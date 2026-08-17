@@ -242,7 +242,7 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | ~~P-02~~ | ~~Como as vagas chegam ao site~~ | — | ✅ **Respondida por evidência (17/08/2026).** O sitemap do WP mostra 6 vagas publicadas como páginas comuns — não há ATS. A collection `jobs` está correta e o fluxo atual se mantém, só muda o CMS. Resta confirmar com o RH se querem seguir assim ou adotar um ATS na virada |
 | ~~P-03~~ | ~~Tipografia oficial da marca~~ | — | ✅ **Resolvida em 17/08/2026 → D-16.** Mona Sans, SIL OFL 1.1, self-hosted |
 | **P-04** | Qual o **teto de custo mensal** aceitável para a ATRA AI? | números concretos de D-12 | Fase 5 sem critério de aceite; risco de conta aberta em produção |
-| **P-05** | Plataforma de deploy: **Coolify/Dokploy ou Compose + Caddy**? | Etapa 4 | Comparativo será apresentado com recomendação; decidir tarde só atrasa o runbook de cutover |
+| **P-05** | Plataforma de deploy: **Coolify/Dokploy ou Compose + Caddy**? | provisionamento da VPS | ✳️ **Comparativo entregue em [deploy-vps](../04-infra/deploy-vps.md), com recomendação de Coolify.** Falta confirmar — e vale checar se a ATRA já tem padrão de infra (o WP roda em RunCloud) |
 | **P-06** | A branch `migracao` vai para o remoto `G-ferrari/ATRA-Website`, ou trabalhamos em fork? | fluxo de PR por rota | Hoje não bloqueia (branches locais); bloqueia quando a Fase 3 começar a produzir uma PR por rota |
 | **P-07** *(reduzida)* | Quem escreve o corpo dos **9 materiais** (3 relatórios, 3 ebooks, 3 webinars) que só existem no protótipo? | publicação desses 9 itens | ✅ Os **6 posts** saíram do escopo: os fictícios são descartados e os 207 reais vêm do WP com corpo (D-17). Restam os 9 materiais, que não existem em lugar nenhum — ficam em rascunho até alguém escrever |
 | **P-08** | O **conteúdo EN existente** (169 chaves) é tradução aprovada pelo marketing ou saída de máquina do protótipo? | escopo de revisão antes do cutover | Se for de máquina, o site publica inglês não revisado sob o domínio da ATRA. Entra revisão humana no roadmap |
@@ -258,6 +258,9 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | **P-18** | A ATRA já usa ferramenta de e-mail marketing / CRM (RD Station, HubSpot)? | newsletter e destino dos leads | Se usa, os formulários devem alimentar o CRM em vez de virar lista isolada no Payload |
 | **P-19** | Existe GA4/GTM na conta da ATRA aplicado ao WP por fora do tema? | baseline de tráfego | Sem analytics antes do cutover, **não há como provar** se a migração melhorou ou piorou nada. Instalar no WP agora é a única forma de ter comparação |
 | **P-20** | Guardar o histórico de conversas da ATRA AI? | `/api/chat` | Dado pessoal de visitante; alternativa é registrar só métricas agregadas |
+| **P-21** | Ligar o proxy da Cloudflare (nuvem laranja)? Hoje o DNS está lá, mas em modo direto | CDN, cache, WAF | Ganho de graça em performance e proteção; custa uma camada a mais para depurar. Recomendação: **depois** do cutover estabilizar |
+| **P-22** | Replicar `form-submissions` para fora do banco em tempo real? | RPO dos leads | Com backup diário, o RPO dos leads é de até 24 h. Para conteúdo é aceitável; para lead, não — lead perdido não volta. Depende de P-18 |
+| **P-23** | **Quem tem acesso à conta Cloudflare da ATRA?** | cutover | Sem resolver com antecedência, o cutover trava no passo mais crítico. Barato agora, caro às 7h da manhã do dia da virada |
 
 ### Encaminhamento
 

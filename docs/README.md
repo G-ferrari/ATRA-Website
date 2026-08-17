@@ -76,12 +76,21 @@ chegaram corrompidas ao git, e no ar estão íntegras. Ver
 | [estrategia-de-testes](03-plano/estrategia-de-testes.md) | rascunho | Regressão visual em primeiro lugar, e por quê; pipeline de CI; o que não testar |
 | [definicao-de-pronto](03-plano/definicao-de-pronto.md) | rascunho | Checklist de PR e as 6 regras invioláveis |
 
-## Etapas seguintes
+## Etapa 4 — Infraestrutura
+
+| Documento | Status | O que cobre |
+|---|---|---|
+| [ambientes](04-infra/ambientes.md) | rascunho | Local, staging e produção; variáveis e onde os segredos vivem; o estado real do DNS e do e-mail da ATRA |
+| [docker](04-infra/docker.md) | rascunho | Compose de dev só com dependências (e por quê), Dockerfile multi-stage, e como evitar o custo de CPU da otimização de imagem |
+| [deploy-vps](04-infra/deploy-vps.md) | rascunho | Coolify/Dokploy vs. Compose+Caddy em tabela, recomendação, dimensionamento e estratégia de deploy |
+| [backup-e-observabilidade](04-infra/backup-e-observabilidade.md) | rascunho | Backup com cópia externa e **restore testado**, Sentry, uptime, logs e plano de recuperação |
+| [runbook-cutover](04-infra/runbook-cutover.md) | rascunho | Passo a passo com horário e responsável, critérios de rollback e os 30 dias seguintes |
+
+## Etapa seguinte
 
 | Etapa | Situação |
 |---|---|
-| 4 — Infraestrutura (ambientes, Docker, deploy VPS, backup, runbook de cutover) | não iniciada |
-| 5 — Memória do projeto (`CLAUDE.md`) | escrita ao final da Fase 2, com o padrão real da fatia vertical |
+| 5 — Memória do projeto (`CLAUDE.md`) | escrita ao final da Fase 2 (MIG-031), com o padrão real da fatia vertical — escrevê-la antes seria inventar convenção sem código para sustentá-la |
 | 4 — Infraestrutura (ambientes, Docker, deploy VPS, backup, runbook de cutover) | não iniciada |
 | 5 — Memória do projeto (`CLAUDE.md`, decisões) | não iniciada |
 
