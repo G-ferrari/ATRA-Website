@@ -48,11 +48,21 @@ de dev, e o site ganha SSR/SEO que hoje não existe.
 | [dados/wp-urls-2026-08-17.txt](02-especificacao/dados/wp-urls-2026-08-17.txt) | — | As 260 URLs do WordPress, insumo do mapa de redirects |
 | [formularios-e-integracoes](02-especificacao/formularios-e-integracoes.md) | rascunho | Formulários, anti-spam, e-mail, analytics, consentimento e a integração da ATRA AI |
 
+## Etapa 3 — Plano
+
+| Documento | Status | O que cobre |
+|---|---|---|
+| [roadmap](03-plano/roadmap.md) | rascunho | 9 fases com critério de conclusão verificável, caminho crítico e riscos de cronograma |
+| [tasks](03-plano/tasks.md) | rascunho | 87 tasks atômicas (`MIG-001`…), uma por PR, ordenadas por dependência — ~229h de engenharia |
+| [estrategia-de-testes](03-plano/estrategia-de-testes.md) | rascunho | Regressão visual em primeiro lugar, e por quê; pipeline de CI; o que não testar |
+| [definicao-de-pronto](03-plano/definicao-de-pronto.md) | rascunho | Checklist de PR e as 6 regras invioláveis |
+
 ## Etapas seguintes
 
 | Etapa | Situação |
 |---|---|
-| 3 — Plano (roadmap, backlog, testes, definição de pronto) | **bloqueada por P-15** — o caminho escolhido define o roadmap inteiro |
+| 4 — Infraestrutura (ambientes, Docker, deploy VPS, backup, runbook de cutover) | não iniciada |
+| 5 — Memória do projeto (`CLAUDE.md`) | escrita ao final da Fase 2, com o padrão real da fatia vertical |
 | 4 — Infraestrutura (ambientes, Docker, deploy VPS, backup, runbook de cutover) | não iniciada |
 | 5 — Memória do projeto (`CLAUDE.md`, decisões) | não iniciada |
 

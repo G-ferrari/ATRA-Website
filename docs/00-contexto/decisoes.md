@@ -202,6 +202,34 @@ largura de texto).
 ⚠️ **Portanto o baseline visual ainda não pode ser congelado.** A pendência saiu de
 "qual é a fonte" para "carregar a fonte no legado" — que é execução, não decisão.
 
+## D-17 — Paridade de conteúdo antes do cutover
+
+**Contexto.** O levantamento do sitemap real (17/08/2026) mostrou que o protótipo
+cobre 20 rotas contra ~259 URLs indexáveis em `atra.com.br`. Detalhe completo em
+[lacuna-de-escopo](../02-especificacao/lacuna-de-escopo.md).
+
+**Opções.** A paridade antes do cutover · B cutover parcial com WP em subdomínio ·
+C cutover só do institucional, com proxy · D reduzir o site com 301 em massa.
+
+**Escolha. A** — o site novo só assume `atra.com.br` quando cobrir o que o
+WordPress cobre.
+
+**Consequência.** Entram no escopo:
+
+| Frente | Volume | Natureza |
+|---|---|---|
+| Migração do blog | 207 posts | **Automatizável** — a API REST do WP (`/wp-json/wp/v2/posts`) entrega título, slug, corpo HTML, data, autor, categorias e imagem destacada. Converter HTML → Lexical e baixar mídia é script |
+| Expansão de soluções | 6 → 13 | Conteúdo existe no WP; precisa de curadoria editorial ao migrar |
+| Nova collection `segments` | 10 páginas | **Modelagem nova** — não há nada equivalente no protótipo |
+| Importação de vagas | 6 | Vira `jobs`, com o mesmo fluxo de hoje |
+| Página legal | 1 | `/politicas-e-termos` — bloqueia LGPD, já que haverá formulários |
+
+Os 6 posts fictícios do protótipo (`legacy/src/pages/Blog.tsx:11-60`) são
+**descartados**, não migrados: não correspondem a nenhum conteúdo real.
+
+O cutover fica mais longe, e é o ponto: trocar o domínio antes da paridade
+significaria escolher entre perder 6 anos de SEO ou manter dois sites no ar.
+
 ---
 
 ## Decisões pendentes
@@ -211,24 +239,41 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | # | Pergunta | Bloqueia | Impacto de não decidir |
 |---|---|---|---|
 | **P-01** | As **métricas institucionais** corretas: profissionais (150+ vs 140+), clientes (20+ vs 30+), certificações (40+), parceiros (9) e **GPTW: 5x ou 4x**? Home e `/sobre` divergem em 4 números | seed + global `siteSettings` | O site novo publica número errado sobre a própria empresa, agora em SSR e indexado. Divergência que hoje passa despercebida entre duas páginas vira dado estruturado único — errado em todo lugar de uma vez |
-| **P-02** | Como as **vagas** chegam ao site: RH cadastra no Payload, vem de ATS externo (Gupy/Solides), ou não há vagas? | collection `jobs` ou integração | Sem isso, `/carreiras` continua prometendo "Ver Vagas Disponíveis" (`App.tsx:742`) sem entregar. Muda de conteúdo para integração — decisão de arquitetura, não de campo |
+| ~~P-02~~ | ~~Como as vagas chegam ao site~~ | — | ✅ **Respondida por evidência (17/08/2026).** O sitemap do WP mostra 6 vagas publicadas como páginas comuns — não há ATS. A collection `jobs` está correta e o fluxo atual se mantém, só muda o CMS. Resta confirmar com o RH se querem seguir assim ou adotar um ATS na virada |
 | ~~P-03~~ | ~~Tipografia oficial da marca~~ | — | ✅ **Resolvida em 17/08/2026 → D-16.** Mona Sans, SIL OFL 1.1, self-hosted |
 | **P-04** | Qual o **teto de custo mensal** aceitável para a ATRA AI? | números concretos de D-12 | Fase 5 sem critério de aceite; risco de conta aberta em produção |
 | **P-05** | Plataforma de deploy: **Coolify/Dokploy ou Compose + Caddy**? | Etapa 4 | Comparativo será apresentado com recomendação; decidir tarde só atrasa o runbook de cutover |
 | **P-06** | A branch `migracao` vai para o remoto `G-ferrari/ATRA-Website`, ou trabalhamos em fork? | fluxo de PR por rota | Hoje não bloqueia (branches locais); bloqueia quando a Fase 3 começar a produzir uma PR por rota |
-| **P-07** | Quem escreve o **corpo dos 15 conteúdos** sem texto, e em que prazo? | publicação das rotas de D-08 | As páginas de detalhe existem mas ficam em rascunho. Sem um dono, o principal ganho da migração não se realiza |
+| **P-07** *(reduzida)* | Quem escreve o corpo dos **9 materiais** (3 relatórios, 3 ebooks, 3 webinars) que só existem no protótipo? | publicação desses 9 itens | ✅ Os **6 posts** saíram do escopo: os fictícios são descartados e os 207 reais vêm do WP com corpo (D-17). Restam os 9 materiais, que não existem em lugar nenhum — ficam em rascunho até alguém escrever |
 | **P-08** | O **conteúdo EN existente** (169 chaves) é tradução aprovada pelo marketing ou saída de máquina do protótipo? | escopo de revisão antes do cutover | Se for de máquina, o site publica inglês não revisado sob o domínio da ATRA. Entra revisão humana no roadmap |
 | **P-09** | Confirmar o **telefone oficial**: o site usa `+55 11 96305-2391` (`App.tsx:2391`); o contato institucional registrado é `+55 11 96306-0267` | global `contact` | Lead ligando para o número errado |
 | **P-10** | Qual o **nome real do parceiro** cadastrado como `"Partner"` (`App.tsx:111`)? | collection `partners` | Card de parceiro genérico em produção |
 | **P-11** | O **case "RD Saúde"** do carrossel da home (`App.tsx:1658-1669`) existe? Hoje aponta para o slug do Banco ABC | seed de `cases` | Ou some no porte, ou vira case real — mas não pode continuar apontando para o case de outro cliente |
+| **P-12** | Manter o `Content-Signal: ai-train=yes` do robots.txt atual? | `robots.ts` | Autoriza treino de modelos com o conteúdo da ATRA — decisão de negócio, não técnica |
+| **P-13** | Exportar do **Search Console** as URLs com impressão nos últimos 12 meses | priorização dos redirects | Sem dado real, a prioridade de preservação é palpite estruturado. Barato de obter, caro de não ter |
+| **P-14** | `/politicas-e-termos/` e `/eventos/` têm destino no site novo? | redirects + rodapé | Formulário coletando dado pessoal sem política de privacidade publicada é exposição de LGPD |
+| ~~P-15~~ | ~~Qual caminho para a lacuna de escopo~~ | — | ✅ **Resolvida em 17/08/2026 → D-17.** Caminho A, paridade de conteúdo antes do cutover |
+| **P-16** | A redução de 13 soluções para 6, e o sumiço dos segmentos, foi **decisão de posicionamento** do marketing ou simplificação de protótipo? | escopo de D-17 | Com A escolhido, o padrão é **restaurar**. Se foi decisão deliberada, restaurar desfaz uma escolha de negócio sem querer |
+| **P-17** | Prazo de retenção de currículos e quem no RH tem acesso | formulário de candidatura | Exigência de LGPD, não preferência |
+| **P-18** | A ATRA já usa ferramenta de e-mail marketing / CRM (RD Station, HubSpot)? | newsletter e destino dos leads | Se usa, os formulários devem alimentar o CRM em vez de virar lista isolada no Payload |
+| **P-19** | Existe GA4/GTM na conta da ATRA aplicado ao WP por fora do tema? | baseline de tráfego | Sem analytics antes do cutover, **não há como provar** se a migração melhorou ou piorou nada. Instalar no WP agora é a única forma de ter comparação |
+| **P-20** | Guardar o histórico de conversas da ATRA AI? | `/api/chat` | Dado pessoal de visitante; alternativa é registrar só métricas agregadas |
 
 ### Encaminhamento
 
-P-01, P-02, P-08, P-09, P-10 e P-11 dependem de confirmação com a ATRA e foram
-assumidos por Leonardo. P-04 e P-05 têm recomendação técnica a apresentar nas
-Etapas 2 e 4. P-06 destrava sozinho quando a Fase 3 começar. P-07 é decisão de
-gestão, não de engenharia.
+**Com a ATRA, assumidas por Leonardo:** P-01, P-08, P-09, P-10, P-11, P-12, P-13,
+P-14, P-16, P-17, P-18, P-19.
+**Recomendação técnica a apresentar:** P-04 (Etapa 2), P-05 (Etapa 4), P-20.
+**Destrava sozinha:** P-06, quando a Fase 3 começar a produzir PRs.
+**Decisão de gestão:** P-07.
 
-A Etapa 2 pode começar com todas em aberto — o modelo de conteúdo prevê os campos;
-só o **seed** fica esperando os valores. Com P-03 resolvida, o **baseline visual**
-depende agora de execução (carregar Mona Sans no legado), não de decisão.
+Duas merecem prioridade por serem baratas agora e caras depois:
+
+- **P-19** — se não há analytics no WordPress, instalar **hoje** é a única forma de
+  ter baseline de tráfego para comparar no cutover. Cada semana sem isso é uma
+  semana a menos de histórico.
+- **P-13** — o export do Search Console transforma a priorização de redirects de
+  palpite em dado. É um clique.
+
+Nenhuma bloqueia a Etapa 3. O modelo prevê os campos; **seed** e **priorização de
+redirects** ficam esperando valores.

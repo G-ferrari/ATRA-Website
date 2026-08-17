@@ -1,12 +1,16 @@
 ---
-status: rascunho
+status: revisado
 atualizado_em: 2026-08-17
 depende_de: [seo-e-redirects.md, mapa-de-migracao.md]
 ---
 
 # Lacuna de escopo: o protótipo não cobre o site atual
 
-**Precisa de decisão antes da Etapa 3 (roadmap).** Todo o planejamento até aqui
+> ✅ **Resolvido em 17/08/2026 — caminho A** (paridade de conteúdo antes do
+> cutover). Registrado como [D-17](../00-contexto/decisoes.md#d-17--paridade-de-conteúdo-antes-do-cutover).
+> Este documento fica como o diagnóstico que fundamentou a decisão.
+
+Todo o planejamento até aqui
 tratou o protótipo do AI Studio (20 rotas) como equivalente ao site que ele vai
 substituir. O levantamento do sitemap real mostrou que não é.
 
@@ -139,10 +143,9 @@ editorial, não de conversão automática.
 D é a única que eu desaconselho ativamente: joga fora o ativo que justifica o
 domínio ranquear.
 
-> [!DECISÃO PENDENTE] **P-15 — bloqueia a Etapa 3.** Qual caminho? A resposta
-> define o roadmap inteiro: em A entram 3 fases novas (migração de blog, segmentos,
-> expansão de soluções); em B e C entra trabalho de infraestrutura de proxy e uma
-> dívida datada.
+✅ **P-15 resolvida: caminho A.** Entram no roadmap três frentes novas — migração
+do blog (207 posts, por script), collection `segments` (10 páginas) e expansão de
+`solutions` de 6 para 13.
 
 > [!DECISÃO PENDENTE] **P-16** — o protótipo reduziu a oferta de 13 soluções para
 > 6, e não tem segmentos. Isso foi decisão de posicionamento do marketing, ou

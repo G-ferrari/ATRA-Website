@@ -41,8 +41,9 @@ do admin em PT-BR.
 | `clients` | Logos de cliente | — | `App.tsx:1860` |
 | `testimonials` | Depoimentos | — | `App.tsx:1922` + `testimony` dos cases |
 | `specialist-roles` | Perfis de consultor alocáveis | — | `Consultants.tsx:61` |
-| `jobs` | Vagas | `/carreiras#[slug]` | ⚠️ não existe hoje — P-02 |
-| `pages` | Páginas institucionais montadas por blocos | `/[slug]` | Home, `/sobre`, `/carreiras` |
+| `segments` | Verticais de mercado atendidas | `/segmentos/[slug]` | ⚠️ **só no WordPress** — 10 páginas, sem equivalente no protótipo (D-17) |
+| `jobs` | Vagas | `/carreiras#[slug]` | 6 páginas no WordPress (P-02 respondida) |
+| `pages` | Páginas institucionais montadas por blocos | `/[slug]` | Home, `/sobre`, `/carreiras`, `/contato`, `/politicas-e-termos` |
 
 ### Decisões de "collection separada vs. campo"
 
@@ -252,10 +253,36 @@ desconhecido. Não migrar até resolver.
 | `skills` | `array{ name: text }` | não | Não localizado: nome de tecnologia |
 | `availableCount` | `number` | não | "N especialistas disponíveis" no card |
 
-## `jobs` ⚠️
+## `segments`
 
-**Bloqueada por P-02** — modelada, não implementada até saber a origem das vagas.
-Se vierem de ATS externo, isto vira integração e a collection não existe.
+`drafts: true` · URL `/segmentos/[slug]` · **entra por D-17**
+
+Verticais de mercado. Existem no WordPress (10 páginas) e não têm equivalente no
+protótipo. Mesma forma de `solutions` — a diferença é semântica: solução é *o que*
+a ATRA faz; segmento é *para quem*.
+
+| Campo | Tipo | Obrig. | Observações |
+|---|---|---|---|
+| `name` | `text` (loc) | **sim** | Bancos & Serviços Financeiros, Saúde, Varejo, Educação, Logística, Telecom, Indústria, Utilidades |
+| `slug` | `text` (loc, unique) | **sim** | |
+| `icon` | `text` | **sim** | Ícone Fluent |
+| `shortDescription` | `textarea` (loc) | **sim** | Card do índice |
+| `layout` | `blocks` | não | Conteúdo da página |
+| `relatedSolutions` | `rel → solutions` (hasMany) | não | Liga vertical à oferta |
+| `relatedCases` | `rel → cases` (hasMany) | não | Prova social por segmento — o case do Banco ABC vive em "Bancos" |
+| `clients` | `rel → clients` (hasMany) | não | Logos por vertical |
+| `order` | `number` | não | |
+| `seo` | grupo | não | |
+
+> `relatedCases` e `clients` fazem a página de segmento se montar sozinha à medida
+> que cases e clientes são cadastrados — em vez de repetir conteúdo.
+
+## `jobs`
+
+`drafts: true` · URL `/carreiras#[slug]` (ou `/carreiras/[slug]` — ver nota)
+
+**P-02 respondida por evidência:** as 6 vagas atuais são páginas do WordPress,
+publicadas pelo RH. Não há ATS. O fluxo se mantém, muda o CMS.
 
 | Campo | Tipo | Obrig. | Observações |
 |---|---|---|---|
@@ -268,6 +295,11 @@ Se vierem de ATS externo, isto vira integração e a collection não existe.
 | `description` | `richText` (loc) | **sim** | |
 | `applyUrl` | `text` | não | Se a candidatura for externa |
 | `isOpen` | `checkbox` | não | `true` |
+
+> ⚠️ As 6 vagas do WP têm **URL de raiz** (`/key-account-manager-pl-sr/`), não
+> aninhada. Se virarem âncora em `/carreiras`, os 6 redirects apontam todos para a
+> mesma página — o candidato cai na lista, não na vaga. Recomendo
+> `/carreiras/[slug]` para preservar o destino 1:1.
 
 ## `pages`
 
