@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "3000:3000"
+      # HMR: em middlewareMode o Vite sobe o websocket numa porta própria
+      - "24678:24678"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: development
+      # Vite dentro do container precisa de polling para ver mudanças no bind mount
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - .:/app
+      # mantém o node_modules construído na imagem (não sobrescrito pelo host)
+      - node_modules:/app/node_modules
+    restart: unless-stopped
+
+volumes:
+  node_modules:
