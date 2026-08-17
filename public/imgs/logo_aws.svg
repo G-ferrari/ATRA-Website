@@ -1,0 +1,9 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 80' width='300' height='80'>
+  <g transform='translate(15, 12)'>
+    <text x='0' y='40' font-family='Arial Black, sans-serif' font-weight='900' font-size='36' fill='#232F3E' letter-spacing='-1'>aws</text>
+    <path d='M 5 48 Q 40 64 75 48' fill='none' stroke='#FF9900' stroke-width='4.5' stroke-linecap='round'/>
+    <path d='M 70 43 L 78 49 L 71 55 Z' fill='#FF9900'/>
+    <text x='95' y='38' font-family='Arial, sans-serif' font-weight='700' font-size='16' fill='#232F3E'>Amazon</text>
+    <text x='95' y='54' font-family='Arial, sans-serif' font-weight='400' font-size='14' fill='#545B64'>Web Services</text>
+  </g>
+</svg>

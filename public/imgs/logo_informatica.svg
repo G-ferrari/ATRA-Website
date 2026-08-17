@@ -1,0 +1,7 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 80' width='320' height='80'>
+  <g transform='translate(10, 15)'>
+    <path d='M 25 5 L 45 28 L 25 51 L 5 28 Z' fill='#FF4D00'/>
+    <path d='M 25 16 L 37 28 L 25 40 L 13 28 Z' fill='#FF9900'/>
+    <text x='55' y='40' font-family='Arial, sans-serif' font-weight='700' font-size='26' fill='#000000'>Informatica</text>
+  </g>
+</svg>

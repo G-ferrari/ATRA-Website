@@ -1,0 +1,15 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' width='400' height='120'>
+  <defs>
+    <linearGradient id='atraGrad' x1='0%' y1='0%' x2='100%' y2='100%'>
+      <stop offset='0%' stop-color='#0052CC'/>
+      <stop offset='50%' stop-color='#172B4D'/>
+      <stop offset='100%' stop-color='#00B8D9'/>
+    </linearGradient>
+  </defs>
+  <g transform='translate(10, 20)'>
+    <path d='M25 10 L65 80 L50 80 L40 60 L10 60 L20 40 L33 40 L25 24 Z' fill='url(#atraGrad)'/>
+    <path d='M45 10 L75 80 L60 80 L45 50 L35 70 L25 70 Z' fill='#00B8D9' opacity='0.85'/>
+    <text x='90' y='52' font-family='Arial, Helvetica, sans-serif' font-weight='900' font-size='42' fill='#172B4D' letter-spacing='2'>ATRA</text>
+    <text x='92' y='72' font-family='Arial, Helvetica, sans-serif' font-weight='700' font-size='12' fill='#0052CC' letter-spacing='4'>DATA &amp; TECH SOLUTIONS</text>
+  </g>
+</svg>

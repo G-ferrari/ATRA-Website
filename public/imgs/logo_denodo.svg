@@ -1,0 +1,7 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 80' width='300' height='80'>
+  <g transform='translate(10, 15)'>
+    <circle cx='28' cy='28' r='22' fill='#0052CC'/>
+    <path d='M 18 16 L 38 28 L 18 40 Z' fill='#FFFFFF'/>
+    <text x='60' y='38' font-family='Arial, sans-serif' font-weight='800' font-size='32' fill='#172B4D' letter-spacing='-1'>denodo</text>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 280 80' width='280' height='80'>
+  <g transform='translate(10, 15)'>
+    <polygon points='10,45 25,10 40,45' fill='#1890FF'/>
+    <polygon points='25,25 40,45 55,25' fill='#0050B3'/>
+    <text x='65' y='40' font-family='Arial, sans-serif' font-weight='800' font-size='32' fill='#001529'>atlan</text>
+  </g>
+</svg>

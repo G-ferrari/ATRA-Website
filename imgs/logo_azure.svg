@@ -1,0 +1,8 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 80' width='320' height='80'>
+  <g transform='translate(10, 15)'>
+    <path d='M 18.5 42 L 39.5 6 L 56.5 42 L 35 34 Z' fill='#0078D4'/>
+    <path d='M 6 52.5 L 24 52.5 L 36.5 28 L 27.5 11.5 Z' fill='#50E6FF'/>
+    <path d='M 24 52.5 L 58.5 52.5 L 56.5 42 L 35 34 Z' fill='#004E8C'/>
+    <text x='72' y='46' font-family='Arial, sans-serif' font-weight='700' font-size='24' fill='#0078D4'>Microsoft <tspan font-weight='400' fill='#262626'>Azure</tspan></text>
+  </g>
+</svg>
