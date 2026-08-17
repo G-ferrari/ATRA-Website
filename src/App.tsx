@@ -1259,9 +1259,15 @@ const Stats = () => {
                       className="h-22 sm:h-26 w-auto object-contain shrink-0"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        if (target.src !== '/imgs/lipt-2026.png') {
-                          target.src = '/imgs/lipt-2026.png';
+                        // target.src é absoluta ("http://host/imgs/..."), então comparar
+                        // com um caminho relativo nunca casa: sem esta flag o fallback
+                        // se reatribui em loop quando a própria imagem de fallback falha.
+                        if (target.dataset.fallbackApplied) {
+                          target.style.display = 'none';
+                          return;
                         }
+                        target.dataset.fallbackApplied = 'true';
+                        target.src = '/imgs/lipt-2026.png';
                       }}
                     />
                   </div>
