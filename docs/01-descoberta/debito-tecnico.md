@@ -105,13 +105,28 @@ O que o git mostra:
 - Aparece **já corrompido** em `d5ab550` (`git cat-file` → `efbfbd50 4e47`).
 - Os scripts `.cjs` foram adicionados **nesse mesmo commit** (`114f190` tem zero).
 
-Conclusão: as imagens entraram no repositório já corrompidas, pelo processo que
-gerou aquele commit — o pipeline de export/sync do Google AI Studio trata o
-projeto como texto. Não é um script do repositório rodando localmente.
+### Confirmado: a corrupção é do caminho de export, não do AI Studio
 
-**Consequência prática:** o risco não é histórico, é recorrente. Enquanto o
-projeto for sincronizado pelo AI Studio, qualquer binário novo pode chegar
-corrompido. Recuperação e prevenção em [inventario-assets](inventario-assets.md).
+O protótipo está publicado em **https://atra-website.ai.studio** (build do AI
+Studio, em análise interna). Verificado em 17/08/2026:
+
+- **52 imagens na home, zero quebradas** — incluindo as duas que estão corrompidas
+  no repositório (`lipt-2026.png` e `salesforceinformatica.png`).
+- O asset publicado é **byte-idêntico** ao gêmeo íntegro do repositório:
+
+```
+sha256  9dd01651cbc297e9…  atra-website.ai.studio/assets/lipt-2026-y0TumdP7.png
+sha256  9dd01651cbc297e9…  legacy/imgs/LIPT 2026.png
+```
+
+Ou seja: **os binários estão íntegros no AI Studio**; a mangling acontece no
+caminho de export/sync para o GitHub. Isso confirma de duas formas independentes
+(gêmeo interno + build publicado) que as cópias `imgs/` são os originais.
+
+**Consequência:** o risco é recorrente, não histórico. Enquanto o projeto for
+sincronizado do AI Studio para o git, qualquer binário novo pode chegar
+corrompido — e o build publicado continuará bonito, escondendo o problema de quem
+só olha o site. Recuperação em [inventario-assets](inventario-assets.md).
 
 ## Ausências estruturais
 

@@ -151,3 +151,8 @@ do blog (207 posts, por script), collection `segments` (10 páginas) e expansão
 > 6, e não tem segmentos. Isso foi decisão de posicionamento do marketing, ou
 > simplificação de protótipo? Muda se estamos restaurando conteúdo ou respeitando
 > uma escolha já feita.
+>
+> **O momento é oportuno:** o protótipo está em análise interna na ATRA agora
+> (publicado em `atra-website.ai.studio`, ainda não divulgado). Esta lacuna é
+> exatamente o tipo de coisa que a revisão interna precisa ver — e a resposta de
+> P-16 provavelmente sai de lá, não da engenharia.

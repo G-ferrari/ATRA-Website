@@ -13,6 +13,25 @@ Next.js App Router + Payload CMS 3 + PostgreSQL.
 **Objetivo de negócio:** o marketing publica cases, blog e materiais sem depender
 de dev, e o site ganha SSR/SEO que hoje não existe.
 
+## Os três sites em jogo
+
+Confundir os três leva a conclusões erradas — vale fixar:
+
+| | O quê | Situação |
+|---|---|---|
+| **`atra.com.br`** | WordPress, ~259 URLs | No ar, público. É o site que será **substituído** (D-02) |
+| **`atra-website.ai.studio`** | Build do protótipo React | No ar, **em análise interna** — ainda não divulgado. É o site que estamos **migrando** |
+| **`legacy/`** | Código-fonte do protótipo | Neste repositório. Gera o build acima |
+
+O protótipo está sob revisão interna da ATRA agora, o que torna os achados da
+Etapa 2 insumo direto dessa revisão — em especial a
+[lacuna de escopo](02-especificacao/lacuna-de-escopo.md) entre o que ele cobre e o
+que o WordPress cobre.
+
+⚠️ `legacy/` e o build publicado **não são equivalentes em assets**: 30 imagens
+chegaram corrompidas ao git, e no ar estão íntegras. Ver
+[inventario-assets](01-descoberta/inventario-assets.md#fonte-limpa-para-a-recuperação).
+
 ## Convenções
 
 - Documentação em português do Brasil; código, identificadores, campos do Payload

@@ -100,8 +100,32 @@ que estão **íntegros**. Os corrompidos que o site realmente tenta usar são:
 - `/imgs/salesforceinformatica.png` — `App.tsx:115`, `:1404`, `logo-clouds.tsx:107`
 - `/imgs/lipt-2026.png` — fallback do `onError` (`App.tsx:1270`, `Careers.tsx:335`)
 
-Ou seja: **2 imagens visivelmente quebradas em produção**; as outras 28 são cópias
-não referenciadas ou com gêmeo íntegro sendo servido.
+Ou seja: **2 imagens visivelmente quebradas em qualquer build feito a partir do
+repositório**; as outras 28 são cópias não referenciadas ou com gêmeo íntegro
+sendo servido.
+
+⚠️ **Não vale para o site publicado.** Em https://atra-website.ai.studio as 52
+imagens da home carregam, incluindo essas duas — o build do AI Studio usa os
+binários íntegros. Consequência: **o loop infinito do `onError` também não
+acontece lá**, porque a imagem nunca falha e o guard quebrado nunca é exercitado.
+O guard continua errado e a correção vale (é uma bomba armada para qualquer imagem
+que falhe no futuro), mas o sintoma é do repositório, não do ar.
+
+### Fonte limpa para a recuperação
+
+O build publicado é a origem mais confiável dos assets — melhor que os gêmeos
+internos, cuja proveniência é inferida. Verificado por hash:
+
+```
+sha256 9dd01651cbc297e9…  atra-website.ai.studio/assets/lipt-2026-y0TumdP7.png
+sha256 9dd01651cbc297e9…  legacy/imgs/LIPT 2026.png        ← idêntico
+```
+
+Isso valida os gêmeos como originais e resolve a dúvida da foto do ATRA Summit
+(exceção acima): baixar do site publicado dispensa o julgamento visual.
+
+**Recomendação para MIG-070:** recuperar do build publicado, usando os gêmeos
+internos só como conferência.
 
 ## 3. Unsplash — 21 referências a substituir
 

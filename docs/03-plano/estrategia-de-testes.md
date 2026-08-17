@@ -148,5 +148,21 @@ vira reflexo e o teste deixa de significar qualquer coisa.
 | visual | build local **+ legado servido em paralelo** (`cd legacy && docker compose up`) |
 | redirects, lighthouse | staging com dado de produção |
 
+### Por que o baseline é o legado local, e não `atra-website.ai.studio`
+
+O build publicado é tentador como gabarito — está no ar e tem as imagens íntegras.
+Mesmo assim o baseline é o **legado local**, por dois motivos:
+
+1. **Precisamos alterá-lo.** D-16 exige carregar Mona Sans no legado antes de
+   congelar qualquer captura; não temos como fazer isso no build do AI Studio.
+2. **Ele muda sem aviso.** O protótipo está em análise interna: qualquer edição no
+   AI Studio republica o site e quebraria todos os snapshots sem que ninguém tenha
+   tocado no nosso código.
+
+Em compensação, o legado local precisa das **imagens recuperadas antes do
+baseline** (MIG-070) — senão congelamos capturas com duas imagens quebradas que
+não existem no site real. A ordem correta é: MIG-070 → MIG-008 (fonte) →
+MIG-011 (baseline).
+
 O legado precisa continuar rodando durante toda a Fase 3 — é o gabarito. Só sai do
 repositório na Fase 8, depois do cutover.
