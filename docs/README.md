@@ -35,12 +35,24 @@ de dev, e o site ganha SSR/SEO que hoje não existe.
 | [debito-tecnico](01-descoberta/debito-tecnico.md) | rascunho | O que bloqueia, o que se resolve durante e o que fica para depois — inclui `/chat` e `/design-system` |
 | [decisoes](00-contexto/decisoes.md) | revisado | ADR das 15 decisões tomadas e as 11 pendentes, com o custo de não decidir cada uma |
 
+## Etapa 2 — Especificação
+
+| Documento | Status | O que cobre |
+|---|---|---|
+| [modelo-de-conteudo](02-especificacao/modelo-de-conteudo.md) | rascunho | 15 collections e 5 globals, campo a campo, com justificativa de cada "collection vs. campo" |
+| [blocos](02-especificacao/blocos.md) | rascunho | 19 blocos flexíveis, todos derivados de seções que já existem, e a composição de cada página |
+| [contratos-de-dados](02-especificacao/contratos-de-dados.md) | rascunho | Tipos de apresentação, mappers e a regra de que componente não busca dado |
+| [mapa-de-migracao](02-especificacao/mapa-de-migracao.md) | rascunho | Rota a rota: origem, destino, renderização, collections, riscos e ordem de execução |
+| [seo-e-redirects](02-especificacao/seo-e-redirects.md) | rascunho | Inventário real do WP, grupos de redirect, metadata, sitemap, hreflang, JSON-LD |
+| [lacuna-de-escopo](02-especificacao/lacuna-de-escopo.md) | **rascunho ⚠️** | **O protótipo cobre 20 rotas; o site atual tem ~259 URLs.** Quatro caminhos possíveis |
+| [dados/wp-urls-2026-08-17.txt](02-especificacao/dados/wp-urls-2026-08-17.txt) | — | As 260 URLs do WordPress, insumo do mapa de redirects |
+| [formularios-e-integracoes](02-especificacao/formularios-e-integracoes.md) | rascunho | Formulários, anti-spam, e-mail, analytics, consentimento e a integração da ATRA AI |
+
 ## Etapas seguintes
 
 | Etapa | Situação |
 |---|---|
-| 2 — Especificação (modelo de conteúdo, contratos, mapa de migração, SEO/redirects, formulários) | não iniciada |
-| 3 — Plano (roadmap, backlog, testes, definição de pronto) | não iniciada |
+| 3 — Plano (roadmap, backlog, testes, definição de pronto) | **bloqueada por P-15** — o caminho escolhido define o roadmap inteiro |
 | 4 — Infraestrutura (ambientes, Docker, deploy VPS, backup, runbook de cutover) | não iniciada |
 | 5 — Memória do projeto (`CLAUDE.md`, decisões) | não iniciada |
 
@@ -86,4 +98,22 @@ qualquer captura de referência (D-16).
 4. **Existe um export de conteúdo pronto**, `legacy/CONTEUDO_DO_SITE.md` (440
    linhas), feito para portar o site a outro CMS. Não estava no briefing e é
    insumo direto da Etapa 2 — a validar contra o código.
-5. **Quatro formulários não enviam nada** para lugar nenhum.
+5. **Quatro formulários não enviam nada** para lugar nenhum — todo lead
+   preenchido hoje é perdido.
+
+## Achado da Etapa 2 que redefine o escopo
+
+**O protótipo não cobre o site que ele vai substituir.** O sitemap de
+`atra.com.br` tem ~259 URLs indexáveis contra 20 rotas no protótipo:
+
+- **207 posts de blog reais**, de 2021 a hoje, ativos — contra 6 posts fictícios
+  no protótipo. É o principal ativo de SEO do domínio.
+- **13 páginas de solução** no ar; o protótipo modela 6 e construiu 1.
+- **10 páginas de segmento** (bancos, saúde, varejo, educação…) sem nenhuma
+  cobertura.
+- **6 vagas** publicadas como páginas — isto responde P-02.
+- `/politicas-e-termos/` existe no WP; no protótipo os 3 links legais do rodapé
+  apontam para `#`.
+
+Ver [lacuna-de-escopo](02-especificacao/lacuna-de-escopo.md) para os quatro
+caminhos possíveis. **P-15 bloqueia a Etapa 3.**
