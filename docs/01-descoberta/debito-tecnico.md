@@ -1,0 +1,168 @@
+---
+status: rascunho
+atualizado_em: 2026-08-17
+depende_de: [inventario-rotas.md, inventario-componentes.md, inventario-conteudo.md, inventario-assets.md]
+---
+
+# Débito técnico
+
+Classificação: **🔴 bloqueia a migração** · **🟡 resolver durante** · **🟢 resolver depois**
+
+## Rota `/chat`
+
+### Onde está a chave de API — verificado
+
+A chave **não vaza para o bundle do cliente**. Cadeia verificada:
+
+1. `src/services/geminiService.ts:6` — o cliente faz `fetch('/api/chat')`, sem SDK
+   e sem chave.
+2. `server.ts:53` — o Express lê `process.env.GEMINI_API_KEY` **no servidor** e
+   instancia `GoogleGenAI` (`server.ts:63`).
+3. `grep -rn "GEMINI_API_KEY\|process.env" legacy/src` → **zero ocorrências**.
+
+⚠️ **Mas há uma armadilha armada.** `vite.config.ts:12` declara:
+
+```ts
+define: { 'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY) }
+```
+
+O `define` do Vite faz substituição textual em tempo de build. Hoje nenhum código
+de cliente referencia esse identificador, então nada é inlinado. **No dia em que
+alguém escrever `process.env.GEMINI_API_KEY` em um componente, a chave entra no
+JavaScript público sem nenhum aviso** — sem erro de build, sem lint.
+
+**Encaminhamento 🔴:** não portar esse `define`. No Next, a chave fica em variável
+de ambiente sem prefixo `NEXT_PUBLIC_`, acessível só em Route Handler / Server
+Component. O prefixo obrigatório do Next é justamente a proteção que falta aqui.
+
+### Outros pontos do chat
+
+| Item | Evidência | Classe |
+|---|---|---|
+| Sem rate limiting — endpoint público que gasta cota de LLM a cada POST | `server.ts:38-84` | 🔴 |
+| Sem autenticação, sem CAPTCHA, sem origem verificada | `server.ts:38` | 🔴 |
+| Modelo fixo no código: `'gemini-3.6-flash'` | `server.ts:66` | 🟡 |
+| System prompt de 40 linhas hardcoded no servidor | `server.ts:6-36` | 🟡 — vira global do Payload, editável pelo marketing |
+| Sem streaming — resposta inteira de uma vez, com timeout de 25 s no cliente | `Chat.tsx:133` | 🟢 |
+| Sem persistência de conversa; recarregar perde tudo | `Chat.tsx:90` | 🟢 |
+| Protocolo de UI generativa por tags `[UI_*]` parseadas com regex | `Chat.tsx:17-57` | 🟡 — funciona, mas quebra silenciosamente se o modelo variar o formato |
+| `ChartCard` renderiza gráfico com **dados fictícios** apresentados como demonstração | `ChatGenerativeUI.tsx:109` | 🟡 — validar com o jurídico/marketing |
+
+> [!DECISÃO PENDENTE] Qual o limite de uso aceitável para a ATRA AI (req/IP/hora,
+> teto de custo mensal)? Sem isso definido, a Fase 5 não tem critério de aceite.
+
+## Estado do `/design-system`
+
+`src/pages/DesignSystem.tsx` — 1.141 linhas, a segunda maior do projeto.
+Sete seções: cores, tipografia, ícones, botões/inputs, badges, componentes
+dinâmicos, UI generativa. Linkada publicamente no rodapé (`App.tsx:2532`).
+
+| Item | Classe |
+|---|---|
+| É **vitrine**, não fonte — os tokens reais estão em `src/index.css:6-30`; a página os repete à mão | 🟡 |
+| Indexável pelo Google (sem `noindex`) e linkada no rodapé de todas as páginas | 🟡 |
+| Único consumidor de `TabFilter` (`:62`) — componente que as outras 5 páginas de filtro ignoram | 🟡 |
+| Mostra amostras de componentes que não existem mais como usados | 🟢 |
+
+**Encaminhamento:** portar por último (Fase 6), como rota interna com `noindex`, e
+reconstruída a partir dos tokens reais em vez de repetir valores. Não é candidata a
+paridade visual estrita — é ferramenta interna.
+
+## Código morto e entrelaçamento
+
+| Item | Evidência | Classe |
+|---|---|---|
+| `App.tsx` com 2.668 linhas concentrando 18 componentes de seção não exportados | `src/App.tsx` | 🟡 — a extração é o próprio trabalho de porte |
+| `Navbar` sozinho tem ~816 linhas, com o texto dos 7 menus inline | `App.tsx:277-1093` | 🟡 |
+| `TechSectionBoundary` exportado e nunca usado | `TechDetails.tsx:243` | 🟢 |
+| `RoundedDiamond` importado em `App.tsx:9` e nunca renderizado | `App.tsx:9` | 🟢 |
+| `better-sqlite3` nas dependências, zero imports no projeto (dependência nativa, exige toolchain no build) | `package.json` | 🟡 — remover |
+| `@fluentui/react-icons` e `@iconify-json/fluent-color` declarados, zero imports | `package.json` | 🟢 |
+| `framer-motion` **e** `motion` declarados; só `motion/react` é importado (24 arquivos) | `package.json` | 🟡 — remover `framer-motion` |
+| 6 scripts `.cjs` de manipulação de código-fonte na raiz | `fix_hero.cjs`, `fix_theme.cjs`, `fix_ui.cjs`, `refactor.cjs`, `remove_borders.cjs`, `minify.cjs` | 🟢 — não portar |
+| `update_locales.js` (13 KB) reescrevendo os JSON de tradução por script | `update_locales.js` | 🟢 — não portar |
+| Rotas duplicadas apontando ao mesmo componente | `App.tsx:2617` e `:2618` | 🟡 |
+| Link para rota inexistente `/contato` | `CaseDetailBase.tsx:211` | 🟡 |
+| 12+ links `href="#"` sem destino | `App.tsx:58,69,75,86,92,109-116`; `Blog.tsx:229` | 🟡 |
+
+### Sobre a corrupção das imagens — hipótese anterior refutada
+
+Levantei antes a suspeita de que os scripts `fix_*.cjs` teriam corrompido os
+binários. **Verificado: não foram eles.** Todos os 6 scripts são seguros quanto a
+isso — `fix_hero`, `fix_theme`, `fix_ui` e `minify` operam só sobre
+`src/App.tsx`; `refactor.cjs` sobre `App.tsx` e `index.css`;
+`remove_borders.cjs` percorre diretórios mas filtra por extensão
+(`remove_borders.cjs:48`: `.endsWith('.tsx') || .endsWith('.ts')`);
+`update_locales.js` só toca os JSON de locale.
+
+O que o git mostra:
+
+- `public/imgs/LIPT 2026.png` **não existe** no commit inicial `114f190`.
+- Aparece **já corrompido** em `d5ab550` (`git cat-file` → `efbfbd50 4e47`).
+- Os scripts `.cjs` foram adicionados **nesse mesmo commit** (`114f190` tem zero).
+
+Conclusão: as imagens entraram no repositório já corrompidas, pelo processo que
+gerou aquele commit — o pipeline de export/sync do Google AI Studio trata o
+projeto como texto. Não é um script do repositório rodando localmente.
+
+**Consequência prática:** o risco não é histórico, é recorrente. Enquanto o
+projeto for sincronizado pelo AI Studio, qualquer binário novo pode chegar
+corrompido. Recuperação e prevenção em [inventario-assets](inventario-assets.md).
+
+## Ausências estruturais
+
+| O que falta | Consequência | Classe |
+|---|---|---|
+| **SSR / SSG** — SPA pura, HTML inicial vazio (`legacy/index.html:9`) | Sem SEO. É o motivo declarado da migração | 🔴 |
+| **`<title>` e `<meta>` por rota** — o `<title>` global é `"My Google AI Studio App"` (`legacy/index.html:6`) | 20 rotas com o mesmo título de template | 🔴 |
+| Sem `sitemap.xml`, `robots.txt`, canonical, OG, dados estruturados | Invisível para buscadores e link preview | 🔴 |
+| **Sem rota 404** — `<Routes>` sem `path="*"` (`App.tsx:2611-2631`) | URL inválida renderiza layout vazio, com status 200 | 🟡 |
+| **Nenhum teste** — sem runner, sem arquivo de teste, sem CI | Zero rede de segurança para o porte | 🔴 (a suíte de regressão visual é o primeiro entregável real) |
+| **Formulários sem destino** — 4 formulários que não enviam nada | `App.tsx:2309` (`preventDefault` e nada mais), `Careers.tsx:487` (só marca estado local), `Consultants.tsx:750`, `Insights.tsx:643` | 🔴 — cada envio hoje é um lead perdido |
+| Sem analytics, sem GTM, sem consentimento de cookie | Sem medição; LGPD pendente | 🟡 |
+| Sem `lang` dinâmico no `<html>` (fixo `lang="en"` com site em PT) | `legacy/index.html:2` — erro de acessibilidade e de SEO | 🟡 |
+| `package-lock.json` fora de sincronia com `package.json` | `npm ci` falha; projeto é mantido com `bun.lock` | 🟡 |
+| Sem tratamento de erro de rota / error boundary | Um throw derruba a página inteira | 🟢 |
+
+## Acessibilidade — amostragem
+
+| Item | Evidência | Classe |
+|---|---|---|
+| `alt` genérico repetido em 10 imagens: `alt="ATRA Moment"` | `About.tsx:219` | 🟡 |
+| Botões de categoria sem `aria-pressed` | `SuccessStories.tsx:138`, `Blog.tsx:141` | 🟡 |
+| Mega-menu abre por `onMouseEnter`, sem equivalente por teclado | `App.tsx:397`, `:477` | 🟡 |
+| Contraste de `text-muted` (`#64748b`) sobre `surface-1` (`#f8fafc`) em textos de 10-11 px | `index.css:13`; usado em `App.tsx:1188` etc. | 🟡 — medir no porte |
+| Ponto positivo: `prefers-reduced-motion` respeitado no contador | `App.tsx:1105` | — |
+
+> [!DECISÃO PENDENTE] Acessibilidade entra como critério de aceite das PRs de rota
+> (com axe no CI), ou fica como fase própria depois do cutover? O porte fiel
+> replica os problemas atuais se ninguém decidir o contrário.
+
+## Inconsistências de conteúdo
+
+Registradas em detalhe em [inventario-conteudo](inventario-conteudo.md). Resumo do
+que **bloqueia o modelo de conteúdo**:
+
+| # | Inconsistência | Classe |
+|---|---|---|
+| 1 | Métricas divergentes entre home e /sobre: 150+ vs 140+ profissionais, 20+ vs 30+ clientes, **5x vs 4x GPTW** | 🔴 — o seed precisa de um número só |
+| 2 | Case fantasma: "RD Saúde" no carrossel da home aponta para o slug do Banco ABC | `App.tsx:1658-1669` | 🔴 |
+| 3 | Mesmo case com título diferente em 3 lugares | 🟡 |
+| 4 | Contadores do hub Insights não batem com as listas reais | `Insights.tsx:57-61` | 🟡 |
+| 5 | Parceiro sem nome, cadastrado como `"Partner"` | `App.tsx:111` | 🟡 |
+| 6 | Telefone do site (`96305-2391`) diverge do contato oficial registrado (`96306-0267`) | 🟡 |
+| 7 | Depoimentos de clientes reais com foto de banco de imagem | `App.tsx:1927-1945` | 🟡 |
+| 8 | 5 das 6 soluções do mega-menu sem página (`link: "#"`) | `App.tsx:58-92` | 🟡 |
+
+## Resumo por classe
+
+**🔴 Bloqueia a migração (9)** — SSR/SEO ausente, metadata por rota, sitemap/robots,
+`define` da chave no Vite, rate limiting do chat, formulários sem destino, ausência
+de testes, métricas divergentes, case fantasma.
+
+**🟡 Resolver durante (24)** — extração do `App.tsx`, duplicações de componente,
+rotas duplicadas, `/contato` quebrado, links `#`, deps não usadas, 404, analytics,
+`lang`, lockfile, acessibilidade, design system, inconsistências de conteúdo.
+
+**🟢 Resolver depois (10)** — código morto, scripts `.cjs`, streaming do chat,
+persistência de conversa, error boundary, deps de ícone não usadas.
