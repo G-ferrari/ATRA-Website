@@ -41,16 +41,19 @@ primeira tela.
 **Escopo.** Projeto Next em `web/` · Payload 3 + adapter Postgres · localization
 `pt`/`en` (D-07) · docker-compose de dev com Postgres e storage S3-compatível ·
 variáveis de ambiente · CI (lint, typecheck, build) · Playwright configurado ·
-**Mona Sans carregada no legado** (D-16).
+**imagens do legado recuperadas** (MIG-070) · Mona Sans no app novo via
+`next/font/google` (D-16).
 
 **Critério de conclusão:**
 - `pnpm dev` sobe; `http://localhost:3000/admin` abre e permite criar o 1º usuário
 - `pnpm payload generate:types` produz `payload-types.ts` sem erro
 - CI verde em PR limpo
 - `pnpm test:e2e` roda a suíte vazia sem erro de configuração
-- O app legado renderiza com Mona Sans (`document.fonts.check` retorna `true`)
+- Zero imagem corrompida no legado; a home renderiza 52 imagens sem quebra
+- A largura de texto no app novo bate com a do legado (±0,1%) nos pesos 300–900
 
-> A última é pré-requisito da Fase 2: sem ela, o baseline visual nasce errado.
+> As duas últimas são pré-requisito do baseline visual: capturas congeladas com
+> imagem quebrada ou fonte divergente registram defeito como comportamento correto.
 
 ## Fase 2 — Fatia vertical (Cases)
 

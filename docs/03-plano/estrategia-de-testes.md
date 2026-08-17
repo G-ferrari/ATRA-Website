@@ -42,7 +42,7 @@ test('cases-de-sucesso mantém paridade com o legado', async ({ page }) => {
 | Carrosséis com auto-rotação (`App.tsx:1473`, `:1674`, `:1952`) | Congelar em `index 0` por flag de teste (`?e2e=1`) |
 | Contadores animados (`App.tsx:1095`) | Mesma flag: renderiza o valor final direto |
 | Imagens remotas (39 do Unsplash) | Interceptar e servir um PNG fixo |
-| Fontes | Aguardar `document.fonts.ready` — e **carregar Mona Sans no legado antes** (D-16) |
+| Fontes | Aguardar `document.fonts.ready`. Legado e app novo usam a **mesma build** da Mona Sans (D-16) — builds diferentes divergem até 2,3% em largura |
 | Data/hora visível | Congelar relógio com `page.clock` |
 
 Viewports: 375 (mobile), 768 (tablet), 1280 (desktop). Temas: claro e escuro — o
@@ -153,16 +153,15 @@ vira reflexo e o teste deixa de significar qualquer coisa.
 O build publicado é tentador como gabarito — está no ar e tem as imagens íntegras.
 Mesmo assim o baseline é o **legado local**, por dois motivos:
 
-1. **Precisamos alterá-lo.** D-16 exige carregar Mona Sans no legado antes de
-   congelar qualquer captura; não temos como fazer isso no build do AI Studio.
+1. **Podemos precisar alterá-lo** para estabilizar capturas (congelar carrossel e
+   contador por flag de teste); no build do AI Studio não temos esse acesso.
 2. **Ele muda sem aviso.** O protótipo está em análise interna: qualquer edição no
    AI Studio republica o site e quebraria todos os snapshots sem que ninguém tenha
    tocado no nosso código.
 
 Em compensação, o legado local precisa das **imagens recuperadas antes do
-baseline** (MIG-070) — senão congelamos capturas com duas imagens quebradas que
-não existem no site real. A ordem correta é: MIG-070 → MIG-008 (fonte) →
-MIG-011 (baseline).
+baseline** (MIG-070, concluída) — senão congelamos capturas com duas imagens
+quebradas que não existem no site real.
 
 O legado precisa continuar rodando durante toda a Fase 3 — é o gabarito. Só sai do
 repositório na Fase 8, depois do cutover.

@@ -112,7 +112,7 @@ Registro completo em [00-contexto/decisoes.md](00-contexto/decisoes.md) —
 | ATRA AI | Rate limit por IP + teto de custo, com degradação graciosa |
 | Acessibilidade | axe no CI reportando, sem reprovar PR |
 | Porte fiel | Vale também para a decoração — preserva a regressão visual |
-| Tipografia | **Mona Sans** (SIL OFL 1.1), variável, self-hosted via `next/font/local` |
+| Tipografia | **Mona Sans** (SIL OFL 1.1) via `next/font/google` — mesma build do legado, para não quebrar a regressão visual |
 | Versionamento | Branches locais por ora (P-06) |
 | Idioma da documentação | PT-BR; código e commits em inglês |
 

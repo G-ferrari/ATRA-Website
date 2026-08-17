@@ -165,42 +165,64 @@ foto. As 4 URLs do Unsplash são descartadas no seed.
 real — decoração alterada faria todo snapshot exigir julgamento humano, destruindo
 o valor do teste. Simplificação vira item de backlog para a fase de refactor.
 
-## D-16 — Mona Sans, self-hosted — e o baseline visual precisa ser corrigido antes
+## D-16 — Mona Sans via `next/font/google`, para bater com o legado
 
-**Contexto.** `legacy/src/index.css:19-20` declara `"Mona Sans"` como `--font-sans`
-e `--font-display`, mas não há `@font-face`, arquivo de fonte, nem `<link>` em
-`legacy/index.html`. **A fonte nunca carrega** — o site em produção renderiza
-inteiro no fallback do sistema.
+> ⚠️ **Esta decisão foi reescrita em 17/08/2026, durante a Fase 1.** A versão
+> anterior partia de duas premissas erradas, corrigidas por medição. O histórico
+> do erro está em "O que estava errado", ao final.
 
-**Escolha.** Mona Sans é a tipografia oficial da marca (confirmado por Leonardo em
-17/08/2026), servida via `next/font/local`.
+**Contexto.** Mona Sans é a tipografia oficial da marca (confirmado por Leonardo).
+Licença **SIL OFL 1.1**, fonte variável, `wght` 200–900 — cobre de `font-light`
+(300) a `font-black` (900), que é a faixa que o legado usa.
 
-Verificado em [github/mona-sans](https://github.com/github/mona-sans):
-licença **SIL Open Font License 1.1** (permissiva, self-hosting sem custo), fonte
-**variável** em arquivo único `MonaSansVF[wdth,wght,opsz,ital].woff2`, com eixos
-`wght` 200–900, `wdth` 75–125%, `opsz` 1–100 e itálico. Cobre todos os pesos que o
-legado usa (`font-light` 300 a `font-extrabold` 800) em um só arquivo.
+O legado **já a carrega**, por `@import` do Google Fonts em
+`legacy/src/index.css:1`. Verificado no browser:
+`document.fonts.check('16px "Mona Sans"')` → `true`, com as faces roman e itálica
+carregadas.
 
-**Consequência — afeta a estratégia de testes.** O site novo vai renderizar com
-Mona Sans; o legado renderiza com fonte de sistema. Comparar um contra o outro faria
-**toda captura com texto acusar diferença**, exatamente o oposto do que a regressão
-visual serve para detectar.
+**O ponto que decide.** Existem duas builds distintas da Mona Sans, e elas **não
+são metricamente idênticas**. Medido no browser, mesma string de 56 caracteres a
+32 px:
 
-Duas saídas:
+| Peso | Google Fonts (v4) | GitHub (v2.0.27) | Diferença |
+|---|---|---|---|
+| 300 | 900,80 px | 886,17 px | −1,6% |
+| 400 | 912,80 px | 899,89 px | −1,4% |
+| 700 | 951,45 px | 929,31 px | **−2,3%** |
+| 900 | 977,22 px | 959,80 px | −1,8% |
 
-| | Abordagem | Avaliação |
+A build do GitHub é consistentemente mais estreita. **2,3% em uma linha de 900 px
+são ~21 px** — muito acima do limite de 0,1% da regressão visual.
+
+**Escolha.** O app novo usa **`next/font/google`** com Mona Sans.
+
+Por quê: o `next/font/google` baixa a fonte **em tempo de build e a serve do nosso
+domínio**. Ou seja, entrega os três objetivos de uma vez —
+
+1. **Métrica idêntica ao legado**, porque é o mesmo arquivo que o legado consome.
+2. **Sem requisição do visitante ao Google** em runtime: resolve a questão de
+   privacidade/LGPD que motivava o self-hosting.
+3. Sem DNS e conexão extra no carregamento.
+
+Self-hostar a build do GitHub faria o oposto: **introduziria** a divergência de
+métrica que esta decisão existe para evitar.
+
+**Consequência.** MIG-008 (carregar a fonte no legado) **deixa de existir** — não
+há o que corrigir. MIG-009 passa a ser `next/font/google`, não `next/font/local`.
+O baseline visual pode ser congelado assim que as imagens forem recuperadas
+(MIG-070, feita).
+
+### O que estava errado
+
+| Afirmação anterior | Realidade | Como o erro passou |
 |---|---|---|
-| **A** | Carregar Mona Sans **no legado primeiro**, num commit isolado em `legacy/`, e só então congelar o baseline | **Recomendada.** Mudança pequena e reversível; o baseline passa a refletir o design pretendido, e a comparação volta a ser pixel a pixel de verdade |
-| B | Aceitar tipografia como diferença conhecida e comparar só layout/estrutura | Enfraquece o teste justamente onde ele é mais útil, e obriga julgamento humano em todo snapshot |
+| "A Mona Sans nunca carrega; o site roda no fallback do sistema" | Carrega, via `@import` do Google Fonts | Procurei `<link>` em `index.html` e `@font-face` no CSS; o `@import` está na **linha 1** de `index.css` e não casava com nenhum dos dois padrões |
+| "Mona Sans não está no Google Fonts" | Está, e é servida | Suposição não verificada |
+| "O baseline nasceria errado sem corrigir o legado" | O baseline já estaria certo | Decorrência do primeiro erro |
 
-**Escolha: A.** Entra como primeira tarefa da Fase 2, antes de qualquer captura de
-referência. Efeito colateral bem-vindo: mostra pela primeira vez como o site foi
-desenhado para parecer — o que pode revelar quebras de layout que hoje estão
-escondidas pelo fallback (métricas de fonte diferentes mudam altura de linha e
-largura de texto).
-
-⚠️ **Portanto o baseline visual ainda não pode ser congelado.** A pendência saiu de
-"qual é a fonte" para "carregar a fonte no legado" — que é execução, não decisão.
+**Lição para o resto do projeto:** a verificação empírica (abrir o browser e
+medir) contradisse a leitura estática do código em dois pontos. Antes de tratar
+algo como defeito do legado, conferir no browser.
 
 ## D-17 — Paridade de conteúdo antes do cutover
 

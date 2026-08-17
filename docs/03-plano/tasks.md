@@ -25,10 +25,10 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-006 | Roteamento `[locale]` + middleware | `web/src/app/[locale]/layout.tsx`, `middleware.ts` | 003 | `/` serve PT, `/en` serve EN, `/xx` cai em 404 | 2h | todo |
 | MIG-007 | Tokens de design + Tailwind v4 | `web/src/app/globals.css` | 001 | Tokens de `legacy/src/index.css:6-30` disponíveis; tema claro/escuro alterna | 2h | todo |
 | MIG-070 | **Recuperar as 30 imagens corrompidas** do build publicado (`atra-website.ai.studio`), conferindo contra os gêmeos internos | `legacy/public/**`, `legacy/src/assets/**` | — | `file -b` reporta imagem em 100%; hash bate com o gêmeo onde existir | 1.5h | todo |
-| MIG-008 | **Mona Sans no app legado** (D-16) | `legacy/index.html`, `legacy/src/index.css` | 070 | `document.fonts.check('16px "Mona Sans"')` = `true` no legado | 1h | todo |
-| MIG-009 | Mona Sans no app novo via `next/font/local` | `web/src/app/[locale]/layout.tsx` | 007 | Mesma renderização do legado após 008 | 0.5h | todo |
+| ~~MIG-008~~ | ~~Mona Sans no app legado~~ | — | — | ❌ **Cancelada.** O legado já carrega Mona Sans via `@import` do Google Fonts (`index.css:1`); não há o que corrigir — ver D-16 | — | n/a |
+| MIG-009 | Mona Sans via **`next/font/google`** (D-16) | `web/src/app/[locale]/layout.tsx` | 007 | Largura de texto idêntica à do legado (±0,1%) nos pesos 300–900 | 0.5h | todo |
 | MIG-010 | CI: lint, typecheck, build | `.github/workflows/ci.yml` | 001 | PR com erro de tipo reprova; PR limpa passa | 1.5h | todo |
-| MIG-011 | Playwright + harness de regressão visual | `web/playwright.config.ts`, `web/e2e/visual.spec.ts` | 006, 010, **070, 008** | Suíte vazia roda no CI; captura do legado e do novo lado a lado | 3h | todo |
+| MIG-011 | Playwright + harness de regressão visual | `web/playwright.config.ts`, `web/e2e/visual.spec.ts` | 006, 010, **070** | Suíte vazia roda no CI; captura do legado e do novo lado a lado | 3h | todo |
 | MIG-012 | **Piloto de conversão HTML → Lexical** (10 posts) | `web/scripts/wp-import/pilot.ts` | 002 | Relatório com o que converteu e o que quebrou nos 10; decisão registrada | 3h | todo |
 
 > MIG-012 é diagnóstico, não entrega. Existe para medir cedo o maior risco
@@ -86,7 +86,8 @@ Uma PR por linha. Todas dependem de MIG-031.
 > **MIG-070 saiu desta fase para a Fase 1.** A recuperação das imagens precisa
 > anteceder o baseline visual (MIG-011): congelar capturas com duas imagens
 > quebradas registraria como "correto" um defeito que não existe no site real.
-> Ordem obrigatória: **MIG-070 → MIG-008 (fonte) → MIG-011 (baseline)**.
+> Ordem obrigatória: **MIG-070 → MIG-011 (baseline)**. (MIG-008 foi cancelada:
+> o legado já carrega a fonte corretamente — ver D-16.)
 
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
@@ -161,7 +162,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 
 | Fase | Tasks | Horas |
 |---|---|---|
-| 1 Fundação | 13 | ~21,5h |
+| 1 Fundação | 12 | ~20,5h |
 | 2 Fatia vertical | 12 | ~26h |
 | 3 Fábrica de rotas | 23 | ~78h |
 | 4a Seed | 3 | ~7,5h |
@@ -170,7 +171,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | 5 Formulários/SEO | 11 | ~30h |
 | 6 Endurecimento | 6 | ~17h |
 | 7–8 Cutover/limpeza | 7 | ~10h |
-| **Total** | **87** | **~229h** |
+| **Total** | **86** | **~228h** |
 
 ⚠️ Estas horas cobrem **engenharia**. Não cobrem: curadoria editorial de
 `segments` e `solutions` (Fase 4c), redação dos 9 materiais sem corpo (P-07),

@@ -172,21 +172,24 @@ ou `partners.logo` no Media, se o marketing precisar trocar.
 ## Fontes
 
 `src/index.css:19-20` declara `--font-sans` e `--font-display` como **"Mona Sans"**,
-com fallback para `ui-sans-serif, system-ui`.
+e a **linha 1** do mesmo arquivo importa a fonte do Google Fonts.
 
-⚠️ Não há `@font-face`, nem arquivo de fonte no repositório, nem `<link>` para
-Google Fonts em `legacy/index.html`. **A Mona Sans nunca carrega** — o site inteiro
-renderiza no fallback do sistema. É débito visual, não estético-intencional.
+> ⚠️ **Correção (17/08/2026).** A versão anterior desta seção afirmava que a fonte
+> nunca carregava e que o site rodava no fallback do sistema. **Estava errado.** O
+> `@import` da linha 1 funciona: verificado no browser,
+> `document.fonts.check('16px "Mona Sans"')` retorna `true`, com as faces roman e
+> itálica carregadas. O erro veio de procurar `<link>` em `index.html` e
+> `@font-face` no CSS — o `@import` não casa com nenhum dos dois padrões.
 
-✅ **Resolvido — D-16:** Mona Sans **é** a tipografia oficial da ATRA. Licença SIL
-OFL 1.1 (self-hosting sem custo), fonte variável em arquivo único
-`MonaSansVF[wdth,wght,opsz,ital].woff2`, eixos `wght` 200–900 e `wdth` 75–125% —
-cobre de `font-light` (300) a `font-extrabold` (800) num só arquivo. Servida por
-`next/font/local`.
+✅ **Resolvido — D-16:** Mona Sans é a tipografia oficial da ATRA (SIL OFL 1.1),
+servida no app novo por **`next/font/google`**, que baixa em build e serve do
+nosso domínio.
 
-⚠️ **Antes de congelar o baseline visual:** carregar Mona Sans **também no legado**
-(commit isolado em `legacy/`), senão a comparação legado × novo acusa diferença em
-toda captura com texto. Ver [decisoes D-16](../00-contexto/decisoes.md#d-16--mona-sans-self-hosted--e-o-baseline-visual-precisa-ser-corrigido-antes).
+⚠️ **Não trocar por self-hosting da build do GitHub.** As duas builds não são
+metricamente idênticas — medido no browser, a do GitHub (v2.0.27) é de 1,4% a
+**2,3% mais estreita** que a servida pelo Google Fonts (v4), o que estouraria o
+limite de 0,1% da regressão visual em toda captura com texto. Ver
+[decisoes D-16](../00-contexto/decisoes.md#d-16--mona-sans-via-nextfontgoogle-para-bater-com-o-legado).
 
 ## Vídeos
 
