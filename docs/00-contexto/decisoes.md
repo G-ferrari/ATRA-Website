@@ -165,6 +165,43 @@ foto. As 4 URLs do Unsplash são descartadas no seed.
 real — decoração alterada faria todo snapshot exigir julgamento humano, destruindo
 o valor do teste. Simplificação vira item de backlog para a fase de refactor.
 
+## D-16 — Mona Sans, self-hosted — e o baseline visual precisa ser corrigido antes
+
+**Contexto.** `legacy/src/index.css:19-20` declara `"Mona Sans"` como `--font-sans`
+e `--font-display`, mas não há `@font-face`, arquivo de fonte, nem `<link>` em
+`legacy/index.html`. **A fonte nunca carrega** — o site em produção renderiza
+inteiro no fallback do sistema.
+
+**Escolha.** Mona Sans é a tipografia oficial da marca (confirmado por Leonardo em
+17/08/2026), servida via `next/font/local`.
+
+Verificado em [github/mona-sans](https://github.com/github/mona-sans):
+licença **SIL Open Font License 1.1** (permissiva, self-hosting sem custo), fonte
+**variável** em arquivo único `MonaSansVF[wdth,wght,opsz,ital].woff2`, com eixos
+`wght` 200–900, `wdth` 75–125%, `opsz` 1–100 e itálico. Cobre todos os pesos que o
+legado usa (`font-light` 300 a `font-extrabold` 800) em um só arquivo.
+
+**Consequência — afeta a estratégia de testes.** O site novo vai renderizar com
+Mona Sans; o legado renderiza com fonte de sistema. Comparar um contra o outro faria
+**toda captura com texto acusar diferença**, exatamente o oposto do que a regressão
+visual serve para detectar.
+
+Duas saídas:
+
+| | Abordagem | Avaliação |
+|---|---|---|
+| **A** | Carregar Mona Sans **no legado primeiro**, num commit isolado em `legacy/`, e só então congelar o baseline | **Recomendada.** Mudança pequena e reversível; o baseline passa a refletir o design pretendido, e a comparação volta a ser pixel a pixel de verdade |
+| B | Aceitar tipografia como diferença conhecida e comparar só layout/estrutura | Enfraquece o teste justamente onde ele é mais útil, e obriga julgamento humano em todo snapshot |
+
+**Escolha: A.** Entra como primeira tarefa da Fase 2, antes de qualquer captura de
+referência. Efeito colateral bem-vindo: mostra pela primeira vez como o site foi
+desenhado para parecer — o que pode revelar quebras de layout que hoje estão
+escondidas pelo fallback (métricas de fonte diferentes mudam altura de linha e
+largura de texto).
+
+⚠️ **Portanto o baseline visual ainda não pode ser congelado.** A pendência saiu de
+"qual é a fonte" para "carregar a fonte no legado" — que é execução, não decisão.
+
 ---
 
 ## Decisões pendentes
@@ -175,7 +212,7 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 |---|---|---|---|
 | **P-01** | As **métricas institucionais** corretas: profissionais (150+ vs 140+), clientes (20+ vs 30+), certificações (40+), parceiros (9) e **GPTW: 5x ou 4x**? Home e `/sobre` divergem em 4 números | seed + global `siteSettings` | O site novo publica número errado sobre a própria empresa, agora em SSR e indexado. Divergência que hoje passa despercebida entre duas páginas vira dado estruturado único — errado em todo lugar de uma vez |
 | **P-02** | Como as **vagas** chegam ao site: RH cadastra no Payload, vem de ATS externo (Gupy/Solides), ou não há vagas? | collection `jobs` ou integração | Sem isso, `/carreiras` continua prometendo "Ver Vagas Disponíveis" (`App.tsx:742`) sem entregar. Muda de conteúdo para integração — decisão de arquitetura, não de campo |
-| **P-03** | Qual a **tipografia oficial** da marca e há licença? Hoje o CSS pede "Mona Sans" (`index.css:19`) mas nada carrega — o site roda no fallback do sistema | baseline de regressão visual (Fase 2) | Congelar os snapshots do Playwright com a fonte errada obriga a refazer **todos** depois. Precisa ser resolvido antes da fatia vertical, não depois |
+| ~~P-03~~ | ~~Tipografia oficial da marca~~ | — | ✅ **Resolvida em 17/08/2026 → D-16.** Mona Sans, SIL OFL 1.1, self-hosted |
 | **P-04** | Qual o **teto de custo mensal** aceitável para a ATRA AI? | números concretos de D-12 | Fase 5 sem critério de aceite; risco de conta aberta em produção |
 | **P-05** | Plataforma de deploy: **Coolify/Dokploy ou Compose + Caddy**? | Etapa 4 | Comparativo será apresentado com recomendação; decidir tarde só atrasa o runbook de cutover |
 | **P-06** | A branch `migracao` vai para o remoto `G-ferrari/ATRA-Website`, ou trabalhamos em fork? | fluxo de PR por rota | Hoje não bloqueia (branches locais); bloqueia quando a Fase 3 começar a produzir uma PR por rota |
@@ -187,10 +224,11 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 
 ### Encaminhamento
 
-P-01, P-02, P-03, P-08, P-09, P-10 e P-11 dependem de confirmação com a ATRA e
-foram assumidos por Leonardo. P-04 e P-05 têm recomendação técnica a apresentar nas
+P-01, P-02, P-08, P-09, P-10 e P-11 dependem de confirmação com a ATRA e foram
+assumidos por Leonardo. P-04 e P-05 têm recomendação técnica a apresentar nas
 Etapas 2 e 4. P-06 destrava sozinho quando a Fase 3 começar. P-07 é decisão de
 gestão, não de engenharia.
 
-A Etapa 2 pode começar com P-01 a P-03 em aberto — o modelo de conteúdo prevê os
-campos; só o **seed** e o **baseline visual** ficam esperando os valores.
+A Etapa 2 pode começar com todas em aberto — o modelo de conteúdo prevê os campos;
+só o **seed** fica esperando os valores. Com P-03 resolvida, o **baseline visual**
+depende agora de execução (carregar Mona Sans no legado), não de decisão.

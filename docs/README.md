@@ -47,7 +47,7 @@ de dev, e o site ganha SSR/SEO que hoje não existe.
 ## Decisões
 
 Registro completo em [00-contexto/decisoes.md](00-contexto/decisoes.md) —
-15 decisões tomadas (D-01 a D-15) e 11 pendentes (P-01 a P-11).
+16 decisões tomadas (D-01 a D-16) e 10 pendentes.
 
 | Decisão | Escolha |
 |---|---|
@@ -62,11 +62,15 @@ Registro completo em [00-contexto/decisoes.md](00-contexto/decisoes.md) —
 | ATRA AI | Rate limit por IP + teto de custo, com degradação graciosa |
 | Acessibilidade | axe no CI reportando, sem reprovar PR |
 | Porte fiel | Vale também para a decoração — preserva a regressão visual |
+| Tipografia | **Mona Sans** (SIL OFL 1.1), variável, self-hosted via `next/font/local` |
 | Versionamento | Branches locais por ora (P-06) |
 | Idioma da documentação | PT-BR; código e commits em inglês |
 
-**Bloqueiam a Etapa 2:** P-01 (métricas institucionais divergentes),
-P-02 (fonte das vagas), P-03 (tipografia oficial da marca).
+**Pendências que atrasam o seed:** P-01 (métricas institucionais divergentes) e
+P-02 (fonte das vagas). Nenhuma bloqueia a modelagem — só os valores.
+
+**Primeira tarefa da Fase 2:** carregar Mona Sans no app legado antes de congelar
+qualquer captura de referência (D-16).
 
 ## Achados da Etapa 1 que mudam premissas do plano original
 

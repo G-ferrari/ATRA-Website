@@ -154,11 +154,15 @@ com fallback para `ui-sans-serif, system-ui`.
 Google Fonts em `legacy/index.html`. **A Mona Sans nunca carrega** — o site inteiro
 renderiza no fallback do sistema. É débito visual, não estético-intencional.
 
-> [!DECISÃO PENDENTE] **P-03 — bloqueia a Fase 2.** Qual a tipografia oficial da
-> marca e há licença? Precisa ser resolvido **antes** do baseline de regressão
-> visual: congelar os snapshots com a fonte errada obriga a refazer todos depois.
-> (Nota: Mona Sans é open source sob SIL OFL, então, se for ela, self-hosting via
-> `next/font/local` não tem custo de licença.)
+✅ **Resolvido — D-16:** Mona Sans **é** a tipografia oficial da ATRA. Licença SIL
+OFL 1.1 (self-hosting sem custo), fonte variável em arquivo único
+`MonaSansVF[wdth,wght,opsz,ital].woff2`, eixos `wght` 200–900 e `wdth` 75–125% —
+cobre de `font-light` (300) a `font-extrabold` (800) num só arquivo. Servida por
+`next/font/local`.
+
+⚠️ **Antes de congelar o baseline visual:** carregar Mona Sans **também no legado**
+(commit isolado em `legacy/`), senão a comparação legado × novo acusa diferença em
+toda captura com texto. Ver [decisoes D-16](../00-contexto/decisoes.md#d-16--mona-sans-self-hosted--e-o-baseline-visual-precisa-ser-corrigido-antes).
 
 ## Vídeos
 
