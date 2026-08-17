@@ -45,16 +45,17 @@ layout de altura fixa sem `Footer` — ver `App.tsx:2596-2606`.
 | `/#fale-conosco` | `App.tsx:428`, `:1079`, `:1589` | Âncora para `CTA` (`App.tsx:2287`); só funciona a partir da home |
 | `#` (placeholder) | `App.tsx:58,69,75,86,92,109-116`; `Blog.tsx:229` | 12+ links de solução/parceiro/artigo sem destino |
 
-> [!DECISÃO PENDENTE] `/contato` vira rota própria no site novo, ou o CTA da home
-> continua sendo o único ponto de contato (âncora)?
+## Decisões que alteram este inventário
 
-> [!DECISÃO PENDENTE] `/solucoes` e `/solucoes/inteligencia-artificial` devem ser
-> a mesma página (redirect 301 de uma para a outra) ou `/solucoes` vira índice das
-> 6 soluções do mega-menu, das quais só 1 tem página hoje?
+Resolvidas em 17/08/2026 — ver [decisoes](../00-contexto/decisoes.md):
 
-> [!DECISÃO PENDENTE] Blog, relatórios, ebooks e webinars não têm página de detalhe
-> hoje (o card não leva a lugar nenhum). O site novo cria `/blog/[slug]` etc.?
-> Isso muda o modelo de conteúdo e o mapa de redirects.
+| Decisão | Efeito nas rotas |
+|---|---|
+| **D-07** — EN sob `/en/...` com slugs traduzidos | Cada rota ganha par em inglês; o total sai de 20 para ~40 URLs |
+| **D-08** — páginas de detalhe para os 4 tipos | `+/blog/[slug]`, `/relatorios/[slug]`, `/ebooks/[slug]`, `/webinars/[slug]` — sem baseline legado |
+| **D-09** — `/solucoes` vira índice + página por solução | `+/solucoes/[slug]` (6 soluções); `/solucoes/inteligencia-artificial` deixa de ser rota duplicada e vira uma instância |
+| **D-10** — `/contato` como página real | Nova rota; conserta o link quebrado de `CaseDetailBase.tsx:211` |
+| **D-11** — webinars com embed | `/webinars/[slug]` hospeda player |
 
 ## Estratégia de renderização sugerida (entrada para o mapa de migração)
 

@@ -33,6 +33,7 @@ de dev, e o site ganha SSR/SEO que hoje não existe.
 | [inventario-conteudo](01-descoberta/inventario-conteudo.md) | rascunho | Todo conteúdo hardcoded por natureza, o que é CMS vs. microcopy, e o estado real da tradução PT/EN |
 | [inventario-assets](01-descoberta/inventario-assets.md) | rascunho | Imagens, ícones e fontes: origem, integridade e destino proposto |
 | [debito-tecnico](01-descoberta/debito-tecnico.md) | rascunho | O que bloqueia, o que se resolve durante e o que fica para depois — inclui `/chat` e `/design-system` |
+| [decisoes](00-contexto/decisoes.md) | revisado | ADR das 15 decisões tomadas e as 11 pendentes, com o custo de não decidir cada uma |
 
 ## Etapas seguintes
 
@@ -43,16 +44,29 @@ de dev, e o site ganha SSR/SEO que hoje não existe.
 | 4 — Infraestrutura (ambientes, Docker, deploy VPS, backup, runbook de cutover) | não iniciada |
 | 5 — Memória do projeto (`CLAUDE.md`, decisões) | não iniciada |
 
-## Decisões já tomadas
+## Decisões
+
+Registro completo em [00-contexto/decisoes.md](00-contexto/decisoes.md) —
+15 decisões tomadas (D-01 a D-15) e 11 pendentes (P-01 a P-11).
 
 | Decisão | Escolha |
 |---|---|
 | Banco de dados | PostgreSQL |
 | Escopo do WordPress | O site novo **substitui** `atra.com.br`, com redirects e migração de mídia |
-| Hospedagem | VPS — plataforma (Coolify/Dokploy vs. Compose+Caddy) em aberto |
-| Idiomas | **PT e EN**, com localization do Payload desde a fundação |
-| Versionamento | Branches locais por ora; publicação no remoto em aberto |
+| Hospedagem | VPS — plataforma (Coolify/Dokploy vs. Compose+Caddy) em aberto (P-05) |
+| Idiomas | PT na raiz, **EN sob `/en/...`** com slugs traduzidos; localization desde a fundação |
+| Páginas de detalhe | Blog, relatórios, ebooks e webinars ganham `/[slug]` próprio |
+| Soluções | `/solucoes` vira índice + página por solução |
+| Contato | `/contato` como página real (hoje é link quebrado) |
+| Webinars | Embed de YouTube/Vimeo |
+| ATRA AI | Rate limit por IP + teto de custo, com degradação graciosa |
+| Acessibilidade | axe no CI reportando, sem reprovar PR |
+| Porte fiel | Vale também para a decoração — preserva a regressão visual |
+| Versionamento | Branches locais por ora (P-06) |
 | Idioma da documentação | PT-BR; código e commits em inglês |
+
+**Bloqueiam a Etapa 2:** P-01 (métricas institucionais divergentes),
+P-02 (fonte das vagas), P-03 (tipografia oficial da marca).
 
 ## Achados da Etapa 1 que mudam premissas do plano original
 

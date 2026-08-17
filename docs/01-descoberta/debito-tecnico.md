@@ -48,8 +48,12 @@ Component. O prefixo obrigatório do Next é justamente a proteção que falta a
 | Protocolo de UI generativa por tags `[UI_*]` parseadas com regex | `Chat.tsx:17-57` | 🟡 — funciona, mas quebra silenciosamente se o modelo variar o formato |
 | `ChartCard` renderiza gráfico com **dados fictícios** apresentados como demonstração | `ChatGenerativeUI.tsx:109` | 🟡 — validar com o jurídico/marketing |
 
-> [!DECISÃO PENDENTE] Qual o limite de uso aceitável para a ATRA AI (req/IP/hora,
-> teto de custo mensal)? Sem isso definido, a Fase 5 não tem critério de aceite.
+✅ **Resolvido — D-12:** rate limit por IP + teto de custo mensal, com degradação
+graciosa (atingido o teto, o chat responde indisponível em vez de continuar
+gastando). O system prompt sai do código e vira global editável pelo marketing.
+
+> [!DECISÃO PENDENTE] **P-04** — qual o teto de custo mensal aceitável para a ATRA?
+> Os números concretos (req/IP/hora e limite em R$) saem na Etapa 2.
 
 ## Estado do `/design-system`
 
@@ -134,9 +138,10 @@ corrompido. Recuperação e prevenção em [inventario-assets](inventario-assets
 | Contraste de `text-muted` (`#64748b`) sobre `surface-1` (`#f8fafc`) em textos de 10-11 px | `index.css:13`; usado em `App.tsx:1188` etc. | 🟡 — medir no porte |
 | Ponto positivo: `prefers-reduced-motion` respeitado no contador | `App.tsx:1105` | — |
 
-> [!DECISÃO PENDENTE] Acessibilidade entra como critério de aceite das PRs de rota
-> (com axe no CI), ou fica como fase própria depois do cutover? O porte fiel
-> replica os problemas atuais se ninguém decidir o contrário.
+✅ **Resolvido — D-13:** axe no CI **reportando, sem reprovar PR**. Os achados
+viram backlog priorizado em fase própria. Aceita-se conscientemente lançar com as
+falhas atuais, em troca de não travar a fábrica de rotas — mas com a dívida
+visível em vez de invisível.
 
 ## Inconsistências de conteúdo
 

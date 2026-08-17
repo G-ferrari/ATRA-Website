@@ -103,7 +103,7 @@ Antes de qualquer rota, para que a fatia vertical de Cases já nasça no padrão
 9. `ContentCard` — resolve #9.
 10. `CaseDetailBase` → vira o template da fatia vertical.
 
-> [!DECISÃO PENDENTE] Os componentes `Tech*` e `Decorations` são puramente
-> decorativos e somam ~460 linhas. Mantemos a identidade visual exatamente como
-> está (porte fiel) ou é uma oportunidade de simplificação já no porte? O
-> princípio 2 do plano diz porte fiel — confirmar que vale para decoração também.
+✅ **Resolvido — D-15:** porte fiel vale também para a decoração, sem exceção.
+É o que faz a regressão visual do Playwright funcionar como rede de segurança real
+— decoração alterada faria todo snapshot exigir julgamento humano. Simplificação
+vira item de backlog para a fase de refactor.

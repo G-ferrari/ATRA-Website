@@ -154,18 +154,20 @@ com fallback para `ui-sans-serif, system-ui`.
 Google Fonts em `legacy/index.html`. **A Mona Sans nunca carrega** — o site inteiro
 renderiza no fallback do sistema. É débito visual, não estético-intencional.
 
-> [!DECISÃO PENDENTE] Mona Sans é a fonte oficial da marca ATRA? Se sim, precisa
-> ser licenciada e self-hosted (`next/font/local`). Se a identidade real for outra,
-> a definição correta entra antes da regressão visual — senão o baseline do
-> Playwright congela a fonte errada.
+> [!DECISÃO PENDENTE] **P-03 — bloqueia a Fase 2.** Qual a tipografia oficial da
+> marca e há licença? Precisa ser resolvido **antes** do baseline de regressão
+> visual: congelar os snapshots com a fonte errada obriga a refazer todos depois.
+> (Nota: Mona Sans é open source sob SIL OFL, então, se for ela, self-hosting via
+> `next/font/local` não tem custo de licença.)
 
 ## Vídeos
 
 Nenhum. Os webinars mostram thumbnail + ícone de play sem player
 (`Webinars.tsx:64-84`); "45:00" e "HD" são texto fixo.
 
-> [!DECISÃO PENDENTE] Webinars vão hospedar vídeo (YouTube/Vimeo embed) ou seguem
-> como card de divulgação com link externo? Muda a collection `webinars`.
+✅ **Resolvido — D-11:** embed de YouTube/Vimeo na página de detalhe, com campo de
+URL e duração real por item. Hosting fica com a plataforma externa — sem custo de
+storage nem banda. `"45:00"` e `"HD"`, hoje texto fixo, viram campo (ou somem).
 
 ## Destino consolidado
 

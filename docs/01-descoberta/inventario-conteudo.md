@@ -89,9 +89,9 @@ pessoas): especialidade, senioridade, skills, descrição.
 (`:487`) mas **não há lista de vagas estruturada** no código. O mega-menu promete
 "Ver Vagas Disponíveis" (`App.tsx:742`) e "Vagas Abertas →" (`App.tsx:1074`).
 
-> [!DECISÃO PENDENTE] Existe hoje uma fonte de vagas (Gupy, Solides, planilha)?
-> Se sim, a collection `jobs` é integração, não conteúdo digitado. Se não, o
-> marketing/RH vai cadastrar vaga a vaga no Payload?
+> [!DECISÃO PENDENTE] **P-02** — existe hoje uma fonte de vagas (Gupy, Solides,
+> planilha)? Se sim, `jobs` é integração, não conteúdo digitado. A confirmar com o
+> RH da ATRA. Ver [decisoes](../00-contexto/decisoes.md#decisões-pendentes).
 
 ## 9. Parceiros 🟢
 
@@ -116,9 +116,8 @@ escala visual). RD Saúde, ANBIMA, Afya, Oncoclínicas, Carrefour Banco, Icatu, 
 Mais 3 dentro dos cases (`cases/*.tsx`, prop `testimony`), esses **com nome real**
 (Rafael Kataoka, Paulo Ruza).
 
-> [!DECISÃO PENDENTE] Os 4 depoimentos da home usam avatar de banco de imagem para
-> pessoas reais de ABC Brasil e Banco Carrefour. Isso é aceitável para produção, ou
-> o campo `avatar` deve ser opcional e cair para iniciais/monograma?
+✅ **Resolvido — D-14:** o campo de foto vira **opcional**, com fallback para
+iniciais em monograma. As 4 URLs do Unsplash são descartadas no seed.
 
 ## 12. Soluções 🟢
 
@@ -178,14 +177,19 @@ Com a decisão de manter **PT e EN**, toda collection precisa nascer com
 `localized: true` nos campos de texto, e a Etapa 2 tem que decidir a estratégia de
 URL. Isso está registrado como decisão em [debito-tecnico](debito-tecnico.md).
 
-> [!DECISÃO PENDENTE] Estratégia de URL para o segundo idioma: `/en/...` (prefixo
-> de rota), subdomínio, ou `?lang=`? Afeta o mapa de redirects e o sitemap. A
-> recomendação técnica é prefixo de rota (`/en/...`) com `hreflang`, por ser o
-> único que o Google indexa como páginas distintas sem configuração extra.
+✅ **Resolvido — D-07:** PT na raiz, EN sob `/en/...`, com **slugs traduzidos**
+(`/sobre` → `/en/about`). Toda collection nasce com `localized: true` nos campos de
+texto e slug por idioma.
 
-> [!DECISÃO PENDENTE] O conteúdo EN existente (169 chaves) é tradução aprovada
-> pelo marketing ou saída de máquina do protótipo? Se for a segunda, entra
-> revisão humana no roadmap antes do cutover.
+> [!DECISÃO PENDENTE] **P-08** — o conteúdo EN existente (169 chaves) é tradução
+> aprovada pelo marketing ou saída de máquina do protótipo? Se for a segunda, entra
+> revisão humana antes do cutover.
+
+⚠️ **Consequência de D-07 sobre o acervo:** as 172 chaves cobrem só navegação e
+páginas institucionais. Os ~50 itens de conteúdo (cases, posts, glossário,
+relatórios, ebooks, webinars, consultores, depoimentos) **não têm versão em
+inglês** — o modelo prevê o campo, mas o valor não existe. Dimensionar o esforço
+de tradução é parte de P-07.
 
 ## Duplicação entre hub e listagens
 
