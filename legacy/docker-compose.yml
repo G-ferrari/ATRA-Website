@@ -4,7 +4,10 @@ services:
       context: .
       target: dev
     ports:
-      - "3000:3000"
+      # 3001 no host: a porta 3000 é do app novo em web/.
+      # O legado segue no ar durante toda a migração — é o gabarito da
+      # regressão visual. Sai do repositório só na Fase 8.
+      - "3001:3000"
       # HMR: em middlewareMode o Vite sobe o websocket numa porta própria
       - "24678:24678"
     env_file:

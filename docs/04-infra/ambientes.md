@@ -93,12 +93,11 @@ pnpm seed                               # conteúdo de desenvolvimento
 pnpm dev                                # http://localhost:3000
 ```
 
-O app legado, enquanto existir, sobe em paralelo na porta 3000 — **conflita**.
-Rodar o legado em outra porta durante a Fase 3, já que a regressão visual precisa
-dos dois no ar ao mesmo tempo:
+O app legado roda em paralelo, na **porta 3001** — a regressão visual precisa dos
+dois no ar ao mesmo tempo. Já configurado assim em `legacy/docker-compose.yml`:
 
 ```bash
-cd legacy && docker compose up -d       # ajustar para 3001 na Fase 1
+cd legacy && docker compose up -d       # http://localhost:3001
 ```
 
 ## Migrações de banco
@@ -111,3 +110,22 @@ Payload gera migração a partir do schema. Regras:
    [backup-e-observabilidade](backup-e-observabilidade.md).
 4. Staging recebe a migração primeiro, com dado real copiado. Se quebrar lá,
    quebraria em produção.
+
+## Notas do Next 16 (levantadas na Fase 1)
+
+O Next 16 traz mudanças que contradizem o que boa parte da documentação e dos
+modelos de linguagem "sabem" sobre Next. Registradas aqui porque afetam tarefas
+já planejadas:
+
+| Mudança | Impacto |
+|---|---|
+| **`middleware.ts` → `proxy.ts`**, e a função exportada passa a se chamar `proxy` | MIG-006. O runtime é `nodejs` e **não é configurável**; quem precisa de `edge` continua em `middleware` |
+| **Request APIs assíncronas obrigatórias** — `params`, `searchParams`, `cookies()`, `headers()` | Já previsto nos [contratos de dados](../02-especificacao/contratos-de-dados.md); acesso síncrono foi removido de vez |
+| `params` e `id` viram Promise em `icon` e `opengraph-image` | MIG-105/107 |
+| **Turbopack é o padrão** | Dispensa a flag `--turbopack` nos scripts |
+| Mínimos: Node 20.9+, TypeScript 5.1+ | Atendidos |
+| Defaults de `next/image` mudaram (`minimumCacheTTL`, `imageSizes`) | Ver a estratégia de imagem em [docker](docker.md#custo-de-cpu-da-otimização-de-imagem) |
+
+O pacote instala um `AGENTS.md` em `web/` avisando disso e apontando para
+`node_modules/next/dist/docs/`. **Ler de lá antes de escrever código de Next** —
+é a fonte que acompanha a versão instalada.
