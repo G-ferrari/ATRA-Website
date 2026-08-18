@@ -49,7 +49,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # O projeto vive em `web/`; não há package.json na raiz, e a action lê
+      # `packageManager` de lá por padrão. Sem apontar o caminho, ela falha
+      # antes de qualquer passo útil — foi como o CI reprovou na primeira
+      # execução de verdade.
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
 
       - uses: actions/setup-node@v4
         with:
@@ -134,7 +140,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      # O projeto vive em `web/`; não há package.json na raiz, e a action lê
+      # `packageManager` de lá por padrão. Sem apontar o caminho, ela falha
+      # antes de qualquer passo útil — foi como o CI reprovou na primeira
+      # execução de verdade.
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
