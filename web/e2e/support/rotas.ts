@@ -5,6 +5,7 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'glossario', caminho: '/glossario' },
   { nome: 'relatorios', caminho: '/relatorios' },
   { nome: 'ebooks', caminho: '/ebooks' },
+  { nome: 'webinars', caminho: '/webinars' },
 ] as const
 
 /* Imagens entram mascaradas na comparação.

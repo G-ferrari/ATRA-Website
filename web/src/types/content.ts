@@ -79,6 +79,18 @@ export type Resource = {
   publishedAt: string
 }
 
+export type Webinar = {
+  slug: string
+  title: string
+  description: string
+  image: Image
+  tags: string[]
+  /** Texto livre no legado ("Amanhã, 15:00"), não data formatada. */
+  dateLabel: string
+  duration: string
+  videoUrl: string | null
+}
+
 export type Seo = {
   title: string
   description: string

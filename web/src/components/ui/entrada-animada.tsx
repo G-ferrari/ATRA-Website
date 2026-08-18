@@ -20,17 +20,23 @@ export function EntradaAnimada({
   index = 0,
   className,
   id,
+  escala = false,
 }: {
   children: ReactNode
   index?: number
   className?: string
   id?: string
+  /** `/webinars` cresce de 0.95 em vez de subir 20px (`Webinars.tsx:58`). */
+  escala?: boolean
 }) {
+  const inicial = escala ? { opacity: 0, scale: 0.95 } : { opacity: 0, y: 20 }
+  const final = escala ? { opacity: 1, scale: 1 } : { opacity: 1, y: 0 }
+
   return (
     <motion.div
       id={id}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={inicial}
+      whileInView={final}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className={className}

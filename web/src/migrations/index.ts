@@ -4,6 +4,7 @@ import * as migration_20260818_144016_add_case_hero_subtitle from './20260818_14
 import * as migration_20260818_184514_add_testimonial_label from './20260818_184514_add_testimonial_label';
 import * as migration_20260818_190708_add_glossary_terms from './20260818_190708_add_glossary_terms';
 import * as migration_20260818_191612_add_resources from './20260818_191612_add_resources';
+import * as migration_20260818_211820_add_webinars from './20260818_211820_add_webinars';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260818_191612_add_resources.up,
     down: migration_20260818_191612_add_resources.down,
-    name: '20260818_191612_add_resources'
+    name: '20260818_191612_add_resources',
+  },
+  {
+    up: migration_20260818_211820_add_webinars.up,
+    down: migration_20260818_211820_add_webinars.down,
+    name: '20260818_211820_add_webinars'
   },
 ];

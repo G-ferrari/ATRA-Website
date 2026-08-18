@@ -74,7 +74,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 |---|---|---|---|
 | MIG-040 | `/glossario` + collection `glossary-terms` | — | 3h | **done** |
 | MIG-041 | `/relatorios` + `/ebooks` + collection `resources` | — | 4h | **done** |
-| MIG-042 | `/webinars` + collection `webinars` | — | 3h |
+| MIG-042 | `/webinars` + collection `webinars` | — | 3h | **done** |
 | MIG-043 | `/blog` + collection `posts` | — | 3h |
 | MIG-044 | `/blog/[slug]` | 043 | 3h |
 | MIG-045 | `/relatorios/[slug]` + `/ebooks/[slug]` | 041 | 2.5h |

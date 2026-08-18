@@ -9,7 +9,7 @@ import { spawnSync } from 'node:child_process'
  *
  * Rodar com `pnpm seed`. Todos são idempotentes: rodar duas vezes não duplica.
  */
-const SEEDS = ['cases.ts', 'glossary.ts', 'resources.ts']
+const SEEDS = ['cases.ts', 'glossary.ts', 'resources.ts', 'webinars.ts']
 
 for (const arquivo of SEEDS) {
   console.log(`\n▶ ${arquivo}`)

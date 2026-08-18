@@ -45,6 +45,9 @@ export type FeaturedHeroProps = {
   eyebrowIcon: ReactNode
   /** Sem ícone próprio, o legado fecha o botão com uma seta. */
   actionIcon?: ReactNode
+  /* Botão secundário. Só webinar tem um no legado
+   * (`FeaturedHero.tsx:130`), levando à página do evento. */
+  acaoSecundaria?: { label: string; href: string }
   /** Intervalo da rotação automática, em ms. */
   intervalo?: number
 }
@@ -54,6 +57,7 @@ export function FeaturedHero({
   actionLabel,
   eyebrowIcon,
   actionIcon,
+  acaoSecundaria,
   variante = 'wide',
   rotuloDaCapa,
   intervalo = 5000,
@@ -133,6 +137,14 @@ export function FeaturedHero({
                   <span>{actionLabel}</span>
                   {!actionIcon && <ArrowRight size={16} aria-hidden />}
                 </Link>
+                {acaoSecundaria && (
+                  <Link
+                    href={acaoSecundaria.href}
+                    className="pill-btn-outline py-3 px-6 text-xs sm:text-sm font-bold justify-center"
+                  >
+                    {acaoSecundaria.label}
+                  </Link>
+                )}
               </div>
             </div>
 

@@ -75,6 +75,7 @@ export interface Config {
     cases: Case;
     'glossary-terms': GlossaryTerm;
     resources: Resource;
+    webinars: Webinar;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -90,6 +91,7 @@ export interface Config {
     cases: CasesSelect<false> | CasesSelect<true>;
     'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
+    webinars: WebinarsSelect<false> | WebinarsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -517,6 +519,66 @@ export interface Resource {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Webinars and online events. The video comes in as a YouTube or Vimeo link.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "webinars".
+ */
+export interface Webinar {
+  id: number;
+  title: string;
+  /**
+   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   */
+  slug: string;
+  description: string;
+  coverImage: number | Media;
+  /**
+   * As shown on the card. E.g. "Tomorrow, 3pm" or "May 10, 2026".
+   */
+  dateLabel: string;
+  startsAt?: string | null;
+  /**
+   * Shown over the cover. E.g. 45:00.
+   */
+  duration?: string | null;
+  /**
+   * YouTube or Vimeo. Empty until the webinar has been recorded (D-11).
+   */
+  videoUrl?: string | null;
+  tags?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Lower comes first.
+   */
+  order: number;
+  /**
+   * Optional. When empty, the site falls back to the page title and summary.
+   */
+  seo?: {
+    /**
+     * Up to ~60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Up to 160 characters — Google truncates the rest.
+     */
+    metaDescription?: string | null;
+    /**
+     * Shown when shared on LinkedIn and WhatsApp. Falls back to the cover image.
+     */
+    ogImage?: (number | null) | Media;
+    noIndex?: boolean | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -571,6 +633,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'resources';
         value: number | Resource;
+      } | null)
+    | ({
+        relationTo: 'webinars';
+        value: number | Webinar;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -825,6 +891,38 @@ export interface ResourcesSelect<T extends boolean = true> {
   pages?: T;
   body?: T;
   publishedAt?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+        noIndex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "webinars_select".
+ */
+export interface WebinarsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  coverImage?: T;
+  dateLabel?: T;
+  startsAt?: T;
+  duration?: T;
+  videoUrl?: T;
+  tags?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  order?: T;
   seo?:
     | T
     | {
