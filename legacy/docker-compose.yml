@@ -11,7 +11,11 @@ services:
       # HMR: em middlewareMode o Vite sobe o websocket numa porta própria
       - "24678:24678"
     env_file:
-      - .env
+      # Opcional: o `.env` é local e fora do git. No CI ele não existe, e o
+      # compose abortava antes de subir o gabarito da regressão visual. O
+      # legado só precisa dele para a rota /chat, que não entra nos testes.
+      - path: .env
+        required: false
     environment:
       NODE_ENV: development
       # Vite dentro do container precisa de polling para ver mudanças no bind mount
