@@ -91,6 +91,16 @@ export type Webinar = {
   videoUrl: string | null
 }
 
+export type PostCard = {
+  slug: string
+  title: string
+  description: string
+  image: Image
+  tags: string[]
+  /** ISO 8601; o componente formata no locale ativo. */
+  publishedAt: string
+}
+
 export type Seo = {
   title: string
   description: string

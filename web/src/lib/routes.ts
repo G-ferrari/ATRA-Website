@@ -16,6 +16,7 @@ export const SECOES = {
   relatorios: { pt: 'relatorios', en: 'reports' },
   ebooks: { pt: 'ebooks', en: 'ebooks' },
   webinars: { pt: 'webinars', en: 'webinars' },
+  blog: { pt: 'blog', en: 'blog' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type Secao = keyof typeof SECOES
