@@ -19,7 +19,7 @@ Status: `todo` · `wip` · `done` · `blocked`
 |---|---|---|---|---|---|---|
 | MIG-001 | Scaffold do projeto Next em `web/` | `web/package.json`, `web/next.config.ts`, `web/tsconfig.json` | — | `pnpm dev` sobe em :3000 com página em branco; typecheck passa | 1h | **done** |
 | MIG-002 | Payload 3 + adapter Postgres | `web/src/payload.config.ts`, `web/src/collections/Users.ts` | 001 | `/admin` abre e cria o 1º usuário; tabelas criadas no Postgres | 2h | **done** |
-| MIG-003 | Localization `pt`/`en` no Payload | `payload.config.ts` | 002 | Admin mostra seletor de locale; campo localizado grava nos dois | 1h | todo |
+| MIG-003 | Localization `pt`/`en` no Payload | `payload.config.ts` | 002 | Admin mostra seletor de locale; campo localizado grava nos dois | 1h | **done** |
 | MIG-004 | docker-compose de dev (Postgres + MinIO) | `docker-compose.yml`, `.env.example` | 002 | `docker compose up -d` sobe os dois; Payload conecta em ambos | 1.5h | **done** |
 | MIG-005 | Storage S3-compatível para Media | `payload.config.ts`, `collections/Media.ts` | 004 | Upload pelo admin cai no MinIO e é servido de volta | 1.5h | **done** |
 | MIG-006 | Roteamento `[locale]` + **`proxy.ts`** | `web/src/app/[locale]/layout.tsx`, `web/src/proxy.ts` | 003 | `/` serve PT, `/en` serve EN, `/xx` cai em 404 | 2h | **done** |

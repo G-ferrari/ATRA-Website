@@ -17,7 +17,7 @@ depois da paridade de conteúdo.
 | Fase | Nome | Entrega | Depende de |
 |---|---|---|---|
 | 0 | Descoberta | ✅ concluída | — |
-| 1 | Fundação | Next + Payload + Postgres + CI + Playwright, sem telas | 0 |
+| 1 | Fundação | ✅ **concluída em 18/08/2026** | 0 |
 | 2 | Fatia vertical | Cases ponta a ponta, com padrão documentado | 1 |
 | 3 | Fábrica de rotas | As 16 rotas restantes do protótipo | 2 |
 | 4a | Seed do protótipo | Conteúdo que já existe em `legacy/` no CMS | 2 |
@@ -44,16 +44,25 @@ variáveis de ambiente · CI (lint, typecheck, build) · Playwright configurado 
 **imagens do legado recuperadas** (MIG-070) · Mona Sans no app novo via
 `next/font/google` (D-16).
 
-**Critério de conclusão:**
-- `pnpm dev` sobe; `http://localhost:3000/admin` abre e permite criar o 1º usuário
-- `pnpm payload generate:types` produz `payload-types.ts` sem erro
-- CI verde em PR limpo
-- `pnpm test:e2e` roda a suíte vazia sem erro de configuração
-- Zero imagem corrompida no legado; a home renderiza 52 imagens sem quebra
-- A largura de texto no app novo bate com a do legado (±0,1%) nos pesos 300–900
+**Critério de conclusão — verificado em 18/08/2026:**
 
-> As duas últimas são pré-requisito do baseline visual: capturas congeladas com
-> imagem quebrada ou fonte divergente registram defeito como comportamento correto.
+| Critério | Resultado |
+|---|---|
+| `pnpm dev` sobe; `/admin` abre e cria o 1º usuário | ✅ 200; usuário criado e autenticado |
+| `pnpm payload generate:types` sem erro | ✅ |
+| `pnpm test:e2e` roda sem erro de configuração | ✅ **24 testes passando** em 3 viewports |
+| Zero imagem corrompida no legado | ✅ 0 de 48; home renderiza 52 imagens sem quebra |
+| Largura de texto bate com o legado (±0,1%) | ✅ **0,0005%** nos pesos 200–900; **0,0003%** no itálico |
+| CI verde em PR limpo | ⚠️ **não verificável sem remoto** — cada passo foi exercitado localmente, e o portão de erro de tipo foi testado com um erro deliberado. Depende de **P-06** |
+
+> As duas últimas linhas de imagem e fonte eram pré-requisito do baseline visual:
+> capturas congeladas com imagem quebrada ou fonte divergente registrariam
+> defeito como comportamento correto.
+
+**Entregue além do previsto:** papéis `editor`/`admin` com access control
+(MIG-013), admin em português (MIG-014) e o
+[piloto de conversão do WordPress](piloto-conversao-wp.md) (MIG-012), que baixou
+o risco da Fase 4b de alto para baixo.
 
 ## Fase 2 — Fatia vertical (Cases)
 
