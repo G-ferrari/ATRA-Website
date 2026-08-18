@@ -186,3 +186,10 @@ rotas duplicadas, `/contato` quebrado, links `#`, deps não usadas, 404, analyti
 
 **🟢 Resolver depois (10)** — código morto, scripts `.cjs`, streaming do chat,
 persistência de conversa, error boundary, deps de ícone não usadas.
+
+## Achados durante o porte (Fase 1)
+
+| Item | Evidência | Classe |
+|---|---|---|
+| **Anel de foco removido globalmente** fora de campos de formulário: `outline: none !important` em `*:focus`, `button:focus`, `a:focus` etc. Quem navega por teclado perde a indicação de onde está | `legacy/src/index.css:110-131`, portado fielmente para `web/src/app/(frontend)/globals.css` | 🟡 — porte fiel (D-15) manda replicar; corrigir na fase de a11y (D-13) |
+| `--color-border-main` renderiza com alpha 0,0784 no app novo contra 0,08 no legado — mesma cor, notação normalizada pelo minificador CSS do Next (`rgba(255,255,255,0.08)` → `#ffffff14`), enquanto o Vite preserva a original | medido no browser, 10 dos 11 tokens batem exatamente | 🟢 — diferença abaixo do que um canal de 8 bits distingue na maioria dos casos; observar quando o baseline visual for congelado |

@@ -1,26 +1,169 @@
+/* Fundação visual, portada de legacy/src/index.css.
+ *
+ * Porte fiel (D-15): valores idênticos aos do legado, para a regressão visual
+ * comparar pixel a pixel. Melhoria identificada aqui vai para
+ * docs/01-descoberta/debito-tecnico.md, não para este arquivo.
+ *
+ * A fonte NÃO é importada aqui — entra por next/font/google em MIG-009 (D-16).
+ */
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-surface-1: #f8fafc;
+  --color-surface-2: #ffffff;
+  --color-surface-3: #f1f5f9;
+  --color-surface-inverse: #0e1015;
+
+  --color-text-main: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-subtle: #334155;
+
+  --color-border-main: #e2e8f0;
+  --color-border-subtle: transparent;
+
+  /* Preenchidas por next/font/google em MIG-009 */
+  --font-sans: var(--font-mona-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-mona-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary: #3C98FA;
+  --color-secondary: #FF8B08;
+  --color-primary-dark: #2A75C5;
+  --color-secondary-dark: #D67200;
+
+  /* Paleta grafite do tema escuro */
+  --color-dark-bg: #0e1015;
+  --color-dark-surface: #181b22;
+  --color-dark-surface-2: #222631;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer utilities {
+  .glass-card {
+    @apply bg-white shadow-xl border-0 rounded-[6px];
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  .glass-card-dark {
+    @apply bg-[#181b22] shadow-2xl shadow-black/60 text-white border-0 rounded-[6px];
+  }
+
+  .vort-card {
+    @apply rounded-[6px] bg-surface-2 p-6 sm:p-8 shadow-md border-0 transition-all duration-200 relative overflow-hidden;
+  }
+
+  .vort-card-dark {
+    @apply rounded-[6px] bg-[#181b22] p-6 sm:p-8 shadow-xl text-white border-0 transition-all duration-200 relative overflow-hidden;
+  }
+
+  .pill-btn-primary {
+    @apply rounded-[6px] bg-primary hover:bg-primary-dark text-white px-6 py-3 font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-[0.98] uppercase tracking-wider text-xs border-0;
+  }
+
+  .pill-btn-secondary {
+    @apply rounded-[6px] bg-secondary hover:bg-secondary-dark text-white px-6 py-3 font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-[0.98] uppercase tracking-wider text-xs border-0;
+  }
+
+  .pill-btn-outline {
+    @apply rounded-[6px] border-0 hover:border-primary text-text-main hover:bg-primary/10 px-6 py-3 font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wider text-xs;
+  }
+
+  .vort-dot-grid {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+  }
+
+  .vort-dot-grid-light {
+    background-image: radial-gradient(circle, rgba(15, 23, 42, 0.08) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
+  }
+
+  .bg-gradient-atra {
+    @apply bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
+  }
+
+  @keyframes marquee-vertical {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
+  }
+
+  .animate-marquee-vertical {
+    animation: marquee-vertical 30s linear infinite;
+  }
+
+  @keyframes marquee-horizontal {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-marquee-horizontal {
+    display: flex;
+    width: max-content;
+    animation: marquee-horizontal 26s linear infinite;
+  }
+
+  .animate-marquee-horizontal:hover {
+    animation-play-state: paused;
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Herdado do legado: remove todo anel de foco fora de campos de formulário.
+ * ⚠️ É problema de acessibilidade — quem navega por teclado perde a indicação
+ * de onde está. Mantido por porte fiel (D-15); registrado no débito técnico
+ * para a fase de a11y (D-13). Não "consertar" aqui: quebraria a paridade. */
+*:focus:not(input):not(textarea):not(select):not([contenteditable="true"]),
+*:focus-visible:not(input):not(textarea):not(select):not([contenteditable="true"]),
+*:active:not(input):not(textarea):not(select):not([contenteditable="true"]) {
+  outline: none !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-width: 0px !important;
+}
+
+button, a, summary, [role="button"], [tabindex] {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus, button:focus-visible, button:active,
+a:focus, a:focus-visible, a:active,
+summary:focus, summary:focus-visible, summary:active,
+[role="button"]:focus, [role="button"]:focus-visible, [role="button"]:active,
+[tabindex]:focus, [tabindex]:focus-visible, [tabindex]:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--color-surface-1);
+  color: var(--color-text-main);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+html.dark {
+  --color-surface-1: #0e1015;
+  --color-surface-2: #181b22;
+  --color-surface-3: #222631;
+  --color-surface-inverse: #0e1015;
+
+  --color-text-main: #f3f4f6;
+  --color-text-muted: #9ca3af;
+  --color-text-subtle: #d1d5db;
+
+  --color-border-main: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
 }
