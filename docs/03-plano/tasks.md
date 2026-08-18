@@ -26,7 +26,7 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-007 | Tokens de design + Tailwind v4 | `web/src/app/globals.css` | 001 | Tokens de `legacy/src/index.css:6-30` disponíveis; tema claro/escuro alterna | 2h | **done** |
 | MIG-070 | **Recuperar as 30 imagens corrompidas** do build publicado (`atra-website.ai.studio`), conferindo contra os gêmeos internos | `legacy/public/**`, `legacy/src/assets/**` | — | `file -b` reporta imagem em 100%; hash bate com o gêmeo onde existir | 1.5h | **done** |
 | ~~MIG-008~~ | ~~Mona Sans no app legado~~ | — | — | ❌ **Cancelada.** O legado já carrega Mona Sans via `@import` do Google Fonts (`index.css:1`); não há o que corrigir — ver D-16 | — | n/a |
-| MIG-009 | Mona Sans via **`next/font/google`** (D-16) | `web/src/app/[locale]/layout.tsx` | 007 | Largura de texto idêntica à do legado (±0,1%) nos pesos 300–900 | 0.5h | todo |
+| MIG-009 | Mona Sans via **`next/font/google`** (D-16) | `web/src/app/[locale]/layout.tsx` | 007 | Largura de texto idêntica à do legado (±0,1%) nos pesos 300–900 | 0.5h | **done** |
 | MIG-010 | CI: lint, typecheck, build | `.github/workflows/ci.yml` | 001 | PR com erro de tipo reprova; PR limpa passa | 1.5h | todo |
 | MIG-011 | Playwright + harness de regressão visual | `web/playwright.config.ts`, `web/e2e/visual.spec.ts` | 006, 010, **070** | Suíte vazia roda no CI; captura do legado e do novo lado a lado | 3h | todo |
 | MIG-013 | **Papéis `editor`/`admin` + access control** (D-18) | `web/src/access/*`, `collections/Users.ts` | 002 | Editor não edita globals nem `ai-assistant`; editor não consegue se promover a admin | 2h | **done** |
