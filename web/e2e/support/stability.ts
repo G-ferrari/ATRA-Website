@@ -77,7 +77,6 @@ export async function stabilize(page: Page) {
      * framer observa a `div` do card, o Next observa o `<a>`; o tipo do
      * elemento separa os dois. Não pré-carregar também deixa a captura mais
      * previsível. */
-    const original = window.IntersectionObserver
     window.IntersectionObserver = class {
       private readonly cb: IntersectionObserverCallback
       constructor(cb: IntersectionObserverCallback) {
@@ -105,7 +104,7 @@ export async function stabilize(page: Page) {
       root = null
       rootMargin = ''
       thresholds = [] as readonly number[]
-    } as unknown as typeof original
+    } as unknown as typeof window.IntersectionObserver
 
     const aplicar = () => {
       if (document.getElementById('e2e-estabilizacao')) return
