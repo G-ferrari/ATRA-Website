@@ -47,3 +47,6 @@ next-env.d.ts
 
 # Amostras baixadas do WordPress (regeneráveis por scripts/wp-import)
 /scripts/wp-import/.sample/
+
+# pnpm: store local do container, nunca versionado
+.pnpm-store/
