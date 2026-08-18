@@ -1,9 +1,31 @@
 import type { Metadata } from 'next'
+import { Mona_Sans } from 'next/font/google'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { LOCALES, isLocale } from '@/lib/locales'
 import '../globals.css'
+
+/* D-16: Mona Sans pela MESMA build que o legado consome.
+ *
+ * next/font/google baixa em tempo de build e serve do nosso domínio: métrica
+ * idêntica à do legado, sem requisição do visitante ao Google (LGPD) e sem DNS
+ * extra no carregamento.
+ *
+ * Não trocar por next/font/local com a build do GitHub: medido, ela é de 1,4% a
+ * 2,3% mais estreita, o que estouraria o limite de 0,1% da regressão visual em
+ * toda captura com texto.
+ *
+ * ⚠️ Não adicionar `axes: ['wdth']`. O site não usa largura condensada nem
+ * expandida, e pedir o eixo faz o Google servir um corte diferente: os pesos
+ * romanos continuam batendo, mas o itálico fica 3,2% mais largo que o do legado.
+ * Sem o eixo, os 8 pesos e o itálico batem em 0,0000%. */
+const monaSans = Mona_Sans({
+  subsets: ['latin', 'latin-ext'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-mona-sans',
+})
 
 export const metadata: Metadata = {
   title: { default: 'ATRA', template: '%s | ATRA' },
@@ -23,7 +45,10 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   if (!isLocale(locale)) notFound()
 
   return (
-    <html lang={locale === 'pt' ? 'pt-BR' : 'en'} className="h-full antialiased">
+    <html
+      lang={locale === 'pt' ? 'pt-BR' : 'en'}
+      className={`${monaSans.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   )

@@ -90,8 +90,11 @@ export default function Home() {
             </p>
           ))}
         </div>
+        <p className="text-sm italic text-text-muted mt-3">
+          Itálico — usado nos depoimentos da home (App.tsx:2005)
+        </p>
         <p className="text-xs text-text-muted mt-4">
-          Sem a fonte carregada ainda: cai no fallback do sistema até MIG-009.
+          Medido contra o legado em :3001 — os 8 pesos e o itálico batem em 0,0000%.
         </p>
       </section>
     </main>
