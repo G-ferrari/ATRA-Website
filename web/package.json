@@ -23,7 +23,8 @@
     "migrate": "payload migrate",
     "migrate:create": "payload migrate:create",
     "migrate:status": "payload migrate:status",
-    "baseline": "GRAVAR_GABARITO=1 playwright test e2e/baseline.spec.ts --update-snapshots"
+    "baseline": "GRAVAR_GABARITO=1 playwright test e2e/baseline.spec.ts --update-snapshots",
+    "typegen": "next typegen"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",

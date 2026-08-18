@@ -101,6 +101,11 @@ jobs:
           fi
           echo "OK: importMap em dia."
 
+      # `PageProps` e `LayoutProps` são tipos que o Next gera em `.next/types`
+      # a partir da árvore de rotas. Num checkout limpo eles não existem e o
+      # tsc falha em rotas corretas — foi o segundo motivo de reprovação na
+      # estreia do CI. Localmente o dev server já os gerou, por isso passava.
+      - run: pnpm typegen
       - run: pnpm typecheck
 
       # Unitário cobre onde há lógica: mappers, conversor do WP, redirects,
