@@ -59,7 +59,9 @@ chegaram corrompidas ao git, e no ar estão íntegras. Ver
 | [inventario-conteudo](01-descoberta/inventario-conteudo.md) | rascunho | Todo conteúdo hardcoded por natureza, o que é CMS vs. microcopy, e o estado real da tradução PT/EN |
 | [inventario-assets](01-descoberta/inventario-assets.md) | rascunho | Imagens, ícones e fontes: origem, integridade e destino proposto |
 | [debito-tecnico](01-descoberta/debito-tecnico.md) | rascunho | O que bloqueia, o que se resolve durante e o que fica para depois — inclui `/chat` e `/design-system` |
-| [decisoes](00-contexto/decisoes.md) | revisado | ADR das 20 decisões tomadas e as 11 pendentes, com o custo de não decidir cada uma |
+| [decisoes](00-contexto/decisoes.md) | revisado | ADR das 25 decisões tomadas (D-01…D-25) |
+| [pendencias](00-contexto/pendencias.md) | rascunho | As 22 decisões em aberto, com o custo de não decidir cada uma |
+| [pendencias-atra](00-contexto/pendencias-atra.md) | rascunho | O subconjunto que depende da ATRA, agrupado por área e pronto para circular |
 
 ## Etapa 2 — Especificação
 
@@ -104,7 +106,9 @@ chegaram corrompidas ao git, e no ar estão íntegras. Ver
 ## Decisões
 
 Registro completo em [00-contexto/decisoes.md](00-contexto/decisoes.md) —
-20 decisões tomadas (D-01 a D-20) e 11 pendentes.
+25 decisões tomadas (D-01 a D-25). As em aberto ficam em
+[pendencias.md](00-contexto/pendencias.md), separadas porque decisão registrada
+é permanente e pendência existe para deixar de existir.
 
 | Decisão | Escolha |
 |---|---|
