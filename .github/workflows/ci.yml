@@ -108,6 +108,12 @@ jobs:
       - run: pnpm typegen
       - run: pnpm typecheck
 
+      # O Postgres do CI sobe vazio. `generateStaticParams` consulta `cases`
+      # durante o build, então o schema precisa existir antes — as migrações
+      # versionadas (D-21) são a única fonte dele, já que `push` está
+      # desligado. Terceiro motivo de reprovação na estreia do CI.
+      - run: pnpm payload migrate
+
       # Unitário cobre onde há lógica: mappers, conversor do WP, redirects,
       # rate limit. Componente de marketing fica com a regressão visual.
       - run: pnpm test
