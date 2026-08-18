@@ -54,6 +54,59 @@ export async function stabilize(page: Page) {
       transition-duration:0s !important; transition-delay:0s !important;
       scroll-behavior:auto !important;
     }`
+    /* IntersectionObserver que dispara na hora.
+     *
+     * Os dois apps animam a entrada dos cards com `whileInView`: 20px de
+     * deslocamento e opacidade, disparados quando o elemento entra na viewport.
+     * Se o observer não disparar antes da captura, o card fica no estado
+     * **inicial** — 20px abaixo e transparente.
+     *
+     * Isso é uma corrida, e cada lado corre sozinho: a mesma suíte alternava
+     * entre passar e reprovar com 20px de diferença em toda a grade, sem
+     * nenhuma mudança de código. Não adianta esperar mais: o disparo depende de
+     * hidratação, que varia com carga da máquina.
+     *
+     * Aqui o elemento observado é reportado como visível imediatamente.
+     * Combinado com `reducedMotion: 'reduce'` do contexto, o framer-motion pula
+     * direto para o estado final — determinístico dos dois lados.
+     *
+     * ⚠️ Âncoras ficam de fora. O router do Next também usa IntersectionObserver,
+     * para pré-carregar `<Link>` que entra na viewport: reportar todas como
+     * visíveis dispara o prefetch de todas as rotas de uma vez e o
+     * `networkidle` nunca chega — a suíte inteira estourava em timeout. O
+     * framer observa a `div` do card, o Next observa o `<a>`; o tipo do
+     * elemento separa os dois. Não pré-carregar também deixa a captura mais
+     * previsível. */
+    const original = window.IntersectionObserver
+    window.IntersectionObserver = class {
+      private readonly cb: IntersectionObserverCallback
+      constructor(cb: IntersectionObserverCallback) {
+        this.cb = cb
+      }
+      observe(alvo: Element) {
+        if (alvo.tagName === 'A') return
+        const entrada = {
+          isIntersecting: true,
+          intersectionRatio: 1,
+          target: alvo,
+          time: 0,
+          boundingClientRect: alvo.getBoundingClientRect(),
+          intersectionRect: alvo.getBoundingClientRect(),
+          rootBounds: null,
+        } as IntersectionObserverEntry
+        // Fora da pilha atual: o framer registra o callback antes de montar.
+        setTimeout(() => this.cb([entrada], this as unknown as IntersectionObserver), 0)
+      }
+      unobserve() {}
+      disconnect() {}
+      takeRecords(): IntersectionObserverEntry[] {
+        return []
+      }
+      root = null
+      rootMargin = ''
+      thresholds = [] as readonly number[]
+    } as unknown as typeof original
+
     const aplicar = () => {
       if (document.getElementById('e2e-estabilizacao')) return
       const style = document.createElement('style')

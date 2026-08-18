@@ -276,29 +276,15 @@ e dimensão da imagem continuam comparadas, o conteúdo não. O que sai de cober
 — imagem certa no lugar certo — fica com `smoke.spec.ts`, que confere `src` e
 `alt`.
 
-### 3. Timeout de 90s, 2 workers e aquecimento das rotas
+### 3. ~~Timeout, workers e aquecimento~~ — resolvido em MIG-035
 
-Três ajustes contra a mesma causa: **a suíte roda contra o servidor de
-desenvolvimento, que compila sob demanda.**
+O gate agora roda contra um **build de produção** em `:3100`, dentro da imagem
+oficial do Playwright, por um comando só: `pnpm gate`. Antes ele rodava contra o
+servidor de dev, que compila sob demanda — e a suíte alternava entre 27 verdes e
+4 vermelhos **sem nenhuma mudança de código**.
 
-- `settle()` rola a página em passos de 80ms; uma rota de 4.600px no mobile leva
-  ~5s só nisso. Com 30s de teto, os timeouts apareciam como falha de paridade.
-- Com os 5 workers do padrão, a mesma rota levava de 8s a 70s. Dois workers
-  mantêm o tempo previsível.
-- `globalSetup` visita cada URL da suíte uma vez, em sequência, antes de
-  qualquer teste — e espera o servidor aceitar conexão antes disso. Sem o
-  aquecimento a suíte alternava entre 27 verdes e 4 vermelhos **sem nenhuma
-  mudança de código**; a partir de um container recém-reiniciado, reprovava 24
-  de 27. O `/admin` sozinho levava 32s na primeira compilação.
-
-**Suíte que falha ao acaso é pior que suíte ausente** — é ignorada em duas
-semanas, que é a premissa deste documento. Por isso o aquecimento entrou junto
-com MIG-034 em vez de virar dívida.
-
-⚠️ Tudo isso trata sintoma. A correção durável é comparar contra um **build de
-produção**: é o que vai ao ar e não recompila. Registrado como **MIG-035**, com
-critério de aceite explícito — verde 3× seguidas a partir de container novo,
-sem aquecimento.
+Números da virada, mesma suíte e mesmo gabarito: **14,8 min com 11 falhas e 5
+instáveis → 21 segundos, 36 verdes**, três execuções seguidas.
 
 ## Duas armadilhas que passaram despercebidas
 
@@ -314,3 +300,48 @@ não define `-webkit-font-smoothing`. Depois de layout e fonte já baterem — a
 caixas de texto da listagem coincidem ao décimo de pixel — ainda sobravam ~3.400
 pixels divergentes, todos em borda de letra. A regra geral: **não introduzir
 propriedade tipográfica que o legado não tem**, por melhor que pareça.
+
+## O que MIG-035 encontrou
+
+Três causas, e nenhuma delas era o código do site.
+
+### A fonte do legado dependia da rede
+
+O legado buscava Mona Sans no Google Fonts em tempo de execução (`@import` em
+`index.css:1`); o app novo serve a mesma build do próprio domínio via next/font
+(D-16). Dentro da imagem do Playwright o legado renderizava texto **0,6% mais
+largo** — no rodapé isso virava uma linha a mais e 20px de altura de página.
+
+Os `.woff2` que o next/font baixou foram copiados para `legacy/public/fonts/` e
+o `@import` remoto virou local. **Mesmos arquivos, mesmos bytes, mesma métrica.**
+Depois disso a divergência foi a 0,00%.
+
+Para regerar, se a fonte mudar:
+
+```bash
+docker compose exec web sh -c 'cd /app/.next && tar cf - $(find . -name "*.woff2")' | tar xf - -C /tmp/
+find /tmp/dev -name '*.woff2' -exec cp {} legacy/public/fonts/ \;
+# e reescrever legacy/public/fonts/mona-sans.css com as regras servidas pelo app novo
+```
+
+### A animação de entrada era uma corrida
+
+Os dois apps animam a entrada dos cards com `whileInView`: 20px de deslocamento,
+disparados por `IntersectionObserver`. Se o observer não disparasse antes da
+captura, o card ficava no estado **inicial** — e cada lado corria sozinho. Era a
+origem do "20px em toda a grade" que aparecia e sumia sem mudança de código.
+
+Esperar mais não resolve: o disparo depende de hidratação, que varia com a carga
+da máquina. `stabilize()` agora substitui o `IntersectionObserver` por um que
+reporta visível na hora, e o framer pula para o estado final nos dois lados.
+
+⚠️ **Âncoras ficam de fora do patch.** O router do Next usa o mesmo observer
+para pré-carregar `<Link>`: reportar todas como visíveis dispara o prefetch de
+todas as rotas de uma vez e o `networkidle` nunca chega — na primeira tentativa
+a suíte inteira estourou em timeout. O framer observa a `div` do card, o Next
+observa o `<a>`.
+
+### O servidor de dev não é o que vai ao ar
+
+Compila sob demanda, injeta o indicador de dev e hidrata devagar. `pnpm gate`
+usa `next build` + `next start`, que é o que o visitante recebe.

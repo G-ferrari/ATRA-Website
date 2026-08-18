@@ -172,42 +172,20 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
         working-directory: web
-      # Sem `--with-deps`: é ele que instala pacotes de sistema por apt, e foi
-      # onde o job pendurou por 27 minutos na estreia. O runner do GitHub já traz
-      # as bibliotecas; só o binário do Chromium falta.
-      - run: pnpm exec playwright install chromium
-        working-directory: web
-
       # Mesmo motivo do job `verify`: o build lê o banco em
       # `generateStaticParams`, e o Postgres do CI sobe vazio.
       - run: pnpm payload migrate
         working-directory: web
 
-      - run: pnpm build
+      # A comparação confere o conteúdo, não só o layout: sem seed o app novo
+      # sobe vazio e nada bate com o legado.
+      - run: pnpm seed
         working-directory: web
 
-      - name: Sobe o app novo (:3000)
-        run: |
-          pnpm start &
-          npx wait-on http://localhost:3000 --timeout 60000
-        working-directory: web
-
-      # Só o smoke por enquanto — arquivo explícito, não filtro por título: as
-      # duas suítes que comparam contra o legado (`visual` e `paridade-ds`) têm
-      # nomes diferentes e um `--grep-invert` deixou a segunda passar batido.
-      #
-      # Elas comparam PNGs gravados na
-      # máquina de quem desenvolve (macOS) e o runner é Linux: medido, o legado
-      # renderiza texto 0,6% mais largo lá, porque busca Mona Sans no Google
-      # Fonts em tempo de execução enquanto o app novo serve do próprio domínio
-      # (D-16). Isso vira uma linha a mais no rodapé e 20px de altura — falha
-      # real do ambiente, não do código.
-      #
-      # MIG-035 resolve tornando a fonte do legado determinística e rodando a
-      # suíte na imagem oficial do Playwright (`pnpm e2e:docker`), a mesma nos
-      # dois lados. Até lá o gate visual roda local, e reprovar aqui todo push
-      # só ensinaria a ignorar o CI.
-      - run: pnpm test:e2e e2e/smoke.spec.ts
+      # `pnpm gate` faz tudo: build de produção, sobe em :3100 e roda a suíte
+      # dentro da imagem oficial do Playwright — a mesma que gravou o gabarito
+      # no macOS. É o que torna um gabarito só válido nos dois lugares (MIG-035).
+      - run: pnpm gate
         working-directory: web
 
       - uses: actions/upload-artifact@v4

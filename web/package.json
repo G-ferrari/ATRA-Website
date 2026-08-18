@@ -25,8 +25,8 @@
     "migrate:status": "payload migrate:status",
     "baseline": "GRAVAR_GABARITO=1 playwright test e2e/baseline.spec.ts --update-snapshots",
     "typegen": "next typegen",
-    "e2e:docker": "docker run --rm --add-host=host.docker.internal:host-gateway -e NEXT_URL=http://host.docker.internal:3000 -e LEGACY_URL=http://host.docker.internal:3001 -e CI=1 -v \"$PWD\":/work -w /work mcr.microsoft.com/playwright:v1.62.1-noble npx playwright test",
-    "baseline:docker": "docker run --rm --add-host=host.docker.internal:host-gateway -e NEXT_URL=http://host.docker.internal:3000 -e LEGACY_URL=http://host.docker.internal:3001 -e CI=1 -v \"$PWD\":/work -w /work mcr.microsoft.com/playwright:v1.62.1-noble sh -c \"GRAVAR_GABARITO=1 npx playwright test e2e/baseline.spec.ts --update-snapshots\""
+    "gate": "node scripts/gate.mjs",
+    "gate:baseline": "node scripts/gate.mjs --baseline"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",

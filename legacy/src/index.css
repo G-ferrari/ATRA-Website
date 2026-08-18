@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap');
+/* Mona Sans local — ver public/fonts/mona-sans.css e MIG-035. */
+@import url('/fonts/mona-sans.css');
 @import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));

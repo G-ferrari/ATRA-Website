@@ -108,12 +108,16 @@ cd legacy && docker compose up -d        # gabarito (:3001)
 pnpm dev · pnpm lint · pnpm typecheck · pnpm test
 pnpm typegen                             # PageProps/LayoutProps antes do tsc em árvore limpa
 pnpm seed                                # idempotente
-pnpm baseline                            # regrava o gabarito a partir do legado
-pnpm test:e2e                            # compara o app novo contra ele
+pnpm gate                                # build de produção + comparação visual
+pnpm gate --baseline                     # regrava o gabarito a partir do legado
+pnpm gate --sem-build                    # reaproveita o .next existente
 ```
 
-`pnpm baseline` só é rodado com justificativa no PR — regravar gabarito apaga a
-evidência de regressão.
+`pnpm gate` é o único caminho: build de produção em :3100, suíte dentro da imagem
+oficial do Playwright — a mesma no macOS e no CI, para um gabarito só valer nos
+dois. `pnpm test:e2e` é o executor cru, usado por dentro do container.
+
+Regravar gabarito exige justificativa no PR: apaga a evidência de regressão.
 
 ## Regressão visual
 
@@ -123,13 +127,15 @@ Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
   serve variante reencodada pelo `next/image`. Divergem por projeto, não por
   regressão.
 - `?e2e=1` congela carrossel e rotação nos dois apps (`lib/e2e.ts` de cada lado).
-- O `globalSetup` aquece cada rota antes da suíte, esperando o servidor aceitar
-  conexão. Sem isso a suíte alternava entre 27 verdes e 4 vermelhos **sem
-  mudança de código** — `/admin` sozinho leva 32s na primeira compilação.
-- ⚠️ O gabarito é gravado no macOS e o CI é Linux. Lá o legado renderiza texto
-  0,6% mais largo, porque busca Mona Sans no Google Fonts em tempo de execução
-  enquanto o novo serve do próprio domínio (D-16). Por isso o CI roda só o
-  smoke até **MIG-035**.
+- `stabilize()` troca o `IntersectionObserver` por um que reporta visível na
+  hora — **menos para âncoras**. Os cards animam a entrada com `whileInView`, e
+  se o observer não disparar antes da captura o card fica 20px abaixo; era uma
+  corrida que aparecia e sumia sem mudança de código. As âncoras ficam de fora
+  porque o router do Next usa o mesmo observer para prefetch, e liberar todas
+  trava o `networkidle`.
+- A fonte do legado é servida de `legacy/public/fonts/` — os mesmos `.woff2` que
+  o next/font baixou. Enquanto vinha do Google em tempo de execução, o legado
+  renderizava 0,6% mais largo dentro do Linux.
 
 ## Armadilhas já pagas
 
