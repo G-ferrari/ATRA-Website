@@ -3,7 +3,10 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    # `migracao` está aqui para o CI rodar durante a migração inteira: sem isso
+    # ele só dispararia em PR ou em push para main, e a branch de trabalho
+    # ficaria sem validação nenhuma até a virada.
+    branches: [main, migracao]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
