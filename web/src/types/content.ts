@@ -59,6 +59,13 @@ export type CaseDetail = CaseCard & {
   aboutClient: string | null
 }
 
+export type GlossaryTerm = {
+  slug: string
+  term: string
+  definition: string
+  category: string
+}
+
 export type Seo = {
   title: string
   description: string

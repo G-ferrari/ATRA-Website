@@ -12,6 +12,7 @@ export const SECOES = {
   // A página ainda não existe (Fase 3); o legado já linka para cá e o link
   // está quebrado lá também. Centralizado aqui para não nascer na mão.
   contato: { pt: 'contato', en: 'contact' },
+  glossario: { pt: 'glossario', en: 'glossary' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type Secao = keyof typeof SECOES

@@ -73,6 +73,7 @@ export interface Config {
     testimonials: Testimonial;
     partners: Partner;
     cases: Case;
+    'glossary-terms': GlossaryTerm;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,6 +87,7 @@ export interface Config {
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     partners: PartnersSelect<false> | PartnersSelect<true>;
     cases: CasesSelect<false> | CasesSelect<true>;
+    'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -422,6 +424,27 @@ export interface Case {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Glossary terms, grouped by letter on /glossary.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "glossary-terms".
+ */
+export interface GlossaryTerm {
+  id: number;
+  term: string;
+  /**
+   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   */
+  slug: string;
+  /**
+   * A short explanation, for a non-technical reader.
+   */
+  definition: string;
+  category: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -468,6 +491,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'cases';
         value: number | Case;
+      } | null)
+    | ({
+        relationTo: 'glossary-terms';
+        value: number | GlossaryTerm;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -690,6 +717,18 @@ export interface CasesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "glossary-terms_select".
+ */
+export interface GlossaryTermsSelect<T extends boolean = true> {
+  term?: T;
+  slug?: T;
+  definition?: T;
+  category?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

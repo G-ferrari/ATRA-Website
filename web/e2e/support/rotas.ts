@@ -2,6 +2,7 @@
 export const ROTAS_COM_GABARITO = [
   { nome: 'cases-listagem', caminho: '/cases-de-sucesso' },
   { nome: 'cases-detalhe', caminho: '/cases-de-sucesso/eficiencia-processos-risco' },
+  { nome: 'glossario', caminho: '/glossario' },
 ] as const
 
 /* Imagens entram mascaradas na comparação.
