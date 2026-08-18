@@ -3,6 +3,7 @@
  * conhecem o schema do CMS. */
 export { ContactCta, type ContactCtaProps } from './contact-cta'
 export { ContentCard, type ContentCardProps } from './content-card'
+export { EntradaAnimada } from './entrada-animada'
 export { EmptyState, type EmptyStateProps } from './empty-state'
 export { GlowCard, type GlowCardProps } from './glow-card'
 export { QuoteBlock, type QuoteBlockProps } from './quote-block'

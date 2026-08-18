@@ -35,6 +35,12 @@ export type FeaturedItem = {
 
 export type FeaturedHeroProps = {
   items: FeaturedItem[]
+  /* `cover` é o formato de material rico: capa 3/4 estreita com uma faixa
+   * escura embaixo (`legacy/src/components/FeaturedHero.tsx:139`). `wide` é o
+   * 16/10 de case e blog. */
+  variante?: 'wide' | 'cover'
+  /** Texto da faixa sobre a capa. Só em `cover`. */
+  rotuloDaCapa?: string
   actionLabel: string
   eyebrowIcon: ReactNode
   /** Sem ícone próprio, o legado fecha o botão com uma seta. */
@@ -48,6 +54,8 @@ export function FeaturedHero({
   actionLabel,
   eyebrowIcon,
   actionIcon,
+  variante = 'wide',
+  rotuloDaCapa,
   intervalo = 5000,
 }: FeaturedHeroProps) {
   const [indiceAtivo, setIndiceAtivo] = useState(0)
@@ -129,15 +137,34 @@ export function FeaturedHero({
             </div>
 
             <div className="w-full flex justify-center lg:justify-end relative group">
-              <div className="overflow-hidden shadow-xl sm:shadow-2xl relative w-full border border-slate-200 dark:border-white/10 aspect-[16/10] rounded-[6px] bg-surface-2">
-                <Image
-                  src={ativo.image.url}
-                  alt={ativo.image.alt}
-                  fill
-                  priority
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-[6px]"
-                />
+              <div
+                className={cn(
+                  'overflow-hidden shadow-xl sm:shadow-2xl relative w-full border border-slate-200 dark:border-white/10 rounded-[6px] bg-surface-2',
+                  variante === 'cover' ? 'aspect-[3/4] max-w-xs sm:max-w-sm p-2' : 'aspect-[16/10]',
+                )}
+              >
+                {/* Invólucro relativo em vez de `fill` direto no contêiner:
+                    `fill` é `absolute inset-0` e **ignora padding**, então na
+                    variante `cover` a imagem cobria os 8px de `p-2` que no
+                    legado aparecem como moldura. */}
+                <div className="relative w-full h-full">
+                  <Image
+                    src={ativo.image.url}
+                    alt={ativo.image.alt}
+                    fill
+                    priority
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-[6px]"
+                  />
+                </div>
+
+                {variante === 'cover' && rotuloDaCapa && (
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent flex flex-col justify-end p-5 sm:p-6">
+                    <div className="text-white font-bold text-base sm:text-lg uppercase tracking-widest opacity-90">
+                      {rotuloDaCapa}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>

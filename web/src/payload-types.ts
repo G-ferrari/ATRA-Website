@@ -74,6 +74,7 @@ export interface Config {
     partners: Partner;
     cases: Case;
     'glossary-terms': GlossaryTerm;
+    resources: Resource;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,6 +89,7 @@ export interface Config {
     partners: PartnersSelect<false> | PartnersSelect<true>;
     cases: CasesSelect<false> | CasesSelect<true>;
     'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
+    resources: ResourcesSelect<false> | ResourcesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -445,6 +447,76 @@ export interface GlossaryTerm {
   createdAt: string;
 }
 /**
+ * Reports and ebooks. The kind decides which page lists the item.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources".
+ */
+export interface Resource {
+  id: number;
+  /**
+   * Reports list on /reports; ebooks on /ebooks.
+   */
+  kind: 'report' | 'ebook';
+  title: string;
+  /**
+   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   */
+  slug: string;
+  description: string;
+  coverImage: number | Media;
+  tags?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Shown on the ebook card.
+   */
+  pages?: number | null;
+  /**
+   * The material itself. Keep the item as a draft while this is empty.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  publishedAt: string;
+  /**
+   * Optional. When empty, the site falls back to the page title and summary.
+   */
+  seo?: {
+    /**
+     * Up to ~60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Up to 160 characters — Google truncates the rest.
+     */
+    metaDescription?: string | null;
+    /**
+     * Shown when shared on LinkedIn and WhatsApp. Falls back to the cover image.
+     */
+    ogImage?: (number | null) | Media;
+    noIndex?: boolean | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -495,6 +567,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'glossary-terms';
         value: number | GlossaryTerm;
+      } | null)
+    | ({
+        relationTo: 'resources';
+        value: number | Resource;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -729,6 +805,37 @@ export interface GlossaryTermsSelect<T extends boolean = true> {
   category?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources_select".
+ */
+export interface ResourcesSelect<T extends boolean = true> {
+  kind?: T;
+  title?: T;
+  slug?: T;
+  description?: T;
+  coverImage?: T;
+  tags?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  pages?: T;
+  body?: T;
+  publishedAt?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+        noIndex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

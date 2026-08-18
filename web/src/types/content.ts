@@ -66,6 +66,19 @@ export type GlossaryTerm = {
   category: string
 }
 
+export type Resource = {
+  slug: string
+  kind: 'report' | 'ebook'
+  title: string
+  description: string
+  image: Image
+  tags: string[]
+  /** Só para e-book; `null` em relatório. */
+  pages: number | null
+  /** ISO 8601. */
+  publishedAt: string
+}
+
 export type Seo = {
   title: string
   description: string

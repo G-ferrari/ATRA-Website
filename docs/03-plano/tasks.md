@@ -81,7 +81,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | ID | Rota | Dep. extra | Est. |
 |---|---|---|---|
 | MIG-040 | `/glossario` + collection `glossary-terms` | — | 3h | **done** |
-| MIG-041 | `/relatorios` + `/ebooks` + collection `resources` | — | 4h |
+| MIG-041 | `/relatorios` + `/ebooks` + collection `resources` | — | 4h | **done** |
 | MIG-042 | `/webinars` + collection `webinars` | — | 3h |
 | MIG-043 | `/blog` + collection `posts` | — | 3h |
 | MIG-044 | `/blog/[slug]` | 043 | 3h |

@@ -13,6 +13,8 @@ export const SECOES = {
   // está quebrado lá também. Centralizado aqui para não nascer na mão.
   contato: { pt: 'contato', en: 'contact' },
   glossario: { pt: 'glossario', en: 'glossary' },
+  relatorios: { pt: 'relatorios', en: 'reports' },
+  ebooks: { pt: 'ebooks', en: 'ebooks' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type Secao = keyof typeof SECOES

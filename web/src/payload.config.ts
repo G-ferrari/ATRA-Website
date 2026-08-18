@@ -13,6 +13,7 @@ import { Cases } from './collections/Cases'
 import { GlossaryTerms } from './collections/GlossaryTerms'
 import { Media } from './collections/Media'
 import { Partners } from './collections/Partners'
+import { Resources } from './collections/Resources'
 import { Testimonials } from './collections/Testimonials'
 import { Topics } from './collections/Topics'
 import { Users } from './collections/Users'
@@ -41,7 +42,7 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms],
+  collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Resources],
 
   /* Idioma da INTERFACE do admin (botões, menus, validação) — diferente de
    * `localization`, que é o idioma do CONTEÚDO. São independentes: dá para
