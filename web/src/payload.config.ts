@@ -2,6 +2,8 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { en } from '@payloadcms/translations/languages/en'
+import { pt } from '@payloadcms/translations/languages/pt'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { buildConfig } from 'payload'
@@ -19,6 +21,15 @@ export default buildConfig({
   },
 
   collections: [Users, Media],
+
+  /* Idioma da INTERFACE do admin (botões, menus, validação) — diferente de
+   * `localization`, que é o idioma do CONTEÚDO. São independentes: dá para
+   * editar conteúdo em inglês com a interface em português, que é o caso de
+   * uso real do time da ATRA. Ver D-20. */
+  i18n: {
+    supportedLanguages: { pt, en },
+    fallbackLanguage: 'pt',
+  },
 
   editor: lexicalEditor(),
 

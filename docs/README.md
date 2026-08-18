@@ -13,6 +13,13 @@ Next.js App Router + Payload CMS 3 + PostgreSQL.
 **Objetivo de negócio:** o marketing publica cases, blog e materiais sem depender
 de dev, e o site ganha SSR/SEO que hoje não existe.
 
+> **O critério que define sucesso.** Uma pessoa de marketing, sem acesso ao código
+> e sem ajuda, cria um case com imagem, vê como ficou, publica, e corrige um número
+> institucional — tudo em português. Se isso não for verdade no cutover, a migração
+> entregou desempenho e indexação, mas não o que a justificou. Detalhado em
+> [experiencia-do-editor](02-especificacao/experiencia-do-editor.md); verificado na
+> Fase 6 (MIG-127), com alguém do marketing executando os passos sob observação.
+
 ## Os três sites em jogo
 
 Confundir os três leva a conclusões erradas — vale fixar:
@@ -66,6 +73,7 @@ chegaram corrompidas ao git, e no ar estão íntegras. Ver
 | [lacuna-de-escopo](02-especificacao/lacuna-de-escopo.md) | **rascunho ⚠️** | **O protótipo cobre 20 rotas; o site atual tem ~259 URLs.** Quatro caminhos possíveis |
 | [dados/wp-urls-2026-08-17.txt](02-especificacao/dados/wp-urls-2026-08-17.txt) | — | As 260 URLs do WordPress, insumo do mapa de redirects |
 | [formularios-e-integracoes](02-especificacao/formularios-e-integracoes.md) | rascunho | Formulários, anti-spam, e-mail, analytics, consentimento e a integração da ATRA AI |
+| [experiencia-do-editor](02-especificacao/experiencia-do-editor.md) | rascunho | **Papéis, Live Preview, idioma do admin, organização e handoff** — o lado de quem publica |
 
 ## Etapa 3 — Plano
 

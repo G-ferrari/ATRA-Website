@@ -252,6 +252,50 @@ Os 6 posts fictícios do protótipo (`legacy/src/pages/Blog.tsx:11-60`) são
 O cutover fica mais longe, e é o ponto: trocar o domínio antes da paridade
 significaria escolher entre perder 6 anos de SEO ou manter dois sites no ar.
 
+## D-18 — Dois papéis: editor e admin
+
+**Contexto.** Até a Fase 1, `users` tinha só `auth: true`: **todo usuário era
+administrador pleno**. Marketing, RH e dev teriam acesso idêntico, inclusive ao
+system prompt da IA e aos currículos enviados por candidatos.
+
+**Escolha.** `editor` e `admin`. O editor cria, edita e publica todo conteúdo; o
+admin também mexe no que muda o comportamento do site (navegação, rodapé,
+`ai-assistant`), em usuários e em dado pessoal de terceiros.
+
+**Consequência.** Toda collection passa a declarar `access` explicitamente — sem
+declaração o Payload libera para qualquer autenticado. O campo `role` precisa de
+`access.update` restrito a admin, senão o editor se promove sozinho. Resolve
+**P-20** (prompt da IA) e endereça **P-17** (retenção de currículo).
+
+## D-19 — Sem etapa de aprovação para publicar
+
+**Contexto.** Publicar poderia exigir revisão de um aprovador.
+
+**Escolha.** Quem edita, publica.
+
+**Consequência.** O Payload não traz workflow de aprovação embutido; construir um
+recriaria a dependência que a migração existe para eliminar — trocaria "esperar o
+dev" por "esperar o aprovador". A rede de segurança fica com drafts, Live Preview,
+versionamento com restauração, e a regra de D-08 de nada ir ao ar sem corpo.
+
+## D-20 — A experiência do editor é entregável, não consequência
+
+**Contexto.** O objetivo declarado da migração é o marketing publicar sem
+depender de desenvolvedor. O plano cobria o lado dos dados a fundo e o lado de
+quem usa quase nada: papéis, Live Preview, idioma do admin, organização da
+navegação e treinamento não existiam em lugar nenhum. Nenhuma task tinha como
+critério de aceite "uma pessoa de marketing publica um case sem chamar um dev".
+
+**Escolha.** Tratar isso como escopo próprio, com documento
+([experiencia-do-editor](../02-especificacao/experiencia-do-editor.md)), tasks e
+critério de conclusão verificável na Fase 6: alguém do marketing executa seis
+passos sem ajuda, sob observação, e o que travar vira correção — não item de
+treinamento.
+
+**Consequência.** Entram no backlog: papéis e access control, i18n do admin em
+pt, Live Preview, organização do admin, guia do editor e sessão de handoff.
+A engenharia sozinha não fecha o objetivo — sem transferência, ninguém usa.
+
 ---
 
 ## Decisões pendentes
@@ -280,6 +324,7 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | **P-18** | A ATRA já usa ferramenta de e-mail marketing / CRM (RD Station, HubSpot)? | newsletter e destino dos leads | Se usa, os formulários devem alimentar o CRM em vez de virar lista isolada no Payload |
 | **P-19** | Existe GA4/GTM na conta da ATRA aplicado ao WP por fora do tema? | baseline de tráfego | Sem analytics antes do cutover, **não há como provar** se a migração melhorou ou piorou nada. Instalar no WP agora é a única forma de ter comparação |
 | **P-20** | Guardar o histórico de conversas da ATRA AI? | `/api/chat` | Dado pessoal de visitante; alternativa é registrar só métricas agregadas |
+| **P-24** | **Quem da ATRA vai editar o site**, e quem é o ponto de contato nos 30 dias após o cutover? | treinamento e guia do editor (D-20) | Sem nome, o treinamento não tem convidado e o guia não tem destinatário — e o objetivo da migração depende de alguém do outro lado |
 | **P-21** | Ligar o proxy da Cloudflare (nuvem laranja)? Hoje o DNS está lá, mas em modo direto | CDN, cache, WAF | Ganho de graça em performance e proteção; custa uma camada a mais para depurar. Recomendação: **depois** do cutover estabilizar |
 | **P-22** | Replicar `form-submissions` para fora do banco em tempo real? | RPO dos leads | Com backup diário, o RPO dos leads é de até 24 h. Para conteúdo é aceitável; para lead, não — lead perdido não volta. Depende de P-18 |
 | **P-23** | **Quem tem acesso à conta Cloudflare da ATRA?** | cutover | Sem resolver com antecedência, o cutover trava no passo mais crítico. Barato agora, caro às 7h da manhã do dia da virada |

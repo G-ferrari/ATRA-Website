@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { isEditorOrAdmin, isPublic } from '@/access'
+
 const WEBP = { format: 'webp' as const, options: { quality: 82 } }
 
 export const Media: CollectionConfig = {
@@ -13,8 +15,11 @@ export const Media: CollectionConfig = {
     plural: { pt: 'Mídia', en: 'Media' },
   },
   access: {
-    // Imagem de site é conteúdo público; o resto exige autenticação.
-    read: () => true,
+    // Imagem de site é conteúdo público; alterar exige estar autenticado (D-18).
+    read: isPublic,
+    create: isEditorOrAdmin,
+    update: isEditorOrAdmin,
+    delete: isEditorOrAdmin,
   },
   upload: {
     mimeTypes: ['image/*', 'application/pdf'],

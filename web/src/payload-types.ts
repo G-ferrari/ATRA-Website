@@ -118,12 +118,18 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Who can access the panel. Only admins manage users.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
   name: string;
+  /**
+   * Editors publish content. Admins also change navigation, footer, the AI and users.
+   */
+  role: 'editor' | 'admin';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -276,6 +282,7 @@ export interface PayloadMigration {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

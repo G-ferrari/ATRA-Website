@@ -29,6 +29,8 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-009 | Mona Sans via **`next/font/google`** (D-16) | `web/src/app/[locale]/layout.tsx` | 007 | Largura de texto idêntica à do legado (±0,1%) nos pesos 300–900 | 0.5h | todo |
 | MIG-010 | CI: lint, typecheck, build | `.github/workflows/ci.yml` | 001 | PR com erro de tipo reprova; PR limpa passa | 1.5h | todo |
 | MIG-011 | Playwright + harness de regressão visual | `web/playwright.config.ts`, `web/e2e/visual.spec.ts` | 006, 010, **070** | Suíte vazia roda no CI; captura do legado e do novo lado a lado | 3h | todo |
+| MIG-013 | **Papéis `editor`/`admin` + access control** (D-18) | `web/src/access/*`, `collections/Users.ts` | 002 | Editor não edita globals nem `ai-assistant`; editor não consegue se promover a admin | 2h | todo |
+| MIG-014 | **Admin em português** (`i18n` com `pt`) | `web/src/payload.config.ts` | 002 | Interface do admin em PT-BR; conteúdo segue editável nos dois idiomas | 0.5h | todo |
 | MIG-012 | **Piloto de conversão HTML → Lexical** (10 posts) | `web/scripts/wp-import/pilot.ts` | 002 | Relatório com o que converteu e o que quebrou nos 10; decisão registrada | 3h | todo |
 
 > MIG-012 é diagnóstico, não entrega. Existe para medir cedo o maior risco
@@ -49,6 +51,8 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-028 | Rota `/cases-de-sucesso/[slug]` | `app/[locale]/cases-de-sucesso/[slug]/page.tsx` | 027 | 4 slugs respondem; `generateStaticParams` cobre os dois locales | 3h | todo |
 | MIG-029 | Seed dos 4 cases | `scripts/seed/cases.ts` | 023 | Roda 2× sem duplicar; imagens íntegras no Media | 2h | todo |
 | MIG-030 | Regressão visual das 2 rotas de case | `e2e/visual/cases.spec.ts` | 011, 028 | Diferença ≤ 0,1% contra o legado | 2h | todo |
+| MIG-032 | **Live Preview + draft mode** (D-20) | `payload.config.ts`, `app/(frontend)/[locale]/preview/route.ts` | 028 | Editar um case mostra o resultado ao vivo nos 3 breakpoints, com rascunho | 4h | todo |
+| MIG-033 | Organização do admin: grupos, `useAsTitle`, `defaultColumns`, busca | `collections/*` | 023 | As 15 collections agrupadas; nenhuma lista caindo em id | 2h | todo |
 | MIG-031 | **`CLAUDE.md` com o padrão consolidado** | `CLAUDE.md` | 030 | Contém exemplo real do código da fatia vertical | 2h | todo |
 
 ## Fase 3 — Fábrica de rotas
@@ -143,6 +147,9 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-123 | Backup `pg_dump` + **teste de restore** | Fase 4 | Restore em base limpa, verificado | 3h |
 | MIG-124 | Uptime e alerta | 122 | Alerta dispara em queda simulada | 1.5h |
 | MIG-125 | `/design-system` com `noIndex` | 025 | Reconstruído dos tokens reais | 4h |
+| MIG-126 | **Guia do editor** (D-20) | Fase 4 | Cobre entrar, criar case, imagem+alt, preview, publicar, corrigir métrica | 4h |
+| MIG-127 | **Teste do objetivo com o marketing** (D-20) | 126, 032 | Alguém do marketing executa os 6 passos sem ajuda; o que travar vira correção | 2h |
+| MIG-128 | Sessão de handoff gravada | 127 | Marketing + RH treinados; gravação arquivada | 2h |
 
 ## Fase 7 — Cutover · Fase 8 — Limpeza
 
@@ -162,16 +169,16 @@ Uma PR por linha. Todas dependem de MIG-031.
 
 | Fase | Tasks | Horas |
 |---|---|---|
-| 1 Fundação | 12 | ~20,5h |
-| 2 Fatia vertical | 12 | ~26h |
+| 1 Fundação | 14 | ~23h |
+| 2 Fatia vertical | 14 | ~32h |
 | 3 Fábrica de rotas | 23 | ~78h |
 | 4a Seed | 3 | ~7,5h |
 | 4b Migração WP | 7 | ~20h |
 | 4c Conteúdo novo | 5 | ~19h |
 | 5 Formulários/SEO | 11 | ~30h |
-| 6 Endurecimento | 6 | ~17h |
+| 6 Endurecimento | 9 | ~25h |
 | 7–8 Cutover/limpeza | 7 | ~10h |
-| **Total** | **86** | **~228h** |
+| **Total** | **93** | **~244h** |
 
 ⚠️ Estas horas cobrem **engenharia**. Não cobrem: curadoria editorial de
 `segments` e `solutions` (Fase 4c), redação dos 9 materiais sem corpo (P-07),
