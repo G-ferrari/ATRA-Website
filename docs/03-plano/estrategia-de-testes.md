@@ -345,3 +345,28 @@ observa o `<a>`.
 
 Compila sob demanda, injeta o indicador de dev e hidrata devagar. `pnpm gate`
 usa `next build` + `next start`, que é o que o visitante recebe.
+
+## Rotas sem gabarito
+
+Nem toda rota da Fase 3 existe no protótipo. `/blog/[slug]` é a primeira: os
+cards do blog apontam para `#` (`legacy/src/pages/Blog.tsx:229`) e a página de
+detalhe foi **decidida** em D-08, não portada. O mesmo vale para
+`/relatorios/[slug]`, `/ebooks/[slug]`, `/webinars/[slug]`, `/contato`,
+`/carreiras/[slug]` e as páginas de segmento.
+
+Para essas, **a regressão visual não diz nada** — não há com o que comparar. O
+que as verifica:
+
+- `smoke.spec.ts`: responde 200 nos dois idiomas, slug inexistente dá 404,
+  rascunho não vaza para visitante.
+- Asserções específicas do risco de cada uma. Em `/blog/[slug]`: artigo sem
+  corpo sai com `noindex`, que é a preocupação de D-08 aplicada em código em vez
+  de por disciplina.
+
+⚠️ **Não invente gabarito para elas.** Capturar a própria saída e chamar de
+referência transforma o teste num espelho: ele passa a provar que o código não
+mudou, não que está certo.
+
+O layout dessas rotas é **composto do que já foi portado** — a abertura da
+página de case, o `RichText`, o `ContactCta` — e não desenhado do zero. Assim a
+rota nova herda a linguagem visual já aprovada pelo gate nas outras.

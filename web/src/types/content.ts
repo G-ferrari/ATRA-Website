@@ -101,6 +101,11 @@ export type PostCard = {
   publishedAt: string
 }
 
+export type PostDetail = PostCard & {
+  /** Documento Lexical serializado; `null` enquanto ninguém escreveu. */
+  body: unknown | null
+}
+
 export type Seo = {
   title: string
   description: string

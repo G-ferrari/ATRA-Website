@@ -4,7 +4,11 @@ import { fileURLToPath } from 'url'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { en } from '@payloadcms/translations/languages/en'
 import { pt } from '@payloadcms/translations/languages/pt'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  EXPERIMENTAL_TableFeature,
+  defaultEditorFeatures,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -55,7 +59,18 @@ export default buildConfig({
     fallbackLanguage: 'pt',
   },
 
-  editor: lexicalEditor(),
+  /* Tabela precisa de feature explícita, e a ausência dela falha em silêncio.
+   *
+   * O piloto de conversão do WordPress (MIG-012) mediu: com o conjunto padrão,
+   * uma tabela converte com **100% do texto e zero estrutura** — as linhas
+   * viram parágrafos soltos e nenhuma métrica de retenção acusa. Com a feature
+   * ligada, os mesmos posts convertem íntegros (table/tablerow/tablecell).
+   *
+   * Ligada aqui, e não só no script de importação, porque quem edita depois
+   * precisa conseguir mexer na tabela que foi importada. */
+  editor: lexicalEditor({
+    features: [...defaultEditorFeatures, EXPERIMENTAL_TableFeature()],
+  }),
 
   // D-07: português na raiz, inglês em /en, com slugs traduzidos.
   // Habilitado desde a fundação de propósito — adicionar localization depois
