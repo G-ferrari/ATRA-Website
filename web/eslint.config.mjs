@@ -9,6 +9,11 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Migrações são geradas pelo Payload — não editar nem lintar.
     "src/migrations/**",
+    // Saída do Playwright: o relatório HTML embute JS minificado, e lintá-lo
+    // produzia 3.031 problemas em código de terceiros. Só aparecia depois de
+    // rodar a suíte, por isso o CI (que linta antes) nunca viu.
+    "playwright-report/**",
+    "e2e/.artifacts/**",
     // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
