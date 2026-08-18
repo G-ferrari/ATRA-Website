@@ -1,11 +1,13 @@
 import { Calendar, Sparkles } from 'lucide-react'
 import type { Metadata } from 'next'
+import { draftMode } from 'next/headers'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { FeaturedHero, MetricChip, StatusBadge, type FeaturedItem } from '@/components/ui'
+import { RascunhoIncompleto } from '@/components/content/rascunho-incompleto'
 import { toCaseCard } from '@/lib/mappers/case'
-import { toTopics } from '@/lib/mappers/shared'
+import { mapearOuFaltando, toTopics } from '@/lib/mappers/shared'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
@@ -85,6 +87,11 @@ export default async function CasesPage() {
 
   const payload = await getPayload()
 
+  /* Modo rascunho (D-20): com ele ligado, o editor vê o que ainda não publicou.
+   * Para quem visita o site, `isEnabled` é falso e a página segue estática —
+   * o Next só passa a renderizar por requisição quando o cookie existe. */
+  const { isEnabled: rascunho } = await draftMode()
+
   // depth: 2 popula heroImage e topics — os mappers exigem documento, não id.
   const { docs } = await payload.find({
     collection: 'cases',
@@ -92,10 +99,20 @@ export default async function CasesPage() {
     depth: 2,
     limit: 100,
     sort: '-publishedAt',
-    where: { _status: { equals: 'published' } },
+    draft: rascunho,
+    ...(rascunho ? {} : { where: { _status: { equals: 'published' } } }),
   })
 
-  const cases = docs.map(toCaseCard)
+  /* Um rascunho pela metade não pode derrubar a listagem inteira: mapeia um a
+   * um e separa os que ainda não estão prontos. Fora do modo rascunho a lista
+   * só traz publicados, então `incompletos` fica sempre vazia. */
+  const cases: CaseCard[] = []
+  const incompletos: string[] = []
+  for (const doc of docs) {
+    const r = mapearOuFaltando(() => toCaseCard(doc))
+    if ('doc' in r) cases.push(r.doc)
+    else incompletos.push(r.faltando)
+  }
 
   /* Os chips vêm dos assuntos marcados para o filtro, na ordem definida no
    * admin — não de tudo que está em uso. Ver Topics.showInFilter. */
@@ -139,6 +156,12 @@ export default async function CasesPage() {
 
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          {incompletos.length > 0 && (
+            <div className="mb-8">
+              <RascunhoIncompleto campos={incompletos} />
+            </div>
+          )}
+
           <ListaDeCases cases={cases} topics={categorias} locale={locale} cabecalho={cabecalho} />
         </div>
       </section>

@@ -7,8 +7,10 @@ const WEBP = { format: 'webp' as const, options: { quality: 82 } }
 export const Media: CollectionConfig = {
   slug: 'media',
   admin: {
-    group: 'Biblioteca',
+    group: { pt: 'Biblioteca', en: 'Library' },
     useAsTitle: 'alt',
+    defaultColumns: ['filename', 'alt', 'mimeType', 'filesize', 'updatedAt'],
+    listSearchableFields: ['alt', 'filename'],
   },
   labels: {
     singular: { pt: 'Mídia', en: 'Media' },

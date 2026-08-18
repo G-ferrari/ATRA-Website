@@ -1,15 +1,18 @@
 import { CheckCircle2, ChevronLeft, Cpu, Layers, Users } from 'lucide-react'
 import type { Metadata } from 'next'
+import { draftMode } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
+import { RascunhoIncompleto } from '@/components/content/rascunho-incompleto'
 import { RichText } from '@/components/content/rich-text'
 import { AREAS_DE_ATUACAO } from '@/lib/areas'
 import { ContactCta, QuoteBlock } from '@/components/ui'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toCaseDetail } from '@/lib/mappers/case'
+import { mapearOuFaltando } from '@/lib/mappers/shared'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { CaseDetail } from '@/types/content'
@@ -57,16 +60,27 @@ const TEXTOS = {
   },
 } as const
 
-async function buscarCase(slug: string, locale: Locale): Promise<CaseDetail | null> {
+type Resultado = { doc: CaseDetail } | { faltando: string } | null
+
+async function buscarCase(slug: string, locale: Locale): Promise<Resultado> {
+  /* Ver a nota de modo rascunho na listagem. `generateStaticParams` continua
+   * só com publicados de propósito: pré-renderizar rascunho colocaria no build
+   * uma página que ninguém deveria ver. */
+  const { isEnabled: rascunho } = await draftMode()
   const payload = await getPayload()
   const { docs } = await payload.find({
     collection: 'cases',
     locale,
     depth: 2,
     limit: 1,
-    where: { slug: { equals: slug }, _status: { equals: 'published' } },
+    draft: rascunho,
+    where: rascunho
+      ? { slug: { equals: slug } }
+      : { slug: { equals: slug }, _status: { equals: 'published' } },
   })
-  return docs[0] ? toCaseDetail(docs[0]) : null
+  if (!docs[0]) return null
+  // Em rascunho, campo obrigatório vazio é uso normal e vira aviso na página.
+  return mapearOuFaltando(() => toCaseDetail(docs[0]))
 }
 
 /* Pré-renderiza os slugs dos dois idiomas. O slug é localizado (D-07), então
@@ -91,8 +105,9 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/cases-de
   const { slug } = await params
   const locale = await getLocale()
   if (!isLocale(locale)) return {}
-  const caso = await buscarCase(slug, locale)
-  if (!caso) return {}
+  const r = await buscarCase(slug, locale)
+  if (!r || !('doc' in r)) return {}
+  const caso = r.doc
   return {
     title: `${caso.title} — ${TEXTOS[locale].prefixo} ${caso.client}`,
     description: caso.summary,
@@ -105,10 +120,22 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
   const locale = await getLocale()
   if (!isLocale(locale)) notFound()
 
-  const caso = await buscarCase(slug, locale)
-  if (!caso) notFound()
+  const resultado = await buscarCase(slug, locale)
+  if (!resultado) notFound()
 
   const t = TEXTOS[locale]
+
+  if ('faltando' in resultado) {
+    return (
+      <main className="min-h-screen bg-surface-1 text-text-main pt-40 pb-24">
+        <div className="container mx-auto px-4 md:px-6 max-w-2xl">
+          <RascunhoIncompleto campos={[resultado.faltando]} />
+        </div>
+      </main>
+    )
+  }
+
+  const caso = resultado.doc
 
   return (
     <main className="min-h-screen bg-white">

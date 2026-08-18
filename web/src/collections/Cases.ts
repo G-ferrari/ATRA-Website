@@ -1,8 +1,20 @@
 import type { CollectionConfig } from 'payload'
 
 import { isEditorOrAdmin } from '@/access'
+import { isLocale, DEFAULT_LOCALE } from '@/lib/locales'
+import { urlDePreview } from '@/lib/preview'
 import { seoField } from '@/fields/seo'
 import { slugField } from '@/fields/slug'
+
+/** URL pública do case no idioma sendo editado; a listagem quando não há slug. */
+function enderecoDoCase(doc: unknown, locale?: string): string {
+  const slug = (doc as { slug?: string } | null)?.slug
+  return urlDePreview({
+    secao: 'cases',
+    slug: slug || undefined,
+    locale: isLocale(locale) ? locale : DEFAULT_LOCALE,
+  })
+}
 
 /* Cases de sucesso — a fatia vertical que define o padrão das outras 19 rotas.
  *
@@ -14,11 +26,18 @@ export const Cases: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'client', 'publishedAt', '_status'],
     listSearchableFields: ['title', 'client', 'summary'],
-    group: 'Conteúdo',
+    group: { pt: 'Conteúdo', en: 'Content' },
     description: {
       pt: 'Cases de sucesso. Rascunho não aparece no site — publique só com o conteúdo completo.',
       en: 'Success stories. Drafts are not visible on the site — publish only when complete.',
     },
+
+    /* "Publique só com o conteúdo completo" só é um pedido razoável se houver
+     * como conferir antes. Estes dois dão isso: `preview` abre a página numa
+     * aba, `livePreview` mostra dentro do admin enquanto se edita. O slug é
+     * localizado (D-07), então a URL depende do idioma que está sendo editado. */
+    preview: (doc, { locale }) => enderecoDoCase(doc, locale),
+    livePreview: { url: ({ data, locale }) => enderecoDoCase(data, locale?.code) },
   },
   labels: {
     singular: { pt: 'Case', en: 'Case' },

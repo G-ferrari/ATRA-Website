@@ -5,9 +5,14 @@ import { isEditorOrAdmin, isPublic } from '@/access'
 export const Testimonials: CollectionConfig = {
   slug: 'testimonials',
   admin: {
-    useAsTitle: 'company',
-    defaultColumns: ['company', 'authorName', 'authorRole', 'featured'],
-    group: 'Site',
+    /* `company` sozinho não identifica: o seed tem dois depoimentos do mesmo
+     * autor na mesma empresa, e a lista mostrava "Banco ABC" duas vezes — bem
+     * na tela em que o editor escolhe qual anexar a um case. `label` é montado
+     * na gravação e junta autor, empresa e um trecho da citação. */
+    useAsTitle: 'label',
+    defaultColumns: ['label', 'company', 'authorRole', 'featured'],
+    listSearchableFields: ['quote', 'company', 'authorName', 'authorRole'],
+    group: { pt: 'Catálogos', en: 'Catalogs' },
     description: {
       pt: 'Depoimentos de clientes. Aparecem na home e dentro dos cases.',
       en: 'Client testimonials. Shown on the home page and inside cases.',
@@ -19,6 +24,28 @@ export const Testimonials: CollectionConfig = {
   },
   access: { read: isPublic, create: isEditorOrAdmin, update: isEditorOrAdmin, delete: isEditorOrAdmin },
   fields: [
+    {
+      /* Só para leitura humana na lista e no seletor de relacionamento.
+       * Recalculado a cada gravação, então nunca fica velho. */
+      name: 'label',
+      type: 'text',
+      localized: true,
+      admin: { hidden: true },
+      hooks: {
+        beforeChange: [
+          ({ siblingData }) => {
+            const d = siblingData as {
+              quote?: string | null
+              company?: string | null
+              authorName?: string | null
+            }
+            const quem = [d.authorName, d.company].filter(Boolean).join(' — ')
+            const trecho = (d.quote ?? '').trim().replace(/\s+/g, ' ').slice(0, 60)
+            return [quem, trecho && `“${trecho}…”`].filter(Boolean).join(' · ') || undefined
+          },
+        ],
+      },
+    },
     {
       name: 'quote',
       type: 'textarea',

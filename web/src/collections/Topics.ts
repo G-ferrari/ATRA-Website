@@ -10,8 +10,9 @@ export const Topics: CollectionConfig = {
   slug: 'topics',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'slug', 'updatedAt'],
-    group: 'Conteúdo',
+    defaultColumns: ['name', 'slug', 'showInFilter', 'filterOrder'],
+    listSearchableFields: ['name', 'slug'],
+    group: { pt: 'Catálogos', en: 'Catalogs' },
     description: {
       pt: 'Assuntos usados para filtrar cases, artigos e materiais. Vocabulário controlado: prefira reaproveitar a criar.',
       en: 'Topics used to filter cases, posts and resources. Controlled vocabulary: prefer reusing over creating.',

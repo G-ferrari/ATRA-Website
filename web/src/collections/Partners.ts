@@ -14,8 +14,9 @@ export const Partners: CollectionConfig = {
   slug: 'partners',
   admin: {
     useAsTitle: 'name',
+    listSearchableFields: ['name', 'slug', 'description'],
     defaultColumns: ['name', 'tier', 'featured', 'hasPage'],
-    group: 'Site',
+    group: { pt: 'Catálogos', en: 'Catalogs' },
     description: {
       pt: 'Parceiros de tecnologia. Aparecem no menu, na home e na página de parceiro.',
       en: 'Technology partners. Shown in the menu, on the home page and on partner pages.',

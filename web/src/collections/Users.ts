@@ -7,8 +7,9 @@ export const Users: CollectionConfig = {
   auth: true,
   admin: {
     useAsTitle: 'email',
+    listSearchableFields: ['email', 'name'],
     defaultColumns: ['name', 'email', 'role'],
-    group: 'Sistema',
+    group: { pt: 'Sistema', en: 'System' },
     description: {
       pt: 'Quem tem acesso ao painel. Só administradores gerenciam usuários.',
       en: 'Who can access the panel. Only admins manage users.',

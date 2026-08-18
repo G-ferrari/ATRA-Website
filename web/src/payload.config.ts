@@ -22,6 +22,22 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
+
+    /* Live Preview (D-20): o editor vê a página se montando enquanto digita,
+     * dentro do próprio admin.
+     *
+     * Os três tamanhos são os mesmos da regressão visual — se o gate compara
+     * nesses breakpoints, é neles que o editor precisa conferir. */
+    livePreview: {
+      breakpoints: [
+        // O rótulo é string simples (não aceita objeto por idioma). Os nomes
+        // são os mesmos dos projetos do Playwright, de propósito: o editor e o
+        // gate falam dos mesmos três tamanhos.
+        { name: 'mobile', label: 'Mobile', width: 375, height: 812 },
+        { name: 'tablet', label: 'Tablet', width: 768, height: 1024 },
+        { name: 'desktop', label: 'Desktop', width: 1280, height: 800 },
+      ],
+    },
   },
 
   collections: [Users, Media, Topics, Testimonials, Partners, Cases],

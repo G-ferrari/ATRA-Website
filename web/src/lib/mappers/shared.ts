@@ -10,11 +10,29 @@ export function isPopulated<T>(valor: number | string | T | null | undefined): v
 }
 
 /**
+ * Campo obrigatório que chegou vazio.
+ *
+ * É diferente de relacionamento não populado, e a distinção importa: o Payload
+ * **não valida obrigatórios em rascunho**, de propósito — é o que permite salvar
+ * pela metade. Então rascunho com `heroImage` vazio é uso normal, não defeito,
+ * e o preview precisa mostrar o que falta em vez de estourar (D-20).
+ *
+ * Já num documento publicado isto é bug de verdade e continua derrubando.
+ */
+export class ConteudoIncompleto extends Error {
+  constructor(readonly campo: string) {
+    super(`[conteúdo] "${campo}" está vazio.`)
+    this.name = 'ConteudoIncompleto'
+  }
+}
+
+/**
  * Falha alto e explicando o conserto. Relacionamento não populado é erro de
  * consulta (faltou `depth`), não dado ruim — e uma imagem quebrada em silêncio
  * é pior que um erro em desenvolvimento.
  */
 function exigirPopulado<T>(valor: number | string | T | null | undefined, campo: string): T {
+  if (valor == null) throw new ConteudoIncompleto(campo)
   if (!isPopulated<T>(valor)) {
     throw new Error(
       `[mapper] "${campo}" veio como id, não como documento. ` +
@@ -22,6 +40,19 @@ function exigirPopulado<T>(valor: number | string | T | null | undefined, campo:
     )
   }
   return valor
+}
+
+/**
+ * Roda um mapper e separa "conteúdo faltando" de sucesso. Erro de consulta
+ * continua subindo: aquilo é bug e tem que aparecer.
+ */
+export function mapearOuFaltando<T>(fn: () => T): { doc: T } | { faltando: string } {
+  try {
+    return { doc: fn() }
+  } catch (e) {
+    if (e instanceof ConteudoIncompleto) return { faltando: e.campo }
+    throw e
+  }
 }
 
 export function toImage(valor: number | Media | null | undefined, campo: string): Image {

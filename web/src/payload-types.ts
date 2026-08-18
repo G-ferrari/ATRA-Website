@@ -243,6 +243,7 @@ export interface Topic {
  */
 export interface Testimonial {
   id: number;
+  label?: string | null;
   quote: string;
   /**
    * Not translated: proper noun.
@@ -606,6 +607,7 @@ export interface TopicsSelect<T extends boolean = true> {
  * via the `definition` "testimonials_select".
  */
 export interface TestimonialsSelect<T extends boolean = true> {
+  label?: T;
   quote?: T;
   company?: T;
   authorName?: T;
