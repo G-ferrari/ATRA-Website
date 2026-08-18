@@ -1,0 +1,61 @@
+# Dependências de desenvolvimento. O Next roda nativo (`cd web && pnpm dev`) —
+# ver docs/04-infra/docker.md para o porquê dessa divisão.
+#
+# O app legado tem o compose dele em legacy/, na porta 3001.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: atra
+      POSTGRES_PASSWORD: atra
+      POSTGRES_DB: atra
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atra -d atra"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Storage S3-compatível. Mesma API do S3/R2, sem credencial de nuvem na
+  # máquina de ninguém e funcionando offline.
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: atra
+      MINIO_ROOT_PASSWORD: atra12345
+    ports:
+      - "9000:9000"   # API
+      - "9001:9001"   # console web
+    volumes:
+      - minio:/data
+    healthcheck:
+      test: ["CMD-SHELL", "mc ready local || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Cria o bucket na primeira subida e sai. Sem isso, o primeiro upload falha.
+  createbucket:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 atra atra12345 &&
+      mc mb --ignore-existing local/atra-media &&
+      mc anonymous set download local/atra-media &&
+      echo 'bucket atra-media pronto'
+      "
+    restart: "no"
+
+volumes:
+  pgdata:
+  minio:
