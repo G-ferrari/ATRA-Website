@@ -186,3 +186,22 @@ teste no código legado.
 
 Recomendação: **flag**. A primeira dobra é onde uma regressão dói mais, e o
 `estabilizar por flag` já estava previsto nesta estratégia para carrosséis.
+
+## Ferramenta de verificação: use o Playwright, não o console do browser
+
+Durante MIG-024/025, a comparação de estilo computado feita pelo console do
+browser reportou divergência entre o app novo e o legado — enquanto a captura de
+tela mostrava os dois **idênticos**. O mesmo elemento aparecia escuro no pixel e
+branco no `getComputedStyle`; um elemento recém-criado com as mesmas classes, no
+mesmo pai, computava certo. Outros sinais de contexto obsoleto apareceram junto
+(`window.scrollTo` sem efeito, `scrollY` preso em 0).
+
+Refeita com Playwright, a comparação passou: os estilos batem exatamente.
+
+**Regra:** medição que decide aceite de paridade roda no Playwright. O console do
+browser serve para explorar, não para concluir. Quando pixel e API discordarem,
+**o pixel manda** — e a dúvida se resolve na ferramenta que roda o teste de
+verdade.
+
+`e2e/paridade-ds.spec.ts` guarda essa comparação e cresce a cada componente
+portado.
