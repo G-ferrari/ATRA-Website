@@ -253,19 +253,16 @@ critério certo é `maxDiffPixelRatio`, e a estabilização embutida do
 Três ajustes vieram de fechar a primeira comparação de verdade. Todos reduzem
 o escopo do teste — e cada um existe porque o escopo maior media a coisa errada.
 
-### 1. A comparação é recortada no `<main>`, não na página inteira
+### 1. ~~Comparação recortada no `<main>`~~ — resolvido em MIG-034
 
-O gabarito vem do legado, que tem cabeçalho e rodapé; o app novo só ganha a
-casca em MIG-034. Comparar a página inteira antes disso mede a ausência da
-moldura, não a fidelidade da rota — eram 394px de diferença no desktop, iguais
-nas duas rotas, e nenhuma task de conteúdo conseguiria fechar o limite.
+Enquanto o app novo não tinha cabeçalho e rodapé, a comparação era recortada no
+`<main>`: a página inteira media a ausência da moldura, não a fidelidade da rota
+— eram 394px de diferença no desktop, iguais nas duas rotas.
 
-O menu do legado é `position: fixed` e é pintado **por cima** do `<main>`, então
-entra na captura recortada mesmo estando fora dele. Ele e o alternador de tema
-são ocultados por CSS na captura; sendo `fixed`, esconder não desloca nada.
-
-**Em MIG-034 isto volta para `fullPage: true`, nos dois arquivos, com o gabarito
-regravado.**
+**MIG-034 portou a casca e a comparação voltou para `fullPage: true`**, com o
+gabarito regravado. O menu do legado é `position: fixed` e era pintado por cima
+do `<main>`, entrando na captura recortada mesmo estando fora dele; com a página
+inteira isso deixou de importar e a regra que o escondia saiu.
 
 ### 2. Imagens entram mascaradas
 
@@ -279,11 +276,29 @@ e dimensão da imagem continuam comparadas, o conteúdo não. O que sai de cober
 — imagem certa no lugar certo — fica com `smoke.spec.ts`, que confere `src` e
 `alt`.
 
-### 3. Timeout de 90s
+### 3. Timeout de 90s, 2 workers e aquecimento das rotas
 
-`settle()` rola a página em passos de 80ms; uma rota de 4.600px no mobile leva
-~5s só nisso, com três workers disputando o mesmo servidor de dev. Com 30s os
-timeouts apareciam como falha de paridade e escondiam o número real.
+Três ajustes contra a mesma causa: **a suíte roda contra o servidor de
+desenvolvimento, que compila sob demanda.**
+
+- `settle()` rola a página em passos de 80ms; uma rota de 4.600px no mobile leva
+  ~5s só nisso. Com 30s de teto, os timeouts apareciam como falha de paridade.
+- Com os 5 workers do padrão, a mesma rota levava de 8s a 70s. Dois workers
+  mantêm o tempo previsível.
+- `globalSetup` visita cada URL da suíte uma vez, em sequência, antes de
+  qualquer teste — e espera o servidor aceitar conexão antes disso. Sem o
+  aquecimento a suíte alternava entre 27 verdes e 4 vermelhos **sem nenhuma
+  mudança de código**; a partir de um container recém-reiniciado, reprovava 24
+  de 27. O `/admin` sozinho levava 32s na primeira compilação.
+
+**Suíte que falha ao acaso é pior que suíte ausente** — é ignorada em duas
+semanas, que é a premissa deste documento. Por isso o aquecimento entrou junto
+com MIG-034 em vez de virar dívida.
+
+⚠️ Tudo isso trata sintoma. A correção durável é comparar contra um **build de
+produção**: é o que vai ao ar e não recompila. Registrado como **MIG-035**, com
+critério de aceite explícito — verde 3× seguidas a partir de container novo,
+sem aquecimento.
 
 ## Duas armadilhas que passaram despercebidas
 

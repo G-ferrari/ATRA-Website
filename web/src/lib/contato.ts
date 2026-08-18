@@ -6,5 +6,7 @@
  * mapper e nenhum componente muda. */
 export const CONTATO = {
   telefone: '+55 11 96305-2391',
+  whatsapp: 'https://wa.me/5511963052391',
   email: 'negocios@atra.com.br',
+  endereco: 'Av. Queiroz Filho, 1700 – Torre D Sala 802 Vila Hamburguesa – SP',
 } as const

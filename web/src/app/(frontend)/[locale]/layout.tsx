@@ -3,6 +3,9 @@ import { Mona_Sans } from 'next/font/google'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
+import { SiteFooter } from '@/components/layout/site-footer'
+import { SiteHeader } from '@/components/layout/site-header'
+import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { LOCALES, isLocale } from '@/lib/locales'
 import '../globals.css'
 
@@ -58,7 +61,16 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
        * assim as bordas divergiam. Porte fiel vale para isso também (D-15). */
       className={`${monaSans.variable} h-full dark`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      {/* A árvore reproduz a do legado (`App.tsx:2597`): o `<body>` fica limpo,
+        * como no `index.html` dele, e as classes de casca vivem no wrapper. */}
+      <body>
+        <div className="bg-surface-1 font-sans selection:bg-primary/30 flex flex-col transition-colors duration-500 min-h-screen">
+          <SiteHeader locale={locale} />
+          <div className="flex-1 flex flex-col min-h-0">{children}</div>
+          <SiteFooter locale={locale} />
+          <ThemeToggle locale={locale} />
+        </div>
+      </body>
     </html>
   )
 }

@@ -435,3 +435,8 @@ existir no legado.
 o porte fiel não é só de estrutura e cor. Se a ATRA quiser ligar suavização
 depois, é mudança de uma linha — feita conscientemente, com o gabarito regravado,
 e não escondida dentro de uma migração.
+
+> [!DECISÃO PENDENTE] **P-26** — quais são as URLs reais de LinkedIn, Instagram
+> e YouTube da ATRA? No protótipo os três apontam para `#`, e o rodapé agora
+> está em toda página do site novo. Custo de não decidir: três links mortos em
+> posição de destaque, em 100% das páginas.

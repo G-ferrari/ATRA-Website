@@ -46,12 +46,6 @@ export async function stabilize(page: Page) {
    * mesmo com a regra escrita. */
   await page.addInitScript(() => {
     const CSS = `
-    /* Casca do site: menu e alternador de tema do legado são \`fixed\` e são
-     * pintados por cima do <main>, entrando na captura recortada mesmo estando
-     * fora dele. O app novo ainda não tem casca (MIG-034) — ocultar deixa a
-     * comparação sobre o conteúdo da rota, que é o que a task entrega. Sendo
-     * fixed, esconder não desloca nada. Remover em MIG-034. */
-    nav.fixed, button.fixed{display:none !important;}
     /* Indicador de dev do Next: existe só no app novo e não no legado. */
     nextjs-portal{display:none !important;}
     *,*::before,*::after{

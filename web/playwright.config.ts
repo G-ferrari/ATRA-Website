@@ -19,11 +19,21 @@ const VIEWPORTS = {
 
 export default defineConfig({
   testDir: './e2e',
+  /* Compila as rotas antes de qualquer teste — ver support/aquecimento.ts. */
+  globalSetup: './e2e/support/aquecimento.ts',
   /* Gabarito e comparação usam o MESMO diretório de snapshots: um é gravado a
    * partir do legado, o outro compara o app novo contra ele. */
   snapshotPathTemplate: '{testDir}/gabarito/{arg}-{projectName}{ext}',
   outputDir: './e2e/.artifacts',
   fullyParallel: true,
+  /* A suíte roda contra o servidor de **desenvolvimento**, que compila sob
+   * demanda: com os 5 workers do padrão, a mesma rota levava de 8s a 70s e os
+   * timeouts apareciam como falha de paridade. Dois workers mantêm o tempo
+   * previsível.
+   *
+   * A correção durável é comparar contra um build de produção — é o que vai ao
+   * ar, e não recompila. Registrado como MIG-035. */
+  workers: 2,
   /* 30s não bastava: `settle()` rola a página em passos de 80ms, e uma rota de
    * 4.600px no mobile leva ~5s só nisso, com três workers disputando o mesmo
    * servidor de dev. Timeouts apareciam como falha de paridade e mascaravam o

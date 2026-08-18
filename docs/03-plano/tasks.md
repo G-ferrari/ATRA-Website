@@ -54,7 +54,9 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-030a | Seções que faltavam no porte: `FeaturedHero`, Solução, depoimento, CTA e barra lateral completa | `components/ui/{featured-hero,contact-cta,quote-block}.tsx`, `components/content/rich-text.tsx` | 030 | As 6 comparações passam | 4h | **done** |
 | MIG-032 | **Live Preview + draft mode** (D-20) | `payload.config.ts`, `app/(frontend)/[locale]/preview/route.ts` | 028 | Editar um case mostra o resultado ao vivo nos 3 breakpoints, com rascunho | 4h | todo |
 | MIG-033 | Organização do admin: grupos, `useAsTitle`, `defaultColumns`, busca | `collections/*` | 023 | As 15 collections agrupadas; nenhuma lista caindo em id | 2h | todo |
-| MIG-034 | **Casca do site: cabeçalho fixo + rodapé** | `components/layout/{site-header,site-footer}.tsx`, `app/(frontend)/[locale]/layout.tsx` | 030 | As 2 rotas de case comparam com `fullPage: true` e fecham em ≤0,1% | 5h | todo |
+| MIG-034 | **Casca do site: cabeçalho fixo + rodapé** | `components/layout/{site-header,site-footer,theme-toggle}.tsx`, `lib/navegacao.ts`, `app/(frontend)/[locale]/layout.tsx` | 030 | As 2 rotas de case comparam com `fullPage: true` e fecham em ≤0,1% | 5h | **done** |
+| MIG-035 | Regressão visual contra **build de produção**, não o servidor de dev | `playwright.config.ts`, `docker-compose.yml` | 034 | Suíte verde 3× seguidas a partir de container recém-subido, sem aquecimento | 3h | todo |
+| MIG-072a | **Painéis do megamenu** (7 categorias) + gaveta mobile, alimentados pelo global `navigation` | `components/layout/site-header.tsx` | 034, 072 | Os 7 painéis abrem com o conteúdo do legado, vindo do CMS | 6h | todo |
 | MIG-031 | **`CLAUDE.md` com o padrão consolidado** | `CLAUDE.md` | 030 | Contém exemplo real do código da fatia vertical | 2h | todo |
 
 > **MIG-034 apareceu durante MIG-030 e não estava no plano.** Nenhuma task

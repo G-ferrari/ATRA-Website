@@ -4,18 +4,6 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'cases-detalhe', caminho: '/cases-de-sucesso/eficiencia-processos-risco' },
 ] as const
 
-/* O recorte da comparação: `<main>`, não a página inteira.
- *
- * Cabeçalho e rodapé do legado ainda não existem no app novo — a casca é
- * MIG-034, no fim da Fase 2. Comparar a página inteira antes disso mede a ausência da
- * casca, não a fidelidade da rota portada, e nenhuma task de conteúdo
- * conseguiria fechar o limite. Os dois lados expõem um `<main>` como raiz da
- * página, então o recorte é o mesmo nos dois.
- *
- * ⚠️ Em MIG-034, trocar por `fullPage: true` nos dois arquivos e regravar o
- * gabarito — aí a casca passa a ser comparada também. */
-export const ALVO = 'main'
-
 /* Imagens entram mascaradas na comparação.
  *
  * O legado serve o JPEG original; o app novo serve variante responsiva

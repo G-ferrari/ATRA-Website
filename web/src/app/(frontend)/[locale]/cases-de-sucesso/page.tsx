@@ -111,8 +111,12 @@ export default async function CasesPage() {
 
   const t = TEXTOS[locale]
 
+  /* `key` num elemento que não é lista: o React valida chaves de qualquer
+   * elemento criado num componente e renderizado dentro de um array de filhos
+   * de outro — e `cabecalho` cai exatamente nisso ao dividir a linha flex com a
+   * busca dentro da ilha. Sem ela, aviso no console em toda renderização. */
   const cabecalho = (
-    <div>
+    <div key="cabecalho-cases">
       <div className="flex items-center gap-2 mb-3">
         <StatusBadge label={t.badge} variant="primary" size="sm" pulse icon={<Sparkles size={12} />} />
         <MetricChip label={t.chip} variant="neutral" size="sm" />
