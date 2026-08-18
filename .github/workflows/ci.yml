@@ -178,6 +178,11 @@ jobs:
       - run: pnpm exec playwright install chromium
         working-directory: web
 
+      # Mesmo motivo do job `verify`: o build lê o banco em
+      # `generateStaticParams`, e o Postgres do CI sobe vazio.
+      - run: pnpm payload migrate
+        working-directory: web
+
       - run: pnpm build
         working-directory: web
 
