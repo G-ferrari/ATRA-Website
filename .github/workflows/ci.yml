@@ -94,6 +94,10 @@ jobs:
 
       - run: pnpm typecheck
 
+      # Unitário cobre onde há lógica: mappers, conversor do WP, redirects,
+      # rate limit. Componente de marketing fica com a regressão visual.
+      - run: pnpm test
+
       - run: pnpm build
 
   e2e:
