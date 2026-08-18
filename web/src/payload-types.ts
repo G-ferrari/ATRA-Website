@@ -69,6 +69,10 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    topics: Topic;
+    testimonials: Testimonial;
+    partners: Partner;
+    cases: Case;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +82,10 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    topics: TopicsSelect<false> | TopicsSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    partners: PartnersSelect<false> | PartnersSelect<true>;
+    cases: CasesSelect<false> | CasesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -203,6 +211,204 @@ export interface Media {
   };
 }
 /**
+ * Topics used to filter cases, posts and resources. Controlled vocabulary: prefer reusing over creating.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topics".
+ */
+export interface Topic {
+  id: number;
+  name: string;
+  /**
+   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   */
+  slug: string;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Client testimonials. Shown on the home page and inside cases.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  quote: string;
+  /**
+   * Not translated: proper noun.
+   */
+  company: string;
+  /**
+   * Optional. Without a name, the site shows role and company only.
+   */
+  authorName?: string | null;
+  authorRole: string;
+  /**
+   * Optional. Only use a real, authorised photo — without one the site shows initials.
+   */
+  photo?: (number | null) | Media;
+  featured?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Technology partners. Shown in the menu, on the home page and on partner pages.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners".
+ */
+export interface Partner {
+  id: number;
+  /**
+   * Not translated: proper noun.
+   */
+  name: string;
+  /**
+   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   */
+  slug: string;
+  /**
+   * Prefer SVG. The repository already has intact partner SVGs.
+   */
+  logo: number | Media;
+  /**
+   * One sentence, used in the menu.
+   */
+  description: string;
+  /**
+   * E.g. Premier Partner.
+   */
+  tier?: string | null;
+  featured?: boolean | null;
+  /**
+   * Without this, the partner appears in the menu but is not a link.
+   */
+  hasPage?: boolean | null;
+  order?: number | null;
+  /**
+   * Optional. When empty, the site falls back to the page title and summary.
+   */
+  seo?: {
+    /**
+     * Up to ~60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Up to 160 characters — Google truncates the rest.
+     */
+    metaDescription?: string | null;
+    /**
+     * Shown when shared on LinkedIn and WhatsApp. Falls back to the cover image.
+     */
+    ogImage?: (number | null) | Media;
+    noIndex?: boolean | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Success stories. Drafts are not visible on the site — publish only when complete.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cases".
+ */
+export interface Case {
+  id: number;
+  title: string;
+  /**
+   * E.g. Banco ABC.
+   */
+  client: string;
+  /**
+   * Up to 220 characters. Used on the listing card and as the search description.
+   */
+  summary: string;
+  heroImage: number | Media;
+  /**
+   * E.g. "51x faster". Shown over the card image.
+   */
+  impact?: string | null;
+  challenges?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  solution?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  results?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  aboutClient?: string | null;
+  /**
+   * Used by the listing filter. At least one.
+   */
+  topics: (number | Topic)[];
+  /**
+   * Not translated: product names.
+   */
+  technologies?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  partners?: (number | Partner)[] | null;
+  /**
+   * The same testimonial can appear here and on the home page.
+   */
+  testimonial?: (number | null) | Testimonial;
+  clientLogo?: (number | null) | Media;
+  /**
+   * Optional. When empty, the site falls back to the page title and summary.
+   */
+  seo?: {
+    /**
+     * Up to ~60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Up to 160 characters — Google truncates the rest.
+     */
+    metaDescription?: string | null;
+    /**
+     * Shown when shared on LinkedIn and WhatsApp. Falls back to the cover image.
+     */
+    ogImage?: (number | null) | Media;
+    noIndex?: boolean | null;
+  };
+  /**
+   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   */
+  slug: string;
+  /**
+   * Appears in the home carousel and the insights hub.
+   */
+  featured?: boolean | null;
+  publishedAt: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -233,6 +439,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'topics';
+        value: number | Topic;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'partners';
+        value: number | Partner;
+      } | null)
+    | ({
+        relationTo: 'cases';
+        value: number | Case;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -353,6 +575,104 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topics_select".
+ */
+export interface TopicsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  quote?: T;
+  company?: T;
+  authorName?: T;
+  authorRole?: T;
+  photo?: T;
+  featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners_select".
+ */
+export interface PartnersSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  logo?: T;
+  description?: T;
+  tier?: T;
+  featured?: T;
+  hasPage?: T;
+  order?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+        noIndex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cases_select".
+ */
+export interface CasesSelect<T extends boolean = true> {
+  title?: T;
+  client?: T;
+  summary?: T;
+  heroImage?: T;
+  impact?: T;
+  challenges?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  solution?: T;
+  results?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  aboutClient?: T;
+  topics?: T;
+  technologies?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  partners?: T;
+  testimonial?: T;
+  clientLogo?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+        noIndex?: T;
+      };
+  slug?: T;
+  featured?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

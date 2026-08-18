@@ -81,6 +81,17 @@ jobs:
           fi
           echo "OK: tipos em dia."
 
+      # O importMap precisa conter todo componente de campo em uso. Ficar
+      # defasado não quebra o build: quebra silenciosamente o campo no admin.
+      - name: importMap em dia?
+        run: |
+          pnpm generate:importmap
+          if ! git diff --quiet -- 'src/app/(payload)/admin/importMap.js'; then
+            echo "::error::importMap desatualizado. Rode 'pnpm generate:importmap' e commite."
+            exit 1
+          fi
+          echo "OK: importMap em dia."
+
       - run: pnpm typecheck
 
       - run: pnpm build
