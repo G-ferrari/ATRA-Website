@@ -99,7 +99,7 @@ chegaram corrompidas ao git, e no ar estão íntegras. Ver
 
 | Etapa | Situação |
 |---|---|
-| 5 — Memória do projeto (`CLAUDE.md`) | escrita ao final da Fase 2 (MIG-031), com o padrão real da fatia vertical — escrevê-la antes seria inventar convenção sem código para sustentá-la |
+| 5 — Memória do projeto (`CLAUDE.md`) | ✅ **escrita** ao final da Fase 2 (MIG-031), com o padrão real da fatia vertical. Fica em [`CLAUDE.md`](../CLAUDE.md), na raiz |
 
 ## Decisões
 

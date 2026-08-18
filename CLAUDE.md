@@ -1,0 +1,153 @@
+# ATRA — memória do projeto
+
+Migração do site institucional da ATRA para **Next.js 16 + Payload CMS 3 +
+PostgreSQL**, substituindo o WordPress em `atra.com.br`.
+
+- `legacy/` — protótipo React + Vite, no ar em análise interna. É o **gabarito**.
+- `web/` — o site novo.
+- `docs/` — a especificação. Toda decisão vive em
+  [`docs/00-contexto/decisoes.md`](docs/00-contexto/decisoes.md) como `D-xx`;
+  toda pendência como `P-xx`.
+
+Antes de escrever código de Next, ler `web/AGENTS.md` e
+`web/node_modules/next/dist/docs/` — esta versão tem mudanças que contradizem o
+que a maioria da documentação diz.
+
+## Idioma
+
+**Documentação, comentários e mensagens ao usuário em português.** Código,
+identificadores, campos do Payload e mensagens de commit em inglês.
+
+Comentário explica **por quê**, não o quê. O padrão do repositório é registrar a
+armadilha que motivou a linha:
+
+```ts
+// ⚠️ Não adicionar `axes: ['wdth']`. O site não usa largura condensada, e pedir
+// o eixo faz o Google servir outro corte: o itálico fica 3,2% mais largo.
+```
+
+## As regras que não se quebram
+
+### 1. Porte fiel, inclusive dos defeitos (D-15)
+
+O site novo tem que sair **igual** ao legado, pixel a pixel. Isso vale para
+decoração e para bugs: o herói mostra `"Banco ABC • "` com marcador solto porque
+o legado monta `${client} • ${date}` sem ter `date`. Foi portado assim, com
+comentário, e registrado em `docs/01-descoberta/debito-tecnico.md`.
+
+**Melhoria não entra junto com migração.** Se entrar, um aceite visual reprovado
+não distingue erro de porte de escolha deliberada. Corolário (D-25): não
+introduzir propriedade tipográfica que o legado não tem — ligar `antialiased`
+movia a rasterização de todo glifo do site.
+
+### 2. Decisão de conteúdo é do marketing (D-22)
+
+Consolidar vocabulário, reescrever texto, escolher quais categorias aparecem:
+nada disso é decisão de quem migra. O seed espelha o legado; a ferramenta para
+mudar fica no CMS.
+
+### 3. Componente não conhece o CMS
+
+`web/src/types/content.ts` define tipos de **apresentação**; `lib/mappers/`
+converte. Nenhum componente importa `@/payload-types`.
+
+```ts
+// mapper: o único lugar que sabe o formato do Payload
+export function toCaseCard(doc: Case): CaseCard {
+  return { slug: doc.slug, image: toImage(doc.heroImage, 'cases.heroImage'), … }
+}
+```
+
+Trocar o nome de um campo quebra um mapper, não oito componentes.
+
+Relacionamento não populado **derruba com a instrução do conserto** — imagem
+quebrada em silêncio é pior. Mas campo vazio é outra coisa: o Payload não valida
+obrigatórios em rascunho, então `ConteudoIncompleto` separa os dois casos, e o
+preview mostra o que falta em vez de estourar.
+
+### 4. Nenhuma página busca dado dentro de componente
+
+Server Component resolve o dado e monta props. A parte interativa vira ilha
+cliente que recebe tudo pronto — `cases-de-sucesso/lista-de-cases.tsx` é o
+modelo.
+
+### 5. Schema muda por migração versionada (D-21)
+
+`push: false`. Toda mudança de campo:
+
+```bash
+pnpm payload generate:types
+pnpm payload migrate:create <nome>
+pnpm payload migrate
+```
+
+Esquecer isso produz `column ... does not exist` em runtime, com o servidor de
+pé — já aconteceu. `pnpm dev` **não** sincroniza schema.
+
+### 6. URL nunca é escrita à mão
+
+`lib/routes.ts` é a fonte. PT na raiz, EN em `/en`, com **slugs traduzidos**
+(D-07); `proxy.ts` faz a ponte. Use `hrefDe('cases', locale, slug)`.
+
+### 7. Nenhum segredo com prefixo `NEXT_PUBLIC_`
+
+O prefixo injeta a variável no bundle do cliente. O CI reprova se `NEXT_PUBLIC_`
+aparecer junto de `KEY`, `SECRET`, `TOKEN` ou `PASSWORD`. O `define` em
+`legacy/vite.config.ts:12` **nunca** é portado.
+
+### 8. Pixel decide, não a API do browser
+
+Quando inspeção de estilo e captura discordam, a captura ganha. Já houve
+divergência relatada por `getComputedStyle` que a imagem desmentia.
+
+## Comandos
+
+```bash
+docker compose up -d                     # postgres + minio + web (:3000)
+cd legacy && docker compose up -d        # gabarito (:3001)
+pnpm dev · pnpm lint · pnpm typecheck · pnpm test
+pnpm typegen                             # PageProps/LayoutProps antes do tsc em árvore limpa
+pnpm seed                                # idempotente
+pnpm baseline                            # regrava o gabarito a partir do legado
+pnpm test:e2e                            # compara o app novo contra ele
+```
+
+`pnpm baseline` só é rodado com justificativa no PR — regravar gabarito apaga a
+evidência de regressão.
+
+## Regressão visual
+
+Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
+
+- Imagens entram **mascaradas**: o legado serve o JPEG original e o app novo
+  serve variante reencodada pelo `next/image`. Divergem por projeto, não por
+  regressão.
+- `?e2e=1` congela carrossel e rotação nos dois apps (`lib/e2e.ts` de cada lado).
+- O `globalSetup` aquece cada rota antes da suíte, esperando o servidor aceitar
+  conexão. Sem isso a suíte alternava entre 27 verdes e 4 vermelhos **sem
+  mudança de código** — `/admin` sozinho leva 32s na primeira compilação.
+- ⚠️ O gabarito é gravado no macOS e o CI é Linux. Lá o legado renderiza texto
+  0,6% mais largo, porque busca Mona Sans no Google Fonts em tempo de execução
+  enquanto o novo serve do próprio domínio (D-16). Por isso o CI roda só o
+  smoke até **MIG-035**.
+
+## Armadilhas já pagas
+
+| Sintoma | Causa |
+|---|---|
+| `Cannot find name 'PageProps'` | Tipos gerados pelo Next; rodar `pnpm typegen` |
+| `Cannot find module '.../page.js'` após mover rota | `.next/types` velho → `rm -rf .next` |
+| Admin sem estilo | Turbopack não processa SCSS de `node_modules` → `import '@payloadcms/next/css'` |
+| Campo de rich text some | `importMap` desatualizado → `pnpm payload generate:importmap` |
+| Servidor pendura minutos | `push: true` esperando resposta num prompt interativo |
+| CSS de teste sem efeito | `<style>` anexado em `documentElement` some quando o parser monta `head` |
+| `pnpm lint` acusa milhares de erros | Está lintando `playwright-report/` |
+| Build do CI falha em `select from "cases"` | Postgres vazio: falta `pnpm payload migrate` |
+
+## Estado
+
+Fases 1 e 2 concluídas: fundação, fatia vertical de cases, casca do site, Live
+Preview e organização do admin. A Fase 3 porta as 18 rotas restantes seguindo
+o padrão de `cases-de-sucesso`.
+
+Roadmap em `docs/03-plano/`; backlog em `tasks.md`, uma task por PR.
