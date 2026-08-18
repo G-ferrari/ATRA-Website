@@ -7,6 +7,8 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Override default ignores of eslint-config-next.
   globalIgnores([
+    // Migrações são geradas pelo Payload — não editar nem lintar.
+    "src/migrations/**",
     // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",

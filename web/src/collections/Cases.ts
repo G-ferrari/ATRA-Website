@@ -51,7 +51,8 @@ export const Cases: CollectionConfig = {
               name: 'client',
               type: 'text',
               required: true,
-              localized: true,
+              /* Não localizado: nome próprio não se traduz — mesmo critério de
+               * `testimonials.company` e `partners.name`. */
               label: { pt: 'Cliente', en: 'Client' },
               admin: { description: { pt: 'Ex.: Banco ABC.', en: 'E.g. Banco ABC.' } },
             },
@@ -91,13 +92,18 @@ export const Cases: CollectionConfig = {
             {
               name: 'challenges',
               type: 'array',
+              /* O ARRAY é localizado, não o campo interno. Com `text` localizado
+               * dentro de um array compartilhado, o idioma ainda sem tradução
+               * herda as linhas vazias e o documento fica inválido — cada locale
+               * precisa da sua própria lista. Descoberto ao rodar o seed. */
+              localized: true,
               label: { pt: 'Desafios', en: 'Challenges' },
               labels: {
                 singular: { pt: 'Desafio', en: 'Challenge' },
                 plural: { pt: 'Desafios', en: 'Challenges' },
               },
               fields: [
-                { name: 'text', type: 'textarea', required: true, localized: true, label: { pt: 'Desafio', en: 'Challenge' } },
+                { name: 'text', type: 'textarea', required: true, label: { pt: 'Desafio', en: 'Challenge' } },
               ],
             },
             {
@@ -109,13 +115,18 @@ export const Cases: CollectionConfig = {
             {
               name: 'results',
               type: 'array',
+              /* O ARRAY é localizado, não o campo interno. Com `text` localizado
+               * dentro de um array compartilhado, o idioma ainda sem tradução
+               * herda as linhas vazias e o documento fica inválido — cada locale
+               * precisa da sua própria lista. Descoberto ao rodar o seed. */
+              localized: true,
               label: { pt: 'Resultados', en: 'Results' },
               labels: {
                 singular: { pt: 'Resultado', en: 'Result' },
                 plural: { pt: 'Resultados', en: 'Results' },
               },
               fields: [
-                { name: 'text', type: 'textarea', required: true, localized: true, label: { pt: 'Resultado', en: 'Result' } },
+                { name: 'text', type: 'textarea', required: true, label: { pt: 'Resultado', en: 'Result' } },
               ],
             },
             {

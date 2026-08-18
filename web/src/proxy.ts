@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
-import { DEFAULT_LOCALE, LOCALES } from '@/lib/locales'
+import { DEFAULT_LOCALE, LOCALES, isLocale } from '@/lib/locales'
+import { aliasEsperado, canonizarSegmento } from '@/lib/routes'
 
 /* Roteamento de idioma (D-07).
  *
@@ -27,11 +28,32 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 308)
   }
 
-  // Idioma com prefixo (hoje só /en) segue direto para o segmento [locale].
-  const hasLocalePrefix = LOCALES.some(
-    (l) => l !== DEFAULT_LOCALE && (pathname === `/${l}` || pathname.startsWith(`/${l}/`)),
+  // Idioma com prefixo (hoje só /en): passa direto, mas traduzindo o segmento
+  // de seção para o nome canônico do sistema de arquivos.
+  // Ex.: /en/success-stories/x → /en/cases-de-sucesso/x (a URL não muda).
+  const prefixado = LOCALES.filter((l) => l !== DEFAULT_LOCALE).find(
+    (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`),
   )
-  if (hasLocalePrefix) return NextResponse.next()
+  if (prefixado) {
+    const [, , secao, ...resto] = pathname.split('/')
+
+    // O segmento canônico não deve ser acessível num idioma que tem alias:
+    // /en/cases-de-sucesso e /en/success-stories serviriam o mesmo conteúdo.
+    const alias = secao && isLocale(prefixado) ? aliasEsperado(secao, prefixado) : null
+    if (alias) {
+      const url = request.nextUrl.clone()
+      url.pathname = ['', prefixado, alias, ...resto].join('/')
+      return NextResponse.redirect(url, 308)
+    }
+
+    const canonico = secao && isLocale(prefixado) ? canonizarSegmento(secao, prefixado) : null
+    if (canonico && canonico !== secao) {
+      const url = request.nextUrl.clone()
+      url.pathname = ['', prefixado, canonico, ...resto].join('/')
+      return NextResponse.rewrite(url)
+    }
+    return NextResponse.next()
+  }
 
   // Todo o resto é português: reescreve mantendo a URL visível intacta.
   const url = request.nextUrl.clone()

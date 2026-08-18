@@ -51,6 +51,17 @@ export default buildConfig({
 
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI || '' },
+
+    /* Migrações versionadas, não push automático.
+     *
+     * Com `push` ligado (o padrão em dev), toda mudança que o Drizzle considera
+     * destrutiva — trocar um campo para localizado, por exemplo — para o servidor
+     * num prompt "Accept warnings and push schema?" e TODA requisição pendura até
+     * alguém responder. Aconteceu duas vezes ao modelar os cases.
+     *
+     * Fluxo: `pnpm migrate:create` gera o arquivo, `pnpm migrate` aplica.
+     * É o que docs/04-infra/ambientes.md já prescrevia. */
+    push: false,
   }),
 
   plugins: [

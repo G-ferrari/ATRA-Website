@@ -18,7 +18,11 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "seed": "tsx --env-file=.env.local scripts/seed/cases.ts",
+    "migrate": "payload migrate",
+    "migrate:create": "payload migrate:create",
+    "migrate:status": "payload migrate:status"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",

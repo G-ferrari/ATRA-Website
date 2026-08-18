@@ -45,9 +45,13 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   if (!isLocale(locale)) notFound()
 
   return (
+    /* `dark` no servidor: o legado inicia no tema escuro (App.tsx:2571) e a
+     * regressão visual compara os dois. Aplicar por efeito no cliente causaria
+     * flash de tema claro na primeira pintura. O alternador entra com a casca
+     * do site (MIG-057). */
     <html
       lang={locale === 'pt' ? 'pt-BR' : 'en'}
-      className={`${monaSans.variable} h-full antialiased`}
+      className={`${monaSans.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

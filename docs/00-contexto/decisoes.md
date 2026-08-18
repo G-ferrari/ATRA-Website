@@ -296,6 +296,27 @@ treinamento.
 pt, Live Preview, organização do admin, guia do editor e sessão de handoff.
 A engenharia sozinha não fecha o objetivo — sem transferência, ninguém usa.
 
+## D-21 — Migrações versionadas, sem push automático de schema
+
+**Contexto.** O adapter Postgres do Payload vem com `push: true` em
+desenvolvimento: ele sincroniza o schema sozinho a cada mudança. Ao modelar os
+cases, duas alterações — tornar um array localizado e tirar `localized` de um
+campo — foram classificadas como destrutivas pelo Drizzle, e o servidor **parou
+num prompt interativo** (`Accept warnings and push schema to database? (y/N)`).
+Toda requisição pendurou até o timeout: uma delas levou 9,9 minutos.
+
+**Escolha.** `push: false`. Schema muda por **migração versionada**:
+`pnpm migrate:create <nome>` gera, `pnpm migrate` aplica.
+
+**Consequência.** Uma etapa a mais por mudança de schema — e a Fase 3 terá
+dezenas. Em troca: o servidor nunca mais trava esperando resposta, a migração
+fica no git e pode ser revisada em PR, e staging/produção aplicam exatamente o
+que foi revisado. É o que [ambientes](../04-infra/ambientes.md#migrações-de-banco)
+já prescrevia; faltava implementar.
+
+⚠️ O deploy precisa rodar `pnpm migrate` **antes** de o Next atender — já
+previsto na estratégia de deploy.
+
 ---
 
 ## Decisões pendentes
