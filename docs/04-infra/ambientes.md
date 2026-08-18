@@ -129,3 +129,21 @@ já planejadas:
 O pacote instala um `AGENTS.md` em `web/` avisando disso e apontando para
 `node_modules/next/dist/docs/`. **Ler de lá antes de escrever código de Next** —
 é a fonte que acompanha a versão instalada.
+
+### Armadilha: tipos de rota obsoletos após mover arquivos
+
+O Next gera um validador de rotas em `.next/dev/types/validator.ts` a partir da
+árvore de `app/`. Ao **mover** um `page.tsx` ou `layout.tsx`, o validador continua
+apontando para o caminho antigo e o `tsc --noEmit` falha com
+`Cannot find module '.../page.js'` — mesmo com o código correto e a rota
+respondendo 200.
+
+Aconteceu duas vezes na Fase 1 (ao criar os grupos `(frontend)`/`(payload)` e ao
+introduzir `[locale]`). A correção é sempre a mesma:
+
+```bash
+rm -rf .next && pnpm dev
+```
+
+Vale para o CI também: build limpo nunca vê o problema, mas quem roda typecheck
+local depois de reorganizar rotas vai ver.
