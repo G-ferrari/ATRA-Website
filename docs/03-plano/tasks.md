@@ -40,10 +40,10 @@ Status: `todo` · `wip` · `done` · `blocked`
 
 | ID | Título | Arquivos | Dep. | Critério de aceite | Est. | Status |
 |---|---|---|---|---|---|---|
-| MIG-020 | Collections `media`, `topics` | `collections/Media.ts`, `Topics.ts` | 005 | `alt` obrigatório; 12 topics semeados | 1.5h | todo |
-| MIG-021 | Collection `testimonials` | `collections/Testimonials.ts` | 020 | `photo` opcional (D-14); grava sem foto | 1h | todo |
-| MIG-022 | Collection `partners` | `collections/Partners.ts` | 020 | 9 parceiros cadastráveis; `hasPage` condiciona `layout` | 1.5h | todo |
-| MIG-023 | Collection `cases` + drafts | `collections/Cases.ts` | 021, 022 | Rascunho não aparece em `find` público; preview funciona | 2h | todo |
+| MIG-020 | Collections `media`, `topics` | `collections/Media.ts`, `Topics.ts` | 005 | `alt` obrigatório; 12 topics semeados | 1.5h | **done** |
+| MIG-021 | Collection `testimonials` | `collections/Testimonials.ts` | 020 | `photo` opcional (D-14); grava sem foto | 1h | **done** |
+| MIG-022 | Collection `partners` | `collections/Partners.ts` | 020 | 9 parceiros cadastráveis; `hasPage` condiciona `layout` | 1.5h | **done** |
+| MIG-023 | Collection `cases` + drafts | `collections/Cases.ts` | 021, 022 | Rascunho não aparece em `find` público; preview funciona | 2h | **done** |
 | MIG-024 | Componentes-base do DS (parte 1) | `components/ui/{StatusBadge,MetricChip,GlowCard}.tsx` | 007, 009 | Paridade visual com o legado; sem import de `payload-types` | 3h | todo |
 | MIG-025 | Componentes-base do DS (parte 2) | `components/ui/{TabFilter,SearchInput,EmptyState,ContentCard}.tsx` | 024 | `TabFilter` substitui as 5 reimplementações de chip | 3h | todo |
 | MIG-026 | Mappers e tipos de apresentação | `lib/mappers/case.ts`, `types/content.ts` | 023 | `toCaseCard` tipado; relationship não populado morre no mapper | 1.5h | todo |
