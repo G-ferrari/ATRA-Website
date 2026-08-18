@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Play, Download, FileText, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { congelado } from '@/lib/e2e';
 
 export interface FeaturedItem {
   id: string | number;
@@ -25,6 +26,7 @@ export const FeaturedHero = ({ items, type = 'blog' }: FeaturedHeroProps) => {
   const [activeFeaturedIndex, setActiveFeaturedIndex] = useState(0);
 
   useEffect(() => {
+    if (congelado()) return;  // regressão visual: fixa no primeiro destaque
     const timer = setTimeout(() => {
       setActiveFeaturedIndex((current) => (current + 1) % items.length);
     }, 5000); // 5 seconds per slide

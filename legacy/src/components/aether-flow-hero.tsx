@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+import { aleatorio, congelado } from '@/lib/e2e';
+
 export interface AetherFlowHeroProps {
   theme?: 'dark' | 'light';
   className?: string;
@@ -27,13 +29,16 @@ class Particle {
   isOrange: boolean;
 
   constructor(canvasWidth: number, canvasHeight: number) {
-    this.x = Math.random() * canvasWidth;
-    this.y = Math.random() * canvasHeight;
-    this.vx = (Math.random() - 0.5) * 0.7;
-    this.vy = (Math.random() - 0.5) * 0.7;
-    this.radius = Math.random() * 2 + 1.5;
+    this.x = aleatorio() * canvasWidth;
+    this.y = aleatorio() * canvasHeight;
+    // Regressão visual: posição vem do gerador determinístico e a velocidade
+    // é zero, então todo quadro é idêntico — sem parar o loop, que precisa
+    // continuar para repintar depois de um resize.
+    this.vx = congelado() ? 0 : (aleatorio() - 0.5) * 0.7;
+    this.vy = congelado() ? 0 : (aleatorio() - 0.5) * 0.7;
+    this.radius = aleatorio() * 2 + 1.5;
     // ~1 in every 6 particles is orange (#FF8B08)
-    this.isOrange = Math.random() < (1 / 6);
+    this.isOrange = aleatorio() < (1 / 6);
   }
 
   update(
@@ -102,6 +107,7 @@ export const AetherFlowHero: React.FC<AetherFlowHeroProps> = ({
 
   // Cycle rotating word every 2.5 seconds
   useEffect(() => {
+    if (congelado()) return;  // regressão visual: fixa a primeira palavra
     const interval = setInterval(() => {
       setCurrentWordIndex((prev) => (prev + 1) % ROTATING_WORDS.length);
     }, 2500);

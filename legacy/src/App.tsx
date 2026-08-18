@@ -8,6 +8,7 @@ import { useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { BackgroundDecorations, RoundedDiamond, HomeParallaxDecorations } from '@/components/Decorations';
 import { SmoothScroll } from '@/components/SmoothScroll';
+import { congelado } from '@/lib/e2e';
 
 // Lazy loading secondary pages for optimal bundle size and instant initial load performance
 const Glossary = lazy(() => import('@/pages/Glossary'));
@@ -1470,6 +1471,7 @@ const Features = () => {
   ];
 
   useEffect(() => {
+    if (congelado()) return;  // regressão visual: fixa no índice 0
     const timer = setInterval(() => {
       setActiveTab((prev) => (prev + 1) % features.length);
     }, 8000);
@@ -1671,6 +1673,7 @@ const CustomerStories = () => {
 
   // Auto-scroll effect with loop
   useEffect(() => {
+    if (congelado()) return;  // regressão visual: fixa no índice 0
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % stories.length);
     }, 5000); // Auto-scroll every 5 seconds
@@ -1949,6 +1952,7 @@ const Testimonials = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
+    if (congelado()) return;  // regressão visual: fixa no índice 0
     const timer = setInterval(() => {
       setActiveIndex((current) => (current + 1) % testimonials.length);
     }, 8000);

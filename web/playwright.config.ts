@@ -19,6 +19,9 @@ const VIEWPORTS = {
 
 export default defineConfig({
   testDir: './e2e',
+  /* Gabarito e comparação usam o MESMO diretório de snapshots: um é gravado a
+   * partir do legado, o outro compara o app novo contra ele. */
+  snapshotPathTemplate: '{testDir}/gabarito/{arg}-{projectName}{ext}',
   outputDir: './e2e/.artifacts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,

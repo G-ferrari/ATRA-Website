@@ -1,3 +1,4 @@
+import { congelado } from '@/lib/e2e';
 "use client";
 import * as React from "react";
 import { motion } from "framer-motion";
@@ -212,6 +213,7 @@ export default function LogoCloudSwap({
 
   React.useEffect(() => {
     if (!isVisible) return;
+    if (congelado()) return;  // regressão visual: fixa no primeiro logo
     const id = setInterval(() => setWaving(true), interval);
     return () => clearInterval(id);
   }, [interval, isVisible]);

@@ -22,7 +22,8 @@
     "seed": "tsx --env-file=.env.local scripts/seed/cases.ts",
     "migrate": "payload migrate",
     "migrate:create": "payload migrate:create",
-    "migrate:status": "payload migrate:status"
+    "migrate:status": "payload migrate:status",
+    "baseline": "GRAVAR_GABARITO=1 playwright test e2e/baseline.spec.ts --update-snapshots"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",

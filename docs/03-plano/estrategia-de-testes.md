@@ -205,3 +205,45 @@ verdade.
 
 `e2e/paridade-ds.spec.ts` guarda essa comparação e cresce a cada componente
 portado.
+
+## O gabarito na prática (MIG-030)
+
+Fluxo em dois passos, e o motivo de serem dois:
+
+```bash
+pnpm baseline      # captura o LEGADO e grava em e2e/gabarito/
+pnpm test:e2e      # compara o app NOVO contra o gabarito
+```
+
+O gabarito só é regravado por `pnpm baseline` — uma execução comum nunca o
+sobrescreve. Sem essa separação, `--update-snapshots` transformaria qualquer
+regressão em "novo normal" silenciosamente.
+
+### Congelamento no legado, por flag
+
+`legacy/src/lib/e2e.ts` expõe `congelado()` e `aleatorio()`. Com `?e2e=1` na URL:
+
+| O quê | Onde | Tratamento |
+|---|---|---|
+| Rotação da palavra do hero | `aether-flow-hero.tsx:111` | não inicia |
+| Carrossel de features, cases e depoimentos | `App.tsx:1475`, `:1677`, `:1956` | ficam no índice 0 |
+| Carrossel do `FeaturedHero` | `FeaturedHero.tsx:30` | fica no primeiro destaque |
+| Carrossel de logos | `logo-clouds.tsx:216` | fica no primeiro |
+| Partículas do canvas | `aether-flow-hero.tsx` | posição por gerador determinístico, velocidade zero |
+| Contadores animados | `App.tsx:1105` | já respeitam `prefers-reduced-motion`, que o Playwright ativa |
+
+Sem a flag, nada muda para o visitante — é alteração de teste, não de produto.
+
+⚠️ **Pendência para a home (MIG-059):** mesmo com posição determinística e
+velocidade zero, o canvas do hero ainda difere entre navegações — o `<canvas>`
+aparece repintado em uma captura e vazio em outra, conforme o momento em que o
+`IntersectionObserver` e o resize disparam. Não bloqueia as rotas de case (não
+têm hero), mas precisa ser resolvido antes de comparar a home. Alternativa se
+persistir: mascarar só o canvas, mantendo o resto da primeira dobra comparável.
+
+### Tolerância: ratio, não bytes
+
+A primeira versão do teste de determinismo exigia capturas **byte-idênticas** e
+reprovava com 0,08% de diferença — variação de compressão PNG, invisível. O
+critério certo é `maxDiffPixelRatio`, e a estabilização embutida do
+`toHaveScreenshot` (repete até dois quadros saírem iguais) resolve o resto.
