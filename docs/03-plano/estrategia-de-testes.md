@@ -165,3 +165,24 @@ quebradas que não existem no site real.
 
 O legado precisa continuar rodando durante toda a Fase 3 — é o gabarito. Só sai do
 repositório na Fase 8, depois do cutover.
+
+## O que a montagem do harness revelou (MIG-011)
+
+Medido, não suposto:
+
+| Achado | Consequência |
+|---|---|
+| **O hero é a única fonte de instabilidade da home legada.** Ele gira a palavra do título por `setInterval` (`aether-flow-hero.tsx:13`) e desenha partículas animadas — duas capturas seguidas saíam com texto diferente | Com o hero mascarado, duas capturas ficam **byte-idênticas**. Os três carrosséis, os contadores e o resto da página já estabilizam com o que `stabilize()` faz |
+| **`clock.install()` + `pauseAt()` não serve.** Congelar os timers da página trava o React: efeitos que dependem de `setTimeout` nunca resolvem e a suíte estoura em 30s | Usar `clock.setFixedTime()`, que falsifica só `Date`. Congelar rotação e carrossel tem que ser no app, por flag |
+| **Ordem importa em `settle()`.** Imagem com `loading="lazy"` fora do viewport nunca completa, e `decode()` nela fica pendente para sempre | Rolar a página **antes** de decodificar, e com teto de tempo |
+| **`reducedMotion` não é opção de topo do `use`** nesta versão do Playwright — vai em `contextOptions` | O typecheck pegou; os testes passavam silenciosamente sem reduzir animação nenhuma. É argumento a favor de manter typecheck no CI |
+
+### Decisão pendente para MIG-030
+
+Máscara ou flag no app? A máscara funciona hoje e não toca no legado, mas **cega
+justamente a primeira dobra** — a parte mais vista de todas. Congelar o hero em
+`?e2e=1` nos dois apps compara a página inteira, ao custo de uma alteração de
+teste no código legado.
+
+Recomendação: **flag**. A primeira dobra é onde uma regressão dói mais, e o
+`estabilizar por flag` já estava previsto nesta estratégia para carrosséis.

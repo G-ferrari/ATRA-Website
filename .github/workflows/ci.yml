@@ -1,0 +1,164 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  verify:
+    name: lint · typecheck · build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+
+    services:
+      # O build do Payload conecta no banco para conferir o schema.
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: atra
+          POSTGRES_PASSWORD: atra
+          POSTGRES_DB: atra
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U atra -d atra"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+
+    env:
+      DATABASE_URI: postgres://atra:atra@localhost:5432/atra
+      PAYLOAD_SECRET: ci-secret-not-used-in-production
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      S3_ENDPOINT: http://localhost:9000
+      S3_BUCKET: atra-media
+      S3_ACCESS_KEY: ci
+      S3_SECRET_KEY: ci-secret
+      NEXT_TELEMETRY_DISABLED: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      # --frozen-lockfile falha se o lock estiver fora de sync. É exatamente o
+      # problema que quebrou o `npm ci` no projeto legado.
+      - run: pnpm install --frozen-lockfile
+
+      # Nenhum segredo pode ter prefixo NEXT_PUBLIC_ — o prefixo injeta a
+      # variável no bundle do cliente. Ver docs/04-infra/ambientes.md.
+      - name: Segredo exposto ao cliente?
+        run: |
+          if grep -rnE 'NEXT_PUBLIC_[A-Z_]*(KEY|SECRET|TOKEN|PASSWORD)' src .env.example; then
+            echo "::error::Segredo com prefixo NEXT_PUBLIC_ — iria para o bundle do cliente."
+            exit 1
+          fi
+          echo "OK: nenhum segredo com prefixo público."
+
+      - run: pnpm lint
+
+      # Falha se payload-types.ts estiver defasado do schema.
+      - name: Tipos do Payload em dia?
+        run: |
+          pnpm generate:types
+          if ! git diff --quiet -- src/payload-types.ts; then
+            echo "::error::payload-types.ts desatualizado. Rode 'pnpm generate:types' e commite."
+            git diff --stat -- src/payload-types.ts
+            exit 1
+          fi
+          echo "OK: tipos em dia."
+
+      - run: pnpm typecheck
+
+      - run: pnpm build
+
+  e2e:
+    name: smoke · regressão visual
+    runs-on: ubuntu-latest
+    needs: verify
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: atra
+          POSTGRES_PASSWORD: atra
+          POSTGRES_DB: atra
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U atra -d atra"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+
+    env:
+      DATABASE_URI: postgres://atra:atra@localhost:5432/atra
+      PAYLOAD_SECRET: ci-secret-not-used-in-production
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      S3_ENDPOINT: http://localhost:9000
+      S3_BUCKET: atra-media
+      S3_ACCESS_KEY: ci
+      S3_SECRET_KEY: ci-secret
+      NEXT_URL: http://localhost:3000
+      LEGACY_URL: http://localhost:3001
+      NEXT_TELEMETRY_DISABLED: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      # O legado é o gabarito da regressão visual: precisa estar no ar junto.
+      # Sai daqui na Fase 8, junto com a pasta legacy/.
+      - name: Sobe o app legado (:3001)
+        run: docker compose up -d --wait
+        working-directory: legacy
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: web
+
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: web
+
+      - run: pnpm build
+        working-directory: web
+
+      - name: Sobe o app novo (:3000)
+        run: |
+          pnpm start &
+          npx wait-on http://localhost:3000 --timeout 60000
+        working-directory: web
+
+      - run: pnpm test:e2e
+        working-directory: web
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: web/playwright-report
+          retention-days: 7
+
+      # Capturas de falha e diffs: é o que permite julgar uma regressão visual
+      # sem reproduzir localmente.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: artefatos-de-falha
+          path: web/e2e/.artifacts
+          retention-days: 7
