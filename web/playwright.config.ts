@@ -44,13 +44,17 @@ export default defineConfig({
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list']],
 
   expect: {
+    /* Orçamento de **captura**, não de correção. O padrão de 5s é apertado:
+     * `toHaveScreenshot` repete a captura até dois quadros saírem iguais, e uma
+     * página de 3.100px numa máquina carregada não fecha nisso. As falhas
+     * apareciam sem `-actual.png` nem `-diff.png` — sinal de que nada chegou a
+     * ser comparado. Aumentar aqui não afrouxa o limite de 0,1%.
+     *
+     * ⚠️ Vai em `expect`, não dentro de `toHaveScreenshot`: lá a chave não
+     * existe, o TypeScript reprova e o Playwright a **ignora em silêncio** em
+     * runtime — a suíte passa a rodar como se nada tivesse mudado. */
+    timeout: 20_000,
     toHaveScreenshot: {
-      /* 5s (o padrão) é orçamento de **captura**, não de correção, e é apertado:
-       * `toHaveScreenshot` repete a captura até dois quadros saírem iguais, e
-       * uma página de 3.100px numa máquina carregada não fecha nisso. As falhas
-       * apareciam sem `-actual.png` nem `-diff.png` — sinal de que nada chegou a
-       * ser comparado. Aumentar aqui não afrouxa o limite de 0,1%. */
-      timeout: 20_000,
       // Limite de 0,1%, como definido na estratégia de testes.
       maxDiffPixelRatio: 0.001,
       // Tolera ruído de antialiasing sem mascarar diferença real de layout.
