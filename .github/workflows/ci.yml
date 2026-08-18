@@ -178,8 +178,6 @@ jobs:
       - run: pnpm exec playwright install chromium
         working-directory: web
 
-        working-directory: web
-
       - run: pnpm build
         working-directory: web
 
