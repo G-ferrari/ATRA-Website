@@ -107,10 +107,13 @@ dos 207 posts.
 - `redirects.csv` gerado com 207 linhas de post + as curadas à mão
 - Nenhum post com corpo vazio ou imagem quebrada (query de verificação)
 
-> **Risco:** a conversão HTML → Lexical é onde este projeto pode consumir tempo
-> imprevisto. Blocos do Gutenberg (galerias, embeds, colunas) não têm equivalente
-> direto. Mitigação: rodar a conversão cedo, na Fase 1 se possível, sobre 10 posts,
-> para medir o estrago antes de comprometer prazo.
+> ✅ **Risco medido e reduzido — ver [piloto-conversao-wp](piloto-conversao-wp.md).**
+> A hipótese estava errada: o conteúdo não é Gutenberg, é Elementor. Varredura dos
+> 207 posts encontrou **zero** blocos Gutenberg, iframes, galerias, colunas ou
+> shortcodes. A conversão retém 99,9–100% do texto, com imagens e links íntegros.
+> Uma armadilha real apareceu: tabela converte com 100% de retenção de texto e
+> **zero estrutura** — corrigido com `EXPERIMENTAL_TableFeature`. Risco de
+> estouro: de **alto** para **baixo**.
 
 ## Fase 4c — Conteúdo novo (D-17)
 
@@ -186,7 +189,7 @@ alavanca de prazo do projeto — e é onde mora o risco técnico menos previsív
 
 | Risco | Probabilidade | Mitigação |
 |---|---|---|
-| Conversão HTML → Lexical pior que o esperado nos 207 posts | **alta** | Piloto de 10 posts na Fase 1 |
+| ~~Conversão HTML → Lexical pior que o esperado~~ | ~~alta~~ → **baixa** | ✅ Piloto executado (MIG-012): retenção de 99,9–100%, sem estruturas exóticas no corpus |
 | Mona Sans revela quebras de layout no legado (D-16) | média | Descobrir na Fase 1, antes do baseline |
 | Conteúdo de `segments` e `solutions` travado no marketing | **alta** | 4c depende de gente fora da engenharia; começar a conversa na Fase 1 |
 | Regressão visual instável (animações, carrosséis) | alta | Desabilitar animação nas capturas; `prefers-reduced-motion` |

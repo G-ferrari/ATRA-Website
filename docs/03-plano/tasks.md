@@ -31,7 +31,7 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-011 | Playwright + harness de regressão visual | `web/playwright.config.ts`, `web/e2e/visual.spec.ts` | 006, 010, **070** | Suíte vazia roda no CI; captura do legado e do novo lado a lado | 3h | **done** |
 | MIG-013 | **Papéis `editor`/`admin` + access control** (D-18) | `web/src/access/*`, `collections/Users.ts` | 002 | Editor não edita globals nem `ai-assistant`; editor não consegue se promover a admin | 2h | **done** |
 | MIG-014 | **Admin em português** (`i18n` com `pt`) | `web/src/payload.config.ts` | 002 | Interface do admin em PT-BR; conteúdo segue editável nos dois idiomas | 0.5h | **done** |
-| MIG-012 | **Piloto de conversão HTML → Lexical** (10 posts) | `web/scripts/wp-import/pilot.ts` | 002 | Relatório com o que converteu e o que quebrou nos 10; decisão registrada | 3h | todo |
+| MIG-012 | **Piloto de conversão HTML → Lexical** (10 posts) | `web/scripts/wp-import/pilot.ts` | 002 | Relatório com o que converteu e o que quebrou nos 10; decisão registrada | 3h | **done** |
 
 > MIG-012 é diagnóstico, não entrega. Existe para medir cedo o maior risco
 > imprevisto do projeto — ver [roadmap](roadmap.md#fase-4b--migração-do-wordpress-d-17).
@@ -103,8 +103,8 @@ Uma PR por linha. Todas dependem de MIG-031.
 
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
-| MIG-080 | Cliente da API REST do WP + paginação | 012 | Traz os 207 posts em JSON, com retry | 2h |
-| MIG-081 | Conversor HTML → Lexical | 012 | Passa nos 10 posts do piloto e em 20 amostrados | 6h |
+| MIG-080 | Cliente da API REST do WP + paginação (**exige user-agent de browser**) | 012 | Traz os 207 posts em JSON, com retry | 2h |
+| MIG-081 | Conversor HTML → Lexical + **`EXPERIMENTAL_TableFeature`** | 012 | Passa nos 12 do piloto, nos 4 outliers e em 20 amostrados; tabela vira `table`, não parágrafo | 3h |
 | MIG-082 | Importador de mídia (destacada + inline) | 080 | Imagem baixada, com `alt` vindo do WP | 3h |
 | MIG-083 | Importação dos 207 posts | 081, 082, 043 | 207 publicados, nenhum com corpo vazio | 3h |
 | MIG-084 | Mapeamento de categorias do WP → `topics` | 083 | Todo post com ao menos 1 topic | 1.5h |

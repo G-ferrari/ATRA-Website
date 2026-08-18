@@ -83,6 +83,7 @@ chegaram corrompidas ao git, e no ar estão íntegras. Ver
 | [tasks](03-plano/tasks.md) | rascunho | 93 tasks atômicas (`MIG-001`…), uma por PR, ordenadas por dependência — ~244h de engenharia |
 | [estrategia-de-testes](03-plano/estrategia-de-testes.md) | rascunho | Regressão visual em primeiro lugar, e por quê; pipeline de CI; o que não testar |
 | [definicao-de-pronto](03-plano/definicao-de-pronto.md) | rascunho | Checklist de PR e as 6 regras invioláveis |
+| [piloto-conversao-wp](03-plano/piloto-conversao-wp.md) | revisado | **MIG-012** — mede o risco da migração dos 207 posts. Risco de alto para baixo, com uma armadilha silenciosa encontrada |
 
 ## Etapa 4 — Infraestrutura
 
