@@ -368,3 +368,70 @@ Duas merecem prioridade por serem baratas agora e caras depois:
 
 Nenhuma bloqueia a Etapa 3. O modelo prevê os campos; **seed** e **priorização de
 redirects** ficam esperando valores.
+
+## D-22 — O seed espelha o vocabulário do legado; consolidar é decisão de conteúdo
+
+**Contexto.** [Topics](../02-especificacao/modelo-de-conteudo.md) existe como
+collection justamente porque tag livre produziu "IA" vs. "Inteligência
+Artificial" no legado. Na primeira versão do seed dos cases eu apliquei esse
+raciocínio aos dados: as 12 tags dos 4 cases viraram 4 assuntos "limpos"
+(`Governança & LGPD`, `Google Cloud`…).
+
+Isso quebrou a regressão visual — os chips renderizam outro texto — e, mais
+importante, foi eu tomando uma decisão que não é minha.
+
+**Escolha.** O seed reproduz as tags exatas do legado
+(`legacy/src/pages/SuccessStories.tsx:28-60`). O vocabulário controlado continua
+existindo como **mecanismo**; os **valores** são do marketing, que agora pode
+consolidá-los pelo admin sem pedir deploy.
+
+**Consequência.** A migração entrega o site igual e a ferramenta para melhorá-lo,
+em vez de entregar o site diferente por conta própria. Vale como regra geral:
+**mudança de conteúdo não entra junto com mudança de tecnologia** — se entrar, um
+aceite visual reprovado não distingue erro de porte de escolha editorial.
+
+## D-23 — A barra de filtro das listagens vem do CMS
+
+**Contexto.** O legado tem 6 categorias fixas escritas no código
+(`SuccessStories.tsx:20`), e elas não são todas as tags em uso. Duas saídas
+óbvias: repetir a lista fixa (repete o problema que a migração resolve) ou
+derivar de tudo em uso (12 chips onde havia 6 — enche a barra e muda o layout).
+
+**Escolha.** Dois campos em `topics`: `showInFilter` e `filterOrder`. A listagem
+mostra os assuntos marcados, na ordem definida no admin. O seed marca exatamente
+as 5 categorias do legado, na ordem original.
+
+**Consequência.** Saída idêntica hoje, editável amanhã sem deploy — que é o
+objetivo declarado da migração. Custa uma migração de schema e dois campos que o
+editor precisa entender; a descrição em português no admin cobre isso.
+
+## D-24 — Case tem dois textos de abertura, não um
+
+**Contexto.** O legado usa `description` em dois lugares com **conteúdo
+diferente**: o do array da listagem e o passado a `CaseDetailBase` em cada página
+de case. Modelei um `summary` só, e a página de detalhe abria com a frase do
+card. A diferença apareceu na regressão visual.
+
+**Escolha.** `summary` (card e descrição para buscadores, obrigatório) e
+`heroSubtitle` (abertura da página, opcional). Vazio, `heroSubtitle` cai em
+`summary` — quem só quer um texto preenche um.
+
+**Consequência.** Um campo a mais no formulário, com fallback que evita página
+sem abertura. O padrão vale para blog, relatórios e webinars, que têm a mesma
+estrutura — decidir uma vez aqui evita redecidir quatro vezes na Fase 3.
+
+## D-25 — Não introduzir propriedade tipográfica que o legado não tem
+
+**Contexto.** Eu havia posto `antialiased` no `<html>` do app novo por hábito. O
+legado não define `-webkit-font-smoothing`. Depois de fonte e layout já baterem —
+as 60 caixas de texto da listagem coincidem ao décimo de pixel — ainda sobravam
+~3.400 pixels divergentes, todos em borda de letra, espalhados por toda página
+com texto.
+
+**Escolha.** Removido. Nenhuma propriedade de renderização de texto entra sem
+existir no legado.
+
+**Consequência.** Extensão natural de [D-15](#d-15--o-porte-fiel-vale-também-para-a-decoração):
+o porte fiel não é só de estrutura e cor. Se a ATRA quiser ligar suavização
+depois, é mudança de uma linha — feita conscientemente, com o gabarito regravado,
+e não escondida dentro de uma migração.

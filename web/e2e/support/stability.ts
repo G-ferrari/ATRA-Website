@@ -38,15 +38,37 @@ export async function stabilize(page: Page) {
    * legado precisam ser congelados no app, por flag — ver MIG-030. */
   await page.clock.setFixedTime(new Date('2026-01-01T12:00:00Z'))
 
+  /* ⚠️ Anexar em `document.head`, não em `documentElement`.
+   *
+   * Um <style> filho direto de <html> some quando o parser monta head/body: o
+   * documento fica com uma única folha (a do Vite) e a regra nunca vale.
+   * Verificado — era o caso aqui, e por isso o menu fixo aparecia no gabarito
+   * mesmo com a regra escrita. */
   await page.addInitScript(() => {
-    const style = document.createElement('style')
-    style.textContent = `*,*::before,*::after{
+    const CSS = `
+    /* Casca do site: menu e alternador de tema do legado são \`fixed\` e são
+     * pintados por cima do <main>, entrando na captura recortada mesmo estando
+     * fora dele. O app novo ainda não tem casca (MIG-034) — ocultar deixa a
+     * comparação sobre o conteúdo da rota, que é o que a task entrega. Sendo
+     * fixed, esconder não desloca nada. Remover em MIG-034. */
+    nav.fixed, button.fixed{display:none !important;}
+    /* Indicador de dev do Next: existe só no app novo e não no legado. */
+    nextjs-portal{display:none !important;}
+    *,*::before,*::after{
       animation-duration:0s !important; animation-delay:0s !important;
       animation-iteration-count:1 !important;
       transition-duration:0s !important; transition-delay:0s !important;
       scroll-behavior:auto !important;
     }`
-    document.documentElement.appendChild(style)
+    const aplicar = () => {
+      if (document.getElementById('e2e-estabilizacao')) return
+      const style = document.createElement('style')
+      style.id = 'e2e-estabilizacao'
+      style.textContent = CSS
+      document.head.appendChild(style)
+    }
+    if (document.head) aplicar()
+    document.addEventListener('DOMContentLoaded', aplicar, { once: true })
   })
 }
 

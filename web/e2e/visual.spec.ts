@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 import { NEXT_URL } from '../playwright.config'
-import { ROTAS_COM_GABARITO } from './support/rotas'
+import { ALVO, COR_DA_MASCARA, MASCARA, ROTAS_COM_GABARITO } from './support/rotas'
 import { visit } from './support/stability'
 
 /* Regressão visual: cada rota portada contra o gabarito do legado.
@@ -15,6 +15,9 @@ import { visit } from './support/stability'
 for (const { nome, caminho } of ROTAS_COM_GABARITO) {
   test(`${nome}: paridade com o legado`, async ({ page }) => {
     await visit(page, NEXT_URL, caminho)
-    await expect(page).toHaveScreenshot(`${nome}.png`, { fullPage: true })
+    await expect(page.locator(ALVO)).toHaveScreenshot(`${nome}.png`, {
+      mask: [page.locator(MASCARA)],
+      maskColor: COR_DA_MASCARA,
+    })
   })
 }

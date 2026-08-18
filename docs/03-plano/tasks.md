@@ -45,15 +45,24 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-022 | Collection `partners` | `collections/Partners.ts` | 020 | 9 parceiros cadastráveis; `hasPage` condiciona `layout` | 1.5h | **done** |
 | MIG-023 | Collection `cases` + drafts | `collections/Cases.ts` | 021, 022 | Rascunho não aparece em `find` público; preview funciona | 2h | **done** |
 | MIG-024 | Componentes-base do DS (parte 1) | `components/ui/{StatusBadge,MetricChip,GlowCard}.tsx` | 007, 009 | Paridade visual com o legado; sem import de `payload-types` | 3h | **done** |
-| MIG-025 | Componentes-base do DS (parte 2) | `components/ui/{TabFilter,SearchInput,EmptyState,ContentCard}.tsx` | 024 | `TabFilter` substitui as 5 reimplementações de chip | 3h | **done** |
+| MIG-025 | Componentes-base do DS (parte 2) | `components/ui/{TabFilter,SearchInput,EmptyState,ContentCard,ChipFilter}.tsx` | 024 | `ChipFilter` unifica as 5 reimplementações de chip das listagens | 3h | **done** |
 | MIG-026 | Mappers e tipos de apresentação | `lib/mappers/case.ts`, `types/content.ts` | 023 | `toCaseCard` tipado; relationship não populado morre no mapper | 1.5h | **done** |
 | MIG-027 | Rota `/cases-de-sucesso` | `app/[locale]/cases-de-sucesso/page.tsx` | 025, 026 | 200 em PT e EN; busca e filtro por topic funcionando | 3h | **done** |
 | MIG-028 | Rota `/cases-de-sucesso/[slug]` | `app/[locale]/cases-de-sucesso/[slug]/page.tsx` | 027 | 4 slugs respondem; `generateStaticParams` cobre os dois locales | 3h | **done** |
 | MIG-029 | Seed dos 4 cases | `scripts/seed/cases.ts` | 023 | Roda 2× sem duplicar; imagens íntegras no Media | 2h | **done** |
-| MIG-030 | Regressão visual das 2 rotas de case | `e2e/visual/cases.spec.ts` | 011, 028 | Diferença ≤ 0,1% contra o legado | 2h | todo |
+| MIG-030 | Regressão visual das 2 rotas de case | `e2e/{baseline,visual}.spec.ts`, `e2e/support/*` | 011, 028 | Diferença ≤ 0,1% contra o legado, nos 3 viewports | 2h | **done** |
+| MIG-030a | Seções que faltavam no porte: `FeaturedHero`, Solução, depoimento, CTA e barra lateral completa | `components/ui/{featured-hero,contact-cta,quote-block}.tsx`, `components/content/rich-text.tsx` | 030 | As 6 comparações passam | 4h | **done** |
 | MIG-032 | **Live Preview + draft mode** (D-20) | `payload.config.ts`, `app/(frontend)/[locale]/preview/route.ts` | 028 | Editar um case mostra o resultado ao vivo nos 3 breakpoints, com rascunho | 4h | todo |
 | MIG-033 | Organização do admin: grupos, `useAsTitle`, `defaultColumns`, busca | `collections/*` | 023 | As 15 collections agrupadas; nenhuma lista caindo em id | 2h | todo |
+| MIG-034 | **Casca do site: cabeçalho fixo + rodapé** | `components/layout/{site-header,site-footer}.tsx`, `app/(frontend)/[locale]/layout.tsx` | 030 | As 2 rotas de case comparam com `fullPage: true` e fecham em ≤0,1% | 5h | todo |
 | MIG-031 | **`CLAUDE.md` com o padrão consolidado** | `CLAUDE.md` | 030 | Contém exemplo real do código da fatia vertical | 2h | todo |
+
+> **MIG-034 apareceu durante MIG-030 e não estava no plano.** Nenhuma task
+> construía o cabeçalho e o rodapé — os globals eram semeados (MIG-072), mas
+> nada os renderizava. Sem a casca, toda rota da Fase 3 nasce incompleta e a
+> regressão visual precisa ser recortada no `<main>`, deixando de cobrir a
+> moldura. Fica no fim da Fase 2 porque é compartilhada por todas as rotas
+> seguintes.
 
 ## Fase 3 — Fábrica de rotas
 

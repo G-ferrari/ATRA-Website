@@ -247,3 +247,55 @@ A primeira versão do teste de determinismo exigia capturas **byte-idênticas** 
 reprovava com 0,08% de diferença — variação de compressão PNG, invisível. O
 critério certo é `maxDiffPixelRatio`, e a estabilização embutida do
 `toHaveScreenshot` (repete até dois quadros saírem iguais) resolve o resto.
+
+## O que MIG-030 mudou na regressão visual
+
+Três ajustes vieram de fechar a primeira comparação de verdade. Todos reduzem
+o escopo do teste — e cada um existe porque o escopo maior media a coisa errada.
+
+### 1. A comparação é recortada no `<main>`, não na página inteira
+
+O gabarito vem do legado, que tem cabeçalho e rodapé; o app novo só ganha a
+casca em MIG-034. Comparar a página inteira antes disso mede a ausência da
+moldura, não a fidelidade da rota — eram 394px de diferença no desktop, iguais
+nas duas rotas, e nenhuma task de conteúdo conseguiria fechar o limite.
+
+O menu do legado é `position: fixed` e é pintado **por cima** do `<main>`, então
+entra na captura recortada mesmo estando fora dele. Ele e o alternador de tema
+são ocultados por CSS na captura; sendo `fixed`, esconder não desloca nada.
+
+**Em MIG-034 isto volta para `fullPage: true`, nos dois arquivos, com o gabarito
+regravado.**
+
+### 2. Imagens entram mascaradas
+
+O legado serve o JPEG original; o app novo serve variante responsiva reencodada
+pelo `next/image` (WebP, qualidade 75, largura por viewport). Os bytes divergem
+por decisão de projeto, não por regressão — era ~1% dos pixels, todo dentro das
+imagens.
+
+`mask` do Playwright pinta a área com cor sólida nos dois lados: posição, caixa
+e dimensão da imagem continuam comparadas, o conteúdo não. O que sai de cobertura
+— imagem certa no lugar certo — fica com `smoke.spec.ts`, que confere `src` e
+`alt`.
+
+### 3. Timeout de 90s
+
+`settle()` rola a página em passos de 80ms; uma rota de 4.600px no mobile leva
+~5s só nisso, com três workers disputando o mesmo servidor de dev. Com 30s os
+timeouts apareciam como falha de paridade e escondiam o número real.
+
+## Duas armadilhas que passaram despercebidas
+
+**O CSS de estabilização nunca era aplicado.** O `<style>` era anexado em
+`document.documentElement`; um `<style>` filho direto de `<html>` some quando o
+parser monta `head`/`body`. O documento ficava com uma folha só — a do Vite — e
+nenhuma regra do teste valia. Foi por isso que o menu fixo aparecia no gabarito
+mesmo com a regra escrita. Agora anexa em `document.head`, com guarda de
+idempotência.
+
+**Ligar `antialiased` no app novo movia a rasterização de todo glifo.** O legado
+não define `-webkit-font-smoothing`. Depois de layout e fonte já baterem — as 60
+caixas de texto da listagem coincidem ao décimo de pixel — ainda sobravam ~3.400
+pixels divergentes, todos em borda de letra. A regra geral: **não introduzir
+propriedade tipográfica que o legado não tem**, por melhor que pareça.

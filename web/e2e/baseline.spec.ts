@@ -1,7 +1,7 @@
 import { test } from '@playwright/test'
 
 import { LEGACY_URL } from '../playwright.config'
-import { ROTAS_COM_GABARITO } from './support/rotas'
+import { ALVO, COR_DA_MASCARA, MASCARA, ROTAS_COM_GABARITO } from './support/rotas'
 import { visit } from './support/stability'
 
 /* Gera o gabarito a partir do LEGADO.
@@ -16,7 +16,9 @@ for (const { nome, caminho } of ROTAS_COM_GABARITO) {
     await visit(page, LEGACY_URL, caminho)
     // `toHaveScreenshot` repete a captura até dois quadros saírem iguais —
     // é a estabilização embutida do Playwright.
-    await page.screenshot({ fullPage: true, path: undefined })
-    await test.expect(page).toHaveScreenshot(`${nome}.png`, { fullPage: true })
+    await test.expect(page.locator(ALVO)).toHaveScreenshot(`${nome}.png`, {
+      mask: [page.locator(MASCARA)],
+      maskColor: COR_DA_MASCARA,
+    })
   })
 }

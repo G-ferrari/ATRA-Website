@@ -49,6 +49,8 @@ export function toTestimonial(valor: number | TestimonialDoc | null | undefined)
 export function toCaseDetail(doc: Case): CaseDetail {
   return {
     ...toCaseCard(doc),
+    // Vazio no CMS cai no resumo: a página nunca fica sem linha de abertura.
+    heroSubtitle: doc.heroSubtitle?.trim() || doc.summary,
     challenges: toTextos(doc.challenges, 'text'),
     solution: doc.solution ?? null,
     results: toTextos(doc.results, 'text'),

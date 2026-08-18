@@ -47,6 +47,8 @@ export type CaseCard = {
 }
 
 export type CaseDetail = CaseCard & {
+  /** Linha de abertura da página. Cai em `summary` quando não preenchida. */
+  heroSubtitle: string
   challenges: string[]
   /** Documento Lexical serializado; o componente usa o conversor do Payload. */
   solution: unknown | null

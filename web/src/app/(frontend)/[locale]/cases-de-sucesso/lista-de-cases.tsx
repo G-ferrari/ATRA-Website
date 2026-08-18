@@ -1,15 +1,20 @@
 'use client'
 
 import { Landmark } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 
-import { ContentCard, EmptyState, SearchInput, TabFilter } from '@/components/ui'
+import { ChipFilter, ContentCard, EmptyState, SearchInput } from '@/components/ui'
 import type { Locale } from '@/lib/locales'
 import { hrefDe } from '@/lib/routes'
 import type { CaseCard, Topic } from '@/types/content'
 
 /* Ilha interativa: busca e filtro rodam no cliente, como no legado.
- * Recebe dado pronto — não consulta o CMS (contratos-de-dados.md). */
+ * Recebe dado pronto — não consulta o CMS (contratos-de-dados.md).
+ *
+ * O bloco de título entra por `cabecalho` já renderizado no servidor: no legado
+ * ele divide a mesma linha flex com a busca (SuccessStories.tsx:93), e é a
+ * busca que precisa de estado, não o título. */
 
 const TEXTOS = {
   pt: {
@@ -34,23 +39,27 @@ const TEXTOS = {
   },
 } as const
 
+const TODOS = 'todos'
+
 export function ListaDeCases({
   cases,
   topics,
   locale,
+  cabecalho,
 }: {
   cases: CaseCard[]
   topics: Topic[]
   locale: Locale
+  cabecalho: ReactNode
 }) {
   const t = TEXTOS[locale]
   const [busca, setBusca] = useState('')
-  const [topico, setTopico] = useState('todos')
+  const [topico, setTopico] = useState<string>(TODOS)
 
   const filtrados = useMemo(() => {
     const termo = busca.trim().toLowerCase()
     return cases.filter((c) => {
-      const casaTopico = topico === 'todos' || c.topics.some((tp) => tp.slug === topico)
+      const casaTopico = topico === TODOS || c.topics.some((tp) => tp.slug === topico)
       const casaBusca =
         termo === '' ||
         [c.title, c.client, c.summary, ...c.topics.map((tp) => tp.name)]
@@ -61,24 +70,26 @@ export function ListaDeCases({
     })
   }, [cases, busca, topico])
 
-  const abas = [
-    { id: 'todos', label: t.todos, count: cases.length },
-    ...topics.map((tp) => ({
-      id: tp.slug,
-      label: tp.name,
-      count: cases.filter((c) => c.topics.some((x) => x.slug === tp.slug)).length,
-    })),
+  const categorias = [
+    { id: TODOS, label: t.todos },
+    ...topics.map((tp) => ({ id: tp.slug, label: tp.name })),
   ]
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-8">
-        <SearchInput value={busca} onChange={setBusca} placeholder={t.buscar} />
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-12 gap-6">
+        {cabecalho}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <SearchInput value={busca} onChange={setBusca} placeholder={t.buscar} />
+        </div>
       </div>
 
-      <div className="mb-8">
-        <TabFilter options={abas} activeId={topico} onChange={setTopico} />
-      </div>
+      <ChipFilter
+        label={t.categorias}
+        options={categorias}
+        activeId={topico}
+        onChange={setTopico}
+      />
 
       {filtrados.length === 0 ? (
         <EmptyState
@@ -88,7 +99,7 @@ export function ListaDeCases({
             label: t.limpar,
             onClick: () => {
               setBusca('')
-              setTopico('todos')
+              setTopico(TODOS)
             },
           }}
         />

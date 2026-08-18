@@ -224,6 +224,14 @@ export interface Topic {
    */
   slug: string;
   description?: string | null;
+  /**
+   * Check to show this topic as a category button on listings.
+   */
+  showInFilter?: boolean | null;
+  /**
+   * Lower comes first.
+   */
+  filterOrder?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -325,6 +333,10 @@ export interface Case {
    * Up to 220 characters. Used on the listing card and as the search description.
    */
   summary: string;
+  /**
+   * Line under the title on the case page. Falls back to the summary.
+   */
+  heroSubtitle?: string | null;
   heroImage: number | Media;
   /**
    * E.g. "51x faster". Shown over the card image.
@@ -584,6 +596,8 @@ export interface TopicsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   description?: T;
+  showInFilter?: T;
+  filterOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -633,6 +647,7 @@ export interface CasesSelect<T extends boolean = true> {
   title?: T;
   client?: T;
   summary?: T;
+  heroSubtitle?: T;
   heroImage?: T;
   impact?: T;
   challenges?:

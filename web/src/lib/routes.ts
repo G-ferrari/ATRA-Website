@@ -9,6 +9,9 @@ import { DEFAULT_LOCALE, type Locale } from './locales'
  * Cresce a cada rota portada na Fase 3. */
 export const SECOES = {
   cases: { pt: 'cases-de-sucesso', en: 'success-stories' },
+  // A página ainda não existe (Fase 3); o legado já linka para cá e o link
+  // está quebrado lá também. Centralizado aqui para não nascer na mão.
+  contato: { pt: 'contato', en: 'contact' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type Secao = keyof typeof SECOES

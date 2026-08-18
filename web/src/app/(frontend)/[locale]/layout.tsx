@@ -48,10 +48,15 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
     /* `dark` no servidor: o legado inicia no tema escuro (App.tsx:2571) e a
      * regressão visual compara os dois. Aplicar por efeito no cliente causaria
      * flash de tema claro na primeira pintura. O alternador entra com a casca
-     * do site (MIG-057). */
+     * do site (MIG-034). */
     <html
       lang={locale === 'pt' ? 'pt-BR' : 'en'}
-      className={`${monaSans.variable} h-full antialiased dark`}
+      /* Sem `antialiased`: o legado não define `-webkit-font-smoothing`, e
+       * ligá-lo muda a rasterização de todo glifo do site. Era a diferença que
+       * sobrava na regressão visual depois de layout e fonte já baterem — as
+       * 60 caixas de texto da listagem coincidem ao décimo de pixel, e ainda
+       * assim as bordas divergiam. Porte fiel vale para isso também (D-15). */
+      className={`${monaSans.variable} h-full dark`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

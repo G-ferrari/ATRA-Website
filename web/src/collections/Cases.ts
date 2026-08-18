@@ -70,6 +70,24 @@ export const Cases: CollectionConfig = {
                 },
               },
             },
+            /* O legado usa dois textos distintos: um no card da listagem e outro
+             * na abertura da página do case (`legacy/src/pages/cases/*.tsx`,
+             * prop `description`, diferente da do array de listagem). Manter um
+             * campo só forçaria a mesma frase nos dois lugares. Vazio, cai no
+             * resumo — que é o comportamento razoável para quem só quer um. */
+            {
+              name: 'heroSubtitle',
+              type: 'textarea',
+              localized: true,
+              maxLength: 220,
+              label: { pt: 'Linha de abertura', en: 'Hero subtitle' },
+              admin: {
+                description: {
+                  pt: 'Frase sob o título na página do case. Em branco, usa o resumo.',
+                  en: 'Line under the title on the case page. Falls back to the summary.',
+                },
+              },
+            },
             {
               name: 'heroImage',
               type: 'upload',

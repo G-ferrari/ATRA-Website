@@ -24,6 +24,11 @@ export default defineConfig({
   snapshotPathTemplate: '{testDir}/gabarito/{arg}-{projectName}{ext}',
   outputDir: './e2e/.artifacts',
   fullyParallel: true,
+  /* 30s não bastava: `settle()` rola a página em passos de 80ms, e uma rota de
+   * 4.600px no mobile leva ~5s só nisso, com três workers disputando o mesmo
+   * servidor de dev. Timeouts apareciam como falha de paridade e mascaravam o
+   * número real. */
+  timeout: 90_000,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list']],

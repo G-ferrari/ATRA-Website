@@ -1,10 +1,13 @@
-import { ChevronLeft } from 'lucide-react'
+import { CheckCircle2, ChevronLeft, Cpu, Layers, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
+import { RichText } from '@/components/content/rich-text'
+import { AREAS_DE_ATUACAO } from '@/lib/areas'
+import { ContactCta, QuoteBlock } from '@/components/ui'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toCaseDetail } from '@/lib/mappers/case'
 import { getPayload } from '@/lib/payload'
@@ -21,7 +24,16 @@ const TEXTOS = {
     sobre: 'Sobre o',
     tecnologias: 'Tecnologias',
     parceiros: 'Parceiros',
+    conector: ' e ',
     infoProjeto: 'Informações do Projeto',
+    areas: 'Áreas de atuação',
+    ctaTitulo: 'O próximo case de sucesso',
+    ctaDestaque: 'pode ser o seu!',
+    ctaDescricao:
+      'Pronto para transformar seus dados em resultados? Entregamos soluções sob medida para cada negócio, garantindo resultados concretos e de alto impacto. Fale com a gente para começar sua história de sucesso.',
+    ctaTelefone: 'Telefone',
+    ctaEmail: 'E-mail',
+    ctaAcao: 'Fale com um especialista',
   },
   en: {
     voltar: 'Back to cases',
@@ -32,7 +44,16 @@ const TEXTOS = {
     sobre: 'About',
     tecnologias: 'Technologies',
     parceiros: 'Partners',
+    conector: ' and ',
     infoProjeto: 'Project details',
+    areas: 'Areas of expertise',
+    ctaTitulo: 'The next success story',
+    ctaDestaque: 'could be yours!',
+    ctaDescricao:
+      'Ready to turn your data into results? We deliver tailored solutions for every business, with concrete, high-impact outcomes. Talk to us to start your own success story.',
+    ctaTelefone: 'Phone',
+    ctaEmail: 'E-mail',
+    ctaAcao: 'Talk to a specialist',
   },
 } as const
 
@@ -118,7 +139,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               {caso.title}
             </h1>
-            <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl">{caso.summary}</p>
+            <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl">{caso.heroSubtitle}</p>
           </div>
         </div>
       </section>
@@ -143,17 +164,39 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
                 </>
               )}
 
+              {/* A ordem é a do legado: Solução entra entre Desafios e
+                * Resultados (CaseDetailBase.tsx:81). */}
+              {caso.solution ? (
+                <>
+                  <h2 className="text-3xl font-bold text-slate-900 mb-8">{t.solucao}</h2>
+                  <RichText data={caso.solution} />
+                </>
+              ) : null}
+
               {caso.results.length > 0 && (
                 <>
                   <h2 className="text-3xl font-bold text-slate-900 mb-8">{t.resultados}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                     {caso.results.map((r) => (
                       <div key={r} className="bg-slate-50 p-6 rounded-[6px]">
+                        <CheckCircle2 className="text-secondary mb-4" size={24} aria-hidden />
                         <p className="text-slate-900 font-medium">{r}</p>
                       </div>
                     ))}
                   </div>
                 </>
+              )}
+
+              {caso.testimonial && (
+                <QuoteBlock
+                  quote={caso.testimonial.quote}
+                  author={caso.testimonial.authorName ?? caso.testimonial.company}
+                  /* O legado grava cargo e empresa numa string só
+                    * ("… Manager — Banco ABC"); no CMS são dois campos. */
+                  role={[caso.testimonial.authorRole, caso.testimonial.company]
+                    .filter(Boolean)
+                    .join(' — ')}
+                />
               )}
 
               {caso.aboutClient && (
@@ -169,30 +212,62 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
             <aside className="lg:w-1/3">
               <div className="sticky top-32 space-y-6">
                 <div className="bg-slate-50 rounded-[6px] overflow-hidden">
-                  <div className="bg-primary p-6 text-white">
+                  <div className="bg-primary p-6 text-white flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-[6px] bg-white/20 flex items-center justify-center">
+                      <Layers size={18} className="text-white" aria-hidden />
+                    </div>
                     <h2 className="font-bold uppercase tracking-wider text-xs">{t.infoProjeto}</h2>
                   </div>
+
                   <div className="p-8 space-y-8">
                     {caso.partners.length > 0 && (
-                      <div>
-                        <div className="text-[10px] text-slate-400 uppercase font-black mb-1">{t.parceiros}</div>
-                        <div className="text-slate-900 font-bold text-sm">
-                          {caso.partners.map((p) => p.name).join(' e ')}
+                      <div className="flex gap-4">
+                        <div className="w-10 h-10 rounded-[6px] bg-white flex-shrink-0 flex items-center justify-center shadow-sm">
+                          <Users size={20} className="text-primary" aria-hidden />
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-slate-400 uppercase font-black mb-1">{t.parceiros}</div>
+                          <div className="text-slate-900 font-bold text-sm">
+                            {caso.partners.map((p) => p.name).join(t.conector)}
+                          </div>
                         </div>
                       </div>
                     )}
+
                     {caso.technologies.length > 0 && (
-                      <div>
-                        <div className="text-[10px] text-slate-400 uppercase font-black mb-3">{t.tecnologias}</div>
-                        <div className="flex flex-wrap gap-2">
-                          {caso.technologies.map((tec) => (
-                            <span key={tec} className="px-2.5 py-1 bg-white rounded-[6px] text-[10px] font-bold text-slate-600">
-                              {tec}
-                            </span>
-                          ))}
+                      <div className="flex gap-4">
+                        <div className="w-10 h-10 rounded-[6px] bg-white flex-shrink-0 flex items-center justify-center shadow-sm">
+                          <Cpu size={20} className="text-primary" aria-hidden />
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-slate-400 uppercase font-black mb-3">{t.tecnologias}</div>
+                          <div className="flex flex-wrap gap-2">
+                            {caso.technologies.map((tec) => (
+                              <span key={tec} className="px-2.5 py-1 bg-white rounded-[6px] text-[10px] font-bold text-slate-600">
+                                {tec}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     )}
+
+                    <div className="flex gap-4">
+                      <div className="w-10 h-10 rounded-[6px] bg-white flex-shrink-0 flex items-center justify-center shadow-sm">
+                        <Layers size={20} className="text-primary" aria-hidden />
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-slate-400 uppercase font-black mb-3">{t.areas}</div>
+                        <ul className="space-y-2">
+                          {AREAS_DE_ATUACAO[locale].map((area) => (
+                            <li key={area} className="text-[11px] font-bold text-slate-700 flex items-center gap-2">
+                              <div className="w-1 h-1 rounded-full bg-secondary" />
+                              {area}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -200,6 +275,16 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
           </div>
         </div>
       </section>
+
+      <ContactCta
+        title={t.ctaTitulo}
+        titleHighlight={t.ctaDestaque}
+        description={t.ctaDescricao}
+        phoneLabel={t.ctaTelefone}
+        emailLabel={t.ctaEmail}
+        actionLabel={t.ctaAcao}
+        href={hrefDe('contato', locale)}
+      />
     </main>
   )
 }
