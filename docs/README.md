@@ -59,7 +59,7 @@ chegaram corrompidas ao git, e no ar estão íntegras. Ver
 | [inventario-conteudo](01-descoberta/inventario-conteudo.md) | rascunho | Todo conteúdo hardcoded por natureza, o que é CMS vs. microcopy, e o estado real da tradução PT/EN |
 | [inventario-assets](01-descoberta/inventario-assets.md) | rascunho | Imagens, ícones e fontes: origem, integridade e destino proposto |
 | [debito-tecnico](01-descoberta/debito-tecnico.md) | rascunho | O que bloqueia, o que se resolve durante e o que fica para depois — inclui `/chat` e `/design-system` |
-| [decisoes](00-contexto/decisoes.md) | revisado | ADR das 15 decisões tomadas e as 11 pendentes, com o custo de não decidir cada uma |
+| [decisoes](00-contexto/decisoes.md) | revisado | ADR das 20 decisões tomadas e as 11 pendentes, com o custo de não decidir cada uma |
 
 ## Etapa 2 — Especificação
 
@@ -80,7 +80,7 @@ chegaram corrompidas ao git, e no ar estão íntegras. Ver
 | Documento | Status | O que cobre |
 |---|---|---|
 | [roadmap](03-plano/roadmap.md) | rascunho | 9 fases com critério de conclusão verificável, caminho crítico e riscos de cronograma |
-| [tasks](03-plano/tasks.md) | rascunho | 87 tasks atômicas (`MIG-001`…), uma por PR, ordenadas por dependência — ~229h de engenharia |
+| [tasks](03-plano/tasks.md) | rascunho | 93 tasks atômicas (`MIG-001`…), uma por PR, ordenadas por dependência — ~244h de engenharia |
 | [estrategia-de-testes](03-plano/estrategia-de-testes.md) | rascunho | Regressão visual em primeiro lugar, e por quê; pipeline de CI; o que não testar |
 | [definicao-de-pronto](03-plano/definicao-de-pronto.md) | rascunho | Checklist de PR e as 6 regras invioláveis |
 
@@ -99,13 +99,11 @@ chegaram corrompidas ao git, e no ar estão íntegras. Ver
 | Etapa | Situação |
 |---|---|
 | 5 — Memória do projeto (`CLAUDE.md`) | escrita ao final da Fase 2 (MIG-031), com o padrão real da fatia vertical — escrevê-la antes seria inventar convenção sem código para sustentá-la |
-| 4 — Infraestrutura (ambientes, Docker, deploy VPS, backup, runbook de cutover) | não iniciada |
-| 5 — Memória do projeto (`CLAUDE.md`, decisões) | não iniciada |
 
 ## Decisões
 
 Registro completo em [00-contexto/decisoes.md](00-contexto/decisoes.md) —
-16 decisões tomadas (D-01 a D-16) e 10 pendentes.
+20 decisões tomadas (D-01 a D-20) e 11 pendentes.
 
 | Decisão | Escolha |
 |---|---|
@@ -120,6 +118,7 @@ Registro completo em [00-contexto/decisoes.md](00-contexto/decisoes.md) —
 | ATRA AI | Rate limit por IP + teto de custo, com degradação graciosa |
 | Acessibilidade | axe no CI reportando, sem reprovar PR |
 | Porte fiel | Vale também para a decoração — preserva a regressão visual |
+| Papéis no CMS | `editor` e `admin`; quem edita publica, sem etapa de aprovação |
 | Tipografia | **Mona Sans** (SIL OFL 1.1) via `next/font/google` — mesma build do legado, para não quebrar a regressão visual |
 | Versionamento | Branches locais por ora (P-06) |
 | Idioma da documentação | PT-BR; código e commits em inglês |
