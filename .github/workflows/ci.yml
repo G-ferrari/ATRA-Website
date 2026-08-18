@@ -192,7 +192,11 @@ jobs:
           npx wait-on http://localhost:3000 --timeout 60000
         working-directory: web
 
-      # Só o smoke por enquanto. A comparação visual compara PNGs gravados na
+      # Só o smoke por enquanto — arquivo explícito, não filtro por título: as
+      # duas suítes que comparam contra o legado (`visual` e `paridade-ds`) têm
+      # nomes diferentes e um `--grep-invert` deixou a segunda passar batido.
+      #
+      # Elas comparam PNGs gravados na
       # máquina de quem desenvolve (macOS) e o runner é Linux: medido, o legado
       # renderiza texto 0,6% mais largo lá, porque busca Mona Sans no Google
       # Fonts em tempo de execução enquanto o app novo serve do próprio domínio
@@ -203,7 +207,7 @@ jobs:
       # suíte na imagem oficial do Playwright (`pnpm e2e:docker`), a mesma nos
       # dois lados. Até lá o gate visual roda local, e reprovar aqui todo push
       # só ensinaria a ignorar o CI.
-      - run: pnpm test:e2e --grep-invert "paridade com o legado"
+      - run: pnpm test:e2e e2e/smoke.spec.ts
         working-directory: web
 
       - uses: actions/upload-artifact@v4
