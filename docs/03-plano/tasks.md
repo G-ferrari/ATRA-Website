@@ -44,8 +44,8 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-021 | Collection `testimonials` | `collections/Testimonials.ts` | 020 | `photo` opcional (D-14); grava sem foto | 1h | **done** |
 | MIG-022 | Collection `partners` | `collections/Partners.ts` | 020 | 9 parceiros cadastráveis; `hasPage` condiciona `layout` | 1.5h | **done** |
 | MIG-023 | Collection `cases` + drafts | `collections/Cases.ts` | 021, 022 | Rascunho não aparece em `find` público; preview funciona | 2h | **done** |
-| MIG-024 | Componentes-base do DS (parte 1) | `components/ui/{StatusBadge,MetricChip,GlowCard}.tsx` | 007, 009 | Paridade visual com o legado; sem import de `payload-types` | 3h | todo |
-| MIG-025 | Componentes-base do DS (parte 2) | `components/ui/{TabFilter,SearchInput,EmptyState,ContentCard}.tsx` | 024 | `TabFilter` substitui as 5 reimplementações de chip | 3h | todo |
+| MIG-024 | Componentes-base do DS (parte 1) | `components/ui/{StatusBadge,MetricChip,GlowCard}.tsx` | 007, 009 | Paridade visual com o legado; sem import de `payload-types` | 3h | **done** |
+| MIG-025 | Componentes-base do DS (parte 2) | `components/ui/{TabFilter,SearchInput,EmptyState,ContentCard}.tsx` | 024 | `TabFilter` substitui as 5 reimplementações de chip | 3h | **done** |
 | MIG-026 | Mappers e tipos de apresentação | `lib/mappers/case.ts`, `types/content.ts` | 023 | `toCaseCard` tipado; relationship não populado morre no mapper | 1.5h | todo |
 | MIG-027 | Rota `/cases-de-sucesso` | `app/[locale]/cases-de-sucesso/page.tsx` | 025, 026 | 200 em PT e EN; busca e filtro por topic funcionando | 3h | todo |
 | MIG-028 | Rota `/cases-de-sucesso/[slug]` | `app/[locale]/cases-de-sucesso/[slug]/page.tsx` | 027 | 4 slugs respondem; `generateStaticParams` cobre os dois locales | 3h | todo |
