@@ -479,6 +479,11 @@ export interface Page {
          */
         highlight?: string | null;
         description?: string | null;
+        mediaMode?: ('none' | 'image' | 'marquee') | null;
+        /**
+         * With a single image only the first is used. In the marquee, all of them.
+         */
+        images?: (number | Media)[] | null;
         ctas?:
           | {
               label: string;
@@ -1190,6 +1195,8 @@ export interface PagesSelect<T extends boolean = true> {
               title?: T;
               highlight?: T;
               description?: T;
+              mediaMode?: T;
+              images?: T;
               ctas?:
                 | T
                 | {

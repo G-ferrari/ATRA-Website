@@ -7,21 +7,19 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'ebooks', caminho: '/ebooks' },
   { nome: 'webinars', caminho: '/webinars' },
   { nome: 'blog', caminho: '/blog' },
-  /* ⚠️ `/sobre` está FORA do gate de propósito — MIG-049 não fechou.
+  /* ⚠️ `/sobre` segue FORA do gate — MIG-049a reduziu o buraco, não fechou.
    *
-   * A rota existe e os 9 blocos renderizam, mas a página sai 1.760px mais curta
-   * que o legado no desktop. Medido seção a seção:
+   *              legado    antes   depois
+   *   mobile     7392px    4787px   5668px
+   *   tablet     5580px    3269px   3971px
+   *   desktop    4529px    2769px   3559px
    *
-   *   hero            623px → 224px   (falta a coluna de mídia: `mediaMode`)
-   *   quem-somos      604px → 160px   (falta a imagem ao lado)
-   *   nossos-valores  610px → 480px
-   *   nossas-solucoes 681px → 490px
-   *   porque-escolher 618px → 412px
-   *   CTA final       343px → 177px
+   * O que entrou: a coluna de mídia do herói (`mediaMode`), a imagem do
+   * `richTextSection` e a rampa de colunas por variante — no mobile a grade de
+   * cards altos fica em 1 coluna, não 2, e isso sozinho valia 962px.
    *
-   * As duas primeiras respondem por metade e têm causa conhecida. Reativar
-   * junto com a correção — deixar aqui reprovando tornaria a suíte vermelha e
-   * o gate deixaria de servir para as outras 7 rotas. */
+   * O que falta ainda não foi isolado bloco a bloco. Reativar junto com a
+   * correção; deixar reprovando tornaria o gate inútil para as outras 7. */
   // { nome: 'sobre', caminho: '/sobre' },
 ] as const
 

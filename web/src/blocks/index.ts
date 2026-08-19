@@ -31,6 +31,34 @@ export const PageHero: Block = {
     },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
     {
+      /* A coluna direita do herói. `marquee` é a vitrine vertical de fotos de
+       * `About.tsx:199`; `image` é uma imagem só; `none` deixa o texto ocupar a
+       * largura toda, que é o caso de /glossario e /carreiras. */
+      name: 'mediaMode',
+      type: 'select',
+      defaultValue: 'none',
+      options: [
+        { value: 'none', label: { pt: 'Sem mídia', en: 'No media' } },
+        { value: 'image', label: { pt: 'Uma imagem', en: 'Single image' } },
+        { value: 'marquee', label: { pt: 'Fotos em rolagem', en: 'Scrolling photos' } },
+      ],
+      label: { pt: 'Mídia ao lado', en: 'Side media' },
+    },
+    {
+      name: 'images',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      label: { pt: 'Imagens', en: 'Images' },
+      admin: {
+        condition: (_, irmaos) => irmaos?.mediaMode !== 'none',
+        description: {
+          pt: 'Em “uma imagem”, só a primeira é usada. Na rolagem, todas.',
+          en: 'With a single image only the first is used. In the marquee, all of them.',
+        },
+      },
+    },
+    {
       name: 'ctas',
       type: 'array',
       maxRows: 2,

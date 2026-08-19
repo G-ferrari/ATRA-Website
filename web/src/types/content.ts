@@ -134,6 +134,8 @@ export type BlocoPageHero = Base & {
   highlight: string | null
   description: string | null
   ctas: { label: string; href: string }[]
+  mediaMode: 'none' | 'image' | 'marquee'
+  images: Image[]
 }
 
 export type BlocoRichTextSection = Base & {

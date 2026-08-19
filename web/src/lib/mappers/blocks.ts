@@ -74,6 +74,10 @@ export function toBlocos(
           highlight: vazio(b.highlight),
           description: vazio(b.description),
           ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
+          mediaMode: b.mediaMode ?? 'none',
+          images: (b.images ?? [])
+            .map((i) => toImageOpcional(i as never, 'pageHero.images'))
+            .filter((i): i is NonNullable<typeof i> => i !== null),
         })
         break
 

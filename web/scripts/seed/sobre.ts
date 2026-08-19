@@ -10,6 +10,11 @@
  *
  * ⚠️ Os 4 parceiros da vitrine usam os SVGs locais de `legacy/public/imgs/`. No
  * legado são hotlinks do WordPress; a migração de mídia é MIG-071.
+ *
+ * As fotos do herói são as mesmas de `legacy/public/fotos/` (MIG-049a). A do
+ * bloco "quem somos" é uma delas: no legado ali há um hotlink do Unsplash —
+ * foto de banco que não é da ATRA —, e usar uma foto real da empresa é melhor
+ * conteúdo pelo mesmo custo.
  */
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -33,6 +38,14 @@ const PARCEIROS_DA_VITRINE = [
   { slug: 'google-cloud', name: 'Google Cloud', arquivo: 'public/imgs/logo_google_cloud.svg' },
   { slug: 'databricks', name: 'Databricks', arquivo: 'public/imgs/logo_databricks.svg' },
   { slug: 'atlan', name: 'Atlan', arquivo: 'public/imgs/logo_atlan.svg' },
+]
+
+const FOTOS = [
+  'public/fotos/2018_Evento global parceiro Informatica Las Vegas.jpg',
+  'public/fotos/2024_ATRA Summit_Dinamica.jpg',
+  'public/fotos/2024_Evento corporativo com parceiro Denodo.jpg',
+  'public/fotos/2024_Evento parceiro Google.jpeg',
+  'public/fotos/2025_ATRA Summit.JPG',
 ]
 
 const SOLUCOES = [
@@ -70,6 +83,35 @@ await payload.updateGlobal({
   locale: 'pt',
   data: { metrics: METRICAS, foundedYear: 2011 },
 })
+
+async function upsertMidia(arquivo: string, alt: string) {
+  const nome = path.basename(arquivo)
+  const chave = nome.replace(/\.[^.]+$/, '')
+  const { docs } = await payload.find({
+    collection: 'media',
+    where: { filename: { contains: chave } },
+    limit: 1,
+    depth: 0,
+  })
+  if (docs[0]) return docs[0]
+  const ext = path.extname(nome).toLowerCase()
+  return payload.create({
+    collection: 'media',
+    data: { alt },
+    file: {
+      data: readFileSync(path.join(LEGADO, arquivo)),
+      mimetype: ext === '.png' ? 'image/png' : ext === '.svg' ? 'image/svg+xml' : 'image/jpeg',
+      name: nome,
+      size: 0,
+    },
+    locale: 'pt',
+  })
+}
+
+console.log('→ fotos da ATRA')
+const fotos: number[] = []
+for (const f of FOTOS) fotos.push((await upsertMidia(f, 'Equipe e eventos da ATRA')).id)
+console.log(`  ${fotos.length} fotos`)
 
 console.log('→ parceiros da vitrine')
 const ids: number[] = []
@@ -112,6 +154,8 @@ const layout = [
       { label: 'Conhecer Nossa História', href: '#quem-somos' },
       { label: 'Trabalhe Conosco', href: '/carreiras' },
     ],
+    mediaMode: 'marquee' as const,
+    images: fotos,
   },
   { blockType: 'statsGrid' as const, source: 'siteSettings' as const },
   { blockType: 'stickyPageNav' as const },
@@ -124,6 +168,7 @@ const layout = [
       'Somos uma empresa de TI inovadora, responsável por serviços e soluções de Integração, Migração, Governança, Engenharia e Qualidade de Dados.',
       'Nossa marca é apresentar soluções em dados, é observação e ação sobre cada ponto de melhoria identificado.',
     ),
+    image: fotos[1],
     imagePosition: 'right' as const,
   },
   {

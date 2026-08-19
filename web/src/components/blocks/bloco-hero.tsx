@@ -1,4 +1,5 @@
 import { Sparkles } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { MetricChip, StatusBadge, TechCornerBraces } from '@/components/ui'
@@ -20,7 +21,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
           <TechCornerBraces color="orange" position="bottom-right" size={16} />
 
           <div className="grid lg:grid-cols-12 gap-8 items-center relative z-10">
-            <div className="lg:col-span-7">
+            <div className={bloco.mediaMode === 'none' ? 'lg:col-span-12' : 'lg:col-span-7'}>
               {(bloco.badge || bloco.chip) && (
                 <div className="flex items-center gap-2 mb-4">
                   {bloco.badge && (
@@ -64,6 +65,52 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                 </div>
               )}
             </div>
+
+            {bloco.mediaMode !== 'none' && bloco.images.length > 0 && (
+              /* `hidden lg:block` é do legado (`About.tsx:204`): abaixo de lg a
+                 coluna some e o texto ocupa a largura toda. */
+              <div className="lg:col-span-5 relative hidden lg:block">
+                {bloco.mediaMode === 'marquee' ? (
+                  <div
+                    className="w-full h-[400px] rounded-[6px] overflow-hidden relative bg-black/40 border border-white/10 shadow-2xl"
+                    style={{
+                      maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)',
+                      WebkitMaskImage:
+                        'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)',
+                    }}
+                  >
+                    {/* A lista entra duplicada: é o que faz a rolagem emendar
+                        sem salto, já que a animação vai de 0 a -50%. */}
+                    <div className="absolute inset-x-0 w-full animate-marquee-vertical hover:[animation-play-state:paused] flex flex-col gap-3 py-3 px-3">
+                      {[...bloco.images, ...bloco.images].map((img, i) => (
+                        <div
+                          key={`${img.url}-${i}`}
+                          className="relative w-full aspect-[16/10] rounded-[6px] overflow-hidden shrink-0 shadow-sm border border-white/5"
+                        >
+                          <Image
+                            src={img.url}
+                            alt={img.alt}
+                            fill
+                            sizes="(min-width: 1024px) 33vw, 0px"
+                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full aspect-[4/3] rounded-[6px] overflow-hidden relative border border-white/10 shadow-2xl">
+                    <Image
+                      src={bloco.images[0].url}
+                      alt={bloco.images[0].alt}
+                      fill
+                      sizes="(min-width: 1024px) 33vw, 0px"
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

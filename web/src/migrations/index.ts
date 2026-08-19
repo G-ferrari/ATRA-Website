@@ -8,6 +8,7 @@ import * as migration_20260818_211820_add_webinars from './20260818_211820_add_w
 import * as migration_20260818_214047_add_posts from './20260818_214047_add_posts';
 import * as migration_20260819_112748_add_pages_and_blocks from './20260819_112748_add_pages_and_blocks';
 import * as migration_20260819_112945_add_icon_card_variant from './20260819_112945_add_icon_card_variant';
+import * as migration_20260819_113941_add_hero_media from './20260819_113941_add_hero_media';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20260819_112945_add_icon_card_variant.up,
     down: migration_20260819_112945_add_icon_card_variant.down,
-    name: '20260819_112945_add_icon_card_variant'
+    name: '20260819_112945_add_icon_card_variant',
+  },
+  {
+    up: migration_20260819_113941_add_hero_media.up,
+    down: migration_20260819_113941_add_hero_media.down,
+    name: '20260819_113941_add_hero_media'
   },
 ];

@@ -10,10 +10,21 @@ import { iconePorNome } from './icones'
  * esquerda. **Os dois só têm título** — a forma é escolha do bloco, não
  * consequência de haver descrição, como assumi em MIG-047. */
 
-const COLUNAS: Record<2 | 3 | 4, string> = {
-  2: 'grid-cols-1 sm:grid-cols-2',
-  3: 'grid-cols-2 sm:grid-cols-3',
-  4: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
+/* A rampa responsiva difere por variante, e não é detalhe: no mobile a grade
+ * compacta fica em 2 colunas (`About.tsx:403`) e a de cards altos em **1**
+ * (`:434`). Aplicar a mesma rampa às duas encurtava `porque-escolher` em 962px
+ * no mobile — quase metade do buraco da página. */
+const COLUNAS: Record<'compact' | 'card', Record<2 | 3 | 4, string>> = {
+  compact: {
+    2: 'grid-cols-2',
+    3: 'grid-cols-2 sm:grid-cols-3',
+    4: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
+  },
+  card: {
+    2: 'md:grid-cols-2',
+    3: 'md:grid-cols-2 lg:grid-cols-3',
+    4: 'md:grid-cols-2 lg:grid-cols-4',
+  },
 }
 
 export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
@@ -43,7 +54,7 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
           </div>
         )}
 
-        <div className={cn('grid gap-4 md:gap-6', COLUNAS[bloco.columns])}>
+        <div className={cn('grid', compacto ? 'gap-4' : 'gap-6', COLUNAS[bloco.variant][bloco.columns])}>
           {bloco.items.map((item) => {
             const Icone = iconePorNome(item.icon)
 

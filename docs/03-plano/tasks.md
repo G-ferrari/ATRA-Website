@@ -89,7 +89,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-047 | Blocos: `pageHero`, `richTextSection`, `iconCardGrid`, `ctaBanner` + collection `pages` | — | 4h | **done** |
 | MIG-048 | Blocos: `statsGrid`, `sealsBanner`, `valueCards`, `stickyPageNav` + global `site-settings` | 047 | 4h | **done** |
 | MIG-049 | `/sobre` (a collection `pages` veio em 047) | 048 | 4h | **wip** — rota e seed prontos; 1.760px curtos no desktop, fora do gate |
-| MIG-049a | `pageHero.mediaMode` (coluna de mídia) + imagem no `richTextSection` | 049 | 3h | todo |
+| MIG-049a | `pageHero.mediaMode` + imagem no `richTextSection` + rampa de colunas por variante | 049 | 3h | **parcial** — buraco caiu de 1.760px para 970px no desktop; resta isolar bloco a bloco |
 | MIG-050 | `/carreiras` + collection `jobs` | 048 | 4h |
 | MIG-051 | `/carreiras/[slug]` (vaga) | 050 | 2h |
 | MIG-052 | `/consultores` + `specialist-roles` | 047 | 4h |
