@@ -31,6 +31,20 @@ test.describe('app novo', () => {
     expect(r.status()).toBe(404)
   })
 
+  /* A 404 precisa **parecer** o site: sem a rota curinga ela cairia no
+   * `not-found` da raiz, fora do grupo (frontend) — sem fonte, sem tema e sem
+   * casca. O rodapé é o sinal mais barato de que o layout veio junto. */
+  test('a 404 vem com a casca do site nos dois idiomas', async ({ page }) => {
+    for (const [url, marca] of [
+      [`${NEXT_URL}/rota-que-nao-existe`, 'Esta página não existe'],
+      [`${NEXT_URL}/en/does-not-exist`, 'This page does not exist'],
+    ] as const) {
+      await page.goto(url)
+      await expect(page.getByRole('heading', { name: marca })).toBeVisible()
+      await expect(page.locator('footer')).toBeVisible()
+    }
+  })
+
   test('/pt redireciona para a raiz (sem conteúdo duplicado)', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/pt/`, { maxRedirects: 0 })
     expect(r.status()).toBe(308)

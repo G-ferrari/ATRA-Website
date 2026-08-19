@@ -102,7 +102,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-059 | **Rota `/`** | 058 | 5h |
 | MIG-060 | `/insights` (agrega 4 collections) | 044, 045, 046 | 4h |
 | MIG-061 | `/chat` + `/api/chat` com rate limit (D-12) | 031 | 5h |
-| MIG-062 | 404 + `error.tsx` | 031 | 1.5h |
+| MIG-062 | 404 + `error.tsx` | 031 | 1.5h | **done** |
 
 ## Fase 4a — Seed do protótipo
 
