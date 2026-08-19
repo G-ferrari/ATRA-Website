@@ -8,6 +8,9 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'webinars', caminho: '/webinars' },
   { nome: 'blog', caminho: '/blog' },
   { nome: 'sobre', caminho: '/sobre' },
+  /* `/solucoes` (o índice) fica **fora**: D-09 mudou o comportamento da rota e
+     não há gabarito — o legado serve ali a página de IA. É esta que compara. */
+  { nome: 'solucao-detalhe', caminho: '/solucoes/inteligencia-artificial' },
 ] as const
 
 /* Imagens entram mascaradas na comparação.

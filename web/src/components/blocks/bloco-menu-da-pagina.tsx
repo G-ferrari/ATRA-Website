@@ -48,29 +48,60 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
 
   if (bloco.items.length === 0) return null
 
+  const solucao = bloco.variant === 'solution'
+
   return (
     <div
       className={cn(
-        'sticky z-30 w-full flex flex-col items-center px-3 sm:px-4 mb-8 sm:mb-10 pointer-events-none transition-all duration-300',
-        grudado ? 'top-[58px] sm:top-[66px] md:top-[74px]' : 'top-[70px] sm:top-[80px] md:top-[88px]',
+        'sticky w-full flex flex-col items-center pointer-events-none transition-all duration-300',
+        solucao
+          ? cn('z-50 px-4', grudado ? 'top-[62px] md:top-[74px]' : 'top-[76px] md:top-[88px]')
+          : cn(
+              'z-30 px-3 sm:px-4 mb-8 sm:mb-10',
+              grudado ? 'top-[58px] sm:top-[66px] md:top-[74px]' : 'top-[70px] sm:top-[80px] md:top-[88px]',
+            ),
       )}
     >
       <nav
         className={cn(
-          'pointer-events-auto w-full max-w-7xl mx-auto flex items-center py-2.5 sm:py-3.5 md:py-4.5 min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 sm:px-6 md:px-8 overflow-x-auto no-scrollbar justify-start md:justify-center transition-all duration-300 shadow-xl bg-surface-2 border border-slate-200/60 dark:border-white/5',
+          'pointer-events-auto w-full max-w-7xl mx-auto flex items-center overflow-x-auto no-scrollbar transition-all duration-300 shadow-xl bg-surface-2',
+          solucao
+            ? 'py-4 md:py-4.5 min-h-[52px] md:min-h-[56px] px-6 md:px-8 justify-center'
+            : 'py-2.5 sm:py-3.5 md:py-4.5 min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 sm:px-6 md:px-8 justify-start md:justify-center border border-slate-200/60 dark:border-white/5',
           grudado ? 'rounded-b-[6px] rounded-t-none' : 'rounded-[6px] mt-2',
         )}
       >
-        <div className="flex gap-4 sm:gap-6 md:gap-8 whitespace-nowrap items-center shrink-0">
+        {/* ⚠️ Sem `whitespace-nowrap` nem `shrink-0` na variante de solução, de
+            propósito. O legado não os tem (`SolutionAI.tsx:191`), e no mobile
+            os quatro rótulos se espremem em 311px e quebram em várias linhas —
+            a faixa fica 96px alta em vez de 52px. É defeito do legado, e o
+            aceite visual é contra ele (D-15). A variante institucional mantém
+            os dois: lá o legado também tem. */}
+        <div
+          className={cn(
+            'flex items-center',
+            solucao ? 'gap-6 md:gap-8' : 'gap-4 sm:gap-6 md:gap-8 whitespace-nowrap shrink-0',
+          )}
+        >
           {bloco.items.map((item) => (
             <a
               key={item.anchor}
               href={`#${item.anchor}`}
               aria-current={ativo === item.anchor ? 'true' : undefined}
+              /* ⚠️ O link também difere entre os dois menus do legado. O
+                 institucional (`About.tsx:277`) tem `px-1.5 shrink-0` e
+                 sublinhado a 8px; o de solução (`SolutionAI.tsx:205`) não tem
+                 nenhum dos dois e sublinha a 10px. O `shrink-0` é o que pesa:
+                 sem ele os 4 rótulos se espremem e quebram em linha no mobile,
+                 e a faixa passa de 64px para 96px. */
               className={cn(
-                'font-medium transition-all duration-200 text-xs sm:text-sm cursor-pointer py-1 px-1.5 shrink-0',
+                'font-medium transition-all duration-200 text-xs sm:text-sm cursor-pointer py-1',
+                !solucao && 'px-1.5 shrink-0',
                 ativo === item.anchor
-                  ? 'text-primary font-semibold underline underline-offset-[8px] decoration-2'
+                  ? cn(
+                      'text-primary font-semibold underline decoration-2',
+                      solucao ? 'underline-offset-[10px]' : 'underline-offset-[8px]',
+                    )
                   : 'text-text-muted hover:text-text-main',
               )}
             >

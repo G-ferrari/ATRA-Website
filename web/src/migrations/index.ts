@@ -20,6 +20,8 @@ import * as migration_20260819_151003_add_specialist_roles from './20260819_1510
 import * as migration_20260819_151217_add_role_gradient from './20260819_151217_add_role_gradient';
 import * as migration_20260819_155648_add_partner_layout from './20260819_155648_add_partner_layout';
 import * as migration_20260819_171908_add_solutions from './20260819_171908_add_solutions';
+import * as migration_20260819_194123_solution_page_blocks from './20260819_194123_solution_page_blocks';
+import * as migration_20260819_213812_bento_footer_icon from './20260819_213812_bento_footer_icon';
 
 export const migrations = [
   {
@@ -130,6 +132,16 @@ export const migrations = [
   {
     up: migration_20260819_171908_add_solutions.up,
     down: migration_20260819_171908_add_solutions.down,
-    name: '20260819_171908_add_solutions'
+    name: '20260819_171908_add_solutions',
+  },
+  {
+    up: migration_20260819_194123_solution_page_blocks.up,
+    down: migration_20260819_194123_solution_page_blocks.down,
+    name: '20260819_194123_solution_page_blocks',
+  },
+  {
+    up: migration_20260819_213812_bento_footer_icon.up,
+    down: migration_20260819_213812_bento_footer_icon.down,
+    name: '20260819_213812_bento_footer_icon'
   },
 ];

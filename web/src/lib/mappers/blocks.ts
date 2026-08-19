@@ -1,5 +1,13 @@
 import type { Page, SiteSetting } from '@/payload-types'
-import type { Bloco, MetricaInstitucional, PartnerBadge, Selo, TemaDoBloco, Vaga } from '@/types/content'
+import type {
+  Acento,
+  Bloco,
+  MetricaInstitucional,
+  PartnerBadge,
+  Selo,
+  TemaDoBloco,
+  Vaga,
+} from '@/types/content'
 
 import { isPopulated, toImage, toImageOpcional, toTextos } from './shared'
 
@@ -31,6 +39,30 @@ function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
     slug: valor.slug,
     logo: toImageOpcional(valor.logo as never, 'partnerShowcase.partners.logo'),
     logoScale: (valor.logoScale as 'sm' | 'md' | 'lg') ?? 'md',
+  }
+}
+
+/* Grupo de CTA do Payload sempre existe, com os campos vazios. Só vira botão
+ * quando os dois lados estão preenchidos — link sem destino é pior que
+ * nenhum botão. */
+function toCta(
+  g: { label?: string | null; href?: string | null } | null | undefined,
+): { label: string; href: string } | null {
+  return g?.label && g?.href ? { label: g.label, href: g.href } : null
+}
+
+/** Cabeçalho com pílula de seção, comum aos quatro blocos de solução. */
+function cabecalho(b: {
+  eyebrow?: string | null
+  eyebrowIcon?: string | null
+  title: string
+  description?: string | null
+}) {
+  return {
+    eyebrow: vazio(b.eyebrow),
+    eyebrowIcon: vazio(b.eyebrowIcon),
+    title: b.title,
+    description: vazio(b.description),
   }
 }
 
@@ -84,6 +116,14 @@ export function toBlocos(
           highlight: (b.highlight ?? []).filter((h): h is string => Boolean(h?.trim())),
           description: vazio(b.description),
           ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
+          ctaVariant: b.ctaVariant ?? 'primary',
+          descriptionWidth: b.descriptionWidth ?? 'narrow',
+          metrics: (b.metrics ?? []).map((m) => ({
+            value: m.value,
+            suffix: m.suffix ?? '',
+            label: m.label,
+            color: m.color ?? 'primary',
+          })),
           mediaMode: b.mediaMode ?? 'none',
           images: (b.images ?? [])
             .map((i) => toImageOpcional(i as never, 'pageHero.images'))
@@ -128,8 +168,15 @@ export function toBlocos(
           title: b.title,
           highlight: vazio(b.highlight),
           description: vazio(b.description),
-          cta:
-            b.cta?.label && b.cta?.href ? { label: b.cta.label, href: b.cta.href } : null,
+          cta: toCta(b.cta),
+          secondaryCta:
+            b.secondaryCta?.label && b.secondaryCta?.href
+              ? {
+                  label: b.secondaryCta.label,
+                  href: b.secondaryCta.href,
+                  caption: vazio(b.secondaryCta.caption),
+                }
+              : null,
           variant: b.variant ?? 'primary',
         })
         break
@@ -222,7 +269,85 @@ export function toBlocos(
 
       case 'stickyPageNav':
         // Itens preenchidos abaixo, quando a lista inteira já é conhecida.
-        blocos.push({ ...base(b), tipo: 'stickyPageNav', items: [] })
+        blocos.push({ ...base(b), tipo: 'stickyPageNav', variant: b.variant ?? 'institutional', items: [] })
+        break
+
+      case 'methodCards':
+        blocos.push({
+          ...base(b),
+          ...cabecalho(b),
+          tipo: 'methodCards',
+          headerCta: toCta(b.headerCta),
+          items: (b.items ?? []).map((i) => ({
+            icon: i.icon,
+            accent: (i.accent ?? 'primary') as Acento,
+            badge: vazio(i.badge),
+            title: i.title,
+            description: i.description,
+            bullets: toTextos(i.bullets, 'text'),
+          })),
+        })
+        break
+
+      case 'bentoGrid':
+        blocos.push({
+          ...base(b),
+          ...cabecalho(b),
+          tipo: 'bentoGrid',
+          items: (b.items ?? []).map((i) => ({
+            span: i.span,
+            size: i.size ?? 'supporting',
+            accent: (i.accent ?? 'primary') as Acento,
+            icon: vazio(i.icon),
+            badge: vazio(i.badge),
+            chip: vazio(i.chip),
+            title: i.title,
+            description: i.description,
+            metrics: (i.metrics ?? []).map((m) => ({
+              value: m.value,
+              label: m.label,
+              color: m.color ?? 'primary',
+            })),
+            tags: toTextos(i.tags, 'name'),
+            bullets: toTextos(i.bullets, 'text'),
+            footer: vazio(i.footer),
+            footerIcon: vazio(i.footerIcon),
+          })),
+        })
+        break
+
+      case 'audienceSplit':
+        blocos.push({
+          ...base(b),
+          ...cabecalho(b),
+          tipo: 'audienceSplit',
+          cta: toCta(b.cta),
+          items: (b.items ?? []).map((i) => ({
+            icon: i.icon,
+            accent: (i.accent ?? 'primary') as Acento,
+            title: i.title,
+            description: i.description,
+          })),
+        })
+        break
+
+      case 'accordionSteps':
+        blocos.push({
+          ...base(b),
+          ...cabecalho(b),
+          tipo: 'accordionSteps',
+          image: toImageOpcional(b.image, 'accordionSteps.image'),
+          /* Selo sem título é grupo vazio, não selo: o Payload cria o grupo
+           * mesmo quando ninguém preencheu nada dentro dele. */
+          imageBadge: b.imageBadge?.title
+            ? {
+                icon: vazio(b.imageBadge.icon),
+                title: b.imageBadge.title,
+                subtitle: vazio(b.imageBadge.subtitle),
+              }
+            : null,
+          steps: (b.steps ?? []).map((e) => ({ title: e.title, description: e.description })),
+        })
         break
 
       default:
@@ -249,10 +374,23 @@ export function comVagas(blocos: Bloco[], vagas: Vaga[]): Bloco[] {
   return blocos
 }
 
-/** Itens do menu lateral: os blocos que preencheram `anchor` (blocos.md, regra 2). */
+/**
+ * Itens do menu lateral: os blocos que preencheram `anchor` (blocos.md, regra 2).
+ *
+ * ⚠️ **`ctaBanner` fica de fora.** A regra 2 confunde duas coisas que o legado
+ * separa: ter id e estar no índice. A faixa que fecha a página de solução tem
+ * `id="contato"` porque três botões apontam para `#contato`
+ * (`SolutionAI.tsx:150`, `:244`, `:643`), mas o menu lista **quatro** itens e
+ * ela não é um deles — é destino de rolagem, não seção do sumário.
+ *
+ * Sem esta exclusão o menu ganhava um quinto item com o título inteiro da
+ * chamada ("Comece a revolução da IA na sua empresa"), e a faixa passava de
+ * 64px para 144px no mobile. Nenhuma outra página é afetada: /sobre e
+ * /carreiras ancoram seções de conteúdo, nunca a faixa de chamada.
+ */
 export function ancorasDe(blocos: Bloco[]): { anchor: string; label: string }[] {
   return blocos
-    .filter((b) => b.anchor)
+    .filter((b) => b.anchor && b.tipo !== 'ctaBanner')
     .map((b) => ({
       anchor: b.anchor as string,
       label: b.navLabel ?? ('title' in b && b.title ? b.title : (b.anchor as string)),

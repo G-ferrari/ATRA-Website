@@ -203,12 +203,22 @@ test.describe('app novo', () => {
       await expect(page.getByRole('heading', { level: 3 })).toHaveCount(6)
     })
 
-    /* Enquanto `hasPage` for falso a solução não é link. Sem isto o índice
-       ofereceria 5 destinos que respondem 404 — o buraco que MIG-050 abriu e
-       MIG-051 teve que fechar. MIG-056 liga a de IA e este teste muda junto. */
-    test('solução sem página não vira link', async ({ page }) => {
+    /* Só quem tem `hasPage` vira link. Depois de MIG-056 é uma das seis — a de
+       IA. Sem esta asserção o índice poderia voltar a oferecer 5 destinos que
+       respondem 404, que é o buraco que MIG-050 abriu e MIG-051 teve que fechar. */
+    test('só a solução com página vira link, e ela responde', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
-      await expect(page.locator('a[href*="/solucoes/"]')).toHaveCount(0)
+      const links = page.locator('a[href*="/solucoes/"]')
+      await expect(links).toHaveCount(1)
+      const href = await links.first().getAttribute('href')
+      expect(href).toBe('/solucoes/inteligencia-artificial')
+      expect((await request.get(`${NEXT_URL}${href}`)).status()).toBe(200)
+    })
+
+    /* Solução sem `hasPage` não ganha URL: o slug existe na collection, mas a
+       página não. Sem o filtro na consulta as 5 responderiam 200 vazias. */
+    test('solução sem página responde 404', async ({ request }) => {
+      expect((await request.get(`${NEXT_URL}/solucoes/cultura-de-dados`)).status()).toBe(404)
     })
 
     test('o inglês responde no slug traduzido e o canônico redireciona', async ({ request }) => {

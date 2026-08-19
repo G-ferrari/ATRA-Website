@@ -339,6 +339,17 @@ export interface Partner {
                   id?: string | null;
                 }[]
               | null;
+            ctaVariant?: ('primary' | 'secondary') | null;
+            descriptionWidth?: ('narrow' | 'wide') | null;
+            metrics?:
+              | {
+                  value: number;
+                  suffix?: string | null;
+                  label: string;
+                  color?: ('primary' | 'secondary' | 'emerald') | null;
+                  id?: string | null;
+                }[]
+              | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -354,6 +365,7 @@ export interface Partner {
             blockType: 'pageHero';
           }
         | {
+            variant?: ('institutional' | 'solution') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -453,7 +465,14 @@ export interface Partner {
                 | 'lock'
                 | 'workflow'
                 | 'award'
-                | 'app';
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right';
               title: string;
               /**
                * Left empty, the card renders compact and centred.
@@ -492,7 +511,14 @@ export interface Partner {
                 | 'lock'
                 | 'workflow'
                 | 'award'
-                | 'app';
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right';
               glowColor?: ('blue' | 'orange') | null;
               title: string;
               description: string;
@@ -576,6 +602,368 @@ export interface Partner {
             blockType: 'processSteps';
           }
         | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            headerCta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Three in the prototype, side by side.
+             */
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right';
+              accent?: ('primary' | 'secondary') | null;
+              /**
+               * E.g. 01 / DIAGNOSIS.
+               */
+              badge?: string | null;
+              title: string;
+              description: string;
+              bullets?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'methodCards';
+          }
+        | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            items: {
+              span: '5' | '6' | '7' | '12';
+              size?: ('featured-wide' | 'featured' | 'supporting') | null;
+              accent?: ('primary' | 'secondary') | null;
+              icon?:
+                | (
+                    | 'sparkles'
+                    | 'target'
+                    | 'shield'
+                    | 'rocket'
+                    | 'users'
+                    | 'database'
+                    | 'cloud'
+                    | 'brain'
+                    | 'chart'
+                    | 'lock'
+                    | 'workflow'
+                    | 'award'
+                    | 'app'
+                    | 'search'
+                    | 'settings'
+                    | 'zap'
+                    | 'cpu'
+                    | 'shield-check'
+                    | 'trending-up'
+                    | 'arrow-up-right'
+                  )
+                | null;
+              badge?: string | null;
+              /**
+               * E.g. +70% automation. Rendered in green.
+               */
+              chip?: string | null;
+              title: string;
+              description: string;
+              metrics?:
+                | {
+                    value: string;
+                    label: string;
+                    color?: ('primary' | 'secondary' | 'emerald') | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              tags?:
+                | {
+                    name: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              bullets?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              footer?: string | null;
+              footerIcon?:
+                | (
+                    | 'sparkles'
+                    | 'target'
+                    | 'shield'
+                    | 'rocket'
+                    | 'users'
+                    | 'database'
+                    | 'cloud'
+                    | 'brain'
+                    | 'chart'
+                    | 'lock'
+                    | 'workflow'
+                    | 'award'
+                    | 'app'
+                    | 'search'
+                    | 'settings'
+                    | 'zap'
+                    | 'cpu'
+                    | 'shield-check'
+                    | 'trending-up'
+                    | 'arrow-up-right'
+                  )
+                | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'bentoGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right';
+              accent?: ('primary' | 'secondary') | null;
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'audienceSplit';
+          }
+        | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            image?: (number | null) | Media;
+            imageBadge?: {
+              icon?:
+                | (
+                    | 'sparkles'
+                    | 'target'
+                    | 'shield'
+                    | 'rocket'
+                    | 'users'
+                    | 'database'
+                    | 'cloud'
+                    | 'brain'
+                    | 'chart'
+                    | 'lock'
+                    | 'workflow'
+                    | 'award'
+                    | 'app'
+                    | 'search'
+                    | 'settings'
+                    | 'zap'
+                    | 'cpu'
+                    | 'shield-check'
+                    | 'trending-up'
+                    | 'arrow-up-right'
+                  )
+                | null;
+              title?: string | null;
+              subtitle?: string | null;
+            };
+            /**
+             * Numbering follows the order. The first one starts expanded.
+             */
+            steps: {
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'accordionSteps';
+          }
+        | {
             title: string;
             subtitle?: string | null;
             /**
@@ -623,7 +1011,12 @@ export interface Partner {
               label?: string | null;
               href?: string | null;
             };
-            variant?: ('primary' | 'subtle') | null;
+            secondaryCta?: {
+              label?: string | null;
+              href?: string | null;
+              caption?: string | null;
+            };
+            variant?: ('primary' | 'subtle' | 'dark') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -880,6 +1273,17 @@ export interface Page {
               id?: string | null;
             }[]
           | null;
+        ctaVariant?: ('primary' | 'secondary') | null;
+        descriptionWidth?: ('narrow' | 'wide') | null;
+        metrics?:
+          | {
+              value: number;
+              suffix?: string | null;
+              label: string;
+              color?: ('primary' | 'secondary' | 'emerald') | null;
+              id?: string | null;
+            }[]
+          | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -895,6 +1299,7 @@ export interface Page {
         blockType: 'pageHero';
       }
     | {
+        variant?: ('institutional' | 'solution') | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -994,7 +1399,14 @@ export interface Page {
             | 'lock'
             | 'workflow'
             | 'award'
-            | 'app';
+            | 'app'
+            | 'search'
+            | 'settings'
+            | 'zap'
+            | 'cpu'
+            | 'shield-check'
+            | 'trending-up'
+            | 'arrow-up-right';
           title: string;
           /**
            * Left empty, the card renders compact and centred.
@@ -1033,7 +1445,14 @@ export interface Page {
             | 'lock'
             | 'workflow'
             | 'award'
-            | 'app';
+            | 'app'
+            | 'search'
+            | 'settings'
+            | 'zap'
+            | 'cpu'
+            | 'shield-check'
+            | 'trending-up'
+            | 'arrow-up-right';
           glowColor?: ('blue' | 'orange') | null;
           title: string;
           description: string;
@@ -1117,6 +1536,368 @@ export interface Page {
         blockType: 'processSteps';
       }
     | {
+        eyebrow?: string | null;
+        eyebrowIcon?:
+          | (
+              | 'sparkles'
+              | 'target'
+              | 'shield'
+              | 'rocket'
+              | 'users'
+              | 'database'
+              | 'cloud'
+              | 'brain'
+              | 'chart'
+              | 'lock'
+              | 'workflow'
+              | 'award'
+              | 'app'
+              | 'search'
+              | 'settings'
+              | 'zap'
+              | 'cpu'
+              | 'shield-check'
+              | 'trending-up'
+              | 'arrow-up-right'
+            )
+          | null;
+        title: string;
+        description?: string | null;
+        headerCta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        /**
+         * Three in the prototype, side by side.
+         */
+        items: {
+          icon:
+            | 'sparkles'
+            | 'target'
+            | 'shield'
+            | 'rocket'
+            | 'users'
+            | 'database'
+            | 'cloud'
+            | 'brain'
+            | 'chart'
+            | 'lock'
+            | 'workflow'
+            | 'award'
+            | 'app'
+            | 'search'
+            | 'settings'
+            | 'zap'
+            | 'cpu'
+            | 'shield-check'
+            | 'trending-up'
+            | 'arrow-up-right';
+          accent?: ('primary' | 'secondary') | null;
+          /**
+           * E.g. 01 / DIAGNOSIS.
+           */
+          badge?: string | null;
+          title: string;
+          description: string;
+          bullets?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'methodCards';
+      }
+    | {
+        eyebrow?: string | null;
+        eyebrowIcon?:
+          | (
+              | 'sparkles'
+              | 'target'
+              | 'shield'
+              | 'rocket'
+              | 'users'
+              | 'database'
+              | 'cloud'
+              | 'brain'
+              | 'chart'
+              | 'lock'
+              | 'workflow'
+              | 'award'
+              | 'app'
+              | 'search'
+              | 'settings'
+              | 'zap'
+              | 'cpu'
+              | 'shield-check'
+              | 'trending-up'
+              | 'arrow-up-right'
+            )
+          | null;
+        title: string;
+        description?: string | null;
+        items: {
+          span: '5' | '6' | '7' | '12';
+          size?: ('featured-wide' | 'featured' | 'supporting') | null;
+          accent?: ('primary' | 'secondary') | null;
+          icon?:
+            | (
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+              )
+            | null;
+          badge?: string | null;
+          /**
+           * E.g. +70% automation. Rendered in green.
+           */
+          chip?: string | null;
+          title: string;
+          description: string;
+          metrics?:
+            | {
+                value: string;
+                label: string;
+                color?: ('primary' | 'secondary' | 'emerald') | null;
+                id?: string | null;
+              }[]
+            | null;
+          tags?:
+            | {
+                name: string;
+                id?: string | null;
+              }[]
+            | null;
+          bullets?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          footer?: string | null;
+          footerIcon?:
+            | (
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+              )
+            | null;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'bentoGrid';
+      }
+    | {
+        eyebrow?: string | null;
+        eyebrowIcon?:
+          | (
+              | 'sparkles'
+              | 'target'
+              | 'shield'
+              | 'rocket'
+              | 'users'
+              | 'database'
+              | 'cloud'
+              | 'brain'
+              | 'chart'
+              | 'lock'
+              | 'workflow'
+              | 'award'
+              | 'app'
+              | 'search'
+              | 'settings'
+              | 'zap'
+              | 'cpu'
+              | 'shield-check'
+              | 'trending-up'
+              | 'arrow-up-right'
+            )
+          | null;
+        title: string;
+        description?: string | null;
+        cta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        items: {
+          icon:
+            | 'sparkles'
+            | 'target'
+            | 'shield'
+            | 'rocket'
+            | 'users'
+            | 'database'
+            | 'cloud'
+            | 'brain'
+            | 'chart'
+            | 'lock'
+            | 'workflow'
+            | 'award'
+            | 'app'
+            | 'search'
+            | 'settings'
+            | 'zap'
+            | 'cpu'
+            | 'shield-check'
+            | 'trending-up'
+            | 'arrow-up-right';
+          accent?: ('primary' | 'secondary') | null;
+          title: string;
+          description: string;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'audienceSplit';
+      }
+    | {
+        eyebrow?: string | null;
+        eyebrowIcon?:
+          | (
+              | 'sparkles'
+              | 'target'
+              | 'shield'
+              | 'rocket'
+              | 'users'
+              | 'database'
+              | 'cloud'
+              | 'brain'
+              | 'chart'
+              | 'lock'
+              | 'workflow'
+              | 'award'
+              | 'app'
+              | 'search'
+              | 'settings'
+              | 'zap'
+              | 'cpu'
+              | 'shield-check'
+              | 'trending-up'
+              | 'arrow-up-right'
+            )
+          | null;
+        title: string;
+        description?: string | null;
+        image?: (number | null) | Media;
+        imageBadge?: {
+          icon?:
+            | (
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+              )
+            | null;
+          title?: string | null;
+          subtitle?: string | null;
+        };
+        /**
+         * Numbering follows the order. The first one starts expanded.
+         */
+        steps: {
+          title: string;
+          description: string;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'accordionSteps';
+      }
+    | {
         title: string;
         subtitle?: string | null;
         /**
@@ -1164,7 +1945,12 @@ export interface Page {
           label?: string | null;
           href?: string | null;
         };
-        variant?: ('primary' | 'subtle') | null;
+        secondaryCta?: {
+          label?: string | null;
+          href?: string | null;
+          caption?: string | null;
+        };
+        variant?: ('primary' | 'subtle' | 'dark') | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -1364,7 +2150,14 @@ export interface Solution {
     | 'lock'
     | 'workflow'
     | 'award'
-    | 'app';
+    | 'app'
+    | 'search'
+    | 'settings'
+    | 'zap'
+    | 'cpu'
+    | 'shield-check'
+    | 'trending-up'
+    | 'arrow-up-right';
   /**
    * One sentence. Used in the Solutions menu and on the index card.
    */
@@ -1396,6 +2189,17 @@ export interface Solution {
                   id?: string | null;
                 }[]
               | null;
+            ctaVariant?: ('primary' | 'secondary') | null;
+            descriptionWidth?: ('narrow' | 'wide') | null;
+            metrics?:
+              | {
+                  value: number;
+                  suffix?: string | null;
+                  label: string;
+                  color?: ('primary' | 'secondary' | 'emerald') | null;
+                  id?: string | null;
+                }[]
+              | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1411,6 +2215,7 @@ export interface Solution {
             blockType: 'pageHero';
           }
         | {
+            variant?: ('institutional' | 'solution') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1510,7 +2315,14 @@ export interface Solution {
                 | 'lock'
                 | 'workflow'
                 | 'award'
-                | 'app';
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right';
               title: string;
               /**
                * Left empty, the card renders compact and centred.
@@ -1549,7 +2361,14 @@ export interface Solution {
                 | 'lock'
                 | 'workflow'
                 | 'award'
-                | 'app';
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right';
               glowColor?: ('blue' | 'orange') | null;
               title: string;
               description: string;
@@ -1633,6 +2452,368 @@ export interface Solution {
             blockType: 'processSteps';
           }
         | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            headerCta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Three in the prototype, side by side.
+             */
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right';
+              accent?: ('primary' | 'secondary') | null;
+              /**
+               * E.g. 01 / DIAGNOSIS.
+               */
+              badge?: string | null;
+              title: string;
+              description: string;
+              bullets?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'methodCards';
+          }
+        | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            items: {
+              span: '5' | '6' | '7' | '12';
+              size?: ('featured-wide' | 'featured' | 'supporting') | null;
+              accent?: ('primary' | 'secondary') | null;
+              icon?:
+                | (
+                    | 'sparkles'
+                    | 'target'
+                    | 'shield'
+                    | 'rocket'
+                    | 'users'
+                    | 'database'
+                    | 'cloud'
+                    | 'brain'
+                    | 'chart'
+                    | 'lock'
+                    | 'workflow'
+                    | 'award'
+                    | 'app'
+                    | 'search'
+                    | 'settings'
+                    | 'zap'
+                    | 'cpu'
+                    | 'shield-check'
+                    | 'trending-up'
+                    | 'arrow-up-right'
+                  )
+                | null;
+              badge?: string | null;
+              /**
+               * E.g. +70% automation. Rendered in green.
+               */
+              chip?: string | null;
+              title: string;
+              description: string;
+              metrics?:
+                | {
+                    value: string;
+                    label: string;
+                    color?: ('primary' | 'secondary' | 'emerald') | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              tags?:
+                | {
+                    name: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              bullets?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              footer?: string | null;
+              footerIcon?:
+                | (
+                    | 'sparkles'
+                    | 'target'
+                    | 'shield'
+                    | 'rocket'
+                    | 'users'
+                    | 'database'
+                    | 'cloud'
+                    | 'brain'
+                    | 'chart'
+                    | 'lock'
+                    | 'workflow'
+                    | 'award'
+                    | 'app'
+                    | 'search'
+                    | 'settings'
+                    | 'zap'
+                    | 'cpu'
+                    | 'shield-check'
+                    | 'trending-up'
+                    | 'arrow-up-right'
+                  )
+                | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'bentoGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right';
+              accent?: ('primary' | 'secondary') | null;
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'audienceSplit';
+          }
+        | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            image?: (number | null) | Media;
+            imageBadge?: {
+              icon?:
+                | (
+                    | 'sparkles'
+                    | 'target'
+                    | 'shield'
+                    | 'rocket'
+                    | 'users'
+                    | 'database'
+                    | 'cloud'
+                    | 'brain'
+                    | 'chart'
+                    | 'lock'
+                    | 'workflow'
+                    | 'award'
+                    | 'app'
+                    | 'search'
+                    | 'settings'
+                    | 'zap'
+                    | 'cpu'
+                    | 'shield-check'
+                    | 'trending-up'
+                    | 'arrow-up-right'
+                  )
+                | null;
+              title?: string | null;
+              subtitle?: string | null;
+            };
+            /**
+             * Numbering follows the order. The first one starts expanded.
+             */
+            steps: {
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'accordionSteps';
+          }
+        | {
             title: string;
             subtitle?: string | null;
             /**
@@ -1680,7 +2861,12 @@ export interface Solution {
               label?: string | null;
               href?: string | null;
             };
-            variant?: ('primary' | 'subtle') | null;
+            secondaryCta?: {
+              label?: string | null;
+              href?: string | null;
+              caption?: string | null;
+            };
+            variant?: ('primary' | 'subtle' | 'dark') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1750,7 +2936,14 @@ export interface SpecialistRole {
     | 'lock'
     | 'workflow'
     | 'award'
-    | 'app';
+    | 'app'
+    | 'search'
+    | 'settings'
+    | 'zap'
+    | 'cpu'
+    | 'shield-check'
+    | 'trending-up'
+    | 'arrow-up-right';
   gradient:
     | 'blue-cyan'
     | 'cyan-teal'
@@ -2102,6 +3295,17 @@ export interface PartnersSelect<T extends boolean = true> {
                     href?: T;
                     id?: T;
                   };
+              ctaVariant?: T;
+              descriptionWidth?: T;
+              metrics?:
+                | T
+                | {
+                    value?: T;
+                    suffix?: T;
+                    label?: T;
+                    color?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -2112,6 +3316,7 @@ export interface PartnersSelect<T extends boolean = true> {
         stickyPageNav?:
           | T
           | {
+              variant?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -2248,6 +3453,149 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        methodCards?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              headerCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    accent?: T;
+                    badge?: T;
+                    title?: T;
+                    description?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        bentoGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    span?: T;
+                    size?: T;
+                    accent?: T;
+                    icon?: T;
+                    badge?: T;
+                    chip?: T;
+                    title?: T;
+                    description?: T;
+                    metrics?:
+                      | T
+                      | {
+                          value?: T;
+                          label?: T;
+                          color?: T;
+                          id?: T;
+                        };
+                    tags?:
+                      | T
+                      | {
+                          name?: T;
+                          id?: T;
+                        };
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    footer?: T;
+                    footerIcon?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        audienceSplit?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    accent?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        accordionSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              image?: T;
+              imageBadge?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    subtitle?: T;
+                  };
+              steps?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         ctaContact?:
           | T
           | {
@@ -2286,6 +3634,13 @@ export interface PartnersSelect<T extends boolean = true> {
                 | {
                     label?: T;
                     href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    caption?: T;
                   };
               variant?: T;
               anchor?: T;
@@ -2422,6 +3777,17 @@ export interface PagesSelect<T extends boolean = true> {
                     href?: T;
                     id?: T;
                   };
+              ctaVariant?: T;
+              descriptionWidth?: T;
+              metrics?:
+                | T
+                | {
+                    value?: T;
+                    suffix?: T;
+                    label?: T;
+                    color?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -2432,6 +3798,7 @@ export interface PagesSelect<T extends boolean = true> {
         stickyPageNav?:
           | T
           | {
+              variant?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -2568,6 +3935,149 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        methodCards?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              headerCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    accent?: T;
+                    badge?: T;
+                    title?: T;
+                    description?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        bentoGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    span?: T;
+                    size?: T;
+                    accent?: T;
+                    icon?: T;
+                    badge?: T;
+                    chip?: T;
+                    title?: T;
+                    description?: T;
+                    metrics?:
+                      | T
+                      | {
+                          value?: T;
+                          label?: T;
+                          color?: T;
+                          id?: T;
+                        };
+                    tags?:
+                      | T
+                      | {
+                          name?: T;
+                          id?: T;
+                        };
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    footer?: T;
+                    footerIcon?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        audienceSplit?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    accent?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        accordionSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              image?: T;
+              imageBadge?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    subtitle?: T;
+                  };
+              steps?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         ctaContact?:
           | T
           | {
@@ -2606,6 +4116,13 @@ export interface PagesSelect<T extends boolean = true> {
                 | {
                     label?: T;
                     href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    caption?: T;
                   };
               variant?: T;
               anchor?: T;
@@ -2719,6 +4236,17 @@ export interface SolutionsSelect<T extends boolean = true> {
                     href?: T;
                     id?: T;
                   };
+              ctaVariant?: T;
+              descriptionWidth?: T;
+              metrics?:
+                | T
+                | {
+                    value?: T;
+                    suffix?: T;
+                    label?: T;
+                    color?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -2729,6 +4257,7 @@ export interface SolutionsSelect<T extends boolean = true> {
         stickyPageNav?:
           | T
           | {
+              variant?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -2865,6 +4394,149 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        methodCards?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              headerCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    accent?: T;
+                    badge?: T;
+                    title?: T;
+                    description?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        bentoGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    span?: T;
+                    size?: T;
+                    accent?: T;
+                    icon?: T;
+                    badge?: T;
+                    chip?: T;
+                    title?: T;
+                    description?: T;
+                    metrics?:
+                      | T
+                      | {
+                          value?: T;
+                          label?: T;
+                          color?: T;
+                          id?: T;
+                        };
+                    tags?:
+                      | T
+                      | {
+                          name?: T;
+                          id?: T;
+                        };
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    footer?: T;
+                    footerIcon?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        audienceSplit?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    accent?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        accordionSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              image?: T;
+              imageBadge?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    subtitle?: T;
+                  };
+              steps?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         ctaContact?:
           | T
           | {
@@ -2903,6 +4575,13 @@ export interface SolutionsSelect<T extends boolean = true> {
                 | {
                     label?: T;
                     href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    caption?: T;
                   };
               variant?: T;
               anchor?: T;
@@ -3062,6 +4741,13 @@ export interface SiteSetting {
               | 'workflow'
               | 'award'
               | 'app'
+              | 'search'
+              | 'settings'
+              | 'zap'
+              | 'cpu'
+              | 'shield-check'
+              | 'trending-up'
+              | 'arrow-up-right'
             )
           | null;
         id?: string | null;

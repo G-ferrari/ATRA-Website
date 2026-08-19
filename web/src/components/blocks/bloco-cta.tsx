@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 import { BORDAS } from '@/components/blocks/bordas'
+import { TechCornerBraces } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { BlocoCtaBanner } from '@/types/content'
 
@@ -18,6 +19,68 @@ import { TextoDestacado } from './texto-destacado'
  * `ctaContact` (MIG-053), que carrega formulário. Aqui é só a faixa. */
 export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
   const azul = bloco.variant === 'primary'
+
+  /* Caixa escura (MIG-056) — porte de `legacy/src/pages/SolutionAI.tsx:821`.
+   * A mesma moldura do herói, fechando a página: texto à esquerda, os dois
+   * botões empilhados à direita. */
+  if (bloco.variant === 'dark') {
+    return (
+      <section
+        id={bloco.anchor ?? undefined}
+        className="py-16 md:py-24 bg-surface-1 relative overflow-hidden px-3 sm:px-6 scroll-mt-32"
+      >
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/10 text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid">
+            <TechCornerBraces color="blue" position="top-left" size={14} />
+            <TechCornerBraces color="orange" position="bottom-right" size={14} />
+
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-display text-white mb-3 leading-tight">
+                  <TextoDestacado
+                    texto={bloco.title}
+                    destaque={bloco.highlight}
+                    className="text-secondary font-normal"
+                  />
+                </h2>
+                {bloco.description && (
+                  <p className="text-xs sm:text-sm md:text-base text-white/70 leading-relaxed max-w-xl font-light">
+                    {bloco.description}
+                  </p>
+                )}
+              </div>
+
+              <div className="shrink-0 flex flex-col items-center md:items-end gap-3 w-full md:w-auto">
+                {bloco.cta && (
+                  <Link
+                    href={bloco.cta.href}
+                    className="inline-flex w-full md:w-auto items-center justify-center bg-secondary hover:bg-orange-600 text-white px-8 py-3 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer"
+                  >
+                    {bloco.cta.label}
+                  </Link>
+                )}
+                {bloco.secondaryCta && (
+                  <div className="flex flex-col items-center w-full">
+                    <Link
+                      href={bloco.secondaryCta.href}
+                      className="inline-flex w-full md:w-auto items-center justify-center bg-white/10 hover:bg-white/20 text-white px-8 py-2.5 rounded-[6px] text-xs font-medium transition-all whitespace-nowrap border border-white/10"
+                    >
+                      {bloco.secondaryCta.label}
+                    </Link>
+                    {bloco.secondaryCta.caption && (
+                      <span className="text-white/40 text-[10px] mt-1.5 uppercase tracking-wider font-semibold text-center">
+                        {bloco.secondaryCta.caption}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   if (!azul) {
     return (

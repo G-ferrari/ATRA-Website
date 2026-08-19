@@ -72,12 +72,25 @@ export default async function SolucoesPage() {
 
   const t = TEXTOS[locale]
   const payload = await getPayload()
+  /* ⚠️ O `select` não é otimização especulativa: sem ele o adapter Postgres
+   * monta um `LEFT JOIN LATERAL` para **cada um dos 16 tipos de bloco** que a
+   * collection aceita, mesmo com `depth: 0`, porque o `layout` é um campo do
+   * documento. Medido: 18–23s para servir esta página, contra ~1s das outras.
+   * O índice só precisa do cartão — a página de detalhe é quem lê o `layout`. */
   const { docs } = await payload.find({
     collection: 'solutions',
     locale,
     depth: 0,
     limit: 100,
     sort: 'order',
+    select: {
+      title: true,
+      slug: true,
+      category: true,
+      icon: true,
+      shortDescription: true,
+      hasPage: true,
+    },
   })
   const solucoes = docs.map(toSolutionCard)
 

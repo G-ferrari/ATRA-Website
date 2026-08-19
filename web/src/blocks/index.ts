@@ -1,6 +1,6 @@
-import type { Block } from 'payload'
+import type { Block, Field } from 'payload'
 
-import { campoDeIcone, camposComuns } from './shared'
+import { campoDeIcone, camposComuns, ICONES } from './shared'
 
 /* Blocos de página (MIG-047).
  *
@@ -69,6 +69,60 @@ export const PageHero: Block = {
       fields: [
         { name: 'label', type: 'text', required: true, localized: true, label: { pt: 'Texto', en: 'Label' } },
         { name: 'href', type: 'text', required: true, label: { pt: 'Destino', en: 'Target' } },
+      ],
+    },
+    {
+      /* MIG-056. O botão do herói de solução é laranja e um pouco maior que o
+       * das páginas institucionais (`SolutionAI.tsx:151` contra
+       * `About.tsx:186`) — é a chamada comercial da página, não um link de
+       * navegação. Cor, respiro e corpo do texto andam juntos. */
+      name: 'ctaVariant',
+      type: 'select',
+      defaultValue: 'primary',
+      options: [
+        { value: 'primary', label: { pt: 'Azul, compacto', en: 'Blue, compact' } },
+        { value: 'secondary', label: { pt: 'Laranja, destacado', en: 'Orange, prominent' } },
+      ],
+      label: { pt: 'Estilo do botão', en: 'Button style' },
+      admin: { condition: (_, irmaos) => (irmaos?.ctas?.length ?? 0) > 0 },
+    },
+    {
+      /* Mesmo motivo de `headerWidth` no `iconCardGrid`: a largura da linha é
+       * escolha de composição, e o legado usa duas — `max-w-xl` nas páginas
+       * institucionais, `max-w-2xl` na de solução (`SolutionAI.tsx:123`). */
+      name: 'descriptionWidth',
+      type: 'select',
+      defaultValue: 'narrow',
+      options: [
+        { value: 'narrow', label: { pt: 'Estreita', en: 'Narrow' } },
+        { value: 'wide', label: { pt: 'Larga', en: 'Wide' } },
+      ],
+      label: { pt: 'Largura da descrição', en: 'Description width' },
+      admin: { condition: (_, irmaos) => Boolean(irmaos?.description) },
+    },
+    {
+      /* Os três números do herói de solução (`SolutionAI.tsx:128`). Ficam no
+       * bloco, e não no global `site-settings`: são resultados **daquela**
+       * oferta, não métricas da empresa — o `statsGrid` é que consome o global. */
+      name: 'metrics',
+      type: 'array',
+      maxRows: 3,
+      label: { pt: 'Números do herói', en: 'Hero metrics' },
+      fields: [
+        { name: 'value', type: 'number', required: true, label: { pt: 'Valor', en: 'Value' } },
+        { name: 'suffix', type: 'text', label: { pt: 'Sufixo', en: 'Suffix' } },
+        { name: 'label', type: 'text', required: true, localized: true, label: { pt: 'Legenda', en: 'Label' } },
+        {
+          name: 'color',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { value: 'primary', label: { pt: 'Azul', en: 'Blue' } },
+            { value: 'secondary', label: { pt: 'Laranja', en: 'Orange' } },
+            { value: 'emerald', label: { pt: 'Verde', en: 'Green' } },
+          ],
+          label: { pt: 'Cor', en: 'Colour' },
+        },
       ],
     },
     ...camposComuns,
@@ -197,12 +251,29 @@ export const CtaBanner: Block = {
       ],
     },
     {
+      /* MIG-056: o segundo botão e a legenda só existem na variante escura
+       * (`SolutionAI.tsx:846`) — lá o CTA principal é o WhatsApp e o
+       * secundário leva à ATRA AI, com a legenda explicando o que é. */
+      name: 'secondaryCta',
+      type: 'group',
+      label: { pt: 'Botão secundário', en: 'Secondary button' },
+      admin: { condition: (_, irmaos) => irmaos?.variant === 'dark' },
+      fields: [
+        { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+        { name: 'caption', type: 'text', localized: true, label: { pt: 'Legenda abaixo', en: 'Caption below' } },
+      ],
+    },
+    {
       name: 'variant',
       type: 'select',
       defaultValue: 'primary',
       options: [
         { value: 'primary', label: { pt: 'Azul', en: 'Primary' } },
         { value: 'subtle', label: { pt: 'Discreta', en: 'Subtle' } },
+        /* Terceira forma, de MIG-056: a mesma caixa escura do herói, fechando a
+         * página de solução. Não é o `ctaContact` — aquele carrega formulário. */
+        { value: 'dark', label: { pt: 'Caixa escura', en: 'Dark box' } },
       ],
       label: { pt: 'Estilo', en: 'Style' },
     },
@@ -307,7 +378,24 @@ export const StickyPageNav: Block = {
    * `anchor` (blocos.md, regra 2). Deixar o editor digitar a lista à mão
    * garantiria menu apontando para seção que não existe mais — o erro que este
    * bloco existe para não ter. Ele só marca **onde** o menu aparece. */
-  fields: [...camposComuns],
+  fields: [
+    {
+      /* MIG-056. Os dois menus fixos do legado **não são o mesmo componente**:
+       * o de `About.tsx:258` acompanha desde o mobile, tem borda e respiro
+       * embaixo; o de `SolutionAI.tsx:181` some abaixo de `md`, sobe para
+       * `z-50` e gruda 4px mais alto. Não dá para escolher um: o aceite visual
+       * é contra cada página. */
+      name: 'variant',
+      type: 'select',
+      defaultValue: 'institutional',
+      options: [
+        { value: 'institutional', label: { pt: 'Institucional', en: 'Institutional' } },
+        { value: 'solution', label: { pt: 'Solução (some no mobile)', en: 'Solution (hidden on mobile)' } },
+      ],
+      label: { pt: 'Estilo', en: 'Style' },
+    },
+    ...camposComuns,
+  ],
 }
 
 export const SealsBanner: Block = {
@@ -381,6 +469,294 @@ export const JobsList: Block = {
   ],
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * Blocos da página de solução (MIG-056).
+ *
+ * Justificativa exigida pela regra 3 de blocos.md. A composição prevista para
+ * `solucoes/[slug]` era `pageHero → stickyPageNav → iconCardGrid →
+ * processSteps → richTextSection → ctaBanner`, e **não corresponde ao legado**:
+ * `SolutionAI.tsx` tem quatro seções com anatomia própria, nenhuma delas
+ * expressável nos blocos existentes sem desfigurar o gabarito (D-15).
+ *
+ * - `iconCardGrid` e `valueCards` são cards de ícone+título+texto. As seções 01
+ *   e 02 têm selo de etapa, lista de conferência, métricas, etiquetas e rodapé,
+ *   e a 02 é um bento de 12 colunas com larguras diferentes por card.
+ * - `processSteps` é uma grade de 4 cards numerados (veio de `Careers.tsx`).
+ *   A seção 04 é imagem + acordeão, que é outra coisa.
+ *
+ * Os quatro nascem configuráveis porque esta página é o **template das outras
+ * 5** (e das 13 de MIG-093): o que hoje é conteúdo de IA vira conteúdo de
+ * qualquer solução sem componente novo.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/* A pílula de seção do legado (`SolutionAI.tsx:231`) é ícone + texto, e o ícone
+ * muda por seção (Workflow, Sparkles, Target, Settings). Opcional, ao contrário
+ * de `campoDeIcone`: seção sem pílula é uso normal. */
+const campoDeIconeOpcional = (nome = 'eyebrowIcon'): Field => ({
+  name: nome,
+  type: 'select',
+  options: ICONES.map((v) => ({ value: v, label: v })),
+  label: { pt: 'Ícone da linha de apoio', en: 'Eyebrow icon' },
+})
+
+/* `select` e não texto de cor: o valor vira classe do Tailwind, e classe
+ * montada em tempo de execução (`text-${x}`) o Tailwind não enxerga no build.
+ * Cada opção precisa existir como string literal no componente. */
+const campoDeAcento: Field = {
+  name: 'accent',
+  type: 'select',
+  defaultValue: 'primary',
+  options: [
+    { value: 'primary', label: { pt: 'Azul', en: 'Blue' } },
+    { value: 'secondary', label: { pt: 'Laranja', en: 'Orange' } },
+  ],
+  label: { pt: 'Cor de destaque', en: 'Accent colour' },
+}
+
+const camposDeCabecalho: Field[] = [
+  { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
+  campoDeIconeOpcional(),
+  { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+  { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+]
+
+export const MethodCards: Block = {
+  slug: 'methodCards',
+  labels: {
+    singular: { pt: 'Cards de metodologia', en: 'Method cards' },
+    plural: { pt: 'Cards de metodologia', en: 'Method cards' },
+  },
+  fields: [
+    ...camposDeCabecalho,
+    {
+      /* O cabeçalho desta seção não é centralizado: é uma linha com o texto à
+       * esquerda e um botão à direita (`SolutionAI.tsx:229`). Por isso o CTA
+       * mora no bloco, e não numa faixa separada depois. */
+      name: 'headerCta',
+      type: 'group',
+      label: { pt: 'Botão no cabeçalho', en: 'Header button' },
+      fields: [
+        { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+      ],
+    },
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 3,
+      label: { pt: 'Cards', en: 'Cards' },
+      admin: { description: { pt: 'Três no legado, lado a lado.', en: 'Three in the prototype, side by side.' } },
+      fields: [
+        { ...campoDeIcone },
+        campoDeAcento,
+        {
+          name: 'badge',
+          type: 'text',
+          localized: true,
+          label: { pt: 'Selo da etapa', en: 'Step badge' },
+          admin: { description: { pt: 'Ex.: 01 / DIAGNÓSTICO.', en: 'E.g. 01 / DIAGNOSIS.' } },
+        },
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
+        {
+          name: 'bullets',
+          type: 'array',
+          label: { pt: 'Lista de conferência', en: 'Checklist' },
+          fields: [{ name: 'text', type: 'text', required: true, localized: true, label: { pt: 'Item', en: 'Item' } }],
+        },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const BentoGrid: Block = {
+  slug: 'bentoGrid',
+  labels: { singular: { pt: 'Grade bento', en: 'Bento grid' }, plural: { pt: 'Grades bento', en: 'Bento grids' } },
+  fields: [
+    ...camposDeCabecalho,
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Cards', en: 'Cards' },
+      fields: [
+        {
+          /* Largura em colunas de uma grade de 12 (`SolutionAI.tsx:418`): o
+           * legado usa 7+5 na primeira fileira e 6+6 na segunda. Lista fechada
+           * porque cada valor é uma classe literal do Tailwind. */
+          name: 'span',
+          type: 'select',
+          required: true,
+          defaultValue: '6',
+          options: [
+            { value: '5', label: { pt: '5 de 12', en: '5 of 12' } },
+            { value: '6', label: { pt: '6 de 12 (metade)', en: '6 of 12 (half)' } },
+            { value: '7', label: { pt: '7 de 12', en: '7 of 12' } },
+            { value: '12', label: { pt: '12 de 12 (inteira)', en: '12 of 12 (full)' } },
+          ],
+          label: { pt: 'Largura', en: 'Width' },
+        },
+        {
+          /* Os cards da primeira fileira têm título maior que os da segunda
+           * (`text-xl sm:text-2xl` contra `text-lg sm:text-xl`). É hierarquia
+           * deliberada do legado, não consequência da largura — card de 6
+           * colunas na fileira de cima seguiria grande. */
+          name: 'size',
+          type: 'select',
+          defaultValue: 'supporting',
+          options: [
+            { value: 'featured-wide', label: { pt: 'Destaque maior', en: 'Lead' } },
+            { value: 'featured', label: { pt: 'Destaque', en: 'Featured' } },
+            { value: 'supporting', label: { pt: 'Apoio', en: 'Supporting' } },
+          ],
+          label: { pt: 'Peso', en: 'Weight' },
+        },
+        campoDeAcento,
+        campoDeIconeOpcional('icon'),
+        { name: 'badge', type: 'text', localized: true, label: { pt: 'Selo', en: 'Badge' } },
+        {
+          name: 'chip',
+          type: 'text',
+          localized: true,
+          label: { pt: 'Etiqueta à direita', en: 'Right-hand chip' },
+          admin: { description: { pt: 'Ex.: +70% Automação. Sai em verde.', en: 'E.g. +70% automation. Rendered in green.' } },
+        },
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
+        {
+          name: 'metrics',
+          type: 'array',
+          maxRows: 3,
+          label: { pt: 'Números', en: 'Metrics' },
+          fields: [
+            { name: 'value', type: 'text', required: true, label: { pt: 'Valor', en: 'Value' } },
+            { name: 'label', type: 'text', required: true, localized: true, label: { pt: 'Legenda', en: 'Label' } },
+            {
+              name: 'color',
+              type: 'select',
+              defaultValue: 'primary',
+              options: [
+                { value: 'primary', label: { pt: 'Azul', en: 'Blue' } },
+                { value: 'secondary', label: { pt: 'Laranja', en: 'Orange' } },
+                { value: 'emerald', label: { pt: 'Verde', en: 'Green' } },
+              ],
+              label: { pt: 'Cor', en: 'Colour' },
+            },
+          ],
+        },
+        {
+          name: 'tags',
+          type: 'array',
+          label: { pt: 'Etiquetas', en: 'Tags' },
+          fields: [{ name: 'name', type: 'text', required: true, localized: true, label: { pt: 'Etiqueta', en: 'Tag' } }],
+        },
+        {
+          name: 'bullets',
+          type: 'array',
+          label: { pt: 'Lista de conferência', en: 'Checklist' },
+          fields: [{ name: 'text', type: 'text', required: true, localized: true, label: { pt: 'Item', en: 'Item' } }],
+        },
+        { name: 'footer', type: 'text', localized: true, label: { pt: 'Rodapé do card', en: 'Card footer' } },
+        {
+          /* O legado fecha cada card de destaque com um glifo diferente:
+           * `ArrowUpRight` no mais largo (`SolutionAI.tsx:470`) e `Cpu` no
+           * outro (`:516`). Não dá para derivar do ícone do selo — no primeiro
+           * card os dois diferem.
+           *
+           * Escrito por extenso, e não com spread de `campoDeIconeOpcional`:
+           * espalhar um `Field` e acrescentar chaves desfaz o estreitamento da
+           * união e o TypeScript passa a cobrar campos de `RowField`. */
+          name: 'footerIcon',
+          type: 'select',
+          options: ICONES.map((v) => ({ value: v, label: v })),
+          label: { pt: 'Ícone do rodapé', en: 'Footer icon' },
+          admin: { condition: (_, irmaos) => Boolean(irmaos?.footer) },
+        },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const AudienceSplit: Block = {
+  slug: 'audienceSplit',
+  labels: {
+    singular: { pt: 'Para quem é', en: 'Who it is for' },
+    plural: { pt: 'Seções "para quem é"', en: 'Who-it-is-for sections' },
+  },
+  fields: [
+    ...camposDeCabecalho,
+    {
+      name: 'cta',
+      type: 'group',
+      label: { pt: 'Botão', en: 'Button' },
+      fields: [
+        { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+      ],
+    },
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Perfis', en: 'Profiles' },
+      fields: [
+        { ...campoDeIcone },
+        campoDeAcento,
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const AccordionSteps: Block = {
+  slug: 'accordionSteps',
+  labels: {
+    singular: { pt: 'Etapas em acordeão', en: 'Accordion steps' },
+    plural: { pt: 'Etapas em acordeão', en: 'Accordion steps' },
+  },
+  fields: [
+    ...camposDeCabecalho,
+    { name: 'image', type: 'upload', relationTo: 'media', label: { pt: 'Imagem', en: 'Image' } },
+    {
+      name: 'imageBadge',
+      type: 'group',
+      label: { pt: 'Selo sobre a imagem', en: 'Badge over the image' },
+      admin: { condition: (_, irmaos) => Boolean(irmaos?.image) },
+      fields: [
+        campoDeIconeOpcional('icon'),
+        { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'subtitle', type: 'text', localized: true, label: { pt: 'Subtítulo', en: 'Subtitle' } },
+      ],
+    },
+    {
+      name: 'steps',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Etapas', en: 'Steps' },
+      admin: {
+        description: {
+          pt: 'A numeração é automática, pela ordem. A primeira já abre aberta.',
+          en: 'Numbering follows the order. The first one starts expanded.',
+        },
+      },
+      fields: [
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
 export const BLOCOS = [
   PageHero,
   StickyPageNav,
@@ -391,6 +767,10 @@ export const BLOCOS = [
   PartnerShowcase,
   SealsBanner,
   ProcessSteps,
+  MethodCards,
+  BentoGrid,
+  AudienceSplit,
+  AccordionSteps,
   CtaContact,
   JobsList,
   CtaBanner,

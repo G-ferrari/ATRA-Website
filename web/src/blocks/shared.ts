@@ -85,6 +85,14 @@ export const ICONES = [
   'workflow',
   'award',
   'app',
+  // MIG-056: os seis que `SolutionAI.tsx` usa e não existiam no registro.
+  'search',
+  'settings',
+  'zap',
+  'cpu',
+  'shield-check',
+  'trending-up',
+  'arrow-up-right',
 ] as const
 
 export const campoDeIcone: Field = {

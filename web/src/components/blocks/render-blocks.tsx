@@ -1,6 +1,9 @@
 import type { Locale } from '@/lib/locales'
 import type { Bloco } from '@/types/content'
 
+import { BlocoAcordeao } from './bloco-acordeao'
+import { BlocoBento } from './bloco-bento'
+import { BlocoCardsDeMetodo } from './bloco-cards-de-metodo'
 import { BlocoCta } from './bloco-cta'
 import { BlocoGradeDeCards } from './bloco-grade-de-cards'
 import { BlocoHero } from './bloco-hero'
@@ -8,6 +11,7 @@ import { BlocoMenuDaPagina } from './bloco-menu-da-pagina'
 import { BlocoNumeros } from './bloco-numeros'
 import { BlocoEtapas } from './bloco-etapas'
 import { BlocoContato } from './bloco-contato'
+import { BlocoParaQuem } from './bloco-para-quem'
 import { BlocoParceiros } from './bloco-parceiros'
 import { BlocoVagas } from './bloco-vagas'
 import { BlocoSelos } from './bloco-selos'
@@ -49,6 +53,14 @@ export function RenderBlocks({ blocos, locale }: { blocos: Bloco[]; locale: Loca
             return <BlocoValores key={b.id} bloco={b} />
           case 'stickyPageNav':
             return <BlocoMenuDaPagina key={b.id} bloco={b} />
+          case 'methodCards':
+            return <BlocoCardsDeMetodo key={b.id} bloco={b} />
+          case 'bentoGrid':
+            return <BlocoBento key={b.id} bloco={b} />
+          case 'audienceSplit':
+            return <BlocoParaQuem key={b.id} bloco={b} />
+          case 'accordionSteps':
+            return <BlocoAcordeao key={b.id} bloco={b} />
         }
       })}
     </>

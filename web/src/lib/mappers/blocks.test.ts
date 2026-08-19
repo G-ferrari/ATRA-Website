@@ -82,14 +82,30 @@ describe('ancorasDe', () => {
       layout(
         { id: '1', blockType: 'pageHero', title: 'Abertura' },
         { id: '2', blockType: 'iconCardGrid', title: 'Nossos valores', anchor: 'valores', items: [] },
-        { id: '3', blockType: 'ctaBanner', title: 'Fim', anchor: 'fim' },
+        { id: '3', blockType: 'processSteps', title: 'Como fazemos', anchor: 'como', steps: [] },
       ),
     )
 
     expect(ancorasDe(blocos)).toEqual([
       { anchor: 'valores', label: 'Nossos valores' },
-      { anchor: 'fim', label: 'Fim' },
+      { anchor: 'como', label: 'Como fazemos' },
     ])
+  })
+
+  /* A faixa de chamada é destino de rolagem, não seção do sumário — MIG-056.
+   * Sem esta exclusão o menu da página de solução ganhava um quinto item com o
+   * título inteiro da chamada, e crescia de 64px para 144px no mobile. */
+  it('deixa o ctaBanner de fora, mesmo com âncora', () => {
+    const blocos = toBlocos(
+      layout(
+        { id: '1', blockType: 'iconCardGrid', title: 'Valores', anchor: 'valores', items: [] },
+        { id: '2', blockType: 'ctaBanner', title: 'Comece agora', anchor: 'contato' },
+      ),
+    )
+
+    expect(ancorasDe(blocos)).toEqual([{ anchor: 'valores', label: 'Valores' }])
+    // A âncora continua no bloco: é ela que dá o `id` para os botões `#contato`.
+    expect(blocos[1]).toMatchObject({ tipo: 'ctaBanner', anchor: 'contato' })
   })
 
   it('cai na âncora quando o bloco não tem título', () => {
@@ -129,7 +145,7 @@ describe('blocos de MIG-048', () => {
         { id: '1', blockType: 'pageHero', title: 'Abertura' },
         { id: '2', blockType: 'stickyPageNav' },
         { id: '3', blockType: 'iconCardGrid', title: 'Valores', anchor: 'valores', items: [] },
-        { id: '4', blockType: 'ctaBanner', title: 'Fim', anchor: 'fim' },
+        { id: '4', blockType: 'processSteps', title: 'Etapas', anchor: 'etapas', steps: [] },
       ),
     )
 
@@ -137,7 +153,7 @@ describe('blocos de MIG-048', () => {
     expect(menu).toMatchObject({
       items: [
         { anchor: 'valores', label: 'Valores' },
-        { anchor: 'fim', label: 'Fim' },
+        { anchor: 'etapas', label: 'Etapas' },
       ],
     })
   })

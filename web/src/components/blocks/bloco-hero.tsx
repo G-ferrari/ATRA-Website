@@ -3,13 +3,31 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { MetricChip, StatusBadge, TechCornerBraces } from '@/components/ui'
+import { cn } from '@/lib/utils'
 import type { BlocoPageHero } from '@/types/content'
 
+import { ContadorAnimado } from './contador-animado'
 import { TextoDestacado } from './texto-destacado'
+
+/* Classe literal por cor: o Tailwind não enxerga `text-${cor}` no build. */
+const COR_DA_METRICA = {
+  primary: 'text-primary',
+  secondary: 'text-secondary',
+  emerald: 'text-emerald-400',
+} as const
 
 /* Abertura de página — porte de `legacy/src/pages/About.tsx:150`, que é a mesma
  * caixa usada em `Glossary.tsx:71` e `Careers.tsx:99`. */
 export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
+  /* ⚠️ O respiro entre as colunas segue o estilo do botão, e isso é acoplamento
+   * implícito assumido: no legado os três (botão laranja, descrição larga,
+   * `lg:gap-12`) só aparecem juntos, na página de solução. O certo seria um
+   * campo `variant` só, no lugar de `ctaVariant` + `descriptionWidth` — mas
+   * trocar exige uma migração que **remove** coluna, e o gerador do Payload
+   * trava num prompt interativo que não roda sem terminal. Fica para a próxima
+   * mudança de schema neste bloco; ver debito-tecnico.md. */
+  const solucao = bloco.ctaVariant === 'secondary'
+
   return (
     <section
       id={bloco.anchor ?? undefined}
@@ -20,7 +38,12 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
           <TechCornerBraces color="blue" position="top-left" size={16} />
           <TechCornerBraces color="orange" position="bottom-right" size={16} />
 
-          <div className="grid lg:grid-cols-12 gap-8 items-center relative z-10">
+          <div
+            className={cn(
+              'grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10',
+              solucao && 'lg:gap-12',
+            )}
+          >
             <div className={bloco.mediaMode === 'none' ? 'lg:col-span-12' : 'lg:col-span-7'}>
               {(bloco.badge || bloco.chip) && (
                 <div className="flex items-center gap-2 mb-4">
@@ -42,9 +65,27 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
               </h1>
 
               {bloco.description && (
-                <p className="text-xs sm:text-sm md:text-base text-white/70 font-light leading-relaxed mb-6 max-w-xl">
+                <p
+                  className={cn(
+                    'text-xs sm:text-sm md:text-base text-white/70 font-light leading-relaxed mb-6',
+                    bloco.descriptionWidth === 'wide' ? 'max-w-2xl' : 'max-w-xl',
+                  )}
+                >
                   {bloco.description}
                 </p>
+              )}
+
+              {bloco.metrics.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 mb-6 max-w-lg">
+                  {bloco.metrics.map((m) => (
+                    <div key={m.label} className="p-3 rounded-[6px] bg-white/5 border border-white/10 text-center">
+                      <div className={cn('text-lg sm:text-xl font-bold', COR_DA_METRICA[m.color])}>
+                        <ContadorAnimado ate={m.value} sufixo={m.suffix} />
+                      </div>
+                      <div className="text-[10px] text-white/60 font-medium mt-0.5">{m.label}</div>
+                    </div>
+                  ))}
+                </div>
               )}
 
               {bloco.ctas.length > 0 && (
@@ -53,11 +94,13 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                     <Link
                       key={cta.href}
                       href={cta.href}
-                      className={
-                        i === 0
-                          ? 'px-5 py-2.5 rounded-[6px] bg-primary text-white text-xs font-semibold hover:bg-primary-dark transition-all cursor-pointer shadow-md shadow-primary/20'
-                          : 'px-5 py-2.5 rounded-[6px] bg-white/5 border border-white/10 text-white text-xs font-semibold hover:bg-white/10 transition-all'
-                      }
+                      className={cn(
+                        i > 0
+                          ? 'px-5 py-2.5 rounded-[6px] bg-white/5 border border-white/10 text-white text-xs font-semibold hover:bg-white/10 transition-all'
+                          : solucao
+                            ? 'inline-flex items-center justify-center bg-secondary hover:bg-orange-600 text-white px-6 py-3 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-lg hover:-translate-y-0.5 cursor-pointer'
+                            : 'px-5 py-2.5 rounded-[6px] bg-primary text-white text-xs font-semibold hover:bg-primary-dark transition-all cursor-pointer shadow-md shadow-primary/20',
+                      )}
                     >
                       {cta.label}
                     </Link>

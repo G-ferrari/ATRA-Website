@@ -8,8 +8,20 @@
  * institucionais e aparecem também na home. São os de /sobre (140+, 30+, 4x),
  * que P-01 disputa contra os da home (150+, 20+, 5x).
  *
- * ⚠️ Os 4 parceiros da vitrine usam os SVGs locais de `legacy/public/imgs/`. No
- * legado são hotlinks do WordPress; a migração de mídia é MIG-071.
+ * ⚠️ Os 4 logos da vitrine são os PNGs do WordPress que o legado usa
+ * (`About.tsx:384`), baixados para `scripts/seed/assets/parceiros/` em MIG-071.
+ * Antes disso eram os SVGs de `legacy/public/imgs/`, que não são a marca: são
+ * aproximações desenhadas à mão, com o nome em Arial e proporção 4:1. Como a
+ * altura é fixa e a largura sai do aspecto (`w-auto`), o desenho saía com a
+ * caixa errada além de a marca estar errada.
+ *
+ * A pasta guarda os **9** parceiros do carrossel do legado
+ * (`logo-clouds.tsx:27`), não só os 4 daqui. AWS, Denodo, BigID e IBM ficam
+ * sem seed até MIG-059 (a home), porque a collection exige `description` e
+ * escrever esse texto é decisão do marketing (D-22) — o arquivo está aqui para
+ * a task não precisar voltar ao WordPress. Baixar de lá exige user-agent de
+ * browser: sem ele o site responde 403 em HTML com status 200, e é para isso
+ * que existe `WP_USER_AGENT` em `scripts/wp-import/types.ts`.
  *
  * As fotos do herói são as mesmas de `legacy/public/fotos/` (MIG-049a). A do
  * bloco "quem somos" é uma delas: no legado ali há um hotlink do Unsplash —
@@ -22,6 +34,7 @@ import path from 'node:path'
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { casarIds } from './ids'
 
 const LEGADO = path.resolve(process.cwd(), '../legacy')
 
@@ -38,10 +51,10 @@ const METRICAS = [
 
 /* `logoScale` reproduz as classes por logo do legado (`About.tsx:384`). */
 const PARCEIROS_DA_VITRINE = [
-  { slug: 'microsoft-azure', name: 'Microsoft Azure', arquivo: 'public/imgs/logo_azure.svg', logoScale: 'lg' as const },
-  { slug: 'google-cloud', name: 'Google Cloud', arquivo: 'public/imgs/logo_google_cloud.svg', logoScale: 'md' as const },
-  { slug: 'databricks', name: 'Databricks', arquivo: 'public/imgs/logo_databricks.svg', logoScale: 'sm' as const },
-  { slug: 'atlan', name: 'Atlan', arquivo: 'public/imgs/logo_atlan.svg', logoScale: 'sm' as const },
+  { slug: 'microsoft-azure', name: 'Microsoft Azure', arquivo: 'scripts/seed/assets/parceiros/logo_azure.png', logoScale: 'lg' as const },
+  { slug: 'google-cloud', name: 'Google Cloud', arquivo: 'scripts/seed/assets/parceiros/logo_google_cloud.png', logoScale: 'md' as const },
+  { slug: 'databricks', name: 'Databricks', arquivo: 'scripts/seed/assets/parceiros/logo_databricks.png', logoScale: 'sm' as const },
+  { slug: 'atlan', name: 'Atlan', arquivo: 'scripts/seed/assets/parceiros/logo_atlan.png', logoScale: 'sm' as const },
 ]
 
 const FOTOS = [
@@ -81,17 +94,32 @@ const paragrafos = (...textos: string[]) => ({
 
 const payload = await getPayload({ config })
 
-/** Igual a upsertMidia, mas resolvendo o caminho a partir de web/, não de legacy/. */
+const MIMES: Record<string, string> = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+}
+
+/* Igual a upsertMidia, mas resolvendo o caminho a partir de web/, não de
+ * legacy/ — e **regravando o arquivo** quando o doc já existe.
+ *
+ * ⚠️ A regravação não é detalhe: sem ela, MIG-071 não chegaria a um banco que
+ * já rodou o seed. Os logos da vitrine foram semeados uma vez como SVG
+ * desenhado à mão; a busca por `logo_azure` acha aquele doc, e a versão que só
+ * criava devolvia o desenho para sempre. */
 async function upsertMidiaLocal(arquivo: string, alt: string) {
   const nome = path.basename(arquivo)
   const { docs } = await payload.find({ collection: 'media', where: { filename: { contains: nome.replace(/\.[^.]+$/, '') } }, limit: 1, depth: 0 })
-  if (docs[0]) return docs[0]
-  return payload.create({
-    collection: 'media',
-    data: { alt },
-    file: { data: readFileSync(path.resolve(process.cwd(), arquivo)), mimetype: 'image/png', name: nome, size: 0 },
-    locale: 'pt',
-  })
+  const file = {
+    data: readFileSync(path.resolve(process.cwd(), arquivo)),
+    mimetype: MIMES[path.extname(nome).toLowerCase()] ?? 'image/png',
+    name: nome,
+    size: 0,
+  }
+  return docs[0]
+    ? payload.update({ collection: 'media', id: docs[0].id, data: { alt }, file, locale: 'pt' })
+    : payload.create({ collection: 'media', data: { alt }, file, locale: 'pt' })
 }
 
 async function upsertMidia(arquivo: string, alt: string) {
@@ -119,10 +147,17 @@ async function upsertMidia(arquivo: string, alt: string) {
 }
 
 console.log('→ dados institucionais')
-/* Selos GPTW e LIPT (Careers.tsx:306). O LIPT é arquivo local; o GPTW é hotlink
- * do WordPress, então entra como marcador até a migração de mídia (MIG-071). */
+/* Os 3 selos de `Careers.tsx:306`, na ordem do legado. O LIPT é arquivo local
+ * do protótipo; GPTW e FEEx eram hotlink do WordPress e vieram para
+ * `scripts/seed/assets/selos/` em MIG-071.
+ *
+ * ⚠️ O arquivo do FEEx se chama `GPTW-Selos-site-1-768x768.png` no WordPress e
+ * **não é o selo do GPTW**: são os selos FEEx/Clima Organizacional, de 2023 e
+ * 2024. O legado também dá `alt="FEEx"` (`Careers.tsx:352`). Renomeado na
+ * cópia para o nome não induzir a troca. */
 const lipt = await upsertMidia('public/imgs/lipt-2026.png', 'Selo LIPT 2026 — Lugares Incríveis Para Trabalhar')
-const gptw = await upsertMidiaLocal('scripts/seed/assets/capa-pendente.png', 'SELO GPTW PENDENTE — imagem real entra com a mídia (MIG-071)')
+const gptw = await upsertMidiaLocal('scripts/seed/assets/selos/selo_gptw.jpg', 'Great Place To Work')
+const feex = await upsertMidiaLocal('scripts/seed/assets/selos/selo_feex.png', 'FEEx')
 
 await payload.updateGlobal({
   slug: 'site-settings',
@@ -133,6 +168,7 @@ await payload.updateGlobal({
     seals: [
       { name: 'Great Place To Work', image: gptw.id },
       { name: 'LIPT 2026', image: lipt.id },
+      { name: 'FEEx', image: feex.id },
     ],
   },
 })
@@ -145,20 +181,7 @@ console.log(`  ${fotos.length} fotos`)
 console.log('→ parceiros da vitrine')
 const ids: number[] = []
 for (const p of PARCEIROS_DA_VITRINE) {
-  const { docs: midias } = await payload.find({
-    collection: 'media', where: { filename: { contains: path.basename(p.arquivo, '.svg') } }, limit: 1, depth: 0,
-  })
-  const logo = midias[0] ?? await payload.create({
-    collection: 'media',
-    data: { alt: `Logo ${p.name}` },
-    file: {
-      data: readFileSync(path.join(LEGADO, p.arquivo)),
-      mimetype: 'image/svg+xml',
-      name: path.basename(p.arquivo),
-      size: 0,
-    },
-    locale: 'pt',
-  })
+  const logo = await upsertMidiaLocal(p.arquivo, `Logo ${p.name}`)
 
   const { docs } = await payload.find({ collection: 'partners', where: { slug: { equals: p.slug } }, limit: 1, locale: 'pt', depth: 0 })
   const data = { name: p.name, slug: p.slug, description: 'Parceiro de tecnologia da ATRA.', logo: logo.id, logoScale: p.logoScale }
@@ -280,28 +303,6 @@ const doc = docs[0]
  *
  * O texto repete o português por ora: o legado traduz navegação, não conteúdo
  * (P-08). Entra na fila de tradução. */
-/* Casa ids por posição, **inclusive das linhas de array dentro do bloco**.
- * `items` e `ctas` também têm id próprio: sem eles o Payload recria as linhas e
- * o texto em português dos cards some, mesmo com o bloco preservado. */
-function casarIds<T>(novo: T, gravado: unknown): T {
-  if (Array.isArray(novo)) {
-    const antigo = Array.isArray(gravado) ? gravado : []
-    return novo.map((item, i) => casarIds(item, antigo[i])) as T
-  }
-  if (novo && typeof novo === 'object') {
-    const antigo = (gravado ?? {}) as Record<string, unknown>
-    const saida: Record<string, unknown> = { ...(novo as Record<string, unknown>) }
-    if (antigo.id !== undefined) saida.id = antigo.id
-    for (const [chave, valor] of Object.entries(saida)) {
-      if (chave !== 'id' && valor && typeof valor === 'object') {
-        saida[chave] = casarIds(valor, antigo[chave])
-      }
-    }
-    return saida as T
-  }
-  return novo
-}
-
 const gravado = await payload.findByID({ collection: 'pages', id: doc.id, locale: 'pt', depth: 0 })
 const comIds = casarIds(layout, gravado.layout)
 

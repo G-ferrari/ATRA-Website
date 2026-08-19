@@ -138,8 +138,12 @@ export type BlocoPageHero = Base & {
   highlight: string[]
   description: string | null
   ctas: { label: string; href: string }[]
+  ctaVariant: 'primary' | 'secondary'
+  descriptionWidth: 'narrow' | 'wide'
   mediaMode: 'none' | 'image' | 'marquee'
   images: Image[]
+  /** Números da própria oferta, não da empresa — o `statsGrid` é que lê o global. */
+  metrics: { value: number; suffix: string; label: string; color: 'primary' | 'secondary' | 'emerald' }[]
 }
 
 export type BlocoRichTextSection = Base & {
@@ -168,7 +172,8 @@ export type BlocoCtaBanner = Base & {
   highlight: string | null
   description: string | null
   cta: { label: string; href: string } | null
-  variant: 'primary' | 'subtle'
+  secondaryCta: { label: string; href: string; caption: string | null } | null
+  variant: 'primary' | 'subtle' | 'dark'
 }
 
 export type MetricaInstitucional = {
@@ -219,6 +224,7 @@ export type BlocoValueCards = Base & {
 
 export type BlocoStickyPageNav = Base & {
   tipo: 'stickyPageNav'
+  variant: 'institutional' | 'solution'
   /** Derivados dos blocos com `anchor`; o editor não os digita. */
   items: { anchor: string; label: string }[]
 }
@@ -253,6 +259,68 @@ export type BlocoJobsList = Base & {
   vagas: Vaga[]
 }
 
+/* Blocos da página de solução (MIG-056) — a justificativa de cada um está em
+ * `src/blocks/index.ts`, junto da definição. */
+
+export type Acento = 'primary' | 'secondary'
+
+/** Cabeçalho com pílula de seção, comum às quatro seções de `SolutionAI.tsx`. */
+type ComCabecalho = {
+  eyebrow: string | null
+  eyebrowIcon: string | null
+  title: string
+  description: string | null
+}
+
+export type BlocoMethodCards = Base &
+  ComCabecalho & {
+    tipo: 'methodCards'
+    headerCta: { label: string; href: string } | null
+    items: {
+      icon: string
+      accent: Acento
+      badge: string | null
+      title: string
+      description: string
+      bullets: string[]
+    }[]
+  }
+
+export type BlocoBentoGrid = Base &
+  ComCabecalho & {
+    tipo: 'bentoGrid'
+    items: {
+      span: '5' | '6' | '7' | '12'
+      size: 'featured-wide' | 'featured' | 'supporting'
+      accent: Acento
+      icon: string | null
+      badge: string | null
+      chip: string | null
+      title: string
+      description: string
+      metrics: { value: string; label: string; color: 'primary' | 'secondary' | 'emerald' }[]
+      tags: string[]
+      bullets: string[]
+      footer: string | null
+      footerIcon: string | null
+    }[]
+  }
+
+export type BlocoAudienceSplit = Base &
+  ComCabecalho & {
+    tipo: 'audienceSplit'
+    cta: { label: string; href: string } | null
+    items: { icon: string; accent: Acento; title: string; description: string }[]
+  }
+
+export type BlocoAccordionSteps = Base &
+  ComCabecalho & {
+    tipo: 'accordionSteps'
+    image: Image | null
+    imageBadge: { icon: string | null; title: string; subtitle: string | null } | null
+    steps: { title: string; description: string }[]
+  }
+
 export type Bloco =
   | BlocoPageHero
   | BlocoRichTextSection
@@ -260,6 +328,10 @@ export type Bloco =
   | BlocoCtaBanner
   | BlocoStatsGrid
   | BlocoPartnerShowcase
+  | BlocoMethodCards
+  | BlocoBentoGrid
+  | BlocoAudienceSplit
+  | BlocoAccordionSteps
   | BlocoValueCards
   | BlocoStickyPageNav
   | BlocoSealsBanner
