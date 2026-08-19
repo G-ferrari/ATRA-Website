@@ -89,22 +89,27 @@ const TOPICOS: { slug: string; pt: string; en: string; filtro?: number }[] = [
  * português e entra na fila de tradução — ver P-08. */
 /* Parceiros citados nos cases (`partners=` em legacy/src/pages/cases/*.tsx).
  *
- * ⚠️ O logo é obrigatório na collection, mas esta página só mostra o nome. O da
- * Informatica existe em `legacy/src/assets/images/`; o do Google Cloud é
- * hotlink do WordPress e entra na migração de mídia (MIG-071). Até lá vai um
- * PNG marcador, com alt explícito — nenhuma página o exibe hoje. */
-const PARCEIROS: { slug: string; name: string; description: string; logo: string | null }[] = [
+ * O caminho do logo é absoluto porque os dois arquivos moram em raízes
+ * diferentes: o da Informatica veio do protótipo, e o do Google Cloud era
+ * hotlink do WordPress — baixado para o repositório em MIG-071.
+ *
+ * ⚠️ O do Google Cloud é o mesmo doc de mídia que a vitrine de /sobre usa
+ * (`sobre.ts`, `PARCEIROS_DA_VITRINE`): os dois seeds procuram por
+ * `logo_google_cloud` e caem no mesmo registro, de propósito. Renomear o
+ * arquivo em um dos lados cria um segundo doc e o parceiro passa a ter dois
+ * logos concorrentes, conforme a ordem do seed. */
+const PARCEIROS: { slug: string; name: string; description: string; logo: string }[] = [
   {
     slug: 'google-cloud',
     name: 'Google Cloud',
     description: 'Nuvem pública líder em dados e IA.',
-    logo: null,
+    logo: path.resolve(process.cwd(), 'scripts/seed/assets/parceiros/logo_google_cloud.png'),
   },
   {
     slug: 'salesforce-informatica',
     name: 'Informatica',
     description: 'Gestão de dados em nuvem líder de mercado.',
-    logo: 'src/assets/images/salesforceinformatica.png',
+    logo: path.join(LEGADO, 'src/assets/images/salesforceinformatica.png'),
   },
 ]
 
@@ -344,13 +349,11 @@ async function upsertDepoimento(d: NonNullable<DadosCase['testimonial']>) {
     : payload.create({ collection: 'testimonials', data, locale: 'pt' })
 }
 
-/** PNG 1×1 transparente, usado só onde o logo real ainda não migrou. */
-const MARCADOR = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
-  'base64',
-)
-
-async function upsertMidia(arquivo: string, alt: string, conteudo?: Buffer) {
+/* Procura pelo nome **sem extensão**: o Payload reencoda a imagem em WebP no
+ * upload, então o doc criado a partir de `logo_google_cloud.png` fica gravado
+ * como `logo_google_cloud.webp`. Buscar pelo nome inteiro nunca casaria, e cada
+ * `pnpm seed` criaria uma cópia. */
+async function upsertMidia(arquivo: string, alt: string) {
   const nome = path.basename(arquivo)
   const { docs } = await payload.find({
     collection: 'media',
@@ -359,7 +362,7 @@ async function upsertMidia(arquivo: string, alt: string, conteudo?: Buffer) {
     depth: 0,
   })
   const file = {
-    data: conteudo ?? readFileSync(arquivo),
+    data: readFileSync(arquivo),
     mimetype: nome.endsWith('.png') ? 'image/png' : 'image/jpeg',
     name: nome,
     size: 0,
@@ -370,9 +373,7 @@ async function upsertMidia(arquivo: string, alt: string, conteudo?: Buffer) {
 }
 
 async function upsertParceiro(p: (typeof PARCEIROS)[number]) {
-  const logo = p.logo
-    ? await upsertMidia(path.join(LEGADO, p.logo), `Logo ${p.name}`)
-    : await upsertMidia(`logo-pendente-${p.slug}.png`, `LOGO PENDENTE — ${p.name} (MIG-071)`, MARCADOR)
+  const logo = await upsertMidia(p.logo, `Logo ${p.name}`)
 
   const { docs } = await payload.find({
     collection: 'partners',
