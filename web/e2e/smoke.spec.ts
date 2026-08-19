@@ -92,6 +92,28 @@ test.describe('app novo', () => {
     })
   })
 
+  test.describe('/webinars/[slug] — rota sem gabarito', () => {
+    const SLUG = 'data-show-como-escalar-seu-data-lakehouse'
+
+    test('webinar existente responde 200 nos dois idiomas', async ({ request }) => {
+      for (const url of [`${NEXT_URL}/webinars/${SLUG}`, `${NEXT_URL}/en/webinars/${SLUG}`]) {
+        expect((await request.get(url)).status(), url).toBe(200)
+      }
+    })
+
+    test('slug inexistente responde 404', async ({ request }) => {
+      expect((await request.get(`${NEXT_URL}/webinars/nao-existe`)).status()).toBe(404)
+    })
+
+    /* D-11 previu os dois estados; nenhum webinar do seed tem vídeo, então é o
+     * estado vazio que está no ar. Sem iframe quebrado é o que importa aqui. */
+    test('webinar sem vídeo mostra o aviso e não monta iframe', async ({ request }) => {
+      const html = await (await request.get(`${NEXT_URL}/webinars/${SLUG}`)).text()
+      expect(html).toContain('Gravação em breve')
+      expect(html).not.toContain('<iframe')
+    })
+  })
+
   test('admin do Payload responde', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/admin`)
     expect(r.status()).toBe(200)
