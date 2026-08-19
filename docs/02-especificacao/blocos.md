@@ -32,6 +32,10 @@ corresponde a uma seção que **já existe** no legado — nenhum bloco foi inve
 | `ctaBanner` | `CaseDetailBase.tsx:185`, `About.tsx:456` | fim de página | `title` (loc), `description` (loc), `cta{ label (loc), href }`, `variant: primary \| subtle` |
 | `resourceList` | `SuccessStories.tsx:90`, `Blog.tsx:93` | índices | `source`, `showSearch` (bool), `showTopicFilter` (bool), `pageSize` |
 | `videoEmbed` | novo (D-11) | webinars | `url`, `caption` (loc) |
+| `methodCards` | `SolutionAI.tsx:218` | soluções | cabeçalho (`eyebrow`+`eyebrowIcon`+`title`+`description`), `headerCta{label,href}`, `items[]{icon, accent, badge, title (loc), description (loc), bullets[]}` |
+| `bentoGrid` | `SolutionAI.tsx:395` | soluções, home | cabeçalho, `items[]{span: 5\|6\|7\|12, size: featured-wide\|featured\|supporting, accent, icon, badge, chip, title, description, metrics[], tags[], bullets[], footer}` |
+| `audienceSplit` | `SolutionAI.tsx:621` | soluções | cabeçalho, `cta{label,href}`, `items[]{icon, accent, title (loc), description (loc)}` |
+| `accordionSteps` | `SolutionAI.tsx:685` | soluções | cabeçalho, `image → media`, `imageBadge{icon,title,subtitle}`, `steps[]{title (loc), description (loc)}` — a primeira abre expandida |
 
 ## Composição das páginas iniciais
 
@@ -43,8 +47,26 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 | `sobre` | `pageHero` → `statsGrid` → `stickyPageNav` → `richTextSection` → `valueCards` → `partnerShowcase` → `iconCardGrid` → `iconCardGrid` → `ctaBanner` |
 | `carreiras` | `pageHero` → `stickyPageNav` → `iconCardGrid` → `sealsBanner` → `processSteps` → `ctaContact` → `iconCardGrid` |
 | `contato` (nova, D-10) | `pageHero` → `ctaContact` |
-| `solucoes/[slug]` | `pageHero` → `stickyPageNav` → `iconCardGrid` → `processSteps` → `richTextSection` → `ctaBanner` |
+| `solucoes/[slug]` | `pageHero` → `stickyPageNav` → `methodCards` → `bentoGrid` → `audienceSplit` → `accordionSteps` → `ctaBanner`(dark) — **corrigida em MIG-056**, ver abaixo |
 | `parceiros/[slug]` | `pageHero` → `richTextSection` → `iconCardGrid` → `iconCardGrid` → `ctaBanner` |
+
+> [!ATENÇÃO] **A composição prevista para `solucoes/[slug]` estava errada.**
+> Ela dizia `iconCardGrid → processSteps → richTextSection`, e `SolutionAI.tsx`
+> não tem nenhuma dessas seções: tem três cards com selo de etapa e lista de
+> conferência, um bento de 12 colunas com cards de anatomia diferente, uma seção
+> de duas colunas com perfis e um acordeão ao lado de uma imagem. Reusar os
+> blocos existentes só seria possível desfigurando o gabarito, o que D-15 proíbe.
+>
+> MIG-056 acrescentou quatro blocos — `methodCards`, `bentoGrid`,
+> `audienceSplit`, `accordionSteps` — e três variantes: `ctaBanner: dark`,
+> `stickyPageNav: solution` e, no `pageHero`, `metrics[]` + `ctaVariant` +
+> `descriptionWidth`. A justificativa de cada um está junto da definição, em
+> `web/src/blocks/index.ts`. Todos nascem configuráveis porque esta página é o
+> **template das outras 5** e das 13 de MIG-093.
+>
+> Lição para as composições que faltam (`home`, `/insights`, `segmentos`): elas
+> foram escritas a partir do inventário de seções, não do markup. Conferir
+> contra o arquivo do legado **antes** de estimar a task.
 
 ## Regras de bloco
 
@@ -53,6 +75,12 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 2. **Todo bloco aceita `anchor` (`text`) e `theme` (`surface-1 | surface-2`).**
    O `anchor` alimenta o `stickyPageNav`; o `theme` reproduz a alternância de
    fundo que o legado faz seção a seção.
+
+   ⚠️ **Exceção, descoberta em MIG-056: `ctaBanner` tem âncora mas não entra no
+   menu.** Ter id e estar no sumário são coisas diferentes — a faixa que fecha a
+   página de solução precisa de `id="contato"` porque três botões apontam para
+   lá, mas o menu do legado lista quatro itens e ela não é um deles. A exclusão
+   vive em `ancorasDe()`.
 3. **Bloco novo exige justificativa** no PR: por que nenhum dos existentes serve.
    É o que impede 20 rotas virarem 20 dialetos.
 4. **`mode: featured | manual`** é o padrão para blocos que listam conteúdo:

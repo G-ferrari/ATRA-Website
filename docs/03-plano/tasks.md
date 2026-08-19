@@ -96,7 +96,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-053 | Bloco `ctaContact` + `/contato` (D-10) | 047 | 3h | **done** |
 | MIG-054 | `/parceiros/[slug]` | 047 | 3h | **done** |
 | MIG-055 | `/solucoes` (índice) + collection `solutions` | 047 | 3h | **done** — sem gabarito (D-09); aceite funcional no smoke |
-| MIG-056 | `/solucoes/[slug]` | 055 | 3h |
+| MIG-056 | `/solucoes/[slug]` | 055 | ~~3h~~ **~5x maior** | **done** — portão verde nos 3 viewports. A composição prevista não batia com o legado: exigiu 4 blocos novos e 4 variantes. Ver a nota em [blocos.md](../02-especificacao/blocos.md#regras-de-bloco) |
 | MIG-057 | Blocos da home: `hero`, `featureTabs`, `logoMarquee` | 048 | 5h |
 | MIG-058 | Blocos da home: `caseCarousel`, `testimonialCarousel`, `contentTeaser` | 057 | 5h |
 | MIG-059 | **Rota `/`** | 058 | 5h |
