@@ -1,5 +1,5 @@
 import type { Resource as Doc } from '@/payload-types'
-import type { Resource } from '@/types/content'
+import type { Resource, ResourceDetail } from '@/types/content'
 
 import { toImage, toTextos } from './shared'
 
@@ -14,6 +14,10 @@ export function toResource(doc: Doc): Resource {
     pages: doc.pages ?? null,
     publishedAt: doc.publishedAt,
   }
+}
+
+export function toResourceDetail(doc: Doc): ResourceDetail {
+  return { ...toResource(doc), body: doc.body ?? null }
 }
 
 /** Data por extenso, como o legado escreve nos cards ("10 de janeiro de 2026"). */

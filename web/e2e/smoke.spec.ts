@@ -62,6 +62,36 @@ test.describe('app novo', () => {
     })
   })
 
+  /* `/relatorios/[slug]` e `/ebooks/[slug]` também não existem no protótipo. */
+  test.describe('materiais — rotas sem gabarito', () => {
+    const RELATORIO = 'relatorio-anual-de-dados-2025-tendencias-e-projecoes'
+    const EBOOK = 'o-guia-definitivo-do-data-lakehouse-para-executivos'
+
+    test('material existente responde 200 nos dois idiomas', async ({ request }) => {
+      for (const url of [
+        `${NEXT_URL}/relatorios/${RELATORIO}`,
+        `${NEXT_URL}/ebooks/${EBOOK}`,
+        `${NEXT_URL}/en/reports/${RELATORIO}`,
+        `${NEXT_URL}/en/ebooks/${EBOOK}`,
+      ]) {
+        expect((await request.get(url)).status(), url).toBe(200)
+      }
+    })
+
+    /* O tipo entra na consulta, não só na rota. Sem isso o mesmo material
+     * responderia sob as duas seções e o Google veria conteúdo duplicado. */
+    test('slug do outro tipo responde 404', async ({ request }) => {
+      for (const url of [`${NEXT_URL}/relatorios/${EBOOK}`, `${NEXT_URL}/ebooks/${RELATORIO}`]) {
+        expect((await request.get(url)).status(), url).toBe(404)
+      }
+    })
+
+    test('material sem corpo sai com noindex', async ({ request }) => {
+      const r = await request.get(`${NEXT_URL}/relatorios/${RELATORIO}`)
+      expect(await r.text()).toContain('noindex')
+    })
+  })
+
   test('admin do Payload responde', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/admin`)
     expect(r.status()).toBe(200)
