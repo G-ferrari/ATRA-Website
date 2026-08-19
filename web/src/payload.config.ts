@@ -16,6 +16,7 @@ import sharp from 'sharp'
 import { Cases } from './collections/Cases'
 import { GlossaryTerms } from './collections/GlossaryTerms'
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
 import { Partners } from './collections/Partners'
 import { Posts } from './collections/Posts'
 import { Resources } from './collections/Resources'
@@ -48,7 +49,7 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Posts, Resources, Webinars],
+  collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Pages, Posts, Resources, Webinars],
 
   /* Idioma da INTERFACE do admin (botões, menus, validação) — diferente de
    * `localization`, que é o idioma do CONTEÚDO. São independentes: dá para

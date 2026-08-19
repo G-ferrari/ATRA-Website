@@ -79,9 +79,9 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-044 | `/blog/[slug]` | 043 | 3h | **done** |
 | MIG-045 | `/relatorios/[slug]` + `/ebooks/[slug]` | 041 | 2.5h | **done** |
 | MIG-046 | `/webinars/[slug]` + player (D-11) | 042 | 3h | **done** |
-| MIG-047 | Blocos: `pageHero`, `richTextSection`, `iconCardGrid`, `ctaBanner` | — | 4h |
+| MIG-047 | Blocos: `pageHero`, `richTextSection`, `iconCardGrid`, `ctaBanner` + collection `pages` | — | 4h | **done** |
 | MIG-048 | Blocos: `statsGrid`, `sealsBanner`, `valueCards`, `stickyPageNav` | 047 | 4h |
-| MIG-049 | `/sobre` + collection `pages` | 048 | 4h |
+| MIG-049 | `/sobre` (a collection `pages` veio em 047) | 048 | 4h |
 | MIG-050 | `/carreiras` + collection `jobs` | 048 | 4h |
 | MIG-051 | `/carreiras/[slug]` (vaga) | 050 | 2h |
 | MIG-052 | `/consultores` + `specialist-roles` | 047 | 4h |

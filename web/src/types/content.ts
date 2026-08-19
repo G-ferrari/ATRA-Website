@@ -111,6 +111,59 @@ export type ResourceDetail = Resource & {
   body: unknown | null
 }
 
+/* Blocos de página (MIG-047).
+ *
+ * União discriminada por `tipo`: o componente que despacha faz `switch` e o
+ * TypeScript garante que nenhum caso ficou de fora. Adicionar bloco sem tratar
+ * o novo caso não compila. */
+
+export type TemaDoBloco = 'surface-1' | 'surface-2'
+
+type Base = {
+  id: string
+  anchor: string | null
+  theme: TemaDoBloco
+}
+
+export type BlocoPageHero = Base & {
+  tipo: 'pageHero'
+  badge: string | null
+  chip: string | null
+  title: string
+  /** Trecho de `title` pintado de azul; o componente o localiza no texto. */
+  highlight: string | null
+  description: string | null
+  ctas: { label: string; href: string }[]
+}
+
+export type BlocoRichTextSection = Base & {
+  tipo: 'richTextSection'
+  eyebrow: string | null
+  title: string | null
+  body: unknown | null
+  image: Image | null
+  imagePosition: 'left' | 'right' | 'none'
+}
+
+export type BlocoIconCardGrid = Base & {
+  tipo: 'iconCardGrid'
+  eyebrow: string | null
+  title: string | null
+  columns: 2 | 3 | 4
+  items: { icon: string; title: string; description: string | null }[]
+}
+
+export type BlocoCtaBanner = Base & {
+  tipo: 'ctaBanner'
+  title: string
+  highlight: string | null
+  description: string | null
+  cta: { label: string; href: string } | null
+  variant: 'primary' | 'subtle'
+}
+
+export type Bloco = BlocoPageHero | BlocoRichTextSection | BlocoIconCardGrid | BlocoCtaBanner
+
 export type Seo = {
   title: string
   description: string

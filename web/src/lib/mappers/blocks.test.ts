@@ -1,0 +1,99 @@
+import { describe, expect, it, vi } from 'vitest'
+
+import { ancorasDe, toBlocos } from './blocks'
+import type { Page } from '@/payload-types'
+
+/* O layout vem do Payload com muito mais campo do que o mapper lê; o `as`
+ * evita reconstruir o documento inteiro em cada caso de teste. */
+const layout = (...blocos: unknown[]) => blocos as NonNullable<Page['layout']>
+
+describe('toBlocos', () => {
+  it('converte um pageHero e normaliza os campos vazios para null', () => {
+    const [b] = toBlocos(
+      layout({
+        id: '1',
+        blockType: 'pageHero',
+        title: 'A ATRA transforma desafios',
+        highlight: 'ATRA',
+        badge: '   ',
+        chip: null,
+        ctas: [{ label: 'Conhecer', href: '/sobre' }],
+      }),
+    )
+
+    expect(b).toMatchObject({
+      tipo: 'pageHero',
+      title: 'A ATRA transforma desafios',
+      highlight: 'ATRA',
+      // string só de espaço é ausência, não conteúdo
+      badge: null,
+      chip: null,
+      theme: 'surface-1',
+      ctas: [{ label: 'Conhecer', href: '/sobre' }],
+    })
+  })
+
+  it('descarta o botão do ctaBanner quando falta rótulo ou destino', () => {
+    const [so_label, completo] = toBlocos(
+      layout(
+        { id: '1', blockType: 'ctaBanner', title: 'A', cta: { label: 'Fale', href: null } },
+        { id: '2', blockType: 'ctaBanner', title: 'B', cta: { label: 'Fale', href: '/contato' } },
+      ),
+    )
+
+    expect(so_label).toMatchObject({ cta: null })
+    expect(completo).toMatchObject({ cta: { label: 'Fale', href: '/contato' } })
+  })
+
+  it('lê columns como número', () => {
+    const [b] = toBlocos(
+      layout({ id: '1', blockType: 'iconCardGrid', columns: '3', items: [{ icon: 'target', title: 'X' }] }),
+    )
+    expect(b).toMatchObject({ columns: 3 })
+  })
+
+  /* Um bloco removido do código com conteúdo ainda no banco não pode derrubar
+   * uma página institucional inteira — some e avisa no log. */
+  it('ignora bloco desconhecido em vez de derrubar a página', () => {
+    const aviso = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    const blocos = toBlocos(
+      layout(
+        { id: '1', blockType: 'blocoQueNaoExisteMais', seja: 'o que for' },
+        { id: '2', blockType: 'ctaBanner', title: 'Sobrevivi' },
+      ),
+    )
+
+    expect(blocos).toHaveLength(1)
+    expect(blocos[0]).toMatchObject({ title: 'Sobrevivi' })
+    expect(aviso).toHaveBeenCalledOnce()
+    aviso.mockRestore()
+  })
+
+  it('aceita layout vazio ou ausente', () => {
+    expect(toBlocos(null)).toEqual([])
+    expect(toBlocos([])).toEqual([])
+  })
+})
+
+describe('ancorasDe', () => {
+  it('leva só os blocos com âncora, usando o título como rótulo', () => {
+    const blocos = toBlocos(
+      layout(
+        { id: '1', blockType: 'pageHero', title: 'Abertura' },
+        { id: '2', blockType: 'iconCardGrid', title: 'Nossos valores', anchor: 'valores', items: [] },
+        { id: '3', blockType: 'ctaBanner', title: 'Fim', anchor: 'fim' },
+      ),
+    )
+
+    expect(ancorasDe(blocos)).toEqual([
+      { anchor: 'valores', label: 'Nossos valores' },
+      { anchor: 'fim', label: 'Fim' },
+    ])
+  })
+
+  it('cai na âncora quando o bloco não tem título', () => {
+    const blocos = toBlocos(layout({ id: '1', blockType: 'iconCardGrid', anchor: 'sem-titulo', items: [] }))
+    expect(ancorasDe(blocos)).toEqual([{ anchor: 'sem-titulo', label: 'sem-titulo' }])
+  })
+})

@@ -74,6 +74,7 @@ export interface Config {
     partners: Partner;
     cases: Case;
     'glossary-terms': GlossaryTerm;
+    pages: Page;
     posts: Post;
     resources: Resource;
     webinars: Webinar;
@@ -91,6 +92,7 @@ export interface Config {
     partners: PartnersSelect<false> | PartnersSelect<true>;
     cases: CasesSelect<false> | CasesSelect<true>;
     'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
     webinars: WebinarsSelect<false> | WebinarsSelect<true>;
@@ -451,6 +453,149 @@ export interface GlossaryTerm {
   createdAt: string;
 }
 /**
+ * Pages assembled from blocks. Drag to reorder sections.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   */
+  slug: string;
+  layout: (
+    | {
+        badge?: string | null;
+        chip?: string | null;
+        title: string;
+        /**
+         * A slice of the title shown in blue. Must appear in the title.
+         */
+        highlight?: string | null;
+        description?: string | null;
+        ctas?:
+          | {
+              label: string;
+              href: string;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'pageHero';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        image?: (number | null) | Media;
+        imagePosition?: ('left' | 'right' | 'none') | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'richTextSection';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        columns?: ('2' | '3' | '4') | null;
+        items: {
+          icon:
+            | 'sparkles'
+            | 'target'
+            | 'shield'
+            | 'rocket'
+            | 'users'
+            | 'database'
+            | 'cloud'
+            | 'brain'
+            | 'chart'
+            | 'lock'
+            | 'workflow'
+            | 'award';
+          title: string;
+          /**
+           * Left empty, the card renders compact and centred.
+           */
+          description?: string | null;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'iconCardGrid';
+      }
+    | {
+        title: string;
+        highlight?: string | null;
+        description?: string | null;
+        cta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        variant?: ('primary' | 'subtle') | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ctaBanner';
+      }
+  )[];
+  /**
+   * Optional. When empty, the site falls back to the page title and summary.
+   */
+  seo?: {
+    /**
+     * Up to ~60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Up to 160 characters — Google truncates the rest.
+     */
+    metaDescription?: string | null;
+    /**
+     * Shown when shared on LinkedIn and WhatsApp. Falls back to the cover image.
+     */
+    ogImage?: (number | null) | Media;
+    noIndex?: boolean | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Blog posts. Publish only once the body is written.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -698,6 +843,10 @@ export interface PayloadLockedDocument {
         value: number | GlossaryTerm;
       } | null)
     | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
         relationTo: 'posts';
         value: number | Post;
       } | null)
@@ -942,6 +1091,99 @@ export interface GlossaryTermsSelect<T extends boolean = true> {
   category?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  layout?:
+    | T
+    | {
+        pageHero?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              ctas?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richTextSection?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              body?: T;
+              image?: T;
+              imagePosition?: T;
+              anchor?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        iconCardGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              columns?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaBanner?:
+          | T
+          | {
+              title?: T;
+              highlight?: T;
+              description?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              variant?: T;
+              anchor?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+        noIndex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
