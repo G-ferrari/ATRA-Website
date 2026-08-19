@@ -128,6 +128,25 @@ test.describe('app novo', () => {
     })
   })
 
+  test.describe('/carreiras e /contato — páginas de bloco sem gabarito', () => {
+    test('a vaga da collection aparece e leva ao detalhe', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/carreiras`)
+      const vaga = page.getByRole('link', { name: /Engenheiro\(a\) de Dados SR/ }).first()
+      await expect(vaga).toBeVisible()
+      await vaga.click()
+      await expect(page).toHaveURL(/\/carreiras\//)
+    })
+
+    /* O formulário existe mas não envia (P-14, P-18): o botão fica desabilitado
+       para não coletar dado pessoal sem política publicada nem destino. */
+    test('o formulário de contato está desabilitado', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/contato`)
+      await expect(page.getByRole('button', { name: 'Enviar' })).toBeDisabled()
+      // O e-mail aparece no cartão E no rodapé; o `first()` fica com o do cartão.
+      await expect(page.getByRole('link', { name: 'negocios@atra.com.br' }).first()).toBeVisible()
+    })
+  })
+
   test('admin do Payload responde', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/admin`)
     expect(r.status()).toBe(200)

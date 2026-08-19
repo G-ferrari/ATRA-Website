@@ -1,5 +1,5 @@
 import type { Page, SiteSetting } from '@/payload-types'
-import type { Bloco, MetricaInstitucional, PartnerBadge, Selo, TemaDoBloco } from '@/types/content'
+import type { Bloco, MetricaInstitucional, PartnerBadge, Selo, TemaDoBloco, Vaga } from '@/types/content'
 
 import { isPopulated, toImage, toImageOpcional, toTextos } from './shared'
 
@@ -170,6 +170,29 @@ export function toBlocos(
         })
         break
 
+      case 'ctaContact':
+        blocos.push({
+          ...base(b),
+          tipo: 'ctaContact',
+          title: b.title,
+          subtitle: vazio(b.subtitle),
+          showContactCard: b.showContactCard ?? true,
+        })
+        break
+
+      case 'jobsList':
+        blocos.push({
+          ...base(b),
+          tipo: 'jobsList',
+          eyebrow: vazio(b.eyebrow),
+          title: vazio(b.title),
+          description: vazio(b.description),
+          emptyText: vazio(b.emptyText),
+          // Preenchido pela página, que tem as vagas publicadas.
+          vagas: [],
+        })
+        break
+
       case 'partnerShowcase':
         blocos.push({
           ...base(b),
@@ -217,6 +240,12 @@ export function toBlocos(
     if (b.tipo === 'stickyPageNav') b.items = ancoras
   }
 
+  return blocos
+}
+
+/** Injeta as vagas resolvidas nos blocos `jobsList` (bloco não busca dado). */
+export function comVagas(blocos: Bloco[], vagas: Vaga[]): Bloco[] {
+  for (const b of blocos) if (b.tipo === 'jobsList') b.vagas = vagas
   return blocos
 }
 

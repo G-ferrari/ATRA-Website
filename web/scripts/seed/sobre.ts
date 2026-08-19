@@ -81,12 +81,18 @@ const paragrafos = (...textos: string[]) => ({
 
 const payload = await getPayload({ config })
 
-console.log('→ dados institucionais')
-await payload.updateGlobal({
-  slug: 'site-settings',
-  locale: 'pt',
-  data: { metrics: METRICAS, foundedYear: 2011 },
-})
+/** Igual a upsertMidia, mas resolvendo o caminho a partir de web/, não de legacy/. */
+async function upsertMidiaLocal(arquivo: string, alt: string) {
+  const nome = path.basename(arquivo)
+  const { docs } = await payload.find({ collection: 'media', where: { filename: { contains: nome.replace(/\.[^.]+$/, '') } }, limit: 1, depth: 0 })
+  if (docs[0]) return docs[0]
+  return payload.create({
+    collection: 'media',
+    data: { alt },
+    file: { data: readFileSync(path.resolve(process.cwd(), arquivo)), mimetype: 'image/png', name: nome, size: 0 },
+    locale: 'pt',
+  })
+}
 
 async function upsertMidia(arquivo: string, alt: string) {
   const nome = path.basename(arquivo)
@@ -111,6 +117,25 @@ async function upsertMidia(arquivo: string, alt: string) {
     locale: 'pt',
   })
 }
+
+console.log('→ dados institucionais')
+/* Selos GPTW e LIPT (Careers.tsx:306). O LIPT é arquivo local; o GPTW é hotlink
+ * do WordPress, então entra como marcador até a migração de mídia (MIG-071). */
+const lipt = await upsertMidia('public/imgs/lipt-2026.png', 'Selo LIPT 2026 — Lugares Incríveis Para Trabalhar')
+const gptw = await upsertMidiaLocal('scripts/seed/assets/capa-pendente.png', 'SELO GPTW PENDENTE — imagem real entra com a mídia (MIG-071)')
+
+await payload.updateGlobal({
+  slug: 'site-settings',
+  locale: 'pt',
+  data: {
+    metrics: METRICAS,
+    foundedYear: 2011,
+    seals: [
+      { name: 'Great Place To Work', image: gptw.id },
+      { name: 'LIPT 2026', image: lipt.id },
+    ],
+  },
+})
 
 console.log('→ fotos da ATRA')
 const fotos: number[] = []

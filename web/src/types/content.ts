@@ -223,6 +223,30 @@ export type BlocoStickyPageNav = Base & {
   items: { anchor: string; label: string }[]
 }
 
+export type Vaga = {
+  slug: string
+  title: string
+  area: string
+  locationLabel: string
+}
+
+export type BlocoCtaContact = Base & {
+  tipo: 'ctaContact'
+  title: string
+  subtitle: string | null
+  showContactCard: boolean
+}
+
+export type BlocoJobsList = Base & {
+  tipo: 'jobsList'
+  eyebrow: string | null
+  title: string | null
+  description: string | null
+  emptyText: string | null
+  /** Resolvido pela página, das vagas publicadas. */
+  vagas: Vaga[]
+}
+
 export type Bloco =
   | BlocoPageHero
   | BlocoRichTextSection
@@ -234,6 +258,8 @@ export type Bloco =
   | BlocoStickyPageNav
   | BlocoSealsBanner
   | BlocoProcessSteps
+  | BlocoCtaContact
+  | BlocoJobsList
 
 export type Seo = {
   title: string

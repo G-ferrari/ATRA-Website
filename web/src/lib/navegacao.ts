@@ -87,3 +87,11 @@ export const TEXTOS_CASCA = {
  * mídia junto com os outros 32 hotlinks (MIG-071). */
 export const LOGO_ATRA =
   'https://www.atra.com.br/wp-content/uploads/2025/08/atra_horizontal_cor-2048x1134.png'
+
+/* Redes sociais (P-26). No rodapé do protótipo apontavam para `#`; as URLs
+ * reais estavam no CTA de contato (`App.tsx:2412`). */
+export const REDES_SOCIAIS = {
+  linkedin: 'https://www.linkedin.com/company/atra-tecnologia/',
+  instagram: 'https://www.instagram.com/atratecnologia/',
+  youtube: 'https://www.youtube.com/@atratecnologia',
+} as const

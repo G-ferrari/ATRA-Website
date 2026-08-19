@@ -349,6 +349,38 @@ export const ProcessSteps: Block = {
   ],
 }
 
+export const CtaContact: Block = {
+  slug: 'ctaContact',
+  labels: { singular: { pt: 'Contato com formulário', en: 'Contact CTA' }, plural: { pt: 'Contatos', en: 'Contact CTAs' } },
+  fields: [
+    { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'subtitle', type: 'text', localized: true, label: { pt: 'Subtítulo', en: 'Subtitle' } },
+    {
+      name: 'showContactCard',
+      type: 'checkbox',
+      defaultValue: true,
+      label: { pt: 'Mostrar o cartão de contato', en: 'Show the contact card' },
+      admin: { description: { pt: 'Telefone, e-mail, endereço e redes ao lado do formulário.', en: 'Phone, e-mail, address and socials beside the form.' } },
+    },
+    ...camposComuns,
+  ],
+}
+
+export const JobsList: Block = {
+  slug: 'jobsList',
+  labels: { singular: { pt: 'Lista de vagas', en: 'Jobs list' }, plural: { pt: 'Listas de vagas', en: 'Jobs lists' } },
+  /* Sem campo de vagas: elas vêm da collection `jobs` (as publicadas), resolvidas
+   * na página. Digitar a lista à mão recriaria o problema que a collection
+   * existe para resolver — vaga fechada continuando no ar. */
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    { name: 'emptyText', type: 'text', localized: true, label: { pt: 'Texto quando não há vagas', en: 'Empty text' } },
+    ...camposComuns,
+  ],
+}
+
 export const BLOCOS = [
   PageHero,
   StickyPageNav,
@@ -359,5 +391,7 @@ export const BLOCOS = [
   PartnerShowcase,
   SealsBanner,
   ProcessSteps,
+  CtaContact,
+  JobsList,
   CtaBanner,
 ]

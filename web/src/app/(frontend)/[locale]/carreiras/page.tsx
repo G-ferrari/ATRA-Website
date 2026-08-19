@@ -6,7 +6,7 @@ import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { resolverPagina } from '@/lib/paginas'
 
-/* /sobre (MIG-049) — página montada por blocos. Casca fina: resolve e renderiza.
+/* /carreiras (MIG-050) — página montada por blocos. Casca fina: resolve e renderiza.
  * Toda a estrutura vive no CMS. */
 
 export function generateStaticParams() {
@@ -16,7 +16,7 @@ export function generateStaticParams() {
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   if (!isLocale(locale)) return {}
-  const pagina = await resolverPagina('sobre', 'about', locale)
+  const pagina = await resolverPagina('carreiras', 'careers', locale)
   return pagina ? { title: pagina.title } : {}
 }
 
@@ -24,7 +24,7 @@ export default async function Pagina() {
   const locale = await getLocale()
   if (!isLocale(locale)) notFound()
 
-  const pagina = await resolverPagina('sobre', 'about', locale)
+  const pagina = await resolverPagina('carreiras', 'careers', locale)
   if (!pagina) notFound()
 
   return (

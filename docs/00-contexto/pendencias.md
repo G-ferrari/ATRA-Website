@@ -48,7 +48,7 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | **P-24** | **Quem da ATRA vai editar o site**, e quem é o ponto de contato nos 30 dias após o cutover? | treinamento e guia do editor (D-20) | Sem nome, o treinamento não tem convidado e o guia não tem destinatário — e o objetivo da migração depende de alguém do outro lado |
 | **P-21** | Ligar o proxy da Cloudflare (nuvem laranja)? Hoje o DNS está lá, mas em modo direto | CDN, cache, WAF | Ganho de graça em performance e proteção; custa uma camada a mais para depurar. Recomendação: **depois** do cutover estabilizar |
 | **P-22** | Replicar `form-submissions` para fora do banco em tempo real? | RPO dos leads | Com backup diário, o RPO dos leads é de até 24 h. Para conteúdo é aceitável; para lead, não — lead perdido não volta. Depende de P-18 |
-| **P-26** | Quais as **URLs reais de LinkedIn, Instagram e YouTube** da ATRA? No protótipo os três apontam para `#` | rodapé | O rodapé agora está em **toda** página do site novo — três links mortos em 100% do site, em posição de destaque |
+| ~~P-26~~ | ~~URLs reais de LinkedIn, Instagram e YouTube~~ | — | ✅ **Respondida por evidência (19/08).** O rodapé aponta para `#`, mas o CTA de contato (`App.tsx:2412`) traz as três: linkedin.com/company/atra-tecnologia, instagram.com/atratecnologia, youtube.com/@atratecnologia. Aplicadas no rodapé |
 | **P-23** | **Quem tem acesso à conta Cloudflare da ATRA?** | cutover | Sem resolver com antecedência, o cutover trava no passo mais crítico. Barato agora, caro às 7h da manhã do dia da virada |
 
 ### Encaminhamento

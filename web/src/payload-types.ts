@@ -788,6 +788,46 @@ export interface Page {
       }
     | {
         title: string;
+        subtitle?: string | null;
+        /**
+         * Phone, e-mail, address and socials beside the form.
+         */
+        showContactCard?: boolean | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ctaContact';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        description?: string | null;
+        emptyText?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'jobsList';
+      }
+    | {
+        title: string;
         highlight?: string | null;
         description?: string | null;
         cta?: {
@@ -1525,6 +1565,33 @@ export interface PagesSelect<T extends boolean = true> {
                     description?: T;
                     id?: T;
                   };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaContact?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              showContactCard?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        jobsList?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              emptyText?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;

@@ -1,3 +1,4 @@
+import type { Locale } from '@/lib/locales'
 import type { Bloco } from '@/types/content'
 
 import { BlocoCta } from './bloco-cta'
@@ -6,7 +7,9 @@ import { BlocoHero } from './bloco-hero'
 import { BlocoMenuDaPagina } from './bloco-menu-da-pagina'
 import { BlocoNumeros } from './bloco-numeros'
 import { BlocoEtapas } from './bloco-etapas'
+import { BlocoContato } from './bloco-contato'
 import { BlocoParceiros } from './bloco-parceiros'
+import { BlocoVagas } from './bloco-vagas'
 import { BlocoSelos } from './bloco-selos'
 import { BlocoTexto } from './bloco-texto'
 import { BlocoValores } from './bloco-valores'
@@ -17,7 +20,7 @@ import { BlocoValores } from './bloco-valores'
  * O `switch` é exaustivo: `Bloco` é união discriminada, então bloco novo sem
  * caso aqui não compila. É de propósito — é o que impede uma seção existir no
  * CMS e não aparecer no site. */
-export function RenderBlocks({ blocos }: { blocos: Bloco[] }) {
+export function RenderBlocks({ blocos, locale }: { blocos: Bloco[]; locale: Locale }) {
   return (
     <>
       {blocos.map((b) => {
@@ -36,6 +39,10 @@ export function RenderBlocks({ blocos }: { blocos: Bloco[] }) {
             return <BlocoSelos key={b.id} bloco={b} />
           case 'processSteps':
             return <BlocoEtapas key={b.id} bloco={b} />
+          case 'ctaContact':
+            return <BlocoContato key={b.id} bloco={b} />
+          case 'jobsList':
+            return <BlocoVagas key={b.id} bloco={b} locale={locale} />
           case 'partnerShowcase':
             return <BlocoParceiros key={b.id} bloco={b} />
           case 'valueCards':

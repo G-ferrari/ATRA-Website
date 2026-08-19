@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { CONTATO } from '@/lib/contato'
 import type { Locale } from '@/lib/locales'
-import { LOGO_ATRA, RODAPE, TEXTOS_CASCA } from '@/lib/navegacao'
+import { LOGO_ATRA, REDES_SOCIAIS, RODAPE, TEXTOS_CASCA } from '@/lib/navegacao'
 
 /* Rodapé — porte de `legacy/src/App.tsx:2450`.
  *
@@ -32,13 +32,15 @@ export function SiteFooter({ locale }: { locale: Locale }) {
             <p className="text-xs font-light leading-relaxed mb-4 text-white/60">{t.sobreATRA}</p>
             <div className="flex gap-2.5">
               {[
-                { Icone: Linkedin, nome: 'LinkedIn' },
-                { Icone: Instagram, nome: 'Instagram' },
-                { Icone: Youtube, nome: 'YouTube' },
-              ].map(({ Icone, nome }) => (
+                { Icone: Linkedin, nome: 'LinkedIn', url: REDES_SOCIAIS.linkedin },
+                { Icone: Instagram, nome: 'Instagram', url: REDES_SOCIAIS.instagram },
+                { Icone: Youtube, nome: 'YouTube', url: REDES_SOCIAIS.youtube },
+              ].map(({ Icone, nome, url }) => (
                 <a
                   key={nome}
-                  href="#"
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={nome}
                   className="w-8 h-8 rounded-md bg-white/10 hover:bg-primary transition-all flex items-center justify-center text-white"
                 >
