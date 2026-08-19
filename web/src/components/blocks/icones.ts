@@ -1,4 +1,5 @@
 import {
+  AppWindow,
   Award,
   Brain,
   ChartNoAxesColumn,
@@ -32,6 +33,7 @@ const REGISTRO: Record<string, LucideIcon> = {
   lock: Lock,
   workflow: Workflow,
   award: Award,
+  app: AppWindow,
 }
 
 const RECURSO = Sparkles

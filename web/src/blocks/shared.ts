@@ -84,6 +84,7 @@ export const ICONES = [
   'lock',
   'workflow',
   'award',
+  'app',
 ] as const
 
 export const campoDeIcone: Field = {

@@ -11,8 +11,17 @@ import { LEGACY_URL, NEXT_URL } from '../playwright.config'
  * traduzidos** (D-07), então `/en` + `/cases-de-sucesso` não é uma URL válida —
  * é `/en/success-stories`, e é justamente essa tradução que precisa ser testada. */
 const ROTAS_PORTADAS = {
-  pt: ['/', '/cases-de-sucesso', '/glossario', '/relatorios', '/ebooks', '/webinars', '/blog'],
-  en: ['/en', '/en/success-stories', '/en/glossary', '/en/reports', '/en/ebooks', '/en/webinars', '/en/blog'],
+  pt: ['/', '/cases-de-sucesso', '/glossario', '/relatorios', '/ebooks', '/webinars', '/blog', '/solucoes'],
+  en: [
+    '/en',
+    '/en/success-stories',
+    '/en/glossary',
+    '/en/reports',
+    '/en/ebooks',
+    '/en/webinars',
+    '/en/blog',
+    '/en/solutions',
+  ],
 } as const
 
 test.describe('app novo', () => {
@@ -180,6 +189,34 @@ test.describe('app novo', () => {
     }
     // Um parceiro existente mas sem hasPage não vira página.
     expect((await request.get(`${NEXT_URL}/parceiros/salesforce-informatica`)).status()).toBe(404)
+  })
+
+  /* `/solucoes` é a única rota que **muda de comportamento** (D-09): no legado
+     ela serve a página de IA, aqui vira índice. Não há gabarito visual, então o
+     aceite é este. */
+  test.describe('/solucoes — índice novo (D-09)', () => {
+    test('lista as 6 soluções agrupadas nas 3 categorias', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/solucoes`)
+      for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
+        await expect(page.getByRole('heading', { name: categoria, level: 2 })).toBeVisible()
+      }
+      await expect(page.getByRole('heading', { level: 3 })).toHaveCount(6)
+    })
+
+    /* Enquanto `hasPage` for falso a solução não é link. Sem isto o índice
+       ofereceria 5 destinos que respondem 404 — o buraco que MIG-050 abriu e
+       MIG-051 teve que fechar. MIG-056 liga a de IA e este teste muda junto. */
+    test('solução sem página não vira link', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/solucoes`)
+      await expect(page.locator('a[href*="/solucoes/"]')).toHaveCount(0)
+    })
+
+    test('o inglês responde no slug traduzido e o canônico redireciona', async ({ request }) => {
+      expect((await request.get(`${NEXT_URL}/en/solutions`)).status()).toBe(200)
+      // `/en/solucoes` serviria o mesmo conteúdo numa segunda URL (D-07).
+      const r = await request.get(`${NEXT_URL}/en/solucoes`, { maxRedirects: 0 })
+      expect(r.status()).toBe(308)
+    })
   })
 
   test('admin do Payload responde', async ({ request }) => {

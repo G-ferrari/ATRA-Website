@@ -278,6 +278,18 @@ export type ConsultantRole = {
   ecosystem: number
 }
 
+export type SolutionCategory = 'innovation-ai' | 'data-bi' | 'governance-culture'
+
+export type SolutionCard = {
+  slug: string
+  title: string
+  category: SolutionCategory
+  icon: string
+  shortDescription: string
+  /** `false` mostra o card sem link — a solução ainda não tem página (D-09). */
+  hasPage: boolean
+}
+
 export type Seo = {
   title: string
   description: string
