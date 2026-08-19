@@ -5,10 +5,10 @@ import { iconePorNome } from './icones'
 
 /* Grade de cards com ícone — porte de `legacy/src/pages/About.tsx:403` e `:434`.
  *
- * As duas ocorrências do legado usam a mesma grade de formas diferentes: uma só
- * com rótulo, centralizada e compacta; outra com título e descrição, alinhada à
- * esquerda. O card muda conforme `description` estiver preenchida, em vez de
- * existirem dois blocos quase idênticos para o editor escolher errado. */
+ * As duas ocorrências do legado usam a mesma grade com cards diferentes:
+ * `About.tsx:403` é compacto e centralizado; `:434` é card alto alinhado à
+ * esquerda. **Os dois só têm título** — a forma é escolha do bloco, não
+ * consequência de haver descrição, como assumi em MIG-047. */
 
 const COLUNAS: Record<2 | 3 | 4, string> = {
   2: 'grid-cols-1 sm:grid-cols-2',
@@ -17,7 +17,7 @@ const COLUNAS: Record<2 | 3 | 4, string> = {
 }
 
 export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
-  const compacto = bloco.items.every((i) => !i.description)
+  const compacto = bloco.variant === 'compact'
 
   return (
     <section
@@ -64,14 +64,22 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
                 key={item.title}
                 className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-6 group hover:border-primary/30 transition-all"
               >
-                <div className="w-10 h-10 rounded-[6px] bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary transition-all">
-                  <Icone className="w-5 h-5 text-primary group-hover:text-white transition-colors" aria-hidden />
+                <div className="w-12 h-12 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all">
+                  <Icone size={20} aria-hidden />
                 </div>
-                <h3 className="text-sm font-bold text-text-main mb-2 group-hover:text-primary transition-colors">
-                  {item.title}
-                </h3>
-                {item.description && (
-                  <p className="text-xs text-text-muted font-light leading-relaxed">{item.description}</p>
+                {item.description ? (
+                  <>
+                    <h3 className="text-sm font-bold text-text-main mb-2 group-hover:text-primary transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-text-muted font-light leading-relaxed">{item.description}</p>
+                  </>
+                ) : (
+                  /* Sem descrição o legado usa <p>, não <h3>: o texto é a frase
+                   * inteira do card (`About.tsx:445`). */
+                  <p className="text-xs text-text-muted font-light group-hover:text-text-main transition-colors leading-relaxed">
+                    {item.title}
+                  </p>
                 )}
               </div>
             )

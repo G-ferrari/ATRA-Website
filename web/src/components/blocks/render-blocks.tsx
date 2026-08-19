@@ -5,7 +5,7 @@ import { BlocoGradeDeCards } from './bloco-grade-de-cards'
 import { BlocoHero } from './bloco-hero'
 import { BlocoMenuDaPagina } from './bloco-menu-da-pagina'
 import { BlocoNumeros } from './bloco-numeros'
-import { BlocoSelos } from './bloco-selos'
+import { BlocoParceiros } from './bloco-parceiros'
 import { BlocoTexto } from './bloco-texto'
 import { BlocoValores } from './bloco-valores'
 
@@ -30,8 +30,8 @@ export function RenderBlocks({ blocos }: { blocos: Bloco[] }) {
             return <BlocoCta key={b.id} bloco={b} />
           case 'statsGrid':
             return <BlocoNumeros key={b.id} bloco={b} />
-          case 'sealsBanner':
-            return <BlocoSelos key={b.id} bloco={b} />
+          case 'partnerShowcase':
+            return <BlocoParceiros key={b.id} bloco={b} />
           case 'valueCards':
             return <BlocoValores key={b.id} bloco={b} />
           case 'stickyPageNav':

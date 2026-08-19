@@ -1,7 +1,7 @@
 import type { Page, SiteSetting } from '@/payload-types'
-import type { Bloco, MetricaInstitucional, Selo, TemaDoBloco } from '@/types/content'
+import type { Bloco, MetricaInstitucional, PartnerBadge, TemaDoBloco } from '@/types/content'
 
-import { toImage, toImageOpcional, toTextos } from './shared'
+import { isPopulated, toImageOpcional, toTextos } from './shared'
 
 /* Documento do Payload → blocos de apresentação.
  *
@@ -17,6 +17,20 @@ type BlocoDoPayload = NonNullable<Page['layout']>[number]
 const vazio = (v: string | null | undefined): string | null => {
   const t = v?.trim()
   return t ? t : null
+}
+
+/* Parceiro não populado é descartado em silêncio, não derruba: aqui é uma
+ * vitrine decorativa, e a página inteira fora do ar por um logo é troca ruim.
+ * Difere de `cases.heroImage`, onde a imagem é o conteúdo. */
+type ParceiroPopulado = { name: string; slug: string; logo: unknown }
+
+function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
+  if (!isPopulated<ParceiroPopulado>(valor)) return null
+  return {
+    name: valor.name,
+    slug: valor.slug,
+    logo: toImageOpcional(valor.logo as never, 'partnerShowcase.partners.logo'),
+  }
 }
 
 function base(b: BlocoDoPayload) {
@@ -37,10 +51,6 @@ export function toMetricas(g: SiteSetting | null | undefined): MetricaInstitucio
   }))
 }
 
-export function toSelos(g: SiteSetting | null | undefined): Selo[] {
-  return (g?.seals ?? []).map((s) => ({ name: s.name, image: toImage(s.image, 'siteSettings.seals.image') }))
-}
-
 /**
  * `institucional` chega resolvido pela página: bloco não busca dado
  * (blocos.md, regra 1). Passar o global inteiro para o mapper, e não para os
@@ -48,7 +58,7 @@ export function toSelos(g: SiteSetting | null | undefined): Selo[] {
  */
 export function toBlocos(
   layout: Page['layout'] | null | undefined,
-  institucional?: { metricas: MetricaInstitucional[]; selos: Selo[] },
+  institucional?: { metricas: MetricaInstitucional[] },
 ): Bloco[] {
   const blocos: Bloco[] = []
 
@@ -86,6 +96,7 @@ export function toBlocos(
           eyebrow: vazio(b.eyebrow),
           title: vazio(b.title),
           columns: Number(b.columns ?? 4) as 2 | 3 | 4,
+          variant: b.variant ?? 'compact',
           items: (b.items ?? []).map((i) => ({
             icon: i.icon,
             title: i.title,
@@ -123,13 +134,15 @@ export function toBlocos(
         })
         break
 
-      case 'sealsBanner':
+      case 'partnerShowcase':
         blocos.push({
           ...base(b),
-          tipo: 'sealsBanner',
+          tipo: 'partnerShowcase',
           title: vazio(b.title),
-          description: vazio(b.description),
-          seals: institucional?.selos ?? [],
+          grayscale: b.grayscale ?? true,
+          partners: (b.partners ?? [])
+            .map(toPartnerBadge)
+            .filter((p): p is PartnerBadge => p !== null),
         })
         break
 

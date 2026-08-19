@@ -52,6 +52,7 @@ export default async function aquecer() {
     `${NEXT_URL}/`,
     `${NEXT_URL}/en`,
     `${NEXT_URL}/en/success-stories`,
+    `${NEXT_URL}/en/about`,
     `${NEXT_URL}/admin`,
     `${NEXT_URL}/rota-que-nao-existe`,
     `${LEGACY_URL}/`,

@@ -102,7 +102,6 @@ describe('blocos de MIG-048', () => {
   it('statsGrid usa os números institucionais por padrão e os próprios quando pedido', () => {
     const institucional = {
       metricas: [{ value: 140, suffix: '+', label: 'Profissionais', icon: null }],
-      selos: [],
     }
 
     const [doGlobal, proprios] = toBlocos(
@@ -143,8 +142,17 @@ describe('blocos de MIG-048', () => {
     })
   })
 
-  it('sealsBanner sem selos no global chega vazio, e o componente decide não desenhar', () => {
-    const [b] = toBlocos(layout({ id: '1', blockType: 'sealsBanner', title: 'Parceiros' }))
-    expect(b).toMatchObject({ tipo: 'sealsBanner', title: 'Parceiros', seals: [] })
+  it('partnerShowcase descarta parceiro não populado em vez de derrubar a vitrine', () => {
+    const [b] = toBlocos(
+      layout({
+        id: '1',
+        blockType: 'partnerShowcase',
+        title: 'Parceiros',
+        // O primeiro veio como id (depth insuficiente); o segundo, populado.
+        partners: [7, { name: 'Google Cloud', slug: 'google-cloud', logo: null }],
+      }),
+    )
+    expect(b).toMatchObject({ tipo: 'partnerShowcase', grayscale: true })
+    expect((b as { partners: unknown[] }).partners).toHaveLength(1)
   })
 })

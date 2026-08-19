@@ -9,10 +9,42 @@ import { TextoDestacado } from './texto-destacado'
 /* Faixa de chamada — porte de `legacy/src/components/CaseDetailBase.tsx:185`,
  * a mesma caixa que fecha `About.tsx:456`.
  *
+ * Duas formas, porque o legado tem duas: `primary` é a caixa azul arredondada
+ * do case; `subtle` é a faixa de largura inteira que fecha `/sobre`, sem caixa
+ * interna e com borda no topo.
+ *
  * Sem o bloco de telefone e e-mail que a versão do case tem: aquele é o
  * `ctaContact` (MIG-053), que carrega formulário. Aqui é só a faixa. */
 export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
   const azul = bloco.variant === 'primary'
+
+  if (!azul) {
+    return (
+      <section
+        id={bloco.anchor ?? undefined}
+        className="py-16 md:py-20 bg-surface-2 border-t border-slate-200 dark:border-white/5 text-center scroll-mt-32"
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-4 tracking-tight">
+            <TextoDestacado texto={bloco.title} destaque={bloco.highlight} />
+          </h2>
+          {bloco.description && (
+            <p className="text-xs sm:text-sm text-text-muted font-light mb-8 max-w-xl mx-auto leading-relaxed">
+              {bloco.description}
+            </p>
+          )}
+          {bloco.cta && (
+            <Link
+              href={bloco.cta.href}
+              className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-[6px] text-xs font-semibold transition-all shadow-md shadow-primary/20"
+            >
+              {bloco.cta.label} <ArrowRight size={14} aria-hidden />
+            </Link>
+          )}
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section

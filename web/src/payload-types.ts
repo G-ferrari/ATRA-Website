@@ -557,6 +557,7 @@ export interface Page {
         eyebrow?: string | null;
         title?: string | null;
         columns?: ('2' | '3' | '4') | null;
+        variant?: ('compact' | 'card') | null;
         items: {
           icon:
             | 'sparkles'
@@ -619,7 +620,11 @@ export interface Page {
       }
     | {
         title?: string | null;
-        description?: string | null;
+        partners: (number | Partner)[];
+        /**
+         * They gain colour on hover.
+         */
+        grayscale?: boolean | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -627,7 +632,7 @@ export interface Page {
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
-        blockType: 'sealsBanner';
+        blockType: 'partnerShowcase';
       }
     | {
         title: string;
@@ -1241,6 +1246,7 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               columns?: T;
+              variant?: T;
               items?:
                 | T
                 | {
@@ -1272,11 +1278,12 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        sealsBanner?:
+        partnerShowcase?:
           | T
           | {
               title?: T;
-              description?: T;
+              partners?: T;
+              grayscale?: T;
               anchor?: T;
               theme?: T;
               id?: T;
@@ -1483,13 +1490,6 @@ export interface SiteSetting {
         id?: string | null;
       }[]
     | null;
-  seals?:
-    | {
-        name: string;
-        image: number | Media;
-        id?: string | null;
-      }[]
-    | null;
   foundedYear?: number | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1506,13 +1506,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         suffix?: T;
         label?: T;
         icon?: T;
-        id?: T;
-      };
-  seals?:
-    | T
-    | {
-        name?: T;
-        image?: T;
         id?: T;
       };
   foundedYear?: T;

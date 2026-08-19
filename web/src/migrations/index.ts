@@ -6,8 +6,8 @@ import * as migration_20260818_190708_add_glossary_terms from './20260818_190708
 import * as migration_20260818_191612_add_resources from './20260818_191612_add_resources';
 import * as migration_20260818_211820_add_webinars from './20260818_211820_add_webinars';
 import * as migration_20260818_214047_add_posts from './20260818_214047_add_posts';
-import * as migration_20260819_092500_add_pages_blocks from './20260819_092500_add_pages_blocks';
-import * as migration_20260819_103535_add_blocks_mig048 from './20260819_103535_add_blocks_mig048';
+import * as migration_20260819_112748_add_pages_and_blocks from './20260819_112748_add_pages_and_blocks';
+import * as migration_20260819_112945_add_icon_card_variant from './20260819_112945_add_icon_card_variant';
 
 export const migrations = [
   {
@@ -51,13 +51,13 @@ export const migrations = [
     name: '20260818_214047_add_posts',
   },
   {
-    up: migration_20260819_092500_add_pages_blocks.up,
-    down: migration_20260819_092500_add_pages_blocks.down,
-    name: '20260819_092500_add_pages_blocks',
+    up: migration_20260819_112748_add_pages_and_blocks.up,
+    down: migration_20260819_112748_add_pages_and_blocks.down,
+    name: '20260819_112748_add_pages_and_blocks',
   },
   {
-    up: migration_20260819_103535_add_blocks_mig048.up,
-    down: migration_20260819_103535_add_blocks_mig048.down,
-    name: '20260819_103535_add_blocks_mig048'
+    up: migration_20260819_112945_add_icon_card_variant.up,
+    down: migration_20260819_112945_add_icon_card_variant.down,
+    name: '20260819_112945_add_icon_card_variant'
   },
 ];

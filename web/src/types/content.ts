@@ -150,6 +150,7 @@ export type BlocoIconCardGrid = Base & {
   eyebrow: string | null
   title: string | null
   columns: 2 | 3 | 4
+  variant: 'compact' | 'card'
   items: { icon: string; title: string; description: string | null }[]
 }
 
@@ -169,22 +170,17 @@ export type MetricaInstitucional = {
   icon: string | null
 }
 
-export type Selo = {
-  name: string
-  image: Image
-}
-
 export type BlocoStatsGrid = Base & {
   tipo: 'statsGrid'
   /** Já resolvido pela página: o bloco não sabe de onde os números vieram. */
   items: MetricaInstitucional[]
 }
 
-export type BlocoSealsBanner = Base & {
-  tipo: 'sealsBanner'
+export type BlocoPartnerShowcase = Base & {
+  tipo: 'partnerShowcase'
   title: string | null
-  description: string | null
-  seals: Selo[]
+  partners: PartnerBadge[]
+  grayscale: boolean
 }
 
 export type BlocoValueCards = Base & {
@@ -205,7 +201,7 @@ export type Bloco =
   | BlocoIconCardGrid
   | BlocoCtaBanner
   | BlocoStatsGrid
-  | BlocoSealsBanner
+  | BlocoPartnerShowcase
   | BlocoValueCards
   | BlocoStickyPageNav
 

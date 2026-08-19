@@ -81,6 +81,20 @@ export const IconCardGrid: Block = {
       label: { pt: 'Colunas', en: 'Columns' },
     },
     {
+      /* O legado usa a mesma grade com dois cards diferentes, e **os dois só
+       * têm título** (`About.tsx:403` e `:434`) — a forma é escolha do bloco,
+       * não consequência de ter descrição. Foi o que assumi em MIG-047 e estava
+       * errado. */
+      name: 'variant',
+      type: 'select',
+      defaultValue: 'compact',
+      options: [
+        { value: 'compact', label: { pt: 'Compacto e centralizado', en: 'Compact, centred' } },
+        { value: 'card', label: { pt: 'Card alto', en: 'Tall card' } },
+      ],
+      label: { pt: 'Formato do card', en: 'Card shape' },
+    },
+    {
       name: 'items',
       type: 'array',
       required: true,
@@ -173,12 +187,28 @@ export const StatsGrid: Block = {
   ],
 }
 
-export const SealsBanner: Block = {
-  slug: 'sealsBanner',
-  labels: { singular: { pt: 'Faixa de selos', en: 'Seals banner' }, plural: { pt: 'Faixas de selos', en: 'Seals banners' } },
+export const PartnerShowcase: Block = {
+  slug: 'partnerShowcase',
+  labels: { singular: { pt: 'Vitrine de parceiros', en: 'Partner showcase' }, plural: { pt: 'Vitrines', en: 'Partner showcases' } },
   fields: [
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
-    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    {
+      /* Relação com `partners`, não upload solto: o logo do Google Cloud
+       * aparece aqui, na página do parceiro e no card de case. Um lugar só. */
+      name: 'partners',
+      type: 'relationship',
+      relationTo: 'partners',
+      hasMany: true,
+      required: true,
+      label: { pt: 'Parceiros', en: 'Partners' },
+    },
+    {
+      name: 'grayscale',
+      type: 'checkbox',
+      defaultValue: true,
+      label: { pt: 'Logos em escala de cinza', en: 'Greyscale logos' },
+      admin: { description: { pt: 'Ganham cor ao passar o mouse.', en: 'They gain colour on hover.' } },
+    },
     ...camposComuns,
   ],
 }
@@ -231,6 +261,6 @@ export const BLOCOS = [
   RichTextSection,
   IconCardGrid,
   ValueCards,
-  SealsBanner,
+  PartnerShowcase,
   CtaBanner,
 ]
