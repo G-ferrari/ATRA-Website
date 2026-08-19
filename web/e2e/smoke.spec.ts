@@ -129,12 +129,23 @@ test.describe('app novo', () => {
   })
 
   test.describe('/carreiras e /contato — páginas de bloco sem gabarito', () => {
-    test('a vaga da collection aparece e leva ao detalhe', async ({ page }) => {
+    test('a vaga da collection aparece e leva a um detalhe que responde 200', async ({ page }) => {
       await page.goto(`${NEXT_URL}/carreiras`)
       const vaga = page.getByRole('link', { name: /Engenheiro\(a\) de Dados SR/ }).first()
       await expect(vaga).toBeVisible()
       await vaga.click()
-      await expect(page).toHaveURL(/\/carreiras\//)
+      // A vaga leva a /carreiras/[slug] (MIG-051), que precisa **responder**,
+      // não só mudar a URL: o link ficou quebrado entre MIG-050 e esta task.
+      await expect(page).toHaveURL(/\/carreiras\/.+/)
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    })
+
+    /* A vaga sem descrição sai com noindex, como o post sem corpo (D-08). */
+    test('vaga sem descrição sai com noindex; slug inexistente dá 404', async ({ request }) => {
+      const ok = await request.get(`${NEXT_URL}/carreiras/engenheiro-a-de-dados-sr`)
+      expect(await ok.text()).toContain('noindex')
+      const nope = await request.get(`${NEXT_URL}/carreiras/vaga-que-nao-existe`)
+      expect(nope.status()).toBe(404)
     })
 
     /* O formulário existe mas não envia (P-14, P-18): o botão fica desabilitado

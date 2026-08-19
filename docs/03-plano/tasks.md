@@ -91,7 +91,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-049 | `/sobre` (a collection `pages` veio em 047) | 048 | 4h | **done** — no gate, ≤0,1% nos 3 viewports |
 | MIG-049a | `pageHero.mediaMode`, imagem no `richTextSection`, rampa de colunas por variante, ids de bloco no seed EN, `navLabel`, `logoScale` | 049 | 3h | **done** |
 | MIG-050 | `/carreiras` + collection `jobs` + blocos `jobsList`/`sealsBanner`/`processSteps` | 048 | 4h | **done** |
-| MIG-051 | `/carreiras/[slug]` (vaga) | 050 | 2h |
+| MIG-051 | `/carreiras/[slug]` (vaga) | 050 | 2h | **done** |
 | MIG-052 | `/consultores` + `specialist-roles` | 047 | 4h |
 | MIG-053 | Bloco `ctaContact` + `/contato` (D-10) | 047 | 3h | **done** |
 | MIG-054 | `/parceiros/[slug]` | 047 | 3h |

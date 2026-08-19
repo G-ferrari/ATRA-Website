@@ -230,6 +230,12 @@ export type Vaga = {
   locationLabel: string
 }
 
+export type VagaDetalhe = Vaga & {
+  summary: string
+  /** Documento Lexical serializado; `null` enquanto ninguém escreveu. */
+  body: unknown | null
+}
+
 export type BlocoCtaContact = Base & {
   tipo: 'ctaContact'
   title: string
