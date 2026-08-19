@@ -18,6 +18,7 @@ import * as migration_20260819_141533_add_jobs_and_career_blocks from './2026081
 import * as migration_20260819_143627_add_contact_and_jobs_blocks from './20260819_143627_add_contact_and_jobs_blocks';
 import * as migration_20260819_151003_add_specialist_roles from './20260819_151003_add_specialist_roles';
 import * as migration_20260819_151217_add_role_gradient from './20260819_151217_add_role_gradient';
+import * as migration_20260819_155648_add_partner_layout from './20260819_155648_add_partner_layout';
 
 export const migrations = [
   {
@@ -118,6 +119,11 @@ export const migrations = [
   {
     up: migration_20260819_151217_add_role_gradient.up,
     down: migration_20260819_151217_add_role_gradient.down,
-    name: '20260819_151217_add_role_gradient'
+    name: '20260819_151217_add_role_gradient',
+  },
+  {
+    up: migration_20260819_155648_add_partner_layout.up,
+    down: migration_20260819_155648_add_partner_layout.down,
+    name: '20260819_155648_add_partner_layout'
   },
 ];

@@ -172,6 +172,16 @@ test.describe('app novo', () => {
     expect(n).toBeLessThan(8)
   })
 
+  /* `/parceiros/[slug]` monta a página do parceiro por blocos guardados na
+     collection. Sem gabarito — o legado usava um componente fixo. */
+  test('a página do parceiro responde e o slug sem página dá 404', async ({ request }) => {
+    for (const url of [`${NEXT_URL}/parceiros/google-cloud`, `${NEXT_URL}/en/partners/google-cloud`]) {
+      expect((await request.get(url)).status(), url).toBe(200)
+    }
+    // Um parceiro existente mas sem hasPage não vira página.
+    expect((await request.get(`${NEXT_URL}/parceiros/salesforce-informatica`)).status()).toBe(404)
+  })
+
   test('admin do Payload responde', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/admin`)
     expect(r.status()).toBe(200)

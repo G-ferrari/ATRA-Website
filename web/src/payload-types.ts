@@ -314,6 +314,328 @@ export interface Partner {
    * Without this, the partner appears in the menu but is not a link.
    */
   hasPage?: boolean | null;
+  layout?:
+    | (
+        | {
+            badge?: string | null;
+            chip?: string | null;
+            title: string;
+            /**
+             * Slices of the title shown in blue. Each must appear in the title.
+             */
+            highlight?: string[] | null;
+            description?: string | null;
+            mediaMode?: ('none' | 'image' | 'marquee') | null;
+            /**
+             * With a single image only the first is used. In the marquee, all of them.
+             */
+            images?: (number | Media)[] | null;
+            ctas?:
+              | {
+                  label: string;
+                  href: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pageHero';
+          }
+        | {
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'stickyPageNav';
+          }
+        | {
+            source?: ('siteSettings' | 'custom') | null;
+            customItems?:
+              | {
+                  value: number;
+                  suffix?: string | null;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'statsGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            image?: (number | null) | Media;
+            ctas?:
+              | {
+                  label: string;
+                  href: string;
+                  id?: string | null;
+                }[]
+              | null;
+            imagePosition?: ('left' | 'right' | 'none') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richTextSection';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            variant?: ('compact' | 'card') | null;
+            headerWidth?: ('full' | 'narrow') | null;
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award';
+              title: string;
+              /**
+               * Left empty, the card renders compact and centred.
+               */
+              description?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'iconCardGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award';
+              glowColor?: ('blue' | 'orange') | null;
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'valueCards';
+          }
+        | {
+            title?: string | null;
+            partners: (number | Partner)[];
+            /**
+             * They gain colour on hover.
+             */
+            grayscale?: boolean | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerShowcase';
+          }
+        | {
+            title?: string | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'sealsBanner';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
+            /**
+             * Numbering follows the order. Drag to reorder.
+             */
+            steps: {
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'processSteps';
+          }
+        | {
+            title: string;
+            subtitle?: string | null;
+            /**
+             * Phone, e-mail, address and socials beside the form.
+             */
+            showContactCard?: boolean | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaContact';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
+            emptyText?: string | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'jobsList';
+          }
+        | {
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            variant?: ('primary' | 'subtle') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaBanner';
+          }
+      )[]
+    | null;
   order?: number | null;
   /**
    * Optional. When empty, the site falls back to the page title and summary.
@@ -1363,6 +1685,220 @@ export interface PartnersSelect<T extends boolean = true> {
   tier?: T;
   featured?: T;
   hasPage?: T;
+  layout?:
+    | T
+    | {
+        pageHero?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              mediaMode?: T;
+              images?: T;
+              ctas?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        stickyPageNav?:
+          | T
+          | {
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        statsGrid?:
+          | T
+          | {
+              source?: T;
+              customItems?:
+                | T
+                | {
+                    value?: T;
+                    suffix?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richTextSection?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              body?: T;
+              image?: T;
+              ctas?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              imagePosition?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        iconCardGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              columns?: T;
+              variant?: T;
+              headerWidth?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        valueCards?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    glowColor?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partnerShowcase?:
+          | T
+          | {
+              title?: T;
+              partners?: T;
+              grayscale?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sealsBanner?:
+          | T
+          | {
+              title?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        processSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              steps?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaContact?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              showContactCard?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        jobsList?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              emptyText?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaBanner?:
+          | T
+          | {
+              title?: T;
+              highlight?: T;
+              description?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
   order?: T;
   seo?:
     | T

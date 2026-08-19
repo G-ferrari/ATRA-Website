@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { isEditorOrAdmin, isPublic } from '@/access'
 import { seoField } from '@/fields/seo'
+import { BLOCOS } from '@/blocks'
 import { slugField } from '@/fields/slug'
 
 /* Parceiros de tecnologia. Separada de `clients` porque cliente é quem
@@ -99,6 +100,16 @@ export const Partners: CollectionConfig = {
           en: 'Without this, the partner appears in the menu but is not a link.',
         },
       },
+    },
+    {
+      /* A página do parceiro é montada por blocos, como /sobre — só aparece se
+       * `hasPage`. O legado tinha um `PartnerPageBase` fixo; blocos dão a mesma
+       * estrutura (herói, texto, grades, faixa) sem página nova por parceiro. */
+      name: 'layout',
+      type: 'blocks',
+      blocks: BLOCOS,
+      label: { pt: 'Seções da página', en: 'Page sections' },
+      admin: { condition: (_, irmaos) => Boolean(irmaos?.hasPage) },
     },
     {
       name: 'order',

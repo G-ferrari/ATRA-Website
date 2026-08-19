@@ -94,7 +94,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-051 | `/carreiras/[slug]` (vaga) | 050 | 2h | **done** |
 | MIG-052 | `/consultores` + `specialist-roles` | 047 | 4h | **done** |
 | MIG-053 | Bloco `ctaContact` + `/contato` (D-10) | 047 | 3h | **done** |
-| MIG-054 | `/parceiros/[slug]` | 047 | 3h |
+| MIG-054 | `/parceiros/[slug]` | 047 | 3h | **done** |
 | MIG-055 | `/solucoes` (índice) + collection `solutions` | 047 | 3h |
 | MIG-056 | `/solucoes/[slug]` | 055 | 3h |
 | MIG-057 | Blocos da home: `hero`, `featureTabs`, `logoMarquee` | 048 | 5h |
