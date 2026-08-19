@@ -158,6 +158,20 @@ test.describe('app novo', () => {
     })
   })
 
+  /* `/consultores` fica fora do gate: o legado tem hero com stats animados,
+     modal de detalhe e formulário que não foram portados integralmente. O
+     catálogo filtrável, que é o núcleo, é verificado aqui. */
+  test('o catálogo de consultores filtra pelo seletor de senioridade', async ({ page }) => {
+    await page.goto(`${NEXT_URL}/consultores`)
+    // 8 perfis no total, cada um com um botão Solicitar.
+    await expect(page.getByRole('link', { name: 'Solicitar' })).toHaveCount(8)
+    // Filtrar por "Pleno" reduz a lista sem esvaziá-la.
+    await page.getByLabel('Senioridade').selectOption('Lead / Principal')
+    const n = await page.getByRole('link', { name: 'Solicitar' }).count()
+    expect(n).toBeGreaterThan(0)
+    expect(n).toBeLessThan(8)
+  })
+
   test('admin do Payload responde', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/admin`)
     expect(r.status()).toBe(200)

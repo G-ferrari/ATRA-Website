@@ -267,6 +267,17 @@ export type Bloco =
   | BlocoCtaContact
   | BlocoJobsList
 
+export type ConsultantRole = {
+  slug: string
+  role: string
+  code: string
+  level: string
+  gradient: string
+  description: string
+  tags: string[]
+  ecosystem: number
+}
+
 export type Seo = {
   title: string
   description: string

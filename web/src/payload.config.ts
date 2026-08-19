@@ -21,6 +21,7 @@ import { Pages } from './collections/Pages'
 import { Partners } from './collections/Partners'
 import { Posts } from './collections/Posts'
 import { Resources } from './collections/Resources'
+import { SpecialistRoles } from './collections/SpecialistRoles'
 import { Testimonials } from './collections/Testimonials'
 import { Topics } from './collections/Topics'
 import { Users } from './collections/Users'
@@ -51,7 +52,7 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Webinars],
+  collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, SpecialistRoles, Webinars],
 
   globals: [SiteSettings],
 

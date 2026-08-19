@@ -78,6 +78,7 @@ export interface Config {
     pages: Page;
     posts: Post;
     resources: Resource;
+    'specialist-roles': SpecialistRole;
     webinars: Webinar;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -97,6 +98,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
+    'specialist-roles': SpecialistRolesSelect<false> | SpecialistRolesSelect<true>;
     webinars: WebinarsSelect<false> | WebinarsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -1008,6 +1010,63 @@ export interface Resource {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Consultant profiles shown on /consultores.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialist-roles".
+ */
+export interface SpecialistRole {
+  id: number;
+  role: string;
+  /**
+   * Two or three letters, on the card badge.
+   */
+  code: string;
+  level: 'Senior' | 'Pleno' | 'Lead / Principal';
+  icon:
+    | 'sparkles'
+    | 'target'
+    | 'shield'
+    | 'rocket'
+    | 'users'
+    | 'database'
+    | 'cloud'
+    | 'brain'
+    | 'chart'
+    | 'lock'
+    | 'workflow'
+    | 'award';
+  gradient:
+    | 'blue-cyan'
+    | 'cyan-teal'
+    | 'indigo-blue'
+    | 'sky-indigo'
+    | 'purple-indigo'
+    | 'emerald-teal'
+    | 'amber-orange'
+    | 'blue-teal';
+  description: string;
+  /**
+   * Technologies and topics. Also feed the page filter.
+   */
+  tags: {
+    name: string;
+    id?: string | null;
+  }[];
+  allocatedProjects?: number | null;
+  allocatedPartners?: number | null;
+  totalTeamSize?: number | null;
+  certifications?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  order: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Webinars and online events. The video comes in as a YouTube or Vimeo link.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1134,6 +1193,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'resources';
         value: number | Resource;
+      } | null)
+    | ({
+        relationTo: 'specialist-roles';
+        value: number | SpecialistRole;
       } | null)
     | ({
         relationTo: 'webinars';
@@ -1691,6 +1754,36 @@ export interface ResourcesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialist-roles_select".
+ */
+export interface SpecialistRolesSelect<T extends boolean = true> {
+  role?: T;
+  code?: T;
+  level?: T;
+  icon?: T;
+  gradient?: T;
+  description?: T;
+  tags?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  allocatedProjects?: T;
+  allocatedPartners?: T;
+  totalTeamSize?: T;
+  certifications?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -16,6 +16,8 @@ import * as migration_20260819_123913_add_partner_logo_scale from './20260819_12
 import * as migration_20260819_124247_add_nav_label from './20260819_124247_add_nav_label';
 import * as migration_20260819_141533_add_jobs_and_career_blocks from './20260819_141533_add_jobs_and_career_blocks';
 import * as migration_20260819_143627_add_contact_and_jobs_blocks from './20260819_143627_add_contact_and_jobs_blocks';
+import * as migration_20260819_151003_add_specialist_roles from './20260819_151003_add_specialist_roles';
+import * as migration_20260819_151217_add_role_gradient from './20260819_151217_add_role_gradient';
 
 export const migrations = [
   {
@@ -106,6 +108,16 @@ export const migrations = [
   {
     up: migration_20260819_143627_add_contact_and_jobs_blocks.up,
     down: migration_20260819_143627_add_contact_and_jobs_blocks.down,
-    name: '20260819_143627_add_contact_and_jobs_blocks'
+    name: '20260819_143627_add_contact_and_jobs_blocks',
+  },
+  {
+    up: migration_20260819_151003_add_specialist_roles.up,
+    down: migration_20260819_151003_add_specialist_roles.down,
+    name: '20260819_151003_add_specialist_roles',
+  },
+  {
+    up: migration_20260819_151217_add_role_gradient.up,
+    down: migration_20260819_151217_add_role_gradient.down,
+    name: '20260819_151217_add_role_gradient'
   },
 ];
