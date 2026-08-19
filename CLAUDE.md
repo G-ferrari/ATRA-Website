@@ -149,6 +149,10 @@ Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
 | CSS de teste sem efeito | `<style>` anexado em `documentElement` some quando o parser monta `head` |
 | `pnpm lint` acusa milhares de erros | Está lintando `playwright-report/` |
 | Build do CI falha em `select from "cases"` | Postgres vazio: falta `pnpm payload migrate` |
+| Seção sai alguns px mais alta e o `leading-*` "não pega" | `text-xl` define tamanho **e** entrelinha, então o `cn()` (tailwind-merge) descarta um `leading-tight` que venha **antes** dele. Pôr o tamanho primeiro. O legado sofre do mesmo mal ao contrário: em `SolutionAI.tsx:182` o `flex` anula o `hidden md:block`, e o menu fixo aparece no mobile |
+| Texto localizado em branco depois de semear o 2º idioma | Layout reenviado sem os ids **de todos os níveis** — `items`, `metrics`, `bullets` também têm id. Usar `casarIds` (`scripts/seed/ids.ts`); já escondeu 800px em /sobre e 742px na página de solução |
+| Consulta a uma collection com muitos blocos leva dezenas de segundos | O adapter Postgres faz um `LEFT JOIN LATERAL` por tipo de bloco, mesmo com `depth: 0`. Índice que só mostra cartão precisa de `select` |
+| Gerador de migração trava sem imprimir nada | Remoção de coluna vira pergunta interativa do drizzle, que não roda sem TTY. Preferir migração aditiva; refundir as não commitadas quando não der |
 
 ## Estado
 

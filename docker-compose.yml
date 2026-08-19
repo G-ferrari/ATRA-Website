@@ -15,6 +15,19 @@ services:
       context: ./web
       dockerfile: Dockerfile.dev
     restart: unless-stopped
+    # Teto de CPU, medido: sem ele o contêiner não tem cota nenhuma
+    # (`cpu.max = max`) e o Docker Desktop, no padrão, entrega à VM os 10 núcleos
+    # da máquina. Uma compilação a frio de **uma** rota chegou a 514% de CPU, e a
+    # primeira requisição a `/` levou 86s — 68s só de Turbopack — com o Mac
+    # inteiro parado nesse intervalo.
+    #
+    # ⚠️ Isto **não** deixa a compilação mais rápida; deixa a máquina utilizável
+    # enquanto ela acontece. Os 4 núcleos que sobram são para o macOS.
+    #
+    # O contêiner continua vendo `nproc = 10`, então o Turbopack segue criando 10
+    # workers — eles apenas dividem a cota de 6. Não adianta procurar variável
+    # para reduzir o número de workers: nem o libuv nem o Turbopack leem o cgroup.
+    cpus: 6
     ports:
       - "3000:3000"
     environment:
