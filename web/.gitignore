@@ -47,6 +47,9 @@ next-env.d.ts
 
 # Amostras baixadas do WordPress (regeneráveis por scripts/wp-import)
 /scripts/wp-import/.sample/
+# Cache do cliente da API do WP: evita bater 207× na produção da ATRA a cada
+# execução de MIG-081..086. Apagar a pasta (ou WP_IMPORT_CACHE=refresh) rebaixa.
+/scripts/wp-import/.cache/
 
 # pnpm: store local do container, nunca versionado
 .pnpm-store/

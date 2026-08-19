@@ -2,18 +2,13 @@
  * O piloto converte 12; isto verifica se a amostra é representativa.
  *
  * Rodar com: pnpm exec tsx scripts/wp-import/scan-corpus.ts */
-import { WP_API, WP_USER_AGENT, type WpPost } from './types'
+import { createWpClient } from './client'
 
-const posts: WpPost[] = []
-for (let pagina = 1; ; pagina++) {
-  const r = await fetch(`${WP_API}/posts?per_page=100&page=${pagina}&_fields=id,slug,date,content`, {
-    headers: { 'user-agent': WP_USER_AGENT },
-  })
-  if (!r.ok) break
-  const lote = (await r.json()) as WpPost[]
-  posts.push(...lote)
-  if (lote.length < 100) break
-}
+// Era um fetch ad-hoc que parava quando o lote vinha com menos de 100 e engolia
+// qualquer !ok como fim da coleção — um 500 no meio devolvia corpus parcial e a
+// varredura reportava 0 ocorrências como se fosse resultado. MIG-080 trocou por
+// paginação pelo header, com retry.
+const posts = await createWpClient().posts({ _fields: 'id,slug,date,content' })
 
 const RISCOS: Record<string, RegExp> = {
   'bloco Gutenberg (wp:)': /<!--\s*wp:/i,
