@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
+import { BORDAS } from '@/components/blocks/bordas'
 import { cn } from '@/lib/utils'
 import type { BlocoCtaBanner } from '@/types/content'
 
@@ -22,7 +23,10 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
     return (
       <section
         id={bloco.anchor ?? undefined}
-        className="py-16 md:py-20 bg-surface-2 border-t border-slate-200 dark:border-white/5 text-center scroll-mt-32"
+        className={cn(
+          'py-16 md:py-20 bg-surface-2 text-center scroll-mt-32',
+          BORDAS[bloco.borda],
+        )}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-4 tracking-tight">
@@ -36,9 +40,9 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
           {bloco.cta && (
             <Link
               href={bloco.cta.href}
-              className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-[6px] text-xs font-semibold transition-all shadow-md shadow-primary/20"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold transition-all shadow-md shadow-primary/20"
             >
-              {bloco.cta.label} <ArrowRight size={14} aria-hidden />
+              {bloco.cta.label}
             </Link>
           )}
         </div>

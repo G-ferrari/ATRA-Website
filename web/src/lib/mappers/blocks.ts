@@ -22,7 +22,7 @@ const vazio = (v: string | null | undefined): string | null => {
 /* Parceiro não populado é descartado em silêncio, não derruba: aqui é uma
  * vitrine decorativa, e a página inteira fora do ar por um logo é troca ruim.
  * Difere de `cases.heroImage`, onde a imagem é o conteúdo. */
-type ParceiroPopulado = { name: string; slug: string; logo: unknown }
+type ParceiroPopulado = { name: string; slug: string; logo: unknown; logoScale?: unknown }
 
 function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
   if (!isPopulated<ParceiroPopulado>(valor)) return null
@@ -30,6 +30,7 @@ function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
     name: valor.name,
     slug: valor.slug,
     logo: toImageOpcional(valor.logo as never, 'partnerShowcase.partners.logo'),
+    logoScale: (valor.logoScale as 'sm' | 'md' | 'lg') ?? 'md',
   }
 }
 
@@ -37,7 +38,9 @@ function base(b: BlocoDoPayload) {
   return {
     id: b.id ?? `${b.blockType}-sem-id`,
     anchor: vazio(b.anchor),
+    navLabel: vazio(b.navLabel),
     theme: (b.theme ?? 'surface-1') as TemaDoBloco,
+    borda: (b.borda ?? 'nenhuma') as 'nenhuma' | 'topo' | 'ambas',
   }
 }
 
@@ -71,7 +74,7 @@ export function toBlocos(
           badge: vazio(b.badge),
           chip: vazio(b.chip),
           title: b.title,
-          highlight: vazio(b.highlight),
+          highlight: (b.highlight ?? []).filter((h): h is string => Boolean(h?.trim())),
           description: vazio(b.description),
           ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
           mediaMode: b.mediaMode ?? 'none',
@@ -90,6 +93,7 @@ export function toBlocos(
           body: b.body ?? null,
           image: toImageOpcional(b.image, 'richTextSection.image'),
           imagePosition: b.imagePosition ?? 'right',
+          ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
         })
         break
 
@@ -101,6 +105,7 @@ export function toBlocos(
           title: vazio(b.title),
           columns: Number(b.columns ?? 4) as 2 | 3 | 4,
           variant: b.variant ?? 'compact',
+          headerWidth: b.headerWidth ?? 'full',
           items: (b.items ?? []).map((i) => ({
             icon: i.icon,
             title: i.title,
@@ -154,6 +159,7 @@ export function toBlocos(
         blocos.push({
           ...base(b),
           tipo: 'valueCards',
+          eyebrow: vazio(b.eyebrow),
           title: vazio(b.title),
           items: (b.items ?? []).map((i) => ({
             icon: i.icon,
@@ -193,7 +199,7 @@ export function ancorasDe(blocos: Bloco[]): { anchor: string; label: string }[] 
     .filter((b) => b.anchor)
     .map((b) => ({
       anchor: b.anchor as string,
-      label: 'title' in b && b.title ? b.title : (b.anchor as string),
+      label: b.navLabel ?? ('title' in b && b.title ? b.title : (b.anchor as string)),
     }))
 }
 

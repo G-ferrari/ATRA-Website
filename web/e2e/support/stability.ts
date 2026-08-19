@@ -18,11 +18,15 @@ const REMOTE_IMAGES = [
   '**/images.unsplash.com/**',
   '**/picsum.photos/**',
   '**/www.atra.com.br/wp-content/**',
-  /* O storage do app novo, pelo mesmo motivo dos outros: onde a largura sai do
+  /* A mídia do app novo, pelo mesmo motivo dos outros: onde a largura sai do
    * aspecto do arquivo (logos com `w-auto`), o legado recebe o marcador 1×1 e
-   * o app novo precisa receber o mesmo, ou os dois medem caixas diferentes. */
-  '**/localhost:9000/**',
-  '**/minio:9000/**',
+   * o app novo precisa receber o mesmo, ou os dois medem caixas diferentes.
+   *
+   * ⚠️ O caminho é `/api/media/file/...`, servido pelo próprio Next — **não** o
+   * endereço do MinIO. Stubbar `localhost:9000` não pegava nada, e o sintoma
+   * foi a vitrine de parceiros ficar 144px mais alta no mobile: os SVGs reais
+   * ocupavam mais largura e quebravam em mais linhas. */
+  '**/api/media/file/**',
 ]
 
 /** Neutraliza o que muda entre execuções sem o código ter mudado. */

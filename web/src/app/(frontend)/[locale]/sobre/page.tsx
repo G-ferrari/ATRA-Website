@@ -64,7 +64,10 @@ export default async function SobrePage() {
   if (!pagina) notFound()
 
   return (
-    <main className="min-h-screen bg-surface-1 text-text-main">
+    /* `pt-24 md:pt-36` limpa o menu fixo, como no legado (`About.tsx:146`).
+       Fica na página e não nos blocos: é a casca que precisa do espaço, e um
+       bloco não sabe se é o primeiro. */
+    <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
       <RenderBlocks blocos={pagina.blocos} />
     </main>
   )

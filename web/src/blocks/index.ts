@@ -15,17 +15,20 @@ export const PageHero: Block = {
     { name: 'chip', type: 'text', localized: true, label: { pt: 'Etiqueta', en: 'Chip' } },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     {
-      /* O legado destaca trechos do título em azul e laranja com `<span>`
-       * (`About.tsx:175`). Como o editor não escreve HTML, o destaque vira
-       * campo: o texto aqui é procurado no título e recebe a cor. */
+      /* O legado destaca trechos do título com `<span>` (`About.tsx:175`).
+       * Como o editor não escreve HTML, o destaque vira campo.
+       *
+       * `hasMany` porque o título de /sobre destaca **dois** trechos — "ATRA" e
+       * "Transformação Digital". Com um só, o segundo saía branco. */
       name: 'highlight',
       type: 'text',
+      hasMany: true,
       localized: true,
-      label: { pt: 'Trecho destacado', en: 'Highlighted text' },
+      label: { pt: 'Trechos destacados', en: 'Highlighted text' },
       admin: {
         description: {
-          pt: 'Um trecho do título que aparece em azul. Deve existir no título.',
-          en: 'A slice of the title shown in blue. Must appear in the title.',
+          pt: 'Trechos do título que aparecem em azul. Cada um deve existir no título.',
+          en: 'Slices of the title shown in blue. Each must appear in the title.',
         },
       },
     },
@@ -81,6 +84,17 @@ export const RichTextSection: Block = {
     { name: 'body', type: 'richText', localized: true, label: { pt: 'Texto', en: 'Body' } },
     { name: 'image', type: 'upload', relationTo: 'media', label: { pt: 'Imagem', en: 'Image' } },
     {
+      /* O legado fecha a seção "quem somos" com um botão (`About.tsx:308`). */
+      name: 'ctas',
+      type: 'array',
+      maxRows: 2,
+      label: { pt: 'Botões', en: 'Buttons' },
+      fields: [
+        { name: 'label', type: 'text', required: true, localized: true, label: { pt: 'Texto', en: 'Label' } },
+        { name: 'href', type: 'text', required: true, label: { pt: 'Destino', en: 'Target' } },
+      ],
+    },
+    {
       name: 'imagePosition',
       type: 'select',
       defaultValue: 'right',
@@ -121,6 +135,19 @@ export const IconCardGrid: Block = {
         { value: 'card', label: { pt: 'Card alto', en: 'Tall card' } },
       ],
       label: { pt: 'Formato do card', en: 'Card shape' },
+    },
+    {
+      /* Outra inconsistência do legado: `porque-escolher` limita o cabeçalho a
+       * `max-w-3xl` e as outras grades não. Com título longo isso muda quantas
+       * linhas ele ocupa — 206px de diferença na página. */
+      name: 'headerWidth',
+      type: 'select',
+      defaultValue: 'full',
+      options: [
+        { value: 'full', label: { pt: 'Largura total', en: 'Full width' } },
+        { value: 'narrow', label: { pt: 'Estreito (quebra mais cedo)', en: 'Narrow' } },
+      ],
+      label: { pt: 'Largura do cabeçalho', en: 'Header width' },
     },
     {
       name: 'items',
@@ -245,6 +272,7 @@ export const ValueCards: Block = {
   slug: 'valueCards',
   labels: { singular: { pt: 'Cards de valores', en: 'Value cards' }, plural: { pt: 'Cards de valores', en: 'Value cards' } },
   fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
     {
       name: 'items',

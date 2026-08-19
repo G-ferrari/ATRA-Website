@@ -23,6 +23,8 @@ export type PartnerBadge = {
   name: string
   slug: string
   logo: Image | null
+  /** Altura de exibição do logo; varia por marca. */
+  logoScale: 'sm' | 'md' | 'lg'
 }
 
 export type Testimonial = {
@@ -122,7 +124,9 @@ export type TemaDoBloco = 'surface-1' | 'surface-2'
 type Base = {
   id: string
   anchor: string | null
+  navLabel: string | null
   theme: TemaDoBloco
+  borda: 'nenhuma' | 'topo' | 'ambas'
 }
 
 export type BlocoPageHero = Base & {
@@ -130,8 +134,8 @@ export type BlocoPageHero = Base & {
   badge: string | null
   chip: string | null
   title: string
-  /** Trecho de `title` pintado de azul; o componente o localiza no texto. */
-  highlight: string | null
+  /** Trechos de `title` pintados de azul; o componente os localiza no texto. */
+  highlight: string[]
   description: string | null
   ctas: { label: string; href: string }[]
   mediaMode: 'none' | 'image' | 'marquee'
@@ -145,6 +149,7 @@ export type BlocoRichTextSection = Base & {
   body: unknown | null
   image: Image | null
   imagePosition: 'left' | 'right' | 'none'
+  ctas: { label: string; href: string }[]
 }
 
 export type BlocoIconCardGrid = Base & {
@@ -153,6 +158,7 @@ export type BlocoIconCardGrid = Base & {
   title: string | null
   columns: 2 | 3 | 4
   variant: 'compact' | 'card'
+  headerWidth: 'full' | 'narrow'
   items: { icon: string; title: string; description: string | null }[]
 }
 
@@ -187,6 +193,7 @@ export type BlocoPartnerShowcase = Base & {
 
 export type BlocoValueCards = Base & {
   tipo: 'valueCards'
+  eyebrow: string | null
   title: string | null
   items: { icon: string; glowColor: 'blue' | 'orange'; title: string; description: string }[]
 }

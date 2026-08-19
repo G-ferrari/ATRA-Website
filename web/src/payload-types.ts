@@ -296,6 +296,7 @@ export interface Partner {
    * Prefer SVG. The repository already has intact partner SVGs.
    */
   logo: number | Media;
+  logoScale?: ('sm' | 'md' | 'lg') | null;
   /**
    * One sentence, used in the menu.
    */
@@ -475,9 +476,9 @@ export interface Page {
         chip?: string | null;
         title: string;
         /**
-         * A slice of the title shown in blue. Must appear in the title.
+         * Slices of the title shown in blue. Each must appear in the title.
          */
-        highlight?: string | null;
+        highlight?: string[] | null;
         description?: string | null;
         mediaMode?: ('none' | 'image' | 'marquee') | null;
         /**
@@ -495,6 +496,11 @@ export interface Page {
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
         anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -505,6 +511,11 @@ export interface Page {
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
         anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -524,6 +535,11 @@ export interface Page {
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
         anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -548,11 +564,23 @@ export interface Page {
           [k: string]: unknown;
         } | null;
         image?: (number | null) | Media;
+        ctas?:
+          | {
+              label: string;
+              href: string;
+              id?: string | null;
+            }[]
+          | null;
         imagePosition?: ('left' | 'right' | 'none') | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
         anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -563,6 +591,7 @@ export interface Page {
         title?: string | null;
         columns?: ('2' | '3' | '4') | null;
         variant?: ('compact' | 'card') | null;
+        headerWidth?: ('full' | 'narrow') | null;
         items: {
           icon:
             | 'sparkles'
@@ -588,12 +617,18 @@ export interface Page {
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
         anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'iconCardGrid';
       }
     | {
+        eyebrow?: string | null;
         title?: string | null;
         items: {
           icon:
@@ -618,6 +653,11 @@ export interface Page {
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
         anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -634,6 +674,11 @@ export interface Page {
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
         anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -652,6 +697,11 @@ export interface Page {
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
         anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1099,6 +1149,7 @@ export interface PartnersSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   logo?: T;
+  logoScale?: T;
   description?: T;
   tier?: T;
   featured?: T;
@@ -1205,6 +1256,8 @@ export interface PagesSelect<T extends boolean = true> {
                     id?: T;
                   };
               anchor?: T;
+              navLabel?: T;
+              borda?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -1213,6 +1266,8 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               anchor?: T;
+              navLabel?: T;
+              borda?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -1230,6 +1285,8 @@ export interface PagesSelect<T extends boolean = true> {
                     id?: T;
                   };
               anchor?: T;
+              navLabel?: T;
+              borda?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -1241,8 +1298,17 @@ export interface PagesSelect<T extends boolean = true> {
               title?: T;
               body?: T;
               image?: T;
+              ctas?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    id?: T;
+                  };
               imagePosition?: T;
               anchor?: T;
+              navLabel?: T;
+              borda?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -1254,6 +1320,7 @@ export interface PagesSelect<T extends boolean = true> {
               title?: T;
               columns?: T;
               variant?: T;
+              headerWidth?: T;
               items?:
                 | T
                 | {
@@ -1263,6 +1330,8 @@ export interface PagesSelect<T extends boolean = true> {
                     id?: T;
                   };
               anchor?: T;
+              navLabel?: T;
+              borda?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -1270,6 +1339,7 @@ export interface PagesSelect<T extends boolean = true> {
         valueCards?:
           | T
           | {
+              eyebrow?: T;
               title?: T;
               items?:
                 | T
@@ -1281,6 +1351,8 @@ export interface PagesSelect<T extends boolean = true> {
                     id?: T;
                   };
               anchor?: T;
+              navLabel?: T;
+              borda?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -1292,6 +1364,8 @@ export interface PagesSelect<T extends boolean = true> {
               partners?: T;
               grayscale?: T;
               anchor?: T;
+              navLabel?: T;
+              borda?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -1310,6 +1384,8 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               variant?: T;
               anchor?: T;
+              navLabel?: T;
+              borda?: T;
               theme?: T;
               id?: T;
               blockName?: T;

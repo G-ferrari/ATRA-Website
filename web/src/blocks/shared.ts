@@ -20,6 +20,39 @@ export const camposComuns: Field[] = [
     },
   },
   {
+    /* Rótulo no menu da página, quando ele difere do título da seção.
+     *
+     * O legado cura essa lista (`About.tsx:127`): a seção "História da ATRA"
+     * aparece no menu como "Quem somos", e "Transformando Desafios em
+     * Resultados" como "Nossas Soluções". A âncora continua derivada — só o
+     * texto é escolhido, e vazio cai no título. */
+    name: 'navLabel',
+    type: 'text',
+    localized: true,
+    label: { pt: 'Rótulo no menu da página', en: 'Page nav label' },
+    admin: {
+      position: 'sidebar',
+      condition: (_, irmaos) => Boolean(irmaos?.anchor),
+      description: { pt: 'Vazio, usa o título da seção.', en: 'Empty falls back to the section title.' },
+    },
+  },
+  {
+    /* O legado alterna borda junto com o fundo, e não de um jeito só:
+     * `nossos-valores` tem `border-y`, `nossas-solucoes` e o CTA final têm
+     * `border-t`, `porque-escolher` não tem nenhuma. Reproduzir exige o campo.
+     * Candidato a unificação depois do aceite visual. */
+    name: 'borda',
+    type: 'select',
+    defaultValue: 'nenhuma',
+    options: [
+      { value: 'nenhuma', label: { pt: 'Sem borda', en: 'No border' } },
+      { value: 'topo', label: { pt: 'Linha no topo', en: 'Top line' } },
+      { value: 'ambas', label: { pt: 'Linha em cima e embaixo', en: 'Top and bottom lines' } },
+    ],
+    label: { pt: 'Borda', en: 'Border' },
+    admin: { position: 'sidebar' },
+  },
+  {
     name: 'theme',
     type: 'select',
     defaultValue: 'surface-1',

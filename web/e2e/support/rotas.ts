@@ -7,20 +7,7 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'ebooks', caminho: '/ebooks' },
   { nome: 'webinars', caminho: '/webinars' },
   { nome: 'blog', caminho: '/blog' },
-  /* ⚠️ `/sobre` segue FORA do gate — MIG-049a reduziu o buraco, não fechou.
-   *
-   *              legado    antes   depois
-   *   mobile     7392px    4787px   5668px
-   *   tablet     5580px    3269px   3971px
-   *   desktop    4529px    2769px   3559px
-   *
-   * O que entrou: a coluna de mídia do herói (`mediaMode`), a imagem do
-   * `richTextSection` e a rampa de colunas por variante — no mobile a grade de
-   * cards altos fica em 1 coluna, não 2, e isso sozinho valia 962px.
-   *
-   * O que falta ainda não foi isolado bloco a bloco. Reativar junto com a
-   * correção; deixar reprovando tornaria o gate inútil para as outras 7. */
-  // { nome: 'sobre', caminho: '/sobre' },
+  { nome: 'sobre', caminho: '/sobre' },
 ] as const
 
 /* Imagens entram mascaradas na comparação.

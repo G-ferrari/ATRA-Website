@@ -14,10 +14,16 @@ import {
  * `disableContainer` remove a div que o Payload injetaria por padrão — ela não
  * existe no legado e mudaria o espaçamento. */
 
-const conversores: JSXConvertersFunction = ({ defaultConverters }) => ({
+/* A tipografia do parágrafo é do **chamador**, não do conversor.
+ *
+ * Fixá-la aqui parecia certo enquanto só a página de case usava rich text; ao
+ * entrar no bloco `richTextSection` o `text-lg` vazou para uma seção que no
+ * legado é `text-xs sm:text-sm`, e a página ficou 35px mais alta no mobile. */
+const conversores = (classeDoParagrafo?: string): JSXConvertersFunction =>
+  ({ defaultConverters }) => ({
   ...defaultConverters,
   paragraph: ({ node, nodesToJSX }) => (
-    <p className="text-slate-700 text-lg leading-relaxed">{nodesToJSX({ nodes: node.children })}</p>
+    <p className={classeDoParagrafo}>{nodesToJSX({ nodes: node.children })}</p>
   ),
   heading: ({ node, nodesToJSX }) => {
     const Tag = node.tag
@@ -33,7 +39,16 @@ const conversores: JSXConvertersFunction = ({ defaultConverters }) => ({
   },
 })
 
-export function RichText({ data, className }: { data: unknown; className?: string }) {
+export function RichText({
+  data,
+  className,
+  classeDoParagrafo = 'text-slate-700 text-lg leading-relaxed',
+}: {
+  data: unknown
+  className?: string
+  /** Vazio herda a tipografia do contêiner, que é o que os blocos querem. */
+  classeDoParagrafo?: string
+}) {
   if (!data) return null
   return (
     <div className={className ?? 'mb-12 space-y-6'}>
@@ -41,7 +56,7 @@ export function RichText({ data, className }: { data: unknown; className?: strin
         // O tipo do documento serializado vem do Payload; aqui ele chega como
         // `unknown` de propósito — o componente não importa `@/payload-types`.
         data={data as never}
-        converters={conversores}
+        converters={conversores(classeDoParagrafo)}
         disableContainer
       />
     </div>

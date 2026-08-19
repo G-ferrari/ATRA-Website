@@ -9,6 +9,11 @@ import * as migration_20260818_214047_add_posts from './20260818_214047_add_post
 import * as migration_20260819_112748_add_pages_and_blocks from './20260819_112748_add_pages_and_blocks';
 import * as migration_20260819_112945_add_icon_card_variant from './20260819_112945_add_icon_card_variant';
 import * as migration_20260819_113941_add_hero_media from './20260819_113941_add_hero_media';
+import * as migration_20260819_115931_add_block_border_and_header from './20260819_115931_add_block_border_and_header';
+import * as migration_20260819_121444_add_richtext_ctas from './20260819_121444_add_richtext_ctas';
+import * as migration_20260819_123348_highlight_has_many from './20260819_123348_highlight_has_many';
+import * as migration_20260819_123913_add_partner_logo_scale from './20260819_123913_add_partner_logo_scale';
+import * as migration_20260819_124247_add_nav_label from './20260819_124247_add_nav_label';
 
 export const migrations = [
   {
@@ -64,6 +69,31 @@ export const migrations = [
   {
     up: migration_20260819_113941_add_hero_media.up,
     down: migration_20260819_113941_add_hero_media.down,
-    name: '20260819_113941_add_hero_media'
+    name: '20260819_113941_add_hero_media',
+  },
+  {
+    up: migration_20260819_115931_add_block_border_and_header.up,
+    down: migration_20260819_115931_add_block_border_and_header.down,
+    name: '20260819_115931_add_block_border_and_header',
+  },
+  {
+    up: migration_20260819_121444_add_richtext_ctas.up,
+    down: migration_20260819_121444_add_richtext_ctas.down,
+    name: '20260819_121444_add_richtext_ctas',
+  },
+  {
+    up: migration_20260819_123348_highlight_has_many.up,
+    down: migration_20260819_123348_highlight_has_many.down,
+    name: '20260819_123348_highlight_has_many',
+  },
+  {
+    up: migration_20260819_123913_add_partner_logo_scale.up,
+    down: migration_20260819_123913_add_partner_logo_scale.down,
+    name: '20260819_123913_add_partner_logo_scale',
+  },
+  {
+    up: migration_20260819_124247_add_nav_label.up,
+    down: migration_20260819_124247_add_nav_label.down,
+    name: '20260819_124247_add_nav_label'
   },
 ];

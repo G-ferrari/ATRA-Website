@@ -1,4 +1,12 @@
+import { BORDAS } from '@/components/blocks/bordas'
 import { cn } from '@/lib/utils'
+
+/* As três alturas do legado (`About.tsx:384`). */
+const ALTURAS = {
+  sm: 'h-6 md:h-8',
+  md: 'h-8 md:h-10',
+  lg: 'h-10 md:h-12',
+} as const
 import type { BlocoPartnerShowcase } from '@/types/content'
 
 /* Vitrine de parceiros — porte de `legacy/src/pages/About.tsx:376`.
@@ -15,6 +23,7 @@ export function BlocoParceiros({ bloco }: { bloco: BlocoPartnerShowcase }) {
       className={cn(
         'py-16 overflow-hidden scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
+        BORDAS[bloco.borda],
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -46,7 +55,7 @@ export function BlocoParceiros({ bloco }: { bloco: BlocoPartnerShowcase }) {
                 alt={p.name}
                 loading="lazy"
                 decoding="async"
-                className="h-10 md:h-12 w-auto object-contain"
+                className={cn(ALTURAS[p.logoScale], 'w-auto object-contain')}
               />
             ) : null,
           )}

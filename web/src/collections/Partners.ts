@@ -51,6 +51,25 @@ export const Partners: CollectionConfig = {
       },
     },
     {
+      /* Altura de exibição do logo, por marca.
+       *
+       * O legado fixa uma classe por logo (`About.tsx:384`): Azure em h-12,
+       * Google Cloud em h-10, Databricks e Atlan em h-8. Não é capricho — os
+       * arquivos têm proporções muito diferentes e a mesma altura deixaria uns
+       * gigantes ao lado de outros. É atributo da marca, então vive aqui e vale
+       * onde quer que o logo apareça. */
+      name: 'logoScale',
+      type: 'select',
+      defaultValue: 'md',
+      options: [
+        { value: 'sm', label: { pt: 'Pequeno', en: 'Small' } },
+        { value: 'md', label: { pt: 'Médio', en: 'Medium' } },
+        { value: 'lg', label: { pt: 'Grande', en: 'Large' } },
+      ],
+      label: { pt: 'Tamanho do logo', en: 'Logo size' },
+      admin: { position: 'sidebar' },
+    },
+    {
       name: 'description',
       type: 'textarea',
       required: true,

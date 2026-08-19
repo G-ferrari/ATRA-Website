@@ -14,7 +14,7 @@ describe('toBlocos', () => {
         id: '1',
         blockType: 'pageHero',
         title: 'A ATRA transforma desafios',
-        highlight: 'ATRA',
+        highlight: ['ATRA'],
         badge: '   ',
         chip: null,
         ctas: [{ label: 'Conhecer', href: '/sobre' }],
@@ -24,7 +24,7 @@ describe('toBlocos', () => {
     expect(b).toMatchObject({
       tipo: 'pageHero',
       title: 'A ATRA transforma desafios',
-      highlight: 'ATRA',
+      highlight: ['ATRA'],
       // string só de espaço é ausência, não conteúdo
       badge: null,
       chip: null,

@@ -1,4 +1,5 @@
 import { GlowCard } from '@/components/ui'
+import { BORDAS } from '@/components/blocks/bordas'
 import { cn } from '@/lib/utils'
 import type { BlocoValueCards } from '@/types/content'
 
@@ -12,14 +13,22 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
       className={cn(
         'py-16 md:py-20 relative overflow-hidden scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
+        BORDAS[bloco.borda],
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-        {bloco.title && (
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-3">
-              {bloco.title}
-            </h2>
+        {(bloco.eyebrow || bloco.title) && (
+          <div className="text-center mb-16">
+            {bloco.eyebrow && (
+              <span className="text-primary font-bold tracking-widest text-xs uppercase mb-2 block">
+                {bloco.eyebrow}
+              </span>
+            )}
+            {bloco.title && (
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-3">
+                {bloco.title}
+              </h2>
+            )}
           </div>
         )}
 
