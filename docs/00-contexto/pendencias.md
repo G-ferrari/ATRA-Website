@@ -50,11 +50,12 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | **P-22** | Replicar `form-submissions` para fora do banco em tempo real? | RPO dos leads | Com backup diário, o RPO dos leads é de até 24 h. Para conteúdo é aceitável; para lead, não — lead perdido não volta. Depende de P-18 |
 | ~~P-26~~ | ~~URLs reais de LinkedIn, Instagram e YouTube~~ | — | ✅ **Respondida por evidência (19/08).** O rodapé aponta para `#`, mas o CTA de contato (`App.tsx:2412`) traz as três: linkedin.com/company/atra-tecnologia, instagram.com/atratecnologia, youtube.com/@atratecnologia. Aplicadas no rodapé |
 | **P-23** | **Quem tem acesso à conta Cloudflare da ATRA?** | cutover | Sem resolver com antecedência, o cutover trava no passo mais crítico. Barato agora, caro às 7h da manhã do dia da virada |
+| **P-27** | **Como classificar os 207 posts em `topics`?** Descoberto em MIG-080: o WP tem **1 categoria** (`uncategorized`, com os 207 dentro) e **0 tags** | MIG-084 | Não há de onde mapear. Ou os 207 entram todos sem assunto — e `/blog` e `/insights` nascem com filtro que não filtra — ou alguém classifica. Classificar é decisão de conteúdo (D-22), não de quem migra; o que a engenharia pode oferecer é uma sugestão automática para o marketing revisar no CMS |
 
 ### Encaminhamento
 
 **Com a ATRA, assumidas por Leonardo:** P-01, P-08, P-09, P-10, P-11, P-12, P-13,
-P-14, P-16, P-17, P-18, P-19.
+P-14, P-16, P-17, P-18, P-19, P-27.
 **Recomendação técnica a apresentar:** P-04 (Etapa 2), P-05 (Etapa 4), P-20.
 **Destrava sozinha:** P-06, quando a Fase 3 começar a produzir PRs.
 **Decisão de gestão:** P-07.

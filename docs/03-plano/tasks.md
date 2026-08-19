@@ -95,7 +95,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-052 | `/consultores` + `specialist-roles` | 047 | 4h | **done** |
 | MIG-053 | Bloco `ctaContact` + `/contato` (D-10) | 047 | 3h | **done** |
 | MIG-054 | `/parceiros/[slug]` | 047 | 3h | **done** |
-| MIG-055 | `/solucoes` (índice) + collection `solutions` | 047 | 3h |
+| MIG-055 | `/solucoes` (índice) + collection `solutions` | 047 | 3h | **done** — sem gabarito (D-09); aceite funcional no smoke |
 | MIG-056 | `/solucoes/[slug]` | 055 | 3h |
 | MIG-057 | Blocos da home: `hero`, `featureTabs`, `logoMarquee` | 048 | 5h |
 | MIG-058 | Blocos da home: `caseCarousel`, `testimonialCarousel`, `contentTeaser` | 057 | 5h |
@@ -122,13 +122,31 @@ Uma PR por linha. Todas dependem de MIG-031.
 
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
-| MIG-080 | Cliente da API REST do WP + paginação (**exige user-agent de browser**) | 012 | Traz os 207 posts em JSON, com retry | 2h |
+| MIG-080 | Cliente da API REST do WP + paginação (**exige user-agent de browser**) | 012 | Traz os 207 posts em JSON, com retry | 2h | **done** |
 | MIG-081 | Conversor HTML → Lexical + **`EXPERIMENTAL_TableFeature`** | 012 | Passa nos 12 do piloto, nos 4 outliers e em 20 amostrados; tabela vira `table`, não parágrafo | 3h |
 | MIG-082 | Importador de mídia (destacada + inline) | 080 | Imagem baixada, com `alt` vindo do WP | 3h |
 | MIG-083 | Importação dos 207 posts | 081, 082, 043 | 207 publicados, nenhum com corpo vazio | 3h |
-| MIG-084 | Mapeamento de categorias do WP → `topics` | 083 | Todo post com ao menos 1 topic | 1.5h |
+| MIG-084 | ~~Mapeamento de categorias do WP → `topics`~~ **sem fonte de dado** | 083 | ⚠️ **Repactuar — ver P-27.** MIG-080 mediu: o WP tem 1 categoria (`uncategorized`, com os 207 posts) e 0 tags. Não há taxonomia para mapear, e classificar é decisão de conteúdo (D-22) | 1.5h |
 | MIG-085 | Importação das 6 vagas | 051 | 6 vagas publicadas com URL 1:1 | 2h |
 | MIG-086 | Geração do `redirects.csv` dos posts | 083 | 207 linhas, todas validadas contra staging | 2h |
+
+> **O que MIG-080 mediu no WP, e que muda as tasks seguintes.** Volumes reais:
+> 207 posts · 52 páginas (as 6 vagas de MIG-085 estão entre elas) · 541 mídias
+> acessíveis · 1 categoria · 0 tags.
+>
+> ⚠️ **Em `media` o `X-WP-Total` mente**: diz 562 e entrega 541 — o WP conta
+> anexos que depois esconde por permissão do post-mãe. Pior, a **primeira página
+> volta com 99 de 100**, então parar a paginação por "lote menor que `per_page`"
+> importaria 99 de 541 sem erro nenhum. O cliente para por `X-WP-TotalPages` e
+> avisa quando os números divergem; MIG-082 confere por id, nunca pelo total.
+>
+> ⚠️ **A armadilha do 302 é WAF, não WordPress.** O host roda RunCloud 8G e manda
+> user-agent de robô para `/RUNCLOUD-8G-WAF-BLOCKED`. Seguir o redirect entrega
+> HTML com status 200, e o erro só apareceria depois, num `JSON.parse` sem
+> contexto — por isso o cliente usa `redirect: 'manual'`.
+>
+> `_fields` **omite** o campo em vez de devolvê-lo vazio: quem precisar de `link`
+> (MIG-086) ou `featured_media` (MIG-082) tem que pedir explicitamente.
 
 ## Fase 4c — Conteúdo novo (D-17)
 
