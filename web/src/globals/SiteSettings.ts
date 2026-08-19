@@ -10,10 +10,6 @@ import { campoDeIcone } from '@/blocks/shared'
  * caso do mesmo buraco (o primeiro foi a casca do site, MIG-034): existem
  * tasks de "semear X" sem a de "criar X". Registrado em tasks.md.
  *
- * Sem campo de selos: o bloco que os desenharia (`sealsBanner`, o card bento de
- * `App.tsx:1217`) ainda não existe, e campo que não aparece em lugar nenhum só
- * confunde quem edita. Entra junto com o bloco, na fase da home.
- *
  * ⚠️ Os números **estão em disputa** (P-01): `/sobre` diz 140+ profissionais,
  * 30+ clientes e 4x GPTW; a home diz 150+, 20+ e 5x. Aqui ficam os de `/sobre`,
  * que é a página que o gate compara. Quando P-01 for respondida, muda num lugar
@@ -53,6 +49,18 @@ export const SiteSettings: GlobalConfig = {
         /* Ícone é opcional aqui: no legado os números de /sobre não têm ícone
          * (`About.tsx:134`) e os da home têm. O bloco decide se desenha. */
         { ...campoDeIcone, required: false } as typeof campoDeIcone,
+      ],
+    },
+    {
+      /* Selos de reconhecimento (GPTW, LIPT). Desenhados pelo bloco
+       * `sealsBanner`; ficam no global porque aparecem em /carreiras, na home e
+       * em /sobre, e são os mesmos nos três. */
+      name: 'seals',
+      type: 'array',
+      label: { pt: 'Selos e certificações', en: 'Seals and certifications' },
+      fields: [
+        { name: 'name', type: 'text', required: true, label: { pt: 'Nome', en: 'Name' } },
+        { name: 'image', type: 'upload', relationTo: 'media', required: true, label: { pt: 'Imagem', en: 'Image' } },
       ],
     },
     {

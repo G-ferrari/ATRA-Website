@@ -184,6 +184,25 @@ export type BlocoStatsGrid = Base & {
   items: MetricaInstitucional[]
 }
 
+export type Selo = {
+  name: string
+  image: Image
+}
+
+export type BlocoSealsBanner = Base & {
+  tipo: 'sealsBanner'
+  title: string | null
+  seals: Selo[]
+}
+
+export type BlocoProcessSteps = Base & {
+  tipo: 'processSteps'
+  eyebrow: string | null
+  title: string | null
+  description: string | null
+  steps: { title: string; description: string }[]
+}
+
 export type BlocoPartnerShowcase = Base & {
   tipo: 'partnerShowcase'
   title: string | null
@@ -213,6 +232,8 @@ export type Bloco =
   | BlocoPartnerShowcase
   | BlocoValueCards
   | BlocoStickyPageNav
+  | BlocoSealsBanner
+  | BlocoProcessSteps
 
 export type Seo = {
   title: string

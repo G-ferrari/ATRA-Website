@@ -310,6 +310,45 @@ export const StickyPageNav: Block = {
   fields: [...camposComuns],
 }
 
+export const SealsBanner: Block = {
+  slug: 'sealsBanner',
+  labels: { singular: { pt: 'Faixa de selos', en: 'Seals banner' }, plural: { pt: 'Faixas de selos', en: 'Seals banners' } },
+  /* Os selos vêm de `site-settings` — são os mesmos em /carreiras, /sobre e na
+   * home. O bloco só escolhe o título e onde a faixa aparece. */
+  fields: [
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    ...camposComuns,
+  ],
+}
+
+export const ProcessSteps: Block = {
+  slug: 'processSteps',
+  labels: { singular: { pt: 'Etapas de processo', en: 'Process steps' }, plural: { pt: 'Etapas', en: 'Process steps' } },
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    {
+      name: 'steps',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Etapas', en: 'Steps' },
+      admin: {
+        description: {
+          pt: 'A numeração é automática, pela ordem. Arraste para reordenar.',
+          en: 'Numbering follows the order. Drag to reorder.',
+        },
+      },
+      fields: [
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
 export const BLOCOS = [
   PageHero,
   StickyPageNav,
@@ -318,5 +357,7 @@ export const BLOCOS = [
   IconCardGrid,
   ValueCards,
   PartnerShowcase,
+  SealsBanner,
+  ProcessSteps,
   CtaBanner,
 ]

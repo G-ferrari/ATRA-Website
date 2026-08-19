@@ -14,6 +14,7 @@ import * as migration_20260819_121444_add_richtext_ctas from './20260819_121444_
 import * as migration_20260819_123348_highlight_has_many from './20260819_123348_highlight_has_many';
 import * as migration_20260819_123913_add_partner_logo_scale from './20260819_123913_add_partner_logo_scale';
 import * as migration_20260819_124247_add_nav_label from './20260819_124247_add_nav_label';
+import * as migration_20260819_141533_add_jobs_and_career_blocks from './20260819_141533_add_jobs_and_career_blocks';
 
 export const migrations = [
   {
@@ -94,6 +95,11 @@ export const migrations = [
   {
     up: migration_20260819_124247_add_nav_label.up,
     down: migration_20260819_124247_add_nav_label.down,
-    name: '20260819_124247_add_nav_label'
+    name: '20260819_124247_add_nav_label',
+  },
+  {
+    up: migration_20260819_141533_add_jobs_and_career_blocks.up,
+    down: migration_20260819_141533_add_jobs_and_career_blocks.down,
+    name: '20260819_141533_add_jobs_and_career_blocks'
   },
 ];

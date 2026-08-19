@@ -74,6 +74,7 @@ export interface Config {
     partners: Partner;
     cases: Case;
     'glossary-terms': GlossaryTerm;
+    jobs: Job;
     pages: Page;
     posts: Post;
     resources: Resource;
@@ -92,6 +93,7 @@ export interface Config {
     partners: PartnersSelect<false> | PartnersSelect<true>;
     cases: CasesSelect<false> | CasesSelect<true>;
     'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
+    jobs: JobsSelect<false> | JobsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
@@ -458,6 +460,64 @@ export interface GlossaryTerm {
   createdAt: string;
 }
 /**
+ * Open roles. Unpublish when a role closes; do not delete, so the link keeps working.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "jobs".
+ */
+export interface Job {
+  id: number;
+  title: string;
+  /**
+   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   */
+  slug: string;
+  area: string;
+  locationType: 'remote' | 'hybrid' | 'onsite';
+  location?: string | null;
+  summary: string;
+  /**
+   * Responsibilities, requirements and nice-to-haves. Publish only once filled in.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  publishedAt: string;
+  /**
+   * Optional. When empty, the site falls back to the page title and summary.
+   */
+  seo?: {
+    /**
+     * Up to ~60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Up to 160 characters — Google truncates the rest.
+     */
+    metaDescription?: string | null;
+    /**
+     * Shown when shared on LinkedIn and WhatsApp. Falls back to the cover image.
+     */
+    ogImage?: (number | null) | Media;
+    noIndex?: boolean | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Pages assembled from blocks. Drag to reorder sections.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -683,6 +743,48 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'partnerShowcase';
+      }
+    | {
+        title?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sealsBanner';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        description?: string | null;
+        /**
+         * Numbering follows the order. Drag to reorder.
+         */
+        steps: {
+          title: string;
+          description: string;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'processSteps';
       }
     | {
         title: string;
@@ -978,6 +1080,10 @@ export interface PayloadLockedDocument {
         value: number | GlossaryTerm;
       } | null)
     | ({
+        relationTo: 'jobs';
+        value: number | Job;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: number | Page;
       } | null)
@@ -1230,6 +1336,31 @@ export interface GlossaryTermsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "jobs_select".
+ */
+export interface JobsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  area?: T;
+  locationType?: T;
+  location?: T;
+  summary?: T;
+  body?: T;
+  publishedAt?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+        noIndex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
@@ -1363,6 +1494,37 @@ export interface PagesSelect<T extends boolean = true> {
               title?: T;
               partners?: T;
               grayscale?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sealsBanner?:
+          | T
+          | {
+              title?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        processSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              steps?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -1573,6 +1735,13 @@ export interface SiteSetting {
         id?: string | null;
       }[]
     | null;
+  seals?:
+    | {
+        name: string;
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
   foundedYear?: number | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1589,6 +1758,13 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         suffix?: T;
         label?: T;
         icon?: T;
+        id?: T;
+      };
+  seals?:
+    | T
+    | {
+        name?: T;
+        image?: T;
         id?: T;
       };
   foundedYear?: T;

@@ -15,6 +15,7 @@ import sharp from 'sharp'
 
 import { Cases } from './collections/Cases'
 import { GlossaryTerms } from './collections/GlossaryTerms'
+import { Jobs } from './collections/Jobs'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Partners } from './collections/Partners'
@@ -50,7 +51,7 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Pages, Posts, Resources, Webinars],
+  collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Webinars],
 
   globals: [SiteSettings],
 

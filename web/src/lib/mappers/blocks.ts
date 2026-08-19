@@ -1,7 +1,7 @@
 import type { Page, SiteSetting } from '@/payload-types'
-import type { Bloco, MetricaInstitucional, PartnerBadge, TemaDoBloco } from '@/types/content'
+import type { Bloco, MetricaInstitucional, PartnerBadge, Selo, TemaDoBloco } from '@/types/content'
 
-import { isPopulated, toImageOpcional, toTextos } from './shared'
+import { isPopulated, toImage, toImageOpcional, toTextos } from './shared'
 
 /* Documento do Payload → blocos de apresentação.
  *
@@ -54,6 +54,13 @@ export function toMetricas(g: SiteSetting | null | undefined): MetricaInstitucio
   }))
 }
 
+export function toSelos(g: SiteSetting | null | undefined): Selo[] {
+  return (g?.seals ?? []).map((s) => ({
+    name: s.name,
+    image: toImage(s.image, 'siteSettings.seals.image'),
+  }))
+}
+
 /**
  * `institucional` chega resolvido pela página: bloco não busca dado
  * (blocos.md, regra 1). Passar o global inteiro para o mapper, e não para os
@@ -61,7 +68,7 @@ export function toMetricas(g: SiteSetting | null | undefined): MetricaInstitucio
  */
 export function toBlocos(
   layout: Page['layout'] | null | undefined,
-  institucional?: { metricas: MetricaInstitucional[] },
+  institucional?: { metricas: MetricaInstitucional[]; selos?: Selo[] },
 ): Bloco[] {
   const blocos: Bloco[] = []
 
@@ -140,6 +147,26 @@ export function toBlocos(
                   icon: null,
                 }))
               : (institucional?.metricas ?? []),
+        })
+        break
+
+      case 'sealsBanner':
+        blocos.push({
+          ...base(b),
+          tipo: 'sealsBanner',
+          title: vazio(b.title),
+          seals: institucional?.selos ?? [],
+        })
+        break
+
+      case 'processSteps':
+        blocos.push({
+          ...base(b),
+          tipo: 'processSteps',
+          eyebrow: vazio(b.eyebrow),
+          title: vazio(b.title),
+          description: vazio(b.description),
+          steps: (b.steps ?? []).map((e) => ({ title: e.title, description: e.description })),
         })
         break
 
