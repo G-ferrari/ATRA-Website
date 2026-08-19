@@ -1,7 +1,7 @@
-import type { Page } from '@/payload-types'
-import type { Bloco, TemaDoBloco } from '@/types/content'
+import type { Page, SiteSetting } from '@/payload-types'
+import type { Bloco, MetricaInstitucional, Selo, TemaDoBloco } from '@/types/content'
 
-import { toImageOpcional, toTextos } from './shared'
+import { toImage, toImageOpcional, toTextos } from './shared'
 
 /* Documento do Payload → blocos de apresentação.
  *
@@ -27,7 +27,29 @@ function base(b: BlocoDoPayload) {
   }
 }
 
-export function toBlocos(layout: Page['layout'] | null | undefined): Bloco[] {
+/** Números e selos do global, prontos para os blocos que os consomem. */
+export function toMetricas(g: SiteSetting | null | undefined): MetricaInstitucional[] {
+  return (g?.metrics ?? []).map((m) => ({
+    value: m.value,
+    suffix: m.suffix ?? '',
+    label: m.label,
+    icon: m.icon ?? null,
+  }))
+}
+
+export function toSelos(g: SiteSetting | null | undefined): Selo[] {
+  return (g?.seals ?? []).map((s) => ({ name: s.name, image: toImage(s.image, 'siteSettings.seals.image') }))
+}
+
+/**
+ * `institucional` chega resolvido pela página: bloco não busca dado
+ * (blocos.md, regra 1). Passar o global inteiro para o mapper, e não para os
+ * componentes, mantém a regra e evita cada bloco reabrir a mesma consulta.
+ */
+export function toBlocos(
+  layout: Page['layout'] | null | undefined,
+  institucional?: { metricas: MetricaInstitucional[]; selos: Selo[] },
+): Bloco[] {
   const blocos: Bloco[] = []
 
   for (const b of layout ?? []) {
@@ -85,12 +107,64 @@ export function toBlocos(layout: Page['layout'] | null | undefined): Bloco[] {
         })
         break
 
+      case 'statsGrid':
+        blocos.push({
+          ...base(b),
+          tipo: 'statsGrid',
+          items:
+            b.source === 'custom'
+              ? (b.customItems ?? []).map((i) => ({
+                  value: i.value,
+                  suffix: i.suffix ?? '',
+                  label: i.label,
+                  icon: null,
+                }))
+              : (institucional?.metricas ?? []),
+        })
+        break
+
+      case 'sealsBanner':
+        blocos.push({
+          ...base(b),
+          tipo: 'sealsBanner',
+          title: vazio(b.title),
+          description: vazio(b.description),
+          seals: institucional?.selos ?? [],
+        })
+        break
+
+      case 'valueCards':
+        blocos.push({
+          ...base(b),
+          tipo: 'valueCards',
+          title: vazio(b.title),
+          items: (b.items ?? []).map((i) => ({
+            icon: i.icon,
+            glowColor: i.glowColor ?? 'blue',
+            title: i.title,
+            description: i.description,
+          })),
+        })
+        break
+
+      case 'stickyPageNav':
+        // Itens preenchidos abaixo, quando a lista inteira já é conhecida.
+        blocos.push({ ...base(b), tipo: 'stickyPageNav', items: [] })
+        break
+
       default:
         console.warn(
           `[mapper] bloco desconhecido "${(b as { blockType: string }).blockType}" ignorado. ` +
             `Removido do código com conteúdo ainda no banco?`,
         )
     }
+  }
+
+  /* O menu só pode ser montado depois de percorrer tudo: ele lista as âncoras
+   * dos **outros** blocos, inclusive as que vêm depois dele na página. */
+  const ancoras = ancorasDe(blocos)
+  for (const b of blocos) {
+    if (b.tipo === 'stickyPageNav') b.items = ancoras
   }
 
   return blocos

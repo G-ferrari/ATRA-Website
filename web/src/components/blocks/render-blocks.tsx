@@ -3,7 +3,11 @@ import type { Bloco } from '@/types/content'
 import { BlocoCta } from './bloco-cta'
 import { BlocoGradeDeCards } from './bloco-grade-de-cards'
 import { BlocoHero } from './bloco-hero'
+import { BlocoMenuDaPagina } from './bloco-menu-da-pagina'
+import { BlocoNumeros } from './bloco-numeros'
+import { BlocoSelos } from './bloco-selos'
 import { BlocoTexto } from './bloco-texto'
+import { BlocoValores } from './bloco-valores'
 
 /* Despacha os blocos de uma página (blocos.md, regra 1: bloco não busca dado —
  * recebe tudo por props, resolvidas na page).
@@ -24,6 +28,14 @@ export function RenderBlocks({ blocos }: { blocos: Bloco[] }) {
             return <BlocoGradeDeCards key={b.id} bloco={b} />
           case 'ctaBanner':
             return <BlocoCta key={b.id} bloco={b} />
+          case 'statsGrid':
+            return <BlocoNumeros key={b.id} bloco={b} />
+          case 'sealsBanner':
+            return <BlocoSelos key={b.id} bloco={b} />
+          case 'valueCards':
+            return <BlocoValores key={b.id} bloco={b} />
+          case 'stickyPageNav':
+            return <BlocoMenuDaPagina key={b.id} bloco={b} />
         }
       })}
     </>

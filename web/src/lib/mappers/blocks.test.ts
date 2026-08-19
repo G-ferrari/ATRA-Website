@@ -97,3 +97,54 @@ describe('ancorasDe', () => {
     expect(ancorasDe(blocos)).toEqual([{ anchor: 'sem-titulo', label: 'sem-titulo' }])
   })
 })
+
+describe('blocos de MIG-048', () => {
+  it('statsGrid usa os números institucionais por padrão e os próprios quando pedido', () => {
+    const institucional = {
+      metricas: [{ value: 140, suffix: '+', label: 'Profissionais', icon: null }],
+      selos: [],
+    }
+
+    const [doGlobal, proprios] = toBlocos(
+      layout(
+        { id: '1', blockType: 'statsGrid', source: 'siteSettings' },
+        {
+          id: '2',
+          blockType: 'statsGrid',
+          source: 'custom',
+          customItems: [{ value: 51, suffix: 'x', label: 'Mais rápido' }],
+        },
+      ),
+      institucional,
+    )
+
+    expect(doGlobal).toMatchObject({ items: institucional.metricas })
+    expect(proprios).toMatchObject({ items: [{ value: 51, suffix: 'x', label: 'Mais rápido' }] })
+  })
+
+  /* O menu lista âncoras de blocos que vêm **depois** dele na página, então só
+   * pode ser montado quando a lista inteira já foi percorrida. */
+  it('stickyPageNav recebe âncoras de blocos posteriores a ele', () => {
+    const blocos = toBlocos(
+      layout(
+        { id: '1', blockType: 'pageHero', title: 'Abertura' },
+        { id: '2', blockType: 'stickyPageNav' },
+        { id: '3', blockType: 'iconCardGrid', title: 'Valores', anchor: 'valores', items: [] },
+        { id: '4', blockType: 'ctaBanner', title: 'Fim', anchor: 'fim' },
+      ),
+    )
+
+    const menu = blocos.find((b) => b.tipo === 'stickyPageNav')
+    expect(menu).toMatchObject({
+      items: [
+        { anchor: 'valores', label: 'Valores' },
+        { anchor: 'fim', label: 'Fim' },
+      ],
+    })
+  })
+
+  it('sealsBanner sem selos no global chega vazio, e o componente decide não desenhar', () => {
+    const [b] = toBlocos(layout({ id: '1', blockType: 'sealsBanner', title: 'Parceiros' }))
+    expect(b).toMatchObject({ tipo: 'sealsBanner', title: 'Parceiros', seals: [] })
+  })
+})

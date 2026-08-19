@@ -162,7 +162,52 @@ export type BlocoCtaBanner = Base & {
   variant: 'primary' | 'subtle'
 }
 
-export type Bloco = BlocoPageHero | BlocoRichTextSection | BlocoIconCardGrid | BlocoCtaBanner
+export type MetricaInstitucional = {
+  value: number
+  suffix: string
+  label: string
+  icon: string | null
+}
+
+export type Selo = {
+  name: string
+  image: Image
+}
+
+export type BlocoStatsGrid = Base & {
+  tipo: 'statsGrid'
+  /** Já resolvido pela página: o bloco não sabe de onde os números vieram. */
+  items: MetricaInstitucional[]
+}
+
+export type BlocoSealsBanner = Base & {
+  tipo: 'sealsBanner'
+  title: string | null
+  description: string | null
+  seals: Selo[]
+}
+
+export type BlocoValueCards = Base & {
+  tipo: 'valueCards'
+  title: string | null
+  items: { icon: string; glowColor: 'blue' | 'orange'; title: string; description: string }[]
+}
+
+export type BlocoStickyPageNav = Base & {
+  tipo: 'stickyPageNav'
+  /** Derivados dos blocos com `anchor`; o editor não os digita. */
+  items: { anchor: string; label: string }[]
+}
+
+export type Bloco =
+  | BlocoPageHero
+  | BlocoRichTextSection
+  | BlocoIconCardGrid
+  | BlocoCtaBanner
+  | BlocoStatsGrid
+  | BlocoSealsBanner
+  | BlocoValueCards
+  | BlocoStickyPageNav
 
 export type Seo = {
   title: string

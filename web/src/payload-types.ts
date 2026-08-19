@@ -105,8 +105,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
   locale: 'pt' | 'en';
   widgets: {
     collections: CollectionsWidget;
@@ -492,6 +496,35 @@ export interface Page {
         blockType: 'pageHero';
       }
     | {
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'stickyPageNav';
+      }
+    | {
+        source?: ('siteSettings' | 'custom') | null;
+        customItems?:
+          | {
+              value: number;
+              suffix?: string | null;
+              label: string;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'statsGrid';
+      }
+    | {
         eyebrow?: string | null;
         title?: string | null;
         body?: {
@@ -553,6 +586,48 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'iconCardGrid';
+      }
+    | {
+        title?: string | null;
+        items: {
+          icon:
+            | 'sparkles'
+            | 'target'
+            | 'shield'
+            | 'rocket'
+            | 'users'
+            | 'database'
+            | 'cloud'
+            | 'brain'
+            | 'chart'
+            | 'lock'
+            | 'workflow'
+            | 'award';
+          glowColor?: ('blue' | 'orange') | null;
+          title: string;
+          description: string;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'valueCards';
+      }
+    | {
+        title?: string | null;
+        description?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sealsBanner';
       }
     | {
         title: string;
@@ -1122,6 +1197,31 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        stickyPageNav?:
+          | T
+          | {
+              anchor?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        statsGrid?:
+          | T
+          | {
+              source?: T;
+              customItems?:
+                | T
+                | {
+                    value?: T;
+                    suffix?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         richTextSection?:
           | T
           | {
@@ -1149,6 +1249,34 @@ export interface PagesSelect<T extends boolean = true> {
                     description?: T;
                     id?: T;
                   };
+              anchor?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        valueCards?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    glowColor?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sealsBanner?:
+          | T
+          | {
+              title?: T;
+              description?: T;
               anchor?: T;
               theme?: T;
               id?: T;
@@ -1316,6 +1444,81 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Figures and seals used across pages. Changing here changes everywhere.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * Shown on the home page and /sobre. One figure, whole site.
+   */
+  metrics?:
+    | {
+        value: number;
+        /**
+         * E.g. “+” or “x”. Empty for none.
+         */
+        suffix?: string | null;
+        label: string;
+        icon?:
+          | (
+              | 'sparkles'
+              | 'target'
+              | 'shield'
+              | 'rocket'
+              | 'users'
+              | 'database'
+              | 'cloud'
+              | 'brain'
+              | 'chart'
+              | 'lock'
+              | 'workflow'
+              | 'award'
+            )
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  seals?:
+    | {
+        name: string;
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  foundedYear?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  metrics?:
+    | T
+    | {
+        value?: T;
+        suffix?: T;
+        label?: T;
+        icon?: T;
+        id?: T;
+      };
+  seals?:
+    | T
+    | {
+        name?: T;
+        image?: T;
+        id?: T;
+      };
+  foundedYear?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

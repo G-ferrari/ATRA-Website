@@ -1,3 +1,4 @@
+import { congelado } from '@/lib/e2e';
 import React, { useEffect, useRef } from 'react';
 import { useInView, useMotionValue, useSpring } from 'motion/react';
 
@@ -23,8 +24,12 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   className = '',
 }) => {
   const targetValue = end !== undefined ? end : (to !== undefined ? to : 0);
+
+  /* Regressão visual: sem isto o número capturado depende de quando a mola do
+     framer assentou, e o valor varia entre execuções. Ver lib/e2e.ts. */
+  const inicial = congelado() ? targetValue : from;
   const ref = useRef<HTMLSpanElement>(null);
-  const motionVal = useMotionValue(from);
+  const motionVal = useMotionValue(inicial);
   const springVal = useSpring(motionVal, {
     damping: 30 + duration * 10,
     stiffness: 100,
@@ -54,7 +59,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     return () => unsubscribe();
   }, [springVal, prefix, suffix, decimals]);
 
-  return <span ref={ref} className={className}>{prefix}{from.toFixed(decimals)}{suffix}</span>;
+  return <span ref={ref} className={className}>{prefix}{inicial.toFixed(decimals)}{suffix}</span>;
 };
 
 export default AnimatedCounter;

@@ -141,4 +141,96 @@ export const CtaBanner: Block = {
   ],
 }
 
-export const BLOCOS = [PageHero, RichTextSection, IconCardGrid, CtaBanner]
+export const StatsGrid: Block = {
+  slug: 'statsGrid',
+  labels: { singular: { pt: 'Números', en: 'Stats grid' }, plural: { pt: 'Números', en: 'Stats grids' } },
+  fields: [
+    {
+      /* `siteSettings` é o padrão de propósito: o número institucional tem que
+       * ser o mesmo no site inteiro, e foi por duas páginas divergirem que P-01
+       * existe. `custom` fica para grade que não é institucional. */
+      name: 'source',
+      type: 'select',
+      defaultValue: 'siteSettings',
+      options: [
+        { value: 'siteSettings', label: { pt: 'Dados institucionais', en: 'Site settings' } },
+        { value: 'custom', label: { pt: 'Números próprios deste bloco', en: 'Custom to this block' } },
+      ],
+      label: { pt: 'Origem dos números', en: 'Figures from' },
+    },
+    {
+      name: 'customItems',
+      type: 'array',
+      label: { pt: 'Números', en: 'Figures' },
+      admin: { condition: (_, irmaos) => irmaos?.source === 'custom' },
+      fields: [
+        { name: 'value', type: 'number', required: true, label: { pt: 'Número', en: 'Value' } },
+        { name: 'suffix', type: 'text', label: { pt: 'Sufixo', en: 'Suffix' } },
+        { name: 'label', type: 'text', required: true, localized: true, label: { pt: 'Rótulo', en: 'Label' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const SealsBanner: Block = {
+  slug: 'sealsBanner',
+  labels: { singular: { pt: 'Faixa de selos', en: 'Seals banner' }, plural: { pt: 'Faixas de selos', en: 'Seals banners' } },
+  fields: [
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    ...camposComuns,
+  ],
+}
+
+export const ValueCards: Block = {
+  slug: 'valueCards',
+  labels: { singular: { pt: 'Cards de valores', en: 'Value cards' }, plural: { pt: 'Cards de valores', en: 'Value cards' } },
+  fields: [
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Valores', en: 'Values' },
+      fields: [
+        campoDeIcone,
+        {
+          name: 'glowColor',
+          type: 'select',
+          defaultValue: 'blue',
+          options: [
+            { value: 'blue', label: { pt: 'Azul', en: 'Blue' } },
+            { value: 'orange', label: { pt: 'Laranja', en: 'Orange' } },
+          ],
+          label: { pt: 'Cor do brilho', en: 'Glow colour' },
+        },
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const StickyPageNav: Block = {
+  slug: 'stickyPageNav',
+  labels: { singular: { pt: 'Menu da página', en: 'Page nav' }, plural: { pt: 'Menus da página', en: 'Page navs' } },
+  /* Sem campo de itens: eles são **derivados** dos blocos que preencheram
+   * `anchor` (blocos.md, regra 2). Deixar o editor digitar a lista à mão
+   * garantiria menu apontando para seção que não existe mais — o erro que este
+   * bloco existe para não ter. Ele só marca **onde** o menu aparece. */
+  fields: [...camposComuns],
+}
+
+export const BLOCOS = [
+  PageHero,
+  StickyPageNav,
+  StatsGrid,
+  RichTextSection,
+  IconCardGrid,
+  ValueCards,
+  SealsBanner,
+  CtaBanner,
+]

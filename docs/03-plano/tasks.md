@@ -59,6 +59,13 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-072a | **Painéis do megamenu** (7 categorias) + gaveta mobile, alimentados pelo global `navigation` | `components/layout/site-header.tsx` | 034, 072 | Os 7 painéis abrem com o conteúdo do legado, vindo do CMS | 6h | todo |
 | MIG-031 | **`CLAUDE.md` com o padrão consolidado** | `CLAUDE.md` | 030 | Contém exemplo real do código da fatia vertical | 2h | **done** |
 
+> **Padrão de buraco no plano: existem tasks de "semear X" sem a de "criar X".**
+> Aconteceu duas vezes. A casca do site (MIG-034) tinha seed de globals e nenhum
+> componente que os renderizasse; o global `site-settings` era semeado em
+> MIG-072 e consumido em MIG-072a, mas nada o definia — foi criado junto com
+> MIG-048, que é quem precisa dele. Ao planejar as fases seguintes, conferir se
+> toda task de seed tem uma task de definição antes dela.
+
 > **MIG-034 apareceu durante MIG-030 e não estava no plano.** Nenhuma task
 > construía o cabeçalho e o rodapé — os globals eram semeados (MIG-072), mas
 > nada os renderizava. Sem a casca, toda rota da Fase 3 nasce incompleta e a
@@ -80,7 +87,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-045 | `/relatorios/[slug]` + `/ebooks/[slug]` | 041 | 2.5h | **done** |
 | MIG-046 | `/webinars/[slug]` + player (D-11) | 042 | 3h | **done** |
 | MIG-047 | Blocos: `pageHero`, `richTextSection`, `iconCardGrid`, `ctaBanner` + collection `pages` | — | 4h | **done** |
-| MIG-048 | Blocos: `statsGrid`, `sealsBanner`, `valueCards`, `stickyPageNav` | 047 | 4h |
+| MIG-048 | Blocos: `statsGrid`, `sealsBanner`, `valueCards`, `stickyPageNav` + global `site-settings` | 047 | 4h | **done** |
 | MIG-049 | `/sobre` (a collection `pages` veio em 047) | 048 | 4h |
 | MIG-050 | `/carreiras` + collection `jobs` | 048 | 4h |
 | MIG-051 | `/carreiras/[slug]` (vaga) | 050 | 2h |
