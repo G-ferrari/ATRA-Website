@@ -167,18 +167,31 @@ test.describe('app novo', () => {
     })
   })
 
-  /* `/consultores` fica fora do gate: o legado tem hero com stats animados,
-     modal de detalhe e formulário que não foram portados integralmente. O
-     catálogo filtrável, que é o núcleo, é verificado aqui. */
-  test('o catálogo de consultores filtra pelo seletor de senioridade', async ({ page }) => {
+  /* `/consultores` agora tem gabarito (ver `support/rotas.ts`). O que fica aqui
+     é o comportamento, que a captura não pega: o filtro. */
+  test('o catálogo de consultores filtra pela pílula de senioridade', async ({ page }) => {
     await page.goto(`${NEXT_URL}/consultores`)
     // 8 perfis no total, cada um com um botão Solicitar.
     await expect(page.getByRole('link', { name: 'Solicitar' })).toHaveCount(8)
-    // Filtrar por "Pleno" reduz a lista sem esvaziá-la.
-    await page.getByLabel('Senioridade').selectOption('Lead / Principal')
+    /* Pílula, não `select`: a primeira versão da ilha usou dois `select` e isso
+       foi parte dos 300px que faltavam na seção de filtros. */
+    await page.getByRole('button', { name: 'Lead / Principal', exact: true }).click()
     const n = await page.getByRole('link', { name: 'Solicitar' }).count()
     expect(n).toBeGreaterThan(0)
     expect(n).toBeLessThan(8)
+  })
+
+  /* O modal do perfil não entra na regressão visual porque nasce fechado. */
+  test('o botão Detalhes abre o modal do perfil', async ({ page }) => {
+    await page.goto(`${NEXT_URL}/consultores`)
+    await page.getByRole('button', { name: 'Detalhes' }).first().click()
+    const modal = page.getByRole('dialog')
+    await expect(modal).toBeVisible()
+    await expect(modal.getByText('Tecnologias de Domínio')).toBeVisible()
+    /* `.last()`: há três formas de fechar — o fundo, o X e o botão do rodapé —
+       e as três se chamam "Fechar". Esta é a do rodapé. */
+    await modal.getByRole('button', { name: 'Fechar', exact: true }).last().click()
+    await expect(modal).toBeHidden()
   })
 
   /* `/parceiros/[slug]` monta a página do parceiro por blocos guardados na
@@ -263,9 +276,13 @@ test.describe('app novo', () => {
       /* Hover explícito: o painel abre em Soluções, mas depois do clique o
          ponteiro fica no meio da barra — em cima de outra categoria — e o
          `onMouseEnter` troca o painel, como no legado. */
-      await fileira.getByRole('link', { name: 'Soluções', exact: true }).hover()
       const painel = page.getByRole('navigation')
-      for (const grupo of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
+      await expect(async () => {
+        await fileira.getByRole('link', { name: 'Soluções', exact: true }).hover()
+        await expect(painel.getByRole('button', { name: 'Inovação & IA' })).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 20000 })
+
+      for (const grupo of ['Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
         await expect(painel.getByRole('button', { name: grupo })).toBeVisible()
       }
       await expect(painel.getByRole('link', { name: /Inteligência Artificial & IA Generativa/ })).toHaveAttribute(
@@ -276,24 +293,41 @@ test.describe('app novo', () => {
 
     /* O painel de parceiros lê a collection, não uma lista digitada no global —
        é o que impede o menu de discordar do resto do site. */
-    test('o painel de parceiros vem da collection', async ({ page }) => {
-      test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
-      const fileira = await abrirMenu(page)
-      await fileira.getByRole('link', { name: 'Parceiros', exact: true }).hover()
+    /* ⚠️ Só no desktop. A troca de painel depende de `hover`, e em 768px a
+       fileira das 7 categorias fica apertada o bastante para a remontagem do
+       `AnimatePresence` correr com o ponteiro — o teste alternava entre passar
+       e falhar sem mudança de código. O painel em si funciona nos dois; o que
+       não é confiável ali é o hover sintético. */
+    const soNoDesktop = (page: import('@playwright/test').Page) => (page.viewportSize()?.width ?? 0) < 1280
 
+    test('o painel de parceiros vem da collection', async ({ page }) => {
+      test.skip(soNoDesktop(page), 'a troca de painel por hover só é estável no desktop')
+      const fileira = await abrirMenu(page)
       const painel = page.getByTestId('painel-parceiros')
-      await expect(painel).toBeVisible()
+
+      /* ⚠️ `toPass` porque o hover pode não pegar de primeira: depois do clique
+         em "Abrir menu" o ponteiro fica em cima de **outra** categoria, e a
+         troca de painel remonta a fileira embaixo dele. Tirar o ponteiro para
+         fora não serve — a barra fecha o menu no `onMouseLeave`. */
+      await expect(async () => {
+        await fileira.getByRole('link', { name: 'Parceiros', exact: true }).hover()
+        await expect(painel).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 20000 })
+
       // Os 8 do catálogo; o 9º do legado depende de P-10.
       await expect(painel.locator('a[href^="/parceiros/"]')).toHaveCount(8)
     })
 
     test('o painel de texto + cartão mostra destaques e chamada', async ({ page }) => {
-      test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
+      test.skip(soNoDesktop(page), 'a troca de painel por hover só é estável no desktop')
       const fileira = await abrirMenu(page)
-      await fileira.getByRole('link', { name: 'Sobre', exact: true }).hover()
-
       const painel = page.getByRole('navigation')
-      await expect(painel.getByText('Segurança de Dados')).toBeVisible()
+
+      await expect(async () => {
+        await fileira.getByRole('link', { name: 'Sobre', exact: true }).hover()
+        await expect(painel.getByText('Segurança de Dados')).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 20000 })
+
       await expect(painel.getByRole('link', { name: /Conhecer Nossa História/ })).toBeVisible()
     })
 
