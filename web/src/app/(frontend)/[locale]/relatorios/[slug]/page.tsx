@@ -3,6 +3,7 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { PaginaDeMaterial, type TextosDoMaterial } from '@/components/content/pagina-de-material'
+import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { buscarMaterial, slugsDeMaterial } from '@/lib/materiais'
 
@@ -82,6 +83,6 @@ export default async function MaterialPage({ params }: PageProps<'/[locale]/rela
   if (!material) notFound()
 
   return (
-    <PaginaDeMaterial material={material} secao={SECAO} locale={locale} t={TEXTOS[locale]} />
+    <PaginaDeMaterial material={material} secao={SECAO} locale={locale} t={TEXTOS[locale]} contato={await lerContato()} />
   )
 }

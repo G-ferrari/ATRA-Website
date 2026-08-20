@@ -27,6 +27,18 @@ export const SiteSettings: GlobalConfig = {
   access: { read: isPublic, update: isEditorOrAdmin },
   fields: [
     {
+      /* Logo horizontal, no cabeçalho e no rodapé de toda página (MIG-073).
+       *
+       * ⚠️ Era um **hotlink do WordPress** — o site novo pedia a imagem ao site
+       * velho, e desligar o WP apagaria o logo do site inteiro. Era o último
+       * dos 11; os outros 10 (logos de parceiro e selos) vieram em MIG-071. */
+      name: 'logo',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Logo', en: 'Logo' },
+      admin: { position: 'sidebar' },
+    },
+    {
       name: 'metrics',
       type: 'array',
       maxRows: 6,
@@ -49,6 +61,24 @@ export const SiteSettings: GlobalConfig = {
         /* Ícone é opcional aqui: no legado os números de /sobre não têm ícone
          * (`About.tsx:134`) e os da home têm. O bloco decide se desenha. */
         { ...campoDeIcone, required: false } as typeof campoDeIcone,
+        {
+          /* O placeholder marcado que MIG-072 pede. Sem isto o número em disputa
+           * fica indistinguível do número conferido: os dois são só um inteiro
+           * no banco, e quem abrir o admin publica o errado sem saber que houve
+           * escolha. Marcado, o aviso aparece ao lado do campo.
+           *
+           * Não é desenhado no site — some quando P-01 for respondida e alguém
+           * desmarcar as três. */
+          name: 'pending',
+          type: 'checkbox',
+          label: { pt: 'Número em disputa (P-01)', en: 'Figure in dispute (P-01)' },
+          admin: {
+            description: {
+              pt: 'A home e /sobre discordam deste número. Vale o de /sobre até o marketing decidir.',
+              en: 'The home page and /sobre disagree on this figure. /sobre wins until marketing decides.',
+            },
+          },
+        },
       ],
     },
     {

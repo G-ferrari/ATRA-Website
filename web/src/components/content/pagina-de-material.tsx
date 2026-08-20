@@ -7,7 +7,7 @@ import { ContactCta } from '@/components/ui'
 import type { Locale } from '@/lib/locales'
 import { dataPorExtenso } from '@/lib/mappers/resource'
 import { hrefDe, type Secao } from '@/lib/routes'
-import type { ResourceDetail } from '@/types/content'
+import type { Contato, ResourceDetail } from '@/types/content'
 
 /* Landing de material rico (MIG-045), compartilhada por /relatorios/[slug] e
  * /ebooks/[slug] — as duas diferem em rótulo e num dado (data contra número de
@@ -43,11 +43,13 @@ export function PaginaDeMaterial({
   secao,
   locale,
   t,
+  contato,
 }: {
   material: ResourceDetail
   secao: Extract<Secao, 'relatorios' | 'ebooks'>
   locale: Locale
   t: TextosDoMaterial
+  contato: Contato
 }) {
   const ehEbook = material.kind === 'ebook'
 
@@ -155,6 +157,7 @@ export function PaginaDeMaterial({
         emailLabel={t.ctaEmail}
         actionLabel={t.ctaAcao}
         href={hrefDe('contato', locale)}
+        contato={contato}
       />
     </main>
   )

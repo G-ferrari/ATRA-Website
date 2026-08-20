@@ -330,7 +330,7 @@ Páginas iniciais: `home`, `sobre`, `carreiras`, `contato` (D-10).
 | Global | Conteúdo | Origem |
 |---|---|---|
 | `navigation` | Itens do menu, mega-menu por categoria, CTA do topo | `App.tsx:368-899` |
-| `footer` | 3 colunas de links, redes sociais, texto legal | `App.tsx:2446-2537` |
+| `footer` | Colunas de links, "sobre a ATRA", texto legal | `App.tsx:2446-2537` |
 | `contact` | E-mail, telefone, WhatsApp, endereço, redes | duplicado em 4 lugares |
 | `site-settings` | Métricas institucionais, selos, logo, título padrão | `App.tsx:1131`, `About.tsx:134` |
 | `ai-assistant` | System prompt, modelo, temperatura, rate limit, prompts sugeridos | `server.ts:6-36`, `Chat.tsx:59` |
@@ -350,6 +350,26 @@ Páginas iniciais: `home`, `sobre`, `carreiras`, `contato` (D-10).
 
 > Um número, um lugar. As 4 divergências de P-01 deixam de ser possíveis por
 > construção — resta escolher o valor certo.
+>
+> **Como ficou no porte (MIG-072).** `metrics` é um array de linhas
+> (`value` + `suffix` + `label`), e não um campo por número: o legado desenha 5
+> em /sobre e 3 na home, e um campo nomeado por métrica engessaria a lista que o
+> marketing mexe. Cada linha tem um `pending` — marcado nas três em disputa, é o
+> que faz o admin avisar que houve escolha, em vez de o número controverso
+> parecer conferido.
+
+### `footer` — colunas, e não três campos
+
+O legado desenha a mesma coluna três vezes com listas diferentes. Modelar como
+`solutions`/`institutional`/`legal` fixaria no schema uma escolha de layout: o
+editor não poderia renomear um título nem trocar a ordem sem PR. É um array de
+colunas, cada uma com `title`, `kind` e `links`.
+
+`kind: 'contact'` existe para a coluna que **não tem links próprios** — ela
+desenha telefone, e-mail e endereço do global `contact`, com ícone. Sem esse
+tipo, ou os dados de contato seriam digitados de novo aqui (a duplicação que a
+migração existe para acabar), ou a coluna ficaria fora do array e presa entre
+duas outras no JSX.
 
 ### `ai-assistant` — implementa D-12
 

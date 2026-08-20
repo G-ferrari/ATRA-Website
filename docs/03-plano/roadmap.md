@@ -110,9 +110,20 @@ cases, 9 materiais (metadados), 9 parceiros, 7 clientes, 7 depoimentos,
 gêmeos íntegros · upload para o Media.
 
 **Critério de conclusão:**
-- `pnpm seed` roda **duas vezes** sem duplicar registro
-- Zero imagem corrompida no Media (`file -b` reporta imagem em 100%)
-- Nenhuma URL do Unsplash ou `picsum.photos` no banco
+- `pnpm seed` roda **duas vezes** sem duplicar registro ✅
+- Zero imagem corrompida no Media (`file -b` reporta imagem em 100%) ✅ (MIG-070)
+- Nenhuma URL do Unsplash ou `picsum.photos` no banco ⚠️ **não atingido** — as 7
+  capas de `/insights` e as 4 do `contentTeaser` da home continuam sendo do
+  Unsplash e do `picsum.photos`. Não é defeito de porte: o legado não liga
+  aqueles cartões a conteúdo nenhum, e capa real é conteúdo (P-07, D-22). Fica
+  para a 4c, com o resto do material editorial
+
+> ✅ **Fase 4a concluída.** As três tasks fecharam. O que ela mudou de fato: o
+> conteúdo do protótipo deixou de morar no repositório. Clientes e depoimentos
+> viraram collection (MIG-071), contato e rodapé viraram global (MIG-072), e o
+> último hotlink do WordPress virou mídia do CMS (MIG-073) — o site novo não
+> pede mais nada ao site velho para se desenhar. Antes disso, desligar o
+> WordPress apagava o logo de todas as páginas.
 
 ## Fase 4b — Migração do WordPress (D-17)
 

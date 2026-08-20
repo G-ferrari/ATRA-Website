@@ -7,6 +7,7 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { ContactCta } from '@/components/ui'
+import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toWebinar } from '@/lib/mappers/webinar'
 import { getPayload } from '@/lib/payload'
@@ -108,6 +109,7 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
   if (!w) notFound()
 
   const t = TEXTOS[locale]
+  const contato = await lerContato()
   const embed = paraEmbed(w.videoUrl)
 
   return (
@@ -187,6 +189,7 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
         emailLabel={t.ctaEmail}
         actionLabel={t.ctaAcao}
         href={hrefDe('contato', locale)}
+        contato={contato}
       />
     </main>
   )

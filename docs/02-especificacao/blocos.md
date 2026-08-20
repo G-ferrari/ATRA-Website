@@ -134,6 +134,13 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 
 1. **Bloco não busca dado.** Recebe tudo por props, resolvidas na page server
    component. Ver [contratos-de-dados](contratos-de-dados.md).
+
+   Na prática são injetores em `lib/paginas.ts`, um por fonte, e cada um só
+   consulta se algum bloco da página pede: `comVagas`, `comClientes`,
+   `comDepoimentos` e `comContato`. O bloco declara um campo (`vagas`,
+   `clientes`, `contato`) que nasce vazio no mapper e chega preenchido na
+   renderização — e o preview de um bloco solto no admin, onde nada injeta,
+   simplesmente esconde a parte que dependia do dado.
 2. **Todo bloco aceita `anchor` (`text`), `theme` (`surface-1 | surface-2`),
    `borda` e `spacing` (`normal | roomy`).** O `anchor` alimenta o
    `stickyPageNav`; os outros três reproduzem, seção a seção, a alternância de

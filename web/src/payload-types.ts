@@ -115,11 +115,15 @@ export interface Config {
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
   globals: {
     'atra-ai': AtraAi;
+    contact: Contact;
+    footer: Footer;
     navigation: Navigation;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
+    contact: ContactSelect<false> | ContactSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
@@ -8295,6 +8299,69 @@ export interface AtraAi {
   createdAt?: string | null;
 }
 /**
+ * Phone, email, address and social. Changing here changes the whole site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact".
+ */
+export interface Contact {
+  id: number;
+  phone: string;
+  /**
+   * The same number with parentheses. The legacy uses both formats.
+   */
+  phoneWithArea: string;
+  whatsapp: string;
+  email: string;
+  address: string;
+  social?: {
+    linkedin?: string | null;
+    instagram?: string | null;
+    youtube?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Footer columns, text and links. Shown on every page except /chat.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  /**
+   * Short paragraph under the logo.
+   */
+  about: string;
+  /**
+   * The order here is the footer order. The logo column is fixed and not listed.
+   */
+  columns?:
+    | {
+        title: string;
+        /**
+         * “Contact details” ignores the links and renders the Contact global.
+         */
+        kind: 'links' | 'contact';
+        links?:
+          | {
+              label: string;
+              /**
+               * Empty or “#”: the link goes nowhere, as in the prototype.
+               */
+              href?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  copyright: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * The 7 menu categories and each panel’s content.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -8466,6 +8533,7 @@ export interface Navigation {
  */
 export interface SiteSetting {
   id: number;
+  logo?: (number | null) | Media;
   /**
    * Shown on the home page and /sobre. One figure, whole site.
    */
@@ -8516,6 +8584,10 @@ export interface SiteSetting {
               | 'headset'
             )
           | null;
+        /**
+         * The home page and /sobre disagree on this figure. /sobre wins until marketing decides.
+         */
+        pending?: boolean | null;
         id?: string | null;
       }[]
     | null;
@@ -8539,6 +8611,52 @@ export interface AtraAiSelect<T extends boolean = true> {
   systemPrompt?: T;
   requestsPerHour?: T;
   unavailableMessage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact_select".
+ */
+export interface ContactSelect<T extends boolean = true> {
+  phone?: T;
+  phoneWithArea?: T;
+  whatsapp?: T;
+  email?: T;
+  address?: T;
+  social?:
+    | T
+    | {
+        linkedin?: T;
+        instagram?: T;
+        youtube?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  about?: T;
+  columns?:
+    | T
+    | {
+        title?: T;
+        kind?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  copyright?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -8598,6 +8716,7 @@ export interface NavigationSelect<T extends boolean = true> {
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
+  logo?: T;
   metrics?:
     | T
     | {
@@ -8605,6 +8724,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         suffix?: T;
         label?: T;
         icon?: T;
+        pending?: T;
         id?: T;
       };
   seals?:

@@ -2,6 +2,7 @@ import type { Page, SiteSetting } from '@/payload-types'
 import type {
   Acento,
   Bloco,
+  Contato,
   Depoimento,
   LogoDeCliente,
   MetricaInstitucional,
@@ -477,6 +478,7 @@ export function toBlocos(
           title: b.title,
           subtitle: vazio(b.subtitle),
           showContactCard: b.showContactCard ?? true,
+          contato: null,
         })
         break
 
@@ -649,6 +651,12 @@ export function comVagas(blocos: Bloco[], vagas: Vaga[]): Bloco[] {
 /** Injeta os logos de cliente no herói da home (bloco não busca dado). */
 export function comClientes(blocos: Bloco[], clientes: LogoDeCliente[]): Bloco[] {
   for (const b of blocos) if (b.tipo === 'homeHero') b.clientes = clientes
+  return blocos
+}
+
+/** Injeta os dados de contato nos CTAs que desenham o cartão (MIG-072). */
+export function comContato(blocos: Bloco[], contato: Contato): Bloco[] {
+  for (const b of blocos) if (b.tipo === 'ctaContact') b.contato = contato
   return blocos
 }
 

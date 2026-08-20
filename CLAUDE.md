@@ -173,8 +173,16 @@ Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
 
 ## Estado
 
-Fases 1 e 2 concluídas: fundação, fatia vertical de cases, casca do site, Live
-Preview e organização do admin. A Fase 3 porta as 18 rotas restantes seguindo
-o padrão de `cases-de-sucesso`.
+Fases 1, 2, 3 e 4a concluídas: fundação, fatia vertical de cases, casca do site,
+Live Preview, as 20 rotas do protótipo (15 sob o gate visual) e o conteúdo do
+protótipo dentro do CMS.
+
+Desde a 4a **nada do site vem do repositório nem do WordPress**: clientes,
+depoimentos, contato, rodapé e o logo saíram de arrays e módulos escritos à mão
+e viraram collection, global e mídia. Se aparecer uma lista de conteúdo dentro
+de `lib/` ou de um bloco, é resíduo — o lugar dela é o CMS.
+
+A seguir vem a 4b (importar os 207 posts do WordPress), que depende de repactuar
+**P-27**: MIG-084 mapeia categorias e o WP não tem taxonomia para mapear.
 
 Roadmap em `docs/03-plano/`; backlog em `tasks.md`, uma task por PR.

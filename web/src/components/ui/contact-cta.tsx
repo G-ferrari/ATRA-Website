@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
-import { CONTATO } from '@/lib/contato'
+import type { Contato } from '@/types/content'
 
 /* CTA de fechamento com telefone e e-mail.
  * Porte de `legacy/src/components/CaseDetailBase.tsx:185`. */
@@ -15,6 +15,8 @@ export type ContactCtaProps = {
   emailLabel: string
   actionLabel: string
   href: string
+  /** Resolvido pela página, do global `contact` (MIG-072). */
+  contato: Contato
 }
 
 export function ContactCta({
@@ -25,6 +27,7 @@ export function ContactCta({
   emailLabel,
   actionLabel,
   href,
+  contato,
 }: ContactCtaProps) {
   return (
     <section className="py-24 bg-slate-50">
@@ -42,12 +45,12 @@ export function ContactCta({
             <div className="flex flex-col md:flex-row items-center justify-center gap-12 mb-12 p-8 bg-white/5 rounded-[6px] backdrop-blur-sm">
               <div>
                 <div className="text-secondary text-xs font-black uppercase mb-2">{phoneLabel}</div>
-                <div className="text-xl font-bold">{CONTATO.telefone}</div>
+                <div className="text-xl font-bold">{contato.telefone}</div>
               </div>
               <div className="hidden md:block w-px h-12 bg-white/10" />
               <div>
                 <div className="text-secondary text-xs font-black uppercase mb-2">{emailLabel}</div>
-                <div className="text-xl font-bold">{CONTATO.email}</div>
+                <div className="text-xl font-bold">{contato.email}</div>
               </div>
             </div>
 

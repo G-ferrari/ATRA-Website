@@ -7,8 +7,11 @@ import { Casca } from '@/components/layout/casca'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { lerContato } from '@/lib/contato'
 import { LOCALES, isLocale } from '@/lib/locales'
 import { toNavegacao } from '@/lib/mappers/navigation'
+import { toImageOpcional } from '@/lib/mappers/shared'
+import { toRodape } from '@/lib/mappers/site'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import '../globals.css'
@@ -56,8 +59,13 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
    * o menu só precisa do cartão — sem ele, `solutions` arrasta um join por
    * tipo de bloco e o cabeçalho passa a custar dezenas de segundos. */
   const payload = await getPayload()
-  const [navGlobal, solucoes, parceiros] = await Promise.all([
+  const [navGlobal, rodapeGlobal, institucional, contato, solucoes, parceiros] = await Promise.all([
     payload.findGlobal({ slug: 'navigation', locale, depth: 0 }),
+    payload.findGlobal({ slug: 'footer', locale, depth: 0 }),
+    /* `depth: 1` só pelo logo: o `site-settings` também carrega selos e
+       métricas, que o cabeçalho não usa. */
+    payload.findGlobal({ slug: 'site-settings', locale, depth: 1 }),
+    lerContato(),
     payload.find({
       collection: 'solutions',
       locale,
@@ -75,6 +83,9 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
       select: { name: true, slug: true, logo: true, logoScale: true, description: true },
     }),
   ])
+
+  const logo = toImageOpcional(institucional.logo, 'site-settings.logo')
+  const rodape = toRodape(rodapeGlobal)
 
   const navegacao = toNavegacao({
     global: navGlobal,
@@ -102,8 +113,8 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
         * como no `index.html` dele, e as classes de casca vivem no wrapper. */}
       <body>
         <Casca
-          cabecalho={<SiteHeader locale={locale} navegacao={navegacao} />}
-          rodape={<SiteFooter locale={locale} />}
+          cabecalho={<SiteHeader locale={locale} navegacao={navegacao} logo={logo} />}
+          rodape={<SiteFooter locale={locale} rodape={rodape} contato={contato} logo={logo} />}
           alternadorDeTema={<ThemeToggle locale={locale} />}
         >
           {children}

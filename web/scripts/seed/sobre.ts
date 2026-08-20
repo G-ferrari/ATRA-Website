@@ -41,12 +41,16 @@ const LEGADO = path.resolve(process.cwd(), '../legacy')
 /* Rótulos exatos de `legacy/src/locales/pt.json`, chave `aboutStats`. Os que eu
  * tinha escrito de cabeça ("Clientes" em vez de "clientes de diversos
  * segmentos") não quebravam linha, e o card ficava 15px mais baixo. */
+/* ⚠️ `pending` é o placeholder marcado que MIG-072 exige: são os 3 números em
+ * que a home e /sobre discordam (P-01). Valem os de /sobre, que é a página
+ * comparada pelo gate; a marca faz o admin avisar quem for publicar que houve
+ * escolha, em vez de o número em disputa parecer conferido. */
 const METRICAS = [
   { value: 15, suffix: '+', label: 'anos no mercado' },
-  { value: 140, suffix: '+', label: 'profissionais' },
-  { value: 30, suffix: '+', label: 'clientes de diversos segmentos' },
+  { value: 140, suffix: '+', label: 'profissionais', pending: true },
+  { value: 30, suffix: '+', label: 'clientes de diversos segmentos', pending: true },
   { value: 9, suffix: '', label: 'parceiros estratégicos' },
-  { value: 4, suffix: 'x', label: 'GPTW' },
+  { value: 4, suffix: 'x', label: 'GPTW', pending: true },
 ]
 
 /* `logoScale` reproduz as classes por logo do legado (`About.tsx:384`). */

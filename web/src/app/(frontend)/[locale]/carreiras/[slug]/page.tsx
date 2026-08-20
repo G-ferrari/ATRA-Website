@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation'
 
 import { RichText } from '@/components/content/rich-text'
 import { ContactCta } from '@/components/ui'
+import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toVagaDetalhe } from '@/lib/mappers/job'
 import { getPayload } from '@/lib/payload'
@@ -101,6 +102,7 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
   if (!vaga) notFound()
 
   const t = TEXTOS[locale]
+  const contato = await lerContato()
 
   return (
     <main className="min-h-screen bg-white">
@@ -153,6 +155,7 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
         emailLabel={t.ctaEmail}
         actionLabel={t.ctaAcao}
         href={hrefDe('contato', locale)}
+        contato={contato}
       />
     </main>
   )

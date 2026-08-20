@@ -1,8 +1,6 @@
 import { Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from 'lucide-react'
 
 import { TechCornerBraces } from '@/components/ui'
-import { CONTATO } from '@/lib/contato'
-import { REDES_SOCIAIS } from '@/lib/navegacao'
 import { cn } from '@/lib/utils'
 import type { BlocoCtaContact } from '@/types/content'
 
@@ -27,6 +25,10 @@ export function BlocoContato({ bloco }: { bloco: BlocoCtaContact }) {
   /* A forma com foto é outro markup, não outra pele: ver a nota do campo
      `variant` em `blocks/index.ts`. */
   if (bloco.variant === 'photo') return <ContatoComFoto bloco={bloco} />
+
+  /* O cartão some se o contato não veio resolvido — é o que acontece no preview
+     de um bloco solto no admin. A página o injeta (MIG-072). */
+  const contato = bloco.contato
 
   return (
     <section
@@ -88,7 +90,7 @@ export function BlocoContato({ bloco }: { bloco: BlocoCtaContact }) {
             </form>
           </div>
 
-          {bloco.showContactCard && (
+          {bloco.showContactCard && contato && (
             <div className="bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] rounded-[6px] p-8 lg:p-12 text-white flex flex-col justify-center gap-8 relative overflow-hidden">
               <TechCornerBraces color="blue" position="top-left" size={14} />
 
@@ -97,35 +99,35 @@ export function BlocoContato({ bloco }: { bloco: BlocoCtaContact }) {
                   <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <Phone size={12} aria-hidden /> Telefone
                   </p>
-                  <a href={CONTATO.whatsapp} target="_blank" rel="noopener noreferrer" className="text-sm font-light hover:text-primary transition-colors">
-                    {CONTATO.telefone}
+                  <a href={contato.whatsapp} target="_blank" rel="noopener noreferrer" className="text-sm font-light hover:text-primary transition-colors">
+                    {contato.telefone}
                   </a>
                 </div>
                 <div>
                   <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <Mail size={12} aria-hidden /> E-mail
                   </p>
-                  <a href={`mailto:${CONTATO.email}`} className="text-sm font-light hover:text-primary transition-colors">
-                    {CONTATO.email}
+                  <a href={`mailto:${contato.email}`} className="text-sm font-light hover:text-primary transition-colors">
+                    {contato.email}
                   </a>
                 </div>
                 <div className="sm:col-span-2">
                   <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <MapPin size={12} aria-hidden /> Endereço
                   </p>
-                  <p className="text-sm font-light text-white/90 leading-relaxed">{CONTATO.endereco}</p>
+                  <p className="text-sm font-light text-white/90 leading-relaxed">{contato.endereco}</p>
                 </div>
               </div>
 
               <div className="flex gap-2.5 relative z-10">
                 {[
-                  { Icone: Linkedin, nome: 'LinkedIn', url: REDES_SOCIAIS.linkedin },
-                  { Icone: Instagram, nome: 'Instagram', url: REDES_SOCIAIS.instagram },
-                  { Icone: Youtube, nome: 'YouTube', url: REDES_SOCIAIS.youtube },
+                  { Icone: Linkedin, nome: 'LinkedIn', url: contato.redes.linkedin },
+                  { Icone: Instagram, nome: 'Instagram', url: contato.redes.instagram },
+                  { Icone: Youtube, nome: 'YouTube', url: contato.redes.youtube },
                 ].map(({ Icone, nome, url }) => (
                   <a
                     key={nome}
-                    href={url}
+                    href={url ?? '#'}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={nome}

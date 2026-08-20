@@ -5,6 +5,7 @@ import { locale as getLocale } from 'next/root-params'
 
 import { ContadorAnimado } from '@/components/blocks/contador-animado'
 import { MetricChip, StatusBadge } from '@/components/ui'
+import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { toConsultantRole } from '@/lib/mappers/consultant'
 import { getPayload } from '@/lib/payload'
@@ -124,6 +125,7 @@ export default async function ConsultoresPage() {
     sort: 'order',
   })
   const perfis = docs.map(toConsultantRole)
+  const contato = await lerContato()
 
   /* Somados dos perfis, como no legado (`Consultants.tsx:360`) — não são
    * números institucionais, então não vêm do global `site-settings`. */
@@ -201,7 +203,7 @@ export default async function ConsultoresPage() {
         </div>
       </section>
 
-      <SolicitarConsultores locale={locale} />
+      <SolicitarConsultores locale={locale} contato={contato} />
     </main>
   )
 }

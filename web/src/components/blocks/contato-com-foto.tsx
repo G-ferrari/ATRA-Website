@@ -2,8 +2,6 @@ import { ArrowRight, Instagram, Linkedin, MessageCircle, Youtube } from 'lucide-
 import Image from 'next/image'
 
 import { TechCornerBraces, TechHorizontalLine, TechVerticalLine } from '@/components/ui'
-import { CONTATO } from '@/lib/contato'
-import { REDES_SOCIAIS } from '@/lib/navegacao'
 import { cn } from '@/lib/utils'
 import type { BlocoCtaContact } from '@/types/content'
 
@@ -26,6 +24,9 @@ const CAMPO =
 const AVISO = 'O envio pelo site chega em breve. Enquanto isso, use o WhatsApp ou o e-mail ao lado.'
 
 export function ContatoComFoto({ bloco }: { bloco: BlocoCtaContact }) {
+  /* Injetado pela página (MIG-072). `null` só no preview de um bloco solto. */
+  const contato = bloco.contato
+
   return (
     <section
       id={bloco.anchor ?? 'fale-conosco'}
@@ -113,7 +114,13 @@ export function ContatoComFoto({ bloco }: { bloco: BlocoCtaContact }) {
                   <p className="text-[10px] text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-2">
                     E-mail
                   </p>
-                  {/* As quebras são do gabarito (`App.tsx:2374`), não do texto. */}
+                  {/* ⚠️ E-mail e endereço continuam **escritos aqui**, e não vindos
+                      do global `contact` (MIG-072), por causa das quebras: o gabarito
+                      parte o e-mail no meio da palavra (`negocios@atra.` / `com.br`,
+                      `App.tsx:2374`) e o endereço em três linhas, com pontuação
+                      diferente da string do rodapé. Reconstituir isso a partir de um
+                      texto corrido seria adivinhação, e a quebra é pixel. Registrado
+                      em `debito-tecnico.md`. */}
                   <p className="text-sm font-light text-text-main dark:text-white/90">
                     negocios@atra.
                     <br />
@@ -135,53 +142,55 @@ export function ContatoComFoto({ bloco }: { bloco: BlocoCtaContact }) {
               </div>
             </div>
 
-            <div className="relative z-10 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-8">
-              <a
-                href={CONTATO.whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group bg-surface-2/95 dark:bg-[#181b22]/95 hover:bg-emerald-500/10 dark:hover:bg-emerald-500/15 backdrop-blur-sm border border-border-main dark:border-white/10 hover:border-emerald-500/40 rounded-[6px] px-4 py-3 shadow-lg flex items-center justify-between gap-4 transition-all duration-300 flex-1 sm:flex-initial h-[76px]"
-              >
-                <div className="flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[10px] uppercase font-normal tracking-wider text-emerald-600 dark:text-emerald-400">
-                      Conversar agora
-                    </span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            {contato && (
+              <div className="relative z-10 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-8">
+                <a
+                  href={contato.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group bg-surface-2/95 dark:bg-[#181b22]/95 hover:bg-emerald-500/10 dark:hover:bg-emerald-500/15 backdrop-blur-sm border border-border-main dark:border-white/10 hover:border-emerald-500/40 rounded-[6px] px-4 py-3 shadow-lg flex items-center justify-between gap-4 transition-all duration-300 flex-1 sm:flex-initial h-[76px]"
+                >
+                  <div className="flex flex-col justify-center">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-[10px] uppercase font-normal tracking-wider text-emerald-600 dark:text-emerald-400">
+                        Conversar agora
+                      </span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    </div>
+                    <p className="text-sm font-medium text-text-main dark:text-white tracking-tight">
+                      {contato.telefoneComDdd}
+                    </p>
                   </div>
-                  <p className="text-sm font-medium text-text-main dark:text-white tracking-tight">
-                    {CONTATO.telefoneComDdd}
-                  </p>
-                </div>
-                <div className="w-9 h-9 rounded-[6px] bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <MessageCircle size={19} aria-hidden />
-                </div>
-              </a>
+                  <div className="w-9 h-9 rounded-[6px] bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <MessageCircle size={19} aria-hidden />
+                  </div>
+                </a>
 
-              <div className="bg-surface-2/95 dark:bg-[#181b22]/95 backdrop-blur-sm border border-border-main dark:border-white/10 rounded-[6px] px-4 py-3 shadow-lg flex flex-col justify-center gap-1.5 flex-1 sm:flex-initial h-[76px]">
-                <p className="text-[10px] uppercase font-normal tracking-wider text-text-muted dark:text-white/60">
-                  Nossas redes sociais
-                </p>
-                <div className="flex items-center gap-3">
-                  {[
-                    { Icone: Linkedin, nome: 'LinkedIn', url: REDES_SOCIAIS.linkedin, cor: 'bg-[#0A66C2]/15 text-[#0A66C2] dark:bg-[#0A66C2]/20 dark:text-[#388DFF]' },
-                    { Icone: Instagram, nome: 'Instagram', url: REDES_SOCIAIS.instagram, cor: 'bg-[#E4405F]/15 text-[#E4405F] dark:bg-[#E4405F]/20 dark:text-[#FA7298]' },
-                    { Icone: Youtube, nome: 'YouTube', url: REDES_SOCIAIS.youtube, cor: 'bg-[#FF0000]/15 text-[#FF0000] dark:bg-[#FF0000]/20 dark:text-[#FF4E4E]' },
-                  ].map(({ Icone, nome, url, cor }) => (
-                    <a
-                      key={nome}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${nome} da ATRA`}
-                      className={`w-9 h-9 rounded-[6px] ${cor} flex items-center justify-center transition-transform hover:scale-105`}
-                    >
-                      <Icone size={19} aria-hidden />
-                    </a>
-                  ))}
+                <div className="bg-surface-2/95 dark:bg-[#181b22]/95 backdrop-blur-sm border border-border-main dark:border-white/10 rounded-[6px] px-4 py-3 shadow-lg flex flex-col justify-center gap-1.5 flex-1 sm:flex-initial h-[76px]">
+                  <p className="text-[10px] uppercase font-normal tracking-wider text-text-muted dark:text-white/60">
+                    Nossas redes sociais
+                  </p>
+                  <div className="flex items-center gap-3">
+                    {[
+                      { Icone: Linkedin, nome: 'LinkedIn', url: contato.redes.linkedin, cor: 'bg-[#0A66C2]/15 text-[#0A66C2] dark:bg-[#0A66C2]/20 dark:text-[#388DFF]' },
+                      { Icone: Instagram, nome: 'Instagram', url: contato.redes.instagram, cor: 'bg-[#E4405F]/15 text-[#E4405F] dark:bg-[#E4405F]/20 dark:text-[#FA7298]' },
+                      { Icone: Youtube, nome: 'YouTube', url: contato.redes.youtube, cor: 'bg-[#FF0000]/15 text-[#FF0000] dark:bg-[#FF0000]/20 dark:text-[#FF4E4E]' },
+                    ].map(({ Icone, nome, url, cor }) => (
+                      <a
+                        key={nome}
+                        href={url ?? '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${nome} da ATRA`}
+                        className={`w-9 h-9 rounded-[6px] ${cor} flex items-center justify-center transition-transform hover:scale-105`}
+                      >
+                        <Icone size={19} aria-hidden />
+                      </a>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

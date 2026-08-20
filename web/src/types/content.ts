@@ -455,6 +455,8 @@ export type BlocoCtaContact = Base & {
   title: string
   subtitle: string | null
   showContactCard: boolean
+  /** Resolvido pela página a partir do global `contact` — o bloco não busca. */
+  contato: Contato | null
 }
 
 export type BlocoJobsList = Base & {
@@ -643,6 +645,31 @@ export type CategoriaDoMenu = {
   intro: string | null
   highlights: DestaqueDoMenu[]
   card: CartaoDoMenu | null
+}
+
+/** Dados de contato da ATRA, do global `contact` (MIG-072). */
+export type Contato = {
+  telefone: string
+  /** O mesmo número com parênteses — o legado escreve dos dois jeitos. */
+  telefoneComDdd: string
+  whatsapp: string
+  email: string
+  endereco: string
+  redes: { linkedin: string | null; instagram: string | null; youtube: string | null }
+}
+
+export type ColunaDoRodape = {
+  titulo: string
+  /** `contact`: a coluna desenha o global `contact` em vez dos links. */
+  tipo: 'links' | 'contact'
+  links: { label: string; href: string | null }[]
+}
+
+/** Tudo que o rodapé precisa, resolvido no servidor. */
+export type Rodape = {
+  sobre: string
+  colunas: ColunaDoRodape[]
+  direitos: string
 }
 
 /** Tudo que o cabeçalho precisa, resolvido no servidor. */

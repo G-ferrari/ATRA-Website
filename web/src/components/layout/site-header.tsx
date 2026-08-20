@@ -8,11 +8,11 @@ import { useEffect, useState } from 'react'
 
 import { Icone } from '@/components/blocks/icones'
 import { PainelDoMenu } from '@/components/layout/mega-menu'
-import { LOGO_ATRA, TEXTOS_CASCA } from '@/lib/navegacao'
+import { TEXTOS_CASCA } from '@/lib/navegacao'
 import { hrefDe } from '@/lib/routes'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
-import type { CategoriaDoMenu, Navegacao } from '@/types/content'
+import type { CategoriaDoMenu, Image as Imagem, Navegacao } from '@/types/content'
 
 /* Menu fixo do topo — porte de `legacy/src/App.tsx:278`, com os 7 painéis do
  * megamenu e a gaveta mobile (MIG-072a).
@@ -24,7 +24,15 @@ import type { CategoriaDoMenu, Navegacao } from '@/types/content'
  * em toda captura da regressão visual, e mexer nele obrigaria a regravar os 9
  * gabaritos. Os painéis só existem depois do clique. */
 
-export function SiteHeader({ locale, navegacao }: { locale: Locale; navegacao: Navegacao }) {
+export function SiteHeader({
+  locale,
+  navegacao,
+  logo,
+}: {
+  locale: Locale
+  navegacao: Navegacao
+  logo: Imagem | null
+}) {
   const t = TEXTOS_CASCA[locale]
   const [rolou, setRolou] = useState(false)
   const [aberto, setAberto] = useState(false)
@@ -70,17 +78,20 @@ export function SiteHeader({ locale, navegacao }: { locale: Locale; navegacao: N
       >
         <div className="w-full flex items-center justify-between relative">
           <Link href={prefixo || '/'} className="flex items-center gap-2" onClick={() => setAberto(false)}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- hotlink do
-                WordPress, igual ao do legado: os dois precisam renderizar o
-                mesmo arquivo enquanto a mídia não migra (MIG-071). Passar pelo
-                next/image reescalaria e mudaria a caixa. */}
-            <img
-              src={LOGO_ATRA}
-              alt={t.logo}
-              decoding="async"
-              fetchPriority="high"
-              className="h-10 md:h-12 w-auto object-contain transition-all"
-            />
+            {/* ⚠️ `<img>` cru, e não `next/image`: a caixa é `h-12 w-auto`, e o
+                gabarito desenha o arquivo original. Passar pelo next/image
+                reescalaria e mudaria a caixa. O `src` deixou de ser o hotlink do
+                WordPress em MIG-073 — agora é a mídia do CMS. */}
+            {logo && (
+              /* eslint-disable-next-line @next/next/no-img-element -- ver acima */
+              <img
+                src={logo.url}
+                alt={t.logo}
+                decoding="async"
+                fetchPriority="high"
+                className="h-10 md:h-12 w-auto object-contain transition-all"
+              />
+            )}
           </Link>
 
           {/* ⚠️ O marcador vai aqui, e não no `motion.div` de dentro: o

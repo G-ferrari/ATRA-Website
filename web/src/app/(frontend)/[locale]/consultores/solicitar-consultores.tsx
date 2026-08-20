@@ -2,9 +2,8 @@ import { ArrowRight, Instagram, Linkedin, MessageCircle, Youtube } from 'lucide-
 import Image from 'next/image'
 
 import { TechCornerBraces } from '@/components/ui'
-import { CONTATO } from '@/lib/contato'
 import type { Locale } from '@/lib/locales'
-import { REDES_SOCIAIS } from '@/lib/navegacao'
+import type { Contato } from '@/types/content'
 
 /* Seção "solicitar consultores" — porte de `legacy/src/pages/Consultants.tsx:685`.
  *
@@ -78,7 +77,7 @@ const TEXTOS = {
 const CAMPO =
   'w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main dark:text-white placeholder:text-text-muted dark:placeholder:text-white/40 font-light transition-colors disabled:opacity-100'
 
-export function SolicitarConsultores({ locale }: { locale: Locale }) {
+export function SolicitarConsultores({ locale, contato }: { locale: Locale; contato: Contato }) {
   const t = TEXTOS[locale]
 
   return (
@@ -196,7 +195,7 @@ export function SolicitarConsultores({ locale }: { locale: Locale }) {
 
             <div className="relative z-10 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-8">
               <a
-                href={CONTATO.whatsapp}
+                href={contato.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group bg-surface-2/95 dark:bg-[#181b22]/95 hover:bg-emerald-500/10 dark:hover:bg-emerald-500/15 backdrop-blur-sm border border-border-main dark:border-white/10 hover:border-emerald-500/40 rounded-[6px] px-4 py-3 shadow-lg flex items-center justify-between gap-4 transition-all duration-300 flex-1 sm:flex-initial h-[76px]"
@@ -209,7 +208,7 @@ export function SolicitarConsultores({ locale }: { locale: Locale }) {
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
                   <p className="text-sm font-medium text-text-main dark:text-white tracking-tight">
-                    {CONTATO.telefone}
+                    {contato.telefone}
                   </p>
                 </div>
                 <div className="w-9 h-9 rounded-[6px] bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -223,13 +222,13 @@ export function SolicitarConsultores({ locale }: { locale: Locale }) {
                 </p>
                 <div className="flex items-center gap-3">
                   {[
-                    { Icone: Linkedin, nome: 'LinkedIn', url: REDES_SOCIAIS.linkedin, cor: 'bg-[#0A66C2]/15 text-[#0A66C2] dark:bg-[#0A66C2]/20 dark:text-[#388DFF]' },
-                    { Icone: Instagram, nome: 'Instagram', url: REDES_SOCIAIS.instagram, cor: 'bg-[#E4405F]/15 text-[#E4405F] dark:bg-[#E4405F]/20 dark:text-[#FA7298]' },
-                    { Icone: Youtube, nome: 'YouTube', url: REDES_SOCIAIS.youtube, cor: 'bg-[#FF0000]/15 text-[#FF0000] dark:bg-[#FF0000]/20 dark:text-[#FF4D4D]' },
+                    { Icone: Linkedin, nome: 'LinkedIn', url: contato.redes.linkedin, cor: 'bg-[#0A66C2]/15 text-[#0A66C2] dark:bg-[#0A66C2]/20 dark:text-[#388DFF]' },
+                    { Icone: Instagram, nome: 'Instagram', url: contato.redes.instagram, cor: 'bg-[#E4405F]/15 text-[#E4405F] dark:bg-[#E4405F]/20 dark:text-[#FA7298]' },
+                    { Icone: Youtube, nome: 'YouTube', url: contato.redes.youtube, cor: 'bg-[#FF0000]/15 text-[#FF0000] dark:bg-[#FF0000]/20 dark:text-[#FF4D4D]' },
                   ].map(({ Icone, nome, url, cor }) => (
                     <a
                       key={nome}
-                      href={url}
+                      href={url ?? '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${nome} da ATRA`}

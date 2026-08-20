@@ -188,8 +188,25 @@ Uma PR por linha. Todas dependem de MIG-031.
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
 | MIG-071 | Seed de glossário, materiais, parceiros, clientes, depoimentos | 070 | Idempotente; roda 2× sem duplicar | 4h | **done** — `pnpm seed` 2× sem mudar nenhuma contagem; nova collection `clients` (7) e depoimentos 3→7 |
-| MIG-072 | Seed dos globals (`contact`, `navigation`, `footer`, `site-settings`) | 071 | Métricas com placeholder marcado até P-01 | 2h |
-| MIG-073 | Baixar os 11 assets hotlinkados do WP para o Media | 070 | Zero URL `wp-content` no banco | 1.5h |
+| MIG-072 | Seed dos globals (`contact`, `navigation`, `footer`, `site-settings`) | 071 | Métricas com placeholder marcado até P-01 | 2h | **done** — `contact` e `footer` também precisaram ser **criados**; os 3 números em disputa entram com `pending` marcado |
+| MIG-073 | Baixar os 11 assets hotlinkados do WP para o Media | 070 | Zero URL `wp-content` no banco | 1.5h | **done** — restava 1 (o logo); os outros 10 vieram em MIG-071. `pg_dump` + `grep wp-content` = 0 |
+
+> **Dois globals do título de MIG-072 não existiam.** É o terceiro caso do mesmo
+> buraco — a task diz "semear X" e nenhuma task cria X (o 1º foi a casca do
+> site, MIG-034; o 2º, o `navigation` de MIG-072a). `contact` e `footer` foram
+> definidos junto com o seed.
+>
+> **O que saiu do repositório e virou CMS nesta task:** `lib/contato.ts` (5
+> componentes liam a lista escrita à mão), `RODAPE` e `REDES_SOCIAIS` de
+> `lib/navegacao.ts`, e o hotlink do logo. O que ficou em `navegacao.ts` é cromo
+> de interface — rótulo de botão, `alt`, "Alternar tema". Saiu junto a lista
+> `CATEGORIAS`, que **ninguém importava** desde MIG-072a e parecia a fonte dos
+> sete itens do topo.
+>
+> ⚠️ **O e-mail e o endereço do CTA com foto continuam literais** no componente:
+> o gabarito parte o e-mail no meio da palavra e o endereço em três linhas, com
+> pontuação diferente da string do rodapé, e quebra é pixel. Em
+> `debito-tecnico.md`.
 
 ## Fase 4b — Migração do WordPress (D-17)
 

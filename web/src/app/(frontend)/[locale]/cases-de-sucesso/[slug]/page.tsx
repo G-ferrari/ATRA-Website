@@ -10,6 +10,7 @@ import { RascunhoIncompleto } from '@/components/content/rascunho-incompleto'
 import { RichText } from '@/components/content/rich-text'
 import { AREAS_DE_ATUACAO } from '@/lib/areas'
 import { ContactCta, QuoteBlock } from '@/components/ui'
+import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toCaseDetail } from '@/lib/mappers/case'
 import { mapearOuFaltando } from '@/lib/mappers/shared'
@@ -124,6 +125,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
   if (!resultado) notFound()
 
   const t = TEXTOS[locale]
+  const contato = await lerContato()
 
   if ('faltando' in resultado) {
     return (
@@ -311,6 +313,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
         emailLabel={t.ctaEmail}
         actionLabel={t.ctaAcao}
         href={hrefDe('contato', locale)}
+        contato={contato}
       />
     </main>
   )

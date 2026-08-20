@@ -1,8 +1,9 @@
 import { draftMode } from 'next/headers'
 
 import type { Locale } from './locales'
-import { comClientes, comDepoimentos, comVagas, toBlocos, toMetricas, toSelos } from './mappers/blocks'
+import { comClientes, comContato, comDepoimentos, comVagas, toBlocos, toMetricas, toSelos } from './mappers/blocks'
 import { toDepoimento, toLogoDeCliente } from './mappers/client'
+import { lerContato } from './contato'
 import { toVaga } from './mappers/job'
 import { getPayload } from './payload'
 import type { Bloco } from '@/types/content'
@@ -79,6 +80,12 @@ export async function resolverPagina(
       where: { featured: { equals: true } },
     })
     comDepoimentos(blocos, depoimentos.map(toDepoimento))
+  }
+
+  /* O CTA de contato desenha telefone, e-mail e redes — que agora vêm do
+     global `contact` (MIG-072), não de uma lista escrita no repositório. */
+  if (blocos.some((b) => b.tipo === 'ctaContact')) {
+    comContato(blocos, await lerContato())
   }
 
   return { title: docs[0].title, blocos }

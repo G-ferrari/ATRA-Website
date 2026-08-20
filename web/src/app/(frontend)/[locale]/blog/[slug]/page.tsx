@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation'
 import { RascunhoIncompleto } from '@/components/content/rascunho-incompleto'
 import { RichText } from '@/components/content/rich-text'
 import { ContactCta } from '@/components/ui'
+import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toPostDetail } from '@/lib/mappers/post'
 import { mapearOuFaltando } from '@/lib/mappers/shared'
@@ -125,6 +126,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
   if (!resultado) notFound()
 
   const t = TEXTOS[locale]
+  const contato = await lerContato()
 
   if ('faltando' in resultado) {
     return (
@@ -215,6 +217,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
         emailLabel={t.ctaEmail}
         actionLabel={t.ctaAcao}
         href={hrefDe('contato', locale)}
+        contato={contato}
       />
     </main>
   )
