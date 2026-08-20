@@ -15,7 +15,11 @@ for (const arquivo of SEEDS) {
   console.log(`\n▶ ${arquivo}`)
   const r = spawnSync(
     'node',
-    ['--import', 'tsx', '--env-file=.env.local', `scripts/seed/${arquivo}`],
+    /* ⚠️ `--env-file-if-exists`, e não `--env-file`. No CI não há `.env.local`
+     * — as variáveis vêm do workflow — e o `node` aborta com "not found" antes
+     * de rodar qualquer seed, derrubando o job de e2e inteiro. Foi o que
+     * manteve MIG-010 sem uma execução verde desde a estreia do CI. */
+    ['--import', 'tsx', '--env-file-if-exists=.env.local', `scripts/seed/${arquivo}`],
     { stdio: 'inherit' },
   )
   if (r.status !== 0) {
