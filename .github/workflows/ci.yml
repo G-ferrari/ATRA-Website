@@ -179,8 +179,12 @@ jobs:
       # imagem oficial precisa do comando `server /data`, e serviço do Actions
       # não deixa sobrescrever o comando. Assim a definição vive num lugar só e
       # o `createbucket` vem junto.
+      # ⚠️ O `createbucket` fica fora do `--wait`: ele cria o bucket e **sai**,
+      # e o `--wait` trata contêiner encerrado como falha, mesmo com código 0.
       - name: Sobe o storage (:9000)
-        run: docker compose up -d --wait minio createbucket
+        run: |
+          docker compose up -d --wait minio
+          docker compose up createbucket
 
       - run: pnpm install --frozen-lockfile
         working-directory: web
