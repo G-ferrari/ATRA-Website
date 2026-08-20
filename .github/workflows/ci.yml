@@ -137,14 +137,34 @@ jobs:
           --health-cmd "pg_isready -U atra -d atra"
           --health-interval 5s --health-timeout 5s --health-retries 10
 
+      # O seed sobe imagem para o storage; sem ele o job morria em
+      # `ECONNREFUSED :9000` no primeiro upload — o `S3_ENDPOINT` apontava para
+      # um serviço que não existia aqui. Foi o segundo motivo de MIG-010 nunca
+      # ter tido execução verde.
+      #
+      # Imagem da Bitnami, e não `minio/minio`: serviço do GitHub Actions não
+      # aceita sobrescrever o `command`, e a oficial exige `server /data`. Esta
+      # sobe sozinha e ainda cria o bucket por variável, o que substitui o
+      # container `createbucket` do compose.
+      minio:
+        image: bitnami/minio:latest
+        env:
+          MINIO_ROOT_USER: atra
+          MINIO_ROOT_PASSWORD: atra12345
+          MINIO_DEFAULT_BUCKETS: atra-media:download
+        ports: ['9000:9000']
+        options: >-
+          --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+
     env:
       DATABASE_URI: postgres://atra:atra@localhost:5432/atra
       PAYLOAD_SECRET: ci-secret-not-used-in-production
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       S3_ENDPOINT: http://localhost:9000
       S3_BUCKET: atra-media
-      S3_ACCESS_KEY: ci
-      S3_SECRET_KEY: ci-secret
+      S3_ACCESS_KEY: atra
+      S3_SECRET_KEY: atra12345
       NEXT_URL: http://localhost:3000
       LEGACY_URL: http://localhost:3001
       NEXT_TELEMETRY_DISABLED: '1'
