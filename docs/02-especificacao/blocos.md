@@ -47,6 +47,7 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 | `sobre` | `pageHero` → `statsGrid` → `stickyPageNav` → `richTextSection` → `valueCards` → `partnerShowcase` → `iconCardGrid` → `iconCardGrid` → `ctaBanner` |
 | `carreiras` | `pageHero`(center) → `stickyPageNav` → `valueCards`(expanded) → `sealsBanner` → `processSteps` → `jobsList` → `iconCardGrid`(card-centered) → `richTextSection`(centered) — **corrigida em MIG-050a**, ver abaixo |
 | `contato` (nova, D-10) | `pageHero` → `ctaContact` |
+| `insights` | `insightsHub` — sete seções num bloco só, porque compartilham o estado do filtro |
 | `solucoes/[slug]` | `pageHero` → `stickyPageNav` → `methodCards` → `bentoGrid` → `audienceSplit` → `accordionSteps` → `ctaBanner`(dark) — **corrigida em MIG-056**, ver abaixo |
 | `parceiros/[slug]` | `partnerHero` → `partnerSplit`(image) → `partnerSplit`(checklist) → `partnerSplit`(specGrid) → `ctaBanner`(dark-centered) — **corrigida em MIG-054a**, ver abaixo |
 
@@ -115,11 +116,19 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 > — três campos mais `textarea` contra quatro campos, e um painel de gradiente
 > no lugar do cartão com foto. Daí a variante `ctaContact: photo`.
 
-> **Padrão que se repete.** Quatro composições previstas estavam erradas —
-> `solucoes/[slug]`, `carreiras`, `parceiros/[slug]`, `home` — e nas quatro o
-> erro foi o mesmo: foram escritas a partir do **inventário de seções**, não do
-> markup. Antes de estimar as que faltam (`/insights`, `segmentos`), abrir o
-> arquivo do legado.
+> [!ATENÇÃO] **E `/insights` não agrega nada.** O plano dizia "agrega 4
+> collections" e o legado tem uma **lista curada com texto próprio**: dos 10
+> itens, só 3 repetem o título da página de origem. O mesmo case do Banco
+> Carrefour aparece no hub como "Processamento de Dados 51x Mais Rápido no
+> Google Cloud" e em /cases-de-sucesso com outro nome. Agregar mudaria o texto
+> de sete cartões; trocar o texto do hub pelo das collections é decisão de
+> conteúdo (D-22). Virou o bloco `insightsHub`, com os itens em array.
+
+> **Padrão que se repete.** Cinco composições previstas estavam erradas —
+> `solucoes/[slug]`, `carreiras`, `parceiros/[slug]`, `home`, `/insights` — e
+> nas cinco o erro foi o mesmo: foram escritas a partir do **inventário de
+> seções**, não do markup. Antes de estimar `segmentos` e as 13 de MIG-093,
+> abrir o arquivo do legado.
 
 ## Regras de bloco
 

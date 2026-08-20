@@ -21,6 +21,7 @@ export const ROTAS_COM_GABARITO = [
   /* Terceira rota que MIG-054 fechou sem gabarito, e a terceira a sair curta —
      38%, neste caso. Ver a nota no topo de `seed/parceiros.ts`. */
   { nome: 'parceiro-detalhe', caminho: '/parceiros/google-cloud' },
+  { nome: 'insights', caminho: '/insights' },
 ] as const
 
 /* Imagens entram mascaradas na comparação.

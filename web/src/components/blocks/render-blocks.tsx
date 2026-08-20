@@ -18,6 +18,7 @@ import { BlocoCarrosselDeCases } from './bloco-carrossel-de-cases'
 import { BlocoDepoimentos } from './bloco-depoimentos'
 import { BlocoFaixaDeLogos } from './bloco-faixa-de-logos'
 import { BlocoHomeHero } from './bloco-home-hero'
+import { BlocoHubDeInsights } from './bloco-hub-de-insights'
 import { BlocoParceiroHero } from './bloco-parceiro-hero'
 import { BlocoParceiroSecao } from './bloco-parceiro-secao'
 import { BlocoParceiros } from './bloco-parceiros'
@@ -88,6 +89,8 @@ export function RenderBlocks({ blocos, locale }: { blocos: Bloco[]; locale: Loca
             return <BlocoDepoimentos key={b.id} bloco={b} />
           case 'contentTeaser':
             return <BlocoVitrineDeConteudo key={b.id} bloco={b} />
+          case 'insightsHub':
+            return <BlocoHubDeInsights key={b.id} bloco={b} />
         }
       })}
     </>

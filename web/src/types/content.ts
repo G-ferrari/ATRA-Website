@@ -304,6 +304,50 @@ export type BlocoContentTeaser = Base & {
   newsletter: { title: string | null; placeholder: string | null } | null
 }
 
+export type FormatoDeInsight = {
+  key: string
+  label: string
+  icon: string
+  count: number | null
+  href: string | null
+}
+
+export type ItemDeInsight = {
+  format: string
+  title: string
+  description: string
+  category: string
+  meta: string
+  date: string
+  author: string
+  href: string
+  image: Image | null
+  featured: boolean
+  tags: string[]
+}
+
+export type BlocoInsightsHub = Base & {
+  tipo: 'insightsHub'
+  badge: string | null
+  chip: string | null
+  title: string
+  highlight: string | null
+  description: string | null
+  formats: FormatoDeInsight[]
+  topics: string[]
+  items: ItemDeInsight[]
+  portals: { title: string | null; description: string | null } | null
+  newsletter: { eyebrow: string | null; title: string | null; description: string | null } | null
+  closing: {
+    title: string | null
+    description: string | null
+    ctaLabel: string | null
+    ctaHref: string | null
+    secondaryLabel: string | null
+    secondaryHref: string | null
+  } | null
+}
+
 export type BlocoCtaBanner = Base & {
   tipo: 'ctaBanner'
   title: string
@@ -501,6 +545,7 @@ export type Bloco =
   | BlocoCaseCarousel
   | BlocoTestimonialCarousel
   | BlocoContentTeaser
+  | BlocoInsightsHub
   | BlocoValueCards
   | BlocoStickyPageNav
   | BlocoSealsBanner

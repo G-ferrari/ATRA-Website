@@ -366,6 +366,59 @@ export function toBlocos(
         })
         break
 
+      case 'insightsHub':
+        blocos.push({
+          ...base(b),
+          tipo: 'insightsHub',
+          badge: vazio(b.badge),
+          chip: vazio(b.chip),
+          title: b.title,
+          highlight: vazio(b.highlight),
+          description: vazio(b.description),
+          formats: (b.formats ?? []).map((f) => ({
+            key: f.key,
+            label: f.label,
+            icon: f.icon,
+            count: f.count ?? null,
+            href: vazio(f.href),
+          })),
+          topics: (b.topics ?? []).filter((t): t is string => Boolean(t?.trim())),
+          items: (b.items ?? []).map((i) => ({
+            format: i.format,
+            title: i.title,
+            description: i.description,
+            category: i.category,
+            meta: i.meta,
+            date: i.date,
+            author: i.author,
+            href: i.href,
+            image: toImageOpcional(i.image, 'insightsHub.items.image'),
+            featured: Boolean(i.featured),
+            tags: (i.tags ?? []).map((t) => t.text),
+          })),
+          portals: b.portals?.title
+            ? { title: vazio(b.portals.title), description: vazio(b.portals.description) }
+            : null,
+          newsletter: b.newsletter?.title
+            ? {
+                eyebrow: vazio(b.newsletter.eyebrow),
+                title: vazio(b.newsletter.title),
+                description: vazio(b.newsletter.description),
+              }
+            : null,
+          closing: b.closing?.title
+            ? {
+                title: vazio(b.closing.title),
+                description: vazio(b.closing.description),
+                ctaLabel: vazio(b.closing.ctaLabel),
+                ctaHref: vazio(b.closing.ctaHref),
+                secondaryLabel: vazio(b.closing.secondaryLabel),
+                secondaryHref: vazio(b.closing.secondaryHref),
+              }
+            : null,
+        })
+        break
+
       case 'ctaBanner':
         blocos.push({
           ...base(b),

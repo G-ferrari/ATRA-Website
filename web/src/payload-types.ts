@@ -1711,6 +1711,110 @@ export interface Partner {
             blockName?: string | null;
             blockType: 'contentTeaser';
           }
+        | {
+            badge?: string | null;
+            chip?: string | null;
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            formats: {
+              key: string;
+              label: string;
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              count?: number | null;
+              href?: string | null;
+              id?: string | null;
+            }[];
+            topics?: string[] | null;
+            items: {
+              /**
+               * One of the format keys above.
+               */
+              format: string;
+              title: string;
+              description: string;
+              category: string;
+              meta: string;
+              date: string;
+              author: string;
+              href: string;
+              image?: (number | null) | Media;
+              featured?: boolean | null;
+              tags?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[];
+            portals?: {
+              title?: string | null;
+              description?: string | null;
+            };
+            newsletter?: {
+              eyebrow?: string | null;
+              title?: string | null;
+              description?: string | null;
+            };
+            closing?: {
+              title?: string | null;
+              description?: string | null;
+              ctaLabel?: string | null;
+              ctaHref?: string | null;
+              secondaryLabel?: string | null;
+              secondaryHref?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'insightsHub';
+          }
       )[]
     | null;
   order?: number | null;
@@ -3323,6 +3427,110 @@ export interface Page {
         blockName?: string | null;
         blockType: 'contentTeaser';
       }
+    | {
+        badge?: string | null;
+        chip?: string | null;
+        title: string;
+        highlight?: string | null;
+        description?: string | null;
+        formats: {
+          key: string;
+          label: string;
+          icon:
+            | 'sparkles'
+            | 'target'
+            | 'shield'
+            | 'rocket'
+            | 'users'
+            | 'database'
+            | 'cloud'
+            | 'brain'
+            | 'chart'
+            | 'lock'
+            | 'workflow'
+            | 'award'
+            | 'app'
+            | 'search'
+            | 'settings'
+            | 'zap'
+            | 'cpu'
+            | 'shield-check'
+            | 'trending-up'
+            | 'arrow-up-right'
+            | 'star'
+            | 'file-text'
+            | 'newspaper'
+            | 'video'
+            | 'book'
+            | 'briefcase'
+            | 'graduation-cap'
+            | 'heart'
+            | 'info'
+            | 'user-check'
+            | 'building'
+            | 'coffee'
+            | 'server'
+            | 'code'
+            | 'headset';
+          count?: number | null;
+          href?: string | null;
+          id?: string | null;
+        }[];
+        topics?: string[] | null;
+        items: {
+          /**
+           * One of the format keys above.
+           */
+          format: string;
+          title: string;
+          description: string;
+          category: string;
+          meta: string;
+          date: string;
+          author: string;
+          href: string;
+          image?: (number | null) | Media;
+          featured?: boolean | null;
+          tags?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[];
+        portals?: {
+          title?: string | null;
+          description?: string | null;
+        };
+        newsletter?: {
+          eyebrow?: string | null;
+          title?: string | null;
+          description?: string | null;
+        };
+        closing?: {
+          title?: string | null;
+          description?: string | null;
+          ctaLabel?: string | null;
+          ctaHref?: string | null;
+          secondaryLabel?: string | null;
+          secondaryHref?: string | null;
+        };
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'insightsHub';
+      }
   )[];
   /**
    * Optional. When empty, the site falls back to the page title and summary.
@@ -4932,6 +5140,110 @@ export interface Solution {
             blockName?: string | null;
             blockType: 'contentTeaser';
           }
+        | {
+            badge?: string | null;
+            chip?: string | null;
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            formats: {
+              key: string;
+              label: string;
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              count?: number | null;
+              href?: string | null;
+              id?: string | null;
+            }[];
+            topics?: string[] | null;
+            items: {
+              /**
+               * One of the format keys above.
+               */
+              format: string;
+              title: string;
+              description: string;
+              category: string;
+              meta: string;
+              date: string;
+              author: string;
+              href: string;
+              image?: (number | null) | Media;
+              featured?: boolean | null;
+              tags?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[];
+            portals?: {
+              title?: string | null;
+              description?: string | null;
+            };
+            newsletter?: {
+              eyebrow?: string | null;
+              title?: string | null;
+              description?: string | null;
+            };
+            closing?: {
+              title?: string | null;
+              description?: string | null;
+              ctaLabel?: string | null;
+              ctaHref?: string | null;
+              secondaryLabel?: string | null;
+              secondaryHref?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'insightsHub';
+          }
       )[]
     | null;
   /**
@@ -6058,6 +6370,77 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        insightsHub?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              formats?:
+                | T
+                | {
+                    key?: T;
+                    label?: T;
+                    icon?: T;
+                    count?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              topics?: T;
+              items?:
+                | T
+                | {
+                    format?: T;
+                    title?: T;
+                    description?: T;
+                    category?: T;
+                    meta?: T;
+                    date?: T;
+                    author?: T;
+                    href?: T;
+                    image?: T;
+                    featured?: T;
+                    tags?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              portals?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                  };
+              newsletter?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    description?: T;
+                  };
+              closing?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    ctaLabel?: T;
+                    ctaHref?: T;
+                    secondaryLabel?: T;
+                    secondaryHref?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   order?: T;
   seo?:
@@ -6882,6 +7265,77 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        insightsHub?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              formats?:
+                | T
+                | {
+                    key?: T;
+                    label?: T;
+                    icon?: T;
+                    count?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              topics?: T;
+              items?:
+                | T
+                | {
+                    format?: T;
+                    title?: T;
+                    description?: T;
+                    category?: T;
+                    meta?: T;
+                    date?: T;
+                    author?: T;
+                    href?: T;
+                    image?: T;
+                    featured?: T;
+                    tags?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              portals?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                  };
+              newsletter?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    description?: T;
+                  };
+              closing?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    ctaLabel?: T;
+                    ctaHref?: T;
+                    secondaryLabel?: T;
+                    secondaryHref?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   seo?:
     | T
@@ -7674,6 +8128,77 @@ export interface SolutionsSelect<T extends boolean = true> {
                 | {
                     title?: T;
                     placeholder?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        insightsHub?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              formats?:
+                | T
+                | {
+                    key?: T;
+                    label?: T;
+                    icon?: T;
+                    count?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              topics?: T;
+              items?:
+                | T
+                | {
+                    format?: T;
+                    title?: T;
+                    description?: T;
+                    category?: T;
+                    meta?: T;
+                    date?: T;
+                    author?: T;
+                    href?: T;
+                    image?: T;
+                    featured?: T;
+                    tags?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              portals?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                  };
+              newsletter?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    description?: T;
+                  };
+              closing?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    ctaLabel?: T;
+                    ctaHref?: T;
+                    secondaryLabel?: T;
+                    secondaryHref?: T;
                   };
               anchor?: T;
               navLabel?: T;
