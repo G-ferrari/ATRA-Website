@@ -19,7 +19,7 @@ depois da paridade de conteúdo.
 | 0 | Descoberta | ✅ concluída | — |
 | 1 | Fundação | ✅ **concluída em 18/08/2026** | 0 |
 | 2 | Fatia vertical | ✅ **concluída em 20/08/2026** — MIG-072a fechou o megamenu, último item aberto | 1 |
-| 3 | Fábrica de rotas | As 16 rotas restantes do protótipo | 2 |
+| 3 | Fábrica de rotas | ✅ **concluída em 20/08/2026** — 20 rotas no ar, 14 sob regressão visual | 2 |
 | 4a | Seed do protótipo | Conteúdo que já existe em `legacy/` no CMS | 2 |
 | 4b | Migração do WordPress | 207 posts + 6 vagas + mídia | 1 |
 | 4c | Conteúdo novo | `segments` (10) + `solutions` (6→13) + página legal | 3 |
@@ -85,11 +85,22 @@ rotas · **`CLAUDE.md` escrito ao final**, com o padrão consolidado.
 Uma PR por rota, na ordem de dependência do
 [mapa-de-migracao](../02-especificacao/mapa-de-migracao.md#ordem-de-execução).
 
-**Critério de conclusão:**
-- 20 rotas do protótipo respondendo 200 em PT e EN
-- Regressão visual passando para as 17 com baseline legado
-- Nenhuma PR de rota acima de ~400 linhas de diff
-- 404 real (hoje o legado devolve 200 em URL inválida)
+**Critério de conclusão:** ✅ **concluída em 20/08/2026.**
+- ✅ 20 rotas do protótipo respondendo 200 em PT e EN
+- ✅ Regressão visual passando — **14 rotas** em `ROTAS_COM_GABARITO`, nos três
+  viewports. Ficaram de fora, com razão registrada: `/solucoes` (D-09 mudou o
+  comportamento da rota) e `/contato` (rota nova, D-10 — não há gabarito)
+- ✅ 404 real
+- ⚠️ **Nenhuma PR acima de ~400 linhas: não cumprido.** A home (MIG-057 a 059) e
+  as duas reconstruções passaram longe disso. O motivo é o mesmo nos três casos:
+  a composição prevista não batia com o markup do legado, e a correção veio
+  junto com a rota. Ver o padrão em
+  [blocos.md](../02-especificacao/blocos.md#regras-de-bloco)
+
+**O que a fase ensinou.** Cinco das composições previstas estavam erradas, todas
+escritas a partir do inventário de seções em vez do markup. Três rotas foram
+fechadas sem gabarito e saíram 30% a 57% mais curtas — daí a regra de que rota
+com gabarito entra em `ROTAS_COM_GABARITO` **na mesma PR** que a porta.
 
 ## Fase 4a — Seed do protótipo
 
