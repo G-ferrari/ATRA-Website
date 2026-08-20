@@ -14,5 +14,8 @@ export function toConsultantRole(doc: SpecialistRole): ConsultantRole {
     description: doc.description,
     tags: toTextos(doc.tags, 'name'),
     ecosystem: (doc.allocatedProjects ?? 0) + (doc.allocatedPartners ?? 0),
+    allocatedProjects: doc.allocatedProjects ?? 0,
+    totalTeamSize: doc.totalTeamSize ?? 0,
+    certifications: toTextos(doc.certifications, 'name'),
   }
 }

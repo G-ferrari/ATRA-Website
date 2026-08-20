@@ -348,6 +348,11 @@ export type ConsultantRole = {
   description: string
   tags: string[]
   ecosystem: number
+  /* A barra de números do herói soma estes dois por perfil
+   * (`Consultants.tsx:360`) — são de cada perfil, não do site. */
+  allocatedProjects: number
+  totalTeamSize: number
+  certifications: string[]
 }
 
 export type SolutionCategory = 'innovation-ai' | 'data-bi' | 'governance-culture'

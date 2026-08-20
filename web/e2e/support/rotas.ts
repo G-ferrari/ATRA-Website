@@ -8,6 +8,9 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'webinars', caminho: '/webinars' },
   { nome: 'blog', caminho: '/blog' },
   { nome: 'sobre', caminho: '/sobre' },
+  /* Entrou tarde: MIG-052 fechou /consultores sem gabarito, e 57% da página
+     estava faltando sem ninguém ver. Ver a nota no topo de `consultores/page.tsx`. */
+  { nome: 'consultores', caminho: '/consultores' },
   /* `/solucoes` (o índice) fica **fora**: D-09 mudou o comportamento da rota e
      não há gabarito — o legado serve ali a página de IA. É esta que compara. */
   { nome: 'solucao-detalhe', caminho: '/solucoes/inteligencia-artificial' },
