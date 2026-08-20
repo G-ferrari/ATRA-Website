@@ -26,6 +26,7 @@ import * as migration_20260819_224317_add_navigation_global from './20260819_224
 import * as migration_20260820_092037_mig_050a_carreiras from './20260820_092037_mig_050a_carreiras';
 import * as migration_20260820_093412_mig_050a_nav_bottom_gap from './20260820_093412_mig_050a_nav_bottom_gap';
 import * as migration_20260820_100711_mig_050a_value_cards_highlight from './20260820_100711_mig_050a_value_cards_highlight';
+import * as migration_20260820_105242_mig_054a_partner_blocks from './20260820_105242_mig_054a_partner_blocks';
 
 export const migrations = [
   {
@@ -166,6 +167,11 @@ export const migrations = [
   {
     up: migration_20260820_100711_mig_050a_value_cards_highlight.up,
     down: migration_20260820_100711_mig_050a_value_cards_highlight.down,
-    name: '20260820_100711_mig_050a_value_cards_highlight'
+    name: '20260820_100711_mig_050a_value_cards_highlight',
+  },
+  {
+    up: migration_20260820_105242_mig_054a_partner_blocks.up,
+    down: migration_20260820_105242_mig_054a_partner_blocks.down,
+    name: '20260820_105242_mig_054a_partner_blocks'
   },
 ];

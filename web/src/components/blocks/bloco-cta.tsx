@@ -1,7 +1,7 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Bot } from 'lucide-react'
 import Link from 'next/link'
 
-import { BORDAS } from '@/components/blocks/bordas'
+import { BORDAS, ESPACOS } from '@/components/blocks/bordas'
 import { TechCornerBraces } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { BlocoCtaBanner } from '@/types/content'
@@ -73,6 +73,59 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                       </span>
                     )}
                   </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  /* Caixa escura centralizada (MIG-054a) — porte de
+   * `legacy/src/components/PartnerPageBase.tsx:312`. Mesma moldura da `dark`,
+   * mas com o texto no centro e os dois botões lado a lado; o segundo carrega o
+   * glifo do agente de IA, que no gabarito é literal. */
+  if (bloco.variant === 'dark-centered') {
+    return (
+      <section
+        id={bloco.anchor ?? undefined}
+        className={cn(
+          ESPACOS[bloco.espaco],
+          'bg-surface-1 relative overflow-hidden px-3 sm:px-6 scroll-mt-32',
+        )}
+      >
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
+            <TechCornerBraces color="blue" position="top-left" size={14} />
+            <TechCornerBraces color="orange" position="bottom-right" size={14} />
+
+            <div className="max-w-3xl mx-auto relative z-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-display text-white mb-3 leading-tight">
+                <TextoDestacado texto={bloco.title} destaque={bloco.highlight} className="text-secondary" />
+              </h2>
+              {bloco.description && (
+                <p className="text-xs sm:text-sm md:text-base text-white/70 mb-8 font-light leading-relaxed whitespace-pre-line max-w-xl mx-auto">
+                  {bloco.description}
+                </p>
+              )}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                {bloco.cta && (
+                  <Link
+                    href={bloco.cta.href}
+                    className="w-full sm:w-auto inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-md shadow-primary/20"
+                  >
+                    {bloco.cta.label}
+                  </Link>
+                )}
+                {bloco.secondaryCta && (
+                  <Link
+                    href={bloco.secondaryCta.href}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-6 py-2.5 rounded-[6px] text-xs sm:text-sm font-medium transition-all"
+                  >
+                    <Bot size={16} aria-hidden />
+                    <span>{bloco.secondaryCta.label}</span>
+                  </Link>
                 )}
               </div>
             </div>

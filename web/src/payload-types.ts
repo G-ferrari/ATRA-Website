@@ -500,7 +500,10 @@ export interface Partner {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               title: string;
               /**
                * Left empty, the card renders compact and centred.
@@ -562,7 +565,10 @@ export interface Partner {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               bullets?:
                 | {
                     text: string;
@@ -691,6 +697,9 @@ export interface Partner {
                   | 'user-check'
                   | 'building'
                   | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
                 )
               | null;
             title: string;
@@ -735,7 +744,10 @@ export interface Partner {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               accent?: ('primary' | 'secondary') | null;
               /**
                * E.g. 01 / DIAGNOSIS.
@@ -802,6 +814,9 @@ export interface Partner {
                   | 'user-check'
                   | 'building'
                   | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
                 )
               | null;
             title: string;
@@ -844,6 +859,9 @@ export interface Partner {
                     | 'user-check'
                     | 'building'
                     | 'coffee'
+                    | 'server'
+                    | 'code'
+                    | 'headset'
                   )
                 | null;
               badge?: string | null;
@@ -908,6 +926,9 @@ export interface Partner {
                     | 'user-check'
                     | 'building'
                     | 'coffee'
+                    | 'server'
+                    | 'code'
+                    | 'headset'
                   )
                 | null;
               id?: string | null;
@@ -963,6 +984,9 @@ export interface Partner {
                   | 'user-check'
                   | 'building'
                   | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
                 )
               | null;
             title: string;
@@ -1004,7 +1028,10 @@ export interface Partner {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               accent?: ('primary' | 'secondary') | null;
               title: string;
               description: string;
@@ -1061,6 +1088,9 @@ export interface Partner {
                   | 'user-check'
                   | 'building'
                   | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
                 )
               | null;
             title: string;
@@ -1101,6 +1131,9 @@ export interface Partner {
                     | 'user-check'
                     | 'building'
                     | 'coffee'
+                    | 'server'
+                    | 'code'
+                    | 'headset'
                   )
                 | null;
               title?: string | null;
@@ -1191,7 +1224,7 @@ export interface Partner {
               href?: string | null;
               caption?: string | null;
             };
-            variant?: ('primary' | 'subtle' | 'dark') | null;
+            variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1206,6 +1239,91 @@ export interface Partner {
             id?: string | null;
             blockName?: string | null;
             blockType: 'ctaBanner';
+          }
+        | {
+            badge?: string | null;
+            chip?: string | null;
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            /**
+             * Shown on every award card in the strip.
+             */
+            logo?: (number | null) | Media;
+            awards?:
+              | {
+                  topText?: string | null;
+                  title: string;
+                  highlight?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerHero';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            body?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            rightColumn: 'image' | 'checklist' | 'specGrid';
+            image?: (number | null) | Media;
+            imageLabel?: string | null;
+            /**
+             * Used in the image label and on every grid card.
+             */
+            logo?: (number | null) | Media;
+            /**
+             * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
+             */
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            linkCta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerSplit';
           }
       )[]
     | null;
@@ -1608,7 +1726,10 @@ export interface Page {
             | 'info'
             | 'user-check'
             | 'building'
-            | 'coffee';
+            | 'coffee'
+            | 'server'
+            | 'code'
+            | 'headset';
           title: string;
           /**
            * Left empty, the card renders compact and centred.
@@ -1670,7 +1791,10 @@ export interface Page {
             | 'info'
             | 'user-check'
             | 'building'
-            | 'coffee';
+            | 'coffee'
+            | 'server'
+            | 'code'
+            | 'headset';
           bullets?:
             | {
                 text: string;
@@ -1799,6 +1923,9 @@ export interface Page {
               | 'user-check'
               | 'building'
               | 'coffee'
+              | 'server'
+              | 'code'
+              | 'headset'
             )
           | null;
         title: string;
@@ -1843,7 +1970,10 @@ export interface Page {
             | 'info'
             | 'user-check'
             | 'building'
-            | 'coffee';
+            | 'coffee'
+            | 'server'
+            | 'code'
+            | 'headset';
           accent?: ('primary' | 'secondary') | null;
           /**
            * E.g. 01 / DIAGNOSIS.
@@ -1910,6 +2040,9 @@ export interface Page {
               | 'user-check'
               | 'building'
               | 'coffee'
+              | 'server'
+              | 'code'
+              | 'headset'
             )
           | null;
         title: string;
@@ -1952,6 +2085,9 @@ export interface Page {
                 | 'user-check'
                 | 'building'
                 | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset'
               )
             | null;
           badge?: string | null;
@@ -2016,6 +2152,9 @@ export interface Page {
                 | 'user-check'
                 | 'building'
                 | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset'
               )
             | null;
           id?: string | null;
@@ -2071,6 +2210,9 @@ export interface Page {
               | 'user-check'
               | 'building'
               | 'coffee'
+              | 'server'
+              | 'code'
+              | 'headset'
             )
           | null;
         title: string;
@@ -2112,7 +2254,10 @@ export interface Page {
             | 'info'
             | 'user-check'
             | 'building'
-            | 'coffee';
+            | 'coffee'
+            | 'server'
+            | 'code'
+            | 'headset';
           accent?: ('primary' | 'secondary') | null;
           title: string;
           description: string;
@@ -2169,6 +2314,9 @@ export interface Page {
               | 'user-check'
               | 'building'
               | 'coffee'
+              | 'server'
+              | 'code'
+              | 'headset'
             )
           | null;
         title: string;
@@ -2209,6 +2357,9 @@ export interface Page {
                 | 'user-check'
                 | 'building'
                 | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset'
               )
             | null;
           title?: string | null;
@@ -2299,7 +2450,7 @@ export interface Page {
           href?: string | null;
           caption?: string | null;
         };
-        variant?: ('primary' | 'subtle' | 'dark') | null;
+        variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -2314,6 +2465,91 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'ctaBanner';
+      }
+    | {
+        badge?: string | null;
+        chip?: string | null;
+        title: string;
+        highlight?: string | null;
+        description?: string | null;
+        /**
+         * Shown on every award card in the strip.
+         */
+        logo?: (number | null) | Media;
+        awards?:
+          | {
+              topText?: string | null;
+              title: string;
+              highlight?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        cta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'partnerHero';
+      }
+    | {
+        eyebrow?: string | null;
+        title: string;
+        body?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        rightColumn: 'image' | 'checklist' | 'specGrid';
+        image?: (number | null) | Media;
+        imageLabel?: string | null;
+        /**
+         * Used in the image label and on every grid card.
+         */
+        logo?: (number | null) | Media;
+        /**
+         * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
+         */
+        items?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        cta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        linkCta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'partnerSplit';
       }
   )[];
   /**
@@ -2519,7 +2755,10 @@ export interface Solution {
     | 'info'
     | 'user-check'
     | 'building'
-    | 'coffee';
+    | 'coffee'
+    | 'server'
+    | 'code'
+    | 'headset';
   /**
    * One sentence. Used in the Solutions menu and on the index card.
    */
@@ -2710,7 +2949,10 @@ export interface Solution {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               title: string;
               /**
                * Left empty, the card renders compact and centred.
@@ -2772,7 +3014,10 @@ export interface Solution {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               bullets?:
                 | {
                     text: string;
@@ -2901,6 +3146,9 @@ export interface Solution {
                   | 'user-check'
                   | 'building'
                   | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
                 )
               | null;
             title: string;
@@ -2945,7 +3193,10 @@ export interface Solution {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               accent?: ('primary' | 'secondary') | null;
               /**
                * E.g. 01 / DIAGNOSIS.
@@ -3012,6 +3263,9 @@ export interface Solution {
                   | 'user-check'
                   | 'building'
                   | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
                 )
               | null;
             title: string;
@@ -3054,6 +3308,9 @@ export interface Solution {
                     | 'user-check'
                     | 'building'
                     | 'coffee'
+                    | 'server'
+                    | 'code'
+                    | 'headset'
                   )
                 | null;
               badge?: string | null;
@@ -3118,6 +3375,9 @@ export interface Solution {
                     | 'user-check'
                     | 'building'
                     | 'coffee'
+                    | 'server'
+                    | 'code'
+                    | 'headset'
                   )
                 | null;
               id?: string | null;
@@ -3173,6 +3433,9 @@ export interface Solution {
                   | 'user-check'
                   | 'building'
                   | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
                 )
               | null;
             title: string;
@@ -3214,7 +3477,10 @@ export interface Solution {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               accent?: ('primary' | 'secondary') | null;
               title: string;
               description: string;
@@ -3271,6 +3537,9 @@ export interface Solution {
                   | 'user-check'
                   | 'building'
                   | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
                 )
               | null;
             title: string;
@@ -3311,6 +3580,9 @@ export interface Solution {
                     | 'user-check'
                     | 'building'
                     | 'coffee'
+                    | 'server'
+                    | 'code'
+                    | 'headset'
                   )
                 | null;
               title?: string | null;
@@ -3401,7 +3673,7 @@ export interface Solution {
               href?: string | null;
               caption?: string | null;
             };
-            variant?: ('primary' | 'subtle' | 'dark') | null;
+            variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -3416,6 +3688,91 @@ export interface Solution {
             id?: string | null;
             blockName?: string | null;
             blockType: 'ctaBanner';
+          }
+        | {
+            badge?: string | null;
+            chip?: string | null;
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            /**
+             * Shown on every award card in the strip.
+             */
+            logo?: (number | null) | Media;
+            awards?:
+              | {
+                  topText?: string | null;
+                  title: string;
+                  highlight?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerHero';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            body?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            rightColumn: 'image' | 'checklist' | 'specGrid';
+            image?: (number | null) | Media;
+            imageLabel?: string | null;
+            /**
+             * Used in the image label and on every grid card.
+             */
+            logo?: (number | null) | Media;
+            /**
+             * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
+             */
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            linkCta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerSplit';
           }
       )[]
     | null;
@@ -3491,7 +3848,10 @@ export interface SpecialistRole {
     | 'info'
     | 'user-check'
     | 'building'
-    | 'coffee';
+    | 'coffee'
+    | 'server'
+    | 'code'
+    | 'headset';
   gradient:
     | 'blue-cyan'
     | 'cyan-teal'
@@ -4244,6 +4604,78 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerHero?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              logo?: T;
+              awards?:
+                | T
+                | {
+                    topText?: T;
+                    title?: T;
+                    highlight?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partnerSplit?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              body?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              rightColumn?: T;
+              image?: T;
+              imageLabel?: T;
+              logo?: T;
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              linkCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   order?: T;
   seo?:
@@ -4772,6 +5204,78 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerHero?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              logo?: T;
+              awards?:
+                | T
+                | {
+                    topText?: T;
+                    title?: T;
+                    highlight?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partnerSplit?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              body?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              rightColumn?: T;
+              image?: T;
+              imageLabel?: T;
+              logo?: T;
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              linkCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   seo?:
     | T
@@ -5277,6 +5781,78 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerHero?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              logo?: T;
+              awards?:
+                | T
+                | {
+                    topText?: T;
+                    title?: T;
+                    highlight?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partnerSplit?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              body?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              rightColumn?: T;
+              image?: T;
+              imageLabel?: T;
+              logo?: T;
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              linkCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   order?: T;
   seo?:
@@ -5446,7 +6022,10 @@ export interface Navigation {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               label: string;
               description: string;
               href: string;
@@ -5488,7 +6067,10 @@ export interface Navigation {
                 | 'info'
                 | 'user-check'
                 | 'building'
-                | 'coffee';
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
               color?: ('primary' | 'emerald' | 'purple' | 'indigo' | 'pink' | 'orange' | 'blue' | 'amber') | null;
               title: string;
               description: string;
@@ -5530,6 +6112,9 @@ export interface Navigation {
                 | 'user-check'
                 | 'building'
                 | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset'
               )
             | null;
           title?: string | null;
@@ -5601,6 +6186,9 @@ export interface SiteSetting {
               | 'user-check'
               | 'building'
               | 'coffee'
+              | 'server'
+              | 'code'
+              | 'headset'
             )
           | null;
         id?: string | null;

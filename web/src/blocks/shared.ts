@@ -124,6 +124,10 @@ export const ICONES = [
   'building',
   // MIG-050a: o glifo de "Flexibilidade & Bem-estar" (`Careers.tsx:564`).
   'coffee',
+  // MIG-054a: os glifos de `getSpecIcon` (`PartnerPageBase.tsx:20`).
+  'server',
+  'code',
+  'headset',
 ] as const
 
 export const campoDeIcone: Field = {

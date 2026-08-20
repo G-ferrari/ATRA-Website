@@ -17,6 +17,9 @@ export const ROTAS_COM_GABARITO = [
   /* `/solucoes` (o índice) fica **fora**: D-09 mudou o comportamento da rota e
      não há gabarito — o legado serve ali a página de IA. É esta que compara. */
   { nome: 'solucao-detalhe', caminho: '/solucoes/inteligencia-artificial' },
+  /* Terceira rota que MIG-054 fechou sem gabarito, e a terceira a sair curta —
+     38%, neste caso. Ver a nota no topo de `seed/parceiros.ts`. */
+  { nome: 'parceiro-detalhe', caminho: '/parceiros/google-cloud' },
 ] as const
 
 /* Imagens entram mascaradas na comparação.

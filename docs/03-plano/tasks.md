@@ -98,7 +98,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-055 | `/solucoes` (índice) + collection `solutions` | 047 | 3h | **done** — sem gabarito (D-09); aceite funcional no smoke |
 | MIG-056 | `/solucoes/[slug]` | 055 | ~~3h~~ **~5x maior** | **done** — portão verde nos 3 viewports. A composição prevista não batia com o legado: exigiu 4 blocos novos e 4 variantes. Ver a nota em [blocos.md](../02-especificacao/blocos.md#regras-de-bloco) |
 | MIG-050a | **`/carreiras` a 30% do gabarito** — reconstrução | 050 | 6h | ✅ feita |
-| MIG-054a | **`/parceiros/[slug]` a 38% do gabarito** — reconstrução | 054 | 4h | todo |
+| MIG-054a | **`/parceiros/[slug]` a 38% do gabarito** — reconstrução | 054 | 4h | ✅ feita |
 | MIG-057 | Blocos da home: `hero`, `featureTabs`, `logoMarquee` | 048 | 5h |
 | MIG-058 | Blocos da home: `caseCarousel`, `testimonialCarousel`, `contentTeaser` | 057 | 5h |
 | MIG-059 | **Rota `/`** | 058 | 5h |
@@ -146,10 +146,31 @@ Uma PR por linha. Todas dependem de MIG-031.
 > de `resourceType() === 'image'`: sem ela o stub responde também ao *import de
 > módulo* do Vite e a home do legado renderiza vazia.
 >
-> **MIG-054a — `/parceiros/[slug]`.** As cinco seções existem e batem de nome,
-> mas a última diverge ("Entre em contato" no legado contra "Pronto para migrar,
-> modernizar e inovar?" no porte) e a página inteira sai 3.528px mais curta.
-> Falta medir seção a seção, como foi feito em MIG-056 e MIG-052a.
+> **MIG-054a — `/parceiros/[slug]`.** ✅ **Fechada.** 3.689px contra 3.689px no
+> desktop, e igual nos outros dois viewports — seção a seção.
+>
+> A medição mostrou que "as cinco seções batem de nome" era o único jeito em que
+> batiam. O legado não monta esta página com seções avulsas: tem um componente
+> só, `PartnerPageBase.tsx`, que as 8 páginas de parceiro instanciam com props.
+> As três seções do meio são **o mesmo esqueleto de duas colunas** — muda só o
+> que vai à direita (imagem com etiqueta, lista de conferência, grade de fichas)
+> —, e o porte as tinha transformado em grades de ícones, que não têm coluna
+> nenhuma. O herói também perdera a faixa dos cinco "Partner of the Year".
+>
+> Daí os dois blocos novos, `partnerHero` e `partnerSplit` (com `rightColumn`),
+> mais a variante `dark-centered` do `ctaBanner`. Dois, e não cinco, porque é
+> assim que o legado se organiza — e servem as outras 7 páginas de parceiro sem
+> código novo.
+>
+> O aceite exigiu outro conserto no arnês, irmão do de MIG-050a: o logo do
+> parceiro vem do CDN do Google (`gstatic.com`) e não estava na lista de mídia
+> stubada, então media uma caixa de um lado e outra do outro.
+>
+> E os três testes de megamenu que dependiam de `hover` deixaram de ser
+> instáveis. O `toPass` que os protegia repetia um gesto que o browser ignorava:
+> `hover()` move o ponteiro, e mover para onde ele já está não emite
+> `mouseenter`. Agora cada tentativa passa por outra categoria antes, e reabre o
+> menu se ele fechou no meio do caminho.
 >
 > **Regra que sai daqui:** rota com gabarito no legado **entra em
 > `ROTAS_COM_GABARITO` na mesma PR que a porta**. Sem isso, "done" não quer

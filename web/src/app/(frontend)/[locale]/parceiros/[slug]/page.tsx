@@ -72,7 +72,9 @@ export default async function ParceiroPage({ params }: PageProps<'/[locale]/parc
   if (!parceiro) notFound()
 
   return (
-    <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
+    /* `pb-12`, não `pb-0`: o gabarito fecha a página com 48px abaixo da última
+       faixa (`PartnerPageBase.tsx:97`). É a única rota do site que faz isso. */
+    <main className="pt-24 md:pt-36 pb-12 bg-surface-1 min-h-screen text-text-main">
       <RenderBlocks blocos={parceiro.blocos} locale={locale} />
     </main>
   )

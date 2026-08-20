@@ -48,7 +48,7 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 | `carreiras` | `pageHero`(center) → `stickyPageNav` → `valueCards`(expanded) → `sealsBanner` → `processSteps` → `jobsList` → `iconCardGrid`(card-centered) → `richTextSection`(centered) — **corrigida em MIG-050a**, ver abaixo |
 | `contato` (nova, D-10) | `pageHero` → `ctaContact` |
 | `solucoes/[slug]` | `pageHero` → `stickyPageNav` → `methodCards` → `bentoGrid` → `audienceSplit` → `accordionSteps` → `ctaBanner`(dark) — **corrigida em MIG-056**, ver abaixo |
-| `parceiros/[slug]` | `pageHero` → `richTextSection` → `iconCardGrid` → `iconCardGrid` → `ctaBanner` |
+| `parceiros/[slug]` | `partnerHero` → `partnerSplit`(image) → `partnerSplit`(checklist) → `partnerSplit`(specGrid) → `ctaBanner`(dark-centered) — **corrigida em MIG-054a**, ver abaixo |
 
 > [!ATENÇÃO] **A composição prevista para `solucoes/[slug]` estava errada.**
 > Ela dizia `iconCardGrid → processSteps → richTextSection`, e `SolutionAI.tsx`
@@ -85,6 +85,24 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 > MIG-050a acrescentou também dois campos em nível de página, porque o legado
 > **não é uniforme entre rotas**: `spacing` (em `camposComuns`) e `bottomGap` (no
 > `stickyPageNav`). Ver [debito-tecnico](../01-descoberta/debito-tecnico.md).
+
+> [!ATENÇÃO] **E a de `parceiros/[slug]` também.** Aqui o erro tem outra origem:
+> o legado não monta essa página com seções, e sim com um componente único,
+> `PartnerPageBase.tsx`, que as 8 páginas de parceiro instanciam com props. As
+> **três seções do meio são o mesmo esqueleto** de duas colunas, mudando só a
+> coluna direita — imagem com etiqueta, lista de conferência, grade de fichas.
+>
+> MIG-054a acrescentou `partnerHero` (que carrega a faixa de prêmios, e cuja
+> escala de `h1` sobe em quatro degraus contra os três do `pageHero`) e
+> `partnerSplit` (com `rightColumn`), mais a variante `ctaBanner: dark-centered`.
+> São dois blocos porque é assim que o legado se organiza — reproduzir com os
+> genéricos foi o que MIG-054 tentou, e a página saiu 38% mais curta.
+
+> **Padrão que se repete.** Três composições previstas estavam erradas —
+> `solucoes/[slug]`, `carreiras`, `parceiros/[slug]` — e nas três o erro foi o
+> mesmo: foram escritas a partir do **inventário de seções**, não do markup.
+> Antes de estimar as que faltam (`home`, `/insights`, `segmentos`), abrir o
+> arquivo do legado.
 
 ## Regras de bloco
 

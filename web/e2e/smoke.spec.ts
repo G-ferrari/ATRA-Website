@@ -265,6 +265,36 @@ test.describe('app novo', () => {
       return page.getByTestId('menu-categorias')
     }
 
+    /* Passa o ponteiro numa categoria e espera o painel dela, **reabrindo o
+     * menu quando ele fechou no meio do caminho**.
+     *
+     * ⚠️ Só repetir o hover não basta, e foi o que deixou estes dois testes
+     * instáveis: depois do clique em "Abrir menu" o ponteiro fica sobre outra
+     * categoria, o `onMouseEnter` dela troca o painel, e a remontagem do
+     * `AnimatePresence` pode tirar a barra de debaixo do ponteiro — aí o
+     * `onMouseLeave` fecha o menu. Fechado o menu, a fileira some, e todas as
+     * tentativas seguintes falham no mesmo lugar. */
+    const passarNaCategoria = async (
+      page: import('@playwright/test').Page,
+      categoria: string,
+      esperar: () => Promise<void>,
+    ) => {
+      await expect(async () => {
+        let fileira = page.getByTestId('menu-categorias')
+        if (!(await fileira.isVisible().catch(() => false))) fileira = await abrirMenu(page)
+
+        /* ⚠️ Passar por **outra** categoria antes. `hover()` só move o ponteiro,
+           e mover para onde ele já está não emite `mouseenter` nenhum — na
+           segunda tentativa o painel simplesmente não trocava, e o laço gastava
+           os 20s repetindo um gesto que o browser ignorava. As duas ficam dentro
+           da mesma barra, então o `onMouseLeave` que fecha o menu não dispara. */
+        const vizinha = categoria === 'Soluções' ? 'Sobre' : 'Soluções'
+        await fileira.getByRole('link', { name: vizinha, exact: true }).hover()
+        await fileira.getByRole('link', { name: categoria, exact: true }).hover()
+        await esperar()
+      }).toPass({ timeout: 20000 })
+    }
+
     test('abre com as 7 categorias e o painel de soluções', async ({ page }) => {
       test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
       const fileira = await abrirMenu(page)
@@ -277,10 +307,9 @@ test.describe('app novo', () => {
          ponteiro fica no meio da barra — em cima de outra categoria — e o
          `onMouseEnter` troca o painel, como no legado. */
       const painel = page.getByRole('navigation')
-      await expect(async () => {
-        await fileira.getByRole('link', { name: 'Soluções', exact: true }).hover()
-        await expect(painel.getByRole('button', { name: 'Inovação & IA' })).toBeVisible({ timeout: 2000 })
-      }).toPass({ timeout: 20000 })
+      await passarNaCategoria(page, 'Soluções', () =>
+        expect(painel.getByRole('button', { name: 'Inovação & IA' })).toBeVisible({ timeout: 2000 }),
+      )
 
       for (const grupo of ['Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
         await expect(painel.getByRole('button', { name: grupo })).toBeVisible()
@@ -302,17 +331,9 @@ test.describe('app novo', () => {
 
     test('o painel de parceiros vem da collection', async ({ page }) => {
       test.skip(soNoDesktop(page), 'a troca de painel por hover só é estável no desktop')
-      const fileira = await abrirMenu(page)
+      await abrirMenu(page)
       const painel = page.getByTestId('painel-parceiros')
-
-      /* ⚠️ `toPass` porque o hover pode não pegar de primeira: depois do clique
-         em "Abrir menu" o ponteiro fica em cima de **outra** categoria, e a
-         troca de painel remonta a fileira embaixo dele. Tirar o ponteiro para
-         fora não serve — a barra fecha o menu no `onMouseLeave`. */
-      await expect(async () => {
-        await fileira.getByRole('link', { name: 'Parceiros', exact: true }).hover()
-        await expect(painel).toBeVisible({ timeout: 2000 })
-      }).toPass({ timeout: 20000 })
+      await passarNaCategoria(page, 'Parceiros', () => expect(painel).toBeVisible({ timeout: 2000 }))
 
       // Os 8 do catálogo; o 9º do legado depende de P-10.
       await expect(painel.locator('a[href^="/parceiros/"]')).toHaveCount(8)
@@ -320,13 +341,11 @@ test.describe('app novo', () => {
 
     test('o painel de texto + cartão mostra destaques e chamada', async ({ page }) => {
       test.skip(soNoDesktop(page), 'a troca de painel por hover só é estável no desktop')
-      const fileira = await abrirMenu(page)
+      await abrirMenu(page)
       const painel = page.getByRole('navigation')
-
-      await expect(async () => {
-        await fileira.getByRole('link', { name: 'Sobre', exact: true }).hover()
-        await expect(painel.getByText('Segurança de Dados')).toBeVisible({ timeout: 2000 })
-      }).toPass({ timeout: 20000 })
+      await passarNaCategoria(page, 'Sobre', () =>
+        expect(painel.getByText('Segurança de Dados')).toBeVisible({ timeout: 2000 }),
+      )
 
       await expect(painel.getByRole('link', { name: /Conhecer Nossa História/ })).toBeVisible()
     })

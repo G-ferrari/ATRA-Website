@@ -12,6 +12,8 @@ import { BlocoNumeros } from './bloco-numeros'
 import { BlocoEtapas } from './bloco-etapas'
 import { BlocoContato } from './bloco-contato'
 import { BlocoParaQuem } from './bloco-para-quem'
+import { BlocoParceiroHero } from './bloco-parceiro-hero'
+import { BlocoParceiroSecao } from './bloco-parceiro-secao'
 import { BlocoParceiros } from './bloco-parceiros'
 import { BlocoVagas } from './bloco-vagas'
 import { BlocoSelos } from './bloco-selos'
@@ -61,6 +63,10 @@ export function RenderBlocks({ blocos, locale }: { blocos: Bloco[]; locale: Loca
             return <BlocoParaQuem key={b.id} bloco={b} />
           case 'accordionSteps':
             return <BlocoAcordeao key={b.id} bloco={b} />
+          case 'partnerHero':
+            return <BlocoParceiroHero key={b.id} bloco={b} />
+          case 'partnerSplit':
+            return <BlocoParceiroSecao key={b.id} bloco={b} locale={locale} />
         }
       })}
     </>

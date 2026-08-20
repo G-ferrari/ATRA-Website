@@ -162,6 +162,7 @@ Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
 | Gerador de migração trava sem imprimir nada | Remoção de coluna vira pergunta interativa do drizzle, que não roda sem TTY. Preferir migração aditiva; refundir as não commitadas quando não der |
 | Campo novo aparece numa tabela de bloco que você não mexeu | Edição por `replace` de trecho: vários blocos têm campos com o mesmo rótulo (`Estilo`, `Título`), e o primeiro casamento não é o bloco que você quis. Confira o `ALTER TABLE` da migração **antes** de aplicar; se já aplicou, `pnpm payload migrate:down` desfaz só a última |
 | Contador de números fica em `0` com `?e2e=1` | Só no servidor de dev: `congelado()` lê `window`, o HTML do servidor sai com `0` e a hidratação de desenvolvimento não reescreve o texto. Em produção — que é o que o `pnpm gate` compara — o número aparece certo. Não perseguir |
+| Teste de `hover` fica repetindo e falhando dentro de um `toPass` | `hover()` só move o ponteiro: mover para onde ele **já está** não emite `mouseenter`, e o laço gasta o tempo todo repetindo um gesto que o browser ignora. Passar por outro elemento antes |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
 ## Estado

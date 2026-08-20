@@ -170,6 +170,42 @@ export function toBlocos(
         })
         break
 
+      case 'partnerHero':
+        blocos.push({
+          ...base(b),
+          tipo: 'partnerHero',
+          badge: vazio(b.badge),
+          chip: vazio(b.chip),
+          title: b.title,
+          highlight: vazio(b.highlight),
+          description: vazio(b.description),
+          logo: toImageOpcional(b.logo, 'partnerHero.logo'),
+          awards: (b.awards ?? []).map((a) => ({
+            topText: vazio(a.topText),
+            title: a.title,
+            highlight: vazio(a.highlight),
+          })),
+          cta: toCta(b.cta),
+        })
+        break
+
+      case 'partnerSplit':
+        blocos.push({
+          ...base(b),
+          tipo: 'partnerSplit',
+          eyebrow: vazio(b.eyebrow),
+          title: b.title,
+          body: (b.body ?? []).map((p) => p.text),
+          rightColumn: b.rightColumn ?? 'image',
+          image: toImageOpcional(b.image, 'partnerSplit.image'),
+          imageLabel: vazio(b.imageLabel),
+          logo: toImageOpcional(b.logo, 'partnerSplit.logo'),
+          items: (b.items ?? []).map((i) => i.text),
+          cta: toCta(b.cta),
+          linkCta: toCta(b.linkCta),
+        })
+        break
+
       case 'ctaBanner':
         blocos.push({
           ...base(b),

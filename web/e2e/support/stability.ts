@@ -18,6 +18,11 @@ const REMOTE_IMAGES = [
   '**/images.unsplash.com/**',
   '**/picsum.photos/**',
   '**/www.atra.com.br/wp-content/**',
+  /* O logo do Google Cloud na página de parceiro vem do CDN do próprio Google
+     (`PartnerGoogleCloud.tsx:50`). Mesma razão do resto: a altura é fixa e a
+     largura sai do aspecto, então o arquivo real e o marcador medem caixas
+     diferentes — e a máscara cobre justamente essa caixa. */
+  '**/www.gstatic.com/**',
   /* A mídia do app novo, pelo mesmo motivo dos outros: onde a largura sai do
    * aspecto do arquivo (logos com `w-auto`), o legado recebe o marcador 1×1 e
    * o app novo precisa receber o mesmo, ou os dois medem caixas diferentes.

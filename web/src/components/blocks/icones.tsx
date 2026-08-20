@@ -8,6 +8,7 @@ import {
   Building2,
   FileText,
   GraduationCap,
+  Headset,
   Heart,
   Info,
   Newspaper,
@@ -19,10 +20,12 @@ import {
   ChartNoAxesColumn,
   Cloud,
   Coffee,
+  Code,
   Cpu,
   Database,
   Lock,
   Search,
+  Server,
   Settings,
   ShieldCheck,
   TrendingUp,
@@ -76,6 +79,9 @@ const REGISTRO: Record<string, LucideIcon> = {
   'user-check': UserCheck,
   building: Building2,
   coffee: Coffee,
+  server: Server,
+  code: Code,
+  headset: Headset,
 }
 
 const RECURSO = Sparkles

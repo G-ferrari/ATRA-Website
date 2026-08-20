@@ -340,6 +340,10 @@ export const CtaBanner: Block = {
         /* Terceira forma, de MIG-056: a mesma caixa escura do herói, fechando a
          * página de solução. Não é o `ctaContact` — aquele carrega formulário. */
         { value: 'dark', label: { pt: 'Caixa escura', en: 'Dark box' } },
+        /* Mesma moldura escura, conteúdo centralizado e os dois botões lado a
+         * lado — é a faixa que fecha a página de parceiro
+         * (`PartnerPageBase.tsx:312`). A `dark` alinha à esquerda e empilha. */
+        { value: 'dark-centered', label: { pt: 'Caixa escura, centralizada', en: 'Dark box, centred' } },
       ],
       label: { pt: 'Estilo', en: 'Style' },
     },
@@ -894,6 +898,160 @@ export const AccordionSteps: Block = {
   ],
 }
 
+/* Blocos do template de página de parceiro (MIG-054a).
+ *
+ * Justificativa (blocos.md, regra 3): o legado não monta essa página com seções
+ * avulsas — tem um componente só, `PartnerPageBase.tsx`, que **todas** as 8
+ * páginas de parceiro instanciam com props diferentes. Portar com os blocos
+ * genéricos foi o que MIG-054 tentou, e a página saiu 38% mais curta: o herói
+ * perdeu a faixa de prêmios, e as três seções de duas colunas viraram grades de
+ * ícones que não têm coluna nenhuma.
+ *
+ * São dois blocos, não cinco, porque as três seções do meio são o **mesmo
+ * esqueleto** em `PartnerPageBase` — muda só o que vai na coluna direita. */
+
+export const PartnerHero: Block = {
+  slug: 'partnerHero',
+  labels: { singular: { pt: 'Abertura de parceiro', en: 'Partner hero' }, plural: { pt: 'Aberturas de parceiro', en: 'Partner heroes' } },
+  fields: [
+    { name: 'badge', type: 'text', localized: true, label: { pt: 'Selo', en: 'Badge' } },
+    { name: 'chip', type: 'text', localized: true, label: { pt: 'Etiqueta', en: 'Chip' } },
+    { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'highlight', type: 'text', localized: true, label: { pt: 'Trecho destacado', en: 'Highlighted text' } },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    {
+      name: 'logo',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Logo do parceiro', en: 'Partner logo' },
+      admin: {
+        description: {
+          pt: 'Aparece em cada cartão da faixa de prêmios.',
+          en: 'Shown on every award card in the strip.',
+        },
+      },
+    },
+    {
+      /* A faixa de prêmios (`PartnerPageBase.tsx:131`): cartões de largura fixa
+       * que rolam na horizontal no mobile e centralizam a partir de `md`. O
+       * título quebra linha por `whitespace-pre-line` — "Partner of the Year" e
+       * "Service" são duas linhas no gabarito. */
+      name: 'awards',
+      type: 'array',
+      label: { pt: 'Prêmios', en: 'Awards' },
+      fields: [
+        { name: 'topText', type: 'text', localized: true, label: { pt: 'Linha superior', en: 'Top line' } },
+        { name: 'title', type: 'textarea', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'highlight', type: 'text', label: { pt: 'Destaque (ano)', en: 'Highlight (year)' } },
+      ],
+    },
+    {
+      name: 'cta',
+      type: 'group',
+      label: { pt: 'Botão', en: 'Button' },
+      fields: [
+        { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const PartnerSplit: Block = {
+  slug: 'partnerSplit',
+  labels: { singular: { pt: 'Seção de parceiro', en: 'Partner section' }, plural: { pt: 'Seções de parceiro', en: 'Partner sections' } },
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
+    { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      /* `whitespace-pre-line` no gabarito: as quebras do texto são preservadas
+       * (`PartnerPageBase.tsx:181`). Por isso `textarea` e não `text`. */
+      name: 'body',
+      type: 'array',
+      label: { pt: 'Parágrafos', en: 'Paragraphs' },
+      fields: [
+        { name: 'text', type: 'textarea', required: true, localized: true, label: { pt: 'Texto', en: 'Text' } },
+      ],
+    },
+    {
+      name: 'rightColumn',
+      type: 'select',
+      required: true,
+      defaultValue: 'image',
+      options: [
+        { value: 'image', label: { pt: 'Imagem com etiqueta', en: 'Image with label' } },
+        { value: 'checklist', label: { pt: 'Lista de conferência', en: 'Checklist' } },
+        { value: 'specGrid', label: { pt: 'Grade de especializações', en: 'Specialisation grid' } },
+      ],
+      label: { pt: 'Coluna direita', en: 'Right column' },
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Imagem', en: 'Image' },
+      admin: { condition: (_, irmaos) => irmaos?.rightColumn === 'image' },
+    },
+    {
+      name: 'imageLabel',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Etiqueta sobre a imagem', en: 'Image label' },
+      admin: { condition: (_, irmaos) => irmaos?.rightColumn === 'image' },
+    },
+    {
+      name: 'logo',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Logo do parceiro', en: 'Partner logo' },
+      admin: {
+        condition: (_, irmaos) => irmaos?.rightColumn !== 'checklist',
+        description: {
+          pt: 'Na etiqueta da imagem e em cada cartão da grade.',
+          en: 'Used in the image label and on every grid card.',
+        },
+      },
+    },
+    {
+      name: 'items',
+      type: 'array',
+      label: { pt: 'Itens', en: 'Items' },
+      admin: {
+        description: {
+          pt: 'Na lista de conferência, uma frase por linha. Na grade, o nome da especialização — que também vira a lista de fichas à esquerda.',
+          en: 'In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.',
+        },
+      },
+      fields: [
+        { name: 'text', type: 'text', required: true, localized: true, label: { pt: 'Texto', en: 'Text' } },
+      ],
+    },
+    {
+      name: 'cta',
+      type: 'group',
+      label: { pt: 'Botão', en: 'Button' },
+      fields: [
+        { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+      ],
+    },
+    {
+      /* Só a seção de especializações tem, e é link de texto com seta, não
+       * botão (`PartnerPageBase.tsx:287`). */
+      name: 'linkCta',
+      type: 'group',
+      label: { pt: 'Link de texto', en: 'Text link' },
+      admin: { condition: (_, irmaos) => irmaos?.rightColumn === 'specGrid' },
+      fields: [
+        { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
 export const BLOCOS = [
   PageHero,
   StickyPageNav,
@@ -911,4 +1069,6 @@ export const BLOCOS = [
   CtaContact,
   JobsList,
   CtaBanner,
+  PartnerHero,
+  PartnerSplit,
 ]

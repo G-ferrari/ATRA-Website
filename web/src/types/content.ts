@@ -174,6 +174,36 @@ export type BlocoIconCardGrid = Base & {
   items: { icon: string; title: string; description: string | null }[]
 }
 
+/* Blocos do template de página de parceiro (MIG-054a). A justificativa de cada
+ * um está em `src/blocks/index.ts`, junto da definição. */
+
+export type BlocoPartnerHero = Base & {
+  tipo: 'partnerHero'
+  badge: string | null
+  chip: string | null
+  title: string
+  highlight: string | null
+  description: string | null
+  logo: Image | null
+  awards: { topText: string | null; title: string; highlight: string | null }[]
+  cta: { label: string; href: string } | null
+}
+
+export type BlocoPartnerSplit = Base & {
+  tipo: 'partnerSplit'
+  eyebrow: string | null
+  title: string
+  /** Parágrafos separados; o gabarito preserva as quebras dentro de cada um. */
+  body: string[]
+  rightColumn: 'image' | 'checklist' | 'specGrid'
+  image: Image | null
+  imageLabel: string | null
+  logo: Image | null
+  items: string[]
+  cta: { label: string; href: string } | null
+  linkCta: { label: string; href: string } | null
+}
+
 export type BlocoCtaBanner = Base & {
   tipo: 'ctaBanner'
   title: string
@@ -181,7 +211,7 @@ export type BlocoCtaBanner = Base & {
   description: string | null
   cta: { label: string; href: string } | null
   secondaryCta: { label: string; href: string; caption: string | null } | null
-  variant: 'primary' | 'subtle' | 'dark'
+  variant: 'primary' | 'subtle' | 'dark' | 'dark-centered'
 }
 
 export type MetricaInstitucional = {
@@ -360,6 +390,8 @@ export type Bloco =
   | BlocoBentoGrid
   | BlocoAudienceSplit
   | BlocoAccordionSteps
+  | BlocoPartnerHero
+  | BlocoPartnerSplit
   | BlocoValueCards
   | BlocoStickyPageNav
   | BlocoSealsBanner
