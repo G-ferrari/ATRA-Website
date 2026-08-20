@@ -56,7 +56,7 @@ Status: `todo` · `wip` · `done` · `blocked`
 | MIG-033 | Organização do admin: grupos, `useAsTitle`, `defaultColumns`, busca | `collections/*` | 023 | As 6 collections agrupadas; nenhuma lista ambígua (depoimentos ganharam `label` computado) | 2h | **done** |
 | MIG-034 | **Casca do site: cabeçalho fixo + rodapé** | `components/layout/{site-header,site-footer,theme-toggle}.tsx`, `lib/navegacao.ts`, `app/(frontend)/[locale]/layout.tsx` | 030 | As 2 rotas de case comparam com `fullPage: true` e fecham em ≤0,1% | 5h | **done** |
 | MIG-035 | **Regressão visual determinística**: fonte local no legado + suíte na imagem oficial do Playwright + build de produção | `web/scripts/gate.mjs`, `e2e/support/stability.ts`, `legacy/public/fonts/*`, `.github/workflows/ci.yml` | 034 | Suíte verde 3× seguidas no CI e no macOS **contra o mesmo gabarito** | 5h | **done** |
-| MIG-072a | **Painéis do megamenu** (7 categorias) + gaveta mobile, alimentados pelo global `navigation` | `components/layout/site-header.tsx` | 034, 072 | Os 7 painéis abrem com o conteúdo do legado, vindo do CMS | 6h | todo |
+| MIG-072a | **Painéis do megamenu** (7 categorias) + gaveta mobile, alimentados pelo global `navigation` | `components/layout/site-header.tsx`, `globals/Navigation.ts`, `components/layout/mega-menu.tsx` | 034, 072 | Os 7 painéis abrem com o conteúdo do legado, vindo do CMS | 6h | **done** — o global `navigation` foi criado junto (era o 3º caso de seed sem definição); Soluções e Parceiros leem as collections |
 | MIG-031 | **`CLAUDE.md` com o padrão consolidado** | `CLAUDE.md` | 030 | Contém exemplo real do código da fatia vertical | 2h | **done** |
 
 > **Padrão de buraco no plano: existem tasks de "semear X" sem a de "criar X".**
