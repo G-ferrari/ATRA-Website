@@ -22,6 +22,10 @@ export const SECOES = {
   consultores: { pt: 'consultores', en: 'consultants' },
   parceiros: { pt: 'parceiros', en: 'partners' },
   solucoes: { pt: 'solucoes', en: 'solutions' },
+  // A rota é MIG-061; o destino entra aqui antes porque a caixa de conversa da
+  // home já aponta para ela, e link escrito à mão é o que a regra 6 proíbe.
+  chat: { pt: 'chat', en: 'chat' },
+  insights: { pt: 'insights', en: 'insights' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type Secao = keyof typeof SECOES

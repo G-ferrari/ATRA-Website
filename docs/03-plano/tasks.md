@@ -99,7 +99,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-056 | `/solucoes/[slug]` | 055 | ~~3h~~ **~5x maior** | **done** — portão verde nos 3 viewports. A composição prevista não batia com o legado: exigiu 4 blocos novos e 4 variantes. Ver a nota em [blocos.md](../02-especificacao/blocos.md#regras-de-bloco) |
 | MIG-050a | **`/carreiras` a 30% do gabarito** — reconstrução | 050 | 6h | ✅ feita |
 | MIG-054a | **`/parceiros/[slug]` a 38% do gabarito** — reconstrução | 054 | 4h | ✅ feita |
-| MIG-057 | Blocos da home: `hero`, `featureTabs`, `logoMarquee` | 048 | 5h |
+| MIG-057 | Blocos da home: `homeHero` (com a caixa de IA), `featureTabs`, `logoMarquee` | 048 | 5h | **done** — os três batem exato com o gabarito; a home ainda não entra em `ROTAS_COM_GABARITO`, faltam 5 blocos |
 | MIG-058 | Blocos da home: `caseCarousel`, `testimonialCarousel`, `contentTeaser` | 057 | 5h |
 | MIG-059 | **Rota `/`** | 058 | 5h |
 | MIG-060 | `/insights` (agrega 4 collections) | 044, 045, 046 | 4h |

@@ -204,6 +204,39 @@ export type BlocoPartnerSplit = Base & {
   linkCta: { label: string; href: string } | null
 }
 
+/* Blocos da home (MIG-057). */
+
+export type BlocoHomeHero = Base & {
+  tipo: 'homeHero'
+  titlePrefix: string
+  rotatingWords: string[]
+  description: string | null
+  scrollLabel: string | null
+  prompt: {
+    title: string | null
+    placeholder: string | null
+    disclaimer: string | null
+    clientsTitle: string | null
+    clients: { name: string; logo: Image; boost: boolean }[]
+  } | null
+}
+
+export type BlocoLogoMarquee = Base & {
+  tipo: 'logoMarquee'
+  title: string | null
+  partners: { name: string; logo: Image }[]
+}
+
+export type BlocoFeatureTabs = Base & {
+  tipo: 'featureTabs'
+  eyebrow: string | null
+  title: string
+  description: string | null
+  footnote: string | null
+  cta: { label: string; href: string } | null
+  items: { icon: string; badge: string; title: string; description: string; image: Image | null }[]
+}
+
 export type BlocoCtaBanner = Base & {
   tipo: 'ctaBanner'
   title: string
@@ -392,6 +425,9 @@ export type Bloco =
   | BlocoAccordionSteps
   | BlocoPartnerHero
   | BlocoPartnerSplit
+  | BlocoHomeHero
+  | BlocoLogoMarquee
+  | BlocoFeatureTabs
   | BlocoValueCards
   | BlocoStickyPageNav
   | BlocoSealsBanner

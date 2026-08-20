@@ -1325,6 +1325,132 @@ export interface Partner {
             blockName?: string | null;
             blockType: 'partnerSplit';
           }
+        | {
+            titlePrefix: string;
+            rotatingWords: string[];
+            description?: string | null;
+            scrollLabel?: string | null;
+            prompt?: {
+              title?: string | null;
+              placeholder?: string | null;
+              disclaimer?: string | null;
+              clientsTitle?: string | null;
+              clients?:
+                | {
+                    name: string;
+                    logo: number | Media;
+                    boost?: boolean | null;
+                    id?: string | null;
+                  }[]
+                | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeHero';
+          }
+        | {
+            title?: string | null;
+            partners: {
+              name: string;
+              logo: number | Media;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'logoMarquee';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            description?: string | null;
+            footnote?: string | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Numbering (01, 02…) follows the order. The first one opens active.
+             */
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              badge: string;
+              title: string;
+              description: string;
+              image?: (number | null) | Media;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'featureTabs';
+          }
       )[]
     | null;
   order?: number | null;
@@ -2551,6 +2677,132 @@ export interface Page {
         blockName?: string | null;
         blockType: 'partnerSplit';
       }
+    | {
+        titlePrefix: string;
+        rotatingWords: string[];
+        description?: string | null;
+        scrollLabel?: string | null;
+        prompt?: {
+          title?: string | null;
+          placeholder?: string | null;
+          disclaimer?: string | null;
+          clientsTitle?: string | null;
+          clients?:
+            | {
+                name: string;
+                logo: number | Media;
+                boost?: boolean | null;
+                id?: string | null;
+              }[]
+            | null;
+        };
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'homeHero';
+      }
+    | {
+        title?: string | null;
+        partners: {
+          name: string;
+          logo: number | Media;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'logoMarquee';
+      }
+    | {
+        eyebrow?: string | null;
+        title: string;
+        description?: string | null;
+        footnote?: string | null;
+        cta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        /**
+         * Numbering (01, 02…) follows the order. The first one opens active.
+         */
+        items: {
+          icon:
+            | 'sparkles'
+            | 'target'
+            | 'shield'
+            | 'rocket'
+            | 'users'
+            | 'database'
+            | 'cloud'
+            | 'brain'
+            | 'chart'
+            | 'lock'
+            | 'workflow'
+            | 'award'
+            | 'app'
+            | 'search'
+            | 'settings'
+            | 'zap'
+            | 'cpu'
+            | 'shield-check'
+            | 'trending-up'
+            | 'arrow-up-right'
+            | 'star'
+            | 'file-text'
+            | 'newspaper'
+            | 'video'
+            | 'book'
+            | 'briefcase'
+            | 'graduation-cap'
+            | 'heart'
+            | 'info'
+            | 'user-check'
+            | 'building'
+            | 'coffee'
+            | 'server'
+            | 'code'
+            | 'headset';
+          badge: string;
+          title: string;
+          description: string;
+          image?: (number | null) | Media;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'featureTabs';
+      }
   )[];
   /**
    * Optional. When empty, the site falls back to the page title and summary.
@@ -3774,6 +4026,132 @@ export interface Solution {
             blockName?: string | null;
             blockType: 'partnerSplit';
           }
+        | {
+            titlePrefix: string;
+            rotatingWords: string[];
+            description?: string | null;
+            scrollLabel?: string | null;
+            prompt?: {
+              title?: string | null;
+              placeholder?: string | null;
+              disclaimer?: string | null;
+              clientsTitle?: string | null;
+              clients?:
+                | {
+                    name: string;
+                    logo: number | Media;
+                    boost?: boolean | null;
+                    id?: string | null;
+                  }[]
+                | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeHero';
+          }
+        | {
+            title?: string | null;
+            partners: {
+              name: string;
+              logo: number | Media;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'logoMarquee';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            description?: string | null;
+            footnote?: string | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * Numbering (01, 02…) follows the order. The first one opens active.
+             */
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              badge: string;
+              title: string;
+              description: string;
+              image?: (number | null) | Media;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'featureTabs';
+          }
       )[]
     | null;
   /**
@@ -4676,6 +5054,87 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        homeHero?:
+          | T
+          | {
+              titlePrefix?: T;
+              rotatingWords?: T;
+              description?: T;
+              scrollLabel?: T;
+              prompt?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                    disclaimer?: T;
+                    clientsTitle?: T;
+                    clients?:
+                      | T
+                      | {
+                          name?: T;
+                          logo?: T;
+                          boost?: T;
+                          id?: T;
+                        };
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        logoMarquee?:
+          | T
+          | {
+              title?: T;
+              partners?:
+                | T
+                | {
+                    name?: T;
+                    logo?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        featureTabs?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              footnote?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    badge?: T;
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   order?: T;
   seo?:
@@ -5276,6 +5735,87 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        homeHero?:
+          | T
+          | {
+              titlePrefix?: T;
+              rotatingWords?: T;
+              description?: T;
+              scrollLabel?: T;
+              prompt?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                    disclaimer?: T;
+                    clientsTitle?: T;
+                    clients?:
+                      | T
+                      | {
+                          name?: T;
+                          logo?: T;
+                          boost?: T;
+                          id?: T;
+                        };
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        logoMarquee?:
+          | T
+          | {
+              title?: T;
+              partners?:
+                | T
+                | {
+                    name?: T;
+                    logo?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        featureTabs?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              footnote?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    badge?: T;
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   seo?:
     | T
@@ -5844,6 +6384,87 @@ export interface SolutionsSelect<T extends boolean = true> {
                 | {
                     label?: T;
                     href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        homeHero?:
+          | T
+          | {
+              titlePrefix?: T;
+              rotatingWords?: T;
+              description?: T;
+              scrollLabel?: T;
+              prompt?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                    disclaimer?: T;
+                    clientsTitle?: T;
+                    clients?:
+                      | T
+                      | {
+                          name?: T;
+                          logo?: T;
+                          boost?: T;
+                          id?: T;
+                        };
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        logoMarquee?:
+          | T
+          | {
+              title?: T;
+              partners?:
+                | T
+                | {
+                    name?: T;
+                    logo?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        featureTabs?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              footnote?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    badge?: T;
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    id?: T;
                   };
               anchor?: T;
               navLabel?: T;

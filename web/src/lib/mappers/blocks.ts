@@ -206,6 +206,62 @@ export function toBlocos(
         })
         break
 
+      case 'homeHero':
+        blocos.push({
+          ...base(b),
+          tipo: 'homeHero',
+          titlePrefix: b.titlePrefix,
+          rotatingWords: (b.rotatingWords ?? []).filter((w): w is string => Boolean(w?.trim())),
+          description: vazio(b.description),
+          scrollLabel: vazio(b.scrollLabel),
+          prompt: b.prompt?.title
+            ? {
+                title: vazio(b.prompt.title),
+                placeholder: vazio(b.prompt.placeholder),
+                disclaimer: vazio(b.prompt.disclaimer),
+                clientsTitle: vazio(b.prompt.clientsTitle),
+                clients: (b.prompt.clients ?? [])
+                  .map((c) => ({
+                    name: c.name,
+                    logo: toImageOpcional(c.logo, 'homeHero.prompt.clients.logo'),
+                    boost: Boolean(c.boost),
+                  }))
+                  .filter((c): c is { name: string; logo: NonNullable<typeof c.logo>; boost: boolean } => c.logo !== null),
+              }
+            : null,
+        })
+        break
+
+      case 'logoMarquee':
+        blocos.push({
+          ...base(b),
+          tipo: 'logoMarquee',
+          title: vazio(b.title),
+          partners: (b.partners ?? [])
+            .map((p) => ({ name: p.name, logo: toImageOpcional(p.logo, 'logoMarquee.partners.logo') }))
+            .filter((p): p is { name: string; logo: NonNullable<typeof p.logo> } => p.logo !== null),
+        })
+        break
+
+      case 'featureTabs':
+        blocos.push({
+          ...base(b),
+          tipo: 'featureTabs',
+          eyebrow: vazio(b.eyebrow),
+          title: b.title,
+          description: vazio(b.description),
+          footnote: vazio(b.footnote),
+          cta: toCta(b.cta),
+          items: (b.items ?? []).map((i) => ({
+            icon: i.icon,
+            badge: i.badge,
+            title: i.title,
+            description: i.description,
+            image: toImageOpcional(i.image, 'featureTabs.items.image'),
+          })),
+        })
+        break
+
       case 'ctaBanner':
         blocos.push({
           ...base(b),

@@ -1052,6 +1052,146 @@ export const PartnerSplit: Block = {
   ],
 }
 
+/* Blocos da home (MIG-057).
+ *
+ * Justificativa (blocos.md, regra 3): a home do legado não reusa nenhuma seção
+ * das páginas internas — são oito componentes próprios em `App.tsx`, do herói
+ * de partículas ao carrossel de cases. A composição prevista no plano também
+ * estava incompleta: previa `hero`, `featureTabs` e `logoMarquee`, e a seção do
+ * prompt de IA com os logos de cliente (`App.tsx:2055`) não estava lá. */
+
+export const HomeHero: Block = {
+  slug: 'homeHero',
+  labels: { singular: { pt: 'Herói da home', en: 'Home hero' }, plural: { pt: 'Heróis da home', en: 'Home heroes' } },
+  fields: [
+    { name: 'titlePrefix', type: 'text', required: true, localized: true, label: { pt: 'Início do título', en: 'Title prefix' } },
+    {
+      /* A palavra laranja que troca a cada 2,5s (`aether-flow-hero.tsx:471`).
+       * Com `?e2e=1` fica na primeira — nos dois apps, ou o gabarito dependeria
+       * de quando a captura pegou o ciclo. */
+      name: 'rotatingWords',
+      type: 'text',
+      hasMany: true,
+      required: true,
+      localized: true,
+      label: { pt: 'Palavras que giram', en: 'Rotating words' },
+    },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    { name: 'scrollLabel', type: 'text', localized: true, label: { pt: 'Texto do indicador de rolagem', en: 'Scroll cue label' } },
+    {
+      /* ⚠️ A caixa de conversa fica **dentro** deste bloco, e não num bloco
+       * irmão, porque no legado ela é filha do herói (`App.tsx:2548` passa
+       * `<Clients />` como `children` de `AetherFlowHero`). O canvas é
+       * `absolute inset-0` do container que envolve os dois: separá-los encurta
+       * o canvas para a altura do herói, muda a densidade de partículas — que
+       * sai de `largura * altura / 22000` — e tira o fundo de baixo da caixa. */
+      name: 'prompt',
+      type: 'group',
+      label: { pt: 'Caixa de conversa com a IA', en: 'AI prompt box' },
+      fields: [
+        { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'placeholder', type: 'text', localized: true, label: { pt: 'Texto do campo', en: 'Input placeholder' } },
+        { name: 'disclaimer', type: 'textarea', localized: true, label: { pt: 'Aviso sob a caixa', en: 'Disclaimer' } },
+        { name: 'clientsTitle', type: 'text', localized: true, label: { pt: 'Título dos logos de cliente', en: 'Client logos title' } },
+        {
+          /* Os 7 clientes da esteira (`App.tsx:1863`). Array aqui, e não uma
+           * collection: eles não têm página, slug nem nada além de nome e logo,
+           * e o legado também os lista à mão. Vira collection no dia em que
+           * alguém precisar de um case ligado a eles. */
+          name: 'clients',
+          type: 'array',
+          label: { pt: 'Logos de cliente', en: 'Client logos' },
+          fields: [
+            { name: 'name', type: 'text', required: true, label: { pt: 'Nome', en: 'Name' } },
+            { name: 'logo', type: 'upload', relationTo: 'media', required: true, label: { pt: 'Logo', en: 'Logo' } },
+            {
+              /* Três dos sete logos são desenhados menores no arquivo e o
+               * legado os amplia (`App.tsx:1895`). Sem isso ANBIMA, Afya e
+               * Icatu aparecem visivelmente menores que os outros quatro. */
+              name: 'boost',
+              type: 'checkbox',
+              defaultValue: false,
+              label: { pt: 'Ampliar', en: 'Enlarge' },
+            },
+          ],
+        },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const LogoMarquee: Block = {
+  slug: 'logoMarquee',
+  labels: { singular: { pt: 'Faixa de logos', en: 'Logo strip' }, plural: { pt: 'Faixas de logos', en: 'Logo strips' } },
+  fields: [
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      /* ⚠️ Lista própria, e **não** a collection `partners`, embora seja o que a
+       * regra de fonte única pediria.
+       *
+       * O legado mostra 9 logos e a collection tem 8: o nono está cadastrado lá
+       * só como "Partner", sem nome real (P-10), e `parceiros-catalogo.ts`
+       * decidiu não publicar um card genérico com esse nome. Ligar a faixa à
+       * collection forçaria responder P-10 para a home ficar igual ao gabarito.
+       *
+       * O custo é baixo porque esta faixa é decoração: os logos não levam a
+       * lugar nenhum, ao contrário dos do megamenu e da vitrine de /sobre. */
+      name: 'partners',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Logos', en: 'Logos' },
+      fields: [
+        { name: 'name', type: 'text', required: true, label: { pt: 'Nome', en: 'Name' } },
+        { name: 'logo', type: 'upload', relationTo: 'media', required: true, label: { pt: 'Logo', en: 'Logo' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const FeatureTabs: Block = {
+  slug: 'featureTabs',
+  labels: { singular: { pt: 'Abas de destaque', en: 'Feature tabs' }, plural: { pt: 'Abas de destaque', en: 'Feature tabs' } },
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
+    { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto ao lado do título', en: 'Text beside the title' } },
+    { name: 'footnote', type: 'text', localized: true, label: { pt: 'Rodapé do cartão', en: 'Card footnote' } },
+    {
+      name: 'cta',
+      type: 'group',
+      label: { pt: 'Botão do cartão', en: 'Card button' },
+      fields: [
+        { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+      ],
+    },
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Abas', en: 'Tabs' },
+      admin: {
+        description: {
+          pt: 'A numeração (01, 02…) sai da ordem. A primeira abre ativa.',
+          en: 'Numbering (01, 02…) follows the order. The first one opens active.',
+        },
+      },
+      fields: [
+        campoDeIcone,
+        { name: 'badge', type: 'text', required: true, localized: true, label: { pt: 'Etiqueta', en: 'Badge' } },
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
+        { name: 'image', type: 'upload', relationTo: 'media', label: { pt: 'Imagem de fundo', en: 'Background image' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
 export const BLOCOS = [
   PageHero,
   StickyPageNav,
@@ -1071,4 +1211,7 @@ export const BLOCOS = [
   CtaBanner,
   PartnerHero,
   PartnerSplit,
+  HomeHero,
+  LogoMarquee,
+  FeatureTabs,
 ]

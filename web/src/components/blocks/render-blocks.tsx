@@ -12,6 +12,9 @@ import { BlocoNumeros } from './bloco-numeros'
 import { BlocoEtapas } from './bloco-etapas'
 import { BlocoContato } from './bloco-contato'
 import { BlocoParaQuem } from './bloco-para-quem'
+import { BlocoAbasDeDestaque } from './bloco-abas-de-destaque'
+import { BlocoFaixaDeLogos } from './bloco-faixa-de-logos'
+import { BlocoHomeHero } from './bloco-home-hero'
 import { BlocoParceiroHero } from './bloco-parceiro-hero'
 import { BlocoParceiroSecao } from './bloco-parceiro-secao'
 import { BlocoParceiros } from './bloco-parceiros'
@@ -67,6 +70,12 @@ export function RenderBlocks({ blocos, locale }: { blocos: Bloco[]; locale: Loca
             return <BlocoParceiroHero key={b.id} bloco={b} />
           case 'partnerSplit':
             return <BlocoParceiroSecao key={b.id} bloco={b} locale={locale} />
+          case 'homeHero':
+            return <BlocoHomeHero key={b.id} bloco={b} locale={locale} />
+          case 'logoMarquee':
+            return <BlocoFaixaDeLogos key={b.id} bloco={b} />
+          case 'featureTabs':
+            return <BlocoAbasDeDestaque key={b.id} bloco={b} />
         }
       })}
     </>

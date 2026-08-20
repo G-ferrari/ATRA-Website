@@ -36,7 +36,13 @@ test('StatusBadge, MetricChip e SearchInput batem com o legado', async ({ page }
   }
   expect(legado.badge, 'badge não encontrado no legado').not.toBeNull()
 
-  await visit(page, NEXT_URL, '/')
+  /* ⚠️ A mesma rota dos dois lados, e não a home.
+   *
+   * Este teste comparava o legado contra `/` do app novo, que era a bancada de
+   * componentes da Fase 2 — uma página que existia só para isso. Com a home
+   * real (MIG-059) a bancada saiu, e comparar rotas diferentes já era frágil:
+   * agora é o mesmo conteúdo nos dois. */
+  await visit(page, NEXT_URL, '/cases-de-sucesso')
   const novo = {
     badge: await estiloDe(page, 'span.inline-flex.items-center.font-semibold'),
     input: await estiloDe(page, 'main input[type="text"]'),
