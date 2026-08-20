@@ -1,4 +1,5 @@
 import { spawn, spawnSync } from 'node:child_process'
+import { cpus } from 'node:os'
 import { setTimeout as esperar } from 'node:timers/promises'
 
 /* Gate de regressão visual (MIG-035).
@@ -35,6 +36,8 @@ import { setTimeout as esperar } from 'node:timers/promises'
  */
 
 const PORTA = 3100
+/* Metade dos núcleos, no máximo 4 e no mínimo 1. */
+const TETO_DE_CPUS = Math.min(4, Math.max(1, Math.floor(cpus().length / 2)))
 const IMAGEM = 'mcr.microsoft.com/playwright:v1.62.1-noble'
 const LEGADO = 'http://host.docker.internal:3001'
 const args = process.argv.slice(2)
@@ -116,10 +119,13 @@ const r = passo(gravarGabarito ? 'gravando o gabarito (legado)' : 'comparando', 
     'docker',
     [
       'run', '--rm',
-      /* ⚠️ Teto de recursos. Sem ele o container do Playwright toma a máquina
-         inteira — dois workers de Chromium capturando página inteira em três
-         viewports — e o resto do computador trava enquanto o gate roda. */
-      '--cpus=4', '--memory=6g',
+      /* ⚠️ Teto de recursos, **derivado do que a máquina tem**. Sem teto o
+         container do Playwright toma tudo — dois workers de Chromium
+         capturando página inteira em três viewports — e o resto do computador
+         trava enquanto o gate roda. Fixar em 4 quebrou o CI: o runner do
+         GitHub tem 2 núcleos e o Docker recusa `--cpus` acima do disponível
+         ("range of CPUs is from 0.01 to 2.00"). */
+      `--cpus=${TETO_DE_CPUS}`,
       '--add-host=host.docker.internal:host-gateway',
       '-e', `NEXT_URL=http://host.docker.internal:${PORTA}`,
       '-e', `LEGACY_URL=${LEGADO}`,
