@@ -90,19 +90,54 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-048 | Blocos: `statsGrid`, `sealsBanner`, `valueCards`, `stickyPageNav` + global `site-settings` | 047 | 4h | **done** |
 | MIG-049 | `/sobre` (a collection `pages` veio em 047) | 048 | 4h | **done** — no gate, ≤0,1% nos 3 viewports |
 | MIG-049a | `pageHero.mediaMode`, imagem no `richTextSection`, rampa de colunas por variante, ids de bloco no seed EN, `navLabel`, `logoScale` | 049 | 3h | **done** |
-| MIG-050 | `/carreiras` + collection `jobs` + blocos `jobsList`/`sealsBanner`/`processSteps` | 048 | 4h | **done** |
+| MIG-050 | `/carreiras` + collection `jobs` + blocos `jobsList`/`sealsBanner`/`processSteps` | 048 | 4h | ⚠️ **reaberta** — ver MIG-050a |
 | MIG-051 | `/carreiras/[slug]` (vaga) | 050 | 2h | **done** |
 | MIG-052 | `/consultores` + `specialist-roles` | 047 | 4h | **done** — ⚠️ fechada em MIG-052 com **57% da página faltando** e sem gabarito; refeita e com portão verde nos 3 viewports |
 | MIG-053 | Bloco `ctaContact` + `/contato` (D-10) | 047 | 3h | **done** |
-| MIG-054 | `/parceiros/[slug]` | 047 | 3h | **done** |
+| MIG-054 | `/parceiros/[slug]` | 047 | 3h | ⚠️ **reaberta** — ver MIG-054a |
 | MIG-055 | `/solucoes` (índice) + collection `solutions` | 047 | 3h | **done** — sem gabarito (D-09); aceite funcional no smoke |
 | MIG-056 | `/solucoes/[slug]` | 055 | ~~3h~~ **~5x maior** | **done** — portão verde nos 3 viewports. A composição prevista não batia com o legado: exigiu 4 blocos novos e 4 variantes. Ver a nota em [blocos.md](../02-especificacao/blocos.md#regras-de-bloco) |
+| MIG-050a | **`/carreiras` a 30% do gabarito** — reconstrução | 050 | 6h | todo |
+| MIG-054a | **`/parceiros/[slug]` a 38% do gabarito** — reconstrução | 054 | 4h | todo |
 | MIG-057 | Blocos da home: `hero`, `featureTabs`, `logoMarquee` | 048 | 5h |
 | MIG-058 | Blocos da home: `caseCarousel`, `testimonialCarousel`, `contentTeaser` | 057 | 5h |
 | MIG-059 | **Rota `/`** | 058 | 5h |
 | MIG-060 | `/insights` (agrega 4 collections) | 044, 045, 046 | 4h |
 | MIG-061 | `/chat` + `/api/chat` com rate limit (D-12) | 031 | 5h |
 | MIG-062 | 404 + `error.tsx` | 031 | 1.5h | **done** |
+
+> **Três rotas foram fechadas sem gabarito e saíram muito curtas.** Medido em
+> 19/08, altura de página no desktop contra o legado: `/consultores` 4.975px
+> contra 11.696 (**−57%**), `/carreiras` 10.111 contra 14.539 (**−30%**),
+> `/parceiros/google-cloud` 5.789 contra 9.317 (**−38%**). As três têm gabarito
+> no legado e nenhuma tinha sido registrada em `ROTAS_COM_GABARITO` — passaram
+> no aceite só com asserção funcional no smoke.
+>
+> `/consultores` foi refeita e está verde. As outras duas seguem abertas, e o
+> levantamento já está feito:
+>
+> **MIG-050a — `/carreiras`.** Faltam as seções "Vantagens de ser ATRA"
+> (`Careers.tsx:550`) e "Programa de Trainee ATRA" (`:579`). Além disso: o herói
+> do legado é **centralizado**, com uma linha de apoio entre título e descrição,
+> três números e **nenhum botão** — o nosso é à esquerda, sem números, com dois
+> botões, e usa o subtítulo do legado como `h1`. O título certo é "Construa sua
+> história na ATRA". A seção `trabalhe-conosco` do legado tem **duas partes**: a
+> grade de vagas *e* o cartão "Banco de Talentos" com formulário (`:450`), que
+> no nosso porte virou um `ctaContact` separado no fim da página. E as vagas do
+> legado apontam para `#banco-talentos`, não para páginas de vaga.
+> Precisa de: `subtitle` e `align` no `pageHero`, variante `card-centered` no
+> `iconCardGrid`, `headerLayout: centered` no `richTextSection` e o formulário
+> dentro do `jobsList`.
+>
+> **MIG-054a — `/parceiros/[slug]`.** As cinco seções existem e batem de nome,
+> mas a última diverge ("Entre em contato" no legado contra "Pronto para migrar,
+> modernizar e inovar?" no porte) e a página inteira sai 3.528px mais curta.
+> Falta medir seção a seção, como foi feito em MIG-056 e MIG-052a.
+>
+> **Regra que sai daqui:** rota com gabarito no legado **entra em
+> `ROTAS_COM_GABARITO` na mesma PR que a porta**. Sem isso, "done" não quer
+> dizer nada — foram 15.000px de divergência atravessando a Fase 3 sem ninguém
+> ver.
 
 ## Fase 4a — Seed do protótipo
 

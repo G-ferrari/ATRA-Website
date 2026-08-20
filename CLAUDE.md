@@ -121,6 +121,13 @@ Regravar gabarito exige justificativa no PR: apaga a evidência de regressão.
 
 ## Regressão visual
 
+**Rota com gabarito no legado entra em `ROTAS_COM_GABARITO` na mesma PR que a
+porta.** Três rotas foram para "done" sem isso e saíram 30% a 57% mais curtas
+que o gabarito, sem ninguém ver — o smoke confere que a página responde, não que
+ela está inteira. Ver a nota da Fase 3 em `docs/03-plano/tasks.md`.
+
+
+
 Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
 
 - Imagens entram **mascaradas**: o legado serve o JPEG original e o app novo
