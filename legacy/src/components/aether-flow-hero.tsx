@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-import { aleatorio, congelado } from '@/lib/e2e';
+import { aleatorio, congelado, reiniciarAleatorio } from '@/lib/e2e';
 
 export interface AetherFlowHeroProps {
   theme?: 'dark' | 'light';
@@ -222,6 +222,8 @@ export const AetherFlowHero: React.FC<AetherFlowHeroProps> = ({
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const handleResize = () => {
+      // Ver a nota em `lib/e2e.ts`: sem reiniciar, cada resize dá outra nuvem.
+      reiniciarAleatorio();
       const width = container.clientWidth;
       const height = container.clientHeight;
       canvas.width = width;

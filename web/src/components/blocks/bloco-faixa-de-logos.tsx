@@ -1,4 +1,5 @@
 import { BORDAS } from '@/components/blocks/bordas'
+import { TechHorizontalLine, TechVerticalLine } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { BlocoLogoMarquee } from '@/types/content'
 
@@ -48,6 +49,11 @@ export function BlocoFaixaDeLogos({ bloco }: { bloco: BlocoLogoMarquee }) {
         BORDAS[bloco.borda],
       )}
     >
+      {/* Linhas decorativas da seção, na configuração do gabarito
+          (`App.tsx:1426`). Só a home as tem. */}
+      <TechHorizontalLine color="blue" align="left" side="top" delay={0.2} />
+      <TechVerticalLine color="orange" align="left" alignY="top" delay={0.3} />
+
       <section className="w-full bg-transparent px-4 py-4 sm:py-6">
         {bloco.title && (
           <div className="mx-auto max-w-2xl text-center">

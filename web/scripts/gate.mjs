@@ -17,9 +17,21 @@ import { setTimeout as esperar } from 'node:timers/promises'
  *    depender do que estiver rodando na sua máquina.
  *
  * Uso:
- *   pnpm gate            compara o app novo contra o gabarito
- *   pnpm gate --baseline regrava o gabarito a partir do legado (:3001)
- *   pnpm gate --sem-build  reaproveita o .next existente
+ *   pnpm gate                     compara o app novo contra o gabarito
+ *   pnpm gate --baseline          regrava o gabarito a partir do legado (:3001)
+ *   pnpm gate --sem-build         reaproveita o .next existente
+ *   pnpm gate --rota home         só a regressão visual daquela rota
+ *   pnpm gate --viewport desktop  só um viewport
+ *
+ * ⚠️ `--rota` e `--viewport` existem para **iterar**, não para aprovar. Um
+ * `pnpm gate` sem filtro custa ~9 min e a máquina inteira; conferir uma rota
+ * enquanto se conserta um bloco custa ~1 min. Quem fecha a task roda o gate
+ * completo — o filtro não pega regressão em rota vizinha.
+ *
+ * ⚠️ Página estática não muda com `--sem-build`. A home e as outras rotas de
+ * conteúdo são pré-renderizadas no build: depois de mexer no **seed**, é
+ * `pnpm gate` inteiro, ou o servidor serve o HTML antigo e a comparação repete
+ * o mesmo número de pixels da corrida anterior — já custou duas corridas.
  */
 
 const PORTA = 3100
@@ -28,6 +40,23 @@ const LEGADO = 'http://host.docker.internal:3001'
 const args = process.argv.slice(2)
 const gravarGabarito = args.includes('--baseline')
 const semBuild = args.includes('--sem-build')
+const valorDe = (nome) => {
+  const i = args.indexOf(nome)
+  return i >= 0 ? args[i + 1] : null
+}
+const rota = valorDe('--rota')
+const viewport = valorDe('--viewport')
+
+/* Filtro repassado ao Playwright.
+ *
+ * ⚠️ Os dois specs nomeiam o teste de formas diferentes — `visual.spec.ts` usa
+ * `${nome}: paridade com o legado` e `baseline.spec.ts` usa `gabarito: ${nome}`
+ * —, então o padrão precisa cobrir as duas. Um `-g` que só casasse a primeira
+ * faria `--baseline --rota` rodar **zero** teste e sair verde. */
+const filtro = [
+  ...(rota ? ['-g', `(gabarito: ${rota}$|${rota}: paridade)`] : []),
+  ...(viewport ? ['--project', viewport] : []),
+]
 
 function passo(titulo, fn) {
   process.stdout.write(`\n▶ ${titulo}\n`)
@@ -79,14 +108,18 @@ if (!(await passo(`subindo o build em :${PORTA}`, esperarNoAr))) {
 }
 
 const comando = gravarGabarito
-  ? ['sh', '-c', 'GRAVAR_GABARITO=1 npx playwright test e2e/baseline.spec.ts --update-snapshots']
-  : ['npx', 'playwright', 'test']
+  ? ['sh', '-c', `GRAVAR_GABARITO=1 npx playwright test e2e/baseline.spec.ts --update-snapshots ${filtro.map((a) => `'${a}'`).join(' ')}`]
+  : ['npx', 'playwright', 'test', ...(rota ? ['e2e/visual.spec.ts'] : []), ...filtro]
 
 const r = passo(gravarGabarito ? 'gravando o gabarito (legado)' : 'comparando', () =>
   spawnSync(
     'docker',
     [
       'run', '--rm',
+      /* ⚠️ Teto de recursos. Sem ele o container do Playwright toma a máquina
+         inteira — dois workers de Chromium capturando página inteira em três
+         viewports — e o resto do computador trava enquanto o gate roda. */
+      '--cpus=4', '--memory=6g',
       '--add-host=host.docker.internal:host-gateway',
       '-e', `NEXT_URL=http://host.docker.internal:${PORTA}`,
       '-e', `LEGACY_URL=${LEGADO}`,

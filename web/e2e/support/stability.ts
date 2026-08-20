@@ -81,6 +81,13 @@ export async function stabilize(page: Page) {
       animation-iteration-count:1 !important;
       transition-duration:0s !important; transition-delay:0s !important;
       scroll-behavior:auto !important;
+      /* ⚠️ Sem isto o carrossel de cases se re-encaixa entre uma captura e a
+         seguinte: o snap-mandatory reage a mudança de layout mexendo no
+         scrollLeft, e o cartão anda alguns pixels — o suficiente para o
+         Playwright desistir de estabilizar a home no tablet, com a faixa
+         vermelha do diff exatamente nas duas bordas do cartão.
+         (Sem crase neste comentário: ele vive dentro de um template literal.) */
+      scroll-snap-type:none !important;
     }`
     /* IntersectionObserver que dispara na hora.
      *
@@ -177,6 +184,40 @@ export async function settle(page: Page) {
       new Promise((r) => setTimeout(r, 3000)),
     ])
   })
+
+  /* 3. Esperar a **altura parar de mudar**.
+   *
+   * ⚠️ `networkidle` + fontes + `decode()` não bastam. Medindo a home do legado
+   * a 768px, a página continuava crescendo depois disso: 10.791 → 10.851 →
+   * 10.877px em ~1,6s, e só então parava. O `toHaveScreenshot` tira as duas
+   * capturas com 100ms de intervalo, pegava a página no meio do crescimento, e
+   * desistia com "failed to take two consecutive stable screenshots" e ~14.700
+   * pixels de diferença — capturando o gabarito contra ele mesmo.
+   *
+   * Esperar altura repetida três vezes é mais barato e mais confiável que um
+   * `waitForTimeout` grande: sai assim que assentou, e insiste quando demora. */
+  /* Zera a rolagem **horizontal** de qualquer trilho antes de medir.
+   *
+   * ⚠️ O carrossel de cases da home é `overflow-x-auto`, e o navegador pode
+   * deixá-lo com alguns pixels de `scrollLeft` depois da rolagem vertical e do
+   * re-encaixe de layout. No gabarito ele saiu deslocado 24px — a largura do
+   * respiro do container — e a faixa inteira do carrossel divergia, sozinha
+   * respondendo por 92% dos pixels diferentes da home. */
+  await page.evaluate(() => {
+    for (const el of document.querySelectorAll('*')) {
+      if (el.scrollWidth > el.clientWidth) el.scrollLeft = 0
+    }
+  })
+
+  let anterior = -1
+  let iguais = 0
+  const limite = Date.now() + 8000
+  while (iguais < 3 && Date.now() < limite) {
+    const altura = await page.evaluate(() => document.body.scrollHeight)
+    iguais = altura === anterior ? iguais + 1 : 0
+    anterior = altura
+    await page.waitForTimeout(200)
+  }
 
   await page.waitForTimeout(300)
 }

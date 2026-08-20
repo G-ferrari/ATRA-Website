@@ -1,4 +1,5 @@
 import React from 'react';
+import { congelado } from '@/lib/e2e';
 import { motion, useScroll, useTransform } from 'motion/react';
 
 export const RoundedDiamond = ({ 
@@ -75,10 +76,13 @@ export const ScrollParallaxShape = ({
   children: React.ReactNode;
 }) => {
   const { scrollY } = useScroll();
-  
-  // Custom scroll response
-  const y = useTransform(scrollY, [0, 8000], [0, 8000 * -speed]);
-  const rotate = useTransform(scrollY, [0, 8000], [0, 8000 * rotateSpeed]);
+
+  // Regressão visual: com `?e2e=1` as formas ficam paradas. A captura de página
+  // inteira rola a página, e sem isto cada faixa capturada pegaria as formas
+  // numa posição diferente — as duas capturas nunca coincidiriam.
+  const parado = congelado();
+  const y = useTransform(scrollY, [0, 8000], parado ? [0, 0] : [0, 8000 * -speed]);
+  const rotate = useTransform(scrollY, [0, 8000], parado ? [0, 0] : [0, 8000 * rotateSpeed]);
   
   return (
     <motion.div

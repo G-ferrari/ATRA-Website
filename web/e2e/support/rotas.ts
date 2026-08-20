@@ -1,5 +1,6 @@
 /** Rotas portadas com gabarito no legado. Cresce a cada rota da Fase 3. */
 export const ROTAS_COM_GABARITO = [
+  { nome: 'home', caminho: '/' },
   { nome: 'cases-listagem', caminho: '/cases-de-sucesso' },
   { nome: 'cases-detalhe', caminho: '/cases-de-sucesso/eficiencia-processos-risco' },
   { nome: 'glossario', caminho: '/glossario' },
@@ -32,5 +33,23 @@ export const ROTAS_COM_GABARITO = [
  *
  * O que o mascaramento deixa de cobrir — imagem certa no lugar certo — é
  * coberto por `smoke.spec.ts`, que confere src e alt. */
-export const MASCARA = 'img'
+/* ⚠️ O `canvas` entra na máscara junto com as imagens, e por um motivo
+ * diferente: ele **não é reproduzível**, nem contra si mesmo.
+ *
+ * O campo de partículas do herói da home é redesenhado a cada `resize`, e a
+ * altura do canvas sai de `container.clientHeight` — um inteiro arredondado de
+ * uma altura fracionária. Medindo a mesma página duas vezes no mesmo viewport,
+ * a altura alterna entre 1217 e 1218px, e 1px de diferença muda a posição de
+ * todas as 60 partículas. O Playwright desistia com "failed to take two
+ * consecutive stable screenshots" e ~14.700 pixels de diferença entre um quadro
+ * e o seguinte — no **legado**, capturando o próprio gabarito.
+ *
+ * Mascarado, o teste continua conferindo o que importa: a caixa do canvas, e
+ * portanto a altura do herói e a posição de tudo em volta. O que sai da
+ * comparação — o desenho das partículas e a reação ao ponteiro — é coberto por
+ * `smoke.spec.ts`, que mede o canvas e move o mouse sobre ele.
+ *
+ * `reiniciarAleatorio()` (em `lib/e2e.ts` dos dois apps) continua valendo: sem
+ * ele o `?e2e=1` não congela nada, e um dia o canvas pode voltar à comparação. */
+export const MASCARA = 'img, canvas'
 export const COR_DA_MASCARA = '#ff00ff'

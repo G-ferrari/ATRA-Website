@@ -111,6 +111,7 @@ pnpm seed                                # idempotente
 pnpm gate                                # build de produção + comparação visual
 pnpm gate --baseline                     # regrava o gabarito a partir do legado
 pnpm gate --sem-build                    # reaproveita o .next existente
+pnpm gate --rota home --viewport desktop # 1 teste em vez de 207, para iterar
 ```
 
 `pnpm gate` é o único caminho: build de produção em :3100, suíte dentro da imagem
@@ -163,6 +164,11 @@ Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
 | Campo novo aparece numa tabela de bloco que você não mexeu | Edição por `replace` de trecho: vários blocos têm campos com o mesmo rótulo (`Estilo`, `Título`), e o primeiro casamento não é o bloco que você quis. Confira o `ALTER TABLE` da migração **antes** de aplicar; se já aplicou, `pnpm payload migrate:down` desfaz só a última |
 | Contador de números fica em `0` com `?e2e=1` | Só no servidor de dev: `congelado()` lê `window`, o HTML do servidor sai com `0` e a hidratação de desenvolvimento não reescreve o texto. Em produção — que é o que o `pnpm gate` compara — o número aparece certo. Não perseguir |
 | Teste de `hover` fica repetindo e falhando dentro de um `toPass` | `hover()` só move o ponteiro: mover para onde ele **já está** não emite `mouseenter`, e o laço gasta o tempo todo repetindo um gesto que o browser ignora. Passar por outro elemento antes |
+| Página estática não muda depois de mexer no seed | A home e as outras rotas de conteúdo são pré-renderizadas no build. Com `pnpm gate --sem-build` o servidor devolve o HTML antigo, e a comparação repete o **mesmo número de pixels** da corrida anterior. Depois de seed, gate inteiro |
+| Conferir uma rota custa 9 minutos e a máquina | `pnpm gate --rota home --viewport desktop` roda 1 teste em vez de 207. O container do Playwright entra com `--cpus=4`. O gate completo fica para fechar a task |
+| Faixa do carrossel divergindo inteira no aceite | `overflow-x-auto` guarda `scrollLeft` depois da rolagem vertical. `settle()` zera a rolagem horizontal de todo trilho — antes disso o gabarito saía deslocado 24px, sozinho respondendo por 92% dos pixels diferentes da home |
+| Elemento com imagem some ou muda de altura só no aceite | `stabilize()` troca imagem por um PNG 1×1. Onde a caixa **não** é fixa a altura vira o quadrado esticado: um `<img>` no fluxo com `w-full h-full` dentro de `h-auto min-h-[400px]` foi a 452px no legado e ficou em 400 no porte com `next/image fill`. Copiar o markup do gabarito, não só as classes |
+| Canvas do herói nunca repete entre duas capturas | A captura de página inteira **redimensiona a janela**; o `resize` recria as partículas e o gerador determinístico continua de onde parou, então cada recriação sorteia outro campo. `reiniciarAleatorio()` antes de repovoar, nos dois apps |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
 ## Estado

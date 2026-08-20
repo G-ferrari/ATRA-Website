@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 
 import { BORDAS } from '@/components/blocks/bordas'
 import { congelado } from '@/lib/e2e'
+import { TechCornerBraces, TechHorizontalLine, TechVerticalLine } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { BlocoFeatureTabs } from '@/types/content'
 
@@ -38,6 +39,12 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
         BORDAS[bloco.borda],
       )}
     >
+      {/* Linhas decorativas da seção, na configuração do gabarito
+          (`App.tsx:1490`). Só a home as tem. */}
+      <TechHorizontalLine color="orange" align="right" side="top" delay={0.2} />
+      <TechVerticalLine color="blue" align="right" alignY="bottom" delay={0.3} />
+      <TechCornerBraces color="blue" position="bottom-left" />
+
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
           <div>

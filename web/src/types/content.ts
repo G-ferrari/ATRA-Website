@@ -237,6 +237,73 @@ export type BlocoFeatureTabs = Base & {
   items: { icon: string; badge: string; title: string; description: string; image: Image | null }[]
 }
 
+export type BlocoHomeBento = Base & {
+  tipo: 'homeBento'
+  partnerCard: {
+    eyebrow: string | null
+    title: string | null
+    description: string | null
+    items: { name: string; subtitle: string | null; logo: Image | null }[]
+  } | null
+  sealsCard: {
+    eyebrow: string | null
+    counter: string | null
+    title: string | null
+    description: string | null
+    badge: string | null
+    footnote: string | null
+    seals: Image[]
+  } | null
+  metrics: { icon: string; tag: string; value: string; label: string; color: 'primary' | 'secondary' }[]
+}
+
+export type BlocoCaseCarousel = Base & {
+  tipo: 'caseCarousel'
+  eyebrow: string | null
+  title: string
+  description: string | null
+  readLabel: string | null
+  cta: { label: string; href: string } | null
+  items: {
+    icon: string
+    company: string
+    title: string
+    description: string
+    href: string
+    image: Image | null
+    color: string
+  }[]
+}
+
+export type BlocoTestimonialCarousel = Base & {
+  tipo: 'testimonialCarousel'
+  title: string
+  items: { text: string; client: string; role: string; avatar: Image | null }[]
+}
+
+export type BlocoContentTeaser = Base & {
+  tipo: 'contentTeaser'
+  eyebrow: string | null
+  title: string
+  description: string | null
+  cards: {
+    icon: string
+    category: string
+    title: string
+    href: string | null
+    image: Image | null
+    column: 'first' | 'second'
+  }[]
+  featured: {
+    category: string | null
+    title: string | null
+    ctaLabel: string | null
+    href: string | null
+    image: Image | null
+  } | null
+  newsletter: { title: string | null; placeholder: string | null } | null
+}
+
 export type BlocoCtaBanner = Base & {
   tipo: 'ctaBanner'
   title: string
@@ -327,6 +394,8 @@ export type VagaDetalhe = Vaga & {
 
 export type BlocoCtaContact = Base & {
   tipo: 'ctaContact'
+  variant: 'panel' | 'photo'
+  photo: Image | null
   title: string
   subtitle: string | null
   showContactCard: boolean
@@ -428,6 +497,10 @@ export type Bloco =
   | BlocoHomeHero
   | BlocoLogoMarquee
   | BlocoFeatureTabs
+  | BlocoHomeBento
+  | BlocoCaseCarousel
+  | BlocoTestimonialCarousel
+  | BlocoContentTeaser
   | BlocoValueCards
   | BlocoStickyPageNav
   | BlocoSealsBanner

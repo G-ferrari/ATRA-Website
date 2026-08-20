@@ -6,6 +6,8 @@ import { REDES_SOCIAIS } from '@/lib/navegacao'
 import { cn } from '@/lib/utils'
 import type { BlocoCtaContact } from '@/types/content'
 
+import { ContatoComFoto } from './contato-com-foto'
+
 /* Contato com formulário — porte de `legacy/src/App.tsx:2288`.
  *
  * ⚠️ O formulário está **desabilitado**, de propósito, como a landing de
@@ -22,6 +24,10 @@ const CAMPOS = [
 ] as const
 
 export function BlocoContato({ bloco }: { bloco: BlocoCtaContact }) {
+  /* A forma com foto é outro markup, não outra pele: ver a nota do campo
+     `variant` em `blocks/index.ts`. */
+  if (bloco.variant === 'photo') return <ContatoComFoto bloco={bloco} />
+
   return (
     <section
       id={bloco.anchor ?? 'fale-conosco'}

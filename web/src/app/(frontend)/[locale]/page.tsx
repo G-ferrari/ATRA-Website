@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
+import { DecoracoesDaHome } from '@/components/blocks/decoracoes-da-home'
 import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { resolverPagina } from '@/lib/paginas'
@@ -33,7 +34,12 @@ export default async function Pagina() {
   if (!pagina) notFound()
 
   return (
-    <main className="relative overflow-hidden bg-surface-1 text-text-main">
+    /* ⚠️ Sem `bg-surface-1`. O gabarito abre a home com `relative
+       overflow-hidden` e mais nada (`App.tsx:2546`), e a razão é a camada de
+       decorações: ela é `-z-10`, então um fundo no próprio `main` a esconde por
+       completo — as oito formas ficam atrás dele. */
+    <main className="relative overflow-hidden">
+      <DecoracoesDaHome />
       <RenderBlocks blocos={pagina.blocos} locale={locale} />
     </main>
   )

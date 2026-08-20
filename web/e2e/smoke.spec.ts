@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 import { LEGACY_URL, NEXT_URL } from '../playwright.config'
+import { visit } from './support/stability'
 
 /* Smoke: barato, roda em toda PR, pega o modo de falha mais provável de uma
  * fábrica de 20 rotas — "quebrou porque alguém renomeou um slug". */
@@ -368,6 +369,44 @@ test.describe('app novo', () => {
          existe, que é por onde a gaveta é usada de verdade. */
       await gaveta.getByRole('link', { name: 'Soluções', exact: true }).dispatchEvent('click')
       await expect(gaveta.getByText('Inovação & IA')).toBeVisible()
+    })
+  })
+
+  /* O campo de partículas do herói sai da regressão visual por ser
+   * irreproduzível — ver a nota da `MASCARA` em `support/rotas.ts`. O que ele
+   * precisa entregar é conferido aqui: existir do tamanho do herói, e reagir ao
+   * ponteiro. Sem isto, mascarar o canvas o deixaria sem cobertura nenhuma. */
+  test.describe('herói da home', () => {
+    test('o canvas cobre o herói e reage ao ponteiro', async ({ page }) => {
+      await visit(page, NEXT_URL, '/')
+
+      const medidas = await page.evaluate(() => {
+        const c = document.querySelector('canvas')
+        if (!c) return null
+        const pai = c.parentElement as HTMLElement
+        return { largura: c.width, altura: c.height, paiL: pai.clientWidth, paiA: pai.clientHeight }
+      })
+      expect(medidas, 'o canvas do herói não foi renderizado').not.toBeNull()
+      expect(medidas!.largura).toBe(medidas!.paiL)
+      expect(medidas!.altura).toBe(medidas!.paiA)
+
+      /* Com `?e2e=1` a velocidade é zero, então **qualquer** mudança no desenho
+         vem da repulsão do ponteiro. Sem a flag o teste não provaria nada: as
+         partículas andam sozinhas. */
+      const desenho = () =>
+        page.evaluate(() => {
+          const c = document.querySelector('canvas') as HTMLCanvasElement
+          const d = c.getContext('2d')!.getImageData(0, 0, c.width, Math.min(c.height, 600)).data
+          let h = 0
+          for (let i = 0; i < d.length; i += 16) h = (h * 33 + d[i] + d[i + 2]) >>> 0
+          return h
+        })
+
+      const parado = await desenho()
+      expect(await desenho(), 'o canvas deveria estar congelado com ?e2e=1').toBe(parado)
+
+      await page.mouse.move(640, 400, { steps: 12 })
+      await expect(async () => expect(await desenho()).not.toBe(parado)).toPass({ timeout: 5000 })
     })
   })
 

@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+import { TechHorizontalLine, TechVerticalLine } from '@/components/ui'
 import { hrefDe } from '@/lib/routes'
 import type { Locale } from '@/lib/locales'
 import type { BlocoHomeHero } from '@/types/content'
@@ -40,6 +41,11 @@ export function PromptDaIa({
   return (
     <div className="relative z-10 w-full">
       <section className="py-10 md:py-12 bg-transparent overflow-hidden border-b border-border-main/50 relative z-20">
+        {/* Linhas decorativas da seção, na configuração do gabarito
+            (`App.tsx:2069`). */}
+        <TechHorizontalLine color="orange" align="right" side="top" delay={0.2} />
+        <TechVerticalLine color="blue" align="left" alignY="bottom" delay={0.3} />
+
         <div className="container mx-auto px-4 sm:px-6 max-w-4xl text-center mb-8">
           {prompt.title && (
             /* `min-h-[50px] sm:h-[90px]` com `flex items-center`: a altura é

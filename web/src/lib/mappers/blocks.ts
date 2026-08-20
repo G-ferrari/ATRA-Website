@@ -262,6 +262,110 @@ export function toBlocos(
         })
         break
 
+      case 'homeBento':
+        blocos.push({
+          ...base(b),
+          tipo: 'homeBento',
+          partnerCard: b.partnerCard?.title
+            ? {
+                eyebrow: vazio(b.partnerCard.eyebrow),
+                title: vazio(b.partnerCard.title),
+                description: vazio(b.partnerCard.description),
+                items: (b.partnerCard.items ?? []).map((i) => ({
+                  name: i.name,
+                  subtitle: vazio(i.subtitle),
+                  logo: toImageOpcional(i.logo, 'homeBento.partnerCard.items.logo'),
+                })),
+              }
+            : null,
+          sealsCard: b.sealsCard?.title
+            ? {
+                eyebrow: vazio(b.sealsCard.eyebrow),
+                counter: vazio(b.sealsCard.counter),
+                title: vazio(b.sealsCard.title),
+                description: vazio(b.sealsCard.description),
+                badge: vazio(b.sealsCard.badge),
+                footnote: vazio(b.sealsCard.footnote),
+                seals: (b.sealsCard.seals ?? [])
+                  .map((i) => toImageOpcional(i as never, 'homeBento.sealsCard.seals'))
+                  .filter((i): i is NonNullable<typeof i> => i !== null),
+              }
+            : null,
+          metrics: (b.metrics ?? []).map((m) => ({
+            icon: m.icon,
+            tag: m.tag,
+            value: m.value,
+            label: m.label,
+            color: m.color ?? 'primary',
+          })),
+        })
+        break
+
+      case 'caseCarousel':
+        blocos.push({
+          ...base(b),
+          tipo: 'caseCarousel',
+          eyebrow: vazio(b.eyebrow),
+          title: b.title,
+          description: vazio(b.description),
+          readLabel: vazio(b.readLabel),
+          cta: toCta(b.cta),
+          items: (b.items ?? []).map((i) => ({
+            icon: i.icon,
+            company: i.company,
+            title: i.title,
+            description: i.description,
+            href: i.href,
+            image: toImageOpcional(i.image, 'caseCarousel.items.image'),
+            color: i.color,
+          })),
+        })
+        break
+
+      case 'testimonialCarousel':
+        blocos.push({
+          ...base(b),
+          tipo: 'testimonialCarousel',
+          title: b.title,
+          items: (b.items ?? []).map((i) => ({
+            text: i.text,
+            client: i.client,
+            role: i.role,
+            avatar: toImageOpcional(i.avatar, 'testimonialCarousel.items.avatar'),
+          })),
+        })
+        break
+
+      case 'contentTeaser':
+        blocos.push({
+          ...base(b),
+          tipo: 'contentTeaser',
+          eyebrow: vazio(b.eyebrow),
+          title: b.title,
+          description: vazio(b.description),
+          cards: (b.cards ?? []).map((c) => ({
+            icon: c.icon,
+            category: c.category,
+            title: c.title,
+            href: vazio(c.href),
+            image: toImageOpcional(c.image, 'contentTeaser.cards.image'),
+            column: c.column ?? 'first',
+          })),
+          featured: b.featured?.title
+            ? {
+                category: vazio(b.featured.category),
+                title: vazio(b.featured.title),
+                ctaLabel: vazio(b.featured.ctaLabel),
+                href: vazio(b.featured.href),
+                image: toImageOpcional(b.featured.image, 'contentTeaser.featured.image'),
+              }
+            : null,
+          newsletter: b.newsletter?.title
+            ? { title: vazio(b.newsletter.title), placeholder: vazio(b.newsletter.placeholder) }
+            : null,
+        })
+        break
+
       case 'ctaBanner':
         blocos.push({
           ...base(b),
@@ -322,6 +426,8 @@ export function toBlocos(
         blocos.push({
           ...base(b),
           tipo: 'ctaContact',
+          variant: b.variant ?? 'panel',
+          photo: toImageOpcional(b.photo, 'ctaContact.photo'),
           title: b.title,
           subtitle: vazio(b.subtitle),
           showContactCard: b.showContactCard ?? true,

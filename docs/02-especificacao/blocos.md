@@ -98,10 +98,27 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 > São dois blocos porque é assim que o legado se organiza — reproduzir com os
 > genéricos foi o que MIG-054 tentou, e a página saiu 38% mais curta.
 
-> **Padrão que se repete.** Três composições previstas estavam erradas —
-> `solucoes/[slug]`, `carreiras`, `parceiros/[slug]` — e nas três o erro foi o
-> mesmo: foram escritas a partir do **inventário de seções**, não do markup.
-> Antes de estimar as que faltam (`home`, `/insights`, `segmentos`), abrir o
+> [!ATENÇÃO] **E a da home.** Ela previa seis blocos em duas tasks
+> (`hero`, `featureTabs`, `logoMarquee`; depois `caseCarousel`,
+> `testimonialCarousel`, `contentTeaser`) e faltavam dois: o **bento** de
+> `App.tsx:1132` — seis cartões, dois largos e quatro de número — e a **caixa de
+> conversa com a IA** de `:2055`.
+>
+> A caixa de IA não é um bloco irmão: no legado ela é `children` do herói
+> (`:2548`), e o canvas de partículas é `absolute inset-0` do container que
+> envolve os dois. Separá-los encurtaria o canvas para a altura do herói e
+> mudaria a densidade de partículas, que sai de `largura * altura / 22000`. É um
+> grupo de campos dentro de `homeHero`.
+>
+> A faixa que fecha a home **não** é o `ctaContact` de /contato: aquela rota é
+> nova (D-10) e não tem gabarito, e a composição de MIG-053 divergiu do original
+> — três campos mais `textarea` contra quatro campos, e um painel de gradiente
+> no lugar do cartão com foto. Daí a variante `ctaContact: photo`.
+
+> **Padrão que se repete.** Quatro composições previstas estavam erradas —
+> `solucoes/[slug]`, `carreiras`, `parceiros/[slug]`, `home` — e nas quatro o
+> erro foi o mesmo: foram escritas a partir do **inventário de seções**, não do
+> markup. Antes de estimar as que faltam (`/insights`, `segmentos`), abrir o
 > arquivo do legado.
 
 ## Regras de bloco

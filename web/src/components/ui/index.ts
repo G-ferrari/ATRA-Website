@@ -12,4 +12,5 @@ export { MetricChip, StatusBadge, type MetricChipProps, type StatusBadgeProps } 
 export { ChipFilter, type ChipFilterProps, type ChipOption } from './chip-filter'
 export { FeaturedHero, type FeaturedHeroProps, type FeaturedItem } from './featured-hero'
 export { TechCornerBraces, type TechCornerBracesProps } from './tech-corner-braces'
+export { TechHorizontalLine, TechVerticalLine } from './tech-lines'
 export { TabFilter, type TabFilterProps, type TabOption } from './tab-filter'

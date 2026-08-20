@@ -33,7 +33,23 @@ const criarGerador = (semente: number) => {
   }
 }
 
-const geradorFixo = criarGerador(20260818)
+const SEMENTE = 20260818
+let geradorFixo = criarGerador(SEMENTE)
 
 /** `Math.random()` normalmente; sequência determinística sob `?e2e=1`. */
 export const aleatorio = (): number => (congelado() ? geradorFixo() : Math.random())
+
+/* Recomeça a sequência do zero.
+ *
+ * ⚠️ Sem isto o congelamento não congela nada. A captura de página inteira
+ * **redimensiona a janela**, o `resize` recria a nuvem de partículas, e como o
+ * gerador é contínuo cada recriação sorteia posições novas — o Playwright
+ * desistia com "failed to take two consecutive stable screenshots" e ~15.800
+ * pixels de diferença entre um quadro e o seguinte.
+ *
+ * Chamado antes de repovoar a nuvem, o campo passa a ser função pura da largura
+ * e da altura. `legacy/src/lib/e2e.ts` tem a mesma função, pela mesma razão: os
+ * dois canvas são comparados pixel a pixel. */
+export const reiniciarAleatorio = (): void => {
+  if (congelado()) geradorFixo = criarGerador(SEMENTE)
+}

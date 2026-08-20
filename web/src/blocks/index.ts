@@ -575,6 +575,30 @@ export const CtaContact: Block = {
       label: { pt: 'Mostrar o cartão de contato', en: 'Show the contact card' },
       admin: { description: { pt: 'Telefone, e-mail, endereço e redes ao lado do formulário.', en: 'Phone, e-mail, address and socials beside the form.' } },
     },
+    {
+      /* ⚠️ As duas formas não são estilo: são markups diferentes do legado.
+       *
+       * `panel` é a composição de /contato — rota **nova** (D-10), sem gabarito,
+       * montada em MIG-053 a partir da faixa da home. `photo` é o porte fiel de
+       * `App.tsx:2288`: quatro campos em vez de três mais textarea, botão
+       * alinhado à direita, e um cartão com foto de fundo no lugar do painel de
+       * gradiente. A home só fecha o aceite com a segunda. */
+      name: 'variant',
+      type: 'select',
+      defaultValue: 'panel',
+      options: [
+        { value: 'panel', label: { pt: 'Cartão de gradiente', en: 'Gradient card' } },
+        { value: 'photo', label: { pt: 'Cartão com foto', en: 'Photo card' } },
+      ],
+      label: { pt: 'Forma do cartão', en: 'Card shape' },
+    },
+    {
+      name: 'photo',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Foto de fundo do cartão', en: 'Card background photo' },
+      admin: { condition: (_, irmaos) => irmaos?.variant === 'photo' },
+    },
     ...camposComuns,
   ],
 }
@@ -1192,6 +1216,211 @@ export const FeatureTabs: Block = {
   ],
 }
 
+export const HomeBento: Block = {
+  slug: 'homeBento',
+  labels: { singular: { pt: 'Bento da home', en: 'Home bento' }, plural: { pt: 'Bentos da home', en: 'Home bentos' } },
+  fields: [
+    {
+      /* Cartão largo da esquerda (`App.tsx:1151`): ecossistema de parceiros. */
+      name: 'partnerCard',
+      type: 'group',
+      label: { pt: 'Cartão de parceiros', en: 'Partners card' },
+      fields: [
+        { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
+        { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+        {
+          name: 'items',
+          type: 'array',
+          maxRows: 3,
+          label: { pt: 'Provedores', en: 'Providers' },
+          fields: [
+            { name: 'name', type: 'text', required: true, label: { pt: 'Nome', en: 'Name' } },
+            { name: 'subtitle', type: 'text', localized: true, label: { pt: 'Nível', en: 'Tier' } },
+            { name: 'logo', type: 'upload', relationTo: 'media', label: { pt: 'Logo', en: 'Logo' } },
+          ],
+        },
+      ],
+    },
+    {
+      /* Cartão da direita (`App.tsx:1218`): selos GPTW e LIPT. */
+      name: 'sealsCard',
+      type: 'group',
+      label: { pt: 'Cartão de selos', en: 'Seals card' },
+      fields: [
+        { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
+        { name: 'counter', type: 'text', label: { pt: 'Número', en: 'Counter' }, admin: { description: { pt: 'Ex.: 5x', en: 'E.g. 5x' } } },
+        { name: 'title', type: 'text', localized: true, label: { pt: 'Título ao lado do número', en: 'Title beside the counter' } },
+        { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+        { name: 'badge', type: 'text', localized: true, label: { pt: 'Etiqueta âmbar', en: 'Amber badge' } },
+        { name: 'footnote', type: 'text', localized: true, label: { pt: 'Rodapé do cartão', en: 'Card footnote' } },
+        { name: 'seals', type: 'upload', relationTo: 'media', hasMany: true, label: { pt: 'Selos', en: 'Seals' } },
+      ],
+    },
+    {
+      /* ⚠️ Os quatro números ficam **aqui**, e não no global `site-settings`.
+       *
+       * A home diz 150+ profissionais e 20+ clientes; /sobre diz 140+ e 30+
+       * (`About.tsx` contra `App.tsx:1336`). Ligar os dois ao mesmo global
+       * consertaria a divergência de passagem — e ela é P-01, decisão de
+       * conteúdo, não de quem migra (D-22). */
+      name: 'metrics',
+      type: 'array',
+      label: { pt: 'Números', en: 'Metrics' },
+      fields: [
+        campoDeIcone,
+        { name: 'tag', type: 'text', required: true, localized: true, label: { pt: 'Etiqueta', en: 'Tag' } },
+        { name: 'value', type: 'text', required: true, label: { pt: 'Número', en: 'Value' } },
+        { name: 'label', type: 'text', required: true, localized: true, label: { pt: 'Legenda', en: 'Label' } },
+        {
+          name: 'color',
+          type: 'select',
+          defaultValue: 'primary',
+          options: [
+            { value: 'primary', label: { pt: 'Azul', en: 'Blue' } },
+            { value: 'secondary', label: { pt: 'Laranja', en: 'Orange' } },
+          ],
+          label: { pt: 'Cor', en: 'Colour' },
+        },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const CaseCarousel: Block = {
+  slug: 'caseCarousel',
+  labels: { singular: { pt: 'Carrossel de cases', en: 'Case carousel' }, plural: { pt: 'Carrosséis de cases', en: 'Case carousels' } },
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
+    { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto ao lado do título', en: 'Text beside the title' } },
+    { name: 'readLabel', type: 'text', localized: true, label: { pt: 'Texto do link no cartão', en: 'Card link label' } },
+    {
+      name: 'cta',
+      type: 'group',
+      label: { pt: 'Botão do cabeçalho', en: 'Header button' },
+      fields: [
+        { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+      ],
+    },
+    {
+      /* ⚠️ Os cartões trazem o **próprio** texto em vez de sair da collection
+       * `cases`, e isso é deliberado: o quinto card do gabarito
+       * (`App.tsx:1660`) anuncia um case da RD Saúde que não existe, apontando
+       * para o slug do Banco ABC. Puxar da collection sumiria com o cartão ou
+       * mostraria o case errado — os dois resolvem P-11 por conta própria, e
+       * P-11 é decisão de conteúdo. Some quando ela for respondida. */
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Cartões', en: 'Cards' },
+      fields: [
+        campoDeIcone,
+        { name: 'company', type: 'text', required: true, localized: true, label: { pt: 'Cliente', en: 'Client' } },
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
+        { name: 'href', type: 'text', required: true, label: { pt: 'Destino', en: 'Target' } },
+        { name: 'image', type: 'upload', relationTo: 'media', label: { pt: 'Imagem', en: 'Image' } },
+        {
+          /* Cor de fundo do cartão de texto. Os cinco do gabarito são tons de
+           * azul diferentes, escolhidos um a um (`App.tsx:1620` em diante). */
+          name: 'color',
+          type: 'text',
+          required: true,
+          label: { pt: 'Cor do cartão', en: 'Card colour' },
+          admin: { description: { pt: 'Hexadecimal, ex.: #2A75C5.', en: 'Hex, e.g. #2A75C5.' } },
+        },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const TestimonialCarousel: Block = {
+  slug: 'testimonialCarousel',
+  labels: { singular: { pt: 'Carrossel de depoimentos', en: 'Testimonial carousel' }, plural: { pt: 'Carrosséis de depoimentos', en: 'Testimonial carousels' } },
+  fields: [
+    { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Depoimentos', en: 'Testimonials' },
+      fields: [
+        { name: 'text', type: 'textarea', required: true, localized: true, label: { pt: 'Depoimento', en: 'Quote' } },
+        { name: 'client', type: 'text', required: true, label: { pt: 'Empresa', en: 'Company' } },
+        { name: 'role', type: 'text', required: true, localized: true, label: { pt: 'Cargo', en: 'Role' } },
+        { name: 'avatar', type: 'upload', relationTo: 'media', label: { pt: 'Foto', en: 'Photo' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
+export const ContentTeaser: Block = {
+  slug: 'contentTeaser',
+  labels: { singular: { pt: 'Vitrine de conteúdo', en: 'Content teaser' }, plural: { pt: 'Vitrines de conteúdo', en: 'Content teasers' } },
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
+    { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    {
+      /* ⚠️ Os quatro cartões pequenos do gabarito (`App.tsx:2200`) são
+       * **fixture**: título inventado, capa do picsum e `href="#"`. Não saem das
+       * collections porque a home do legado não os liga a nada. Ligar em
+       * `/blog` e `/insights` é melhoria, e melhoria não entra com migração
+       * (D-15) — vira task depois do aceite. */
+      name: 'cards',
+      type: 'array',
+      label: { pt: 'Cartões', en: 'Cards' },
+      fields: [
+        campoDeIcone,
+        { name: 'category', type: 'text', required: true, localized: true, label: { pt: 'Categoria', en: 'Category' } },
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+        { name: 'image', type: 'upload', relationTo: 'media', label: { pt: 'Capa', en: 'Cover' } },
+        {
+          name: 'column',
+          type: 'select',
+          required: true,
+          defaultValue: 'first',
+          options: [
+            { value: 'first', label: { pt: 'Coluna 1 (sob o texto)', en: 'Column 1 (below the text)' } },
+            { value: 'second', label: { pt: 'Coluna 2', en: 'Column 2' } },
+          ],
+          label: { pt: 'Coluna', en: 'Column' },
+        },
+      ],
+    },
+    {
+      name: 'featured',
+      type: 'group',
+      label: { pt: 'Cartão em destaque', en: 'Featured card' },
+      fields: [
+        { name: 'category', type: 'text', localized: true, label: { pt: 'Categoria', en: 'Category' } },
+        { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'ctaLabel', type: 'text', localized: true, label: { pt: 'Texto do botão', en: 'Button label' } },
+        { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+        { name: 'image', type: 'upload', relationTo: 'media', label: { pt: 'Capa', en: 'Cover' } },
+      ],
+    },
+    {
+      name: 'newsletter',
+      type: 'group',
+      label: { pt: 'Caixa de inscrição', en: 'Subscribe box' },
+      fields: [
+        { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'placeholder', type: 'text', localized: true, label: { pt: 'Texto do campo', en: 'Input placeholder' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
 export const BLOCOS = [
   PageHero,
   StickyPageNav,
@@ -1214,4 +1443,8 @@ export const BLOCOS = [
   HomeHero,
   LogoMarquee,
   FeatureTabs,
+  HomeBento,
+  CaseCarousel,
+  TestimonialCarousel,
+  ContentTeaser,
 ]

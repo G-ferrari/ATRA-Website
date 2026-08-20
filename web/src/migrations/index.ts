@@ -29,6 +29,8 @@ import * as migration_20260820_100711_mig_050a_value_cards_highlight from './202
 import * as migration_20260820_105242_mig_054a_partner_blocks from './20260820_105242_mig_054a_partner_blocks';
 import * as migration_20260820_113453_mig_057_home_blocks from './20260820_113453_mig_057_home_blocks';
 import * as migration_20260820_113912_mig_057_logo_marquee_list from './20260820_113912_mig_057_logo_marquee_list';
+import * as migration_20260820_120441_mig_058_home_blocks from './20260820_120441_mig_058_home_blocks';
+import * as migration_20260820_121347_mig_058_cta_photo from './20260820_121347_mig_058_cta_photo';
 
 export const migrations = [
   {
@@ -184,6 +186,16 @@ export const migrations = [
   {
     up: migration_20260820_113912_mig_057_logo_marquee_list.up,
     down: migration_20260820_113912_mig_057_logo_marquee_list.down,
-    name: '20260820_113912_mig_057_logo_marquee_list'
+    name: '20260820_113912_mig_057_logo_marquee_list',
+  },
+  {
+    up: migration_20260820_120441_mig_058_home_blocks.up,
+    down: migration_20260820_120441_mig_058_home_blocks.down,
+    name: '20260820_120441_mig_058_home_blocks',
+  },
+  {
+    up: migration_20260820_121347_mig_058_cta_photo.up,
+    down: migration_20260820_121347_mig_058_cta_photo.down,
+    name: '20260820_121347_mig_058_cta_photo'
   },
 ];

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-import { aleatorio, congelado } from '@/lib/e2e'
+import { aleatorio, congelado, reiniciarAleatorio } from '@/lib/e2e'
 
 /* Campo de partículas do herói da home — porte de
  * `legacy/src/components/aether-flow-hero.tsx:23` (a classe) e `:165` (o laço).
@@ -100,6 +100,8 @@ export function CampoDeParticulas() {
     const mouse = { x: null as number | null, y: null as number | null, raio: 160 }
 
     const aoRedimensionar = () => {
+      // Ver a nota em `lib/e2e.ts`: sem reiniciar, cada resize dá outra nuvem.
+      reiniciarAleatorio()
       const largura = container.clientWidth
       const altura = container.clientHeight
       canvas.width = largura

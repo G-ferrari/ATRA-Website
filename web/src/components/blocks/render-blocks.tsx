@@ -13,12 +13,16 @@ import { BlocoEtapas } from './bloco-etapas'
 import { BlocoContato } from './bloco-contato'
 import { BlocoParaQuem } from './bloco-para-quem'
 import { BlocoAbasDeDestaque } from './bloco-abas-de-destaque'
+import { BlocoBentoDaHome } from './bloco-bento-da-home'
+import { BlocoCarrosselDeCases } from './bloco-carrossel-de-cases'
+import { BlocoDepoimentos } from './bloco-depoimentos'
 import { BlocoFaixaDeLogos } from './bloco-faixa-de-logos'
 import { BlocoHomeHero } from './bloco-home-hero'
 import { BlocoParceiroHero } from './bloco-parceiro-hero'
 import { BlocoParceiroSecao } from './bloco-parceiro-secao'
 import { BlocoParceiros } from './bloco-parceiros'
 import { BlocoVagas } from './bloco-vagas'
+import { BlocoVitrineDeConteudo } from './bloco-vitrine-de-conteudo'
 import { BlocoSelos } from './bloco-selos'
 import { BlocoTexto } from './bloco-texto'
 import { BlocoValores } from './bloco-valores'
@@ -76,6 +80,14 @@ export function RenderBlocks({ blocos, locale }: { blocos: Bloco[]; locale: Loca
             return <BlocoFaixaDeLogos key={b.id} bloco={b} />
           case 'featureTabs':
             return <BlocoAbasDeDestaque key={b.id} bloco={b} />
+          case 'homeBento':
+            return <BlocoBentoDaHome key={b.id} bloco={b} />
+          case 'caseCarousel':
+            return <BlocoCarrosselDeCases key={b.id} bloco={b} />
+          case 'testimonialCarousel':
+            return <BlocoDepoimentos key={b.id} bloco={b} />
+          case 'contentTeaser':
+            return <BlocoVitrineDeConteudo key={b.id} bloco={b} />
         }
       })}
     </>
