@@ -368,3 +368,57 @@ export type Seo = {
   image: Image | null
   noIndex: boolean
 }
+
+/* Navegação do topo (MIG-072a). O componente do menu recebe isto pronto: a
+ * casca é ilha cliente, e ilha cliente não busca dado. */
+
+export type CorDeDestaque =
+  | 'primary' | 'emerald' | 'purple' | 'indigo' | 'pink' | 'orange' | 'blue' | 'amber'
+
+export type AtalhoDoMenu = {
+  icon: string
+  label: string
+  description: string
+  href: string
+}
+
+export type DestaqueDoMenu = {
+  icon: string
+  color: CorDeDestaque
+  title: string
+  description: string
+}
+
+export type CartaoDoMenu = {
+  icon: string | null
+  title: string
+  bullets: string[]
+  ctaLabel: string | null
+  href: string
+}
+
+/** Uma solução no painel, agrupada pela categoria do mega-menu. */
+export type GrupoDeSolucoes = {
+  title: string
+  items: { title: string; description: string; icon: string; href: string | null }[]
+}
+
+export type CategoriaDoMenu = {
+  label: string
+  /** `null` quando a categoria só abre o painel — Soluções e Parceiros. */
+  href: string | null
+  panel: 'solutions' | 'partners' | 'links' | 'split'
+  links: AtalhoDoMenu[]
+  intro: string | null
+  highlights: DestaqueDoMenu[]
+  card: CartaoDoMenu | null
+}
+
+/** Tudo que o cabeçalho precisa, resolvido no servidor. */
+export type Navegacao = {
+  categorias: CategoriaDoMenu[]
+  solucoes: GrupoDeSolucoes[]
+  parceiros: PartnerBadge[]
+  /** Descrição de cada parceiro, para o painel — o `PartnerBadge` não a carrega. */
+  descricoesDeParceiro: Record<string, string>
+}

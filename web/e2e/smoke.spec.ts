@@ -229,6 +229,95 @@ test.describe('app novo', () => {
     })
   })
 
+  /* Megamenu (MIG-072a). Os painéis só existem com o menu aberto, então a
+     regressão visual — que captura o estado fechado — não os cobre. É aqui. */
+  test.describe('megamenu', () => {
+    const CATEGORIAS = ['Soluções', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre', 'Glossário']
+
+    /* As categorias e o rótulo do rodapé têm o mesmo texto, então todo locator
+       aqui é escopado no `<nav>`. A fileira é `hidden md:flex`: no celular a
+       navegação é a gaveta, testada por último. */
+    /* ⚠️ Não dá para usar `isMobile`: os três projetos rodam com o mesmo
+       `devices['Desktop Chrome']` e só trocam o viewport, então `isMobile` é
+       falso nos três. A largura é o que separa a fileira da gaveta. */
+    const noCelular = (page: import('@playwright/test').Page) => (page.viewportSize()?.width ?? 0) < 768
+
+    /* A fileira do desktop e a gaveta do celular coexistem no DOM — uma é
+       escondida por CSS — então todo rótulo aparece duas vezes e um locator por
+       texto vira violação de strict mode. Por isso cada teste entra pela região
+       que lhe interessa. */
+    const abrirMenu = async (page: import('@playwright/test').Page) => {
+      await page.goto(`${NEXT_URL}/glossario`)
+      await page.getByRole('button', { name: 'Abrir menu' }).click()
+      return page.getByTestId('menu-categorias')
+    }
+
+    test('abre com as 7 categorias e o painel de soluções', async ({ page }) => {
+      test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
+      const fileira = await abrirMenu(page)
+
+      for (const c of CATEGORIAS) {
+        await expect(fileira.getByRole('link', { name: c, exact: true })).toBeVisible()
+      }
+
+      /* Hover explícito: o painel abre em Soluções, mas depois do clique o
+         ponteiro fica no meio da barra — em cima de outra categoria — e o
+         `onMouseEnter` troca o painel, como no legado. */
+      await fileira.getByRole('link', { name: 'Soluções', exact: true }).hover()
+      const painel = page.getByRole('navigation')
+      for (const grupo of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
+        await expect(painel.getByRole('button', { name: grupo })).toBeVisible()
+      }
+      await expect(painel.getByRole('link', { name: /Inteligência Artificial & IA Generativa/ })).toHaveAttribute(
+        'href',
+        '/solucoes/inteligencia-artificial',
+      )
+    })
+
+    /* O painel de parceiros lê a collection, não uma lista digitada no global —
+       é o que impede o menu de discordar do resto do site. */
+    test('o painel de parceiros vem da collection', async ({ page }) => {
+      test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
+      const fileira = await abrirMenu(page)
+      await fileira.getByRole('link', { name: 'Parceiros', exact: true }).hover()
+
+      const painel = page.getByTestId('painel-parceiros')
+      await expect(painel).toBeVisible()
+      // Os 8 do catálogo; o 9º do legado depende de P-10.
+      await expect(painel.locator('a[href^="/parceiros/"]')).toHaveCount(8)
+    })
+
+    test('o painel de texto + cartão mostra destaques e chamada', async ({ page }) => {
+      test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
+      const fileira = await abrirMenu(page)
+      await fileira.getByRole('link', { name: 'Sobre', exact: true }).hover()
+
+      const painel = page.getByRole('navigation')
+      await expect(painel.getByText('Segurança de Dados')).toBeVisible()
+      await expect(painel.getByRole('link', { name: /Conhecer Nossa História/ })).toBeVisible()
+    })
+
+    test('no celular vira gaveta, e só as categorias com lista expandem', async ({ page }) => {
+      test.skip(!noCelular(page), 'a gaveta é `md:hidden`')
+      await page.goto(`${NEXT_URL}/glossario`)
+      await page.getByRole('button', { name: 'Abrir menu' }).click()
+
+      const gaveta = page.getByTestId('menu-gaveta')
+      await expect(gaveta).toBeVisible()
+      for (const c of CATEGORIAS) {
+        await expect(gaveta.getByRole('link', { name: c, exact: true })).toBeVisible()
+      }
+      /* ⚠️ `dispatchEvent`, e não `click()`: a barra fecha o menu no
+         `onMouseLeave`, e a gaveta é **irmã** dela — mover o ponteiro para
+         dentro da gaveta fecha tudo antes do clique chegar. O legado tem o
+         mesmo defeito (`App.tsx:324`), então foi portado assim; ver
+         debito-tecnico.md. Num aparelho de toque não há hover e o problema não
+         existe, que é por onde a gaveta é usada de verdade. */
+      await gaveta.getByRole('link', { name: 'Soluções', exact: true }).dispatchEvent('click')
+      await expect(gaveta.getByText('Inovação & IA')).toBeVisible()
+    })
+  })
+
   test('admin do Payload responde', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/admin`)
     expect(r.status()).toBe(200)

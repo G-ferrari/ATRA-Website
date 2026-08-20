@@ -7,6 +7,9 @@ import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { LOCALES, isLocale } from '@/lib/locales'
+import { toNavegacao } from '@/lib/mappers/navigation'
+import { getPayload } from '@/lib/payload'
+import { hrefDe } from '@/lib/routes'
 import '../globals.css'
 
 /* D-16: Mona Sans pela MESMA build que o legado consome.
@@ -47,6 +50,39 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   const locale = await getLocale()
   if (!isLocale(locale)) notFound()
 
+  /* O menu é ilha cliente e não busca dado (blocos.md, regra 1): o layout
+   * resolve as três fontes e entrega pronto. `select` em cada consulta porque
+   * o menu só precisa do cartão — sem ele, `solutions` arrasta um join por
+   * tipo de bloco e o cabeçalho passa a custar dezenas de segundos. */
+  const payload = await getPayload()
+  const [navGlobal, solucoes, parceiros] = await Promise.all([
+    payload.findGlobal({ slug: 'navigation', locale, depth: 0 }),
+    payload.find({
+      collection: 'solutions',
+      locale,
+      depth: 0,
+      limit: 100,
+      sort: 'order',
+      select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true },
+    }),
+    payload.find({
+      collection: 'partners',
+      locale,
+      depth: 1,
+      limit: 100,
+      sort: 'order',
+      select: { name: true, slug: true, logo: true, logoScale: true, description: true },
+    }),
+  ])
+
+  const navegacao = toNavegacao({
+    global: navGlobal,
+    solucoes: solucoes.docs,
+    parceiros: parceiros.docs,
+    locale,
+    hrefDaSolucao: (slug) => hrefDe('solucoes', locale, slug),
+  })
+
   return (
     /* `dark` no servidor: o legado inicia no tema escuro (App.tsx:2571) e a
      * regressão visual compara os dois. Aplicar por efeito no cliente causaria
@@ -65,7 +101,7 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
         * como no `index.html` dele, e as classes de casca vivem no wrapper. */}
       <body>
         <div className="bg-surface-1 font-sans selection:bg-primary/30 flex flex-col transition-colors duration-500 min-h-screen">
-          <SiteHeader locale={locale} />
+          <SiteHeader locale={locale} navegacao={navegacao} />
           <div className="flex-1 flex flex-col min-h-0">{children}</div>
           <SiteFooter locale={locale} />
           <ThemeToggle locale={locale} />

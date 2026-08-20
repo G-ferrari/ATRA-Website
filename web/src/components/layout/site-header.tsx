@@ -2,26 +2,44 @@
 
 import { ArrowRight, ChevronDown, Menu, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-import { CATEGORIAS, LOGO_ATRA, TEXTOS_CASCA } from '@/lib/navegacao'
+import { Icone } from '@/components/blocks/icones'
+import { PainelDoMenu } from '@/components/layout/mega-menu'
+import { LOGO_ATRA, TEXTOS_CASCA } from '@/lib/navegacao'
+import { hrefDe } from '@/lib/routes'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
+import type { CategoriaDoMenu, Navegacao } from '@/types/content'
 
-/* Menu fixo do topo — porte de `legacy/src/App.tsx:278`.
+/* Menu fixo do topo — porte de `legacy/src/App.tsx:278`, com os 7 painéis do
+ * megamenu e a gaveta mobile (MIG-072a).
  *
- * Fica só a casca: logo, botão Menu, fileira de categorias e "Fale Conosco".
- * Os 7 painéis de megamenu (635 linhas de layout sob medida, uma por categoria)
- * ficam para MIG-072, junto com o global `navigation` que os alimenta —
- * escrevê-los à mão agora seria construir a navegação hardcoded que a migração
- * existe para eliminar, e apontando para rotas que só nascem na Fase 3. */
+ * Ilha cliente porque abrir, fechar e trocar de categoria é estado. **Não busca
+ * dado**: o `navegacao` chega resolvido pelo layout (blocos.md, regra 1).
+ *
+ * ⚠️ O estado **fechado** não mudou nesta task, de propósito: é ele que aparece
+ * em toda captura da regressão visual, e mexer nele obrigaria a regravar os 9
+ * gabaritos. Os painéis só existem depois do clique. */
 
-export function SiteHeader({ locale }: { locale: Locale }) {
+export function SiteHeader({ locale, navegacao }: { locale: Locale; navegacao: Navegacao }) {
   const t = TEXTOS_CASCA[locale]
   const [rolou, setRolou] = useState(false)
   const [aberto, setAberto] = useState(false)
   const [categoriaAtiva, setCategoriaAtiva] = useState<string | null>(null)
+  const [gavetaAberta, setGavetaAberta] = useState<string | null>(null)
+
+  const categorias = navegacao.categorias
+  /* O legado abre já com Soluções selecionada (`App.tsx:283`), então o painel
+   * nunca aparece vazio. */
+  const ativa = categorias.find((c) => c.label === categoriaAtiva) ?? categorias[0]
+  const fechar = () => {
+    setAberto(false)
+    setCategoriaAtiva(null)
+    setGavetaAberta(null)
+  }
 
   useEffect(() => {
     const aoRolar = () => setRolou(window.scrollY > 20)
@@ -48,10 +66,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
               ? 'bg-surface-2 shadow-md py-2 md:py-2 text-text-main'
               : 'bg-transparent py-3 md:py-3 text-text-main dark:text-white',
         )}
-        onMouseLeave={() => {
-          setAberto(false)
-          setCategoriaAtiva(null)
-        }}
+        onMouseLeave={fechar}
       >
         <div className="w-full flex items-center justify-between relative">
           <Link href={prefixo || '/'} className="flex items-center gap-2" onClick={() => setAberto(false)}>
@@ -68,7 +83,13 @@ export function SiteHeader({ locale }: { locale: Locale }) {
             />
           </Link>
 
-          <div className="flex items-center absolute left-1/2 -translate-x-1/2 h-full pointer-events-auto">
+          {/* ⚠️ O marcador vai aqui, e não no `motion.div` de dentro: o
+              `motion/react` filtra `data-*` e o atributo nunca chega ao DOM —
+              custou uma rodada inteira de testes a descobrir. */}
+          <div
+            data-testid="menu-categorias"
+            className="flex items-center absolute left-1/2 -translate-x-1/2 h-full pointer-events-auto"
+          >
             <AnimatePresence mode="wait">
               {!aberto ? (
                 <motion.button
@@ -94,16 +115,16 @@ export function SiteHeader({ locale }: { locale: Locale }) {
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   className="hidden md:flex items-center gap-3.5"
                 >
-                  {CATEGORIAS.map((categoria) => {
-                    const rotulo = categoria.label[locale]
-                    const selecionada = categoriaAtiva === rotulo
+                  {categorias.map((categoria) => {
+                    const rotulo = categoria.label
+                    const selecionada = ativa?.label === rotulo
                     return (
                       <div key={rotulo} className="relative py-1">
                         <Link
-                          href={categoria.href === '#' ? '#' : `${prefixo}${categoria.href}`}
+                          href={categoria.href ? `${prefixo}${categoria.href}` : '#'}
                           onClick={(e) => {
-                            if (categoria.href === '#') e.preventDefault()
-                            else setAberto(false)
+                            if (!categoria.href) e.preventDefault()
+                            else fechar()
                           }}
                           onMouseEnter={() => setCategoriaAtiva(rotulo)}
                           className={cn(
@@ -148,7 +169,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
               <button
                 type="button"
                 className="p-2 rounded-[6px] hover:bg-slate-100 dark:hover:bg-slate-800 text-text-main md:hidden cursor-pointer"
-                onClick={() => setAberto(false)}
+                onClick={fechar}
                 aria-label={t.fecharMenu}
               >
                 <X size={20} aria-hidden />
@@ -156,7 +177,172 @@ export function SiteHeader({ locale }: { locale: Locale }) {
             )}
           </div>
         </div>
+
+        {/* Painel da categoria ativa. `hidden md:block` porque no celular a
+            navegação é a gaveta abaixo, não o painel (`App.tsx:455`). */}
+        <AnimatePresence>
+          {aberto && ativa && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="hidden md:block w-full mt-4 overflow-hidden border-t border-slate-100 dark:border-white/5 pt-4"
+            >
+              <PainelDoMenu categoria={ativa} navegacao={navegacao} locale={locale} aoNavegar={fechar} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
+      {/* Gaveta do celular: cartão separado abaixo da barra (`App.tsx:920`). */}
+      <AnimatePresence>
+        {aberto && (
+          <motion.div
+            initial={{ opacity: 0, y: -12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="pointer-events-auto w-full max-w-lg mt-2 bg-surface-2 border border-slate-200/80 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden relative z-40 mx-auto md:hidden max-h-[82vh] flex flex-col"
+          >
+            <div data-testid="menu-gaveta" className="overflow-y-auto no-scrollbar p-4 space-y-1.5 flex-1">
+              {categorias.map((categoria) => {
+                /* Só as categorias que têm o que listar expandem. No legado são
+                   Soluções, Insights e Parceiros — aqui sai do formato do
+                   painel, então uma categoria nova acerta sozinha. */
+                const expansivel = categoria.panel !== 'split'
+                const expandida = gavetaAberta === categoria.label
+
+                return (
+                  <div key={categoria.label} className="flex flex-col rounded-lg overflow-hidden">
+                    <div
+                      className="flex items-center justify-between py-3 px-3.5 hover:bg-slate-100 dark:hover:bg-white/5 active:bg-slate-200/60 dark:active:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                      onClick={() => (expansivel ? setGavetaAberta(expandida ? null : categoria.label) : fechar())}
+                    >
+                      <Link
+                        href={categoria.href ? `${prefixo}${categoria.href}` : '#'}
+                        className="text-sm font-semibold text-text-main capitalize tracking-wide flex items-center gap-2.5"
+                        onClick={(e) => {
+                          if (expansivel || !categoria.href) e.preventDefault()
+                        }}
+                      >
+                        {categoria.label}
+                      </Link>
+                      {expansivel && (
+                        <div className="p-1 rounded-md text-text-muted">
+                          <ChevronDown
+                            size={18}
+                            aria-hidden
+                            className={cn('transition-transform duration-200', expandida && 'rotate-180 text-primary')}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {expansivel && expandida && (
+                      <div className="overflow-hidden bg-surface-1/60 dark:bg-surface-1/40 rounded-lg mx-1 mb-2 border border-slate-200/50 dark:border-white/5">
+                        <div className="p-2.5 grid grid-cols-1 gap-1.5">
+                          <ItensDaGaveta
+                            categoria={categoria}
+                            navegacao={navegacao}
+                            locale={locale}
+                            aoNavegar={fechar}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
+  )
+}
+
+/* Lista compacta de cada categoria expansível na gaveta (`App.tsx:977`).
+ *
+ * Em Soluções o legado mostra **uma linha por categoria de solução**, usando a
+ * primeira solução de cada uma para ícone, destino e descrição
+ * (`App.tsx:983-992`) — não uma linha por solução. Portado assim. */
+function ItensDaGaveta({
+  categoria,
+  navegacao,
+  locale,
+  aoNavegar,
+}: {
+  categoria: CategoriaDoMenu
+  navegacao: Navegacao
+  locale: Locale
+  aoNavegar: () => void
+}) {
+  const linha =
+    'text-text-main hover:text-primary font-medium py-2 px-3 flex items-center gap-3 bg-surface-2/80 hover:bg-surface-2 rounded-lg hover:shadow-xs transition-all active:scale-[0.99]'
+  const caixa = 'w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary shrink-0'
+
+  if (categoria.panel === 'solutions') {
+    return (
+      <>
+        {navegacao.solucoes.map((grupo) => {
+          const primeira = grupo.items[0]
+          if (!primeira) return null
+          const conteudo = (
+            <>
+              <div className={caixa}>
+                <Icone nome={primeira.icon} size={18} />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold capitalize tracking-wide leading-tight">{grupo.title}</span>
+                <span className="text-[10px] text-text-muted leading-tight mt-0.5 line-clamp-1">
+                  {primeira.description}
+                </span>
+              </div>
+            </>
+          )
+          return primeira.href ? (
+            <Link key={grupo.title} href={primeira.href} className={cn(linha, 'py-2.5')} onClick={aoNavegar}>
+              {conteudo}
+            </Link>
+          ) : (
+            <div key={grupo.title} className={cn(linha, 'py-2.5 cursor-default')}>
+              {conteudo}
+            </div>
+          )
+        })}
+      </>
+    )
+  }
+
+  if (categoria.panel === 'partners') {
+    return (
+      <>
+        {navegacao.parceiros.map((p) => (
+          <Link key={p.slug} href={hrefDe('parceiros', locale, p.slug)} className={linha} onClick={aoNavegar}>
+            <div className="w-8 h-8 rounded-md bg-white dark:bg-white/10 flex items-center justify-center text-primary shrink-0 p-1 relative">
+              {p.logo && <Image src={p.logo.url} alt={p.logo.alt} fill sizes="32px" className="object-contain p-1" />}
+            </div>
+            <span className="text-xs font-semibold capitalize tracking-wide leading-tight">{p.name}</span>
+          </Link>
+        ))}
+      </>
+    )
+  }
+
+  return (
+    <>
+      {categoria.links.map((l) => (
+        <Link key={l.href} href={l.href} className={linha} onClick={aoNavegar}>
+          <div className={caixa}>
+            <Icone nome={l.icon} size={18} />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs font-semibold capitalize tracking-wide leading-tight">{l.label}</span>
+            <span className="text-[10px] text-text-muted leading-tight line-clamp-1">{l.description}</span>
+          </div>
+        </Link>
+      ))}
+    </>
   )
 }

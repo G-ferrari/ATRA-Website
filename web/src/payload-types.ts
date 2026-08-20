@@ -112,9 +112,11 @@ export interface Config {
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
   globals: {
+    navigation: Navigation;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: 'pt' | 'en';
@@ -472,7 +474,18 @@ export interface Partner {
                 | 'cpu'
                 | 'shield-check'
                 | 'trending-up'
-                | 'arrow-up-right';
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
               title: string;
               /**
                * Left empty, the card renders compact and centred.
@@ -518,7 +531,18 @@ export interface Partner {
                 | 'cpu'
                 | 'shield-check'
                 | 'trending-up'
-                | 'arrow-up-right';
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
               glowColor?: ('blue' | 'orange') | null;
               title: string;
               description: string;
@@ -625,6 +649,17 @@ export interface Partner {
                   | 'shield-check'
                   | 'trending-up'
                   | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
                 )
               | null;
             title: string;
@@ -657,7 +692,18 @@ export interface Partner {
                 | 'cpu'
                 | 'shield-check'
                 | 'trending-up'
-                | 'arrow-up-right';
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
               accent?: ('primary' | 'secondary') | null;
               /**
                * E.g. 01 / DIAGNOSIS.
@@ -711,6 +757,17 @@ export interface Partner {
                   | 'shield-check'
                   | 'trending-up'
                   | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
                 )
               | null;
             title: string;
@@ -741,6 +798,17 @@ export interface Partner {
                     | 'shield-check'
                     | 'trending-up'
                     | 'arrow-up-right'
+                    | 'star'
+                    | 'file-text'
+                    | 'newspaper'
+                    | 'video'
+                    | 'book'
+                    | 'briefcase'
+                    | 'graduation-cap'
+                    | 'heart'
+                    | 'info'
+                    | 'user-check'
+                    | 'building'
                   )
                 | null;
               badge?: string | null;
@@ -793,6 +861,17 @@ export interface Partner {
                     | 'shield-check'
                     | 'trending-up'
                     | 'arrow-up-right'
+                    | 'star'
+                    | 'file-text'
+                    | 'newspaper'
+                    | 'video'
+                    | 'book'
+                    | 'briefcase'
+                    | 'graduation-cap'
+                    | 'heart'
+                    | 'info'
+                    | 'user-check'
+                    | 'building'
                   )
                 | null;
               id?: string | null;
@@ -835,6 +914,17 @@ export interface Partner {
                   | 'shield-check'
                   | 'trending-up'
                   | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
                 )
               | null;
             title: string;
@@ -864,7 +954,18 @@ export interface Partner {
                 | 'cpu'
                 | 'shield-check'
                 | 'trending-up'
-                | 'arrow-up-right';
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
               accent?: ('primary' | 'secondary') | null;
               title: string;
               description: string;
@@ -908,6 +1009,17 @@ export interface Partner {
                   | 'shield-check'
                   | 'trending-up'
                   | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
                 )
               | null;
             title: string;
@@ -936,6 +1048,17 @@ export interface Partner {
                     | 'shield-check'
                     | 'trending-up'
                     | 'arrow-up-right'
+                    | 'star'
+                    | 'file-text'
+                    | 'newspaper'
+                    | 'video'
+                    | 'book'
+                    | 'briefcase'
+                    | 'graduation-cap'
+                    | 'heart'
+                    | 'info'
+                    | 'user-check'
+                    | 'building'
                   )
                 | null;
               title?: string | null;
@@ -1406,7 +1529,18 @@ export interface Page {
             | 'cpu'
             | 'shield-check'
             | 'trending-up'
-            | 'arrow-up-right';
+            | 'arrow-up-right'
+            | 'star'
+            | 'file-text'
+            | 'newspaper'
+            | 'video'
+            | 'book'
+            | 'briefcase'
+            | 'graduation-cap'
+            | 'heart'
+            | 'info'
+            | 'user-check'
+            | 'building';
           title: string;
           /**
            * Left empty, the card renders compact and centred.
@@ -1452,7 +1586,18 @@ export interface Page {
             | 'cpu'
             | 'shield-check'
             | 'trending-up'
-            | 'arrow-up-right';
+            | 'arrow-up-right'
+            | 'star'
+            | 'file-text'
+            | 'newspaper'
+            | 'video'
+            | 'book'
+            | 'briefcase'
+            | 'graduation-cap'
+            | 'heart'
+            | 'info'
+            | 'user-check'
+            | 'building';
           glowColor?: ('blue' | 'orange') | null;
           title: string;
           description: string;
@@ -1559,6 +1704,17 @@ export interface Page {
               | 'shield-check'
               | 'trending-up'
               | 'arrow-up-right'
+              | 'star'
+              | 'file-text'
+              | 'newspaper'
+              | 'video'
+              | 'book'
+              | 'briefcase'
+              | 'graduation-cap'
+              | 'heart'
+              | 'info'
+              | 'user-check'
+              | 'building'
             )
           | null;
         title: string;
@@ -1591,7 +1747,18 @@ export interface Page {
             | 'cpu'
             | 'shield-check'
             | 'trending-up'
-            | 'arrow-up-right';
+            | 'arrow-up-right'
+            | 'star'
+            | 'file-text'
+            | 'newspaper'
+            | 'video'
+            | 'book'
+            | 'briefcase'
+            | 'graduation-cap'
+            | 'heart'
+            | 'info'
+            | 'user-check'
+            | 'building';
           accent?: ('primary' | 'secondary') | null;
           /**
            * E.g. 01 / DIAGNOSIS.
@@ -1645,6 +1812,17 @@ export interface Page {
               | 'shield-check'
               | 'trending-up'
               | 'arrow-up-right'
+              | 'star'
+              | 'file-text'
+              | 'newspaper'
+              | 'video'
+              | 'book'
+              | 'briefcase'
+              | 'graduation-cap'
+              | 'heart'
+              | 'info'
+              | 'user-check'
+              | 'building'
             )
           | null;
         title: string;
@@ -1675,6 +1853,17 @@ export interface Page {
                 | 'shield-check'
                 | 'trending-up'
                 | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
               )
             | null;
           badge?: string | null;
@@ -1727,6 +1916,17 @@ export interface Page {
                 | 'shield-check'
                 | 'trending-up'
                 | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
               )
             | null;
           id?: string | null;
@@ -1769,6 +1969,17 @@ export interface Page {
               | 'shield-check'
               | 'trending-up'
               | 'arrow-up-right'
+              | 'star'
+              | 'file-text'
+              | 'newspaper'
+              | 'video'
+              | 'book'
+              | 'briefcase'
+              | 'graduation-cap'
+              | 'heart'
+              | 'info'
+              | 'user-check'
+              | 'building'
             )
           | null;
         title: string;
@@ -1798,7 +2009,18 @@ export interface Page {
             | 'cpu'
             | 'shield-check'
             | 'trending-up'
-            | 'arrow-up-right';
+            | 'arrow-up-right'
+            | 'star'
+            | 'file-text'
+            | 'newspaper'
+            | 'video'
+            | 'book'
+            | 'briefcase'
+            | 'graduation-cap'
+            | 'heart'
+            | 'info'
+            | 'user-check'
+            | 'building';
           accent?: ('primary' | 'secondary') | null;
           title: string;
           description: string;
@@ -1842,6 +2064,17 @@ export interface Page {
               | 'shield-check'
               | 'trending-up'
               | 'arrow-up-right'
+              | 'star'
+              | 'file-text'
+              | 'newspaper'
+              | 'video'
+              | 'book'
+              | 'briefcase'
+              | 'graduation-cap'
+              | 'heart'
+              | 'info'
+              | 'user-check'
+              | 'building'
             )
           | null;
         title: string;
@@ -1870,6 +2103,17 @@ export interface Page {
                 | 'shield-check'
                 | 'trending-up'
                 | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
               )
             | null;
           title?: string | null;
@@ -2157,7 +2401,18 @@ export interface Solution {
     | 'cpu'
     | 'shield-check'
     | 'trending-up'
-    | 'arrow-up-right';
+    | 'arrow-up-right'
+    | 'star'
+    | 'file-text'
+    | 'newspaper'
+    | 'video'
+    | 'book'
+    | 'briefcase'
+    | 'graduation-cap'
+    | 'heart'
+    | 'info'
+    | 'user-check'
+    | 'building';
   /**
    * One sentence. Used in the Solutions menu and on the index card.
    */
@@ -2322,7 +2577,18 @@ export interface Solution {
                 | 'cpu'
                 | 'shield-check'
                 | 'trending-up'
-                | 'arrow-up-right';
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
               title: string;
               /**
                * Left empty, the card renders compact and centred.
@@ -2368,7 +2634,18 @@ export interface Solution {
                 | 'cpu'
                 | 'shield-check'
                 | 'trending-up'
-                | 'arrow-up-right';
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
               glowColor?: ('blue' | 'orange') | null;
               title: string;
               description: string;
@@ -2475,6 +2752,17 @@ export interface Solution {
                   | 'shield-check'
                   | 'trending-up'
                   | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
                 )
               | null;
             title: string;
@@ -2507,7 +2795,18 @@ export interface Solution {
                 | 'cpu'
                 | 'shield-check'
                 | 'trending-up'
-                | 'arrow-up-right';
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
               accent?: ('primary' | 'secondary') | null;
               /**
                * E.g. 01 / DIAGNOSIS.
@@ -2561,6 +2860,17 @@ export interface Solution {
                   | 'shield-check'
                   | 'trending-up'
                   | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
                 )
               | null;
             title: string;
@@ -2591,6 +2901,17 @@ export interface Solution {
                     | 'shield-check'
                     | 'trending-up'
                     | 'arrow-up-right'
+                    | 'star'
+                    | 'file-text'
+                    | 'newspaper'
+                    | 'video'
+                    | 'book'
+                    | 'briefcase'
+                    | 'graduation-cap'
+                    | 'heart'
+                    | 'info'
+                    | 'user-check'
+                    | 'building'
                   )
                 | null;
               badge?: string | null;
@@ -2643,6 +2964,17 @@ export interface Solution {
                     | 'shield-check'
                     | 'trending-up'
                     | 'arrow-up-right'
+                    | 'star'
+                    | 'file-text'
+                    | 'newspaper'
+                    | 'video'
+                    | 'book'
+                    | 'briefcase'
+                    | 'graduation-cap'
+                    | 'heart'
+                    | 'info'
+                    | 'user-check'
+                    | 'building'
                   )
                 | null;
               id?: string | null;
@@ -2685,6 +3017,17 @@ export interface Solution {
                   | 'shield-check'
                   | 'trending-up'
                   | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
                 )
               | null;
             title: string;
@@ -2714,7 +3057,18 @@ export interface Solution {
                 | 'cpu'
                 | 'shield-check'
                 | 'trending-up'
-                | 'arrow-up-right';
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
               accent?: ('primary' | 'secondary') | null;
               title: string;
               description: string;
@@ -2758,6 +3112,17 @@ export interface Solution {
                   | 'shield-check'
                   | 'trending-up'
                   | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
                 )
               | null;
             title: string;
@@ -2786,6 +3151,17 @@ export interface Solution {
                     | 'shield-check'
                     | 'trending-up'
                     | 'arrow-up-right'
+                    | 'star'
+                    | 'file-text'
+                    | 'newspaper'
+                    | 'video'
+                    | 'book'
+                    | 'briefcase'
+                    | 'graduation-cap'
+                    | 'heart'
+                    | 'info'
+                    | 'user-check'
+                    | 'building'
                   )
                 | null;
               title?: string | null;
@@ -2943,7 +3319,18 @@ export interface SpecialistRole {
     | 'cpu'
     | 'shield-check'
     | 'trending-up'
-    | 'arrow-up-right';
+    | 'arrow-up-right'
+    | 'star'
+    | 'file-text'
+    | 'newspaper'
+    | 'video'
+    | 'book'
+    | 'briefcase'
+    | 'graduation-cap'
+    | 'heart'
+    | 'info'
+    | 'user-check'
+    | 'building';
   gradient:
     | 'blue-cyan'
     | 'cyan-teal'
@@ -4708,6 +5095,158 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * The 7 menu categories and each panel’s content.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  /**
+   * The order here is the order in the menu row.
+   */
+  categories?:
+    | {
+        label: string;
+        /**
+         * Empty: the category only opens its panel. That is how Solutions and Partners behave.
+         */
+        href?: string | null;
+        panel: 'solutions' | 'partners' | 'links' | 'split';
+        links?:
+          | {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
+              label: string;
+              description: string;
+              href: string;
+              id?: string | null;
+            }[]
+          | null;
+        intro?: string | null;
+        highlights?:
+          | {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building';
+              color?: ('primary' | 'emerald' | 'purple' | 'indigo' | 'pink' | 'orange' | 'blue' | 'amber') | null;
+              title: string;
+              description: string;
+              id?: string | null;
+            }[]
+          | null;
+        card?: {
+          icon?:
+            | (
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+              )
+            | null;
+          title?: string | null;
+          bullets?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          ctaLabel?: string | null;
+          href?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Figures and seals used across pages. Changing here changes everywhere.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4748,6 +5287,17 @@ export interface SiteSetting {
               | 'shield-check'
               | 'trending-up'
               | 'arrow-up-right'
+              | 'star'
+              | 'file-text'
+              | 'newspaper'
+              | 'video'
+              | 'book'
+              | 'briefcase'
+              | 'graduation-cap'
+              | 'heart'
+              | 'info'
+              | 'user-check'
+              | 'building'
             )
           | null;
         id?: string | null;
@@ -4763,6 +5313,56 @@ export interface SiteSetting {
   foundedYear?: number | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  categories?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        panel?: T;
+        links?:
+          | T
+          | {
+              icon?: T;
+              label?: T;
+              description?: T;
+              href?: T;
+              id?: T;
+            };
+        intro?: T;
+        highlights?:
+          | T
+          | {
+              icon?: T;
+              color?: T;
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+        card?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              bullets?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              ctaLabel?: T;
+              href?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

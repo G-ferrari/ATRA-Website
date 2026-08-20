@@ -27,6 +27,7 @@ import { Testimonials } from './collections/Testimonials'
 import { Topics } from './collections/Topics'
 import { Users } from './collections/Users'
 import { Webinars } from './collections/Webinars'
+import { Navigation } from './globals/Navigation'
 import { SiteSettings } from './globals/SiteSettings'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -55,7 +56,7 @@ export default buildConfig({
 
   collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Solutions, SpecialistRoles, Webinars],
 
-  globals: [SiteSettings],
+  globals: [Navigation, SiteSettings],
 
   /* Idioma da INTERFACE do admin (botões, menus, validação) — diferente de
    * `localization`, que é o idioma do CONTEÚDO. São independentes: dá para

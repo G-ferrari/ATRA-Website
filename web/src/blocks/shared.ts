@@ -93,6 +93,18 @@ export const ICONES = [
   'shield-check',
   'trending-up',
   'arrow-up-right',
+  // MIG-072a: os glifos que os painéis do megamenu usam.
+  'star',
+  'file-text',
+  'newspaper',
+  'video',
+  'book',
+  'briefcase',
+  'graduation-cap',
+  'heart',
+  'info',
+  'user-check',
+  'building',
 ] as const
 
 export const campoDeIcone: Field = {
