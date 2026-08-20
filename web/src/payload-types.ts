@@ -328,7 +328,9 @@ export interface Partner {
              * Slices of the title shown in blue. Each must appear in the title.
              */
             highlight?: string[] | null;
+            subtitle?: string | null;
             description?: string | null;
+            align?: ('left' | 'center') | null;
             mediaMode?: ('none' | 'image' | 'marquee') | null;
             /**
              * With a single image only the first is used. In the marquee, all of them.
@@ -361,6 +363,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -368,6 +371,7 @@ export interface Partner {
           }
         | {
             variant?: ('institutional' | 'solution') | null;
+            bottomGap?: ('normal' | 'none') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -377,6 +381,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -401,6 +406,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -432,6 +438,13 @@ export interface Partner {
                   id?: string | null;
                 }[]
               | null;
+            headerLayout?: ('inline' | 'centered') | null;
+            description?: string | null;
+            subtitle?: string | null;
+            callout?: {
+              label?: string | null;
+              text?: string | null;
+            };
             imagePosition?: ('left' | 'right' | 'none') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
@@ -442,6 +455,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -451,7 +465,7 @@ export interface Partner {
             eyebrow?: string | null;
             title?: string | null;
             columns?: ('2' | '3' | '4') | null;
-            variant?: ('compact' | 'card') | null;
+            variant?: ('compact' | 'card' | 'card-centered') | null;
             headerWidth?: ('full' | 'narrow') | null;
             items: {
               icon:
@@ -485,7 +499,8 @@ export interface Partner {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
               title: string;
               /**
                * Left empty, the card renders compact and centred.
@@ -502,6 +517,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -510,6 +526,9 @@ export interface Partner {
         | {
             eyebrow?: string | null;
             title?: string | null;
+            highlight?: string | null;
+            variant?: ('glow' | 'expanded') | null;
+            description?: string | null;
             items: {
               icon:
                 | 'sparkles'
@@ -542,7 +561,14 @@ export interface Partner {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
+              bullets?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
               glowColor?: ('blue' | 'orange') | null;
               title: string;
               description: string;
@@ -557,6 +583,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -578,6 +605,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -594,6 +622,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -620,6 +649,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -660,6 +690,7 @@ export interface Partner {
                   | 'info'
                   | 'user-check'
                   | 'building'
+                  | 'coffee'
                 )
               | null;
             title: string;
@@ -703,7 +734,8 @@ export interface Partner {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
               accent?: ('primary' | 'secondary') | null;
               /**
                * E.g. 01 / DIAGNOSIS.
@@ -728,6 +760,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -768,6 +801,7 @@ export interface Partner {
                   | 'info'
                   | 'user-check'
                   | 'building'
+                  | 'coffee'
                 )
               | null;
             title: string;
@@ -809,6 +843,7 @@ export interface Partner {
                     | 'info'
                     | 'user-check'
                     | 'building'
+                    | 'coffee'
                   )
                 | null;
               badge?: string | null;
@@ -872,6 +907,7 @@ export interface Partner {
                     | 'info'
                     | 'user-check'
                     | 'building'
+                    | 'coffee'
                   )
                 | null;
               id?: string | null;
@@ -885,6 +921,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -925,6 +962,7 @@ export interface Partner {
                   | 'info'
                   | 'user-check'
                   | 'building'
+                  | 'coffee'
                 )
               | null;
             title: string;
@@ -965,7 +1003,8 @@ export interface Partner {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
               accent?: ('primary' | 'secondary') | null;
               title: string;
               description: string;
@@ -980,6 +1019,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -1020,6 +1060,7 @@ export interface Partner {
                   | 'info'
                   | 'user-check'
                   | 'building'
+                  | 'coffee'
                 )
               | null;
             title: string;
@@ -1059,6 +1100,7 @@ export interface Partner {
                     | 'info'
                     | 'user-check'
                     | 'building'
+                    | 'coffee'
                   )
                 | null;
               title?: string | null;
@@ -1081,6 +1123,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -1102,6 +1145,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -1112,6 +1156,13 @@ export interface Partner {
             title?: string | null;
             description?: string | null;
             emptyText?: string | null;
+            talentBank?: {
+              eyebrow?: string | null;
+              title?: string | null;
+              highlight?: string | null;
+              description?: string | null;
+              note?: string | null;
+            };
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1121,6 +1172,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -1149,6 +1201,7 @@ export interface Partner {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -1383,7 +1436,9 @@ export interface Page {
          * Slices of the title shown in blue. Each must appear in the title.
          */
         highlight?: string[] | null;
+        subtitle?: string | null;
         description?: string | null;
+        align?: ('left' | 'center') | null;
         mediaMode?: ('none' | 'image' | 'marquee') | null;
         /**
          * With a single image only the first is used. In the marquee, all of them.
@@ -1416,6 +1471,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1423,6 +1479,7 @@ export interface Page {
       }
     | {
         variant?: ('institutional' | 'solution') | null;
+        bottomGap?: ('normal' | 'none') | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -1432,6 +1489,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1456,6 +1514,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1487,6 +1546,13 @@ export interface Page {
               id?: string | null;
             }[]
           | null;
+        headerLayout?: ('inline' | 'centered') | null;
+        description?: string | null;
+        subtitle?: string | null;
+        callout?: {
+          label?: string | null;
+          text?: string | null;
+        };
         imagePosition?: ('left' | 'right' | 'none') | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
@@ -1497,6 +1563,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1506,7 +1573,7 @@ export interface Page {
         eyebrow?: string | null;
         title?: string | null;
         columns?: ('2' | '3' | '4') | null;
-        variant?: ('compact' | 'card') | null;
+        variant?: ('compact' | 'card' | 'card-centered') | null;
         headerWidth?: ('full' | 'narrow') | null;
         items: {
           icon:
@@ -1540,7 +1607,8 @@ export interface Page {
             | 'heart'
             | 'info'
             | 'user-check'
-            | 'building';
+            | 'building'
+            | 'coffee';
           title: string;
           /**
            * Left empty, the card renders compact and centred.
@@ -1557,6 +1625,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1565,6 +1634,9 @@ export interface Page {
     | {
         eyebrow?: string | null;
         title?: string | null;
+        highlight?: string | null;
+        variant?: ('glow' | 'expanded') | null;
+        description?: string | null;
         items: {
           icon:
             | 'sparkles'
@@ -1597,7 +1669,14 @@ export interface Page {
             | 'heart'
             | 'info'
             | 'user-check'
-            | 'building';
+            | 'building'
+            | 'coffee';
+          bullets?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
           glowColor?: ('blue' | 'orange') | null;
           title: string;
           description: string;
@@ -1612,6 +1691,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1633,6 +1713,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1649,6 +1730,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1675,6 +1757,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1715,6 +1798,7 @@ export interface Page {
               | 'info'
               | 'user-check'
               | 'building'
+              | 'coffee'
             )
           | null;
         title: string;
@@ -1758,7 +1842,8 @@ export interface Page {
             | 'heart'
             | 'info'
             | 'user-check'
-            | 'building';
+            | 'building'
+            | 'coffee';
           accent?: ('primary' | 'secondary') | null;
           /**
            * E.g. 01 / DIAGNOSIS.
@@ -1783,6 +1868,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1823,6 +1909,7 @@ export interface Page {
               | 'info'
               | 'user-check'
               | 'building'
+              | 'coffee'
             )
           | null;
         title: string;
@@ -1864,6 +1951,7 @@ export interface Page {
                 | 'info'
                 | 'user-check'
                 | 'building'
+                | 'coffee'
               )
             | null;
           badge?: string | null;
@@ -1927,6 +2015,7 @@ export interface Page {
                 | 'info'
                 | 'user-check'
                 | 'building'
+                | 'coffee'
               )
             | null;
           id?: string | null;
@@ -1940,6 +2029,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -1980,6 +2070,7 @@ export interface Page {
               | 'info'
               | 'user-check'
               | 'building'
+              | 'coffee'
             )
           | null;
         title: string;
@@ -2020,7 +2111,8 @@ export interface Page {
             | 'heart'
             | 'info'
             | 'user-check'
-            | 'building';
+            | 'building'
+            | 'coffee';
           accent?: ('primary' | 'secondary') | null;
           title: string;
           description: string;
@@ -2035,6 +2127,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -2075,6 +2168,7 @@ export interface Page {
               | 'info'
               | 'user-check'
               | 'building'
+              | 'coffee'
             )
           | null;
         title: string;
@@ -2114,6 +2208,7 @@ export interface Page {
                 | 'info'
                 | 'user-check'
                 | 'building'
+                | 'coffee'
               )
             | null;
           title?: string | null;
@@ -2136,6 +2231,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -2157,6 +2253,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -2167,6 +2264,13 @@ export interface Page {
         title?: string | null;
         description?: string | null;
         emptyText?: string | null;
+        talentBank?: {
+          eyebrow?: string | null;
+          title?: string | null;
+          highlight?: string | null;
+          description?: string | null;
+          note?: string | null;
+        };
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -2176,6 +2280,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -2204,6 +2309,7 @@ export interface Page {
          */
         navLabel?: string | null;
         borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
@@ -2412,7 +2518,8 @@ export interface Solution {
     | 'heart'
     | 'info'
     | 'user-check'
-    | 'building';
+    | 'building'
+    | 'coffee';
   /**
    * One sentence. Used in the Solutions menu and on the index card.
    */
@@ -2431,7 +2538,9 @@ export interface Solution {
              * Slices of the title shown in blue. Each must appear in the title.
              */
             highlight?: string[] | null;
+            subtitle?: string | null;
             description?: string | null;
+            align?: ('left' | 'center') | null;
             mediaMode?: ('none' | 'image' | 'marquee') | null;
             /**
              * With a single image only the first is used. In the marquee, all of them.
@@ -2464,6 +2573,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2471,6 +2581,7 @@ export interface Solution {
           }
         | {
             variant?: ('institutional' | 'solution') | null;
+            bottomGap?: ('normal' | 'none') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -2480,6 +2591,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2504,6 +2616,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2535,6 +2648,13 @@ export interface Solution {
                   id?: string | null;
                 }[]
               | null;
+            headerLayout?: ('inline' | 'centered') | null;
+            description?: string | null;
+            subtitle?: string | null;
+            callout?: {
+              label?: string | null;
+              text?: string | null;
+            };
             imagePosition?: ('left' | 'right' | 'none') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
@@ -2545,6 +2665,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2554,7 +2675,7 @@ export interface Solution {
             eyebrow?: string | null;
             title?: string | null;
             columns?: ('2' | '3' | '4') | null;
-            variant?: ('compact' | 'card') | null;
+            variant?: ('compact' | 'card' | 'card-centered') | null;
             headerWidth?: ('full' | 'narrow') | null;
             items: {
               icon:
@@ -2588,7 +2709,8 @@ export interface Solution {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
               title: string;
               /**
                * Left empty, the card renders compact and centred.
@@ -2605,6 +2727,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2613,6 +2736,9 @@ export interface Solution {
         | {
             eyebrow?: string | null;
             title?: string | null;
+            highlight?: string | null;
+            variant?: ('glow' | 'expanded') | null;
+            description?: string | null;
             items: {
               icon:
                 | 'sparkles'
@@ -2645,7 +2771,14 @@ export interface Solution {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
+              bullets?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
               glowColor?: ('blue' | 'orange') | null;
               title: string;
               description: string;
@@ -2660,6 +2793,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2681,6 +2815,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2697,6 +2832,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2723,6 +2859,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2763,6 +2900,7 @@ export interface Solution {
                   | 'info'
                   | 'user-check'
                   | 'building'
+                  | 'coffee'
                 )
               | null;
             title: string;
@@ -2806,7 +2944,8 @@ export interface Solution {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
               accent?: ('primary' | 'secondary') | null;
               /**
                * E.g. 01 / DIAGNOSIS.
@@ -2831,6 +2970,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -2871,6 +3011,7 @@ export interface Solution {
                   | 'info'
                   | 'user-check'
                   | 'building'
+                  | 'coffee'
                 )
               | null;
             title: string;
@@ -2912,6 +3053,7 @@ export interface Solution {
                     | 'info'
                     | 'user-check'
                     | 'building'
+                    | 'coffee'
                   )
                 | null;
               badge?: string | null;
@@ -2975,6 +3117,7 @@ export interface Solution {
                     | 'info'
                     | 'user-check'
                     | 'building'
+                    | 'coffee'
                   )
                 | null;
               id?: string | null;
@@ -2988,6 +3131,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -3028,6 +3172,7 @@ export interface Solution {
                   | 'info'
                   | 'user-check'
                   | 'building'
+                  | 'coffee'
                 )
               | null;
             title: string;
@@ -3068,7 +3213,8 @@ export interface Solution {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
               accent?: ('primary' | 'secondary') | null;
               title: string;
               description: string;
@@ -3083,6 +3229,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -3123,6 +3270,7 @@ export interface Solution {
                   | 'info'
                   | 'user-check'
                   | 'building'
+                  | 'coffee'
                 )
               | null;
             title: string;
@@ -3162,6 +3310,7 @@ export interface Solution {
                     | 'info'
                     | 'user-check'
                     | 'building'
+                    | 'coffee'
                   )
                 | null;
               title?: string | null;
@@ -3184,6 +3333,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -3205,6 +3355,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -3215,6 +3366,13 @@ export interface Solution {
             title?: string | null;
             description?: string | null;
             emptyText?: string | null;
+            talentBank?: {
+              eyebrow?: string | null;
+              title?: string | null;
+              highlight?: string | null;
+              description?: string | null;
+              note?: string | null;
+            };
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -3224,6 +3382,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -3252,6 +3411,7 @@ export interface Solution {
              */
             navLabel?: string | null;
             borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
@@ -3330,7 +3490,8 @@ export interface SpecialistRole {
     | 'heart'
     | 'info'
     | 'user-check'
-    | 'building';
+    | 'building'
+    | 'coffee';
   gradient:
     | 'blue-cyan'
     | 'cyan-teal'
@@ -3672,7 +3833,9 @@ export interface PartnersSelect<T extends boolean = true> {
               chip?: T;
               title?: T;
               highlight?: T;
+              subtitle?: T;
               description?: T;
+              align?: T;
               mediaMode?: T;
               images?: T;
               ctas?:
@@ -3696,6 +3859,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3704,9 +3868,11 @@ export interface PartnersSelect<T extends boolean = true> {
           | T
           | {
               variant?: T;
+              bottomGap?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3726,6 +3892,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3744,10 +3911,20 @@ export interface PartnersSelect<T extends boolean = true> {
                     href?: T;
                     id?: T;
                   };
+              headerLayout?: T;
+              description?: T;
+              subtitle?: T;
+              callout?:
+                | T
+                | {
+                    label?: T;
+                    text?: T;
+                  };
               imagePosition?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3771,6 +3948,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3780,10 +3958,19 @@ export interface PartnersSelect<T extends boolean = true> {
           | {
               eyebrow?: T;
               title?: T;
+              highlight?: T;
+              variant?: T;
+              description?: T;
               items?:
                 | T
                 | {
                     icon?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
                     glowColor?: T;
                     title?: T;
                     description?: T;
@@ -3792,6 +3979,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3805,6 +3993,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3816,6 +4005,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3836,6 +4026,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3872,6 +4063,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3921,6 +4113,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3950,6 +4143,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3979,6 +4173,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -3992,6 +4187,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4003,9 +4199,19 @@ export interface PartnersSelect<T extends boolean = true> {
               title?: T;
               description?: T;
               emptyText?: T;
+              talentBank?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    highlight?: T;
+                    description?: T;
+                    note?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4033,6 +4239,7 @@ export interface PartnersSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4154,7 +4361,9 @@ export interface PagesSelect<T extends boolean = true> {
               chip?: T;
               title?: T;
               highlight?: T;
+              subtitle?: T;
               description?: T;
+              align?: T;
               mediaMode?: T;
               images?: T;
               ctas?:
@@ -4178,6 +4387,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4186,9 +4396,11 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               variant?: T;
+              bottomGap?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4208,6 +4420,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4226,10 +4439,20 @@ export interface PagesSelect<T extends boolean = true> {
                     href?: T;
                     id?: T;
                   };
+              headerLayout?: T;
+              description?: T;
+              subtitle?: T;
+              callout?:
+                | T
+                | {
+                    label?: T;
+                    text?: T;
+                  };
               imagePosition?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4253,6 +4476,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4262,10 +4486,19 @@ export interface PagesSelect<T extends boolean = true> {
           | {
               eyebrow?: T;
               title?: T;
+              highlight?: T;
+              variant?: T;
+              description?: T;
               items?:
                 | T
                 | {
                     icon?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
                     glowColor?: T;
                     title?: T;
                     description?: T;
@@ -4274,6 +4507,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4287,6 +4521,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4298,6 +4533,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4318,6 +4554,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4354,6 +4591,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4403,6 +4641,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4432,6 +4671,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4461,6 +4701,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4474,6 +4715,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4485,9 +4727,19 @@ export interface PagesSelect<T extends boolean = true> {
               title?: T;
               description?: T;
               emptyText?: T;
+              talentBank?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    highlight?: T;
+                    description?: T;
+                    note?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4515,6 +4767,7 @@ export interface PagesSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4613,7 +4866,9 @@ export interface SolutionsSelect<T extends boolean = true> {
               chip?: T;
               title?: T;
               highlight?: T;
+              subtitle?: T;
               description?: T;
+              align?: T;
               mediaMode?: T;
               images?: T;
               ctas?:
@@ -4637,6 +4892,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4645,9 +4901,11 @@ export interface SolutionsSelect<T extends boolean = true> {
           | T
           | {
               variant?: T;
+              bottomGap?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4667,6 +4925,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4685,10 +4944,20 @@ export interface SolutionsSelect<T extends boolean = true> {
                     href?: T;
                     id?: T;
                   };
+              headerLayout?: T;
+              description?: T;
+              subtitle?: T;
+              callout?:
+                | T
+                | {
+                    label?: T;
+                    text?: T;
+                  };
               imagePosition?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4712,6 +4981,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4721,10 +4991,19 @@ export interface SolutionsSelect<T extends boolean = true> {
           | {
               eyebrow?: T;
               title?: T;
+              highlight?: T;
+              variant?: T;
+              description?: T;
               items?:
                 | T
                 | {
                     icon?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
                     glowColor?: T;
                     title?: T;
                     description?: T;
@@ -4733,6 +5012,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4746,6 +5026,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4757,6 +5038,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4777,6 +5059,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4813,6 +5096,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4862,6 +5146,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4891,6 +5176,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4920,6 +5206,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4933,6 +5220,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4944,9 +5232,19 @@ export interface SolutionsSelect<T extends boolean = true> {
               title?: T;
               description?: T;
               emptyText?: T;
+              talentBank?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    highlight?: T;
+                    description?: T;
+                    note?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -4974,6 +5272,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               anchor?: T;
               navLabel?: T;
               borda?: T;
+              spacing?: T;
               theme?: T;
               id?: T;
               blockName?: T;
@@ -5146,7 +5445,8 @@ export interface Navigation {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
               label: string;
               description: string;
               href: string;
@@ -5187,7 +5487,8 @@ export interface Navigation {
                 | 'heart'
                 | 'info'
                 | 'user-check'
-                | 'building';
+                | 'building'
+                | 'coffee';
               color?: ('primary' | 'emerald' | 'purple' | 'indigo' | 'pink' | 'orange' | 'blue' | 'amber') | null;
               title: string;
               description: string;
@@ -5228,6 +5529,7 @@ export interface Navigation {
                 | 'info'
                 | 'user-check'
                 | 'building'
+                | 'coffee'
               )
             | null;
           title?: string | null;
@@ -5298,6 +5600,7 @@ export interface SiteSetting {
               | 'info'
               | 'user-check'
               | 'building'
+              | 'coffee'
             )
           | null;
         id?: string | null;

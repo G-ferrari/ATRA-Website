@@ -27,6 +27,9 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
    * trava num prompt interativo que não roda sem terminal. Fica para a próxima
    * mudança de schema neste bloco; ver debito-tecnico.md. */
   const solucao = bloco.ctaVariant === 'secondary'
+  /* /carreiras (`Careers.tsx:101`) centraliza a caixa inteira e troca a grade
+     de 12 colunas por uma coluna só de `max-w-3xl`. */
+  const centro = bloco.align === 'center'
 
   return (
     <section
@@ -34,19 +37,26 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
       className="relative pt-6 pb-12 overflow-hidden bg-surface-1 px-3 sm:px-6 scroll-mt-32"
     >
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid">
+        <div
+          className={cn(
+            'rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid',
+            centro && 'text-center',
+          )}
+        >
           <TechCornerBraces color="blue" position="top-left" size={16} />
           <TechCornerBraces color="orange" position="bottom-right" size={16} />
 
           <div
             className={cn(
-              'grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10',
-              solucao && 'lg:gap-12',
+              centro
+                ? 'max-w-3xl mx-auto relative z-10'
+                : 'grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10',
+              !centro && solucao && 'lg:gap-12',
             )}
           >
-            <div className={bloco.mediaMode === 'none' ? 'lg:col-span-12' : 'lg:col-span-7'}>
+            <div className={centro ? undefined : bloco.mediaMode === 'none' ? 'lg:col-span-12' : 'lg:col-span-7'}>
               {(bloco.badge || bloco.chip) && (
-                <div className="flex items-center gap-2 mb-4">
+                <div className={cn('flex items-center gap-2 mb-4', centro && 'justify-center')}>
                   {bloco.badge && (
                     <StatusBadge
                       label={bloco.badge}
@@ -64,19 +74,38 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                 <TextoDestacado texto={bloco.title} destaque={bloco.highlight} />
               </h1>
 
+              {bloco.subtitle && (
+                <p className="text-sm md:text-lg font-medium text-white/90 mb-3">{bloco.subtitle}</p>
+              )}
+
               {bloco.description && (
+                /* ⚠️ A variante centralizada não é a mesma classe com
+                   `text-center` por cima. `Careers.tsx:129` não tem
+                   `md:text-base` nem `leading-relaxed`, e fecha em `mb-8` — três
+                   diferenças de altura, não de alinhamento. Por isso as duas
+                   strings são inteiras, sem `cn()` mesclando: mesclar deixava a
+                   entrelinha do gabarito de fora. */
                 <p
-                  className={cn(
-                    'text-xs sm:text-sm md:text-base text-white/70 font-light leading-relaxed mb-6',
-                    bloco.descriptionWidth === 'wide' ? 'max-w-2xl' : 'max-w-xl',
-                  )}
+                  className={
+                    centro
+                      ? 'text-xs sm:text-sm text-white/70 font-light max-w-xl mx-auto mb-8'
+                      : cn(
+                          'text-xs sm:text-sm md:text-base text-white/70 font-light leading-relaxed mb-6',
+                          bloco.descriptionWidth === 'wide' ? 'max-w-2xl' : 'max-w-xl',
+                        )
+                  }
                 >
                   {bloco.description}
                 </p>
               )}
 
               {bloco.metrics.length > 0 && (
-                <div className="grid grid-cols-3 gap-3 mb-6 max-w-lg">
+                <div
+                  className={cn(
+                    'grid grid-cols-3 gap-3',
+                    centro ? 'max-w-md mx-auto' : 'mb-6 max-w-lg',
+                  )}
+                >
                   {bloco.metrics.map((m) => (
                     <div key={m.label} className="p-3 rounded-[6px] bg-white/5 border border-white/10 text-center">
                       <div className={cn('text-lg sm:text-xl font-bold', COR_DA_METRICA[m.color])}>
@@ -89,7 +118,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
               )}
 
               {bloco.ctas.length > 0 && (
-                <div className="flex flex-wrap gap-3">
+                <div className={cn('flex flex-wrap gap-3', centro && 'justify-center')}>
                   {bloco.ctas.map((cta, i) => (
                     <Link
                       key={cta.href}

@@ -27,6 +27,14 @@ const REMOTE_IMAGES = [
    * foi a vitrine de parceiros ficar 144px mais alta no mobile: os SVGs reais
    * ocupavam mais largura e quebravam em mais linhas. */
   '**/api/media/file/**',
+  /* E a mídia **local** do legado, que o Vite serve de `/src/assets/images/`.
+   *
+   * ⚠️ Não é simetria opcional. O selo LIPT da faixa de premiações é o único
+   * dos três que vem de arquivo local; os outros dois são hotlink do WordPress
+   * e já caíam aqui. Sem esta linha o legado desenhava o selo em 75×102 e o app
+   * novo, com a mídia stubbada, um ponto de 1×1 — 7.473 pixels de divergência
+   * numa caixa que a máscara devia ter igualado dos dois lados. */
+  '**/src/assets/images/**',
 ]
 
 /** Neutraliza o que muda entre execuções sem o código ter mudado. */
@@ -34,9 +42,15 @@ export async function stabilize(page: Page) {
   // Imagem remota é a maior fonte de instabilidade: muda de conteúdo, de
   // tamanho e de tempo de resposta.
   for (const pattern of REMOTE_IMAGES) {
-    await page.route(pattern, (route) =>
-      route.fulfill({ status: 200, contentType: 'image/png', body: PLACEHOLDER }),
-    )
+    await page.route(pattern, (route) => {
+      /* ⚠️ Só requisição de **imagem**. O legado importa os assets locais como
+       * módulo (`import lipt from '@/assets/images/lipt-2026.png'`), e o Vite
+       * serve esse import pelo mesmo caminho: devolver um PNG ali quebra o
+       * bundle e a home do legado renderiza vazia. Foi o que aconteceu quando o
+       * padrão entrou sem esta guarda. */
+      if (route.request().resourceType() !== 'image') return route.continue()
+      return route.fulfill({ status: 200, contentType: 'image/png', body: PLACEHOLDER })
+    })
   }
 
   /* Relógio fixo só para Date — data renderizada deixa de variar.

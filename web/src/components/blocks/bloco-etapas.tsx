@@ -1,4 +1,4 @@
-import { BORDAS } from '@/components/blocks/bordas'
+import { BORDAS, ESPACOS } from '@/components/blocks/bordas'
 import { cn } from '@/lib/utils'
 import type { BlocoProcessSteps } from '@/types/content'
 
@@ -11,7 +11,8 @@ export function BlocoEtapas({ bloco }: { bloco: BlocoProcessSteps }) {
     <section
       id={bloco.anchor ?? undefined}
       className={cn(
-        'py-20 md:py-24 relative overflow-hidden scroll-mt-32',
+        ESPACOS[bloco.espaco],
+        'relative overflow-hidden scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
         BORDAS[bloco.borda],
       )}
@@ -24,8 +25,10 @@ export function BlocoEtapas({ bloco }: { bloco: BlocoProcessSteps }) {
                 {bloco.eyebrow}
               </span>
             )}
+            {/* `mb-4`, não `mb-3`: é o valor de `Careers.tsx:366`, a única
+                seção do site que usa este bloco. */}
             {bloco.title && (
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-3">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-4">
                 {bloco.title}
               </h2>
             )}

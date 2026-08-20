@@ -160,6 +160,9 @@ Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
 | Texto localizado em branco depois de semear o 2º idioma | Layout reenviado sem os ids **de todos os níveis** — `items`, `metrics`, `bullets` também têm id. Usar `casarIds` (`scripts/seed/ids.ts`); já escondeu 800px em /sobre e 742px na página de solução |
 | Consulta a uma collection com muitos blocos leva dezenas de segundos | O adapter Postgres faz um `LEFT JOIN LATERAL` por tipo de bloco, mesmo com `depth: 0`. Índice que só mostra cartão precisa de `select` |
 | Gerador de migração trava sem imprimir nada | Remoção de coluna vira pergunta interativa do drizzle, que não roda sem TTY. Preferir migração aditiva; refundir as não commitadas quando não der |
+| Campo novo aparece numa tabela de bloco que você não mexeu | Edição por `replace` de trecho: vários blocos têm campos com o mesmo rótulo (`Estilo`, `Título`), e o primeiro casamento não é o bloco que você quis. Confira o `ALTER TABLE` da migração **antes** de aplicar; se já aplicou, `pnpm payload migrate:down` desfaz só a última |
+| Contador de números fica em `0` com `?e2e=1` | Só no servidor de dev: `congelado()` lê `window`, o HTML do servidor sai com `0` e a hidratação de desenvolvimento não reescreve o texto. Em produção — que é o que o `pnpm gate` compara — o número aparece certo. Não perseguir |
+| Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
 ## Estado
 

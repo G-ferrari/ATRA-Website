@@ -97,7 +97,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-054 | `/parceiros/[slug]` | 047 | 3h | ⚠️ **reaberta** — ver MIG-054a |
 | MIG-055 | `/solucoes` (índice) + collection `solutions` | 047 | 3h | **done** — sem gabarito (D-09); aceite funcional no smoke |
 | MIG-056 | `/solucoes/[slug]` | 055 | ~~3h~~ **~5x maior** | **done** — portão verde nos 3 viewports. A composição prevista não batia com o legado: exigiu 4 blocos novos e 4 variantes. Ver a nota em [blocos.md](../02-especificacao/blocos.md#regras-de-bloco) |
-| MIG-050a | **`/carreiras` a 30% do gabarito** — reconstrução | 050 | 6h | todo |
+| MIG-050a | **`/carreiras` a 30% do gabarito** — reconstrução | 050 | 6h | ✅ feita |
 | MIG-054a | **`/parceiros/[slug]` a 38% do gabarito** — reconstrução | 054 | 4h | todo |
 | MIG-057 | Blocos da home: `hero`, `featureTabs`, `logoMarquee` | 048 | 5h |
 | MIG-058 | Blocos da home: `caseCarousel`, `testimonialCarousel`, `contentTeaser` | 057 | 5h |
@@ -116,18 +116,35 @@ Uma PR por linha. Todas dependem de MIG-031.
 > `/consultores` foi refeita e está verde. As outras duas seguem abertas, e o
 > levantamento já está feito:
 >
-> **MIG-050a — `/carreiras`.** Faltam as seções "Vantagens de ser ATRA"
-> (`Careers.tsx:550`) e "Programa de Trainee ATRA" (`:579`). Além disso: o herói
-> do legado é **centralizado**, com uma linha de apoio entre título e descrição,
-> três números e **nenhum botão** — o nosso é à esquerda, sem números, com dois
-> botões, e usa o subtítulo do legado como `h1`. O título certo é "Construa sua
-> história na ATRA". A seção `trabalhe-conosco` do legado tem **duas partes**: a
-> grade de vagas *e* o cartão "Banco de Talentos" com formulário (`:450`), que
-> no nosso porte virou um `ctaContact` separado no fim da página. E as vagas do
-> legado apontam para `#banco-talentos`, não para páginas de vaga.
-> Precisa de: `subtitle` e `align` no `pageHero`, variante `card-centered` no
-> `iconCardGrid`, `headerLayout: centered` no `richTextSection` e o formulário
-> dentro do `jobsList`.
+> **MIG-050a — `/carreiras`.** ✅ **Fechada.** A página passou de 10.111px para
+> os 14.539px do gabarito, e o `pnpm gate` fecha verde nos três viewports. O
+> levantamento previa quatro mudanças de schema; foram sete, porque três
+> divergências só apareceram com a página montada e medida:
+>
+> - `subtitle` e `align` no `pageHero`; `card-centered` no `iconCardGrid`;
+>   `headerLayout`/`description`/`subtitle`/`callout` no `richTextSection`;
+>   `talentBank` no `jobsList` — as previstas.
+> - `variant: expanded` + `highlight` + `bullets` no `valueCards`: a seção
+>   "Jeito ATRA de Ser" não é a grade de ícones que MIG-050 usou, e sim os
+>   **mesmos três valores de /sobre** num cartão alto, com tagline colorida,
+>   divisor e checklist (`Careers.tsx:222`).
+> - `spacing` em `camposComuns`: /sobre usa `py-16 md:py-20` nas oito seções e
+>   /carreiras usa `py-20 md:py-24` em seis das sete. Eram 384px.
+> - `bottomGap` no `stickyPageNav`: /sobre fecha o menu com `mb-8 sm:mb-10` e
+>   /carreiras não, embora os dois usem o menu institucional. Eram 40px.
+>
+> Duas correções de conteúdo saíram de conferir o legado em vez do levantamento:
+> a descrição do herói termina em "profissional" (o porte tinha emendado uma
+> oração que não existe em `careers.desc`), e a linha de apoio do processo
+> seletivo é "Transparência", não "Processo Seletivo" — este é o rótulo do menu.
+>
+> O aceite também exigiu um conserto no **arnês**: `stabilize()` trocava a mídia
+> do app novo por um PNG 1×1 e deixava passar a mídia local do legado, servida
+> pelo Vite em `/src/assets/images/`. O selo LIPT, único dos três que vem de
+> arquivo local, saía 75×102 de um lado e 1×1 do outro — 7.473 pixels numa
+> caixa que a máscara devia ter igualado. O padrão entrou na lista, com guarda
+> de `resourceType() === 'image'`: sem ela o stub responde também ao *import de
+> módulo* do Vite e a home do legado renderiza vazia.
 >
 > **MIG-054a — `/parceiros/[slug]`.** As cinco seções existem e batem de nome,
 > mas a última diverge ("Entre em contato" no legado contra "Pronto para migrar,

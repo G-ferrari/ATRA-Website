@@ -127,6 +127,7 @@ type Base = {
   navLabel: string | null
   theme: TemaDoBloco
   borda: 'nenhuma' | 'topo' | 'ambas'
+  espaco: 'normal' | 'amplo'
 }
 
 export type BlocoPageHero = Base & {
@@ -136,7 +137,9 @@ export type BlocoPageHero = Base & {
   title: string
   /** Trechos de `title` pintados de azul; o componente os localiza no texto. */
   highlight: string[]
+  subtitle: string | null
   description: string | null
+  align: 'left' | 'center'
   ctas: { label: string; href: string }[]
   ctaVariant: 'primary' | 'secondary'
   descriptionWidth: 'narrow' | 'wide'
@@ -150,6 +153,11 @@ export type BlocoRichTextSection = Base & {
   tipo: 'richTextSection'
   eyebrow: string | null
   title: string | null
+  headerLayout: 'inline' | 'centered'
+  /** Só no cabeçalho centralizado; a coluna de texto usa `body`. */
+  description: string | null
+  subtitle: string | null
+  callout: { label: string | null; text: string | null } | null
   body: unknown | null
   image: Image | null
   imagePosition: 'left' | 'right' | 'none'
@@ -161,7 +169,7 @@ export type BlocoIconCardGrid = Base & {
   eyebrow: string | null
   title: string | null
   columns: 2 | 3 | 4
-  variant: 'compact' | 'card'
+  variant: 'compact' | 'card' | 'card-centered'
   headerWidth: 'full' | 'narrow'
   items: { icon: string; title: string; description: string | null }[]
 }
@@ -219,12 +227,24 @@ export type BlocoValueCards = Base & {
   tipo: 'valueCards'
   eyebrow: string | null
   title: string | null
-  items: { icon: string; glowColor: 'blue' | 'orange'; title: string; description: string }[]
+  highlight: string | null
+  /** Só no cartão alto; o curto não tem descrição de cabeçalho. */
+  description: string | null
+  variant: 'glow' | 'expanded'
+  items: {
+    icon: string
+    glowColor: 'blue' | 'orange'
+    title: string
+    /** No cartão alto vira a tagline colorida — mesmo texto, outra cor. */
+    description: string
+    bullets: string[]
+  }[]
 }
 
 export type BlocoStickyPageNav = Base & {
   tipo: 'stickyPageNav'
   variant: 'institutional' | 'solution'
+  bottomGap: 'normal' | 'none'
   /** Derivados dos blocos com `anchor`; o editor não os digita. */
   items: { anchor: string; label: string }[]
 }
@@ -255,6 +275,14 @@ export type BlocoJobsList = Base & {
   title: string | null
   description: string | null
   emptyText: string | null
+  /** O cartão "Banco de Talentos" fica **dentro** desta seção, sob a grade. */
+  talentBank: {
+    eyebrow: string | null
+    title: string | null
+    highlight: string | null
+    description: string | null
+    note: string | null
+  } | null
   /** Resolvido pela página, das vagas publicadas. */
   vagas: Vaga[]
 }

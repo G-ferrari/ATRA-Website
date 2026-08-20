@@ -18,6 +18,7 @@ import {
   Brain,
   ChartNoAxesColumn,
   Cloud,
+  Coffee,
   Cpu,
   Database,
   Lock,
@@ -74,6 +75,7 @@ const REGISTRO: Record<string, LucideIcon> = {
   info: Info,
   'user-check': UserCheck,
   building: Building2,
+  coffee: Coffee,
 }
 
 const RECURSO = Sparkles

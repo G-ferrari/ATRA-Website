@@ -23,6 +23,9 @@ import * as migration_20260819_171908_add_solutions from './20260819_171908_add_
 import * as migration_20260819_194123_solution_page_blocks from './20260819_194123_solution_page_blocks';
 import * as migration_20260819_213812_bento_footer_icon from './20260819_213812_bento_footer_icon';
 import * as migration_20260819_224317_add_navigation_global from './20260819_224317_add_navigation_global';
+import * as migration_20260820_092037_mig_050a_carreiras from './20260820_092037_mig_050a_carreiras';
+import * as migration_20260820_093412_mig_050a_nav_bottom_gap from './20260820_093412_mig_050a_nav_bottom_gap';
+import * as migration_20260820_100711_mig_050a_value_cards_highlight from './20260820_100711_mig_050a_value_cards_highlight';
 
 export const migrations = [
   {
@@ -148,6 +151,21 @@ export const migrations = [
   {
     up: migration_20260819_224317_add_navigation_global.up,
     down: migration_20260819_224317_add_navigation_global.down,
-    name: '20260819_224317_add_navigation_global'
+    name: '20260819_224317_add_navigation_global',
+  },
+  {
+    up: migration_20260820_092037_mig_050a_carreiras.up,
+    down: migration_20260820_092037_mig_050a_carreiras.down,
+    name: '20260820_092037_mig_050a_carreiras',
+  },
+  {
+    up: migration_20260820_093412_mig_050a_nav_bottom_gap.up,
+    down: migration_20260820_093412_mig_050a_nav_bottom_gap.down,
+    name: '20260820_093412_mig_050a_nav_bottom_gap',
+  },
+  {
+    up: migration_20260820_100711_mig_050a_value_cards_highlight.up,
+    down: migration_20260820_100711_mig_050a_value_cards_highlight.down,
+    name: '20260820_100711_mig_050a_value_cards_highlight'
   },
 ];

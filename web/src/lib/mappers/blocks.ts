@@ -73,6 +73,7 @@ function base(b: BlocoDoPayload) {
     navLabel: vazio(b.navLabel),
     theme: (b.theme ?? 'surface-1') as TemaDoBloco,
     borda: (b.borda ?? 'nenhuma') as 'nenhuma' | 'topo' | 'ambas',
+    espaco: (b.spacing === 'roomy' ? 'amplo' : 'normal') as 'normal' | 'amplo',
   }
 }
 
@@ -114,7 +115,9 @@ export function toBlocos(
           chip: vazio(b.chip),
           title: b.title,
           highlight: (b.highlight ?? []).filter((h): h is string => Boolean(h?.trim())),
+          subtitle: vazio(b.subtitle),
           description: vazio(b.description),
+          align: b.align ?? 'left',
           ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
           ctaVariant: b.ctaVariant ?? 'primary',
           descriptionWidth: b.descriptionWidth ?? 'narrow',
@@ -137,6 +140,12 @@ export function toBlocos(
           tipo: 'richTextSection',
           eyebrow: vazio(b.eyebrow),
           title: vazio(b.title),
+          headerLayout: b.headerLayout ?? 'inline',
+          description: vazio(b.description),
+          subtitle: vazio(b.subtitle),
+          callout: b.callout?.text
+            ? { label: vazio(b.callout.label), text: vazio(b.callout.text) }
+            : null,
           body: b.body ?? null,
           image: toImageOpcional(b.image, 'richTextSection.image'),
           imagePosition: b.imagePosition ?? 'right',
@@ -235,6 +244,15 @@ export function toBlocos(
           title: vazio(b.title),
           description: vazio(b.description),
           emptyText: vazio(b.emptyText),
+          talentBank: b.talentBank?.title
+            ? {
+                eyebrow: vazio(b.talentBank.eyebrow),
+                title: vazio(b.talentBank.title),
+                highlight: vazio(b.talentBank.highlight),
+                description: vazio(b.talentBank.description),
+                note: vazio(b.talentBank.note),
+              }
+            : null,
           // Preenchido pela página, que tem as vagas publicadas.
           vagas: [],
         })
@@ -258,18 +276,28 @@ export function toBlocos(
           tipo: 'valueCards',
           eyebrow: vazio(b.eyebrow),
           title: vazio(b.title),
+          highlight: vazio(b.highlight),
+          description: vazio(b.description),
+          variant: b.variant ?? 'glow',
           items: (b.items ?? []).map((i) => ({
             icon: i.icon,
             glowColor: i.glowColor ?? 'blue',
             title: i.title,
             description: i.description,
+            bullets: (i.bullets ?? []).map((x) => x.text),
           })),
         })
         break
 
       case 'stickyPageNav':
         // Itens preenchidos abaixo, quando a lista inteira já é conhecida.
-        blocos.push({ ...base(b), tipo: 'stickyPageNav', variant: b.variant ?? 'institutional', items: [] })
+        blocos.push({
+          ...base(b),
+          tipo: 'stickyPageNav',
+          variant: b.variant ?? 'institutional',
+          bottomGap: b.bottomGap ?? 'normal',
+          items: [],
+        })
         break
 
       case 'methodCards':

@@ -1,4 +1,4 @@
-import { BORDAS } from '@/components/blocks/bordas'
+import { BORDAS, ESPACOS } from '@/components/blocks/bordas'
 import { cn } from '@/lib/utils'
 import type { BlocoSealsBanner } from '@/types/content'
 
@@ -13,7 +13,8 @@ export function BlocoSelos({ bloco }: { bloco: BlocoSealsBanner }) {
     <section
       id={bloco.anchor ?? undefined}
       className={cn(
-        'py-16 md:py-20 scroll-mt-32',
+        ESPACOS[bloco.espaco],
+        'scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
         BORDAS[bloco.borda],
       )}

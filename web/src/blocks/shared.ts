@@ -53,6 +53,23 @@ export const camposComuns: Field[] = [
     admin: { position: 'sidebar' },
   },
   {
+    /* ⚠️ O respiro vertical **não** é constante entre páginas. /sobre usa
+     * `py-16 md:py-20` nas oito seções; /carreiras usa `py-20 md:py-24` em seis
+     * das sete, e `py-16 md:py-20` só em `premiacoes` (`Careers.tsx:306`).
+     * São 32px a mais por seção no md — com seis seções, 384px de diferença,
+     * muito além do limite de 0,1% do aceite visual. Daí o campo, com o valor
+     * de /sobre como padrão para não mexer nos gabaritos já gravados. */
+    name: 'spacing',
+    type: 'select',
+    defaultValue: 'normal',
+    options: [
+      { value: 'normal', label: { pt: 'Normal', en: 'Normal' } },
+      { value: 'roomy', label: { pt: 'Amplo', en: 'Roomy' } },
+    ],
+    label: { pt: 'Respiro vertical', en: 'Vertical spacing' },
+    admin: { position: 'sidebar' },
+  },
+  {
     name: 'theme',
     type: 'select',
     defaultValue: 'surface-1',
@@ -105,6 +122,8 @@ export const ICONES = [
   'info',
   'user-check',
   'building',
+  // MIG-050a: o glifo de "Flexibilidade & Bem-estar" (`Careers.tsx:564`).
+  'coffee',
 ] as const
 
 export const campoDeIcone: Field = {

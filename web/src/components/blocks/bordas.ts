@@ -9,3 +9,11 @@ export const BORDAS: Record<'nenhuma' | 'topo' | 'ambas', string> = {
   topo: 'border-t border-slate-200 dark:border-white/5',
   ambas: 'border-y border-slate-200 dark:border-white/5',
 }
+
+/* Respiro vertical da seção. Ver a justificativa do campo em `blocks/shared.ts`:
+ * /sobre e /carreiras usam escalas diferentes, e a diferença é de centenas de
+ * pixels ao longo da página. */
+export const ESPACOS: Record<'normal' | 'amplo', string> = {
+  normal: 'py-16 md:py-20',
+  amplo: 'py-20 md:py-24',
+}

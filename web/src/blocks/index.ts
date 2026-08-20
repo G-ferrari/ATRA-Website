@@ -32,7 +32,28 @@ export const PageHero: Block = {
         },
       },
     },
+    {
+      /* A linha média do herói de /carreiras (`Careers.tsx:126`), entre o
+       * título e a descrição: maior que a descrição, menor que o título. */
+      name: 'subtitle',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Linha de apoio', en: 'Supporting line' },
+    },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    {
+      /* O herói de /carreiras é **centralizado** (`Careers.tsx:101`): a caixa
+       * inteira em `text-center`, conteúdo em `max-w-3xl mx-auto`. Os outros
+       * dois alinham à esquerda. */
+      name: 'align',
+      type: 'select',
+      defaultValue: 'left',
+      options: [
+        { value: 'left', label: { pt: 'À esquerda', en: 'Left' } },
+        { value: 'center', label: { pt: 'Centralizado', en: 'Centred' } },
+      ],
+      label: { pt: 'Alinhamento', en: 'Alignment' },
+    },
     {
       /* A coluna direita do herói. `marquee` é a vitrine vertical de fotos de
        * `About.tsx:199`; `image` é uma imagem só; `none` deixa o texto ocupar a
@@ -149,6 +170,47 @@ export const RichTextSection: Block = {
       ],
     },
     {
+      /* A seção do trainee (`Careers.tsx:579`) põe linha de apoio, título e
+       * descrição **centralizados acima** das duas colunas; /sobre os mantém
+       * dentro da coluna de texto. */
+      name: 'headerLayout',
+      type: 'select',
+      defaultValue: 'inline',
+      options: [
+        { value: 'inline', label: { pt: 'Junto ao texto', en: 'With the text' } },
+        { value: 'centered', label: { pt: 'Centralizado acima', en: 'Centred above' } },
+      ],
+      label: { pt: 'Cabeçalho', en: 'Header' },
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      localized: true,
+      label: { pt: 'Descrição do cabeçalho', en: 'Header description' },
+      admin: { condition: (_, irmaos) => irmaos?.headerLayout === 'centered' },
+    },
+    {
+      name: 'subtitle',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Subtítulo da coluna', en: 'Column subtitle' },
+      admin: { condition: (_, irmaos) => irmaos?.headerLayout === 'centered' },
+    },
+    {
+      /* A caixa de status do trainee (`Careers.tsx:599`): um `<strong>` azul em
+       * linha própria seguido de um parágrafo, dentro de um quadro com borda.
+       * Não sai de rich text — o editor não escreve o quadro — e desenhá-la com
+       * `blockquote` daria outra caixa. Daí os dois campos. */
+      name: 'callout',
+      type: 'group',
+      label: { pt: 'Caixa de destaque', en: 'Callout box' },
+      admin: { condition: (_, irmaos) => irmaos?.headerLayout === 'centered' },
+      fields: [
+        { name: 'label', type: 'text', localized: true, label: { pt: 'Rótulo', en: 'Label' } },
+        { name: 'text', type: 'textarea', localized: true, label: { pt: 'Texto', en: 'Text' } },
+      ],
+    },
+    {
       name: 'imagePosition',
       type: 'select',
       defaultValue: 'right',
@@ -187,6 +249,10 @@ export const IconCardGrid: Block = {
       options: [
         { value: 'compact', label: { pt: 'Compacto e centralizado', en: 'Compact, centred' } },
         { value: 'card', label: { pt: 'Card alto', en: 'Tall card' } },
+        /* Terceira forma: card centralizado **com** descrição — "Vantagens de
+         * ser ATRA" (`Careers.tsx:566`). O `compact` centraliza mas só tem
+         * título; o `card` tem descrição e alinha à esquerda. */
+        { value: 'card-centered', label: { pt: 'Card centralizado', en: 'Centred card' } },
       ],
       label: { pt: 'Formato do card', en: 'Card shape' },
     },
@@ -346,6 +412,36 @@ export const ValueCards: Block = {
     { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
     {
+      /* "O **Jeito ATRA** de Ser" (`Careers.tsx:212`): mesmo destaque azul do
+       * herói, no título da seção. /sobre não usa. */
+      name: 'highlight',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Trecho destacado', en: 'Highlighted text' },
+    },
+    {
+      /* O legado desenha os **mesmos três valores** com dois cartões
+       * diferentes: `About.tsx:357` é o `GlowCard` curto; `Careers.tsx:222` é
+       * uma versão alta, com tagline colorida, divisor e checklist, e cabeçalho
+       * de pílula com descrição. Mesmo conteúdo, anatomia diferente — por isso
+       * variante, e não um bloco novo (blocos.md, regra 3). */
+      name: 'variant',
+      type: 'select',
+      defaultValue: 'glow',
+      options: [
+        { value: 'glow', label: { pt: 'Cartão curto', en: 'Short card' } },
+        { value: 'expanded', label: { pt: 'Cartão alto com checklist', en: 'Tall card with checklist' } },
+      ],
+      label: { pt: 'Forma do cartão', en: 'Card shape' },
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      localized: true,
+      label: { pt: 'Descrição do cabeçalho', en: 'Header description' },
+      admin: { condition: (_, irmaos) => irmaos?.variant === 'expanded' },
+    },
+    {
       name: 'items',
       type: 'array',
       required: true,
@@ -353,6 +449,17 @@ export const ValueCards: Block = {
       label: { pt: 'Valores', en: 'Values' },
       fields: [
         campoDeIcone,
+        {
+          /* Só o cartão alto tem checklist. A "tagline" colorida dele **é** o
+           * `description` — `Careers.tsx:232` e `About.tsx:353` trazem a mesma
+           * frase; muda a cor e o `min-h`, não o texto. Um campo, dois desenhos. */
+          name: 'bullets',
+          type: 'array',
+          label: { pt: 'Checklist', en: 'Checklist' },
+          fields: [
+            { name: 'text', type: 'textarea', required: true, localized: true, label: { pt: 'Texto', en: 'Text' } },
+          ],
+        },
         {
           name: 'glowColor',
           type: 'select',
@@ -393,6 +500,20 @@ export const StickyPageNav: Block = {
         { value: 'solution', label: { pt: 'Solução (some no mobile)', en: 'Solution (hidden on mobile)' } },
       ],
       label: { pt: 'Estilo', en: 'Style' },
+    },
+    {
+      /* ⚠️ E há um terceiro eixo, independente do estilo: /sobre fecha o menu
+       * com `mb-8 sm:mb-10` (`About.tsx:259`) e /carreiras não (`Careers.tsx:161`),
+       * embora os dois sejam o menu institucional. São 40px que empurram a
+       * página inteira — o suficiente para reprovar o aceite sozinhos. */
+      name: 'bottomGap',
+      type: 'select',
+      defaultValue: 'normal',
+      options: [
+        { value: 'normal', label: { pt: 'Com respiro abaixo', en: 'Gap below' } },
+        { value: 'none', label: { pt: 'Colado na seção seguinte', en: 'Flush with next section' } },
+      ],
+      label: { pt: 'Respiro abaixo', en: 'Gap below' },
     },
     ...camposComuns,
   ],
@@ -465,6 +586,22 @@ export const JobsList: Block = {
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
     { name: 'emptyText', type: 'text', localized: true, label: { pt: 'Texto quando não há vagas', en: 'Empty text' } },
+    {
+      /* ⚠️ O cartão "Banco de Talentos" vive **dentro** desta seção no legado
+       * (`Careers.tsx:450`), abaixo da grade de vagas — não é uma faixa
+       * separada. O porte de MIG-050 o transformou num `ctaContact` no fim da
+       * página, o que muda a ordem e a altura de /carreiras. */
+      name: 'talentBank',
+      type: 'group',
+      label: { pt: 'Banco de talentos', en: 'Talent bank' },
+      fields: [
+        { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
+        { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'highlight', type: 'text', localized: true, label: { pt: 'Trecho destacado', en: 'Highlighted text' } },
+        { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+        { name: 'note', type: 'text', localized: true, label: { pt: 'Aviso ao lado do ícone', en: 'Note beside the icon' } },
+      ],
+    },
     ...camposComuns,
   ],
 }

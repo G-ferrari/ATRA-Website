@@ -57,7 +57,11 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
         solucao
           ? cn('z-50 px-4', grudado ? 'top-[62px] md:top-[74px]' : 'top-[76px] md:top-[88px]')
           : cn(
-              'z-30 px-3 sm:px-4 mb-8 sm:mb-10',
+              'z-30 px-3 sm:px-4',
+              /* ⚠️ O respiro abaixo é do menu de /sobre (`About.tsx:259`), não
+                 do estilo institucional: /carreiras usa o mesmo menu sem ele
+                 (`Careers.tsx:161`). Ver a nota do campo em `blocks/index.ts`. */
+              bloco.bottomGap === 'normal' && 'mb-8 sm:mb-10',
               grudado ? 'top-[58px] sm:top-[66px] md:top-[74px]' : 'top-[70px] sm:top-[80px] md:top-[88px]',
             ),
       )}
