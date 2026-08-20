@@ -13,3 +13,8 @@ allowBuilds:
   # não é necessário. Verificado: libvips 8.18.3 carrega normalmente.
   sharp: false
   unrs-resolver: false
+  # MIG-061. Os dois vêm com o SDK do Gemini. O postinstall do `protobufjs`
+  # gera código que o uso em TypeScript não precisa, e o do `@google/genai` só
+  # o encadeia. Verificado: a rota `/api/chat` compila e responde sem eles.
+  '@google/genai': false
+  protobufjs: false

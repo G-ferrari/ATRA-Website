@@ -29,6 +29,7 @@
     "gate:baseline": "node scripts/gate.mjs --baseline"
   },
   "dependencies": {
+    "@google/genai": "^2.17.1",
     "@iconify/react": "^6.0.2",
     "@payloadcms/db-postgres": "3.88.0",
     "@payloadcms/next": "3.88.0",

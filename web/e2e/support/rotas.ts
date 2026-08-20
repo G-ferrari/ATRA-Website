@@ -22,6 +22,7 @@ export const ROTAS_COM_GABARITO = [
      38%, neste caso. Ver a nota no topo de `seed/parceiros.ts`. */
   { nome: 'parceiro-detalhe', caminho: '/parceiros/google-cloud' },
   { nome: 'insights', caminho: '/insights' },
+  { nome: 'chat', caminho: '/chat' },
 ] as const
 
 /* Imagens entram mascaradas na comparação.

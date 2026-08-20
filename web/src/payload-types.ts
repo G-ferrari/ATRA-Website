@@ -112,10 +112,12 @@ export interface Config {
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
   globals: {
+    'atra-ai': AtraAi;
     navigation: Navigation;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
+    'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
@@ -8325,6 +8327,31 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "atra-ai".
+ */
+export interface AtraAi {
+  id: number;
+  /**
+   * When off, the page stays up and answers that the service is unavailable.
+   */
+  enabled?: boolean | null;
+  /**
+   * Who the AI is, what it knows about ATRA and how it should steer the conversation.
+   */
+  systemPrompt: string;
+  /**
+   * Provisional until P-04.
+   */
+  requestsPerHour: number;
+  /**
+   * Shown when the limit is hit or the AI is off. Graceful degradation, not an error.
+   */
+  unavailableMessage: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * The 7 menu categories and each panel’s content.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -8559,6 +8586,19 @@ export interface SiteSetting {
   foundedYear?: number | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "atra-ai_select".
+ */
+export interface AtraAiSelect<T extends boolean = true> {
+  enabled?: T;
+  systemPrompt?: T;
+  requestsPerHour?: T;
+  unavailableMessage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

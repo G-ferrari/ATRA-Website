@@ -3,6 +3,7 @@ import { Mona_Sans } from 'next/font/google'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
+import { Casca } from '@/components/layout/casca'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
@@ -100,12 +101,13 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
       {/* A árvore reproduz a do legado (`App.tsx:2597`): o `<body>` fica limpo,
         * como no `index.html` dele, e as classes de casca vivem no wrapper. */}
       <body>
-        <div className="bg-surface-1 font-sans selection:bg-primary/30 flex flex-col transition-colors duration-500 min-h-screen">
-          <SiteHeader locale={locale} navegacao={navegacao} />
-          <div className="flex-1 flex flex-col min-h-0">{children}</div>
-          <SiteFooter locale={locale} />
-          <ThemeToggle locale={locale} />
-        </div>
+        <Casca
+          cabecalho={<SiteHeader locale={locale} navegacao={navegacao} />}
+          rodape={<SiteFooter locale={locale} />}
+          alternadorDeTema={<ThemeToggle locale={locale} />}
+        >
+          {children}
+        </Casca>
       </body>
     </html>
   )

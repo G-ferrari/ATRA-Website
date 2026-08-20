@@ -32,6 +32,7 @@ import * as migration_20260820_113912_mig_057_logo_marquee_list from './20260820
 import * as migration_20260820_120441_mig_058_home_blocks from './20260820_120441_mig_058_home_blocks';
 import * as migration_20260820_121347_mig_058_cta_photo from './20260820_121347_mig_058_cta_photo';
 import * as migration_20260820_183139_mig_060_insights_hub from './20260820_183139_mig_060_insights_hub';
+import * as migration_20260820_185404_mig_061_atra_ai from './20260820_185404_mig_061_atra_ai';
 
 export const migrations = [
   {
@@ -202,6 +203,11 @@ export const migrations = [
   {
     up: migration_20260820_183139_mig_060_insights_hub.up,
     down: migration_20260820_183139_mig_060_insights_hub.down,
-    name: '20260820_183139_mig_060_insights_hub'
+    name: '20260820_183139_mig_060_insights_hub',
+  },
+  {
+    up: migration_20260820_185404_mig_061_atra_ai.up,
+    down: migration_20260820_185404_mig_061_atra_ai.down,
+    name: '20260820_185404_mig_061_atra_ai'
   },
 ];

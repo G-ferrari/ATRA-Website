@@ -196,7 +196,7 @@ export async function settle(page: Page) {
    *
    * Esperar altura repetida três vezes é mais barato e mais confiável que um
    * `waitForTimeout` grande: sai assim que assentou, e insiste quando demora. */
-  /* Zera a rolagem **horizontal** de qualquer trilho antes de medir.
+  /* Zera a rolagem interna de qualquer contêiner antes de medir.
    *
    * ⚠️ O carrossel de cases da home é `overflow-x-auto`, e o navegador pode
    * deixá-lo com alguns pixels de `scrollLeft` depois da rolagem vertical e do
@@ -206,6 +206,11 @@ export async function settle(page: Page) {
   await page.evaluate(() => {
     for (const el of document.querySelectorAll('*')) {
       if (el.scrollWidth > el.clientWidth) el.scrollLeft = 0
+      /* E a vertical, pelo mesmo motivo. O painel de mensagens do /chat chama
+         `scrollIntoView` ao montar, e quanto ele rola depende de quando o
+         efeito correu — os dois viewports estreitos alternavam entre passar e
+         falhar sem mudança de código. */
+      if (el.scrollHeight > el.clientHeight) el.scrollTop = 0
     }
   })
 
