@@ -90,11 +90,11 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-048 | Blocos: `statsGrid`, `sealsBanner`, `valueCards`, `stickyPageNav` + global `site-settings` | 047 | 4h | **done** |
 | MIG-049 | `/sobre` (a collection `pages` veio em 047) | 048 | 4h | **done** — no gate, ≤0,1% nos 3 viewports |
 | MIG-049a | `pageHero.mediaMode`, imagem no `richTextSection`, rampa de colunas por variante, ids de bloco no seed EN, `navLabel`, `logoScale` | 049 | 3h | **done** |
-| MIG-050 | `/carreiras` + collection `jobs` + blocos `jobsList`/`sealsBanner`/`processSteps` | 048 | 4h | ⚠️ **reaberta** — ver MIG-050a |
+| MIG-050 | `/carreiras` + collection `jobs` + blocos `jobsList`/`sealsBanner`/`processSteps` | 048 | 4h | **done** por MIG-050a — a entrega original saiu a 30% do gabarito |
 | MIG-051 | `/carreiras/[slug]` (vaga) | 050 | 2h | **done** |
 | MIG-052 | `/consultores` + `specialist-roles` | 047 | 4h | **done** — ⚠️ fechada em MIG-052 com **57% da página faltando** e sem gabarito; refeita e com portão verde nos 3 viewports |
 | MIG-053 | Bloco `ctaContact` + `/contato` (D-10) | 047 | 3h | **done** |
-| MIG-054 | `/parceiros/[slug]` | 047 | 3h | ⚠️ **reaberta** — ver MIG-054a |
+| MIG-054 | `/parceiros/[slug]` | 047 | 3h | **done** por MIG-054a — a entrega original saiu a 38% do gabarito |
 | MIG-055 | `/solucoes` (índice) + collection `solutions` | 047 | 3h | **done** — sem gabarito (D-09); aceite funcional no smoke |
 | MIG-056 | `/solucoes/[slug]` | 055 | ~~3h~~ **~5x maior** | **done** — portão verde nos 3 viewports. A composição prevista não batia com o legado: exigiu 4 blocos novos e 4 variantes. Ver a nota em [blocos.md](../02-especificacao/blocos.md#regras-de-bloco) |
 | MIG-050a | **`/carreiras` a 30% do gabarito** — reconstrução | 050 | 6h | ✅ feita |

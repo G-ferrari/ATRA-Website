@@ -19,7 +19,7 @@ depois da paridade de conteúdo.
 | 0 | Descoberta | ✅ concluída | — |
 | 1 | Fundação | ✅ **concluída em 18/08/2026** | 0 |
 | 2 | Fatia vertical | ✅ **concluída em 20/08/2026** — MIG-072a fechou o megamenu, último item aberto | 1 |
-| 3 | Fábrica de rotas | ✅ **concluída em 20/08/2026** — 20 rotas no ar, 14 sob regressão visual | 2 |
+| 3 | Fábrica de rotas | ✅ **concluída em 20/08/2026** — 20 rotas no ar, 15 sob regressão visual | 2 |
 | 4a | Seed do protótipo | Conteúdo que já existe em `legacy/` no CMS | 2 |
 | 4b | Migração do WordPress | 207 posts + 6 vagas + mídia | 1 |
 | 4c | Conteúdo novo | `segments` (10) + `solutions` (6→13) + página legal | 3 |
@@ -87,7 +87,7 @@ Uma PR por rota, na ordem de dependência do
 
 **Critério de conclusão:** ✅ **concluída em 20/08/2026.**
 - ✅ 20 rotas do protótipo respondendo 200 em PT e EN
-- ✅ Regressão visual passando — **14 rotas** em `ROTAS_COM_GABARITO`, nos três
+- ✅ Regressão visual passando — **15 rotas** em `ROTAS_COM_GABARITO`, nos três
   viewports. Ficaram de fora, com razão registrada: `/solucoes` (D-09 mudou o
   comportamento da rota) e `/contato` (rota nova, D-10 — não há gabarito)
 - ✅ 404 real
