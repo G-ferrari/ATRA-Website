@@ -30,7 +30,7 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | ~~P-03~~ | ~~Tipografia oficial da marca~~ | — | ✅ **Resolvida em 17/08/2026 → D-16.** Mona Sans, SIL OFL 1.1, self-hosted |
 | **P-04** | Qual o **teto de custo mensal** aceitável para a ATRA AI? | números concretos de D-12 | Fase 5 sem critério de aceite; risco de conta aberta em produção |
 | **P-05** | Plataforma de deploy: **Coolify/Dokploy ou Compose + Caddy**? | provisionamento da VPS | ✳️ **Comparativo entregue em [deploy-vps](../04-infra/deploy-vps.md), com recomendação de Coolify.** Falta confirmar — e vale checar se a ATRA já tem padrão de infra (o WP roda em RunCloud) |
-| **P-06** | A branch `migracao` vai para o remoto `G-ferrari/ATRA-Website`, ou trabalhamos em fork? | fluxo de PR por rota | Hoje não bloqueia (branches locais); bloqueia quando a Fase 3 começar a produzir uma PR por rota |
+| ~~P-06~~ | ~~A branch `migracao` vai para o remoto, ou fork?~~ | — | ✅ **Respondida por evidência (20/08).** O remoto `G-ferrari/ATRA-Website` já existe, `origin/migracao` também, e o CI dispara em push para ela. A branch foi publicada e o CI fechou verde nos dois jobs |
 | **P-07** *(reduzida)* | Quem escreve o corpo dos **9 materiais** (3 relatórios, 3 ebooks, 3 webinars) que só existem no protótipo? | publicação desses 9 itens | ✅ Os **6 posts** saíram do escopo: os fictícios são descartados e os 207 reais vêm do WP com corpo (D-17). Restam os 9 materiais, que não existem em lugar nenhum — ficam em rascunho até alguém escrever |
 | **P-08** | O **conteúdo EN existente** (169 chaves) é tradução aprovada pelo marketing ou saída de máquina do protótipo? | escopo de revisão antes do cutover | Se for de máquina, o site publica inglês não revisado sob o domínio da ATRA. Entra revisão humana no roadmap |
 | **P-09** | Confirmar o **telefone oficial**: o site usa `+55 11 96305-2391` (`App.tsx:2391`); o contato institucional registrado é `+55 11 96306-0267` | global `contact` | Lead ligando para o número errado |
@@ -57,7 +57,6 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 **Com a ATRA, assumidas por Leonardo:** P-01, P-08, P-09, P-10, P-11, P-12, P-13,
 P-14, P-16, P-17, P-18, P-19, P-27.
 **Recomendação técnica a apresentar:** P-04 (Etapa 2), P-05 (Etapa 4), P-20.
-**Destrava sozinha:** P-06, quando a Fase 3 começar a produzir PRs.
 **Decisão de gestão:** P-07.
 
 Duas merecem prioridade por serem baratas agora e caras depois:

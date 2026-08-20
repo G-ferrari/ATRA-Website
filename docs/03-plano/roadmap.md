@@ -18,7 +18,7 @@ depois da paridade de conteúdo.
 |---|---|---|---|
 | 0 | Descoberta | ✅ concluída | — |
 | 1 | Fundação | ✅ **concluída em 18/08/2026** | 0 |
-| 2 | Fatia vertical | Cases ponta a ponta, com padrão documentado | 1 |
+| 2 | Fatia vertical | ✅ **concluída em 20/08/2026** — MIG-072a fechou o megamenu, último item aberto | 1 |
 | 3 | Fábrica de rotas | As 16 rotas restantes do protótipo | 2 |
 | 4a | Seed do protótipo | Conteúdo que já existe em `legacy/` no CMS | 2 |
 | 4b | Migração do WordPress | 207 posts + 6 vagas + mídia | 1 |
@@ -53,7 +53,7 @@ variáveis de ambiente · CI (lint, typecheck, build) · Playwright configurado 
 | `pnpm test:e2e` roda sem erro de configuração | ✅ **24 testes passando** em 3 viewports |
 | Zero imagem corrompida no legado | ✅ 0 de 48; home renderiza 52 imagens sem quebra |
 | Largura de texto bate com o legado (±0,1%) | ✅ **0,0005%** nos pesos 200–900; **0,0003%** no itálico |
-| CI verde em PR limpo | ⚠️ **não verificável sem remoto** — cada passo foi exercitado localmente, e o portão de erro de tipo foi testado com um erro deliberado. Depende de **P-06** |
+| CI verde em PR limpo | ✅ **verde em 20/08/2026** ([run 32326603668](https://github.com/G-ferrari/ATRA-Website/actions/runs/32326603668)), nos dois jobs. O `e2e` nunca tinha passado: o executor do seed exigia um `.env.local` que não existe no CI, e não havia serviço de storage para o upload de mídia |
 
 > As duas últimas linhas de imagem e fonte eram pré-requisito do baseline visual:
 > capturas congeladas com imagem quebrada ou fonte divergente registrariam
