@@ -1117,28 +1117,10 @@ export const HomeHero: Block = {
         { name: 'placeholder', type: 'text', localized: true, label: { pt: 'Texto do campo', en: 'Input placeholder' } },
         { name: 'disclaimer', type: 'textarea', localized: true, label: { pt: 'Aviso sob a caixa', en: 'Disclaimer' } },
         { name: 'clientsTitle', type: 'text', localized: true, label: { pt: 'Título dos logos de cliente', en: 'Client logos title' } },
-        {
-          /* Os 7 clientes da esteira (`App.tsx:1863`). Array aqui, e não uma
-           * collection: eles não têm página, slug nem nada além de nome e logo,
-           * e o legado também os lista à mão. Vira collection no dia em que
-           * alguém precisar de um case ligado a eles. */
-          name: 'clients',
-          type: 'array',
-          label: { pt: 'Logos de cliente', en: 'Client logos' },
-          fields: [
-            { name: 'name', type: 'text', required: true, label: { pt: 'Nome', en: 'Name' } },
-            { name: 'logo', type: 'upload', relationTo: 'media', required: true, label: { pt: 'Logo', en: 'Logo' } },
-            {
-              /* Três dos sete logos são desenhados menores no arquivo e o
-               * legado os amplia (`App.tsx:1895`). Sem isso ANBIMA, Afya e
-               * Icatu aparecem visivelmente menores que os outros quatro. */
-              name: 'boost',
-              type: 'checkbox',
-              defaultValue: false,
-              label: { pt: 'Ampliar', en: 'Enlarge' },
-            },
-          ],
-        },
+        /* ⚠️ Os logos **não** ficam aqui: vêm da collection `clients`, resolvida
+         * pela página (MIG-071). Eram um array neste bloco até a Fase 4a, e a
+         * mesma lista já vivia à mão no legado em outro lugar — é o tipo de
+         * duplicação que a migração existe para acabar. */
       ],
     },
     ...camposComuns,
@@ -1344,19 +1326,10 @@ export const TestimonialCarousel: Block = {
   labels: { singular: { pt: 'Carrossel de depoimentos', en: 'Testimonial carousel' }, plural: { pt: 'Carrosséis de depoimentos', en: 'Testimonial carousels' } },
   fields: [
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
-    {
-      name: 'items',
-      type: 'array',
-      required: true,
-      minRows: 1,
-      label: { pt: 'Depoimentos', en: 'Testimonials' },
-      fields: [
-        { name: 'text', type: 'textarea', required: true, localized: true, label: { pt: 'Depoimento', en: 'Quote' } },
-        { name: 'client', type: 'text', required: true, label: { pt: 'Empresa', en: 'Company' } },
-        { name: 'role', type: 'text', required: true, localized: true, label: { pt: 'Cargo', en: 'Role' } },
-        { name: 'avatar', type: 'upload', relationTo: 'media', label: { pt: 'Foto', en: 'Photo' } },
-      ],
-    },
+    /* ⚠️ Os depoimentos vêm da collection `testimonials`, com `featured`
+     * marcado — não de um array aqui (MIG-071). Os mesmos 4 textos existiam
+     * neste bloco e na collection, e um case podia anexar um depoimento que a
+     * home mostrava com outra redação. */
     ...camposComuns,
   ],
 }

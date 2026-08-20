@@ -2,6 +2,8 @@ import type { Page, SiteSetting } from '@/payload-types'
 import type {
   Acento,
   Bloco,
+  Depoimento,
+  LogoDeCliente,
   MetricaInstitucional,
   PartnerBadge,
   Selo,
@@ -220,15 +222,10 @@ export function toBlocos(
                 placeholder: vazio(b.prompt.placeholder),
                 disclaimer: vazio(b.prompt.disclaimer),
                 clientsTitle: vazio(b.prompt.clientsTitle),
-                clients: (b.prompt.clients ?? [])
-                  .map((c) => ({
-                    name: c.name,
-                    logo: toImageOpcional(c.logo, 'homeHero.prompt.clients.logo'),
-                    boost: Boolean(c.boost),
-                  }))
-                  .filter((c): c is { name: string; logo: NonNullable<typeof c.logo>; boost: boolean } => c.logo !== null),
               }
             : null,
+          // Preenchidos pela página, da collection `clients`.
+          clientes: [],
         })
         break
 
@@ -327,12 +324,8 @@ export function toBlocos(
           ...base(b),
           tipo: 'testimonialCarousel',
           title: b.title,
-          items: (b.items ?? []).map((i) => ({
-            text: i.text,
-            client: i.client,
-            role: i.role,
-            avatar: toImageOpcional(i.avatar, 'testimonialCarousel.items.avatar'),
-          })),
+          // Preenchidos pela página, da collection `testimonials`.
+          items: [],
         })
         break
 
@@ -650,6 +643,18 @@ export function toBlocos(
 /** Injeta as vagas resolvidas nos blocos `jobsList` (bloco não busca dado). */
 export function comVagas(blocos: Bloco[], vagas: Vaga[]): Bloco[] {
   for (const b of blocos) if (b.tipo === 'jobsList') b.vagas = vagas
+  return blocos
+}
+
+/** Injeta os logos de cliente no herói da home (bloco não busca dado). */
+export function comClientes(blocos: Bloco[], clientes: LogoDeCliente[]): Bloco[] {
+  for (const b of blocos) if (b.tipo === 'homeHero') b.clientes = clientes
+  return blocos
+}
+
+/** Injeta os depoimentos em destaque no carrossel da home. */
+export function comDepoimentos(blocos: Bloco[], depoimentos: Depoimento[]): Bloco[] {
+  for (const b of blocos) if (b.tipo === 'testimonialCarousel') b.items = depoimentos
   return blocos
 }
 

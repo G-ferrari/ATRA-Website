@@ -1,7 +1,8 @@
 import { draftMode } from 'next/headers'
 
 import type { Locale } from './locales'
-import { comVagas, toBlocos, toMetricas, toSelos } from './mappers/blocks'
+import { comClientes, comDepoimentos, comVagas, toBlocos, toMetricas, toSelos } from './mappers/blocks'
+import { toDepoimento, toLogoDeCliente } from './mappers/client'
 import { toVaga } from './mappers/job'
 import { getPayload } from './payload'
 import type { Bloco } from '@/types/content'
@@ -53,6 +54,31 @@ export async function resolverPagina(
       where: rascunho ? {} : { _status: { equals: 'published' } },
     })
     comVagas(blocos, vagas.map((v) => toVaga(v, locale)))
+  }
+
+  /* Idem para a home: os logos de cliente e os depoimentos em destaque saem das
+     collections, não de arrays no bloco (MIG-071). */
+  if (blocos.some((b) => b.tipo === 'homeHero')) {
+    const { docs: clientes } = await payload.find({
+      collection: 'clients',
+      locale,
+      depth: 1,
+      limit: 100,
+      sort: 'order',
+    })
+    comClientes(blocos, clientes.map(toLogoDeCliente))
+  }
+
+  if (blocos.some((b) => b.tipo === 'testimonialCarousel')) {
+    const { docs: depoimentos } = await payload.find({
+      collection: 'testimonials',
+      locale,
+      depth: 1,
+      limit: 100,
+      sort: 'id',
+      where: { featured: { equals: true } },
+    })
+    comDepoimentos(blocos, depoimentos.map(toDepoimento))
   }
 
   return { title: docs[0].title, blocos }

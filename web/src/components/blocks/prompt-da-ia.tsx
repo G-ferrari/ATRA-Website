@@ -20,9 +20,11 @@ import type { BlocoHomeHero } from '@/types/content'
  * mesmo destino que o legado dá a quem tem JavaScript desligado. */
 export function PromptDaIa({
   prompt,
+  clientes,
   locale,
 }: {
   prompt: NonNullable<BlocoHomeHero['prompt']>
+  clientes: BlocoHomeHero['clientes']
   locale: Locale
 }) {
   const [texto, setTexto] = useState('')
@@ -36,7 +38,7 @@ export function PromptDaIa({
 
   /* A esteira leva a lista **duplicada**: é o que faz a emenda não saltar, já
      que a animação vai de 0 a -50%. Mesmo truque da vitrine vertical de /sobre. */
-  const esteira = [...prompt.clients, ...prompt.clients]
+  const esteira = [...clientes, ...clientes]
 
   return (
     <div className="relative z-10 w-full">
@@ -107,7 +109,7 @@ export function PromptDaIa({
           </div>
         </div>
 
-        {prompt.clients.length > 0 && (
+        {clientes.length > 0 && (
           <div className="w-full max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-slate-200/40 dark:border-slate-800/80">
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
               <div className="flex-shrink-0 flex items-center gap-6 justify-center md:justify-start w-full md:w-auto">
@@ -143,7 +145,7 @@ export function PromptDaIa({
                             alt={`Logo ${c.name}`}
                             loading="lazy"
                             decoding="async"
-                            className={`${c.boost ? 'max-h-10 scale-110' : 'max-h-8'} max-w-full object-contain pointer-events-none opacity-90 hover:opacity-100 transition-all`}
+                            className={`${c.enlarge ? 'max-h-10 scale-110' : 'max-h-8'} max-w-full object-contain pointer-events-none opacity-90 hover:opacity-100 transition-all`}
                           />
                         </div>
                       ))}

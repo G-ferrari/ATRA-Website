@@ -101,7 +101,7 @@ export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale:
         </div>
       </section>
 
-      {bloco.prompt && <PromptDaIa prompt={bloco.prompt} locale={locale} />}
+      {bloco.prompt && <PromptDaIa prompt={bloco.prompt} clientes={bloco.clientes} locale={locale} />}
     </div>
   )
 }

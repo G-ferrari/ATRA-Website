@@ -61,24 +61,6 @@ async function upsertMidia(arquivo: string, alt: string) {
   return doc.id
 }
 
-/* Os 7 logos de cliente da esteira (`App.tsx:1863`). `boost` amplia os três que
- * vêm menores no arquivo. */
-const CLIENTES = [
-  { name: 'RD Saúde', file: 'rdsaude.jpg', boost: false },
-  { name: 'ANBIMA', file: 'anbima.jpg', boost: true },
-  { name: 'Afya', file: 'afya.jpg', boost: true },
-  { name: 'Oncoclínicas', file: 'oncoclinicas.jpg', boost: false },
-  { name: 'Carrefour Banco', file: 'bcarrefour.jpg', boost: false },
-  { name: 'Icatu', file: 'icatu.jpg', boost: true },
-  { name: 'Porto', file: 'porto.jpg', boost: false },
-]
-
-console.log('→ logos de cliente')
-const clients = []
-for (const c of CLIENTES) {
-  clients.push({ name: c.name, logo: await upsertMidia(`public/logos/${c.file}`, `Logo ${c.name}`), boost: c.boost })
-}
-
 /* Os 9 logos da faixa, na ordem e com os nomes do legado (`App.tsx:1397`).
  *
  * ⚠️ O quarto se chama **"Partner"** mesmo. É assim no gabarito, e o nome
@@ -150,21 +132,6 @@ for (const c of CASES) {
   })
 }
 
-const DEPOIMENTOS = [
-  { client: 'ABC Brasil', role: 'Gerente de Arquitetura de Dados', text: 'Integrar nossos serviços do Google Cloud com as soluções Informatica CDGC nos proporcionou agilidade, escalabilidade e eficiência em nossa transformação digital.' },
-  { client: 'ABC Brasil', role: 'Especialista Cloud & DevOps', text: 'Com o uso de Pub/Sub e Cloud Functions, conseguimos alcançar dados quase em tempo real e escalabilidade em nossos processos, ao mesmo tempo em que reduzimos significativamente os custos e esforços operacionais.' },
-  { client: 'Banco Carrefour', role: 'Líder de Engenharia de Dados', text: 'Gostaria de expressar meu reconhecimento e gratidão à Equipe de Fábrica da ATRA pelo trabalho realizado nos processos de ingestão de dados. A equipe desempenhou um papel fundamental na aceleração das implementações e contribuiu de forma consistente para os procedimentos de validação estabelecidos. A colaboração constante resultou em uma melhoria na qualidade das entregas e possibilitou o avanço do nosso projeto de migração da plataforma de dados para o Google Cloud.' },
-  { client: 'Banco Carrefour', role: 'Superintendente de Risco', text: 'A parceria com a ATRA foi essencial para o nosso sucesso na modernização do processamento de dados financeiros no Google Cloud. A capacidade da equipe em se alinhar às necessidades do nosso time de Risco resultou em uma solução totalmente automatizada e 51 vezes mais rápida, garantindo conformidade e excelência operacional.' },
-]
-
-/* ⚠️ Os avatares do gabarito são **retratos de banco** do Unsplash: não são as
- * pessoas que deram o depoimento. Pôr uma foto do acervo da ATRA no lugar seria
- * atribuir rosto a cliente, e deixar sem foto **não** é opção — a caixa de 40px
- * some, o bloco encolhe 3px e a página inteira anda junto, reprovando o aceite
- * por deslocamento. Entra o mesmo marcador das capas de material, que diz o que
- * é. Registrado em debito-tecnico.md. */
-const depoimentos = DEPOIMENTOS.map((d) => ({ ...d, avatar: marcador }))
-
 const CARTOES = [
   { image: marcador, icon: 'sparkles' as const, category: 'BLOG POST', title: 'Inovação em ação: Onde a criatividade encontra a colaboração', column: 'first' as const },
   { image: marcador, icon: 'trending-up' as const, category: 'BLOG POST', title: 'Focado no impacto: Três estratégias essenciais', column: 'first' as const },
@@ -184,8 +151,7 @@ const layout = [
       placeholder: 'Escreva uma mensagem...',
       disclaimer: 'ATRA Intelligence é uma IA e pode cometer erros. Por favor verifique informações críticas.',
       clientsTitle: 'Clientes que confiam em nós',
-      clients,
-    },
+      },
   },
   {
     blockType: 'homeBento' as const,
@@ -249,7 +215,6 @@ const layout = [
     blockType: 'testimonialCarousel' as const,
     theme: 'surface-2' as const,
     title: 'Por que os clientes nos escolhem',
-    items: depoimentos,
   },
   {
     blockType: 'contentTeaser' as const,

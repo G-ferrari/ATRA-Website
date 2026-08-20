@@ -187,7 +187,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
-| MIG-071 | Seed de glossário, materiais, parceiros, clientes, depoimentos | 070 | Idempotente; roda 2× sem duplicar | 4h |
+| MIG-071 | Seed de glossário, materiais, parceiros, clientes, depoimentos | 070 | Idempotente; roda 2× sem duplicar | 4h | **done** — `pnpm seed` 2× sem mudar nenhuma contagem; nova collection `clients` (7) e depoimentos 3→7 |
 | MIG-072 | Seed dos globals (`contact`, `navigation`, `footer`, `site-settings`) | 071 | Métricas com placeholder marcado até P-01 | 2h |
 | MIG-073 | Baixar os 11 assets hotlinkados do WP para o Media | 070 | Zero URL `wp-content` no banco | 1.5h |
 

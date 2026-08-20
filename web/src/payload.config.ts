@@ -14,6 +14,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Cases } from './collections/Cases'
+import { Clients } from './collections/Clients'
 import { GlossaryTerms } from './collections/GlossaryTerms'
 import { Jobs } from './collections/Jobs'
 import { Media } from './collections/Media'
@@ -55,7 +56,9 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Solutions, SpecialistRoles, Webinars],
+  collections: [
+    Clients,
+    Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Solutions, SpecialistRoles, Webinars],
 
   globals: [AtraAi, Navigation, SiteSettings],
 

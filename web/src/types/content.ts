@@ -217,8 +217,9 @@ export type BlocoHomeHero = Base & {
     placeholder: string | null
     disclaimer: string | null
     clientsTitle: string | null
-    clients: { name: string; logo: Image; boost: boolean }[]
   } | null
+  /** Resolvidos pela página, da collection `clients`. */
+  clientes: LogoDeCliente[]
 }
 
 export type BlocoLogoMarquee = Base & {
@@ -275,10 +276,21 @@ export type BlocoCaseCarousel = Base & {
   }[]
 }
 
+export type LogoDeCliente = { name: string; logo: Image; enlarge: boolean }
+
+export type Depoimento = {
+  quote: string
+  company: string
+  authorName: string | null
+  authorRole: string
+  photo: Image | null
+}
+
 export type BlocoTestimonialCarousel = Base & {
   tipo: 'testimonialCarousel'
   title: string
-  items: { text: string; client: string; role: string; avatar: Image | null }[]
+  /** Resolvidos pela página, da collection `testimonials` com `featured`. */
+  items: Depoimento[]
 }
 
 export type BlocoContentTeaser = Base & {

@@ -53,5 +53,14 @@ export const ROTAS_COM_GABARITO = [
  *
  * `reiniciarAleatorio()` (em `lib/e2e.ts` dos dois apps) continua valendo: sem
  * ele o `?e2e=1` não congela nada, e um dia o canvas pode voltar à comparação. */
-export const MASCARA = 'img, canvas'
+/* `[data-mascara]` marca o que **substitui** uma imagem do gabarito por outra
+ * coisa, por decisão registrada. Hoje é só o monograma de depoimento: D-14
+ * descartou os 4 retratos de banco de imagens que o legado usa para representar
+ * pessoas reais de ABC Brasil e Banco Carrefour, e pôs as iniciais no lugar. A
+ * caixa é a mesma; o conteúdo é que muda, de propósito.
+ *
+ * ⚠️ A máscara **ignora opacidade**: os quatro depoimentos ficam empilhados na
+ * mesma célula e os três invisíveis também são pintados. É o que faz a mancha
+ * magenta dos dois lados ter o mesmo formato irregular. */
+export const MASCARA = 'img, canvas, [data-mascara]'
 export const COR_DA_MASCARA = '#ff00ff'

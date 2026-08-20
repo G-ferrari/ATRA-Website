@@ -67,6 +67,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    clients: Client;
     users: User;
     media: Media;
     topics: Topic;
@@ -88,6 +89,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    clients: ClientsSelect<false> | ClientsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
@@ -150,36 +152,25 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Who can access the panel. Only admins manage users.
+ * Client logos. Shown in the home page strip, in the order set here.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "clients".
  */
-export interface User {
+export interface Client {
   id: number;
-  name: string;
   /**
-   * Editors publish content. Admins also change navigation, footer, the AI and users.
+   * Not translated: proper noun.
    */
-  role: 'editor' | 'admin';
+  name: string;
+  logo: number | Media;
+  /**
+   * For files where the mark sits small in the canvas and reads smaller than its neighbours.
+   */
+  enlarge?: boolean | null;
+  order?: number | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -233,6 +224,38 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * Who can access the panel. Only admins manage users.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name: string;
+  /**
+   * Editors publish content. Admins also change navigation, footer, the AI and users.
+   */
+  role: 'editor' | 'admin';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
 }
 /**
  * Topics used to filter cases, posts and resources. Controlled vocabulary: prefer reusing over creating.
@@ -1339,14 +1362,6 @@ export interface Partner {
               placeholder?: string | null;
               disclaimer?: string | null;
               clientsTitle?: string | null;
-              clients?:
-                | {
-                    name: string;
-                    logo: number | Media;
-                    boost?: boolean | null;
-                    id?: string | null;
-                  }[]
-                | null;
             };
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
@@ -1615,13 +1630,6 @@ export interface Partner {
           }
         | {
             title: string;
-            items: {
-              text: string;
-              client: string;
-              role: string;
-              avatar?: (number | null) | Media;
-              id?: string | null;
-            }[];
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -3055,14 +3063,6 @@ export interface Page {
           placeholder?: string | null;
           disclaimer?: string | null;
           clientsTitle?: string | null;
-          clients?:
-            | {
-                name: string;
-                logo: number | Media;
-                boost?: boolean | null;
-                id?: string | null;
-              }[]
-            | null;
         };
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
@@ -3331,13 +3331,6 @@ export interface Page {
       }
     | {
         title: string;
-        items: {
-          text: string;
-          client: string;
-          role: string;
-          avatar?: (number | null) | Media;
-          id?: string | null;
-        }[];
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -4768,14 +4761,6 @@ export interface Solution {
               placeholder?: string | null;
               disclaimer?: string | null;
               clientsTitle?: string | null;
-              clients?:
-                | {
-                    name: string;
-                    logo: number | Media;
-                    boost?: boolean | null;
-                    id?: string | null;
-                  }[]
-                | null;
             };
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
@@ -5044,13 +5029,6 @@ export interface Solution {
           }
         | {
             title: string;
-            items: {
-              text: string;
-              client: string;
-              role: string;
-              avatar?: (number | null) | Media;
-              id?: string | null;
-            }[];
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -5439,6 +5417,10 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
+        relationTo: 'clients';
+        value: number | Client;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
       } | null)
@@ -5535,6 +5517,18 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients_select".
+ */
+export interface ClientsSelect<T extends boolean = true> {
+  name?: T;
+  logo?: T;
+  enlarge?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -6164,14 +6158,6 @@ export interface PartnersSelect<T extends boolean = true> {
                     placeholder?: T;
                     disclaimer?: T;
                     clientsTitle?: T;
-                    clients?:
-                      | T
-                      | {
-                          name?: T;
-                          logo?: T;
-                          boost?: T;
-                          id?: T;
-                        };
                   };
               anchor?: T;
               navLabel?: T;
@@ -6315,15 +6301,6 @@ export interface PartnersSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              items?:
-                | T
-                | {
-                    text?: T;
-                    client?: T;
-                    role?: T;
-                    avatar?: T;
-                    id?: T;
-                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -7059,14 +7036,6 @@ export interface PagesSelect<T extends boolean = true> {
                     placeholder?: T;
                     disclaimer?: T;
                     clientsTitle?: T;
-                    clients?:
-                      | T
-                      | {
-                          name?: T;
-                          logo?: T;
-                          boost?: T;
-                          id?: T;
-                        };
                   };
               anchor?: T;
               navLabel?: T;
@@ -7210,15 +7179,6 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              items?:
-                | T
-                | {
-                    text?: T;
-                    client?: T;
-                    role?: T;
-                    avatar?: T;
-                    id?: T;
-                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -7931,14 +7891,6 @@ export interface SolutionsSelect<T extends boolean = true> {
                     placeholder?: T;
                     disclaimer?: T;
                     clientsTitle?: T;
-                    clients?:
-                      | T
-                      | {
-                          name?: T;
-                          logo?: T;
-                          boost?: T;
-                          id?: T;
-                        };
                   };
               anchor?: T;
               navLabel?: T;
@@ -8082,15 +8034,6 @@ export interface SolutionsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              items?:
-                | T
-                | {
-                    text?: T;
-                    client?: T;
-                    role?: T;
-                    avatar?: T;
-                    id?: T;
-                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;

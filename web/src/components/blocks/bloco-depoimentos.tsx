@@ -9,6 +9,14 @@ import { congelado } from '@/lib/e2e'
 import { cn } from '@/lib/utils'
 import type { BlocoTestimonialCarousel } from '@/types/content'
 
+/* Iniciais de quem falou, para o monograma. Duas letras quando há nome e
+ * sobrenome; a primeira da empresa quando o depoimento é anônimo. */
+function iniciais(d: { authorName: string | null; company: string }): string {
+  const base = d.authorName?.trim() || d.company
+  const partes = base.split(/\s+/).filter(Boolean)
+  return ((partes[0]?.[0] ?? '') + (partes.length > 1 ? (partes[partes.length - 1][0] ?? '') : '')).toUpperCase()
+}
+
 /* Depoimentos — porte de `legacy/src/App.tsx:1922`.
  *
  * ⚠️ Os depoimentos ficam **todos no DOM**, empilhados na mesma célula de grade,
@@ -65,7 +73,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
             <div className="relative w-full overflow-hidden flex-1 grid grid-cols-1 grid-rows-1 items-center px-1 sm:px-4">
               {bloco.items.map((d, i) => (
                 <div
-                  key={`${d.client}-${d.role}`}
+                  key={`${d.company}-${d.authorRole}`}
                   className={cn(
                     'col-start-1 row-start-1 w-full transition-all duration-500 ease-out flex flex-col items-center',
                     i === ativo
@@ -74,11 +82,11 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
                   )}
                 >
                   <p className="text-xs sm:text-sm md:text-base font-light leading-relaxed mb-5 sm:mb-6 text-text-main italic">
-                    &quot;{d.text}&quot;
+                    &quot;{d.quote}&quot;
                   </p>
 
                   <div className="flex items-center justify-center gap-3">
-                    {d.avatar && (
+                    {d.photo ? (
                       /* ⚠️ `<img>` direto, com as classes no próprio elemento —
                          não um wrapper `relative` com `next/image fill`. Os
                          quatro depoimentos ficam empilhados na mesma célula da
@@ -88,16 +96,32 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
                          numa barra só, no porte apareciam separadas. */
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={d.avatar.url}
-                        alt={d.role}
+                        src={d.photo.url}
+                        alt={d.authorName ?? d.authorRole}
                         className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-primary/40 shadow-sm shrink-0"
                       />
+                    ) : (
+                      /* D-14: sem foto, iniciais em círculo com a cor da marca.
+                         O gabarito usa retrato de banco de imagens para
+                         representar pessoas reais de ABC Brasil e Banco
+                         Carrefour — a decisão foi descartar essas 4 URLs em vez
+                         de apresentar rosto de desconhecido como cliente.
+                         Mesma caixa de 40/44px, então o layout não muda. */
+                      <div
+                        aria-hidden
+                        data-mascara
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-primary/40 shadow-sm shrink-0 bg-primary/15 text-primary flex items-center justify-center text-[11px] sm:text-xs font-bold tracking-wide"
+                      >
+                        {iniciais(d)}
+                      </div>
                     )}
                     <div className="flex flex-col items-start justify-center text-left">
                       <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] bg-primary/20 text-primary text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
-                        <ShieldCheck size={12} aria-hidden /> {d.role}
+                        <ShieldCheck size={12} aria-hidden /> {d.authorRole}
                       </div>
-                      <h4 className="font-bold text-xs sm:text-sm text-text-main mt-0.5">{d.client}</h4>
+                      <h4 className="font-bold text-xs sm:text-sm text-text-main mt-0.5">
+                        {d.authorName ? `${d.authorName} · ${d.company}` : d.company}
+                      </h4>
                     </div>
                   </div>
                 </div>
@@ -117,7 +141,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
           <div className="flex gap-2 justify-center mt-8">
             {bloco.items.map((d, i) => (
               <button
-                key={`ponto-${d.client}-${d.role}`}
+                key={`ponto-${d.company}-${d.authorRole}`}
                 type="button"
                 onClick={() => setAtivo(i)}
                 className={cn(
