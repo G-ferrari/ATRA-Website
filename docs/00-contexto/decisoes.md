@@ -1,6 +1,6 @@
 ---
 status: revisado
-atualizado_em: 2026-08-17
+atualizado_em: 2026-08-21
 depende_de: [../01-descoberta/inventario-rotas.md, ../01-descoberta/inventario-conteudo.md, ../01-descoberta/inventario-assets.md, ../01-descoberta/debito-tecnico.md]
 ---
 
@@ -383,6 +383,48 @@ existir no legado.
 o porte fiel não é só de estrutura e cor. Se a ATRA quiser ligar suavização
 depois, é mudança de uma linha — feita conscientemente, com o gabarito regravado,
 e não escondida dentro de uma migração.
+
+## D-26 — Os leads vão para o RD Station CRM; o Payload é registro de passagem
+
+*Responde [P-18](pendencias.md), em 21/08/2026.*
+
+**Contexto.** A collection `form-submissions` nasceu em MIG-100 sendo a **única**
+cópia dos leads, e o comentário no topo dela já dizia que isso era provisório:
+"P-18 pergunta se a ATRA usa RD Station ou HubSpot; se usar, o destino final dos
+leads é lá e isto vira registro de passagem". A pergunta ficou aberta enquanto o
+formulário era ligado.
+
+**Escolha.** A ATRA usa **RD Station CRM** — o produto de CRM, não o RD Station
+Marketing. Os formulários do site passam a alimentá-lo.
+
+**Consequência.**
+
+- **O lead grava no Postgres primeiro; o CRM é o segundo passo.** Mesmo contrato
+  do aviso por e-mail: sem token, não falha — apenas não sincroniza, e a falta
+  fica visível no admin. A ordem de MIG-100 (anti-spam → grava → avisa) ganha um
+  quarto passo no fim, e não um novo primeiro. Lead perdido não volta.
+- **A integração mora num hook de `form-submissions`, não na Server Action.**
+  MIG-102, MIG-103 e MIG-104 são três formulários que ainda vão nascer e
+  desembocam na mesma collection; no hook, os três já entram integrados.
+- **Atribuição de campanha passou a ser coletada.** O `source` que existia
+  responde *onde* o visitante converteu; o CRM precisa saber *de onde ele veio*.
+  Os cinco parâmetros UTM entraram, capturados na chegada e guardados na sessão
+  — ver `lib/utm.ts`.
+- **Sincronizar exige idempotência.** Reenvio sem `crmId` gravado cria negócio
+  duplicado no CRM, e o retry é obrigatório justamente porque a API é externa.
+- **[P-22](pendencias.md) muda de peso.** Ela pergunta se `form-submissions`
+  precisa de réplica em tempo real, porque o backup diário deixa o RPO do lead em
+  24 h. Com o CRM recebendo cada lead, ele passa a ser a segunda cópia — a
+  pergunta não desaparece, mas deixa de ser a única defesa.
+- **Não decide o consentimento.** Mandar dado pessoal para um terceiro pede base
+  legal explícita, e hoje **não existe aviso de privacidade nos formulários** —
+  nem no porte nem no legado. Acrescentar um é elemento visível novo em `/` e
+  `/insights`, que são rotas sob gate visual: é divergência deliberada do
+  gabarito ([D-15](#d-15--o-porte-fiel-vale-também-para-a-decoração)) mais texto
+  jurídico que ninguém escreveu ([D-22](#d-22--o-seed-espelha-o-vocabulário-do-legado-consolidar-é-decisão-de-conteúdo)).
+  Continua em aberto, junto de [P-14](pendencias.md).
+
+---
 
 ---
 

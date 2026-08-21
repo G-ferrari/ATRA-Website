@@ -16,10 +16,12 @@ import { isAdmin, isEditorOrAdmin } from '@/access'
  *  - `delete` só para admin: apagar é o exercício do direito de exclusão, e
  *    precisa ser rastreável a alguém.
  *
- * ⚠️ Isto **não** é o CRM. P-18 pergunta se a ATRA usa RD Station ou HubSpot;
- * se usar, o destino final dos leads é lá e isto vira registro de passagem. Até
- * a resposta, é a única cópia — e o backup diário deixa o RPO de lead em 24h,
- * que é o que P-22 questiona. Lead perdido não volta.
+ * ⚠️ Isto **não** é o CRM, e agora se sabe qual é: **D-26** respondeu P-18 —
+ * a ATRA usa RD Station CRM, e o destino final dos leads é lá. Esta collection
+ * é o registro de passagem, e continua sendo a **primeira** escrita: grava aqui,
+ * sincroniza depois. Enquanto a sincronização não existe, é a única cópia — e o
+ * backup diário deixa o RPO de lead em 24h, que é o que P-22 questiona. Lead
+ * perdido não volta.
  */
 export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
@@ -79,6 +81,32 @@ export const FormSubmissions: CollectionConfig = {
       type: 'text',
       label: { pt: 'Página de origem', en: 'Source page' },
       admin: { readOnly: true, position: 'sidebar' },
+    },
+    {
+      /* Que campanha trouxe o visitante (D-26), para o RD Station CRM saber
+       * qual investimento pagou o lead.
+       *
+       * ⚠️ **Não é o `source` acima.** Aquele é *onde* a pessoa converteu — o
+       * caminho da página. Este é *de onde ela veio*. São duas perguntas
+       * diferentes e o CRM precisa das duas para fechar a conta.
+       *
+       * `group` e não cinco campos soltos: no admin vira um bloco só, ao lado
+       * do lead, e no Postgres vira `utm_source`, `utm_medium`… na mesma tabela.
+       *
+       * ⚠️ Vazio é o caso comum, não defeito: quem chegou por busca orgânica,
+       * link direto ou com JavaScript desligado não tem campanha nenhuma. Ver
+       * a nota do topo de `lib/utm.ts`. */
+      name: 'utm',
+      type: 'group',
+      label: { pt: 'Campanha de origem', en: 'Campaign' },
+      admin: { readOnly: true },
+      fields: [
+        { name: 'source', type: 'text', label: { pt: 'Origem (utm_source)', en: 'Source (utm_source)' } },
+        { name: 'medium', type: 'text', label: { pt: 'Mídia (utm_medium)', en: 'Medium (utm_medium)' } },
+        { name: 'campaign', type: 'text', label: { pt: 'Campanha (utm_campaign)', en: 'Campaign (utm_campaign)' } },
+        { name: 'term', type: 'text', label: { pt: 'Termo (utm_term)', en: 'Term (utm_term)' } },
+        { name: 'content', type: 'text', label: { pt: 'Conteúdo (utm_content)', en: 'Content (utm_content)' } },
+      ],
     },
     {
       /* ⚠️ Marca que o e-mail de aviso **não** saiu. Sem isto, uma chave de

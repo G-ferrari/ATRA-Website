@@ -5,6 +5,7 @@ import { useActionState, useEffect, useRef } from 'react'
 
 import { enviarFormulario, type Resultado } from '@/actions/formularios'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
+import { CHAVES_UTM, lerUtmGuardado, type ChaveUtm } from '@/lib/utm'
 
 /* Casca cliente dos formulários do site (MIG-100 / MIG-101).
  *
@@ -50,8 +51,19 @@ export function Formulario({
    * em cascata que o lint recusa — com razão, já que ninguém precisa
    * re-renderizar por causa de um campo escondido. */
   const carimbo = useRef<HTMLInputElement>(null)
+
+  /* A atribuição de campanha vem da sessão, guardada na chegada por
+   * `CapturaDeUtm` — ver a nota no topo de `lib/utm.ts` sobre por que ela não
+   * pode ser lida da URL do envio. Preenchida por `ref` pelo mesmo motivo do
+   * carimbo: `sessionStorage` não existe no servidor, e ler durante o render
+   * faria o HTML dos dois lados divergir. */
+  const utm = useRef<HTMLInputElement[]>([])
+
   useEffect(() => {
     if (carimbo.current) carimbo.current.value = String(Date.now())
+
+    const guardado = lerUtmGuardado()
+    for (const campo of utm.current) campo.value = guardado[campo.name as ChaveUtm] ?? ''
   }, [])
 
   const [estado, acao, enviando] = useActionState(
@@ -90,6 +102,22 @@ export function Formulario({
       <input type="hidden" name="source" value={caminho ?? ''} />
       {/* Carimbo de quando a página montou: a armadilha de tempo de MIG-101. */}
       <input ref={carimbo} type="hidden" name="carimbo" defaultValue="0" />
+
+      {/* Campanha de origem (D-26). Vazios quando não houve UTM na chegada ou
+          quando o visitante está sem JavaScript — o lead entra do mesmo jeito,
+          só sem atribuição. Aqui em cima junto dos outros escondidos, pela
+          regra do `space-y` explicada logo acima. */}
+      {CHAVES_UTM.map((chave, i) => (
+        <input
+          key={chave}
+          ref={(el) => {
+            if (el) utm.current[i] = el
+          }}
+          type="hidden"
+          name={chave}
+          defaultValue=""
+        />
+      ))}
 
       {/* ⚠️ Campo isca. Escondido por CSS e **não** por `type="hidden"`: robô
           que lê o HTML pula campo oculto declarado, e o que preenche às cegas

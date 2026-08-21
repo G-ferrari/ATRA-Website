@@ -11,8 +11,8 @@ import { Formulario } from '@/components/forms/formulario'
  *
  * ⚠️ O formulário **envia** desde MIG-100. P-14 saiu do caminho quando
  * `/politicas-e-termos` foi publicada (MIG-094) — é o que a LGPD exige antes de
- * coletar dado pessoal. P-18 continua aberta: se a ATRA usa CRM, o destino
- * final do lead é lá, e o que grava aqui vira registro de passagem. */
+ * coletar dado pessoal. E D-26 fechou P-18: a ATRA usa **RD Station CRM**, o
+ * destino final do lead é lá, e o que grava aqui é registro de passagem. */
 
 const CAMPOS = [
   { name: 'name', tipo: 'text', ph: 'Nome completo' },

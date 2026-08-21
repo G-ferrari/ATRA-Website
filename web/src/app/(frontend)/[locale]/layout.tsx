@@ -4,6 +4,7 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { Casca } from '@/components/layout/casca'
+import { CapturaDeUtm } from '@/components/layout/captura-de-utm'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
@@ -136,6 +137,9 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
         <DadosEstruturados
           dados={organizacao({ contato, logo, fundadaEm: institucional.foundedYear })}
         />
+        {/* Não desenha nada: guarda a campanha da URL de chegada para o
+            formulário mandar junto no envio (D-26). */}
+        <CapturaDeUtm />
         <Casca
           cabecalho={<SiteHeader locale={locale} navegacao={navegacao} logo={logo} />}
           rodape={<SiteFooter locale={locale} rodape={rodape} contato={contato} logo={logo} />}
