@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-18
+atualizado_em: 2026-08-21
 depende_de: [decisoes.md]
 ---
 
@@ -42,12 +42,12 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | ~~P-15~~ | ~~Qual caminho para a lacuna de escopo~~ | — | ✅ **Resolvida em 17/08/2026 → D-17.** Caminho A, paridade de conteúdo antes do cutover |
 | ✅ **P-16** *(respondida em 21/08/2026: **publicar**)* | A redução de 13 soluções para 6 foi **decisão de posicionamento** do marketing ou simplificação de protótipo? | MIG-093 | ✅ **Os segmentos saíram da pergunta**: restaurá-los **acrescenta** e não substitui nada, e as 8 verticais entraram publicadas em MIG-092. Resta as soluções, e a Fase 4c mediu o que a pergunta pressupunha: as 13 do WP **não contêm** as 6 do protótipo. As 6 são consolidadas e assinadas pela ATRA ("Engenharia de Dados & Cloud", "Cultura de Dados"); as 13 são o catálogo anterior, com vocabulário de fornecedor ("Master Data Management", "Customer 360") e páginas que citam a Informatica. Publicar as duas listas poria **18 ofertas no menu, em dois vocabulários**. As 12 foram **publicadas**: o site passou de 6 para **18 ofertas**, e os 13 redirects viraram 1:1 sozinhos — o gerador lê o banco |
 | **P-17** | Prazo de retenção de currículos e quem no RH tem acesso | formulário de candidatura | Exigência de LGPD, não preferência |
-| **P-18** | A ATRA já usa ferramenta de e-mail marketing / CRM (RD Station, HubSpot)? | newsletter e destino dos leads | Se usa, os formulários devem alimentar o CRM em vez de virar lista isolada no Payload |
+| ~~P-18~~ | ~~A ATRA já usa ferramenta de e-mail marketing / CRM (RD Station, HubSpot)?~~ | — | ✅ **Resolvida em 21/08/2026 → D-26.** É **RD Station CRM** (o CRM, não o RD Station Marketing). Os formulários passam a alimentá-lo, e `form-submissions` deixa de ser a única cópia do lead. A captura de UTM entrou junto: o `source` existente diz *onde* converteu, e o CRM precisa saber *de onde veio*. O consentimento **não** foi decidido junto — ver P-14 |
 | **P-19** | Existe GA4/GTM na conta da ATRA aplicado ao WP por fora do tema? | baseline de tráfego | Sem analytics antes do cutover, **não há como provar** se a migração melhorou ou piorou nada. Instalar no WP agora é a única forma de ter comparação |
 | **P-20** | Guardar o histórico de conversas da ATRA AI? | `/api/chat` | Dado pessoal de visitante; alternativa é registrar só métricas agregadas |
 | **P-24** | **Quem da ATRA vai editar o site**, e quem é o ponto de contato nos 30 dias após o cutover? | treinamento e guia do editor (D-20) | Sem nome, o treinamento não tem convidado e o guia não tem destinatário — e o objetivo da migração depende de alguém do outro lado |
 | **P-21** | Ligar o proxy da Cloudflare (nuvem laranja)? Hoje o DNS está lá, mas em modo direto | CDN, cache, WAF | Ganho de graça em performance e proteção; custa uma camada a mais para depurar. Recomendação: **depois** do cutover estabilizar |
-| **P-22** | Replicar `form-submissions` para fora do banco em tempo real? | RPO dos leads | Com backup diário, o RPO dos leads é de até 24 h. Para conteúdo é aceitável; para lead, não — lead perdido não volta. Depende de P-18 |
+| **P-22** | Replicar `form-submissions` para fora do banco em tempo real? | RPO dos leads | Com backup diário, o RPO dos leads é de até 24 h. Para conteúdo é aceitável; para lead, não — lead perdido não volta. ⚠️ **Muda de peso com D-26**: o RD Station CRM passa a receber cada lead e vira a segunda cópia, então isto deixa de ser a única defesa — mas continua aberto |
 | ~~P-26~~ | ~~URLs reais de LinkedIn, Instagram e YouTube~~ | — | ✅ **Respondida por evidência (19/08).** O rodapé aponta para `#`, mas o CTA de contato (`App.tsx:2412`) traz as três: linkedin.com/company/atra-tecnologia, instagram.com/atratecnologia, youtube.com/@atratecnologia. Aplicadas no rodapé |
 | **P-23** | **Quem tem acesso à conta Cloudflare da ATRA?** | cutover | Sem resolver com antecedência, o cutover trava no passo mais crítico. Barato agora, caro às 7h da manhã do dia da virada |
 | ✅ **P-27** *(respondida em 21/08/2026: **manter como está**)* | **Como classificar os 207 posts em `topics`?** Descoberto em MIG-080: o WP tem **1 categoria** (`uncategorized`, com os 207 dentro) e **0 tags** | MIG-084 | Não há de onde mapear. Ou os 207 entram todos sem assunto — e `/blog` e `/insights` nascem com filtro que não filtra — ou alguém classifica. Classificar é decisão de conteúdo (D-22), não de quem migra; o que a engenharia pode oferecer é uma sugestão automática para o marketing revisar no CMS. **Decidido: fica sem assunto.** Os 207 entram sem `topics`, MIG-084 permanece cancelada, e classificar volta a ser tarefa de conteúdo no CMS quando alguém quiser |
@@ -56,7 +56,7 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 ### Encaminhamento
 
 **Com a ATRA, assumidas por Leonardo:** P-01, P-08, P-09, P-10, P-11, P-12, P-13,
-P-14, P-17, P-18, P-19.
+P-14, P-17, P-19.
 **Recomendação técnica a apresentar:** P-04 (Etapa 2), P-05 (Etapa 4), P-20.
 **Decisão de gestão:** P-07.
 

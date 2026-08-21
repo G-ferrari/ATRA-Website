@@ -79,10 +79,10 @@ bucket público de mídia) e URL assinada com expiração.
 
 Só e-mail + consentimento. Double opt-in.
 
-> [!DECISÃO PENDENTE] **P-18** — a ATRA já usa ferramenta de e-mail marketing
-> (RD Station, Mailchimp, HubSpot)? Se sim, a newsletter integra com ela em vez de
-> virar lista no Payload — e provavelmente o formulário de contato também deveria
-> alimentar o CRM.
+> [!NOTE] ✅ **P-18 respondida (21/08/2026) → [D-26](../00-contexto/decisoes.md).**
+> A ATRA usa **RD Station CRM**. A newsletter e o contato alimentam o CRM em vez
+> de virar lista isolada no Payload — mas a escrita no Payload continua sendo a
+> **primeira**, e a sincronização é o passo seguinte, com retry. Ver D-26.
 
 ### Download de material (`resources` com `gated: true`)
 

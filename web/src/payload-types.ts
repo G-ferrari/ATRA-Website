@@ -6997,6 +6997,13 @@ export interface FormSubmission {
   company?: string | null;
   message?: string | null;
   source?: string | null;
+  utm?: {
+    source?: string | null;
+    medium?: string | null;
+    campaign?: string | null;
+    term?: string | null;
+    content?: string | null;
+  };
   notified?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -10670,6 +10677,15 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   company?: T;
   message?: T;
   source?: T;
+  utm?:
+    | T
+    | {
+        source?: T;
+        medium?: T;
+        campaign?: T;
+        term?: T;
+        content?: T;
+      };
   notified?: T;
   updatedAt?: T;
   createdAt?: T;

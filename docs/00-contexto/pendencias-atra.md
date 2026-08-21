@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-18
+atualizado_em: 2026-08-21
 depende_de: [decisoes.md]
 ---
 
@@ -64,7 +64,7 @@ e resolve de uma vez.
 
 | # | Pergunta | O que trava | Custo de não decidir |
 |---|---|---|---|
-| **P-18** | A ATRA usa alguma ferramenta de **e-mail marketing ou CRM** (RD Station, HubSpot)? | Destino dos leads | ⚠️ Hoje **os quatro formulários do protótipo não enviam nada** — todo lead preenchido se perde. Se existe CRM, os formulários novos devem alimentá-lo em vez de virar lista isolada |
+| ✅ **P-18** *(respondida: **RD Station CRM**)* | A ATRA usa alguma ferramenta de **e-mail marketing ou CRM** (RD Station, HubSpot)? | Destino dos leads | Os formulários já **enviam** desde MIG-100 — o lead entra no CMS e um aviso vai por e-mail. Com a resposta, ele passa também para o **RD Station CRM**, e o CMS deixa de ser a única cópia. Falta uma coisa antes de ligar: mandar dado de visitante para outra ferramenta pede um **aviso de consentimento no formulário**, e o texto dele é decisão de vocês — ver P-14 |
 | **P-24** | **Quem da ATRA vai editar o site** depois da virada, e quem é o ponto de contato nos 30 dias seguintes? | Treinamento e guia do editor | O objetivo declarado da migração é o marketing publicar sem depender de dev. Sem nome, o treinamento não tem convidado |
 | **P-02** | O RH quer manter as **vagas publicadas como páginas** do site (é como funciona hoje), ou adotar um sistema de recrutamento? | Modelagem de vagas | Nenhum — o modelo atual funciona. Vale confirmar antes de investir na tela |
 | **P-28** | **As 7 vagas do site estão na área certa?** O site novo mostra a área de atuação em cada vaga (Comercial, Analytics, Engenharia de Dados…), e o WordPress não guarda esse dado — a importação deduziu do título de cada uma | A ficha de cada vaga | Baixo, e fácil de arrumar: são 7 linhas para conferir no CMS. Uma vaga na área errada aparece no filtro errado para o candidato |
@@ -85,4 +85,4 @@ e resolve de uma vez.
 Cada resposta vira uma linha em [decisoes.md](decisoes.md) com data, e destrava
 o que estiver esperando. As respostas de P-01, P-09, P-10, P-11 e P-26 entram
 direto no conteúdo do site; as de P-13 e P-19 mudam a prioridade dos redirects;
-as de P-14, P-17 e P-18 mudam o que os formulários podem fazer.
+as de P-14 e P-17 mudam o que os formulários podem fazer.

@@ -6,6 +6,7 @@ import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
 import { enviarAviso } from '@/lib/email'
 import { getPayload } from '@/lib/payload'
+import { MAX_POR_VALOR } from '@/lib/utm'
 
 /* MIG-100 — o envio dos formulários do site.
  *
@@ -29,6 +30,10 @@ function ipDe(cabecalhos: Headers): string {
 }
 
 const texto = (dados: FormData, campo: string): string => String(dados.get(campo) ?? '').trim()
+
+/** Um parâmetro de campanha, cortado no teto. `undefined` quando vazio: coluna nula diz "sem campanha", string vazia não diz nada. */
+const campanha = (dados: FormData, campo: string): string | undefined =>
+  texto(dados, campo).slice(0, MAX_POR_VALOR) || undefined
 
 /** Aceita o que parece e-mail. Validação de verdade é o e-mail chegar. */
 const pareceEmail = (v: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
@@ -67,6 +72,16 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         company: texto(dados, 'company') || undefined,
         message: texto(dados, 'message') || undefined,
         source: texto(dados, 'source') || undefined,
+        /* ⚠️ Cortado **de novo** aqui. O cliente já limita, mas quem posta o
+         * formulário não é obrigado a ser o nosso JavaScript — `curl` com um
+         * `utm_campaign` de 8 KB chegaria inteiro na coluna. */
+        utm: {
+          source: campanha(dados, 'utm_source'),
+          medium: campanha(dados, 'utm_medium'),
+          campaign: campanha(dados, 'utm_campaign'),
+          term: campanha(dados, 'utm_term'),
+          content: campanha(dados, 'utm_content'),
+        },
         status: 'new',
         notified: false,
       },
@@ -113,6 +128,7 @@ function resumo(dados: FormData, email: string): string {
     texto(dados, 'phone') && `Telefone: ${texto(dados, 'phone')}`,
     texto(dados, 'company') && `Empresa: ${texto(dados, 'company')}`,
     texto(dados, 'source') && `Veio de: ${texto(dados, 'source')}`,
+    texto(dados, 'utm_campaign') && `Campanha: ${texto(dados, 'utm_campaign')}`,
     texto(dados, 'message') && `\n${texto(dados, 'message')}`,
   ].filter(Boolean)
   return linhas.join('\n')
