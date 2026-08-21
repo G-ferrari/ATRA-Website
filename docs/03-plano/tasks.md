@@ -386,10 +386,10 @@ muito tempo as três apontaram para `#`.
 | MIG-104 | Download gated de material | 100, 045 | Formulário libera arquivo por URL assinada | 2.5h |
 | MIG-105 | `generateMetadata` em todas as rotas | Fase 3 | Toda rota com title e description próprios | 3h | **done** — e o grupo `seo` passou a ser lido; ganhou canônica e `hreflang` |
 | MIG-106 | `sitemap.ts` + `robots.ts` | 105 | Só publicados; sem locale não traduzido | 2h | **done** — 270 URLs, só 16 em inglês |
-| MIG-107 | JSON-LD | 105 | Rich Results Test valida | 2.5h |
+| MIG-107 | JSON-LD | 105 | Rich Results Test valida | 2.5h | **done** — `Organization` no layout, `Article` no artigo, `Service` na solução |
 | MIG-108 | `redirects.csv` no `next.config.ts` + teste de CI | 086 | Toda linha: 301 → destino 200 | 3h | **done** — e o teste achou 2 defeitos que derrubariam o site |
 | MIG-109 | GA4/GTM + consentimento de cookies | 105 | Nenhum script não essencial antes do aceite | 3h |
-| MIG-110 | Budget guard da ATRA AI | 061 | Teto atingido degrada com mensagem, não com 500 | 2h |
+| MIG-110 | Budget guard da ATRA AI | 061 | Teto atingido degrada com mensagem, não com 500 | 2h | **done** — teto diário **no banco**; e o global da IA não era localizado |
 
 > **O que MIG-105 encontrou: o grupo `seo` nunca tinha sido lido.**
 > `fields/seo.ts` põe "Título para buscadores", "Descrição" e "Imagem de
@@ -439,6 +439,25 @@ muito tempo as três apontaram para `#`.
 > que saem de propósito são servidas pelo `proxy.ts`. 410 e não 404 porque a
 > diferença importa para o robô: 404 é "não achei agora" e ele volta; 410 é
 > "não existe mais" e ele tira do índice.
+
+> ⚠️ **MIG-110 achou que o global da IA nunca foi localizado.** Nenhum campo de
+> `atra-ai` tinha `localized: true`, e o seed grava `pt` e depois `en` — na mesma
+> coluna. O inglês vencia desde MIG-061, então **todo visitante brasileiro que
+> batia no limite lia a mensagem em inglês**. `systemPrompt` e
+> `unavailableMessage` passaram a ser localizados; o prompt também, porque é ele
+> que manda o modelo responder num idioma.
+>
+> A rota `/api/chat` vive **fora** do segmento `[locale]` — o proxy nem passa por
+> ela — então não há `getLocale()` lá. O idioma vai no corpo do POST, mandado
+> pela ilha de conversa, que é quem sabe em qual das duas páginas o visitante
+> está.
+>
+> **O teto de orçamento é outro limite, não o mesmo.** `requestsPerHour` protege
+> contra um visitante em laço; `dailyRequestCap` protege o dinheiro — 500 pessoas
+> educadas com 1 pergunta cada custam o mesmo que uma abusando 500 vezes. E ele
+> conta **no banco**, não em memória como o de IP: contador que zera a cada
+> deploy não protege orçamento, bastaria reiniciar. O valor de partida é
+> provisório até P-04.
 
 ## Fase 6 — Endurecimento
 

@@ -4,10 +4,12 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { Casca } from '@/components/layout/casca'
+import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { lerContato } from '@/lib/contato'
+import { organizacao } from '@/lib/jsonld'
 import { LOCALES, isLocale } from '@/lib/locales'
 import { toNavegacao } from '@/lib/mappers/navigation'
 import { toImageOpcional } from '@/lib/mappers/shared'
@@ -129,6 +131,11 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
       {/* A árvore reproduz a do legado (`App.tsx:2597`): o `<body>` fica limpo,
         * como no `index.html` dele, e as classes de casca vivem no wrapper. */}
       <body>
+        {/* Uma vez por página, no layout: a organização é a mesma em todas, e
+            repetir o nó em cada rota só multiplicaria bytes. */}
+        <DadosEstruturados
+          dados={organizacao({ contato, logo, fundadaEm: institucional.foundedYear })}
+        />
         <Casca
           cabecalho={<SiteHeader locale={locale} navegacao={navegacao} logo={logo} />}
           rodape={<SiteFooter locale={locale} rodape={rodape} contato={contato} logo={logo} />}

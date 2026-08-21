@@ -83,6 +83,7 @@ export interface Config {
     segments: Segment;
     solutions: Solution;
     'specialist-roles': SpecialistRole;
+    'ai-usage': AiUsage;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -106,6 +107,7 @@ export interface Config {
     segments: SegmentsSelect<false> | SegmentsSelect<true>;
     solutions: SolutionsSelect<false> | SolutionsSelect<true>;
     'specialist-roles': SpecialistRolesSelect<false> | SpecialistRolesSelect<true>;
+    'ai-usage': AiUsageSelect<false> | AiUsageSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -6965,6 +6967,19 @@ export interface SpecialistRole {
   createdAt: string;
 }
 /**
+ * How many conversations ATRA AI served per day. Read-only — the cap lives in “ATRA AI”.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-usage".
+ */
+export interface AiUsage {
+  id: number;
+  day: string;
+  requests: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -7051,6 +7066,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'specialist-roles';
         value: number | SpecialistRole;
+      } | null)
+    | ({
+        relationTo: 'ai-usage';
+        value: number | AiUsage;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -10604,6 +10623,16 @@ export interface SpecialistRolesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-usage_select".
+ */
+export interface AiUsageSelect<T extends boolean = true> {
+  day?: T;
+  requests?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -10660,6 +10689,10 @@ export interface AtraAi {
    * Provisional until P-04.
    */
   requestsPerHour: number;
+  /**
+   * Once reached, the assistant replies with the unavailable message until the next day. 0 disables it.
+   */
+  dailyRequestCap?: number | null;
   /**
    * Shown when the limit is hit or the AI is off. Graceful degradation, not an error.
    */
@@ -10979,6 +11012,7 @@ export interface AtraAiSelect<T extends boolean = true> {
   enabled?: T;
   systemPrompt?: T;
   requestsPerHour?: T;
+  dailyRequestCap?: T;
   unavailableMessage?: T;
   updatedAt?: T;
   createdAt?: T;

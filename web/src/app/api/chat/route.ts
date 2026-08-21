@@ -23,6 +23,18 @@ export const dynamic = 'force-dynamic'
 
 type Mensagem = { role: 'user' | 'model'; content: string }
 
+/**
+ * Idioma da conversa, mandado pelo cliente.
+ *
+ * ⚠️ A rota vive em `/api/chat`, **fora** do segmento `[locale]`, então não há
+ * `getLocale()` aqui — o proxy nem passa por ela. Sem isto o Payload devolve o
+ * idioma padrão, e a página em inglês recebia mensagem em português (e vice-
+ * versa, enquanto os campos não eram localizados).
+ */
+function idiomaDe(corpo: unknown): 'pt' | 'en' {
+  return (corpo as { locale?: string })?.locale === 'en' ? 'en' : 'pt'
+}
+
 const JANELA_MS = 60 * 60 * 1000
 const acessos = new Map<string, number[]>()
 
@@ -54,9 +66,60 @@ function estourouOLimite(ip: string, teto: number): boolean {
   return false
 }
 
-export async function POST(req: Request) {
+/**
+ * Conta a conversa do dia e diz se o teto global já foi atingido.
+ *
+ * ⚠️ Grava no banco, e não em memória como o limite por IP. O de IP protege
+ * contra um visitante em laço e perder a contagem num reinício custa alguns
+ * pedidos; este protege **dinheiro**, e contador que zera a cada deploy não
+ * protege nada — bastaria reiniciar.
+ *
+ * ⚠️ Lê e escreve em duas etapas, então duas requisições simultâneas podem
+ * contar a mesma posição. O desvio é limitado pela concorrência (unidades, não
+ * ordens de grandeza) e o teto é orçamentário, não regulatório — errar para
+ * mais em duas conversas num teto de 500 não muda nada. Um `UPDATE ...
+ * RETURNING` atômico resolveria, e depende do adapter.
+ */
+async function estourouOOrcamento(teto: number): Promise<boolean> {
+  if (teto <= 0) return false
+
   const payload = await getPayload()
-  const config = await payload.findGlobal({ slug: 'atra-ai', depth: 0 })
+  const dia = new Date().toISOString().slice(0, 10)
+
+  const { docs } = await payload.find({ collection: 'ai-usage', where: { day: { equals: dia } }, limit: 1, depth: 0 })
+  const atual = docs[0]
+
+  if (atual && atual.requests >= teto) return true
+
+  if (atual) {
+    await payload.update({ collection: 'ai-usage', id: atual.id, data: { requests: atual.requests + 1 } })
+  } else {
+    await payload.create({ collection: 'ai-usage', data: { day: dia, requests: 1 } })
+  }
+  return false
+}
+
+export async function POST(req: Request) {
+  let corpo: { messages?: Mensagem[]; locale?: string }
+  try {
+    corpo = (await req.json()) as { messages?: Mensagem[]; locale?: string }
+  } catch {
+    return NextResponse.json({ error: 'Formato de mensagens inválido.' }, { status: 400 })
+  }
+
+  /* ⚠️ Validar o pedido **antes** de qualquer verificação de capacidade.
+   *
+   * A ordem anterior respondia 503 ("indisponível") a um corpo malformado,
+   * porque a checagem da chave vinha antes — o cliente recebia "tente mais
+   * tarde" para um erro que é dele e nunca vai passar. Pior: o pedido inválido
+   * já tinha consumido uma unidade do teto de orçamento. */
+  const mensagens = corpo.messages ?? []
+  if (!Array.isArray(mensagens) || mensagens.length === 0) {
+    return NextResponse.json({ error: 'Formato de mensagens inválido.' }, { status: 400 })
+  }
+
+  const payload = await getPayload()
+  const config = await payload.findGlobal({ slug: 'atra-ai', depth: 0, locale: idiomaDe(corpo) })
 
   const indisponivel =
     config?.unavailableMessage ??
@@ -70,24 +133,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: indisponivel }, { status: 429 })
   }
 
+  /* Teto de orçamento (MIG-110). Conferido **antes** de chamar o Gemini: depois
+   * seria contabilidade, não guarda. */
+  if (await estourouOOrcamento(config?.dailyRequestCap ?? 0)) {
+    return NextResponse.json({ error: indisponivel }, { status: 429 })
+  }
+
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
     /* Sem chave a rota não erra 500: responde o mesmo texto de
        indisponibilidade. É o caso do ambiente de desenvolvimento e do
        container do aceite visual. */
     return NextResponse.json({ error: indisponivel }, { status: 503 })
-  }
-
-  let mensagens: Mensagem[]
-  try {
-    const corpo = (await req.json()) as { messages?: Mensagem[] }
-    mensagens = corpo.messages ?? []
-  } catch {
-    return NextResponse.json({ error: 'Formato de mensagens inválido.' }, { status: 400 })
-  }
-
-  if (!Array.isArray(mensagens) || mensagens.length === 0) {
-    return NextResponse.json({ error: 'Formato de mensagens inválido.' }, { status: 400 })
   }
 
   try {

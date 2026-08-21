@@ -52,7 +52,7 @@ const SUGESTOES = [
 const ERRO_GERAL =
   'Desculpe, ocorreu um erro ao se comunicar com nossos especialistas. Tente novamente em alguns segundos.'
 
-export function Conversa({ mensagemInicial }: { mensagemInicial?: string }) {
+export function Conversa({ mensagemInicial, locale }: { mensagemInicial?: string; locale: 'pt' | 'en' }) {
   const [mensagens, setMensagens] = useState<Mensagem[]>([])
   const [texto, setTexto] = useState('')
   const [carregando, setCarregando] = useState(false)
@@ -80,7 +80,11 @@ export function Conversa({ mensagemInicial }: { mensagemInicial?: string }) {
         const r = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: historico }),
+          /* O idioma vai junto: a rota está fora do segmento `[locale]` e não
+             tem como descobrir sozinha em qual das duas páginas o visitante
+             está. Sem ele, a mensagem de indisponibilidade sai no idioma
+             padrão, qualquer que seja a página. */
+          body: JSON.stringify({ messages: historico, locale }),
         })
         const dados = (await r.json()) as { text?: string; error?: string }
         if (!r.ok || dados.error) {
@@ -94,7 +98,7 @@ export function Conversa({ mensagemInicial }: { mensagemInicial?: string }) {
         setCarregando(false)
       }
     },
-    [],
+    [locale],
   )
 
   /* A caixa de conversa da home manda a primeira pergunta por query string.

@@ -202,6 +202,69 @@ test.describe('app novo', () => {
 
   /* MIG-094: os 3 links legais do rodapé apontavam para `#` no protótipo e
      passam a apontar para a mesma página — o WordPress também tem uma só. */
+  /* MIG-110 — teto de orçamento da ATRA AI.
+     ⚠️ O que se testa é a **degradação**: teto atingido responde a mensagem de
+     indisponibilidade, e não 500. O caminho feliz não é testável aqui — sem
+     `GEMINI_API_KEY` no container, a rota já responde indisponível. */
+  test.describe('ATRA AI — limites', () => {
+    test('rota de chat nunca responde 500, mesmo sem chave', async ({ request }) => {
+      const r = await request.post(`${NEXT_URL}/api/chat`, {
+        data: { messages: [{ role: 'user', content: 'oi' }] },
+      })
+      expect([200, 429, 503], `status inesperado ${r.status()}`).toContain(r.status())
+      if (r.status() !== 200) {
+        /* Degradar é responder texto para o visitante, não um erro cru. */
+        expect(((await r.json()) as { error?: string }).error ?? '').not.toBe('')
+      }
+    })
+
+    test('corpo inválido é recusado com 400, não com 500', async ({ request }) => {
+      expect((await request.post(`${NEXT_URL}/api/chat`, { data: {} })).status()).toBe(400)
+    })
+  })
+
+  /* MIG-107 — dados estruturados. O que o Rich Results Test do Google confere é
+     a forma; isto confere que a forma chegou à página, que é o que costuma
+     falhar (JSON escapado errado, nó ausente, `@id` que não casa). */
+  test.describe('dados estruturados (schema.org)', () => {
+    const jsonLd = async (page: import('@playwright/test').Page) =>
+      (await page.locator('script[type="application/ld+json"]').allTextContents()).map(
+        (t) => JSON.parse(t) as Record<string, unknown>,
+      )
+
+    test('toda página declara a Organization, com as redes reais', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/sobre`)
+      const org = (await jsonLd(page)).find((d) => d['@type'] === 'Organization')
+      expect(org, 'nenhum nó Organization na página').toBeTruthy()
+      expect(org!.name).toBe('ATRA')
+      expect(org!.email).toBe('negocios@atra.com.br')
+      expect(org!.sameAs).toContain('https://www.linkedin.com/company/atra-tecnologia/')
+    })
+
+    test('o artigo declara Article ligado à mesma organização', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/blog`)
+      const href = await page.locator('a[href^="/blog/"]').first().getAttribute('href')
+      await page.goto(`${NEXT_URL}${href}`)
+
+      const nos = await jsonLd(page)
+      const artigo = nos.find((d) => d['@type'] === 'Article')
+      const org = nos.find((d) => d['@type'] === 'Organization')
+      expect(artigo, 'nenhum nó Article').toBeTruthy()
+      expect(artigo!.headline).toBeTruthy()
+      expect(artigo!.datePublished).toBeTruthy()
+      /* O `@id` do publisher tem que casar com o da organização, senão o Google
+         lê dois nós soltos em vez de um artigo publicado por alguém. */
+      expect((artigo!.publisher as Record<string, string>)['@id']).toBe(org!['@id'])
+    })
+
+    test('a solução declara Service', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/solucoes/inteligencia-artificial`)
+      const servico = (await jsonLd(page)).find((d) => d['@type'] === 'Service')
+      expect(servico, 'nenhum nó Service').toBeTruthy()
+      expect(servico!.name).toBeTruthy()
+    })
+  })
+
   /* Os 3 links de solução do rodapé apontavam para `#`, herdado do protótipo.
      São as 3 categorias do mega-menu, sem página própria, então o destino de
      todas é o índice — mesmo caso dos 3 links legais. */

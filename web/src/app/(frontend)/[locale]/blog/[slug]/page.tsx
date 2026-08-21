@@ -17,6 +17,9 @@ import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { PostDetail } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
+import { artigo } from '@/lib/jsonld'
+import { ORIGEM } from '@/lib/seo'
+import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 
 /* /blog/[slug] (MIG-044).
  *
@@ -131,6 +134,11 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
   }
 
   const post = resultado.doc
+  const dadosDoArtigo = artigo({
+    seo: post.seo,
+    url: `${ORIGEM}${hrefDe('blog', locale, post.slug)}`,
+    publicadoEm: post.publishedAt,
+  })
   const data = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
     day: 'numeric',
     month: 'long',
@@ -140,6 +148,8 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
 
   return (
     <main className="min-h-screen bg-white">
+      {/* Invisível: vai num `<script type="application/ld+json">`. */}
+      <DadosEstruturados dados={dadosDoArtigo} />
       <section className="relative min-h-[50vh] md:min-h-[60vh] bg-primary overflow-hidden flex items-center pt-32 md:pt-48 pb-16">
         <div className="absolute inset-0">
           <Image

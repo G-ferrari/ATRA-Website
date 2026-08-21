@@ -22,6 +22,7 @@ import { Pages } from './collections/Pages'
 import { Partners } from './collections/Partners'
 import { Posts } from './collections/Posts'
 import { Resources } from './collections/Resources'
+import { AiUsage } from './collections/AiUsage'
 import { Segments } from './collections/Segments'
 import { Solutions } from './collections/Solutions'
 import { SpecialistRoles } from './collections/SpecialistRoles'
@@ -63,6 +64,7 @@ export default buildConfig({
     Users, Media, Topics, Testimonials,
     Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Webinars,
     Clients, Partners, Segments, Solutions, SpecialistRoles,
+    AiUsage,
   ],
 
   globals: [AtraAi, Contact, Footer, Navigation, SiteSettings],

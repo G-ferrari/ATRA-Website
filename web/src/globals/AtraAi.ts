@@ -33,6 +33,12 @@ export const AtraAi: GlobalConfig = {
     {
       name: 'systemPrompt',
       type: 'textarea',
+      /* ⚠️ Localizado: o prompt manda o modelo responder num idioma, e o site
+       * atende em dois. Ficou **sem** `localized` desde MIG-061, e o efeito era
+       * pior do que parece — o seed grava `pt` e depois `en` na mesma coluna, e
+       * o inglês vencia. O visitante brasileiro que batia no limite lia a
+       * mensagem em inglês. */
+      localized: true,
       required: true,
       label: { pt: 'Instrução do sistema', en: 'System prompt' },
       admin: {
@@ -52,9 +58,36 @@ export const AtraAi: GlobalConfig = {
       admin: { description: { pt: 'Provisório até P-04.', en: 'Provisional until P-04.' } },
     },
     {
+      /* Teto **global** por dia, e não por visitante (MIG-110).
+       *
+       * ⚠️ São dois limites com propósitos diferentes, e um não substitui o
+       * outro. `requestsPerHour` protege contra um visitante em laço; este
+       * protege o orçamento: cada conversa gasta cota do Gemini, e 500 pessoas
+       * educadas fazendo 1 pergunta cada custam o mesmo que uma abusando 500
+       * vezes. Sem ele, o teto de gasto do dia é "quantas pessoas visitarem".
+       *
+       * ⚠️ `0` desliga o teto. O valor de partida é provisório, como o de
+       * `requestsPerHour` — o número certo depende de P-04, que é quanto a ATRA
+       * aceita gastar por mês.
+       */
+      name: 'dailyRequestCap',
+      type: 'number',
+      defaultValue: 500,
+      min: 0,
+      label: { pt: 'Teto de conversas por dia (todos os visitantes)', en: 'Daily conversation cap (all visitors)' },
+      admin: {
+        description: {
+          pt: 'Atingido o teto, a IA responde a mensagem de indisponibilidade até o dia seguinte. 0 desliga.',
+          en: 'Once reached, the assistant replies with the unavailable message until the next day. 0 disables it.',
+        },
+      },
+    },
+    {
       name: 'unavailableMessage',
       type: 'textarea',
       required: true,
+      /* Localizado pelo mesmo motivo do prompt: é texto que o visitante lê. */
+      localized: true,
       label: { pt: 'Mensagem de indisponibilidade', en: 'Unavailable message' },
       admin: {
         description: {

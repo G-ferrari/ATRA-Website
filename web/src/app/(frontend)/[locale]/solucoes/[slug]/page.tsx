@@ -9,6 +9,10 @@ import { toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
 import { getPayload } from '@/lib/payload'
 import { toSeo } from '@/lib/mappers/seo'
 import { metadataDe } from '@/lib/seo'
+import { DadosEstruturados } from '@/components/layout/dados-estruturados'
+import { servico } from '@/lib/jsonld'
+import { ORIGEM } from '@/lib/seo'
+import { hrefDe } from '@/lib/routes'
 
 /* /solucoes/[slug] (MIG-056) — porte de `legacy/src/pages/SolutionAI.tsx`.
  *
@@ -88,6 +92,13 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
 
   return (
     <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
+      {/* Invisível: vai num `<script type="application/ld+json">`. */}
+      <DadosEstruturados
+        dados={servico({
+          seo: toSeo(solucao.doc.seo, { titulo: solucao.doc.title, descricao: solucao.doc.shortDescription }),
+          url: `${ORIGEM}${hrefDe('solucoes', locale, slug)}`,
+        })}
+      />
       <RenderBlocks blocos={solucao.blocos} locale={locale} />
     </main>
   )

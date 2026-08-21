@@ -43,7 +43,7 @@ export default async function Pagina({ searchParams }: PageProps<'/[locale]/chat
        barra deslocam **tudo** — no aceite visual foram 40% dos pixels. O
        gabarito não tem `<main>` nesta rota: a página é o próprio filho flex. */
     <main className="flex-1 flex flex-col min-h-0">
-      <Conversa mensagemInicial={inicial} />
+      <Conversa mensagemInicial={inicial} locale={locale} />
     </main>
   )
 }
