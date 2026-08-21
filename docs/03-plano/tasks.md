@@ -213,12 +213,12 @@ Uma PR por linha. Todas dependem de MIG-031.
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
 | MIG-080 | Cliente da API REST do WP + paginação (**exige user-agent de browser**) | 012 | Traz os 207 posts em JSON, com retry | 2h | **done** |
-| MIG-081 | Conversor HTML → Lexical + **`EXPERIMENTAL_TableFeature`** | 012 | Passa nos 12 do piloto, nos 4 outliers e em 20 amostrados; tabela vira `table`, não parágrafo | 3h |
-| MIG-082 | Importador de mídia (destacada + inline) | 080 | Imagem baixada, com `alt` vindo do WP | 3h |
-| MIG-083 | Importação dos 207 posts | 081, 082, 043 | 207 publicados, nenhum com corpo vazio | 3h |
+| MIG-081 | Conversor HTML → Lexical + **`EXPERIMENTAL_TableFeature`** | 012 | Passa nos 12 do piloto, nos 4 outliers e em 20 amostrados; tabela vira `table`, não parágrafo | 3h | **done** — verificado nos **207**, não em 36: 100% de retenção, 287/287 imagens, 2/2 tabelas |
+| MIG-082 | Importador de mídia (destacada + inline) | 080 | Imagem baixada, com `alt` vindo do WP | 3h | **done** — 287 imagens; `alt` do WP em 47, do título da mídia em 193, do título do artigo em 47 |
+| MIG-083 | Importação dos 207 posts | 081, 082, 043 | 207 publicados, nenhum com corpo vazio | 3h | **done** — 207 publicados, 0 sem corpo ou resumo |
 | MIG-084 | ~~Mapeamento de categorias do WP → `topics`~~ **sem fonte de dado** | 083 | ⚠️ **Repactuar — ver P-27.** MIG-080 mediu: o WP tem 1 categoria (`uncategorized`, com os 207 posts) e 0 tags. Não há taxonomia para mapear, e classificar é decisão de conteúdo (D-22) | 1.5h |
-| MIG-085 | Importação das 6 vagas | 051 | 6 vagas publicadas com URL 1:1 | 2h |
-| MIG-086 | Geração do `redirects.csv` dos posts | 083 | 207 linhas, todas validadas contra staging | 2h |
+| MIG-085 | Importação das 6 vagas | 051 | 6 vagas publicadas com URL 1:1 | 2h | **done** — são **7**, não 6; área deduzida do título espera P-28 |
+| MIG-086 | Geração do `redirects.csv` dos posts | 083 | 207 linhas, todas validadas contra staging | 2h | **done (parcial)** — 214 linhas (207 posts + 7 vagas), destino conferido no banco. **Contra staging fica para a Fase 5**, que é quando o `next.config.ts` passa a consumir o arquivo |
 
 > **O que MIG-080 mediu no WP, e que muda as tasks seguintes.** Volumes reais:
 > 207 posts · 52 páginas (as 6 vagas de MIG-085 estão entre elas) · 541 mídias
@@ -237,6 +237,39 @@ Uma PR por linha. Todas dependem de MIG-031.
 >
 > `_fields` **omite** o campo em vez de devolvê-lo vazio: quem precisar de `link`
 > (MIG-086) ou `featured_media` (MIG-082) tem que pedir explicitamente.
+
+> **O que a Fase 4b mudou no aceite visual.** `/blog` e `/carreiras` **saíram**
+> de `ROTAS_COM_GABARITO`. Não é regressão nem descuido: as duas listam conteúdo,
+> e o conteúdo agora é real. O gabarito é uma captura do protótipo mostrando 6
+> artigos fictícios e 6 vagas fictícias; a página nova mostra 207 e 7. Nenhuma
+> captura do protótipo pode voltar a bater, e regravar o gabarito seria pior —
+> apagaria a evidência de regressão do resto da página. As duas continuam
+> cobertas por `smoke.spec.ts`. As outras 13 rotas seguem sob o gate.
+>
+> **A regra de MIG-081 que quase se perdeu de novo.**
+> `editorConfigFactory.default({ config })` não devolve o editor do projeto,
+> devolve o padrão do Lexical — sem a `EXPERIMENTAL_TableFeature` que o piloto
+> mandou ligar. O conversor lê a config do **próprio campo** `posts.body`. O
+> teste unitário pegou isso; a métrica de retenção de texto, não — tabela vira
+> parágrafo solto com 100% do texto preservado.
+>
+> ⚠️ **Fixtures do protótipo agora exigem `SEED_FIXTURES=1`.** Os 6 posts e as 6
+> vagas fictícias existiam para o gate visual; com `/blog` e `/carreiras` fora
+> dele, o que sobrou foi dar ao e2e uma listagem não vazia. Num banco de verdade
+> seriam doze itens inventados no ar, assinados pela ATRA — e "não subir isso no
+> cutover" era uma linha de runbook. Agora é o código: só o CI liga a variável.
+>
+> **Duas armadilhas de localização que o smoke pegou.** Os 207 artigos são só em
+> português, mas o **slug precisa existir nos dois idiomas**: `fallback: true`
+> resolve a leitura, não a consulta — `where: { slug: { equals } }` bate na
+> coluna do locale, que ficava nula, e `/en/blog/<slug>` dava 404 nos 207. E o
+> post cujo slug tem `%c2%b2` falhava só na gravação do inglês, porque `%` é
+> curinga na checagem de `unique`: o valor passa a casar com qualquer linha e o
+> campo é recusado como duplicado. Os importadores normalizam o slug antes de
+> gravar.
+>
+> **MIG-084 continua parada em P-27**, como combinado: os 207 entraram com
+> `tags` vazio.
 
 ## Fase 4c — Conteúdo novo (D-17)
 

@@ -59,7 +59,7 @@ Complementar com, na ordem de confiabilidade:
 | **Carreiras** | ~3 | `/carreiras/`, `/trabalhe-conosco/`, `/programa-de-trainee/` | `/carreiras` | N:1 |
 | **Soluções** | **13** | `/cloud/`, `/data-integration/`, `/governanca-de-dados/`, `/inteligencia-artificial/`, `/data-analytics/`, `/master-data-management/`, `/data-discovery/`, `/customer-360/`, `/fabrica-de-transformacao-de-dados/`, `/sustentacao-remota/`, `/treinamento/`, `/alocacao-de-consultores/`, `/assessoria-em-produtos/` | `/solucoes/[slug]` | ⚠️ **O protótipo modela 6 soluções; o WP tem 13 páginas** |
 | **Segmentos** | **10** | `/bancos-seguradoras-servicos-financeiros/`, `/educacao/`, `/logistica/`, `/varejo/`, `/telecom/`, `/industria/`, `/saude/`, `/utilidades/`, `/segmentos/`, `/segmentos-atra/` | — | ⚠️ **Sem equivalente no protótipo** |
-| **Vagas** | **6** | `/engenheiroa-de-dados-sr-azure-databricks/`, `/key-account-manager-pl-sr/`, `/engenheiro-de-dados-sr-oracle-cloud-oci/`, `/analytics-engineer-sr-gcp-dbt-looker-plataform/`, `/analista-de-sistemas-net-sr/`, `/trainee-engenheiro-de-data-analytics-ai/` | `/carreiras#[slug]` | ⚠️ **Responde P-02**: as vagas são páginas do WP hoje |
+| **Vagas** | **7** | `/engenheiroa-de-dados-sr-azure-databricks/`, `/key-account-manager-pl-sr/`, `/engenheiro-de-dados-sr-oracle-cloud-oci/`, `/analytics-engineer-sr-gcp-dbt-looker-plataform/`, `/analista-de-sistemas-net-sr/`, `/trainee-engenheiro-de-data-analytics-ai/`, `/cientista-de-dados-pl-sr/` | `/carreiras/[slug]` | ⚠️ **Responde P-02**: as vagas são páginas do WP hoje. Destino 1:1 e não âncora em `/carreiras` — âncora levaria o candidato à lista, não à vaga |
 | **Parceiros / clientes** | 2 | `/parceiros/`, `/clientes/` | `/parceiros`, `/sobre` | Protótipo não tem índice de parceiros |
 | **Legal** | 1 | `/politicas-e-termos/` | ⚠️ sem destino | Rodapé do protótipo tem 3 links `#` para Privacidade/Termos/Cookies |
 | **Eventos** | 1 | `/eventos/` | ⚠️ sem destino | |
@@ -78,8 +78,29 @@ from,to,status,note
 /em-manutencao/,,410,pagina tecnica
 ```
 
+> ✅ **As linhas de post e de vaga são geradas** por
+> `web/scripts/wp-import/gerar-redirects.ts` (MIG-086): 207 + 7 = 214 linhas,
+> todas com destino conferido contra o banco. Rodar de novo **preserva** o que
+> foi curado à mão — a curadoria das ~30 institucionais é da Fase 4c.
+>
+> ⚠️ O `to` sai do **banco**, não do WordPress. O hook de `slugField` normaliza o
+> slug na gravação, e um post do corpus tem `%c2%b2` no slug do WP (um "²"
+> percent-encoded), que vira `-c2-b2`. Gerando a partir do WP, essa linha
+> mandaria o leitor para uma rota que o site novo não serve — e seria a única
+> errada entre 207.
+>
+> ⚠️ A regra de catch-all abaixo **não cobre esse post**: ele precisa da linha
+> explícita, que o CSV já tem.
+>
+> ⚠️ **São 7 vagas, não 6.** `cientista-de-dados-pl-sr` foi publicada em
+> 20/08/2026, depois do levantamento do sitemap. O gerador identifica vaga pelo
+> marcador `#vemserATRA` no corpo da página, e não por lista de slugs — que é o
+> que deixou este número desatualizado.
+
 Regras:
 - `from` sempre com barra final (padrão do WP); `to` sem.
+- **Sem vírgula na `note`**: são 4 colunas sem aspas, e quem fizer `split(',')`
+  no `next.config.ts` lê metade da justificativa como uma quinta coluna.
 - `status` 301 para movido, 410 para removido de propósito. **Nunca 302.**
 - Toda linha tem `note` — redirect sem justificativa vira mistério em 6 meses.
 - Os 207 posts entram por script, não à mão; o resto é curado.

@@ -51,11 +51,12 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | ~~P-26~~ | ~~URLs reais de LinkedIn, Instagram e YouTube~~ | — | ✅ **Respondida por evidência (19/08).** O rodapé aponta para `#`, mas o CTA de contato (`App.tsx:2412`) traz as três: linkedin.com/company/atra-tecnologia, instagram.com/atratecnologia, youtube.com/@atratecnologia. Aplicadas no rodapé |
 | **P-23** | **Quem tem acesso à conta Cloudflare da ATRA?** | cutover | Sem resolver com antecedência, o cutover trava no passo mais crítico. Barato agora, caro às 7h da manhã do dia da virada |
 | **P-27** | **Como classificar os 207 posts em `topics`?** Descoberto em MIG-080: o WP tem **1 categoria** (`uncategorized`, com os 207 dentro) e **0 tags** | MIG-084 | Não há de onde mapear. Ou os 207 entram todos sem assunto — e `/blog` e `/insights` nascem com filtro que não filtra — ou alguém classifica. Classificar é decisão de conteúdo (D-22), não de quem migra; o que a engenharia pode oferecer é uma sugestão automática para o marketing revisar no CMS |
+| **P-28** | **A área de atuação das 7 vagas confere?** Descoberto em MIG-085: a página de vaga do WP não tem o campo — os dois `<select>` que parecem taxonomia são a lista de vagas abertas e a de senioridade | MIG-085 | `jobs.area` é obrigatório e aparece na página da vaga. A importação deduziu do título ("Key Account Manager" → Comercial), o que lê o que está escrito mas continua sendo classificação (D-22). São 7 linhas para o RH confirmar, não um projeto |
 
 ### Encaminhamento
 
 **Com a ATRA, assumidas por Leonardo:** P-01, P-08, P-09, P-10, P-11, P-12, P-13,
-P-14, P-16, P-17, P-18, P-19, P-27.
+P-14, P-16, P-17, P-18, P-19, P-27, P-28.
 **Recomendação técnica a apresentar:** P-04 (Etapa 2), P-05 (Etapa 4), P-20.
 **Decisão de gestão:** P-07.
 

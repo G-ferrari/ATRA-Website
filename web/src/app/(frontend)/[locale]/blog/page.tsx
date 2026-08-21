@@ -105,6 +105,10 @@ export default async function BlogPage() {
   const { isEnabled: rascunho } = await draftMode()
   const payload = await getPayload()
 
+  /* ⚠️ `select` não é otimização prematura aqui: sem ele a consulta traz o
+   * `body` inteiro dos 100 artigos — JSONB de artigo de blog, não um campo curto
+   * — só para desenhar cartão. Medido depois da importação dos 207: 536ms sem
+   * `select`, 68ms com. É a mesma armadilha que já custou caro em `solutions`. */
   const { docs } = await payload.find({
     collection: 'posts',
     locale,
@@ -113,6 +117,7 @@ export default async function BlogPage() {
     sort: '-publishedAt',
     draft: rascunho,
     ...(rascunho ? {} : { where: { _status: { equals: 'published' } } }),
+    select: { title: true, slug: true, description: true, coverImage: true, tags: true, publishedAt: true },
   })
   const posts = docs.map(toPostCard)
 

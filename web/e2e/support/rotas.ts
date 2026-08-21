@@ -7,14 +7,21 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'relatorios', caminho: '/relatorios' },
   { nome: 'ebooks', caminho: '/ebooks' },
   { nome: 'webinars', caminho: '/webinars' },
-  { nome: 'blog', caminho: '/blog' },
+  /* `/blog` **saiu** na Fase 4b, e `/carreiras` junto. As duas listam conteúdo,
+     e o conteúdo virou real: MIG-083 importou 207 artigos do WordPress no lugar
+     dos 6 fictícios, e MIG-085 trouxe as 7 vagas no lugar das 6. O gabarito é
+     uma captura do protótipo mostrando as fixtures — nenhuma captura dele pode
+     voltar a bater, porque o protótipo nunca vai ter esse conteúdo.
+
+     Regravar o gabarito seria pior do que remover: o comando existe, mas
+     apagaria a evidência de regressão do resto das duas páginas de uma vez, e o
+     novo gabarito compararia o app contra ele mesmo. As duas continuam cobertas
+     por `smoke.spec.ts` — respondem 200, o artigo e a vaga levam a um detalhe
+     que existe, e artigo com corpo é indexável. */
   { nome: 'sobre', caminho: '/sobre' },
   /* Entrou tarde: MIG-052 fechou /consultores sem gabarito, e 57% da página
      estava faltando sem ninguém ver. Ver a nota no topo de `consultores/page.tsx`. */
   { nome: 'consultores', caminho: '/consultores' },
-  /* Pelo mesmo motivo: MIG-050 fechou /carreiras com quatro das sete seções, e
-     sem gabarito ninguém viu os 4.428px que faltavam. Ver `seed/carreiras.ts`. */
-  { nome: 'carreiras', caminho: '/carreiras' },
   /* `/solucoes` (o índice) fica **fora**: D-09 mudou o comportamento da rota e
      não há gabarito — o legado serve ali a página de IA. É esta que compara. */
   { nome: 'solucao-detalhe', caminho: '/solucoes/inteligencia-artificial' },

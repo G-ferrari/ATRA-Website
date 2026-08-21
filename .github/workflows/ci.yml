@@ -195,7 +195,14 @@ jobs:
 
       # A comparação confere o conteúdo, não só o layout: sem seed o app novo
       # sobe vazio e nada bate com o legado.
+      # `SEED_FIXTURES` liga os 6 posts e as 6 vagas fictícias do protótipo, que
+      # a suíte precisa para exercitar /blog e /carreiras sem ir à rede. Num
+      # banco de verdade eles não entram: o conteúdo real vem de
+      # `scripts/wp-import` (Fase 4b) e conteúdo inventado no ar seria pior do
+      # que uma listagem vazia.
       - run: pnpm seed
+        env:
+          SEED_FIXTURES: '1'
         working-directory: web
 
       # `pnpm gate` faz tudo: build de produção, sobe em :3100 e roda a suíte

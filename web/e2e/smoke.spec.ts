@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type APIRequestContext } from '@playwright/test'
 
 import { LEGACY_URL, NEXT_URL } from '../playwright.config'
 import { visit } from './support/stability'
@@ -62,12 +62,23 @@ test.describe('app novo', () => {
 
   /* `/blog/[slug]` **não existe no legado** (os cards apontam para `#`), então
    * não há gabarito e a regressão visual não cobre esta rota. Estas asserções
-   * são o que sobra de rede de segurança — ver a nota no topo da página. */
+   * são o que sobra de rede de segurança — ver a nota no topo da página.
+   *
+   * ⚠️ O slug sai da **listagem**, não escrito aqui. Escrito, o teste amarra a
+   * suíte ao conteúdo do banco: o slug que estava aqui era de uma das 6
+   * fixtures do protótipo, que MIG-083 apagou ao importar os 207 posts reais, e
+   * três asserções passaram a apontar para um 404. */
   test.describe('/blog/[slug] — rota sem gabarito', () => {
-    const COM_SLUG = '/blog/squad-gerenciada-como-estruturar-equipes-de-ti-mais-eficientes'
+    async function primeiroArtigo(request: APIRequestContext): Promise<string> {
+      const html = await (await request.get(`${NEXT_URL}/blog`)).text()
+      const m = html.match(/href="(\/blog\/[^"#]+)"/)
+      expect(m, 'a listagem não tem nenhum link de artigo').toBeTruthy()
+      return m![1]
+    }
 
     test('artigo existente responde 200 nos dois idiomas', async ({ request }) => {
-      for (const url of [`${NEXT_URL}${COM_SLUG}`, `${NEXT_URL}/en${COM_SLUG}`]) {
+      const caminho = await primeiroArtigo(request)
+      for (const url of [`${NEXT_URL}${caminho}`, `${NEXT_URL}/en${caminho}`]) {
         expect((await request.get(url)).status(), url).toBe(200)
       }
     })
@@ -77,12 +88,13 @@ test.describe('app novo', () => {
       expect(r.status()).toBe(404)
     })
 
-    /* A preocupação de D-08 — página magra prejudica o domínio — aplicada em
-     * código: enquanto o corpo estiver vazio o artigo não é indexável. Os 6
-     * posts do protótipo estão nesse estado de propósito (fixture do porte). */
-    test('artigo sem corpo sai com noindex', async ({ request }) => {
-      const r = await request.get(`${NEXT_URL}${COM_SLUG}`)
-      expect(await r.text()).toContain('noindex')
+    /* O outro lado de D-08: artigo **com** corpo tem que ser indexável. A regra
+     * em si — corpo vazio sai com `noindex` — virou unitário em `lib/seo.ts`
+     * quando os 207 artigos reais entraram e não sobrou no banco nenhuma página
+     * sem corpo para prová-la aqui. */
+    test('artigo com corpo é indexável', async ({ request }) => {
+      const r = await request.get(`${NEXT_URL}${await primeiroArtigo(request)}`)
+      expect(await r.text()).not.toContain('noindex')
     })
   })
 
@@ -141,7 +153,9 @@ test.describe('app novo', () => {
   test.describe('/carreiras e /contato — páginas de bloco sem gabarito', () => {
     test('a vaga da collection aparece e leva a um detalhe que responde 200', async ({ page }) => {
       await page.goto(`${NEXT_URL}/carreiras`)
-      const vaga = page.getByRole('link', { name: /Engenheiro\(a\) de Dados SR/ }).first()
+      /* Qualquer vaga serve: as 6 do protótipo saíram em MIG-085 e as 7 reais
+         entraram, e um título escrito aqui envelhece a cada vaga que abre. */
+      const vaga = page.locator('a[href*="/carreiras/"]').first()
       await expect(vaga).toBeVisible()
       await vaga.click()
       // A vaga leva a /carreiras/[slug] (MIG-051), que precisa **responder**,
@@ -150,10 +164,7 @@ test.describe('app novo', () => {
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     })
 
-    /* A vaga sem descrição sai com noindex, como o post sem corpo (D-08). */
-    test('vaga sem descrição sai com noindex; slug inexistente dá 404', async ({ request }) => {
-      const ok = await request.get(`${NEXT_URL}/carreiras/engenheiro-a-de-dados-sr`)
-      expect(await ok.text()).toContain('noindex')
+    test('slug de vaga inexistente dá 404', async ({ request }) => {
       const nope = await request.get(`${NEXT_URL}/carreiras/vaga-que-nao-existe`)
       expect(nope.status()).toBe(404)
     })

@@ -67,6 +67,7 @@ e resolve de uma vez.
 | **P-18** | A ATRA usa alguma ferramenta de **e-mail marketing ou CRM** (RD Station, HubSpot)? | Destino dos leads | ⚠️ Hoje **os quatro formulários do protótipo não enviam nada** — todo lead preenchido se perde. Se existe CRM, os formulários novos devem alimentá-lo em vez de virar lista isolada |
 | **P-24** | **Quem da ATRA vai editar o site** depois da virada, e quem é o ponto de contato nos 30 dias seguintes? | Treinamento e guia do editor | O objetivo declarado da migração é o marketing publicar sem depender de dev. Sem nome, o treinamento não tem convidado |
 | **P-02** | O RH quer manter as **vagas publicadas como páginas** do site (é como funciona hoje), ou adotar um sistema de recrutamento? | Modelagem de vagas | Nenhum — o modelo atual funciona. Vale confirmar antes de investir na tela |
+| **P-28** | **As 7 vagas do site estão na área certa?** O site novo mostra a área de atuação em cada vaga (Comercial, Analytics, Engenharia de Dados…), e o WordPress não guarda esse dado — a importação deduziu do título de cada uma | A ficha de cada vaga | Baixo, e fácil de arrumar: são 7 linhas para conferir no CMS. Uma vaga na área errada aparece no filtro errado para o candidato |
 
 ## TI e infraestrutura
 

@@ -133,10 +133,30 @@ para `topics` · importação das 6 vagas · geração automática do CSV de red
 dos 207 posts.
 
 **Critério de conclusão:**
-- 207 posts publicados, com corpo, data, autor e imagem
+- 207 posts publicados, com corpo, data, autor e imagem ✅ — 207 publicados,
+  287 imagens no acervo, nenhum sem corpo nem sem resumo
 - Amostra de 20 posts conferida manualmente: formatação, imagens e links internos
-- `redirects.csv` gerado com 207 linhas de post + as curadas à mão
-- Nenhum post com corpo vazio ou imagem quebrada (query de verificação)
+  ✅ **superado** — `check-convert.ts` roda nos **207**: 100% de retenção de
+  texto, 287/287 imagens, 516/517 links (o que falta é um `<a>` sem `href` na
+  origem, desfeito em texto), 2/2 tabelas e 112 links internos reescritos
+- `redirects.csv` gerado com 207 linhas de post + as curadas à mão ⚠️ **parcial**
+  — 214 linhas geradas (207 posts + 7 vagas), todas com destino conferido no
+  banco. As ~30 institucionais são curadoria da 4c; bater 301/200 contra staging
+  é da Fase 5, quando o `next.config.ts` passa a consumir o arquivo
+- Nenhum post com corpo vazio ou imagem quebrada (query de verificação) ✅
+- ⚠️ **MIG-084 fora**: o WP não tem taxonomia para mapear (P-27). Os 207 entraram
+  com `tags` vazio, e `/blog` nasce com filtro que não filtra
+
+> **O aceite visual encolheu de 15 para 13 rotas, de propósito.** `/blog` e
+> `/carreiras` listam conteúdo, e o conteúdo virou real — 207 artigos e 7 vagas
+> no lugar de 6 e 6 fixtures. Nenhuma captura do protótipo pode voltar a bater.
+> As duas ficam com o `smoke.spec.ts`; as outras 13 seguem sob o gate.
+
+> **O build passou de 77 para 491 páginas estáticas e começou a morrer** em
+> "took more than 60 seconds". Não era página quebrada: eram nove workers do
+> Next disputando a máquina com o Postgres, o MinIO e dois containers de app.
+> `next.config.ts` passou a usar metade dos núcleos e 180s de teto — a mesma
+> conta que o `pnpm gate` já fazia.
 
 > ✅ **Risco medido e reduzido — ver [piloto-conversao-wp](piloto-conversao-wp.md).**
 > A hipótese estava errada: o conteúdo não é Gutenberg, é Elementor. Varredura dos

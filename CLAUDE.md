@@ -107,7 +107,9 @@ docker compose up -d                     # postgres + minio + web (:3000)
 cd legacy && docker compose up -d        # gabarito (:3001)
 pnpm dev · pnpm lint · pnpm typecheck · pnpm test
 pnpm typegen                             # PageProps/LayoutProps antes do tsc em árvore limpa
-pnpm seed                                # idempotente
+pnpm seed                                # idempotente (fixtures do e2e só com SEED_FIXTURES=1)
+pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/import-posts.ts   # 207 artigos
+pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/import-jobs.ts    # 7 vagas
 pnpm gate                                # build de produção + comparação visual
 pnpm gate --baseline                     # regrava o gabarito a partir do legado
 pnpm gate --sem-build                    # reaproveita o .next existente
@@ -130,6 +132,12 @@ ela está inteira. Ver a nota da Fase 3 em `docs/03-plano/tasks.md`.
 
 
 Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
+
+**Rota que lista conteúdo real sai do gate.** `/blog` e `/carreiras` saíram na
+Fase 4b: o gabarito é uma captura do protótipo com 6 artigos e 6 vagas
+fictícios, e a página nova mostra os 207 e as 7 de verdade. Nenhuma captura do
+protótipo volta a bater, e regravar apagaria a evidência de regressão do resto
+da página. São 13 rotas sob o gate.
 
 - Imagens entram **mascaradas**: o legado serve o JPEG original e o app novo
   serve variante reencodada pelo `next/image`. Divergem por projeto, não por
@@ -169,6 +177,11 @@ Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
 | Faixa do carrossel divergindo inteira no aceite | `overflow-x-auto` guarda `scrollLeft` depois da rolagem vertical. `settle()` zera a rolagem horizontal de todo trilho — antes disso o gabarito saía deslocado 24px, sozinho respondendo por 92% dos pixels diferentes da home |
 | Elemento com imagem some ou muda de altura só no aceite | `stabilize()` troca imagem por um PNG 1×1. Onde a caixa **não** é fixa a altura vira o quadrado esticado: um `<img>` no fluxo com `w-full h-full` dentro de `h-auto min-h-[400px]` foi a 452px no legado e ficou em 400 no porte com `next/image fill`. Copiar o markup do gabarito, não só as classes |
 | Canvas do herói nunca repete entre duas capturas | A captura de página inteira **redimensiona a janela**; o `resize` recria as partículas e o gerador determinístico continua de onde parou, então cada recriação sorteia outro campo. `reiniciarAleatorio()` antes de repovoar, nos dois apps |
+| Tabela do WordPress vira parágrafo solto, com 100% do texto preservado | `editorConfigFactory.default({ config })` devolve o editor **padrão** do Lexical, não o do projeto — a `EXPERIMENTAL_TableFeature` fica de fora. Tirar a config do próprio campo (`editorConfigFactory.fromField`) |
+| Build morre em "took more than 60 seconds" com muitas páginas | Não é página quebrada, é fila: o Next usa `cpus - 1` workers, e nove instâncias do Payload disputam a máquina com o Postgres. `experimental.cpus` e `staticPageGenerationTimeout` em `next.config.ts` |
+| Campo `unique` recusa um valor que não está duplicado | `%` no valor é **curinga** na checagem de unicidade. Um post do WP tem `%c2%b2` no slug, e só ele falhava, só ao gravar o 2º idioma — o 1º passa porque ainda não há linha com que colidir. Normalizar antes de gravar |
+| Rota `/en/<coleção>/<slug>` dá 404 com `fallback: true` ligado | O fallback resolve a **leitura**, não a **consulta**: `where: { slug: { equals } }` bate na coluna do locale, que está nula. Gravar o slug nos dois idiomas |
+| Post importado é criado e apagado na mesma corrida | O hook de `slugField` normaliza o slug, e um post do WP tem `%c2%b2` no dele. Comparar por slug para achar o que remover perde exatamente esse; comparar pelos **ids que a importação tocou** |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
 ## Estado
@@ -182,7 +195,15 @@ depoimentos, contato, rodapé e o logo saíram de arrays e módulos escritos à 
 e viraram collection, global e mídia. Se aparecer uma lista de conteúdo dentro
 de `lib/` ou de um bloco, é resíduo — o lugar dela é o CMS.
 
-A seguir vem a 4b (importar os 207 posts do WordPress), que depende de repactuar
-**P-27**: MIG-084 mapeia categorias e o WP não tem taxonomia para mapear.
+A 4b importou o WordPress: **207 artigos** com corpo, imagem e links internos
+reescritos, **287 imagens** e as **7 vagas** (não 6 — uma abriu depois do
+levantamento). O `redirects.csv` tem 214 linhas. Falta a MIG-084, parada em
+**P-27**: o WP tem 1 categoria e 0 tags, então não há taxonomia para mapear, e
+classificar 207 artigos é decisão de conteúdo (D-22).
+
+⚠️ **Conteúdo de verdade não vem do `pnpm seed`.** Os artigos e as vagas entram
+por `scripts/wp-import/`; o seed só cria fixtures de teste, e agora **exige
+`SEED_FIXTURES=1`** — que só o CI liga. Sem isso, doze itens inventados iriam ao
+ar assinados pela ATRA no cutover.
 
 Roadmap em `docs/03-plano/`; backlog em `tasks.md`, uma task por PR.

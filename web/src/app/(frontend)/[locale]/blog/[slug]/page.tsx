@@ -15,6 +15,7 @@ import { toPostDetail } from '@/lib/mappers/post'
 import { mapearOuFaltando } from '@/lib/mappers/shared'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
+import { robotsDeCorpo } from '@/lib/seo'
 import type { PostDetail } from '@/types/content'
 
 /* /blog/[slug] (MIG-044).
@@ -113,7 +114,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/blog/[sl
      * 6 posts do protótipo estão publicados como fixture do porte, e página
      * magra prejudica o domínio inteiro. Enquanto não houver texto, o post
      * existe para quem tem o link e é invisível para busca. */
-    robots: post.body ? undefined : { index: false, follow: true },
+    robots: robotsDeCorpo(post.body),
   }
 }
 

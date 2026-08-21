@@ -6,6 +6,7 @@ import { PaginaDeMaterial, type TextosDoMaterial } from '@/components/content/pa
 import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { buscarMaterial, slugsDeMaterial } from '@/lib/materiais'
+import { robotsDeCorpo } from '@/lib/seo'
 
 /* /ebooks/[slug] (MIG-045). Rota **sem gabarito** — não existe no protótipo.
  * A estrutura vive em `PaginaDeMaterial`, compartilhada com a outra rota. */
@@ -70,7 +71,7 @@ export async function generateMetadata({
     openGraph: { images: [{ url: material.image.url }] },
     /* Sem corpo **e** sem download, a página não entrega nada a quem chega da
      * busca. Volta a ser indexável quando MIG-104 ligar o formulário. */
-    robots: material.body ? undefined : { index: false, follow: true },
+    robots: robotsDeCorpo(material.body),
   }
 }
 

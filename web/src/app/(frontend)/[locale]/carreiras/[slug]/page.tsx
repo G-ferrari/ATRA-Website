@@ -12,6 +12,7 @@ import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toVagaDetalhe } from '@/lib/mappers/job'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
+import { robotsDeCorpo } from '@/lib/seo'
 import type { VagaDetalhe } from '@/types/content'
 
 /* /carreiras/[slug] (MIG-051). Rota **sem gabarito** — não existe no protótipo:
@@ -89,7 +90,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/carreira
     title: `${vaga.title} — ${vaga.area}`,
     description: vaga.summary,
     /* Vaga sem descrição não entrega nada a quem chega da busca. */
-    robots: vaga.body ? undefined : { index: false, follow: true },
+    robots: robotsDeCorpo(vaga.body),
   }
 }
 

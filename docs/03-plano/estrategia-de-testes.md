@@ -100,7 +100,9 @@ alto:
 | Alvo | Por quê |
 |---|---|
 | `lib/mappers/*` | Transformam dado do CMS; relationship não populado é o bug mais provável |
-| Conversor **HTML → Lexical** | 207 posts dependem dele. Teste com fixtures reais do WP |
+| Conversor **HTML → Lexical** | 207 posts dependem dele. Fixture **escrita à mão** que reproduz as formas do corpus, e não posts baixados: `.sample/` e `.cache/` estão fora do git, e teste que depende de rede falha por motivo errado. O corpus de verdade é medido por `check-convert.ts`, que é outra coisa |
+| Escolha do texto alternativo e do nome de arquivo na importação de mídia | 17 dos 287 arquivos do WP têm nome-base repetido, e 4 se chamam `banner-site-blog-1`. Procurar por nome importa uma imagem no lugar de outra, calado |
+| `robotsDeCorpo` (D-08) | Era provada no e2e pelas fixtures sem corpo, que a Fase 4b levou embora — sem banco, a regra continua testável |
 | Geração e parsing do `redirects.csv` | Erro aqui = SEO perdido silenciosamente |
 | Parser de UI generativa do chat (`Chat.tsx:17-57`) | Regex sobre saída de LLM; frágil por natureza |
 | Rate limit e budget guard | Segurança e custo |
@@ -112,7 +114,7 @@ alto:
 # Em toda PR
 lint          → eslint + prettier
 typecheck     → tsc --noEmit + payload generate:types (falha se desatualizado)
-unit          → vitest run
+unit          → vitest run   # src/**/*.test.ts e scripts/**/*.test.ts
 build         → next build
 e2e-smoke     → status 200/404 em todas as rotas
 visual        → só as rotas tocadas na PR (por path filter)

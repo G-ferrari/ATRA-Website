@@ -11,9 +11,15 @@
  * de volta para **dentro** da seção de vagas. A rota entrou em
  * `ROTAS_COM_GABARITO` no mesmo PR.
  *
- * ⚠️ As vagas entram **publicadas mas sem corpo** — o legado só tem os títulos,
- * e a página de detalhe (MIG-051) trata a ausência de descrição com aviso, como
- * o blog. A candidatura é MIG-102 (P-17).
+ * ⚠️ **As 6 vagas daqui são fixture de teste e só rodam com `SEED_FIXTURES=1`.**
+ * Vêm do protótipo, que só tem os títulos — nem corpo, nem área, nem modelo de
+ * trabalho de verdade. MIG-085 importou as **7 vagas reais** do WordPress, com
+ * descrição e modelo de trabalho lidos da página, e apagou estas.
+ *
+ * O que sobrou para elas é o mesmo dos posts fictícios: dar ao e2e um
+ * `/carreiras` com lista não vazia sem depender de rede. Num banco de verdade
+ * elas seriam seis vagas inventadas no ar, recebendo candidatura. A candidatura
+ * em si é MIG-102 (P-17).
  */
 import { getPayload } from 'payload'
 
@@ -35,9 +41,9 @@ const paraSlug = (s: string) =>
 
 const payload = await getPayload({ config })
 
-console.log('→ vagas')
+console.log(process.env.SEED_FIXTURES ? '→ vagas (fixtures de teste)' : '→ vagas (puladas: as reais vêm de scripts/wp-import/import-jobs.ts)')
 let n = 0
-for (let i = 0; i < VAGAS.length; i++) {
+for (let i = 0; process.env.SEED_FIXTURES && i < VAGAS.length; i++) {
   const title = VAGAS[i]
   const slug = paraSlug(title)
   const { docs } = await payload.find({ collection: 'jobs', where: { slug: { equals: slug } }, limit: 1, locale: 'pt', depth: 0 })

@@ -10,7 +10,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
  * Ver docs/03-plano/estrategia-de-testes.md. */
 export default defineConfig({
   test: {
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'scripts/**/*.test.ts'],
     environment: 'node',
   },
   resolve: {

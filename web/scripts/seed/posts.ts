@@ -1,24 +1,18 @@
-/* Seed do blog (MIG-043).
+/* Fixture de teste do blog — **não é conteúdo**.
  *
- * ⚠️ **Fixture do porte, não conteúdo final.** Os 6 artigos são fictícios, do
- * protótipo (`legacy/src/pages/Blog.tsx:11`), e existem aqui por um motivo só:
- * a comparação visual precisa dos mesmos cards que estão no ar para provar que
- * a rota foi portada fielmente.
+ * Os 6 artigos são fictícios, do protótipo (`legacy/src/pages/Blog.tsx:11`). Na
+ * Fase 3 existiam porque o aceite visual de `/blog` comparava contra o protótipo
+ * e precisava dos mesmos 6 cards. MIG-083 importou os 207 artigos reais do
+ * WordPress, `/blog` saiu do gate visual (a listagem agora tem conteúdo real, que
+ * o protótipo nunca terá) e o único motivo que sobrou para eles é dar à suíte de
+ * e2e um blog não vazio, sem depender de rede.
  *
- * Na Fase 4b eles são **descartados** e a collection recebe os 207 posts reais
- * do WordPress, com corpo (D-17, P-07). Quem rodar o seed depois disso vai
- * recriá-los — remover este arquivo do run.mjs junto com a importação.
+ * ⚠️ **Só rodam com `SEED_FIXTURES=1`**, que o CI liga e mais ninguém.
  *
- * ⚠️ Entram **publicados**, e isso contraria D-08 de propósito.
- *
- * D-08 manda rascunho para post sem corpo, e a regra está certa: artigo vazio é
- * página magra. Mas o gabarito da regressão visual vem do protótipo, que exibe
- * os 6 cards — deixá-los em rascunho esvaziaria a listagem e o gate compararia
- * uma página vazia contra uma cheia, provando nada sobre o porte.
- *
- * A resolução é temporal, não uma exceção à regra: eles ficam publicados
- * enquanto são fixture, e somem na Fase 4b junto com este arquivo. **Nenhum
- * deles pode ir ao ar no cutover** — está no runbook.
+ * D-17 manda descartá-los, e a razão é forte: publicados num banco de verdade,
+ * seis artigos inventados vão ao ar assinados pela ATRA. Enquanto isso era uma
+ * linha de runbook, dependia de alguém lembrar na hora do cutover. A variável
+ * põe a regra no código — `pnpm seed` sem ela não recria nenhum.
  */
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -105,7 +99,35 @@ async function capaMarcadora() {
   })
 }
 
-console.log('→ blog')
+if (!process.env.SEED_FIXTURES) {
+  console.log('→ blog (pulado: fixture de teste, exige SEED_FIXTURES=1 — os artigos reais vêm de scripts/wp-import)')
+  process.exit(0)
+}
+
+/** Corpo mínimo em Lexical: um parágrafo. */
+const corpo = (texto: string) =>
+  ({
+    root: {
+      type: 'root',
+      format: '',
+      indent: 0,
+      version: 1,
+      direction: 'ltr',
+      children: [
+        {
+          type: 'paragraph',
+          format: '',
+          indent: 0,
+          version: 1,
+          direction: 'ltr',
+          textFormat: 0,
+          children: [{ type: 'text', text: texto, format: 0, detail: 0, mode: 'normal', style: '', version: 1 }],
+        },
+      ],
+    },
+  }) as never
+
+console.log('→ blog (fixtures de teste)')
 const capa = await capaMarcadora()
 
 for (const p of POSTS) {
@@ -124,6 +146,12 @@ for (const p of POSTS) {
     description: p.description,
     coverImage: capa.id,
     tags: p.tags.map((name) => ({ name })),
+    /* Corpo de uma linha. Até a Fase 4b eles ficavam **sem corpo** de propósito,
+     * porque o smoke provava neles a regra de D-08 (página magra sai com
+     * `noindex`). A regra virou unitário em `lib/seo.ts`; o que o e2e precisa
+     * agora é do caso oposto — artigo com corpo é indexável — e para isso o
+     * fixture tem que ter corpo. */
+    body: corpo(p.description),
     publishedAt: new Date(p.publishedAt).toISOString(),
     _status: 'published' as const,
   }
