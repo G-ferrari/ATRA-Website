@@ -366,8 +366,14 @@ const Navbar = () => {
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   className="hidden md:flex items-center gap-3.5"
                 >
-                  {['Soluções', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre', 'Glossário'].map((item) => {
+                  {/* ⚠️ "Segmentos" é a 8ª categoria, e não existia no desenho original.
+                      Entrou junto com a rota `/segmentos` do site novo: as 8 verticais
+                      existem no WordPress e o protótipo não as cobria. O gabarito da
+                      regressão visual sai daqui, então acrescentar só do outro lado
+                      faria a comparação medir a diferença em vez da regressão. */}
+                  {['Soluções', 'Segmentos', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre', 'Glossário'].map((item) => {
                     const label = item === 'Soluções' ? t('nav.solutions') : 
+                                  item === 'Segmentos' ? t('nav.segments') : 
                                   item === 'Consultores' ? t('nav.consultants') : 
                                   item === 'Insights' ? t('nav.insights') : 
                                   item === 'Parceiros' ? t('nav.partners') : 
@@ -377,6 +383,11 @@ const Navbar = () => {
 
                     const isSelected = activeDesktopCategory === item;
                     const menuLink = item === 'Soluções' ? '#' :
+                                     /* `#`, como Soluções e Parceiros: o protótipo não tem a
+                                        página de segmentos — ela nasce no site novo. O rótulo
+                                        existe aqui para o cabeçalho bater no gabarito, e um link
+                                        para rota inexistente seria pior do que nenhum. */
+                                     item === 'Segmentos' ? '#' :
                                      item === 'Consultores' ? '/consultores' :
                                      item === 'Insights' ? '/insights' :
                                      item === 'Parceiros' ? '#' :
@@ -389,7 +400,7 @@ const Navbar = () => {
                         <Link
                           to={menuLink}
                           onClick={(e) => {
-                            if (item === 'Soluções' || item === 'Parceiros') {
+                            if (item === 'Soluções' || item === 'Segmentos' || item === 'Parceiros') {
                               e.preventDefault();
                             } else {
                               setIsMobileMenuOpen(false);
@@ -925,7 +936,7 @@ const Navbar = () => {
               className="pointer-events-auto w-full max-w-lg mt-2 bg-surface-2 border border-slate-200/80 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden relative z-40 mx-auto md:hidden max-h-[82vh] flex flex-col"
             >
               <div className="overflow-y-auto no-scrollbar p-4 space-y-1.5 flex-1">
-                {['Soluções', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre', 'Glossário'].map((item) => (
+                {['Soluções', 'Segmentos', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre', 'Glossário'].map((item) => (
                   <div key={item} className="flex flex-col rounded-lg overflow-hidden">
                     <div 
                       className="flex items-center justify-between py-3 px-3.5 hover:bg-slate-100 dark:hover:bg-white/5 active:bg-slate-200/60 dark:active:bg-white/10 rounded-lg transition-colors cursor-pointer"
@@ -952,6 +963,7 @@ const Navbar = () => {
                         item === 'Parceiros' ? t('nav.partners') : 
                         item === 'Carreiras' ? t('nav.careers') : 
                         item === 'Sobre' ? t('nav.about') : 
+                        item === 'Segmentos' ? t('nav.segments') :
                         item === 'Glossário' ? t('nav.glossary') : item}
                       </Link>
                       {(item === 'Soluções' || item === 'Insights' || item === 'Parceiros') && (
@@ -2493,6 +2505,9 @@ const Footer = () => {
           <div>
             <h4 className="text-primary font-medium text-xs font-display tracking-wide mb-4">{t('nav.about')}</h4>
             <ul className="space-y-2 text-xs font-light">
+              {/* Sem destino aqui, como no menu: a página de segmentos nasce no site
+                  novo. O item existe para o rodapé bater com o gabarito. */}
+              <li><a href="#" className="hover:text-white transition-colors">{t('nav.segments')}</a></li>
               <li><Link to="/consultores" className="hover:text-white transition-colors">{t('nav.consultants')}</Link></li>
               <li><Link to="/cases-de-sucesso" className="hover:text-white transition-colors">{t('nav.insights')}</Link></li>
               <li><Link to="/parceiros/google-cloud" className="hover:text-white transition-colors">{t('nav.partners')}</Link></li>

@@ -84,6 +84,34 @@ export function PainelDoMenu({
     )
   }
 
+  /* Mesma grade do painel de parceiros, com ícone no lugar do logo: a vertical
+   * não tem marca, tem símbolo. Lê a collection `segments` — digitar as 8 aqui
+   * recriaria a duplicação que o global existe para evitar. */
+  if (categoria.panel === 'segments') {
+    return (
+      <div className="grid grid-cols-4 gap-3 pt-3" data-testid="painel-segmentos">
+        {navegacao.segmentos.map((s) => (
+          <Link
+            key={s.slug}
+            href={hrefDe('segmentos', locale, s.slug)}
+            onClick={aoNavegar}
+            className={CELULA_DA_GRADE}
+          >
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary group-hover:text-white transition-all duration-200">
+              <Icone nome={s.icon} size={20} />
+            </div>
+            <div>
+              <div className="text-[11px] font-normal text-text-main mb-0.5 capitalize tracking-wide group-hover:text-primary transition-colors">
+                {s.name}
+              </div>
+              <div className="text-[10px] text-text-muted leading-relaxed line-clamp-2">{s.shortDescription}</div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    )
+  }
+
   if (categoria.panel === 'links') {
     return (
       <div className="grid grid-cols-5 gap-3 pt-3">

@@ -330,6 +330,33 @@ Uma PR por linha. Todas dependem de MIG-031.
 > `/sample-page/` e `/solucoes-atra/` apareceram, nenhuma das duas listada em
 > `seo-e-redirects.md`.
 
+### Ligação de `/segmentos` na navegação
+
+`/segmentos` nasceu em MIG-091 sem link nenhum apontando para ela. Ligar exigiu
+uma decisão que não é de engenharia, porque o gabarito da regressão visual **é o
+protótipo**: acrescentar a categoria só no site novo faria as 13 rotas nunca
+mais baterem, e regravar não resolveria — regravar captura o legado, que
+continuaria com 7.
+
+**Decidido (21/08/2026): menu nos dois apps.** "Segmentos" entra como 8ª
+categoria, ao lado de Soluções — solução é *o que* a ATRA faz, segmento é *para
+quem* — e no rodapé, na coluna institucional. O protótipo recebeu o mesmo item,
+com destino `#`, como Soluções e Parceiros já fazem lá: ele não tem a página, e
+link para rota inexistente seria pior que nenhum.
+
+Os 13 gabaritos foram regravados. O que a regravação apagou de evidência é
+justamente o cabeçalho e o rodapé, que é onde a mudança está.
+
+⚠️ **O painel do menu lê a collection.** `segments` virou o terceiro tipo de
+painel que não digita conteúdo no global, junto de `solutions` e `partners` —
+digitar as 8 verticais ali recriaria a duplicação que o global existe para
+evitar. O valor novo no `select` exigiu migração: `panel` é enum no Postgres, e
+`ALTER TYPE ... ADD VALUE` não sai de graça.
+
+⚠️ **`maxRows` do menu subiu de 7 para 8.** O teto não é burocracia: a fileira é
+`hidden md:flex` e começa a apertar em 768px. Categoria nova custa largura de
+todas as outras, e subir daqui pede olhar os três viewports.
+
 ## Fase 5 — Formulários, SEO e analytics
 
 | ID | Título | Dep. | Critério de aceite | Est. |

@@ -326,7 +326,10 @@ test.describe('app novo', () => {
   /* Megamenu (MIG-072a). Os painéis só existem com o menu aberto, então a
      regressão visual — que captura o estado fechado — não os cobre. É aqui. */
   test.describe('megamenu', () => {
-    const CATEGORIAS = ['Soluções', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre', 'Glossário']
+    /* 8 desde que `/segmentos` entrou no menu: as 7 do protótipo mais Segmentos,
+       ao lado de Soluções. O protótipo recebeu a mesma categoria, senão o
+       gabarito passaria a medir a diferença em vez da regressão. */
+    const CATEGORIAS = ['Soluções', 'Segmentos', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre', 'Glossário']
 
     /* As categorias e o rótulo do rodapé têm o mesmo texto, então todo locator
        aqui é escopado no `<nav>`. A fileira é `hidden md:flex`: no celular a
@@ -376,7 +379,7 @@ test.describe('app novo', () => {
       }).toPass({ timeout: 20000 })
     }
 
-    test('abre com as 7 categorias e o painel de soluções', async ({ page }) => {
+    test('abre com as 8 categorias e o painel de soluções', async ({ page }) => {
       test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
       const fileira = await abrirMenu(page)
 
@@ -399,6 +402,16 @@ test.describe('app novo', () => {
         'href',
         '/solucoes/inteligencia-artificial',
       )
+    })
+
+    /* O painel de segmentos lê a collection, como o de parceiros — digitar as 8
+       verticais no global recriaria a duplicação que ele existe para evitar. */
+    test('o painel de segmentos lista as verticais da collection', async ({ page }) => {
+      test.skip(soNoDesktop(page), 'a troca de painel por hover só é estável no desktop')
+      await abrirMenu(page)
+      const painel = page.getByTestId('painel-segmentos')
+      await passarNaCategoria(page, 'Segmentos', () => expect(painel).toBeVisible({ timeout: 2000 }))
+      expect(await painel.getByRole('link').count()).toBeGreaterThanOrEqual(8)
     })
 
     /* O painel de parceiros lê a collection, não uma lista digitada no global —

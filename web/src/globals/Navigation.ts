@@ -9,10 +9,10 @@ import { campoDeIcone, ICONES } from '@/blocks/shared'
  * ordem das sete de uma vez. Cada painel é um formato diferente no legado
  * (`App.tsx:458-880`), então o tipo escolhe o que aparece no admin.
  *
- * Dois painéis **não têm conteúdo aqui**, de propósito: `solutions` lê a
- * collection `solutions` e `partners` lê a `partners`. Digitá-los aqui
- * recriaria a duplicação que o legado tem — lá a lista de parceiros existe em
- * três lugares — e um parceiro novo teria que ser cadastrado duas vezes. */
+ * Três painéis **não têm conteúdo aqui**, de propósito: `solutions`, `partners`
+ * e `segments` leem as collections de mesmo nome. Digitá-los aqui recriaria a
+ * duplicação que o legado tem — lá a lista de parceiros existe em três lugares
+ * — e uma vertical nova teria que ser cadastrada duas vezes. */
 export const Navigation: GlobalConfig = {
   slug: 'navigation',
   label: { pt: 'Menu do topo', en: 'Top navigation' },
@@ -28,7 +28,12 @@ export const Navigation: GlobalConfig = {
     {
       name: 'categories',
       type: 'array',
-      maxRows: 7,
+      /* ⚠️ Eram 7 — as do protótipo — e viraram 8 quando `/segmentos` entrou no
+       * menu. O teto não é burocracia: a fileira é `hidden md:flex` e começa a
+       * apertar em 768px, então cada categoria nova custa largura de todas as
+       * outras. Subir daqui exige olhar o cabeçalho nos três viewports do gate,
+       * não só o admin aceitar. */
+      maxRows: 8,
       label: { pt: 'Categorias', en: 'Categories' },
       admin: {
         description: {
@@ -57,6 +62,7 @@ export const Navigation: GlobalConfig = {
           options: [
             { value: 'solutions', label: { pt: 'Soluções (da collection)', en: 'Solutions (from collection)' } },
             { value: 'partners', label: { pt: 'Parceiros (da collection)', en: 'Partners (from collection)' } },
+            { value: 'segments', label: { pt: 'Segmentos (da collection)', en: 'Segments (from collection)' } },
             { value: 'links', label: { pt: 'Grade de atalhos', en: 'Shortcut grid' } },
             { value: 'split', label: { pt: 'Texto + cartão', en: 'Text + card' } },
           ],

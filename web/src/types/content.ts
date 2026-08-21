@@ -641,7 +641,7 @@ export type CategoriaDoMenu = {
   label: string
   /** `null` quando a categoria só abre o painel — Soluções e Parceiros. */
   href: string | null
-  panel: 'solutions' | 'partners' | 'links' | 'split'
+  panel: 'solutions' | 'partners' | 'segments' | 'links' | 'split'
   links: AtalhoDoMenu[]
   intro: string | null
   highlights: DestaqueDoMenu[]
@@ -686,6 +686,7 @@ export type Navegacao = {
   categorias: CategoriaDoMenu[]
   solucoes: GrupoDeSolucoes[]
   parceiros: PartnerBadge[]
+  segmentos: SegmentCard[]
   /** Descrição de cada parceiro, para o painel — o `PartnerBadge` não a carrega. */
   descricoesDeParceiro: Record<string, string>
 }

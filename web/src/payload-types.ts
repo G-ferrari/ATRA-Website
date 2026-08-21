@@ -10748,7 +10748,7 @@ export interface Navigation {
          * Empty: the category only opens its panel. That is how Solutions and Partners behave.
          */
         href?: string | null;
-        panel: 'solutions' | 'partners' | 'links' | 'split';
+        panel: 'solutions' | 'partners' | 'segments' | 'links' | 'split';
         links?:
           | {
               icon:

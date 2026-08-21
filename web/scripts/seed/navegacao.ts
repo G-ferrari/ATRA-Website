@@ -26,6 +26,18 @@ const bullets = (itens: string[]) => itens.map((text) => ({ text }))
 
 const PT: Categoria[] = [
   { label: 'Soluções', panel: 'solutions' },
+  /* ⚠️ A **8ª categoria**, e a única que não vem do protótipo.
+   *
+   * As 8 verticais existem só no WordPress (D-17) e a rota `/segmentos` nasceu
+   * em MIG-091 sem link nenhum apontando para ela. Ligar aqui muda o cabeçalho,
+   * que aparece nas 13 rotas sob gate visual — o gabarito foi regravado junto,
+   * com o mesmo item acrescentado ao protótipo, senão a comparação passaria a
+   * medir a diferença em vez da regressão.
+   *
+   * Fica ao lado de Soluções de propósito: solução é **o que** a ATRA faz,
+   * segmento é **para quem**, e as duas se leem juntas. Ao contrário de
+   * Soluções e Parceiros, esta navega — `/segmentos` é uma página de verdade. */
+  { label: 'Segmentos', href: '/segmentos', panel: 'segments' },
   {
     label: 'Consultores',
     href: '/consultores',
@@ -167,6 +179,7 @@ const PT: Categoria[] = [
 
 const EN: Categoria[] = [
   { label: 'Solutions', panel: 'solutions' },
+  { label: 'Segments', href: '/segmentos', panel: 'segments' },
   {
     label: 'Consultants',
     href: '/consultores',

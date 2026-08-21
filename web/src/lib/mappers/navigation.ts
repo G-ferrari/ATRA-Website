@@ -7,6 +7,7 @@ import type {
   PartnerBadge,
 } from '@/types/content'
 
+import { toSegmentCard } from './segment'
 import { toImageOpcional } from './shared'
 
 /* Como em `solution.ts`: o parâmetro é o `Pick` do que o menu usa, e não o
@@ -109,10 +110,14 @@ export function toParceirosDoMenu(docs: ParceiroDoMenu[]): {
   return { parceiros, descricoes }
 }
 
+/** O que o painel de segmentos precisa — o mesmo `Pick` do cartão do índice. */
+type SegmentoDoMenu = Parameters<typeof toSegmentCard>[0]
+
 export function toNavegacao(args: {
   global: Navigation | null | undefined
   solucoes: SolucaoDoMenu[]
   parceiros: ParceiroDoMenu[]
+  segmentos: SegmentoDoMenu[]
   locale: 'pt' | 'en'
   hrefDaSolucao: (slug: string) => string
 }): Navegacao {
@@ -122,5 +127,6 @@ export function toNavegacao(args: {
     solucoes: toGruposDeSolucoes(args.solucoes, args.locale, args.hrefDaSolucao),
     parceiros,
     descricoesDeParceiro: descricoes,
+    segmentos: args.segmentos.map(toSegmentCard),
   }
 }

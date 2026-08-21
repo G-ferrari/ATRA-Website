@@ -37,6 +37,7 @@ import * as migration_20260820_210222_mig_071_clients from './20260820_210222_mi
 import * as migration_20260820_210425_mig_071_sem_arrays_na_home from './20260820_210425_mig_071_sem_arrays_na_home';
 import * as migration_20260820_213521_globais_contato_rodape_logo from './20260820_213521_globais_contato_rodape_logo';
 import * as migration_20260821_100257_segmentos from './20260821_100257_segmentos';
+import * as migration_20260821_120259_painel_de_segmentos from './20260821_120259_painel_de_segmentos';
 
 export const migrations = [
   {
@@ -232,6 +233,11 @@ export const migrations = [
   {
     up: migration_20260821_100257_segmentos.up,
     down: migration_20260821_100257_segmentos.down,
-    name: '20260821_100257_segmentos'
+    name: '20260821_100257_segmentos',
+  },
+  {
+    up: migration_20260821_120259_painel_de_segmentos.up,
+    down: migration_20260821_120259_painel_de_segmentos.down,
+    name: '20260821_120259_painel_de_segmentos'
   },
 ];

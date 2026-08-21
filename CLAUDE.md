@@ -134,6 +134,11 @@ dois. `pnpm test:e2e` é o executor cru, usado por dentro do container.
 
 Regravar gabarito exige justificativa no PR: apaga a evidência de regressão.
 
+⚠️ `--baseline` **não reescreve o que passou dentro da tolerância.** Uma linha a
+mais no rodapé muda ~2.000px numa página de 768×10906 — menos que os 0,1% — e o
+arquivo de tablet fica como estava, enquanto desktop e mobile são regravados.
+Ver um subconjunto dos gabaritos mudar é o esperado, não sinal de captura velha.
+
 ## Regressão visual
 
 **Rota com gabarito no legado entra em `ROTAS_COM_GABARITO` na mesma PR que a

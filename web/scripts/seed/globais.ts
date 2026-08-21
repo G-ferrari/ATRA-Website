@@ -61,6 +61,9 @@ const RODAPE = {
         title: 'Sobre',
         kind: 'links' as const,
         links: [
+          /* Acrescentado com a 8ª categoria do menu: rota que só é alcançável
+           * por URL não existe para o visitante. */
+          { label: 'Segmentos', href: '/segmentos' },
           { label: 'Consultores', href: '/consultores' },
           /* ⚠️ O rótulo diz "Insights" e o destino é /cases-de-sucesso. É assim
            * no legado; portado com o defeito (D-15). */
@@ -99,7 +102,7 @@ const RODAPE = {
     colunas: ['Solutions', 'About', 'Contact Us', 'Legal'],
     rotulos: [
       ['Innovation & AI', 'Data, BI & Advanced Analytics', 'Governance & Culture'],
-      ['Consultants', 'Insights', 'Partners', 'Careers', 'About', 'Glossary'],
+      ['Segments', 'Consultants', 'Insights', 'Partners', 'Careers', 'About', 'Glossary'],
       [],
       ['Privacy', 'Terms of Use', 'Cookies'],
     ],
