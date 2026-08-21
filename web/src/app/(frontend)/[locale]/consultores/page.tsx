@@ -97,12 +97,17 @@ const TEXTOS = {
   },
 } as const
 
-/* Ícone e cor de cada número, na ordem do legado (`Consultants.tsx:395`). */
+/* Ícone e cor de cada número, na ordem do legado (`Consultants.tsx:395`).
+ *
+ * ⚠️ Verde e âmbar carregam par claro/escuro; azul e laranja não precisam,
+ * porque as cores da marca já contrastam com os dois fundos. Sem o par, "< 48h"
+ * e "99.4%" saíam verde-claro e âmbar-claro sobre superfície clara — ilegíveis
+ * no tema claro, e o valor `dark:` é o que o gabarito compara. */
 const METRICAS = [
   { Icone: Users, cor: 'text-primary', marca: 'text-primary/40' },
   { Icone: Zap, cor: 'text-secondary', marca: 'text-secondary/40' },
-  { Icone: CheckCircle2, cor: 'text-emerald-400', marca: 'text-emerald-500/40' },
-  { Icone: Award, cor: 'text-amber-400', marca: 'text-amber-400/40' },
+  { Icone: CheckCircle2, cor: 'text-emerald-700 dark:text-emerald-400', marca: 'text-emerald-500/40' },
+  { Icone: Award, cor: 'text-amber-600 dark:text-amber-400', marca: 'text-amber-400/40' },
 ] as const
 
 const ICONES_DIFERENCIAIS = [Award, Cpu, Zap, ShieldCheck] as const

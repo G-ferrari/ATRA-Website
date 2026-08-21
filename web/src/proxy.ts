@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 import { NextResponse, type NextRequest } from 'next/server'
@@ -6,7 +7,12 @@ import { DEFAULT_LOCALE, LOCALES, isLocale } from '@/lib/locales'
 import { caminhosGone, lerRedirects } from '@/lib/redirects'
 import { aliasEsperado, canonizarSegmento } from '@/lib/routes'
 
-const CSV_DE_REDIRECTS = path.resolve(process.cwd(), '../docs/02-especificacao/dados/redirects.csv')
+/* ⚠️ Dois caminhos, porque o app roda em dois lugares. Nativo (`pnpm dev`) o
+ * repositório inteiro está no disco e `docs/` é irmã de `web/`; no contêiner só
+ * `web/` está montado em `/app`, e `docs/` entra em `/docs`. */
+const CSV_DE_REDIRECTS = [path.resolve(process.cwd(), '../docs'), '/docs']
+  .map((raiz) => path.join(raiz, '02-especificacao/dados/redirects.csv'))
+  .find(existsSync) ?? path.resolve(process.cwd(), '../docs/02-especificacao/dados/redirects.csv')
 
 /* Roteamento de idioma (D-07).
  *

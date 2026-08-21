@@ -84,6 +84,7 @@ export interface Config {
     solutions: Solution;
     'specialist-roles': SpecialistRole;
     'ai-usage': AiUsage;
+    'form-submissions': FormSubmission;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -108,6 +109,7 @@ export interface Config {
     solutions: SolutionsSelect<false> | SolutionsSelect<true>;
     'specialist-roles': SpecialistRolesSelect<false> | SpecialistRolesSelect<true>;
     'ai-usage': AiUsageSelect<false> | AiUsageSelect<true>;
+    'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -6980,6 +6982,26 @@ export interface AiUsage {
   createdAt: string;
 }
 /**
+ * What visitors submitted through the forms. Personal data — treat it as such.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions".
+ */
+export interface FormSubmission {
+  id: number;
+  kind: 'contact' | 'newsletter' | 'talent-pool';
+  status: 'new' | 'read' | 'archived';
+  email: string;
+  name?: string | null;
+  phone?: string | null;
+  company?: string | null;
+  message?: string | null;
+  source?: string | null;
+  notified?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -7070,6 +7092,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-usage';
         value: number | AiUsage;
+      } | null)
+    | ({
+        relationTo: 'form-submissions';
+        value: number | FormSubmission;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -10628,6 +10654,23 @@ export interface SpecialistRolesSelect<T extends boolean = true> {
 export interface AiUsageSelect<T extends boolean = true> {
   day?: T;
   requests?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions_select".
+ */
+export interface FormSubmissionsSelect<T extends boolean = true> {
+  kind?: T;
+  status?: T;
+  email?: T;
+  name?: T;
+  phone?: T;
+  company?: T;
+  message?: T;
+  source?: T;
+  notified?: T;
   updatedAt?: T;
   createdAt?: T;
 }

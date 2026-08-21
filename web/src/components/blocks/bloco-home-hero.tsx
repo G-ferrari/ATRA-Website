@@ -19,6 +19,12 @@ import { PromptDaIa } from './prompt-da-ia'
  * A caixa de conversa com a IA renderiza **dentro** deste container, sobre o
  * mesmo canvas — no legado ela é `children` de `AetherFlowHero` (`App.tsx:2548`).
  * Ver a nota do campo `prompt` em `blocks/index.ts`. */
+/* ⚠️ Toda cor de texto aqui carrega o par claro/escuro, e a versão escura é a
+ * que o gabarito compara — por isso ela vem depois, no `dark:`, com o valor
+ * exato de antes. O herói ficava **branco sobre fundo branco** no tema claro: o
+ * título sumia por completo, e o protótipo tem o mesmo defeito. O aceite visual
+ * nunca pegou porque captura só no escuro. Ver `e2e/contraste.spec.ts`.
+ */
 export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale: Locale }) {
   const [indice, setIndice] = useState(0)
   const secaoRef = useRef<HTMLElement>(null)
@@ -38,7 +44,7 @@ export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale:
   const palavra = bloco.rotatingWords[indice] ?? ''
 
   return (
-    <div className="relative w-full overflow-hidden transition-colors duration-500 text-white">
+    <div className="relative w-full overflow-hidden transition-colors duration-500 text-slate-900 dark:text-white">
       <CampoDeParticulas />
 
       <section
@@ -48,7 +54,7 @@ export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale:
       >
         <div className="flex flex-col items-center max-w-5xl mx-auto space-y-5 sm:space-y-6 md:space-y-8">
           <div className="w-full">
-            <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-snug sm:leading-tight select-none text-center text-white">
+            <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-snug sm:leading-tight select-none text-center text-slate-900 dark:text-white">
               <span>{bloco.titlePrefix} </span>
               {/* `min-h-[1.2em]` e `align-top` seguram a altura da linha enquanto
                   a palavra troca: sem eles o título pula meio caractere a cada
@@ -72,7 +78,7 @@ export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale:
 
           {bloco.description && (
             <div className="max-w-2xl px-2">
-              <p className="text-sm sm:text-lg md:text-xl font-light leading-relaxed text-gray-300">
+              <p className="text-sm sm:text-lg md:text-xl font-light leading-relaxed text-slate-600 dark:text-gray-300">
                 {bloco.description}
               </p>
             </div>
@@ -83,7 +89,7 @@ export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale:
               <button
                 type="button"
                 onClick={rolar}
-                className="group flex flex-col items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3C98FA] rounded-[6px] p-2.5 sm:p-3 text-gray-400 hover:text-white"
+                className="group flex flex-col items-center justify-center gap-1.5 sm:gap-2 cursor-pointer transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3C98FA] rounded-[6px] p-2.5 sm:p-3 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
                 aria-label={bloco.scrollLabel}
               >
                 <span className="text-xs sm:text-base font-medium tracking-wide select-none">

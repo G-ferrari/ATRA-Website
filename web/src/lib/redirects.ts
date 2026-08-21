@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 
 /* Leitura do `redirects.csv` para o `next.config.ts` (MIG-108).
  *
@@ -67,6 +67,26 @@ export function caminhosGone(linhas: LinhaDeRedirect[]): string[] {
   return linhas.filter((l) => l.status === 410).map((l) => l.from.replace(/\/$/, ''))
 }
 
+/**
+ * Lê o CSV, tolerando a ausência dele.
+ *
+ * ⚠️ **Arquivo faltando não derruba o servidor.** A primeira versão fazia
+ * `readFileSync` direto, e o `next.config.ts` o chama ao carregar: no contêiner
+ * de desenvolvimento, que monta só `web/`, o caminho não existia, o ENOENT
+ * subia e o processo morria — com `restart: unless-stopped`, um laço de
+ * reinício sem nada na tela além de ENOENT.
+ *
+ * A escolha entre "site inteiro fora do ar" e "258 URLs antigas respondendo
+ * 404" não é difícil. E a falta não passa despercebida: avisa no log, e o
+ * `redirects.spec.ts` reprova se as linhas não chegarem ao servidor.
+ */
 export function lerRedirects(caminho: string): LinhaDeRedirect[] {
+  if (!existsSync(caminho)) {
+    console.warn(
+      `[redirects] ${caminho} não existe — o site sobe **sem** os redirects do WordPress. ` +
+        'Em desenvolvimento, confira se `docs/` está montado no contêiner.',
+    )
+    return []
+  }
   return lerCsv(readFileSync(caminho, 'utf8'))
 }

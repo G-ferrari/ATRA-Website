@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import { withPayload } from '@payloadcms/next/withPayload'
 import { cpus } from 'node:os'
 import path from 'node:path'
@@ -28,7 +29,12 @@ const WORKERS = Math.max(2, Math.floor(cpus().length / 2))
  * ⚠️ O arquivo mora em `docs/`, fora de `web/`, porque é **especificação**: a
  * curadoria das ~30 URLs institucionais é decisão de negócio, não de código, e
  * quem revisa não abre o repositório do app. */
-const CSV_DE_REDIRECTS = path.resolve(process.cwd(), '../docs/02-especificacao/dados/redirects.csv')
+/* ⚠️ Dois caminhos, porque o app roda em dois lugares. Nativo (`pnpm dev`) o
+ * repositório inteiro está no disco e `docs/` é irmã de `web/`; no contêiner só
+ * `web/` está montado em `/app`, e `docs/` entra em `/docs`. */
+const CSV_DE_REDIRECTS = [path.resolve(process.cwd(), '../docs'), '/docs']
+  .map((raiz) => path.join(raiz, '02-especificacao/dados/redirects.csv'))
+  .find(existsSync) ?? path.resolve(process.cwd(), '../docs/02-especificacao/dados/redirects.csv')
 
 const nextConfig: NextConfig = {
   // Turbopack é o padrão no Next 16 — não precisa de flag.

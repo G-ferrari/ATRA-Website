@@ -40,6 +40,7 @@ import * as migration_20260821_100257_segmentos from './20260821_100257_segmento
 import * as migration_20260821_120259_painel_de_segmentos from './20260821_120259_painel_de_segmentos';
 import * as migration_20260821_130740_consumo_da_ia from './20260821_130740_consumo_da_ia';
 import * as migration_20260821_131123_ia_localizada from './20260821_131123_ia_localizada';
+import * as migration_20260821_132858_envios_de_formulario from './20260821_132858_envios_de_formulario';
 
 export const migrations = [
   {
@@ -250,6 +251,11 @@ export const migrations = [
   {
     up: migration_20260821_131123_ia_localizada.up,
     down: migration_20260821_131123_ia_localizada.down,
-    name: '20260821_131123_ia_localizada'
+    name: '20260821_131123_ia_localizada',
+  },
+  {
+    up: migration_20260821_132858_envios_de_formulario.up,
+    down: migration_20260821_132858_envios_de_formulario.down,
+    name: '20260821_132858_envios_de_formulario'
   },
 ];

@@ -77,7 +77,11 @@ export function ContentCard({
         )}
 
         {highlight && (
-          <div className="absolute bottom-3 right-3 bg-surface-1/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-[4px] border border-white/10 text-[11px] font-bold text-emerald-400">
+          /* ⚠️ O fundo tem par (`bg-surface-1/90 dark:bg-black/80`) e o texto
+             não tinha: no tema claro a etiqueta ficava verde-claro sobre
+             quase-branco, ilegível. O `dark:` guarda o valor que o gabarito
+             compara. */
+          <div className="absolute bottom-3 right-3 bg-surface-1/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-[4px] border border-white/10 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
             {highlight}
           </div>
         )}

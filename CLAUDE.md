@@ -142,6 +142,14 @@ Ver um subconjunto dos gabaritos mudar é o esperado, não sinal de captura velh
 
 ## Regressão visual
 
+⚠️ **O gabarito é capturado só no tema escuro.** O legado inicia em `dark`
+(`App.tsx:2575`), o porte também, e a captura nunca clica no alternador. O tema
+claro existe, tem botão fixo na tela — e ficou **sem nenhum teste até a Fase 5**:
+o título do herói da home era branco sobre fundo branco, invisível, e o
+protótipo tem o mesmo defeito. `e2e/contraste.spec.ts` é a rede que faltava. Ele
+mede os **dois** temas e reprova só o que funciona no escuro e quebra no claro —
+contraste baixo igual nos dois é escolha de design (D-15), não regressão.
+
 **Rota com gabarito no legado entra em `ROTAS_COM_GABARITO` na mesma PR que a
 porta.** Três rotas foram para "done" sem isso e saíram 30% a 57% mais curtas
 que o gabarito, sem ninguém ver — o smoke confere que a página responde, não que
@@ -202,8 +210,10 @@ da página. São 13 rotas sob o gate.
 | Redirect de uma URL para ela mesma trava a página | Com `trailingSlash: false` (padrão) o Next normaliza a barra final **antes** do `redirects()`, então `/sobre/` → `/sobre` vira `/sobre` → `/sobre` e o navegador desiste com ERR_TOO_MANY_REDIRECTS. `redirectsDoNext` descarta `source === destination` |
 | `redirects()` do Next não sabe responder 410 | Ele só emite 307/308. URL que sai de propósito é servida pelo `proxy.ts`. 410 e não 404: 404 é "não achei agora" e o robô volta, 410 é "não existe mais" e ele tira do índice |
 | Página inicial do WordPress vira redirect na raiz | O WP devolve `/` como `link` da página marcada como front page. Virou a linha `/,,410` — o site inteiro fora do ar. O gerador agora recusa `from === '/'` |
-| Teste do gate não acha arquivo de `docs/` | O container monta só `web/` em `/work`. `docs/` entra em `/docs:ro`, e o teste procura nos dois caminhos |
+| Arquivo de `docs/` não encontrado em container | **Três** lugares leem `redirects.csv` e cada container monta só o que precisa: o de dev (`/app`), o do gate (`/work`) e o build nativo. `docs/` entra como `/docs:ro` nos dois composes, e quem lê procura nos dois caminhos. Montar num só e esquecer os outros pôs o serviço `web` em laço de reinício — `next.config.ts` lê o arquivo ao carregar, e ENOENT ali mata o processo |
 | Gate roda inteiro e mede o build errado | Servidor de uma corrida anterior segurando :3100. O `next start` novo sai com `EADDRINUSE` e a suíte testa o build velho, sem aviso — 240 testes com falhas plausíveis. `scripts/gate.mjs` agora aborta se a porta estiver ocupada |
+| Texto some ao trocar para o tema claro | Cor escrita sem par: `text-white` sem `dark:` sobre fundo que clareia, ou `text-text-main` sobre painel que fica escuro. O par é `text-slate-900 dark:text-white` — o valor **escuro depois**, porque é ele que o gabarito compara |
+| Auditoria de contraste acusa centenas de problemas | Dois motivos, os dois já pagos: o Tailwind 4 emite `oklab(...)` para cor com opacidade e regex de números lê errado (use canvas para normalizar); e `transition-colors duration-500` faz `getComputedStyle` devolver a cor **em movimento** — espere a transição antes de medir |
 | Rascunho aparece no site | A Local API roda com **`overrideAccess: true`**: o `access.read` da collection, que filtra `_status` para o público, **não se aplica** a consulta de página. Toda listagem precisa do `where: { _status: { equals: 'published' } }` escrito. Ficou invisível até existir o primeiro rascunho |
 | `unique` recusa e o erro aponta para um bloco que está preenchido | Atualizar documento **publicado** revalida os obrigatórios **do idioma gravado**. Mandar só nome e slug para `en` faz o Payload recusar por "Título inválido" nos blocos, que estão vazios naquele idioma. Reenviar o layout com `casarIds` |
 | Rota `/en/<coleção>/<slug>` dá 404 com `fallback: true` ligado | O fallback resolve a **leitura**, não a **consulta**: `where: { slug: { equals } }` bate na coluna do locale, que está nula. Gravar o slug nos dois idiomas |
