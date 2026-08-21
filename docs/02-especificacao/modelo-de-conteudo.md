@@ -41,7 +41,7 @@ do admin em PT-BR.
 | `clients` | Logos de cliente | — | `App.tsx:1860` |
 | `testimonials` | Depoimentos | — | `App.tsx:1922` + `testimony` dos cases |
 | `specialist-roles` | Perfis de consultor alocáveis | — | `Consultants.tsx:61` |
-| `segments` | Verticais de mercado atendidas | `/segmentos/[slug]` | ⚠️ **só no WordPress** — 10 páginas, sem equivalente no protótipo (D-17) |
+| `segments` | Verticais de mercado atendidas | `/segmentos/[slug]` | ✅ **importadas em MIG-092** — 8 verticais; as outras 2 páginas do WP são índices |
 | `jobs` | Vagas | `/carreiras#[slug]` | 6 páginas no WordPress (P-02 respondida) |
 | `pages` | Páginas institucionais montadas por blocos | `/[slug]` | Home, `/sobre`, `/carreiras`, `/contato`, `/politicas-e-termos` |
 
@@ -276,6 +276,18 @@ a ATRA faz; segmento é *para quem*.
 
 > `relatedCases` e `clients` fazem a página de segmento se montar sozinha à medida
 > que cases e clientes são cadastrados — em vez de repetir conteúdo.
+
+> **O que mudou em MIG-090, e por quê.** A collection **não tem `hasPage`**, ao
+> contrário de `solutions`. Lá o checkbox existe porque o protótipo tem 5
+> ofertas que não são link; aqui as 8 páginas estão no ar hoje, e vertical sem
+> página seria a exceção — quem não deve aparecer fica em rascunho.
+>
+> ⚠️ O importador **não monta grade de cards** a partir do WordPress por
+> acidente: as 8 páginas de vertical seguem um molde de pares título+texto, e as
+> 13 de solução **não** — 8 delas são cabeçalho de seção seguido de parágrafos
+> soltos. Montar cards ali produziria seção vazia e jogaria o texto fora. É a
+> mesma armadilha que `blocos.md` registra: composição escrita a partir do
+> inventário de seções em vez do markup.
 
 ## `jobs`
 

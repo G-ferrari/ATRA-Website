@@ -71,6 +71,18 @@ Server Component resolve o dado e monta props. A parte interativa vira ilha
 cliente que recebe tudo pronto — `cases-de-sucesso/lista-de-cases.tsx` é o
 modelo.
 
+⚠️ **Toda consulta a collection com rascunho escreve o filtro de status.** A
+Local API roda com `overrideAccess: true`, então o `access.read` que esconde
+rascunho do público não vale ali:
+
+```ts
+where: { _status: { equals: 'published' } }   // e `draft: rascunho` no preview
+```
+
+Seis consultas ficaram sem isso por meses sem sintoma nenhum, porque não havia
+rascunho no banco. No dia em que apareceu o primeiro, `/solucoes` passou a
+listar 18 ofertas e o mega-menu junto.
+
 ### 5. Schema muda por migração versionada (D-21)
 
 `push: false`. Toda mudança de campo:
@@ -180,6 +192,9 @@ da página. São 13 rotas sob o gate.
 | Tabela do WordPress vira parágrafo solto, com 100% do texto preservado | `editorConfigFactory.default({ config })` devolve o editor **padrão** do Lexical, não o do projeto — a `EXPERIMENTAL_TableFeature` fica de fora. Tirar a config do próprio campo (`editorConfigFactory.fromField`) |
 | Build morre em "took more than 60 seconds" com muitas páginas | Não é página quebrada, é fila: o Next usa `cpus - 1` workers, e nove instâncias do Payload disputam a máquina com o Postgres. `experimental.cpus` e `staticPageGenerationTimeout` em `next.config.ts` |
 | Campo `unique` recusa um valor que não está duplicado | `%` no valor é **curinga** na checagem de unicidade. Um post do WP tem `%c2%b2` no slug, e só ele falhava, só ao gravar o 2º idioma — o 1º passa porque ainda não há linha com que colidir. Normalizar antes de gravar |
+| Gate roda inteiro e mede o build errado | Servidor de uma corrida anterior segurando :3100. O `next start` novo sai com `EADDRINUSE` e a suíte testa o build velho, sem aviso — 240 testes com falhas plausíveis. `scripts/gate.mjs` agora aborta se a porta estiver ocupada |
+| Rascunho aparece no site | A Local API roda com **`overrideAccess: true`**: o `access.read` da collection, que filtra `_status` para o público, **não se aplica** a consulta de página. Toda listagem precisa do `where: { _status: { equals: 'published' } }` escrito. Ficou invisível até existir o primeiro rascunho |
+| `unique` recusa e o erro aponta para um bloco que está preenchido | Atualizar documento **publicado** revalida os obrigatórios **do idioma gravado**. Mandar só nome e slug para `en` faz o Payload recusar por "Título inválido" nos blocos, que estão vazios naquele idioma. Reenviar o layout com `casarIds` |
 | Rota `/en/<coleção>/<slug>` dá 404 com `fallback: true` ligado | O fallback resolve a **leitura**, não a **consulta**: `where: { slug: { equals } }` bate na coluna do locale, que está nula. Gravar o slug nos dois idiomas |
 | Post importado é criado e apagado na mesma corrida | O hook de `slugField` normaliza o slug, e um post do WP tem `%c2%b2` no dele. Comparar por slug para achar o que remover perde exatamente esse; comparar pelos **ids que a importação tocou** |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
@@ -197,9 +212,15 @@ de `lib/` ou de um bloco, é resíduo — o lugar dela é o CMS.
 
 A 4b importou o WordPress: **207 artigos** com corpo, imagem e links internos
 reescritos, **287 imagens** e as **7 vagas** (não 6 — uma abriu depois do
-levantamento). O `redirects.csv` tem 214 linhas. Falta a MIG-084, parada em
-**P-27**: o WP tem 1 categoria e 0 tags, então não há taxonomia para mapear, e
-classificar 207 artigos é decisão de conteúdo (D-22).
+levantamento). A 4c trouxe as **8 verticais** para `/segmentos` e a página legal
+para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas**, com a
+geração reprovando se alguma URL do WordPress ficar sem destino.
+
+Duas tasks pararam em pendência, e as duas pelo mesmo motivo — classificar não é
+migrar. **MIG-084** (P-27): o WP tem 1 categoria e 0 tags, não há taxonomia para
+mapear. **MIG-093** (P-16): as 13 soluções do WP e as 6 no ar são vocabulários
+diferentes para a mesma oferta, não uma expansão; as 12 importadas estão em
+rascunho, e publicar é uma decisão de posicionamento.
 
 ⚠️ **Conteúdo de verdade não vem do `pnpm seed`.** Os artigos e as vagas entram
 por `scripts/wp-import/`; o seed só cria fixtures de teste, e agora **exige

@@ -647,6 +647,14 @@ export type CategoriaDoMenu = {
   card: CartaoDoMenu | null
 }
 
+/** Cartão do índice /segmentos (MIG-091). */
+export type SegmentCard = {
+  slug: string
+  name: string
+  icon: string
+  shortDescription: string
+}
+
 /** Dados de contato da ATRA, do global `contact` (MIG-072). */
 export type Contato = {
   telefone: string

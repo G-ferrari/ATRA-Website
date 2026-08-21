@@ -30,19 +30,93 @@ const ARQUIVO = path.resolve(process.cwd(), '../docs/02-especificacao/dados/redi
 
 type Linha = { from: string; to: string; status: number; note: string }
 
+/* Curadoria das páginas institucionais (Fase 4c).
+ *
+ * Chave = slug da página no WordPress; valor = destino no site novo e a
+ * justificativa. Fica aqui, e não escrito à mão no CSV, para a **conferência de
+ * cobertura** no fim funcionar: toda página do WordPress precisa de linha, e o
+ * gerador reprova se sobrar alguma. Foi assim que `/sample-page/` e
+ * `/solucoes-atra/` apareceram — nenhuma das duas estava na lista de
+ * `seo-e-redirects.md`.
+ *
+ * `410` é para o que sai de propósito. Nunca 302. */
+const CURADAS: Record<string, { to: string; status?: number; note: string }> = {
+  /* Índices que existem dos dois lados. */
+  blog: { to: '/blog', note: 'indice 1:1' },
+  contato: { to: '/contato', note: 'indice 1:1 - valida D-10' },
+  'case-de-sucesso': { to: '/cases-de-sucesso', note: 'indice 1:1' },
+  solucoes: { to: '/solucoes', note: 'indice 1:1' },
+  segmentos: { to: '/segmentos', note: 'indice 1:1 (a pagina do WP esta vazia)' },
+  'segmentos-atra': { to: '/segmentos', note: 'indice N:1 - o WP tem duas paginas de indice' },
+  'solucoes-atra': { to: '/solucoes', note: 'indice N:1 - o WP tem duas paginas de indice' },
+  'politicas-e-termos': { to: '/politicas-e-termos', note: 'pagina legal 1:1 (MIG-094)' },
+
+  /* Os 4 cases, com o slug que o protótipo já usava. */
+  'case-criacao-de-dashboards-estrategico-para-financeira': { to: '/cases-de-sucesso/dashboards-estrategicos', note: 'case 1:1' },
+  'case-gerando-valor-atraves-de-marketplace-e-governanca': { to: '/cases-de-sucesso/marketplace-governanca-dados', note: 'case 1:1' },
+  'case-ingestao-impulsionando-a-eficiencia-em-processos-de-risco-com-gcp': { to: '/cases-de-sucesso/eficiencia-processos-risco', note: 'case 1:1' },
+  'case-migrando-cargas-de-trabalho-legadas-para-google-cloud': { to: '/cases-de-sucesso/migracao-legado-gcp', note: 'case 1:1' },
+
+  /* Institucionais: o WordPress tem quatro páginas para o mesmo assunto. */
+  'quem-somos': { to: '/sobre', note: 'N:1 institucional' },
+  sobre: { to: '/sobre', note: 'N:1 institucional' },
+  'conheca-atra': { to: '/sobre', note: 'N:1 institucional' },
+  'nossas-conquistas': { to: '/sobre', note: 'N:1 institucional - os selos vivem em /sobre' },
+  clientes: { to: '/sobre', note: 'N:1 - os logos de cliente vivem na home e em /sobre' },
+  /* ⚠️ Não há índice de parceiros: só `/parceiros/[slug]`. Mandar para a página
+   * de um parceiro específico seria pior do que mandar para a vitrine. */
+  parceiros: { to: '/sobre', note: 'N:1 - a vitrine de parceiros vive em /sobre; nao ha indice' },
+
+  /* Carreiras: três páginas, um destino. */
+  carreiras: { to: '/carreiras', note: 'N:1 carreiras' },
+  'trabalhe-conosco': { to: '/carreiras', note: 'N:1 carreiras' },
+  'programa-de-trainee': { to: '/carreiras', note: 'N:1 carreiras - o trainee e uma secao de /carreiras' },
+
+  /* ⚠️ As 13 soluções vão todas para o índice, **de propósito e por ora**: as 6
+   * publicadas são outro vocabulário, e escolher entre os dois é P-16. As 12
+   * importadas estão em rascunho; quando forem publicadas, cada linha destas
+   * vira 1:1. A exceção é IA, que já tem página no ar. */
+  'inteligencia-artificial': { to: '/solucoes/inteligencia-artificial', note: 'solucao 1:1 - a unica com pagina no ar' },
+  cloud: { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'data-integration': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'data-analytics': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'master-data-management': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'data-discovery': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'customer-360': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'governanca-de-dados': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  treinamento: { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'alocacao-de-consultores': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'fabrica-de-transformacao-de-dados': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'sustentacao-remota': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  'assessoria-em-produtos': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+
+  /* Sem destino, e sai de propósito. */
+  'em-manutencao': { to: '', status: 410, note: 'pagina tecnica do WordPress' },
+  'health-check': { to: '', status: 410, note: 'pagina tecnica do WordPress' },
+  'sample-page': { to: '', status: 410, note: 'pagina de exemplo que o WordPress cria sozinho' },
+  eventos: { to: '/insights', note: 'N:1 - nao ha rota de eventos; o hub de conteudo e o mais proximo' },
+}
+
+/** Taxonomia vazia do WP: 1 categoria com os 207 posts, 0 tags (P-27). */
+const CURADAS_FORA_DAS_PAGINAS: Linha[] = [
+  { from: '/category/uncategorized/', to: '', status: 410, note: 'taxonomia vazia - o WP tem 1 categoria e 0 tags' },
+]
+
 const payload = await getPayload({ config })
 const cliente = createWpClient()
 
 console.log('→ lendo WordPress e banco')
-const [wpPosts, wpPaginas, { docs: posts }, { docs: vagas }] = await Promise.all([
+const [wpPosts, wpPaginas, { docs: posts }, { docs: vagas }, { docs: segmentos }] = await Promise.all([
   cliente.posts({ _fields: 'id,slug,link' }),
   cliente.pages({ _fields: 'id,slug,link,content' }),
   payload.find({ collection: 'posts', limit: 500, locale: 'pt', depth: 0, select: { slug: true } }),
   payload.find({ collection: 'jobs', limit: 200, locale: 'pt', depth: 0, select: { slug: true } }),
+  payload.find({ collection: 'segments', limit: 200, locale: 'pt', depth: 0, select: { slug: true } }),
 ])
 
 const slugsDePost = new Set(posts.map((p) => p.slug))
 const slugsDeVaga = new Set(vagas.map((v) => v.slug))
+const slugsDeSegmento = new Set(segmentos.map((v) => v.slug))
 
 /** Caminho da URL do WP, sempre com barra final. */
 function caminho(link: string | undefined, slug: string): string {
@@ -80,7 +154,37 @@ for (const pg of wpPaginas.filter((p) => /#vemserATRA/i.test(p.content?.rendered
   geradas.push({ from: caminho(pg.link, pg.slug), to: `/carreiras/${destino}`, status: 301, note: 'vaga 1:1' })
 }
 
-/* Preserva o que foi curado à mão (Fase 4c). */
+/* As institucionais da tabela curada. */
+const slugsDePaginaDeVaga = new Set(
+  wpPaginas.filter((p) => /#vemserATRA/i.test(p.content?.rendered ?? '')).map((p) => p.slug),
+)
+const semCuradoria: string[] = []
+
+for (const pg of wpPaginas) {
+  if (slugsDePaginaDeVaga.has(pg.slug)) continue
+
+  /* As 8 verticais saem do banco, 1:1, como os posts e as vagas: o slug do WP é
+   * o slug do segmento (MIG-092). Escrevê-las na tabela curada duplicaria a
+   * lista e envelheceria na primeira vertical nova. */
+  const comoSegmento = slugify(pg.slug)
+  if (slugsDeSegmento.has(comoSegmento)) {
+    geradas.push({ from: caminho(pg.link, pg.slug), to: `/segmentos/${comoSegmento}`, status: 301, note: 'segmento 1:1' })
+    continue
+  }
+
+  const curada = CURADAS[pg.slug]
+  if (!curada) {
+    semCuradoria.push(pg.slug)
+    continue
+  }
+  geradas.push({ from: caminho(pg.link, pg.slug), to: curada.to, status: curada.status ?? 301, note: curada.note })
+}
+
+geradas.push(...CURADAS_FORA_DAS_PAGINAS)
+
+/* Preserva qualquer linha que já esteja no arquivo e não venha daqui — o CSV é
+ * versionado, e alguém pode acrescentar um redirect de URL que só aparece no
+ * Search Console (as de tráfego real, que o sitemap não lista). */
 const preservadas: Linha[] = []
 if (existsSync(ARQUIVO)) {
   const gerado = new Set(geradas.map((l) => l.from))
@@ -98,7 +202,12 @@ mkdirSync(path.dirname(ARQUIVO), { recursive: true })
 writeFileSync(ARQUIVO, `${csv}\n`)
 
 const posts301 = geradas.filter((l) => l.to.startsWith('/blog/')).length
-console.log(`\n  ${posts301} posts · ${geradas.length - posts301} vagas · ${preservadas.length} preservadas do arquivo`)
+const vagas301 = geradas.filter((l) => l.to.startsWith('/carreiras/')).length
+const segmentos301 = geradas.filter((l) => l.to.startsWith('/segmentos/')).length
+console.log(
+  `\n  ${posts301} posts · ${vagas301} vagas · ${segmentos301} segmentos · ` +
+    `${geradas.length - posts301 - vagas301 - segmentos301} institucionais · ${preservadas.length} preservadas`,
+)
 console.log(`  ${todas.length} linhas em ${path.relative(process.cwd(), ARQUIVO)}`)
 for (const s of semDestino) console.log(`  ✗ ${s}`)
 
@@ -113,6 +222,16 @@ const malFormadas = todas.filter(
 )
 for (const l of malFormadas) console.log(`  ✗ fora do formato: ${l.from} → ${l.to} (${l.note})`)
 
-const reprovou = semDestino.length > 0 || malFormadas.length > 0 || posts301 !== wpPosts.length
-console.log(reprovou ? '\n✗ geração com pendências' : `\n✓ ${posts301} posts e ${geradas.length - posts301} vagas, todos com destino no banco`)
+/* O critério de aceite da Fase 4c: **nenhuma URL do WordPress sem destino**.
+ * Página nova no WP sem linha aqui reprova a geração em vez de sumir. */
+for (const slug of semCuradoria) console.log(`  ✗ pagina sem destino curado: /${slug}/`)
+
+const reprovou =
+  semDestino.length > 0 || malFormadas.length > 0 || semCuradoria.length > 0 || posts301 !== wpPosts.length
+
+console.log(
+  reprovou
+    ? '\n✗ geração com pendências'
+    : `\n✓ ${todas.length} linhas · ${wpPosts.length} posts, ${vagas301} vagas e ${wpPaginas.length - vagas301} páginas do WordPress, todas com destino`,
+)
 process.exit(reprovou ? 1 : 0)

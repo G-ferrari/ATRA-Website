@@ -22,10 +22,18 @@ export const SECOES = {
   consultores: { pt: 'consultores', en: 'consultants' },
   parceiros: { pt: 'parceiros', en: 'partners' },
   solucoes: { pt: 'solucoes', en: 'solutions' },
+  /* `segments`, tradução direta, e não `industries` ou `sectors`: as outras
+     seções aqui traduzem o termo em vez de reinterpretá-lo, e escolher o
+     vocabulário comercial em inglês é decisão de marketing (D-22). */
+  segmentos: { pt: 'segmentos', en: 'segments' },
   // A rota é MIG-061; o destino entra aqui antes porque a caixa de conversa da
   // home já aponta para ela, e link escrito à mão é o que a regra 6 proíbe.
   chat: { pt: 'chat', en: 'chat' },
   insights: { pt: 'insights', en: 'insights' },
+  /* MIG-094. O WordPress serve **uma** página para privacidade, termos e
+     cookies (`/politicas-e-termos/`); os 3 links do rodapé apontam todos para
+     ela, que é o que já acontece lá. */
+  politicas: { pt: 'politicas-e-termos', en: 'privacy-and-terms' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type Secao = keyof typeof SECOES

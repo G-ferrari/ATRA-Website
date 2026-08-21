@@ -75,11 +75,19 @@ const RODAPE = {
       {
         title: 'Legal',
         kind: 'links' as const,
-        /* `/politicas-e-termos` existe no WordPress e entra em MIG-094. */
+        /* ⚠️ Os três apontam para a **mesma** página (MIG-094). No protótipo
+         * apontavam para `#`, e o WordPress não tem três documentos: tem um só,
+         * `/politicas-e-termos/`, que cobre privacidade, termos e cookies nas
+         * suas sete seções. Separar em três é decisão jurídica, não de
+         * migração.
+         *
+         * Trocar `#` por rota não move um pixel: o rodapé desenha `<a href="#">`
+         * quando o destino é vazio e `<Link>` quando não é, com o mesmo texto e
+         * as mesmas classes. */
         links: [
-          { label: 'Privacidade', href: '' },
-          { label: 'Termos de Uso', href: '' },
-          { label: 'Cookies', href: '' },
+          { label: 'Privacidade', href: '/politicas-e-termos' },
+          { label: 'Termos de Uso', href: '/politicas-e-termos' },
+          { label: 'Cookies', href: '/politicas-e-termos' },
         ],
       },
     ],

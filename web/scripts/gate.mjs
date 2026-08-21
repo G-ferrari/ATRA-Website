@@ -73,6 +73,32 @@ if (!semBuild) {
   })
 }
 
+/* ⚠️ A porta tem que estar **livre** antes de subir o servidor.
+ *
+ * Se alguém já está escutando em :3100 — o servidor de uma corrida anterior que
+ * não morreu, tipicamente — o `next start` desta corrida sai na hora com
+ * `EADDRINUSE`, e a suíte roda inteira contra o **build antigo**. O resultado
+ * parece legítimo: 240 testes, falhas plausíveis, nenhum aviso. Custou uma
+ * corrida inteira de 25 minutos investigando um defeito que já estava
+ * corrigido no código — o build que respondia é que era outro.
+ *
+ * Abortar aqui é a diferença entre um gate que mede e um que inventa. */
+async function portaOcupada() {
+  try {
+    await fetch(`http://localhost:${PORTA}/`, { signal: AbortSignal.timeout(2_000) })
+    return true
+  } catch {
+    return false
+  }
+}
+
+if (await portaOcupada()) {
+  console.error(`✖ já há algo escutando em :${PORTA} — provavelmente o servidor de uma corrida anterior.`)
+  console.error(`  A suíte rodaria contra o build daquela corrida, não contra este. Derrube com:`)
+  console.error(`      lsof -ti tcp:${PORTA} | xargs kill`)
+  process.exit(1)
+}
+
 const servidor = spawn('pnpm', ['exec', 'next', 'start', '--port', String(PORTA)], {
   stdio: ['ignore', 'pipe', 'inherit'],
   env: { ...process.env, NODE_ENV: 'production' },
@@ -84,7 +110,11 @@ servidor.on('exit', () => (saiu = true))
 
 async function esperarNoAr() {
   const limite = Date.now() + 90_000
-  while (Date.now() < limite && !saiu) {
+  while (Date.now() < limite) {
+    /* Servidor que morreu não vai subir, e quem estiver respondendo na porta é
+     * outra coisa. Conferido **antes** do fetch: com a ordem invertida, um
+     * servidor alheio responde 200 na primeira volta e o gate segue feliz. */
+    if (saiu) return false
     try {
       const r = await fetch(`http://localhost:${PORTA}/cases-de-sucesso`, {
         signal: AbortSignal.timeout(5_000),

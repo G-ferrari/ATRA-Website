@@ -22,6 +22,7 @@ import { Pages } from './collections/Pages'
 import { Partners } from './collections/Partners'
 import { Posts } from './collections/Posts'
 import { Resources } from './collections/Resources'
+import { Segments } from './collections/Segments'
 import { Solutions } from './collections/Solutions'
 import { SpecialistRoles } from './collections/SpecialistRoles'
 import { Testimonials } from './collections/Testimonials'
@@ -59,8 +60,10 @@ export default buildConfig({
   },
 
   collections: [
-    Clients,
-    Users, Media, Topics, Testimonials, Partners, Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Solutions, SpecialistRoles, Webinars],
+    Users, Media, Topics, Testimonials,
+    Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Webinars,
+    Clients, Partners, Segments, Solutions, SpecialistRoles,
+  ],
 
   globals: [AtraAi, Contact, Footer, Navigation, SiteSettings],
 

@@ -72,6 +72,13 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
       depth: 0,
       limit: 100,
       sort: 'order',
+      /* ⚠️ O filtro de status é **obrigatório aqui**, e não redundante com o
+       * `access.read` da collection: a Local API roda com `overrideAccess: true`
+       * por padrão, então o acesso que esconde rascunho do público **não se
+       * aplica**. Sem isto o mega-menu lista rascunho para todo visitante — o
+       * que só apareceu quando MIG-093 pôs 12 soluções em rascunho, meses depois
+       * de a consulta ter sido escrita. */
+      where: { _status: { equals: 'published' } },
       select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true },
     }),
     payload.find({

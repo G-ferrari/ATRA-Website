@@ -83,6 +83,10 @@ export default async function SolucoesPage() {
     depth: 0,
     limit: 100,
     sort: 'order',
+    /* ⚠️ Rascunho fora, explicitamente: a Local API roda com
+     * `overrideAccess: true`, então o `access.read` da collection não filtra
+     * nada aqui. Ver a nota no layout. */
+    where: { _status: { equals: 'published' } },
     select: {
       title: true,
       slug: true,

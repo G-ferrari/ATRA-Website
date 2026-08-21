@@ -58,10 +58,10 @@ Complementar com, na ordem de confiabilidade:
 | **Institucionais** | ~8 | `/quem-somos/`, `/sobre/`, `/conheca-atra/`, `/nossas-conquistas/` … | `/sobre` | **N:1** — o WP tem páginas redundantes |
 | **Carreiras** | ~3 | `/carreiras/`, `/trabalhe-conosco/`, `/programa-de-trainee/` | `/carreiras` | N:1 |
 | **Soluções** | **13** | `/cloud/`, `/data-integration/`, `/governanca-de-dados/`, `/inteligencia-artificial/`, `/data-analytics/`, `/master-data-management/`, `/data-discovery/`, `/customer-360/`, `/fabrica-de-transformacao-de-dados/`, `/sustentacao-remota/`, `/treinamento/`, `/alocacao-de-consultores/`, `/assessoria-em-produtos/` | `/solucoes/[slug]` | ⚠️ **O protótipo modela 6 soluções; o WP tem 13 páginas** |
-| **Segmentos** | **10** | `/bancos-seguradoras-servicos-financeiros/`, `/educacao/`, `/logistica/`, `/varejo/`, `/telecom/`, `/industria/`, `/saude/`, `/utilidades/`, `/segmentos/`, `/segmentos-atra/` | — | ⚠️ **Sem equivalente no protótipo** |
+| **Segmentos** | **8** + 2 índices | `/bancos-seguradoras-servicos-financeiros/`, `/educacao/`, `/logistica/`, `/varejo/`, `/telecom/`, `/industria/`, `/saude/`, `/utilidades/` · índices: `/segmentos/`, `/segmentos-atra/` | `/segmentos/[slug]` · índices → `/segmentos` | ✅ **1:1 em MIG-092** |
 | **Vagas** | **7** | `/engenheiroa-de-dados-sr-azure-databricks/`, `/key-account-manager-pl-sr/`, `/engenheiro-de-dados-sr-oracle-cloud-oci/`, `/analytics-engineer-sr-gcp-dbt-looker-plataform/`, `/analista-de-sistemas-net-sr/`, `/trainee-engenheiro-de-data-analytics-ai/`, `/cientista-de-dados-pl-sr/` | `/carreiras/[slug]` | ⚠️ **Responde P-02**: as vagas são páginas do WP hoje. Destino 1:1 e não âncora em `/carreiras` — âncora levaria o candidato à lista, não à vaga |
 | **Parceiros / clientes** | 2 | `/parceiros/`, `/clientes/` | `/parceiros`, `/sobre` | Protótipo não tem índice de parceiros |
-| **Legal** | 1 | `/politicas-e-termos/` | ⚠️ sem destino | Rodapé do protótipo tem 3 links `#` para Privacidade/Termos/Cookies |
+| **Legal** | 1 | `/politicas-e-termos/` | ✅ `/politicas-e-termos` (MIG-094) | Rodapé do protótipo tem 3 links `#` para Privacidade/Termos/Cookies |
 | **Eventos** | 1 | `/eventos/` | ⚠️ sem destino | |
 | **Descartar** | 2 | `/em-manutencao/`, `/health-check/` | `410 Gone` | Páginas técnicas |
 | **Taxonomia vazia** | 1 | `/category/uncategorized/` | `410 Gone` | |
@@ -78,6 +78,17 @@ from,to,status,note
 /em-manutencao/,,410,pagina tecnica
 ```
 
+> ✅ **Fase 4c fechou a cobertura: 261 linhas.** Além dos posts e das vagas, a
+> geração agora percorre as **53 páginas** do WordPress contra uma tabela curada
+> e **reprova se alguma ficar sem destino**. Foi assim que `/sample-page/` e
+> `/solucoes-atra/` apareceram — nenhuma das duas estava listada aqui.
+>
+> ⚠️ As **13 soluções** apontam para o índice `/solucoes` (N:1), e não 1:1, até
+> **P-16** ser respondida: as 12 importadas estão em rascunho porque as 13 do WP
+> e as 6 no ar são vocabulários diferentes. A exceção é
+> `/inteligencia-artificial/`, que já tem página. Quando as soluções forem
+> publicadas, cada linha vira 1:1 sozinha — o gerador lê o banco.
+>
 > ✅ **As linhas de post e de vaga são geradas** por
 > `web/scripts/wp-import/gerar-redirects.ts` (MIG-086): 207 + 7 = 214 linhas,
 > todas com destino conferido contra o banco. Rodar de novo **preserva** o que

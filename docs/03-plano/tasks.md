@@ -275,11 +275,57 @@ Uma PR por linha. Todas dependem de MIG-031.
 
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
-| MIG-090 | Collection `segments` + template | 047 | Modelo conforme spec; admin utilizável | 3h |
-| MIG-091 | `/segmentos` + `/segmentos/[slug]` | 090 | 200 nas 11 rotas | 4h |
-| MIG-092 | Migrar as 10 páginas de segmento do WP | 091 | 10 publicadas com conteúdo real | 5h |
-| MIG-093 | Expandir `solutions` de 6 para 13 | 056 | 13 publicadas; mega-menu comporta | 5h |
-| MIG-094 | `/politicas-e-termos` + links do rodapé | 049 | Os 3 links legais deixam de apontar para `#` | 2h |
+| MIG-090 | Collection `segments` + template | 047 | Modelo conforme spec; admin utilizável | 3h | **done** — sem `hasPage` (ver a nota na collection); ligações em `collapsible` |
+| MIG-091 | `/segmentos` + `/segmentos/[slug]` | 090 | 200 nas 11 rotas | 4h | **done** — índice + 8 detalhes, nos 2 idiomas |
+| MIG-092 | Migrar as 10 páginas de segmento do WP | 091 | 10 publicadas com conteúdo real | 5h | **done** — são **8** verticais + 2 índices; 38 cards nos 2 idiomas |
+| MIG-093 | Expandir `solutions` de 6 para 13 | 056 | 13 publicadas; mega-menu comporta | 5h | ⚠️ **parcial — bloqueada por P-16.** As 12 do WP entraram em **rascunho**; as 6 no ar não foram tocadas. Ver a nota abaixo |
+| MIG-094 | `/politicas-e-termos` + links do rodapé | 049 | Os 3 links legais deixam de apontar para `#` | 2h | **done** — os 3 apontam para a mesma página, como no WordPress. Destrava a Fase 5 (P-14) |
+
+> ⚠️ **MIG-093 não é executável como está escrita, e o motivo é P-16.**
+>
+> "Expandir de 6 para 13" pressupõe que as 13 do WordPress contenham as 6 do
+> protótipo. Medido: não contêm. As 6 no ar são consolidadas e assinadas pela
+> ATRA — "Engenharia de Dados & Cloud", "Business Intelligence & Advanced
+> Analytics", "Cultura de Dados". As 13 do WP são o catálogo anterior, mais fino
+> e com vocabulário de fornecedor — "Master Data Management", "Data Discovery",
+> "Customer 360", páginas que citam a Informatica no corpo. Uma não é
+> subconjunto da outra: são dois jeitos de nomear a mesma oferta, e escolher
+> entre eles é posicionamento (D-22).
+>
+> Publicar as 13 ao lado das 6 poria **18 ofertas no menu, em dois
+> vocabulários**. Então as 12 (IA fica de fora — o slug já é o da solução
+> portada, a única com página e sob gate visual) entraram como **rascunho**:
+> o conteúdo está no CMS, o site não mudou, e responder P-16 vira publicar ou
+> apagar — não reimportar. Rascunho não é lido pelo site, então nem o mega-menu,
+> nem `/solucoes`, nem o gate enxergam. Os 13 redirects apontam para `/solucoes`
+> (N:1) até lá, e o gerador diz isso em cada `note`.
+>
+> **`/segmentos` não está linkado em lugar nenhum**, e é de propósito.
+> Acrescentar item ao mega-menu ou ao rodapé muda cromo que aparece nas 13
+> rotas sob gate, e obrigaria a regravar os 13 gabaritos. `/solucoes` está na
+> mesma situação desde a Fase 3 — o menu abre painel e o rodapé aponta para
+> `#`. Ligar as duas é uma decisão de navegação, com regravação justificada, e
+> não um efeito colateral desta task.
+>
+> ⚠️ **Um defeito de meses apareceu porque a 4c criou o primeiro rascunho.**
+> A Local API do Payload roda com `overrideAccess: true`, então o `access.read`
+> que esconde rascunho do público **não se aplica** às consultas de página. Seis
+> consultas estavam sem `where: { _status }` — o mega-menu e as rotas de
+> `/solucoes` e `/segmentos` — e nunca deram sintoma porque não havia rascunho
+> no banco. No dia em que MIG-093 pôs 12 soluções nesse estado, o índice passou
+> a listar 18 e o menu junto. O seed cria uma vertical em rascunho só para o
+> smoke provar que não vaza.
+>
+> ⚠️ **E o gate mediu o build errado por uma corrida inteira.** Um servidor de
+> uma execução anterior tinha ficado segurando a :3100; o `next start` novo saiu
+> com `EADDRINUSE` e a suíte rodou os 240 testes contra o build velho, com
+> falhas plausíveis e nenhum aviso. `scripts/gate.mjs` agora aborta quando a
+> porta está ocupada — um gate que mede outra coisa é pior do que gate nenhum.
+>
+> **O `redirects.csv` fechou o critério da fase**: 261 linhas, e a geração
+> **reprova** se alguma página do WordPress ficar sem destino — foi assim que
+> `/sample-page/` e `/solucoes-atra/` apareceram, nenhuma das duas listada em
+> `seo-e-redirects.md`.
 
 ## Fase 5 — Formulários, SEO e analytics
 

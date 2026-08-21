@@ -172,10 +172,29 @@ dos 207 posts.
 de 6 para 13, com conteúdo vindo do WP · `/politicas-e-termos` · revisão editorial.
 
 **Critério de conclusão:**
-- `/segmentos` e as 10 `/segmentos/[slug]` respondendo 200
-- 13 soluções publicadas
-- Página legal publicada e linkada no rodapé (hoje os 3 links vão para `#`)
-- Nenhuma das ~30 URLs do WP sem destino no `redirects.csv`
+- `/segmentos` e as 10 `/segmentos/[slug]` respondendo 200 ✅ — são **8**
+  verticais; as outras duas páginas do WP (`/segmentos/` e `/segmentos-atra/`)
+  são índices, e viram o próprio `/segmentos`
+- 13 soluções publicadas ⚠️ **bloqueado por P-16** — as 12 do WordPress entraram
+  em rascunho e as 6 no ar não foram tocadas. Não é atraso de execução: as 13 do
+  WP e as 6 do protótipo são **vocabulários diferentes** para a mesma oferta, e
+  publicar as duas listas poria 18 ofertas no menu. Ver a nota em `tasks.md`
+- Página legal publicada e linkada no rodapé ✅ — os 3 links apontam para a mesma
+  página, como no WordPress. **Destrava a Fase 5**: P-14 impede coletar dado
+  pessoal sem política publicada, e MIG-100 liga o formulário de contato
+- Nenhuma das ~30 URLs do WP sem destino no `redirects.csv` ✅ **superado** — 261
+  linhas cobrindo os 207 posts, as 7 vagas e as 53 páginas. A geração reprova se
+  alguma ficar sem destino
+
+> **O que a 4c acrescentou ao site.** Nove rotas que o protótipo não tinha:
+> `/segmentos`, as 8 verticais e `/politicas-e-termos`. Nenhuma tem gabarito —
+> não existem no protótipo, por definição — e as duas primeiras reaproveitam a
+> composição de `/solucoes` em vez de inventar linguagem visual nova.
+>
+> ⚠️ **`/segmentos` ainda não está no menu nem no rodapé.** Acrescentar item ao
+> cromo mudaria as 13 rotas sob gate. `/solucoes` está na mesma situação desde a
+> Fase 3. Ligar as duas é decisão de navegação, com regravação de gabarito
+> justificada.
 
 ## Fase 5 — Formulários, SEO e analytics
 

@@ -12,7 +12,19 @@ import { visit } from './support/stability'
  * traduzidos** (D-07), então `/en` + `/cases-de-sucesso` não é uma URL válida —
  * é `/en/success-stories`, e é justamente essa tradução que precisa ser testada. */
 const ROTAS_PORTADAS = {
-  pt: ['/', '/cases-de-sucesso', '/glossario', '/relatorios', '/ebooks', '/webinars', '/blog', '/solucoes'],
+  pt: [
+    '/',
+    '/cases-de-sucesso',
+    '/glossario',
+    '/relatorios',
+    '/ebooks',
+    '/webinars',
+    '/blog',
+    '/solucoes',
+    // Fase 4c: as duas nascem aqui, sem equivalente no protótipo (D-17).
+    '/segmentos',
+    '/politicas-e-termos',
+  ],
   en: [
     '/en',
     '/en/success-stories',
@@ -22,6 +34,8 @@ const ROTAS_PORTADAS = {
     '/en/webinars',
     '/en/blog',
     '/en/solutions',
+    '/en/segments',
+    '/en/privacy-and-terms',
   ],
 } as const
 
@@ -147,6 +161,53 @@ test.describe('app novo', () => {
       const html = await (await request.get(`${NEXT_URL}/webinars/${SLUG}`)).text()
       expect(html).toContain('Gravação em breve')
       expect(html).not.toContain('<iframe')
+    })
+  })
+
+  /* `/segmentos` e `/segmentos/[slug]` nascem na Fase 4c (MIG-091/092): as 8
+   * verticais existem só no WordPress e não têm gabarito. Como em `/blog`, o
+   * slug sai da listagem em vez de ser escrito aqui. */
+  test.describe('/segmentos — rota nova, sem gabarito', () => {
+    test('o índice lista as verticais e cada uma leva a uma página que responde', async ({ page, request }) => {
+      await page.goto(`${NEXT_URL}/segmentos`)
+      const cards = page.locator('a[href*="/segmentos/"]')
+      await expect(cards.first()).toBeVisible()
+      expect(await cards.count(), 'o índice de segmentos está vazio').toBeGreaterThanOrEqual(8)
+
+      const href = await cards.first().getAttribute('href')
+      const r = await request.get(`${NEXT_URL}${href}`)
+      expect(r.status(), href!).toBe(200)
+      /* A vertical tem seções montadas: sem isso ela seria página magra e sairia
+         com `noindex` (D-08), que é o que `robotsDeCorpo` decide. */
+      expect(await r.text()).not.toContain('noindex')
+    })
+
+    test('slug de segmento inexistente responde 404', async ({ request }) => {
+      expect((await request.get(`${NEXT_URL}/segmentos/nao-existe`)).status()).toBe(404)
+    })
+
+    /* ⚠️ Regressão de verdade, não hipótese: a Local API do Payload roda com
+       `overrideAccess: true`, então o `access.read` que esconde rascunho do
+       público **não se aplica** às consultas das páginas. Seis consultas ficaram
+       sem `where: { _status }` por meses sem sintoma, porque nada estava em
+       rascunho — e no dia em que MIG-093 pôs 12 soluções nesse estado, o índice
+       passou a listar 18 e o mega-menu junto. O seed cria uma vertical em
+       rascunho só para esta asserção. */
+    test('rascunho não vaza para o índice nem responde por URL', async ({ page, request }) => {
+      await page.goto(`${NEXT_URL}/segmentos`)
+      await expect(page.getByText('Rascunho que não pode vazar')).toHaveCount(0)
+      expect((await request.get(`${NEXT_URL}/segmentos/rascunho-que-nao-pode-vazar`)).status()).toBe(404)
+    })
+  })
+
+  /* MIG-094: os 3 links legais do rodapé apontavam para `#` no protótipo e
+     passam a apontar para a mesma página — o WordPress também tem uma só. */
+  test.describe('/politicas-e-termos — pré-requisito de LGPD', () => {
+    test('os 3 links legais do rodapé levam à página, que responde 200', async ({ page, request }) => {
+      await page.goto(`${NEXT_URL}/sobre`)
+      const legais = page.locator('footer a[href="/politicas-e-termos"]')
+      await expect(legais).toHaveCount(3)
+      expect((await request.get(`${NEXT_URL}/politicas-e-termos`)).status()).toBe(200)
     })
   })
 

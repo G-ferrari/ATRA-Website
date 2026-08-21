@@ -27,7 +27,12 @@ async function buscarSolucao(slug: string, locale: Locale) {
       depth: 2,
       limit: 1,
       draft: rascunho,
-      where: { slug: { equals: slug }, hasPage: { equals: true } },
+      /* Fora do modo rascunho, só publicado: a Local API ignora `access.read`
+       * (`overrideAccess: true` por padrão), e sem isto a solução em rascunho
+       * responde 200 para qualquer visitante. */
+      where: rascunho
+        ? { slug: { equals: slug }, hasPage: { equals: true } }
+        : { slug: { equals: slug }, hasPage: { equals: true }, _status: { equals: 'published' } },
     }),
     payload.findGlobal({ slug: 'site-settings', locale, depth: 1 }),
   ])
@@ -48,7 +53,7 @@ export async function generateStaticParams() {
       locale,
       depth: 0,
       limit: 200,
-      where: { hasPage: { equals: true } },
+      where: { hasPage: { equals: true }, _status: { equals: 'published' } },
       // Só o slug: sem isto a consulta arrasta o `layout` inteiro, com um join
       // por tipo de bloco, para montar uma lista de caminhos.
       select: { slug: true },
