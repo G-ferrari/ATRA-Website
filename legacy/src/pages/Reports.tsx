@@ -14,7 +14,7 @@ const reports = [
     description: "Um mergulho profundo nas tecnologias que moldarão as empresas brasileiras nos próximos 12 meses.",
     date: "10 de janeiro de 2026",
     tags: ["Market", "Trends", "2026"],
-    image: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&q=80&w=1000",
+    image: "/imagens/unsplash-1504868584819-f8e8b4b6d7e3-w1000-effa6f.jpg",
   },
   {
     id: 2,
@@ -22,7 +22,7 @@ const reports = [
     description: "Pesquisa exclusiva com 200 CEOs sobre como a IA está mudando a forma como trabalhamos.",
     date: "15 de novembro de 2025",
     tags: ["IA", "Business", "ROI"],
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600"
+    image: "/imagens/unsplash-1460925895917-afdab827c52f-w600-4ac9c8.jpg"
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ const reports = [
     description: "Comparativo de custos, adoção e maturidade digital entre os principais mercados da região.",
     date: "5 de outubro de 2025",
     tags: ["Cloud", "LATAM", "Infrastructure"],
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?auto=format&fit=crop&q=80&w=600"
+    image: "/imagens/capa-indisponivel.png"
   }
 ];
 

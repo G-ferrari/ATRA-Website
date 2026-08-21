@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { areaDaVaga, AREA_A_CONFIRMAR, corpoDaVaga, modeloDeTrabalho } from './vagas'
+import { corpoDaVaga, modeloDeTrabalho } from './vagas'
 
 /* Reproduz a página do WP: cabeçalho do template, banner, a vaga e o
    formulário de candidatura no fim. */
@@ -53,24 +53,6 @@ describe('corpoDaVaga', () => {
   it('casa o título mesmo com entidade HTML no meio', () => {
     // `&#8211;` no HTML contra `–` no título vindo de `title.rendered` decodificado
     expect(corpoDaVaga(PAGINA, 'Engenheiro(a) de Dados SR - Azure/Databricks')).toBe(html)
-  })
-})
-
-describe('areaDaVaga', () => {
-  it.each([
-    ['Key Account Manager PL/SR', 'Comercial'],
-    ['Cientista de Dados PL | SR', 'Ciência de Dados'],
-    ['Analista de Sistemas (.NET) SR', 'Desenvolvimento'],
-    ['Analytics Engineer SR (GCP – DBT – Looker Plataform)', 'Analytics'],
-    ['Engenheiro de Dados SR – Oracle Cloud (OCI)', 'Engenharia de Dados'],
-    ['Trainee Engenheiro de Data Analytics & AI', 'Analytics'],
-  ])('lê %j como %j', (titulo, area) => {
-    expect(areaDaVaga(titulo).area).toBe(area)
-  })
-
-  /* Vaga que o título não classifica não entra com área adivinhada. */
-  it('marca para confirmação o que não reconhece', () => {
-    expect(areaDaVaga('Estágio')).toEqual({ area: AREA_A_CONFIRMAR, deduzida: false })
   })
 })
 

@@ -28,7 +28,7 @@ const DEFAULT_LOGOS: LogoEntry[] = [
     id: "google-cloud",
     icon: (
       <img
-        src="https://www.atra.com.br/wp-content/uploads/2021/03/Google_Cloud_Platform-Logo.wine_-2048x1365.png"
+        src="/imagens/Google_Cloud_Platform-Logo.wine_-2048x1365-02fd56.png"
         alt="Google Cloud"
         className="h-full w-full object-contain"
       />
@@ -39,7 +39,7 @@ const DEFAULT_LOGOS: LogoEntry[] = [
     id: "denodo",
     icon: (
       <img
-        src="https://www.atra.com.br/wp-content/uploads/2023/11/denodo-tranparent-logo.png"
+        src="/imagens/denodo-tranparent-logo-01f5ab.png"
         alt="Denodo"
         className="h-full w-full object-contain"
       />
@@ -50,7 +50,7 @@ const DEFAULT_LOGOS: LogoEntry[] = [
     id: "bigid",
     icon: (
       <img
-        src="https://www.atra.com.br/wp-content/uploads/2025/02/Horizontal_BigID_Logo-2048x1072.jpg"
+        src="/imagens/Horizontal_BigID_Logo-2048x1072-925fa0.jpg"
         alt="BigID"
         className="h-full w-full object-contain"
       />
@@ -61,7 +61,7 @@ const DEFAULT_LOGOS: LogoEntry[] = [
     id: "partner",
     icon: (
       <img
-        src="https://www.atra.com.br/wp-content/uploads/2023/08/image-removebg-preview-4.png"
+        src="/imagens/image-removebg-preview-4-138596.png"
         alt="Partner"
         className="h-full w-full object-contain"
       />
@@ -72,7 +72,7 @@ const DEFAULT_LOGOS: LogoEntry[] = [
     id: "azure",
     icon: (
       <img
-        src="https://www.atra.com.br/wp-content/uploads/2021/03/Microsoft_Azure-Logo.wine_-1536x1024.png"
+        src="/imagens/Microsoft_Azure-Logo.wine_-1536x1024-370d06.png"
         alt="Azure"
         className="h-full w-full object-contain"
       />
@@ -83,7 +83,7 @@ const DEFAULT_LOGOS: LogoEntry[] = [
     id: "atlan",
     icon: (
       <img
-        src="https://www.atra.com.br/wp-content/uploads/2025/02/Atlan-logo-full.svg_.png"
+        src="/imagens/Atlan-logo-full.svg_-6ccbc8.png"
         alt="Atlan"
         className="h-full w-full object-contain"
       />
@@ -94,7 +94,7 @@ const DEFAULT_LOGOS: LogoEntry[] = [
     id: "ibm",
     icon: (
       <img
-        src="https://www.atra.com.br/wp-content/uploads/2025/06/logo-ibm.png"
+        src="/imagens/logo-ibm-5a3ca7.png"
         alt="IBM"
         className="h-full w-full object-contain"
       />
@@ -116,7 +116,7 @@ const DEFAULT_LOGOS: LogoEntry[] = [
     id: "databricks",
     icon: (
       <img
-        src="https://www.atra.com.br/wp-content/uploads/2025/05/Databricks_Logo2-1536x813.png"
+        src="/imagens/Databricks_Logo2-1536x813-aa2d3d.png"
         alt="Databricks"
         className="h-full w-full object-contain"
       />

@@ -15,7 +15,7 @@ export const ContactCard = () => {
         <div className="relative">
           <div className="w-10 h-10 rounded-[6px] bg-surface-3 flex items-center justify-center overflow-hidden border border-border-main shadow-inner">
              <img 
-               src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" 
+               src="/imagens/unsplash-1560250097-0b93528c311a-w200-e2af26.jpg" 
                alt="Especialista ATRA" 
                className="w-full h-full object-cover" 
              />

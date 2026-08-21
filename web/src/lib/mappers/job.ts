@@ -13,7 +13,7 @@ export function toVaga(doc: Job, locale: Locale): Vaga {
   return {
     slug: doc.slug,
     title: doc.title,
-    area: doc.area,
+    area: doc.area?.trim() || null,
     locationLabel: doc.location ? `${modelo} · ${doc.location}` : modelo,
   }
 }

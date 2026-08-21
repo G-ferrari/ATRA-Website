@@ -163,7 +163,7 @@ const SolutionAI = () => {
               >
                 <div className="relative w-full aspect-[4/3] rounded-[6px] overflow-hidden shadow-2xl border border-white/10">
                   <img 
-                    src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                    src="/imagens/unsplash-1620712943543-bcc4688e7485-w800-70eab8.jpg" 
                     alt="AI Illustration" 
                     loading="lazy"
                     decoding="async"
@@ -712,7 +712,7 @@ const SolutionAI = () => {
             <div className="lg:col-span-5 relative">
               <div className="relative rounded-[6px] overflow-hidden shadow-xl border border-slate-200 dark:border-white/10 aspect-[4/3] lg:aspect-square w-full">
                 <img 
-                  src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                  src="/imagens/unsplash-1550751827-4bd374c3f58b-w800-b6bbe4.jpg" 
                   alt="Como fazemos IA" 
                   loading="lazy"
                   decoding="async"

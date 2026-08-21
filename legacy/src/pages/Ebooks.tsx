@@ -13,7 +13,7 @@ const ebooks = [
     description: "Saiba como unificar seus dados e IA em uma única arquitetura resiliente e de baixo custo.",
     pages: 45,
     tags: ["Data", "Architecture", "Strategy"],
-    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+    image: "/imagens/unsplash-1544716278-ca5e3f4abd8c-w600-64c640.jpg",
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const ebooks = [
     description: "Políticas essenciais para garantir segurança e qualidade nos seus modelos de linguagem.",
     pages: 32,
     tags: ["Governance", "Security", "IA"],
-    image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&q=80&w=600"
+    image: "/imagens/unsplash-1516979187457-637abb4f9353-w600-d699f1.jpg"
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const ebooks = [
     description: "Passo a passo para uma migração segura e eficiente para a nuvem.",
     pages: 38,
     tags: ["Cloud", "Migration", "DevOps"],
-    image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=600"
+    image: "/imagens/unsplash-1507842217343-583bb7270b66-w600-b23e43.jpg"
   }
 ];
 

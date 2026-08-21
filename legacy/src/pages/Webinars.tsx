@@ -13,7 +13,7 @@ const webinars = [
     description: "Uma conversa fascinante sobre como a computação quântica e a IA estão redefinindo limites.",
     date: "Amanhã, 15:00",
     tags: ["Futurismo", "Tech", "Marcelo Madureira"],
-    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=1200",
+    image: "/imagens/unsplash-1511578314322-379afb476865-w1200-9c9576.jpg",
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const webinars = [
     description: "Ética, trabalho e o novo contrato social na era da IA.",
     date: "10 de maio de 2026",
     tags: ["Ética", "Sociedade", "IA"],
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=1200"
+    image: "/imagens/unsplash-1485827404703-89b55fcc595e-w1200-43de5f.jpg"
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const webinars = [
     description: "Dicas práticas de arquitetura para grandes volumes de dados.",
     date: "20 de maio de 2026",
     tags: ["Data", "Engineering", "Scale"],
-    image: "https://images.unsplash.com/photo-1516110833967-0b5716ca1387?auto=format&fit=crop&q=80&w=1200"
+    image: "/imagens/unsplash-1516110833967-0b5716ca1387-w1200-2e772b.jpg"
   }
 ];
 

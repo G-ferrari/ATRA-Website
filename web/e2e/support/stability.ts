@@ -32,6 +32,15 @@ const REMOTE_IMAGES = [
    * foi a vitrine de parceiros ficar 144px mais alta no mobile: os SVGs reais
    * ocupavam mais largura e quebravam em mais linhas. */
   '**/api/media/file/**',
+  /* E as imagens que o protótipo passou a servir de `public/imagens/`.
+   *
+   * ⚠️ Entra na lista **junto** com a mudança que criou a pasta, e não depois.
+   * Aquelas 78 imagens eram hotlink do Unsplash, do picsum e do WordPress —
+   * todos já stubados aqui. Ao virarem arquivo local, sairiam da máscara e o
+   * legado passaria a desenhar a foto de verdade enquanto o app novo recebe o
+   * marcador 1×1: onde a largura sai do aspecto, as duas caixas divergem e o
+   * gabarito reprova por uma mudança que não é regressão. */
+  '**/imagens/**',
   /* E a mídia **local** do legado, que o Vite serve de `/src/assets/images/`.
    *
    * ⚠️ Não é simetria opcional. O selo LIPT da faixa de premiações é o único

@@ -5,6 +5,9 @@
  * `content.rendered` traz cabeçalho do template, banner e o formulário de
  * candidatura junto com a vaga. Ver `vagas.ts`.
  *
+ * ⚠️ **As vagas entram sem área** (P-28): o WordPress não tem o dado e o RH
+ * decidiu manter assim. Ver a nota em `vagas.ts`.
+ *
  * ⚠️ **São 7 vagas, não 6.** O plano e `seo-e-redirects.md` falam em 6, que era
  * o número quando o sitemap foi levantado (17/08/2026); `cientista-de-dados-pl-sr`
  * foi publicada em 20/08. O script lê o que o WordPress tem hoje, e imprime a
@@ -21,7 +24,7 @@ import { createWpClient } from './client'
 import { criarConversor } from './convert'
 import { decodificar, encurtar, textoPuro } from './texto'
 import type { WpPage } from './types'
-import { areaDaVaga, AREA_A_CONFIRMAR, corpoDaVaga, modeloDeTrabalho } from './vagas'
+import { corpoDaVaga, modeloDeTrabalho } from './vagas'
 
 const REMOVER_FIXTURES = process.argv.includes('--remover-fixtures')
 
@@ -55,7 +58,6 @@ async function importar(pagina: WpPage): Promise<void> {
 
   const { raiz } = converter(html)
   const texto = textoPuro(html)
-  const { area, deduzida } = areaDaVaga(titulo)
 
   /* Normalizado aqui pelo mesmo motivo dos posts: `%` no slug do WP é curinga
    * na checagem de unicidade. Ver a nota em `import-posts.ts`. */
@@ -64,7 +66,11 @@ async function importar(pagina: WpPage): Promise<void> {
   const dados = {
     title: titulo,
     slug,
-    area,
+    /* ⚠️ `area` vai **vazia**, de propósito (P-28): o WordPress não tem o dado e
+     * o RH decidiu manter assim por ora. `null` e não `undefined` — precisa
+     * apagar o que a importação anterior deduziu, e `undefined` seria ignorado
+     * pelo Payload em vez de limpar o campo. */
+    area: null,
     locationType: modeloDeTrabalho(texto),
     /* `location` fica vazio de propósito: a cidade aparece no meio da frase
      * ("Híbrido – São Paulo/SP (3 dias presenciais)"), e extrair topônimo de
@@ -99,8 +105,7 @@ async function importar(pagina: WpPage): Promise<void> {
   tocados.add(doc.id)
   if (docs[0]) atualizadas++
   else criadas++
-  console.log(`  ${titulo}`)
-  console.log(`      área: ${area}${deduzida ? ' (deduzida do título — P-28)' : ' ⚠ NÃO RECONHECIDA'} · ${dados.locationType}`)
+  console.log(`  ${titulo.padEnd(46)} ${dados.locationType}`)
 }
 
 console.log('\n→ importando')
@@ -130,9 +135,6 @@ if (fixtures.length && !REMOVER_FIXTURES) {
   for (const f of fixtures) await payload.delete({ collection: 'jobs', id: f.id })
   console.log(`\n  ${fixtures.length} vagas do protótipo removidas`)
 }
-
-const naoReconhecidas = vagas.length && todas.filter((d) => d.area === AREA_A_CONFIRMAR).length
-if (naoReconhecidas) console.log(`\n  ⚠ ${naoReconhecidas} vagas com área "${AREA_A_CONFIRMAR}"`)
 
 console.log(falhas.length ? '\n✗ importação com falhas' : '\n✓ importação completa')
 process.exit(falhas.length ? 1 : 0)

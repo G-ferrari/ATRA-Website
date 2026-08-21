@@ -325,7 +325,7 @@ const About = () => {
             >
               <div className="aspect-[4/3] rounded-[6px] overflow-hidden shadow-xl border border-slate-200 dark:border-white/10 relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                  src="/imagens/unsplash-1522071820081-009f0129c71c-w1200-42d314.jpg" 
                   alt="ATRA Team" 
                   loading="lazy"
                   decoding="async"
@@ -382,10 +382,10 @@ const About = () => {
             <div className="w-12 h-0.5 bg-primary/40 mx-auto rounded-full"></div>
           </div>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-700">
-            <img src="https://www.atra.com.br/wp-content/uploads/2021/03/Microsoft_Azure-Logo.wine_-1536x1024.png" alt="Azure" className="h-10 md:h-12 object-contain" />
-            <img src="https://www.atra.com.br/wp-content/uploads/2021/03/Google_Cloud_Platform-Logo.wine_-2048x1365.png" alt="Google Cloud" className="h-8 md:h-10 object-contain" />
-            <img src="https://www.atra.com.br/wp-content/uploads/2025/05/Databricks_Logo2-1536x813.png" alt="Databricks" className="h-6 md:h-8 object-contain" />
-            <img src="https://www.atra.com.br/wp-content/uploads/2025/02/Atlan-logo-full.svg_.png" alt="Atlan" className="h-6 md:h-8 object-contain" />
+            <img src="/imagens/Microsoft_Azure-Logo.wine_-1536x1024-370d06.png" alt="Azure" className="h-10 md:h-12 object-contain" />
+            <img src="/imagens/Google_Cloud_Platform-Logo.wine_-2048x1365-02fd56.png" alt="Google Cloud" className="h-8 md:h-10 object-contain" />
+            <img src="/imagens/Databricks_Logo2-1536x813-aa2d3d.png" alt="Databricks" className="h-6 md:h-8 object-contain" />
+            <img src="/imagens/Atlan-logo-full.svg_-6ccbc8.png" alt="Atlan" className="h-6 md:h-8 object-contain" />
           </div>
         </div>
       </section>

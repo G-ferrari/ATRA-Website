@@ -47,14 +47,14 @@ const PartnerGoogleCloud = () => {
         </Trans>
       }
       subtitleText={t('partner.subtitle')}
-      partnerLogoUrl="https://www.gstatic.com/devrel-devsite/prod/v22100652613437168/cloud/images/cloud-logo.svg"
+      partnerLogoUrl="/imagens/logo-google-cloud.png"
       badges={badges}
       
       // Achievements (was 'About' section)
       achievementsTitle={t('partner.aboutTitle')}
       achievementsP1={t('partner.aboutP1')}
       achievementsP2={t('partner.aboutP2')}
-      achievementsImage="https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+      achievementsImage="/imagens/unsplash-1573164713988-8665fc963095-w800-e53041.jpg"
       achievementsImageLabel="Partner"
       
       // Services (was 'Benefits' section)

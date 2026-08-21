@@ -438,7 +438,8 @@ export type BlocoStickyPageNav = Base & {
 export type Vaga = {
   slug: string
   title: string
-  area: string
+  /** Vazia quando ninguém classificou a vaga — a página esconde a etiqueta (P-28). */
+  area: string | null
   locationLabel: string
 }
 

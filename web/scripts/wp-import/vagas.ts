@@ -69,35 +69,19 @@ export function corpoDaVaga(html: string, titulo: string): string {
   return selecionados.map((b) => b.outerHTML).join('\n')
 }
 
-/**
- * Área de atuação, deduzida do título da vaga.
+/* ⚠️ **A dedução de área saiu daqui, e é uma decisão registrada (P-28).**
  *
- * ⚠️ **O WordPress não tem este dado.** O campo `area` é obrigatório em `jobs` e
- * aparece na página da vaga; o WP guarda só o título. Os dois `<select>` da
- * página parecem taxonomia mas são a lista de vagas abertas e a de senioridade.
+ * O campo `area` era obrigatório em `jobs`, e o WordPress não tem o dado: guarda
+ * só o título da vaga — os dois `<select>` da página parecem taxonomia mas são a
+ * lista de vagas abertas e a de senioridade. A importação chegou a deduzir a
+ * área do título com uma tabela de palavras ("Key Account Manager" → Comercial),
+ * marcando cada atribuição no log para o RH conferir.
  *
- * É o mesmo muro de MIG-084 em escala menor: classificar é decisão de conteúdo
- * (D-22). A saída aqui é uma tabela pequena e explícita, que lê o que o título
- * já diz — "Key Account Manager" é comercial porque está escrito, não porque
- * alguém julgou — e **P-28** pede ao RH que confirme as 7. Nenhuma vaga entra
- * com área adivinhada em silêncio: a importação imprime as 7 atribuições.
+ * O RH respondeu: manter sem área por ora. Então o campo virou opcional e a
+ * dedução foi removida em vez de ficar desligada — classificação inventada que
+ * ninguém pediu é exatamente o que D-22 mantém fora da migração, e código morto
+ * que "só precisa ser religado" volta sozinho.
  */
-const AREAS: { padrao: RegExp; area: string }[] = [
-  { padrao: /key account|executivo de contas|comercial|vendas|pr[ée].?vendas/i, area: 'Comercial' },
-  { padrao: /cientista de dados|data scien/i, area: 'Ciência de Dados' },
-  { padrao: /analista de sistemas|\.net|desenvolvedor|software/i, area: 'Desenvolvimento' },
-  { padrao: /analytics|business intelligence|power bi|looker/i, area: 'Analytics' },
-  { padrao: /engenheir|data engineer|dados/i, area: 'Engenharia de Dados' },
-]
-
-export const AREA_A_CONFIRMAR = 'A confirmar'
-
-export function areaDaVaga(titulo: string): { area: string; deduzida: boolean } {
-  for (const { padrao, area } of AREAS) {
-    if (padrao.test(titulo)) return { area, deduzida: true }
-  }
-  return { area: AREA_A_CONFIRMAR, deduzida: false }
-}
 
 /**
  * Modelo de trabalho, lido da seção "Modelo de contratação" da própria página.

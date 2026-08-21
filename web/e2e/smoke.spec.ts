@@ -281,24 +281,32 @@ test.describe('app novo', () => {
      ela serve a página de IA, aqui vira índice. Não há gabarito visual, então o
      aceite é este. */
   test.describe('/solucoes — índice novo (D-09)', () => {
-    test('lista as 6 soluções agrupadas nas 3 categorias', async ({ page }) => {
+    /* ⚠️ **18, e não 6.** P-16 foi respondida em 21/08/2026 com "publicar": as 6
+       do protótipo convivem com as 12 do WordPress (MIG-093). O número é
+       asserção de verdade e não contagem frouxa — se voltar a 6, alguém
+       despublicou as 12; se passar de 18, rascunho está vazando de novo. */
+    test('lista as 18 soluções agrupadas nas 3 categorias', async ({ page }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
       for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
         await expect(page.getByRole('heading', { name: categoria, level: 2 })).toBeVisible()
       }
-      await expect(page.getByRole('heading', { level: 3 })).toHaveCount(6)
+      await expect(page.getByRole('heading', { level: 3 })).toHaveCount(18)
     })
 
-    /* Só quem tem `hasPage` vira link. Depois de MIG-056 é uma das seis — a de
-       IA. Sem esta asserção o índice poderia voltar a oferecer 5 destinos que
-       respondem 404, que é o buraco que MIG-050 abriu e MIG-051 teve que fechar. */
-    test('só a solução com página vira link, e ela responde', async ({ page, request }) => {
+    /* Só quem tem `hasPage` vira link: a de IA, portada em MIG-056, mais as 12
+       do WordPress, que têm corpo. As outras 5 do protótipo continuam sem
+       página. Sem esta asserção o índice poderia voltar a oferecer destinos que
+       respondem 404 — o buraco que MIG-050 abriu e MIG-051 teve que fechar. */
+    test('só as soluções com página viram link, e elas respondem', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
       const links = page.locator('a[href*="/solucoes/"]')
-      await expect(links).toHaveCount(1)
-      const href = await links.first().getAttribute('href')
-      expect(href).toBe('/solucoes/inteligencia-artificial')
-      expect((await request.get(`${NEXT_URL}${href}`)).status()).toBe(200)
+      await expect(links).toHaveCount(13)
+
+      const hrefs = await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')))
+      expect(hrefs).toContain('/solucoes/inteligencia-artificial')
+      for (const href of hrefs) {
+        expect((await request.get(`${NEXT_URL}${href}`)).status(), href!).toBe(200)
+      }
     })
 
     /* Solução sem `hasPage` não ganha URL: o slug existe na collection, mas a

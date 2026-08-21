@@ -9,13 +9,12 @@
  * "Data Discovery", "Customer 360", páginas que citam a Informatica no corpo.
  * Uma não é subconjunto da outra: são dois jeitos de nomear a mesma oferta.
  *
- * Escolher entre eles é **P-16**, e é decisão de posicionamento (D-22).
- * Publicar as 13 ao lado das 6 poria 18 ofertas no menu, em dois vocabulários.
+ * Escolher entre eles era **P-16**, e é decisão de posicionamento (D-22).
  *
- * Então elas entram como **rascunho**: o conteúdo fica no CMS, o site não muda,
- * e responder P-16 vira publicar (ou apagar) — não reimportar. Rascunho não é
- * lido pelo site (`access.read` filtra por `_status`), então nem o mega-menu,
- * nem `/solucoes`, nem o gate visual enxergam nada disto.
+ * ✅ **P-16 respondida em 21/08/2026: publicar.** As 12 entram publicadas, ao
+ * lado das 6 do protótipo — o menu passa a listar 18 ofertas. Elas ficaram em
+ * rascunho enquanto a pergunta estava aberta, e foi por isso que a decisão
+ * custou um `_status`, não uma reimportação.
  *
  * ⚠️ `inteligencia-artificial` fica **de fora**: o slug já é o da solução
  * portada do protótipo, que é a única com página e a única sob gate visual
@@ -55,6 +54,25 @@ const SOLUCOES = [
 
 /** Máximo do campo `shortDescription`, que alimenta o card e o mega-menu. */
 const MAX_CHAMADA = 220
+
+/**
+ * As 6 soluções portadas do protótipo. **A importação nunca escreve nelas.**
+ *
+ * ⚠️ A guarda é uma lista explícita, e não "recuse se já está publicada": desde
+ * que P-16 foi respondida as 12 do WordPress também ficam publicadas, e a
+ * segunda regra passaria a impedir a própria reimportação. O que precisa de
+ * proteção é conteúdo **aprovado no aceite visual** — `inteligencia-artificial`
+ * é a única com página e a única sob gate, e trocá-la por uma página de 2024 do
+ * WordPress passaria despercebido até o gate reprovar.
+ */
+const PORTADAS_DO_PROTOTIPO = new Set([
+  'inteligencia-artificial',
+  'apps-e-solucoes-digitais',
+  'engenharia-de-dados-e-cloud',
+  'business-intelligence-e-advanced-analytics',
+  'governanca-de-dados-e-finops',
+  'cultura-de-dados',
+])
 
 const payload = await getPayload({ config })
 const cliente = createWpClient()
@@ -111,7 +129,11 @@ for (const [ordem, solucao] of SOLUCOES.entries()) {
       /* Ordem alta para não disputar posição com as 6 publicadas caso alguém
        * publique uma destas antes de P-16 ser respondida. */
       order: 100 + ordem,
-      _status: 'draft' as const,
+      _status: 'published' as const,
+    }
+
+    if (PORTADAS_DO_PROTOTIPO.has(dados.slug)) {
+      throw new Error('é uma das 6 portadas do protótipo — a importação não escreve nelas')
     }
 
     const { docs } = await payload.find({
@@ -122,28 +144,20 @@ for (const [ordem, solucao] of SOLUCOES.entries()) {
       depth: 0,
     })
 
-    /* ⚠️ Guarda contra sobrescrever o que já está no ar. `inteligencia-artificial`
-     * está fora da lista, mas se alguém acrescentar um slug que já existe
-     * publicado, a importação para em vez de trocar conteúdo aprovado por
-     * conteúdo do WordPress. */
-    if (docs[0] && docs[0]._status === 'published') {
-      throw new Error(`já existe publicada com este slug — não sobrescrevo (id ${docs[0].id})`)
-    }
 
     const doc = docs[0]
-      ? await payload.update({ collection: 'solutions', id: docs[0].id, data: dados, locale: 'pt', draft: true })
-      : await payload.create({ collection: 'solutions', data: dados, locale: 'pt', draft: true })
+      ? await payload.update({ collection: 'solutions', id: docs[0].id, data: dados, locale: 'pt' })
+      : await payload.create({ collection: 'solutions', data: dados, locale: 'pt' })
 
     /* O inglês reenvia o layout com `casarIds`, como em MIG-092: sem isso o
      * português fica órfão, e sem slug em `en` a rota não existe naquele
      * idioma. O texto repete o português (P-08). */
-    const gravado = await payload.findByID({ collection: 'solutions', id: doc.id, locale: 'pt', depth: 0, draft: true })
+    const gravado = await payload.findByID({ collection: 'solutions', id: doc.id, locale: 'pt', depth: 0 })
 
     await payload.update({
       collection: 'solutions',
       id: doc.id,
       locale: 'en',
-      draft: true,
       data: {
         title: titulo,
         slug: dados.slug,
@@ -170,6 +184,6 @@ const { totalDocs: publicadas } = await payload.find({
   locale: 'pt',
   depth: 0,
 })
-console.log(`\n  ${publicadas} soluções publicadas · ${criadas + atualizadas} em rascunho esperando P-16`)
+console.log(`\n  ${publicadas} soluções publicadas no total`)
 console.log(falhas.length ? '\n✗ importação com falhas' : '\n✓ importação completa')
 process.exit(falhas.length ? 1 : 0)

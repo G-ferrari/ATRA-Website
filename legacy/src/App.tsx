@@ -106,15 +106,15 @@ const insightsData = [
 ];
 
 const partnersDropdownData = [
-  { name: "Google Cloud", url: "https://www.atra.com.br/wp-content/uploads/2021/03/Google_Cloud_Platform-Logo.wine_-2048x1365.png", desc: "Nuvem pública líder em dados e IA.", link: "/parceiros/google-cloud" },
-  { name: "Denodo", url: "https://www.atra.com.br/wp-content/uploads/2023/11/denodo-tranparent-logo.png", desc: "Virtualização de dados para agilidade.", link: "#" },
-  { name: "BigID", url: "https://www.atra.com.br/wp-content/uploads/2025/02/Horizontal_BigID_Logo-2048x1072.jpg", desc: "Descoberta e proteção de dados sensíveis.", link: "#" },
-  { name: "Partner", url: "https://www.atra.com.br/wp-content/uploads/2023/08/image-removebg-preview-4.png", desc: "Parceiro estratégico em tecnologia.", link: "#" },
-  { name: "Azure", url: "https://www.atra.com.br/wp-content/uploads/2021/03/Microsoft_Azure-Logo.wine_-1536x1024.png", desc: "Plataforma de nuvem abrangente da Microsoft.", link: "#" },
-  { name: "Atlan", url: "https://www.atra.com.br/wp-content/uploads/2025/02/Atlan-logo-full.svg_.png", desc: "Catálogo de dados moderno e colaborativo.", link: "#" },
-  { name: "IBM", url: "https://www.atra.com.br/wp-content/uploads/2025/06/logo-ibm.png", desc: "Inovação em IA e nuvem híbrida.", link: "#" },
+  { name: "Google Cloud", url: "/imagens/Google_Cloud_Platform-Logo.wine_-2048x1365-02fd56.png", desc: "Nuvem pública líder em dados e IA.", link: "/parceiros/google-cloud" },
+  { name: "Denodo", url: "/imagens/denodo-tranparent-logo-01f5ab.png", desc: "Virtualização de dados para agilidade.", link: "#" },
+  { name: "BigID", url: "/imagens/Horizontal_BigID_Logo-2048x1072-925fa0.jpg", desc: "Descoberta e proteção de dados sensíveis.", link: "#" },
+  { name: "Partner", url: "/imagens/image-removebg-preview-4-138596.png", desc: "Parceiro estratégico em tecnologia.", link: "#" },
+  { name: "Azure", url: "/imagens/Microsoft_Azure-Logo.wine_-1536x1024-370d06.png", desc: "Plataforma de nuvem abrangente da Microsoft.", link: "#" },
+  { name: "Atlan", url: "/imagens/Atlan-logo-full.svg_-6ccbc8.png", desc: "Catálogo de dados moderno e colaborativo.", link: "#" },
+  { name: "IBM", url: "/imagens/logo-ibm-5a3ca7.png", desc: "Inovação em IA e nuvem híbrida.", link: "#" },
   { name: "Salesforce Informatica", url: "/imgs/salesforceinformatica.png", desc: "Gestão de dados em nuvem líder de mercado.", link: "#" },
-  { name: "Databricks", url: "https://www.atra.com.br/wp-content/uploads/2025/05/Databricks_Logo2-1536x813.png", desc: "Lakehouse unificado para dados e IA.", link: "#" }
+  { name: "Databricks", url: "/imagens/Databricks_Logo2-1536x813-aa2d3d.png", desc: "Lakehouse unificado para dados e IA.", link: "#" }
 ];
 
 
@@ -330,7 +330,7 @@ const Navbar = () => {
         <div className="w-full flex items-center justify-between relative">
           <Link to="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
             <img 
-              src="https://www.atra.com.br/wp-content/uploads/2025/08/atra_horizontal_cor-2048x1134.png" 
+              src="/imagens/atra_horizontal_cor-2048x1134-ba220b.png" 
               alt="ATRA Logo" 
               decoding="async"
               fetchPriority="high"
@@ -1245,7 +1245,7 @@ const Stats = () => {
                   {/* Official GPTW & LIPT Seals in a single shared white box */}
                   <div className="flex items-center justify-center gap-4 shrink-0 bg-white p-3 sm:p-3.5 rounded-[8px] shadow-sm border border-slate-200/80 dark:border-white/20 transform group-hover:scale-105 transition-transform duration-300">
                     <img 
-                      src="https://www.atra.com.br/wp-content/uploads/2025/08/GPTW-Selos-site.jpg" 
+                      src="/imagens/GPTW-Selos-site-65306b.jpg" 
                       alt="Selo Great Place to Work 5x ATRA" 
                       loading="lazy"
                       decoding="async"
@@ -1395,15 +1395,15 @@ const Stats = () => {
 const Partners = () => {
   const { t } = useTranslation();
   const partners = [
-    { name: "Google Cloud", url: "https://www.atra.com.br/wp-content/uploads/2021/03/Google_Cloud_Platform-Logo.wine_-2048x1365.png" },
-    { name: "Denodo", url: "https://www.atra.com.br/wp-content/uploads/2023/11/denodo-tranparent-logo.png" },
-    { name: "BigID", url: "https://www.atra.com.br/wp-content/uploads/2025/02/Horizontal_BigID_Logo-2048x1072.jpg" },
-    { name: "Partner", url: "https://www.atra.com.br/wp-content/uploads/2023/08/image-removebg-preview-4.png" },
-    { name: "Azure", url: "https://www.atra.com.br/wp-content/uploads/2021/03/Microsoft_Azure-Logo.wine_-1536x1024.png" },
-    { name: "Atlan", url: "https://www.atra.com.br/wp-content/uploads/2025/02/Atlan-logo-full.svg_.png" },
-    { name: "IBM", url: "https://www.atra.com.br/wp-content/uploads/2025/06/logo-ibm.png" },
+    { name: "Google Cloud", url: "/imagens/Google_Cloud_Platform-Logo.wine_-2048x1365-02fd56.png" },
+    { name: "Denodo", url: "/imagens/denodo-tranparent-logo-01f5ab.png" },
+    { name: "BigID", url: "/imagens/Horizontal_BigID_Logo-2048x1072-925fa0.jpg" },
+    { name: "Partner", url: "/imagens/image-removebg-preview-4-138596.png" },
+    { name: "Azure", url: "/imagens/Microsoft_Azure-Logo.wine_-1536x1024-370d06.png" },
+    { name: "Atlan", url: "/imagens/Atlan-logo-full.svg_-6ccbc8.png" },
+    { name: "IBM", url: "/imagens/logo-ibm-5a3ca7.png" },
     { name: "Salesforce Informatica", url: "/imgs/salesforceinformatica.png" },
-    { name: "Databricks", url: "https://www.atra.com.br/wp-content/uploads/2025/05/Databricks_Logo2-1536x813.png" }
+    { name: "Databricks", url: "/imagens/Databricks_Logo2-1536x813-aa2d3d.png" }
   ];
 
   const logoEntries: LogoEntry[] = partners.map((partner) => ({
@@ -1445,28 +1445,28 @@ const Features = () => {
       description: "Modernize sua infraestrutura, integre sistemas e construa uma base de dados escalável em cloud com suporte de ponta a ponta.",
       icon: Zap,
       badge: "Inovação Cloud",
-      image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop"
+      image: "/imagens/unsplash-1522071820081-009f0129c71c-w1200-d4d8bc.jpg"
     },
     {
       title: "Eficiência Operacional",
       description: "Automatize processos complexos, gere insights em tempo real e aumente exponencialmente a produtividade das equipes com BI e Analytics.",
       icon: SlidersHorizontal,
       badge: "Automação & Analytics",
-      image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1200&auto=format&fit=crop"
+      image: "/imagens/unsplash-1551836022-d5d88e9218df-w1200-40c9aa.jpg"
     },
     {
       title: "Governança, Segurança e FinOps",
       description: "Assegure máxima qualidade de dados, proteção e controle rigoroso de custos de nuvem com compliance e governança contínua.",
       icon: ShieldCheck,
       badge: "Governança & FinOps",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1200&auto=format&fit=crop"
+      image: "/imagens/unsplash-1573496359142-b8d87734a5a2-w1200-4a8584.jpg"
     },
     {
       title: "Decisões Inteligentes e IA",
       description: "Aplique IA Generativa, modelos preditivos e soluções digitais avançadas para antecipar cenários e acelerar tomada de decisão.",
       icon: Sparkles,
       badge: "Inteligência Artificial",
-      image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop"
+      image: "/imagens/unsplash-1531482615713-2afd69097998-w1200-f14c6f.jpg"
     }
   ];
 
@@ -1927,25 +1927,25 @@ const Testimonials = () => {
       client: "ABC Brasil",
       role: "Gerente de Arquitetura de Dados",
       text: "Integrar nossos serviços do Google Cloud com as soluções Informatica CDGC nos proporcionou agilidade, escalabilidade e eficiência em nossa transformação digital.",
-      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop"
+      avatar: "/imagens/unsplash-1573496359142-b8d87734a5a2-w300-83893e.jpg"
     },
     {
       client: "ABC Brasil",
       role: "Especialista Cloud & DevOps",
       text: "Com o uso de Pub/Sub e Cloud Functions, conseguimos alcançar dados quase em tempo real e escalabilidade em nossos processos, ao mesmo tempo em que reduzimos significativamente os custos e esforços operacionais.",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop"
+      avatar: "/imagens/unsplash-1507003211169-0a1dd7228f2d-w300-0cf429.jpg"
     },
     {
       client: "Banco Carrefour",
       role: "Líder de Engenharia de Dados",
       text: "Gostaria de expressar meu reconhecimento e gratidão à Equipe de Fábrica da ATRA pelo trabalho realizado nos processos de ingestão de dados. A equipe desempenhou um papel fundamental na aceleração das implementações e contribuiu de forma consistente para os procedimentos de validação estabelecidos. A colaboração constante resultou em uma melhoria na qualidade das entregas e possibilitou o avanço do nosso projeto de migração da plataforma de dados para o Google Cloud.",
-      avatar: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=300&auto=format&fit=crop"
+      avatar: "/imagens/unsplash-1573497019940-1c28c88b4f3e-w300-828d67.jpg"
     },
     {
       client: "Banco Carrefour",
       role: "Superintendente de Risco",
       text: "A parceria com a ATRA foi essencial para o nosso sucesso na modernização do processamento de dados financeiros no Google Cloud. A capacidade da equipe em se alinhar às necessidades do nosso time de Risco resultou em uma solução totalmente automatizada e 51 vezes mais rápida, garantindo conformidade e excelência operacional.",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop"
+      avatar: "/imagens/unsplash-1500648767791-00dcc994a43e-w300-caea79.jpg"
     }
   ];
 
@@ -2202,7 +2202,7 @@ const BlogSection = () => {
                   category="BLOG POST"
                   icon={Sparkles}
                   title="Inovação em ação: Onde a criatividade encontra a colaboração"
-                  image="https://picsum.photos/seed/tech1/600/400"
+                  image="/imagens/picsum-tech1x600x400-6656d3.jpg"
                   aspect="aspect-[4/3]"
                 />
               </div>
@@ -2211,7 +2211,7 @@ const BlogSection = () => {
                   category="BLOG POST"
                   icon={TrendingUp}
                   title="Focado no impacto: Três estratégias essenciais"
-                  image="https://picsum.photos/seed/tech2/600/400"
+                  image="/imagens/picsum-tech2x600x400-7656a4.jpg"
                   aspect="aspect-[4/3]"
                 />
               </div>
@@ -2225,7 +2225,7 @@ const BlogSection = () => {
                 category="ARTIGO"
                 icon={UserCheck}
                 title="Liderando em meio a mudanças: 5 imperativos para CEOs"
-                image="https://picsum.photos/seed/tech3/600/600"
+                image="/imagens/picsum-tech3x600x600-80827c.jpg"
                 aspect="aspect-square"
               />
             </div>
@@ -2234,7 +2234,7 @@ const BlogSection = () => {
                 category="ARTIGO"
                 icon={Cpu}
                 title="O futuro da IA generativa nas empresas"
-                image="https://picsum.photos/seed/tech4/600/600"
+                image="/imagens/picsum-tech4x600x600-8054dd.jpg"
                 aspect="aspect-square"
               />
             </div>
@@ -2244,7 +2244,7 @@ const BlogSection = () => {
           <div className="flex flex-col gap-6">
             <div className="relative group overflow-hidden rounded-lg min-h-[280px] md:min-h-[340px] shadow-xl">
                <img 
-                src="https://picsum.photos/seed/tech5/600/800" 
+                src="/imagens/picsum-tech5x600x800-aa403b.jpg" 
                 alt="Case Study" 
                 loading="lazy"
                 decoding="async"
@@ -2350,7 +2350,7 @@ const CTA = () => {
           <div className="relative rounded-[6px] overflow-hidden flex flex-col justify-between p-8 sm:p-10 min-h-[500px] shadow-xl dark:shadow-2xl bg-surface-1 dark:bg-[#12151c]">
             {/* Background image (happy tech team collaborating) */}
             <img 
-              src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1600&auto=format&fit=crop" 
+              src="/imagens/unsplash-1556761175-5973dc0f32e7-w1600-fee708.jpg" 
               alt="Equipe ATRA reunida e motivada" 
               loading="lazy"
               decoding="async"
@@ -2458,7 +2458,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-1">
             <div className="mb-4">
               <img 
-                src="https://www.atra.com.br/wp-content/uploads/2025/08/atra_horizontal_cor-2048x1134.png" 
+                src="/imagens/atra_horizontal_cor-2048x1134-ba220b.png" 
                 alt="ATRA Logo" 
                 loading="lazy"
                 decoding="async"

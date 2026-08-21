@@ -72,23 +72,25 @@ const CURADAS: Record<string, { to: string; status?: number; note: string }> = {
   'trabalhe-conosco': { to: '/carreiras', note: 'N:1 carreiras' },
   'programa-de-trainee': { to: '/carreiras', note: 'N:1 carreiras - o trainee e uma secao de /carreiras' },
 
-  /* ⚠️ As 13 soluções vão todas para o índice, **de propósito e por ora**: as 6
-   * publicadas são outro vocabulário, e escolher entre os dois é P-16. As 12
-   * importadas estão em rascunho; quando forem publicadas, cada linha destas
-   * vira 1:1. A exceção é IA, que já tem página no ar. */
+  /* ⚠️ Estas 12 linhas são **rede de segurança**, não o caminho normal.
+   *
+   * Com P-16 respondida (publicar), as 12 soluções do WordPress têm página e a
+   * checagem acima já as manda 1:1. Elas continuam aqui para o caso de alguém
+   * despublicar uma: em vez de a geração reprovar por "página sem destino", a
+   * URL cai no índice `/solucoes`, que é a degradação certa. */
   'inteligencia-artificial': { to: '/solucoes/inteligencia-artificial', note: 'solucao 1:1 - a unica com pagina no ar' },
-  cloud: { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'data-integration': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'data-analytics': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'master-data-management': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'data-discovery': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'customer-360': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'governanca-de-dados': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  treinamento: { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'alocacao-de-consultores': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'fabrica-de-transformacao-de-dados': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'sustentacao-remota': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
-  'assessoria-em-produtos': { to: '/solucoes', note: 'N:1 ate P-16 - a solucao esta em rascunho' },
+  cloud: { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'data-integration': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'data-analytics': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'master-data-management': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'data-discovery': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'customer-360': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'governanca-de-dados': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  treinamento: { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'alocacao-de-consultores': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'fabrica-de-transformacao-de-dados': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'sustentacao-remota': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+  'assessoria-em-produtos': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
 
   /* Sem destino, e sai de propósito. */
   'em-manutencao': { to: '', status: 410, note: 'pagina tecnica do WordPress' },
@@ -106,17 +108,26 @@ const payload = await getPayload({ config })
 const cliente = createWpClient()
 
 console.log('→ lendo WordPress e banco')
-const [wpPosts, wpPaginas, { docs: posts }, { docs: vagas }, { docs: segmentos }] = await Promise.all([
+const [wpPosts, wpPaginas, { docs: posts }, { docs: vagas }, { docs: segmentos }, { docs: solucoes }] = await Promise.all([
   cliente.posts({ _fields: 'id,slug,link' }),
   cliente.pages({ _fields: 'id,slug,link,content' }),
   payload.find({ collection: 'posts', limit: 500, locale: 'pt', depth: 0, select: { slug: true } }),
   payload.find({ collection: 'jobs', limit: 200, locale: 'pt', depth: 0, select: { slug: true } }),
   payload.find({ collection: 'segments', limit: 200, locale: 'pt', depth: 0, select: { slug: true } }),
+  payload.find({
+    collection: 'solutions',
+    limit: 200,
+    locale: 'pt',
+    depth: 0,
+    where: { _status: { equals: 'published' }, hasPage: { equals: true } },
+    select: { slug: true },
+  }),
 ])
 
 const slugsDePost = new Set(posts.map((p) => p.slug))
 const slugsDeVaga = new Set(vagas.map((v) => v.slug))
 const slugsDeSegmento = new Set(segmentos.map((v) => v.slug))
+const slugsDeSolucao = new Set(solucoes.map((v) => v.slug))
 
 /** Caminho da URL do WP, sempre com barra final. */
 function caminho(link: string | undefined, slug: string): string {
@@ -172,6 +183,16 @@ for (const pg of wpPaginas) {
     continue
   }
 
+  /* Idem para as soluções, e é aqui que P-16 aparece no arquivo: enquanto as 12
+   * estavam em rascunho, cada uma caía na tabela curada e ia para o índice
+   * (N:1); publicadas, viram 1:1 sozinhas. O gerador lê o banco, então a
+   * resposta de uma pendência de conteúdo não exige editar redirect à mão. */
+  const comoSolucao = slugify(pg.slug)
+  if (slugsDeSolucao.has(comoSolucao)) {
+    geradas.push({ from: caminho(pg.link, pg.slug), to: `/solucoes/${comoSolucao}`, status: 301, note: 'solucao 1:1' })
+    continue
+  }
+
   const curada = CURADAS[pg.slug]
   if (!curada) {
     semCuradoria.push(pg.slug)
@@ -204,9 +225,10 @@ writeFileSync(ARQUIVO, `${csv}\n`)
 const posts301 = geradas.filter((l) => l.to.startsWith('/blog/')).length
 const vagas301 = geradas.filter((l) => l.to.startsWith('/carreiras/')).length
 const segmentos301 = geradas.filter((l) => l.to.startsWith('/segmentos/')).length
+const solucoes301 = geradas.filter((l) => l.to.startsWith('/solucoes/')).length
 console.log(
-  `\n  ${posts301} posts · ${vagas301} vagas · ${segmentos301} segmentos · ` +
-    `${geradas.length - posts301 - vagas301 - segmentos301} institucionais · ${preservadas.length} preservadas`,
+  `\n  ${posts301} posts · ${vagas301} vagas · ${segmentos301} segmentos · ${solucoes301} soluções · ` +
+    `${geradas.length - posts301 - vagas301 - segmentos301 - solucoes301} institucionais · ${preservadas.length} preservadas`,
 )
 console.log(`  ${todas.length} linhas em ${path.relative(process.cwd(), ARQUIVO)}`)
 for (const s of semDestino) console.log(`  ✗ ${s}`)

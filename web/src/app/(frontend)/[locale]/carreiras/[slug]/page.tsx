@@ -87,7 +87,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/carreira
   const vaga = await buscarVaga(slug, locale)
   if (!vaga) return {}
   return {
-    title: `${vaga.title} — ${vaga.area}`,
+    title: vaga.area ? `${vaga.title} — ${vaga.area}` : vaga.title,
     description: vaga.summary,
     /* Vaga sem descrição não entrega nada a quem chega da busca. */
     robots: robotsDeCorpo(vaga.body),
@@ -118,9 +118,13 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
           </Link>
           <div className="max-w-4xl">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-secondary font-black uppercase tracking-[0.15em] text-xs md:text-sm mb-4">
-              <span className="flex items-center gap-2">
-                <Briefcase size={14} aria-hidden /> {vaga.area}
-              </span>
+              {/* Some quando a vaga não tem área (P-28): etiqueta com rótulo
+                  vazio ao lado do ícone é pior do que etiqueta nenhuma. */}
+              {vaga.area && (
+                <span className="flex items-center gap-2">
+                  <Briefcase size={14} aria-hidden /> {vaga.area}
+                </span>
+              )}
               <span className="flex items-center gap-2">
                 <MapPin size={14} aria-hidden /> {vaga.locationLabel}
               </span>

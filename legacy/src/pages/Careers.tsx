@@ -312,7 +312,7 @@ const Careers = () => {
           <div className="flex overflow-x-auto no-scrollbar justify-center items-center gap-6 md:gap-10 pb-4">
             <div className="bg-white p-3 sm:p-4 rounded-[8px] border border-slate-200/80 dark:border-white/20 shadow-sm flex items-center justify-center shrink-0 min-w-[140px] h-[100px] sm:h-[120px] md:h-[136px]">
               <img 
-                src="https://www.atra.com.br/wp-content/uploads/2025/08/GPTW-Selos-site.jpg" 
+                src="/imagens/GPTW-Selos-site-65306b.jpg" 
                 alt="Great Place To Work" 
                 loading="lazy"
                 decoding="async"
@@ -346,7 +346,7 @@ const Careers = () => {
 
             <div className="bg-white p-3 sm:p-4 rounded-[8px] border border-slate-200/80 dark:border-white/20 shadow-sm flex items-center justify-center shrink-0 min-w-[140px] h-[100px] sm:h-[120px] md:h-[136px]">
               <img 
-                src="https://www.atra.com.br/wp-content/uploads/2024/08/GPTW-Selos-site-1-768x768.png" 
+                src="/imagens/GPTW-Selos-site-1-768x768-dd9c97.png" 
                 alt="FEEx" 
                 loading="lazy"
                 decoding="async"
@@ -603,7 +603,7 @@ const Careers = () => {
             </div>
             <div className="aspect-[16/10] rounded-[6px] overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg">
               <img 
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                src="/imagens/unsplash-1522071820081-009f0129c71c-w800-059624.jpg" 
                 alt="Equipe colaborando" 
                 loading="lazy"
                 decoding="async"

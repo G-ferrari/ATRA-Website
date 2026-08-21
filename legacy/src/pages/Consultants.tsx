@@ -831,7 +831,7 @@ export default function Consultants() {
             <div className="relative rounded-[6px] overflow-hidden flex flex-col justify-between p-8 sm:p-10 min-h-[480px] shadow-xl dark:shadow-2xl bg-surface-1 dark:bg-[#12151c]">
               {/* Background image (team collaborating) */}
               <img 
-                src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1600&auto=format&fit=crop" 
+                src="/imagens/unsplash-1556761175-5973dc0f32e7-w1600-fee708.jpg" 
                 alt="Equipe ATRA de Consultores" 
                 loading="lazy"
                 decoding="async"

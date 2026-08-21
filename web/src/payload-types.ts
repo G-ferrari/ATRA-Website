@@ -1972,7 +1972,10 @@ export interface Job {
    * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
    */
   slug: string;
-  area: string;
+  /**
+   * E.g. “Data Engineering”. Empty: the chip is not shown on the job page.
+   */
+  area?: string | null;
   locationType: 'remote' | 'hybrid' | 'onsite';
   location?: string | null;
   summary: string;

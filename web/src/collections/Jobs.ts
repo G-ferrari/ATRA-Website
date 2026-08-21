@@ -37,7 +37,27 @@ export const Jobs: CollectionConfig = {
   fields: [
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     slugField('title'),
-    { name: 'area', type: 'text', required: true, localized: true, label: { pt: 'Área', en: 'Area' } },
+    {
+      /* ⚠️ **Opcional desde P-28.** Era obrigatório, e a importação do WordPress
+       * mostrou por que isso não se sustenta: o WP guarda só o título da vaga —
+       * os dois `<select>` da página parecem taxonomia mas são a lista de vagas
+       * abertas e a de senioridade. Um campo obrigatório sem fonte de dado
+       * obriga o importador a **inventar** a classificação, que é o muro de
+       * MIG-084 em escala menor: classificar é decisão de conteúdo (D-22).
+       *
+       * O RH decidiu manter as 7 sem área por ora. A página esconde a etiqueta
+       * quando o campo está vazio, em vez de desenhar um rótulo em branco. */
+      name: 'area',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Área', en: 'Area' },
+      admin: {
+        description: {
+          pt: 'Ex.: “Engenharia de Dados”. Vazio: a etiqueta não aparece na página da vaga.',
+          en: 'E.g. “Data Engineering”. Empty: the chip is not shown on the job page.',
+        },
+      },
+    },
     {
       name: 'locationType',
       type: 'select',

@@ -207,10 +207,10 @@ from,to,status,note
 /2026/07/14/por-que-tantos-projetos-de-ia-nao-saem-do-piloto/,/blog/por-que-tantos-projetos-de-ia-nao-saem-do-piloto,301,post 1:1
 /2026/07/15/arquitetura-multicloud-exige-uma-nova-governanca-de-dados/,/blog/arquitetura-multicloud-exige-uma-nova-governanca-de-dados,301,post 1:1
 /2026/08/17/atra-no-rio-preto-tech-summit-2026-dados-cloud-e-ia/,/blog/atra-no-rio-preto-tech-summit-2026-dados-cloud-e-ia,301,post 1:1
-/alocacao-de-consultores/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
+/alocacao-de-consultores/,/solucoes/alocacao-de-consultores,301,solucao 1:1
 /analista-de-sistemas-net-sr/,/carreiras/analista-de-sistemas-net-sr,301,vaga 1:1
 /analytics-engineer-sr-gcp-dbt-looker-plataform/,/carreiras/analytics-engineer-sr-gcp-dbt-looker-plataform,301,vaga 1:1
-/assessoria-em-produtos/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
+/assessoria-em-produtos/,/solucoes/assessoria-em-produtos,301,solucao 1:1
 /bancos-seguradoras-servicos-financeiros/,/segmentos/bancos-seguradoras-servicos-financeiros,301,segmento 1:1
 /blog/,/blog,301,indice 1:1
 /carreiras/,/carreiras,301,N:1 carreiras
@@ -222,26 +222,26 @@ from,to,status,note
 /category/uncategorized/,,410,taxonomia vazia - o WP tem 1 categoria e 0 tags
 /cientista-de-dados-pl-sr/,/carreiras/cientista-de-dados-pl-sr,301,vaga 1:1
 /clientes/,/sobre,301,N:1 - os logos de cliente vivem na home e em /sobre
-/cloud/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
+/cloud/,/solucoes/cloud,301,solucao 1:1
 /conheca-atra/,/sobre,301,N:1 institucional
 /contato/,/contato,301,indice 1:1 - valida D-10
-/customer-360/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
-/data-analytics/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
-/data-discovery/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
-/data-integration/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
+/customer-360/,/solucoes/customer-360,301,solucao 1:1
+/data-analytics/,/solucoes/data-analytics,301,solucao 1:1
+/data-discovery/,/solucoes/data-discovery,301,solucao 1:1
+/data-integration/,/solucoes/data-integration,301,solucao 1:1
 /educacao/,/segmentos/educacao,301,segmento 1:1
 /em-manutencao/,,410,pagina tecnica do WordPress
 /engenheiro-de-dados-sr-oracle-cloud-oci/,/carreiras/engenheiro-de-dados-sr-oracle-cloud-oci,301,vaga 1:1
 /engenheiroa-de-dados-sr-azure-databricks/,/carreiras/engenheiroa-de-dados-sr-azure-databricks,301,vaga 1:1
 /eventos/,/insights,301,N:1 - nao ha rota de eventos; o hub de conteudo e o mais proximo
-/fabrica-de-transformacao-de-dados/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
-/governanca-de-dados/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
+/fabrica-de-transformacao-de-dados/,/solucoes/fabrica-de-transformacao-de-dados,301,solucao 1:1
+/governanca-de-dados/,/solucoes/governanca-de-dados,301,solucao 1:1
 /health-check/,,410,pagina tecnica do WordPress
 /industria/,/segmentos/industria,301,segmento 1:1
-/inteligencia-artificial/,/solucoes/inteligencia-artificial,301,solucao 1:1 - a unica com pagina no ar
+/inteligencia-artificial/,/solucoes/inteligencia-artificial,301,solucao 1:1
 /key-account-manager-pl-sr/,/carreiras/key-account-manager-pl-sr,301,vaga 1:1
 /logistica/,/segmentos/logistica,301,segmento 1:1
-/master-data-management/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
+/master-data-management/,/solucoes/master-data-management,301,solucao 1:1
 /nossas-conquistas/,/sobre,301,N:1 institucional - os selos vivem em /sobre
 /parceiros/,/sobre,301,N:1 - a vitrine de parceiros vive em /sobre; nao ha indice
 /politicas-e-termos/,/politicas-e-termos,301,pagina legal 1:1 (MIG-094)
@@ -253,10 +253,10 @@ from,to,status,note
 /sobre/,/sobre,301,N:1 institucional
 /solucoes-atra/,/solucoes,301,indice N:1 - o WP tem duas paginas de indice
 /solucoes/,/solucoes,301,indice 1:1
-/sustentacao-remota/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
+/sustentacao-remota/,/solucoes/sustentacao-remota,301,solucao 1:1
 /telecom/,/segmentos/telecom,301,segmento 1:1
 /trabalhe-conosco/,/carreiras,301,N:1 carreiras
 /trainee-engenheiro-de-data-analytics-ai/,/carreiras/trainee-engenheiro-de-data-analytics-ai,301,vaga 1:1
-/treinamento/,/solucoes,301,N:1 ate P-16 - a solucao esta em rascunho
+/treinamento/,/solucoes/treinamento,301,solucao 1:1
 /utilidades/,/segmentos/utilidades,301,segmento 1:1
 /varejo/,/segmentos/varejo,301,segmento 1:1

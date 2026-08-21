@@ -278,10 +278,10 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-090 | Collection `segments` + template | 047 | Modelo conforme spec; admin utilizável | 3h | **done** — sem `hasPage` (ver a nota na collection); ligações em `collapsible` |
 | MIG-091 | `/segmentos` + `/segmentos/[slug]` | 090 | 200 nas 11 rotas | 4h | **done** — índice + 8 detalhes, nos 2 idiomas |
 | MIG-092 | Migrar as 10 páginas de segmento do WP | 091 | 10 publicadas com conteúdo real | 5h | **done** — são **8** verticais + 2 índices; 38 cards nos 2 idiomas |
-| MIG-093 | Expandir `solutions` de 6 para 13 | 056 | 13 publicadas; mega-menu comporta | 5h | ⚠️ **parcial — bloqueada por P-16.** As 12 do WP entraram em **rascunho**; as 6 no ar não foram tocadas. Ver a nota abaixo |
+| MIG-093 | Expandir `solutions` de 6 para 13 | 056 | 13 publicadas; mega-menu comporta | 5h | **done** — P-16 respondida em 21/08: publicar. **18 no ar** (as 6 do protótipo + as 12 do WP), 13 com página própria |
 | MIG-094 | `/politicas-e-termos` + links do rodapé | 049 | Os 3 links legais deixam de apontar para `#` | 2h | **done** — os 3 apontam para a mesma página, como no WordPress. Destrava a Fase 5 (P-14) |
 
-> ⚠️ **MIG-093 não é executável como está escrita, e o motivo é P-16.**
+> **MIG-093 — como a task foi escrita, e o que P-16 respondeu.**
 >
 > "Expandir de 6 para 13" pressupõe que as 13 do WordPress contenham as 6 do
 > protótipo. Medido: não contêm. As 6 no ar são consolidadas e assinadas pela
@@ -292,13 +292,16 @@ Uma PR por linha. Todas dependem de MIG-031.
 > subconjunto da outra: são dois jeitos de nomear a mesma oferta, e escolher
 > entre eles é posicionamento (D-22).
 >
-> Publicar as 13 ao lado das 6 poria **18 ofertas no menu, em dois
-> vocabulários**. Então as 12 (IA fica de fora — o slug já é o da solução
-> portada, a única com página e sob gate visual) entraram como **rascunho**:
-> o conteúdo está no CMS, o site não mudou, e responder P-16 vira publicar ou
-> apagar — não reimportar. Rascunho não é lido pelo site, então nem o mega-menu,
-> nem `/solucoes`, nem o gate enxergam. Os 13 redirects apontam para `/solucoes`
-> (N:1) até lá, e o gerador diz isso em cada `note`.
+> As 12 (IA fica de fora — o slug já é o da solução portada, a única com página
+> e sob gate visual) entraram primeiro como **rascunho**, com o site intacto,
+> justamente para que a resposta custasse um `_status` e não uma reimportação.
+>
+> ✅ **P-16 respondida em 21/08/2026: publicar.** O menu passou a listar **18
+> ofertas**, 13 com página própria. Os 13 redirects viraram **1:1 sozinhos** —
+> o gerador lê o banco, então responder uma pendência de conteúdo não exigiu
+> editar redirect à mão. As 12 linhas curadas continuam no gerador como rede de
+> segurança: se alguém despublicar uma, a URL cai no índice em vez de a geração
+> reprovar.
 >
 > **`/segmentos` não está linkado em lugar nenhum**, e é de propósito.
 > Acrescentar item ao mega-menu ou ao rodapé muda cromo que aparece nas 13

@@ -15,7 +15,7 @@ const blogPosts = [
     description: "Saiba como o modelo de squads pode escalar sua operação de tecnologia mantendo a qualidade e cultura.",
     date: "23 de março de 2026",
     tags: ["Business", "Managed IT", "Strategy"],
-    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1000",
+    image: "/imagens/unsplash-1522071820081-009f0129c71c-w1000-4dc2c5.jpg",
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ const blogPosts = [
     description: "Como a combinação de diferentes tipos de IA está criando uma nova era de insights de negócios.",
     date: "2 de fevereiro de 2026",
     tags: ["Analytics", "IA", "Innovation"],
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600"
+    image: "/imagens/unsplash-1677442136019-21780ecad995-w600-726822.jpg"
   },
   {
     id: 3,
@@ -31,7 +31,7 @@ const blogPosts = [
     description: "Explore os benefícios e desafios de manter uma estratégia de nuvem distribuída e resiliente.",
     date: "5 de janeiro de 2026",
     tags: ["Cloud", "Infraestrutura", "Security"],
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=600"
+    image: "/imagens/unsplash-1519389950473-47ba0277781c-w600-018738.jpg"
   },
   {
     id: 4,
@@ -39,7 +39,7 @@ const blogPosts = [
     description: "Garantindo a disponibilidade e performance durante os maiores eventos do varejo digital.",
     date: "14 de outubro de 2025",
     tags: ["Cloud", "Infraestrutura", "Retail"],
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?auto=format&fit=crop&q=80&w=600"
+    image: "/imagens/capa-indisponivel.png"
   },
   {
     id: 5,
@@ -47,7 +47,7 @@ const blogPosts = [
     description: "Métricas e metodologias que o C-level espera ver ao investir em modernização de plataformas de dados.",
     date: "13 de agosto de 2025",
     tags: ["Business", "Finance", "Strategy"],
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600"
+    image: "/imagens/unsplash-1460925895917-afdab827c52f-w600-4ac9c8.jpg"
   },
   {
     id: 6,
@@ -55,7 +55,7 @@ const blogPosts = [
     description: "As novas ameaças cibernéticas e as defesas essenciais para um ecossistema corporativo hiperconectado.",
     date: "10 de julho de 2025",
     tags: ["Cybersecurity", "Data", "Privacy"],
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600"
+    image: "/imagens/unsplash-1550751827-4bd374c3f58b-w600-1d7730.jpg"
   }
 ];
 
@@ -325,7 +325,7 @@ const Blog = () => {
                 className="block aspect-video rounded-[6px] overflow-hidden relative group shadow-2xl border border-slate-200 dark:border-white/10 cursor-pointer bg-surface-1 dark:bg-[#0e1015]"
               >
                 <img 
-                  src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200" 
+                  src="/imagens/unsplash-1540575467063-178a50c2df87-w1200-d34ee4.jpg" 
                   alt="Webinar técnico em destaque sobre Dados e IA"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
