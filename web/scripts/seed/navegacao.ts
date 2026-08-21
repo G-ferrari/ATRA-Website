@@ -6,12 +6,14 @@
  * Soluções e Parceiros **não têm conteúdo aqui**: os painéis leem as
  * collections. Só o rótulo e o formato ficam no global.
  *
- * ⚠️ Soluções e Parceiros ficam sem `href` porque no legado apontam para `#`
- * (`App.tsx:379` e `:382`) — a categoria abre o painel e não navega. Soluções
- * hoje **tem** índice (`/solucoes`, D-09), mas ligar o rótulo é decisão de
- * navegação, não de porte: mudaria o comportamento do cabeçalho em todas as
- * páginas. Fica registrado em debito-tecnico.md.
- */
+ * ⚠️ **Parceiros** fica sem `href`: no legado aponta para `#` e não há índice
+ * de parceiros para onde ir — nem lá nem aqui. A categoria abre o painel e não
+ * navega, e é o painel que leva a cada parceiro.
+ *
+ * **Soluções ganhou destino** em 21/08/2026. Também apontava para `#`, herdado
+ * do protótipo, mas ali é link morto e não ausência de página: `/solucoes`
+ * existe nos dois apps. O protótipo foi ligado na mesma mudança — o gabarito
+ * sai dele, e mexer só de um lado faria a comparação medir a diferença. */
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -25,7 +27,7 @@ const links = (itens: [string, string, string, string][]) =>
 const bullets = (itens: string[]) => itens.map((text) => ({ text }))
 
 const PT: Categoria[] = [
-  { label: 'Soluções', panel: 'solutions' },
+  { label: 'Soluções', href: '/solucoes', panel: 'solutions' },
   /* ⚠️ A **8ª categoria**, e a única que não vem do protótipo.
    *
    * As 8 verticais existem só no WordPress (D-17) e a rota `/segmentos` nasceu
@@ -178,7 +180,7 @@ const PT: Categoria[] = [
 ]
 
 const EN: Categoria[] = [
-  { label: 'Solutions', panel: 'solutions' },
+  { label: 'Solutions', href: '/solucoes', panel: 'solutions' },
   { label: 'Segments', href: '/segmentos', panel: 'segments' },
   {
     label: 'Consultants',

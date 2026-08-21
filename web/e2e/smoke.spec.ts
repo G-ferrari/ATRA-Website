@@ -202,6 +202,17 @@ test.describe('app novo', () => {
 
   /* MIG-094: os 3 links legais do rodapé apontavam para `#` no protótipo e
      passam a apontar para a mesma página — o WordPress também tem uma só. */
+  /* Os 3 links de solução do rodapé apontavam para `#`, herdado do protótipo.
+     São as 3 categorias do mega-menu, sem página própria, então o destino de
+     todas é o índice — mesmo caso dos 3 links legais. */
+  test.describe('rodapé — os links de solução deixam de ser mortos', () => {
+    test('as 3 categorias levam ao índice de soluções', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/sobre`)
+      await expect(page.locator('footer a[href="/solucoes"]')).toHaveCount(3)
+      await expect(page.locator('footer a[href="#"]')).toHaveCount(0)
+    })
+  })
+
   test.describe('/politicas-e-termos — pré-requisito de LGPD', () => {
     test('os 3 links legais do rodapé levam à página, que responde 200', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/sobre`)
@@ -402,6 +413,20 @@ test.describe('app novo', () => {
         'href',
         '/solucoes/inteligencia-artificial',
       )
+    })
+
+    /* Soluções e Segmentos **navegam**; Parceiros não, porque não há índice de
+       parceiros para onde ir. A distinção some fácil: as três abrem painel, e
+       por dois anos as três apontaram para `#` no protótipo. */
+    test('a categoria Soluções leva ao índice, e Parceiros continua sem destino', async ({ page, request }) => {
+      test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
+      const fileira = await abrirMenu(page)
+
+      await expect(fileira.getByRole('link', { name: 'Soluções', exact: true })).toHaveAttribute('href', '/solucoes')
+      await expect(fileira.getByRole('link', { name: 'Segmentos', exact: true })).toHaveAttribute('href', '/segmentos')
+      await expect(fileira.getByRole('link', { name: 'Parceiros', exact: true })).toHaveAttribute('href', '#')
+
+      expect((await request.get(`${NEXT_URL}/solucoes`)).status()).toBe(200)
     })
 
     /* O painel de segmentos lê a collection, como o de parceiros — digitar as 8

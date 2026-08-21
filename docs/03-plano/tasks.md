@@ -357,6 +357,24 @@ evitar. O valor novo no `select` exigiu migração: `panel` é enum no Postgres,
 `hidden md:flex` e começa a apertar em 768px. Categoria nova custa largura de
 todas as outras, e subir daqui pede olhar os três viewports.
 
+### Ligação de `/solucoes`
+
+Feita logo depois da de `/segmentos`, e saiu **de graça**: mudar `href` troca um
+atributo, não a caixa desenhada. Os dois apps renderizam o mesmo `<a>` com as
+mesmas classes com ou sem destino — o cabeçalho já fazia
+`href={categoria.href ?? '#'}` e o rodapé já escolhia entre `<Link>` e `<a>` com
+o mesmo markup. **Gate passou com os 13 gabaritos intactos**, então não houve
+regravação e nenhuma evidência de regressão foi apagada.
+
+A diferença para `/segmentos` é o que estava faltando: lá o item **não existia**
+e precisou nascer nos dois lados; aqui ele existia e apontava para lugar nenhum.
+
+⚠️ **Parceiros continua sem destino**, e é o estado certo: não há índice de
+parceiros, nem no protótipo nem no site novo — só `/parceiros/[slug]`. A
+categoria abre o painel, e é o painel que leva a cada parceiro. O smoke agora
+afirma essa distinção, que some fácil: as três categorias abrem painel e por
+muito tempo as três apontaram para `#`.
+
 ## Fase 5 — Formulários, SEO e analytics
 
 | ID | Título | Dep. | Critério de aceite | Est. |

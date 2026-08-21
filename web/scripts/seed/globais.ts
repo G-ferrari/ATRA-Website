@@ -50,11 +50,18 @@ const RODAPE = {
       {
         title: 'Soluções',
         kind: 'links' as const,
-        /* Os 3 apontam para `#` no legado (`App.tsx:2489`). */
+        /* ⚠️ Os 3 apontam para o **índice**, e não cada um para um lugar: são as
+         * 3 categorias do mega-menu, não soluções com página própria. Mesmo
+         * caso dos 3 links legais, que vão todos para `/politicas-e-termos`.
+         *
+         * Apontavam para `#` até 21/08/2026, herdado do protótipo — e ali era
+         * link morto, não ausência de destino: `/solucoes` existe desde a Fase
+         * 3. Trocar `#` por rota não move um pixel: o rodapé desenha o mesmo
+         * `<a>` com as mesmas classes nos dois casos. */
         links: [
-          { label: 'Inovação & IA', href: '' },
-          { label: 'Dados, BI & Advanced Analytics', href: '' },
-          { label: 'Governança & Cultura', href: '' },
+          { label: 'Inovação & IA', href: '/solucoes' },
+          { label: 'Dados, BI & Advanced Analytics', href: '/solucoes' },
+          { label: 'Governança & Cultura', href: '/solucoes' },
         ],
       },
       {

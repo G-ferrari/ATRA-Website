@@ -382,7 +382,15 @@ const Navbar = () => {
                                   item === 'Glossário' ? t('nav.glossary') : item;
 
                     const isSelected = activeDesktopCategory === item;
-                    const menuLink = item === 'Soluções' ? '#' :
+                    /* ⚠️ `/solucoes` e não `#`: a rota existe aqui (`:2636`) e serve a
+                       página de IA. Apontava para `#` porque a categoria só abria o
+                       painel, e o site novo herdou o link morto junto com o desenho.
+                       Ligada dos dois lados na mesma mudança, senão o gabarito passaria
+                       a medir a diferença.
+
+                       Parceiros continua em `#`: lá não há índice de parceiros para
+                       onde ir, nem aqui nem no site novo. */
+                    const menuLink = item === 'Soluções' ? '/solucoes' :
                                      /* `#`, como Soluções e Parceiros: o protótipo não tem a
                                         página de segmentos — ela nasce no site novo. O rótulo
                                         existe aqui para o cabeçalho bater no gabarito, e um link
@@ -400,7 +408,7 @@ const Navbar = () => {
                         <Link
                           to={menuLink}
                           onClick={(e) => {
-                            if (item === 'Soluções' || item === 'Segmentos' || item === 'Parceiros') {
+                            if (item === 'Segmentos' || item === 'Parceiros') {
                               e.preventDefault();
                             } else {
                               setIsMobileMenuOpen(false);
@@ -949,7 +957,7 @@ const Navbar = () => {
                       }}
                     >
                       <Link 
-                        to={item === 'Consultores' ? '/consultores' : item === 'Insights' ? '/insights' : item === 'Glossário' ? '/glossario' : item === 'Carreiras' ? '/carreiras' : item === 'Sobre' ? '/sobre' : '/'} 
+                        to={item === 'Soluções' ? '/solucoes' : item === 'Consultores' ? '/consultores' : item === 'Insights' ? '/insights' : item === 'Glossário' ? '/glossario' : item === 'Carreiras' ? '/carreiras' : item === 'Sobre' ? '/sobre' : '/'} 
                         className="text-sm font-semibold text-text-main capitalize tracking-wide flex items-center gap-2.5"
                         onClick={(e) => {
                           if (item === 'Soluções' || item === 'Insights' || item === 'Parceiros') {
@@ -2497,7 +2505,9 @@ const Footer = () => {
             <h4 className="text-primary font-medium text-xs font-display tracking-wide mb-4">{t('nav.solutions')}</h4>
             <ul className="space-y-2 text-xs font-light">
               {translatedSolutions.map((sol, index) => (
-                <li key={index}><a href="#" className="hover:text-white transition-colors">{sol.title}</a></li>
+                /* As 3 são categorias do menu, não soluções com página própria:
+                   o destino de todas é o índice. Mesmo caso dos 3 links legais. */
+                <li key={index}><Link to="/solucoes" className="hover:text-white transition-colors">{sol.title}</Link></li>
               ))}
             </ul>
           </div>
