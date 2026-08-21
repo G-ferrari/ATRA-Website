@@ -30,7 +30,15 @@ WORKDIR /app
 # Estágio próprio para o cache do Docker sobreviver a mudança de código: só
 # invalida quando o manifesto muda, não a cada edição de componente.
 FROM base AS deps
-COPY web/package.json web/pnpm-lock.yaml ./
+# ⚠️ `pnpm-workspace.yaml` junto — esquecê-lo custou três builds.
+#
+# É dele que sai o `allowBuilds`, e sem o arquivo aqui o pnpm 11 reprova a
+# instalação com `ERR_PNPM_IGNORED_BUILDS`: `strictDepBuilds` vem ligado por
+# padrão e transforma "dependência com script de instalação não decidido" em
+# erro. Quem desenvolve nunca vê isso, porque nunca instala do zero — o
+# `node_modules` já está lá. A imagem de produção é a primeira instalação limpa
+# que este repositório faz.
+COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml ./
 # --frozen-lockfile falha se o lock estiver fora de sync. É a mesma regra do CI,
 # e é o que quebrou o `npm ci` no legado.
 RUN pnpm install --frozen-lockfile
