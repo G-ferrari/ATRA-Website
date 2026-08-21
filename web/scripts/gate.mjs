@@ -1,6 +1,7 @@
 import { spawn, spawnSync } from 'node:child_process'
 import { cpus } from 'node:os'
 import { setTimeout as esperar } from 'node:timers/promises'
+import path from 'node:path'
 
 /* Gate de regressão visual (MIG-035).
  *
@@ -161,6 +162,13 @@ const r = passo(gravarGabarito ? 'gravando o gabarito (legado)' : 'comparando', 
       '-e', `LEGACY_URL=${LEGADO}`,
       '-e', 'CI=1',
       '-v', `${process.cwd()}:/work`,
+      /* ⚠️ `docs/` entra montado também, e não por conveniência: o
+       * `redirects.spec.ts` lê `docs/02-especificacao/dados/redirects.csv`, que
+       * é a **especificação** dos 258 redirects e mora fora de `web/` de
+       * propósito — quem revisa a curadoria não abre o repositório do app.
+       *
+       * Somente leitura: teste não escreve em especificação. */
+      '-v', `${path.resolve(process.cwd(), '..', 'docs')}:/docs:ro`,
       '-w', '/work',
       IMAGEM,
       ...comando,

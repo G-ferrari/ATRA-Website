@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { resolverPagina } from '@/lib/paginas'
+import { metadataDe } from '@/lib/seo'
 
 /* /carreiras (MIG-050) — página montada por blocos. Casca fina: resolve e renderiza.
  * Toda a estrutura vive no CMS. */
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   if (!isLocale(locale)) return {}
   const pagina = await resolverPagina('carreiras', 'careers', locale)
-  return pagina ? { title: pagina.title } : {}
+  return pagina ? metadataDe({ locale, local: { secao: 'carreiras' }, seo: pagina.seo }) : {}
 }
 
 export default async function Pagina() {

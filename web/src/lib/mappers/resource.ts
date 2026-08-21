@@ -2,6 +2,7 @@ import type { Resource as Doc } from '@/payload-types'
 import type { Resource, ResourceDetail } from '@/types/content'
 
 import { toImage, toTextos } from './shared'
+import { toSeo } from './seo'
 
 export function toResource(doc: Doc): Resource {
   return {
@@ -17,7 +18,12 @@ export function toResource(doc: Doc): Resource {
 }
 
 export function toResourceDetail(doc: Doc): ResourceDetail {
-  return { ...toResource(doc), body: doc.body ?? null }
+  const base = toResource(doc)
+  return {
+    ...base,
+    body: doc.body ?? null,
+    seo: toSeo(doc.seo, { titulo: base.title, descricao: base.description, imagem: base.image }),
+  }
 }
 
 /** Data por extenso, como o legado escreve nos cards ("10 de janeiro de 2026"). */

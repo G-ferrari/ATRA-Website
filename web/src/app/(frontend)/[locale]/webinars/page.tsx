@@ -11,6 +11,7 @@ import { toWebinar } from '@/lib/mappers/webinar'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { Webinar } from '@/types/content'
+import { metadataDe } from '@/lib/seo'
 
 /* /webinars (MIG-042) — porte de `legacy/src/pages/Webinars.tsx`. */
 
@@ -41,8 +42,13 @@ const TEXTOS = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  const t = TEXTOS[isLocale(locale) ? locale : 'pt']
-  return { title: t.metaTitle, description: t.metaDescription }
+  const idioma = isLocale(locale) ? locale : 'pt'
+  const t = TEXTOS[idioma]
+  return metadataDe({
+    locale: idioma,
+    local: { secao: 'webinars' },
+    seo: { title: t.metaTitle, description: t.metaDescription, image: null, noIndex: false },
+  })
 }
 
 function paraDestaque(w: Webinar, locale: Locale, eyebrow: string): FeaturedItem {

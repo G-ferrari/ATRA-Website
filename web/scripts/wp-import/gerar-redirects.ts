@@ -95,7 +95,11 @@ const CURADAS: Record<string, { to: string; status?: number; note: string }> = {
   /* Sem destino, e sai de propósito. */
   'em-manutencao': { to: '', status: 410, note: 'pagina tecnica do WordPress' },
   'health-check': { to: '', status: 410, note: 'pagina tecnica do WordPress' },
-  'sample-page': { to: '', status: 410, note: 'pagina de exemplo que o WordPress cria sozinho' },
+  /* ⚠️ Não é 410: o WordPress a tem marcada como **página inicial**, e é ela que
+   * responde em `atra.com.br/`. O WP já 301 o slug para a raiz; o site novo
+   * serve a própria home ali. Mandar 410 aqui apagaria a home do WordPress dos
+   * índices durante o cutover. */
+  'sample-page': { to: '/', note: 'e a pagina inicial do WordPress - o WP ja 301 o slug para a raiz' },
   eventos: { to: '/insights', note: 'N:1 - nao ha rota de eventos; o hub de conteudo e o mais proximo' },
 }
 
@@ -133,6 +137,15 @@ const slugsDeSolucao = new Set(solucoes.map((v) => v.slug))
 function caminho(link: string | undefined, slug: string): string {
   if (!link) return `/${slug}/`
   const p = new URL(link).pathname
+  /* ⚠️ O WordPress devolve `/` como `link` da página marcada como **página
+   * inicial** — é o caso de `sample-page`. Aceitar isso gerava a linha
+   * `/,,410`, que manda a home do site novo responder "410 Gone".
+   *
+   * O arquivo é consumido pelo `next.config.ts`: seria o site inteiro fora do
+   * ar por uma página de exemplo que o WordPress cria sozinho. A conferência de
+   * cobertura não pegou porque ela verifica que **toda página tem destino**, não
+   * que o destino faz sentido. */
+  if (p === '/' || p === '') return `/${slug}/`
   return p.endsWith('/') ? p : `${p}/`
 }
 
@@ -211,7 +224,11 @@ if (existsSync(ARQUIVO)) {
   const gerado = new Set(geradas.map((l) => l.from))
   for (const linha of readFileSync(ARQUIVO, 'utf8').split('\n').slice(1)) {
     const [from, to, status, ...resto] = linha.split(',')
-    if (!from?.trim() || gerado.has(from)) continue
+    /* ⚠️ Linha na raiz nunca é preservada. O arquivo já ganhou uma `/,,410`
+     * — a página inicial do WordPress virando 410 — e sem esta guarda a
+     * preservação a ressuscitaria a cada geração, mesmo depois de corrigida a
+     * causa. Regenerar tem que curar o arquivo, não repetir o defeito. */
+    if (!from?.trim() || from === '/' || gerado.has(from)) continue
     preservadas.push({ from, to: to ?? '', status: Number(status) || 301, note: resto.join(',') })
   }
 }
@@ -240,7 +257,12 @@ for (const s of semDestino) console.log(`  ✗ ${s}`)
  * `next.config.ts` que fizer `split(',')` lê a metade da justificativa como uma
  * quinta coluna. */
 const malFormadas = todas.filter(
-  (l) => !l.from.endsWith('/') || (l.to && l.to.endsWith('/')) || !l.note.trim() || l.note.includes(','),
+  (l) =>
+    !l.from.endsWith('/') ||
+    /* `to` sem barra final — menos a raiz, que é só a barra. */
+    (l.to && l.to !== '/' && l.to.endsWith('/')) ||
+    !l.note.trim() ||
+    l.note.includes(','),
 )
 for (const l of malFormadas) console.log(`  ✗ fora do formato: ${l.from} → ${l.to} (${l.note})`)
 
@@ -248,8 +270,19 @@ for (const l of malFormadas) console.log(`  ✗ fora do formato: ${l.from} → $
  * Página nova no WP sem linha aqui reprova a geração em vez de sumir. */
 for (const slug of semCuradoria) console.log(`  ✗ pagina sem destino curado: /${slug}/`)
 
+/* ⚠️ Redirect na raiz é sempre engano, e o preço é o site inteiro: uma linha
+ * `/,,410` tira a home do ar, e `/`→qualquer coisa faz laço infinito. Vale a
+ * conferência mesmo parecendo impossível — foi exatamente o que a página
+ * inicial do WordPress produziu, sem nenhum aviso. */
+const naRaiz = todas.filter((l) => l.from === '/' || l.from === '')
+for (const l of naRaiz) console.log(`  ✗ redirect na raiz: ${l.from} → ${l.to || '(410)'}`)
+
 const reprovou =
-  semDestino.length > 0 || malFormadas.length > 0 || semCuradoria.length > 0 || posts301 !== wpPosts.length
+  semDestino.length > 0 ||
+  malFormadas.length > 0 ||
+  semCuradoria.length > 0 ||
+  naRaiz.length > 0 ||
+  posts301 !== wpPosts.length
 
 console.log(
   reprovou

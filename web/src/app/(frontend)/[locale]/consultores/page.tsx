@@ -13,6 +13,7 @@ import { hrefDe } from '@/lib/routes'
 
 import { ListaDeConsultores } from './lista-de-consultores'
 import { SolicitarConsultores } from './solicitar-consultores'
+import { metadataDe } from '@/lib/seo'
 
 /* /consultores — porte de `legacy/src/pages/Consultants.tsx`.
  *
@@ -108,7 +109,13 @@ const ICONES_DIFERENCIAIS = [Award, Cpu, Zap, ShieldCheck] as const
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  return META[isLocale(locale) ? locale : 'pt']
+  const idioma = isLocale(locale) ? locale : 'pt'
+  const { title, description } = META[idioma]
+  return metadataDe({
+    locale: idioma,
+    local: { secao: 'consultores' },
+    seo: { title, description, image: null, noIndex: false },
+  })
 }
 
 export default async function ConsultoresPage() {

@@ -12,8 +12,8 @@ import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toVagaDetalhe } from '@/lib/mappers/job'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
-import { robotsDeCorpo } from '@/lib/seo'
 import type { VagaDetalhe } from '@/types/content'
+import { metadataDe } from '@/lib/seo'
 
 /* /carreiras/[slug] (MIG-051). Rota **sem gabarito** — não existe no protótipo:
  * no legado a vaga é um item de lista que rola para o banco de talentos, sem
@@ -86,12 +86,15 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/carreira
   if (!isLocale(locale)) return {}
   const vaga = await buscarVaga(slug, locale)
   if (!vaga) return {}
-  return {
-    title: vaga.area ? `${vaga.title} — ${vaga.area}` : vaga.title,
-    description: vaga.summary,
+  /* A área entra no título quando existe — desde P-28 ela costuma estar vazia,
+     e "Engenheiro de Dados — " com traço solto seria pior que o título puro. */
+  return metadataDe({
+    locale,
+    local: { secao: 'carreiras', slug },
+    seo: vaga.area ? { ...vaga.seo, title: `${vaga.seo.title} — ${vaga.area}` } : vaga.seo,
     /* Vaga sem descrição não entrega nada a quem chega da busca. */
-    robots: robotsDeCorpo(vaga.body),
-  }
+    corpo: vaga.body,
+  })
 }
 
 export default async function VagaPage({ params }: PageProps<'/[locale]/carreiras/[slug]'>) {

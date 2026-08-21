@@ -2,6 +2,7 @@ import type { Post as Doc } from '@/payload-types'
 import type { PostCard, PostDetail } from '@/types/content'
 
 import { toImage, toTextos } from './shared'
+import { toSeo } from './seo'
 
 /* ⚠️ Pede só os campos do cartão, e não `Post` inteiro, para a página poder
  * consultar com `select`. Sem isto o tipo obriga a trazer o `body` de 100
@@ -19,9 +20,10 @@ export function toPostCard(doc: CamposDeCartao): PostCard {
   }
 }
 
-export function toPostDetail(doc: CamposDeCartao & Pick<Doc, 'body'>): PostDetail {
+export function toPostDetail(doc: CamposDeCartao & Pick<Doc, 'body' | 'seo'>): PostDetail {
   return {
     ...toPostCard(doc),
     body: doc.body ?? null,
+    seo: toSeo(doc.seo, { titulo: doc.title, descricao: doc.description, imagem: toImage(doc.coverImage, 'posts.coverImage') }),
   }
 }

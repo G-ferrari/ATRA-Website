@@ -14,6 +14,7 @@ import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import { paraEmbed } from '@/lib/video'
 import type { Webinar } from '@/types/content'
+import { metadataDe } from '@/lib/seo'
 
 /* /webinars/[slug] (MIG-046). Rota **sem gabarito** — não existe no protótipo.
  *
@@ -93,11 +94,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/webinars
   if (!isLocale(locale)) return {}
   const w = await buscarWebinar(slug, locale)
   if (!w) return {}
-  return {
-    title: w.title,
-    description: w.description,
-    openGraph: { images: [{ url: w.image.url }], type: 'video.other' },
-  }
+  return metadataDe({ locale, local: { secao: 'webinars', slug }, seo: w.seo })
 }
 
 export default async function WebinarPage({ params }: PageProps<'/[locale]/webinars/[slug]'>) {

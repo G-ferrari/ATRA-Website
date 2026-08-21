@@ -6,6 +6,7 @@ import { DecoracoesDaHome } from '@/components/blocks/decoracoes-da-home'
 import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { resolverPagina } from '@/lib/paginas'
+import { metadataDe } from '@/lib/seo'
 
 /* A home (MIG-059) — montada por blocos, como as outras.
  *
@@ -23,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   if (!isLocale(locale)) return {}
   const pagina = await resolverPagina('home', 'home', locale)
-  return pagina ? { title: pagina.title } : {}
+  return pagina ? metadataDe({ locale, local: { caminho: '/' }, seo: pagina.seo }) : {}
 }
 
 export default async function Pagina() {

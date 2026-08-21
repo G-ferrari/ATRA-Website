@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { resolverPagina } from '@/lib/paginas'
+import { metadataDe } from '@/lib/seo'
 
 /* /politicas-e-termos (MIG-094) — página montada por blocos, como /sobre.
  *
@@ -24,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   if (!isLocale(locale)) return {}
   const pagina = await resolverPagina('politicas-e-termos', 'privacy-and-terms', locale)
-  return pagina ? { title: pagina.title } : {}
+  return pagina ? metadataDe({ locale, local: { secao: 'politicas' }, seo: pagina.seo }) : {}
 }
 
 export default async function Pagina() {

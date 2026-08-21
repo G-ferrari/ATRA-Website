@@ -15,8 +15,8 @@ import { toPostDetail } from '@/lib/mappers/post'
 import { mapearOuFaltando } from '@/lib/mappers/shared'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
-import { robotsDeCorpo } from '@/lib/seo'
 import type { PostDetail } from '@/types/content'
+import { metadataDe } from '@/lib/seo'
 
 /* /blog/[slug] (MIG-044).
  *
@@ -104,18 +104,9 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/blog/[sl
   if (!r || !('doc' in r)) return {}
   const post = r.doc
 
-  return {
-    title: post.title,
-    description: post.description,
-    openGraph: { images: [{ url: post.image.url }], type: 'article' },
-    /* Artigo sem corpo não é indexável.
-     *
-     * É a preocupação de D-08 aplicada em código em vez de por disciplina: os
-     * 6 posts do protótipo estão publicados como fixture do porte, e página
-     * magra prejudica o domínio inteiro. Enquanto não houver texto, o post
-     * existe para quem tem o link e é invisível para busca. */
-    robots: robotsDeCorpo(post.body),
-  }
+  /* `corpo` aplica D-08: artigo sem texto existe para quem tem o link e é
+     invisível para busca — página magra prejudica o domínio inteiro. */
+  return metadataDe({ locale, local: { secao: 'blog', slug }, seo: post.seo, corpo: post.body })
 }
 
 export default async function PostPage({ params }: PageProps<'/[locale]/blog/[slug]'>) {

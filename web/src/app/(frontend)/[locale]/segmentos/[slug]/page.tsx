@@ -7,7 +7,8 @@ import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
 import { getPayload } from '@/lib/payload'
-import { robotsDeCorpo } from '@/lib/seo'
+import { toSeo } from '@/lib/mappers/seo'
+import { metadataDe } from '@/lib/seo'
 
 /* /segmentos/[slug] (MIG-091).
  *
@@ -66,12 +67,13 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/segmento
   if (!isLocale(locale)) return {}
   const s = await buscarSegmento(slug, locale)
   if (!s) return {}
-  return {
-    title: `ATRA / ${s.doc.name}`,
-    description: s.doc.shortDescription,
+  return metadataDe({
+    locale,
+    local: { secao: 'segmentos', slug },
+    seo: toSeo(s.doc.seo, { titulo: s.doc.name, descricao: s.doc.shortDescription }),
     /* D-08: vertical sem seção montada é página magra e não entra no índice. */
-    robots: robotsDeCorpo(s.doc.layout?.length),
-  }
+    corpo: s.doc.layout?.length ? s.doc.layout : null,
+  })
 }
 
 export default async function SegmentoPage({ params }: PageProps<'/[locale]/segmentos/[slug]'>) {

@@ -17,6 +17,7 @@ import { mapearOuFaltando } from '@/lib/mappers/shared'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { CaseDetail } from '@/types/content'
+import { metadataDe } from '@/lib/seo'
 
 const TEXTOS = {
   pt: {
@@ -109,11 +110,13 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/cases-de
   const r = await buscarCase(slug, locale)
   if (!r || !('doc' in r)) return {}
   const caso = r.doc
-  return {
-    title: `${caso.title} — ${TEXTOS[locale].prefixo} ${caso.client}`,
-    description: caso.summary,
-    openGraph: { images: [{ url: caso.image.url }] },
-  }
+  /* O título do case leva o cliente junto ("… — Case Banco ABC"), que é o que
+     o legado mostra. Quem preencher o SEO no CMS sobrepõe isso. */
+  return metadataDe({
+    locale,
+    local: { secao: 'cases', slug },
+    seo: { ...caso.seo, title: `${caso.seo.title} — ${TEXTOS[locale].prefixo} ${caso.client}` },
+  })
 }
 
 export default async function CasePage({ params }: PageProps<'/[locale]/cases-de-sucesso/[slug]'>) {

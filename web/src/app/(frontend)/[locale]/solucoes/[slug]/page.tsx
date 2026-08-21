@@ -7,6 +7,8 @@ import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
 import { getPayload } from '@/lib/payload'
+import { toSeo } from '@/lib/mappers/seo'
+import { metadataDe } from '@/lib/seo'
 
 /* /solucoes/[slug] (MIG-056) — porte de `legacy/src/pages/SolutionAI.tsx`.
  *
@@ -69,7 +71,11 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/solucoes
   if (!isLocale(locale)) return {}
   const s = await buscarSolucao(slug, locale)
   if (!s) return {}
-  return { title: `ATRA / ${s.doc.title}`, description: s.doc.shortDescription }
+  return metadataDe({
+    locale,
+    local: { secao: 'solucoes', slug },
+    seo: toSeo(s.doc.seo, { titulo: s.doc.title, descricao: s.doc.shortDescription }),
+  })
 }
 
 export default async function SolucaoPage({ params }: PageProps<'/[locale]/solucoes/[slug]'>) {

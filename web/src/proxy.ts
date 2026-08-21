@@ -1,7 +1,12 @@
+import path from 'node:path'
+
 import { NextResponse, type NextRequest } from 'next/server'
 
 import { DEFAULT_LOCALE, LOCALES, isLocale } from '@/lib/locales'
+import { caminhosGone, lerRedirects } from '@/lib/redirects'
 import { aliasEsperado, canonizarSegmento } from '@/lib/routes'
+
+const CSV_DE_REDIRECTS = path.resolve(process.cwd(), '../docs/02-especificacao/dados/redirects.csv')
 
 /* Roteamento de idioma (D-07).
  *
@@ -18,8 +23,23 @@ import { aliasEsperado, canonizarSegmento } from '@/lib/routes'
  * Next 16: o arquivo se chama proxy.ts (era middleware.ts) e a função exportada
  * é `proxy`. O runtime é nodejs e não é configurável.
  */
+/* As URLs que saem de propósito (MIG-108).
+ *
+ * ⚠️ Aqui e não em `next.config.ts`: o `redirects()` do Next só emite 307/308 e
+ * não sabe responder "410 Gone". São 3 páginas técnicas do WordPress e a
+ * taxonomia vazia — conteúdo que não existe mais e não deve existir. 410 e não
+ * 404 porque a diferença importa para o robô: 404 é "não achei agora" e o
+ * Google volta; 410 é "não existe mais" e ele tira do índice.
+ *
+ * Lido do mesmo CSV que o build consome, na inicialização do processo. */
+const GONE = new Set(caminhosGone(lerRedirects(CSV_DE_REDIRECTS)))
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  if (GONE.has(pathname.replace(/\/$/, ''))) {
+    return new NextResponse(null, { status: 410 })
+  }
 
   // /pt/... não deve existir publicamente: o português mora na raiz.
   if (pathname === `/${DEFAULT_LOCALE}` || pathname.startsWith(`/${DEFAULT_LOCALE}/`)) {
@@ -65,5 +85,7 @@ export const config = {
   /* Fora do roteamento de idioma:
    *  - admin e api → grupo (payload), que não vive sob [locale]
    *  - _next, arquivos estáticos e assets com extensão */
+  /* ⚠️ `/category/uncategorized/` precisa passar por aqui para receber 410, e
+   * ela não tem ponto nem cai em nenhuma exclusão — está coberta. */
   matcher: ['/((?!api|admin|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 }

@@ -1,5 +1,4 @@
 from,to,status,note
-/,,410,pagina de exemplo que o WordPress cria sozinho
 /2021/10/18/elementor-2817/,/blog/elementor-2817,301,post 1:1
 /2021/10/19/governanca-de-dados-para-aperfeicoar-processos-e-fluxos-de-trabalho/,/blog/governanca-de-dados-para-aperfeicoar-processos-e-fluxos-de-trabalho,301,post 1:1
 /2021/10/19/quais-sao-os-beneficios-da-modernizacao-da-analise-na-nuvem-para-o-setor-de-servicos-financeiros/,/blog/quais-sao-os-beneficios-da-modernizacao-da-analise-na-nuvem-para-o-setor-de-servicos-financeiros,301,post 1:1
@@ -247,6 +246,7 @@ from,to,status,note
 /politicas-e-termos/,/politicas-e-termos,301,pagina legal 1:1 (MIG-094)
 /programa-de-trainee/,/carreiras,301,N:1 carreiras - o trainee e uma secao de /carreiras
 /quem-somos/,/sobre,301,N:1 institucional
+/sample-page/,/,301,e a pagina inicial do WordPress - o WP ja 301 o slug para a raiz
 /saude/,/segmentos/saude,301,segmento 1:1
 /segmentos-atra/,/segmentos,301,indice N:1 - o WP tem duas paginas de indice
 /segmentos/,/segmentos,301,indice 1:1 (a pagina do WP esta vazia)

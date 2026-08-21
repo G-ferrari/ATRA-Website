@@ -384,12 +384,61 @@ muito tempo as três apontaram para `#`.
 | MIG-102 | Formulário de candidatura + upload de CV | 100, 051 | PDF em storage privado, URL assinada | 3h |
 | MIG-103 | Newsletter com double opt-in | 100 | Confirmação por e-mail antes de ativar | 3h |
 | MIG-104 | Download gated de material | 100, 045 | Formulário libera arquivo por URL assinada | 2.5h |
-| MIG-105 | `generateMetadata` em todas as rotas | Fase 3 | Toda rota com title e description próprios | 3h |
-| MIG-106 | `sitemap.ts` + `robots.ts` | 105 | Só publicados; sem locale não traduzido | 2h |
+| MIG-105 | `generateMetadata` em todas as rotas | Fase 3 | Toda rota com title e description próprios | 3h | **done** — e o grupo `seo` passou a ser lido; ganhou canônica e `hreflang` |
+| MIG-106 | `sitemap.ts` + `robots.ts` | 105 | Só publicados; sem locale não traduzido | 2h | **done** — 270 URLs, só 16 em inglês |
 | MIG-107 | JSON-LD | 105 | Rich Results Test valida | 2.5h |
-| MIG-108 | `redirects.csv` no `next.config.ts` + teste de CI | 086 | Toda linha: 301 → destino 200 | 3h |
+| MIG-108 | `redirects.csv` no `next.config.ts` + teste de CI | 086 | Toda linha: 301 → destino 200 | 3h | **done** — e o teste achou 2 defeitos que derrubariam o site |
 | MIG-109 | GA4/GTM + consentimento de cookies | 105 | Nenhum script não essencial antes do aceite | 3h |
 | MIG-110 | Budget guard da ATRA AI | 061 | Teto atingido degrada com mensagem, não com 500 | 2h |
+
+> **O que MIG-105 encontrou: o grupo `seo` nunca tinha sido lido.**
+> `fields/seo.ts` põe "Título para buscadores", "Descrição" e "Imagem de
+> compartilhamento" em toda collection com URL pública desde a Fase 1, e nenhuma
+> rota consultava nada disso — o editor preenchia e o campo não saía do banco. O
+> tipo de apresentação `Seo` também estava declarado, sem consumidor. Os
+> fallbacks de `seo-e-redirects.md` estavam escritos à mão em quatro rotas, com
+> três resultados diferentes (`title`, `ATRA / ${title}`, nada).
+>
+> Junto vieram **canônica absoluta e `hreflang`**, que não existiam em rota
+> nenhuma. Não é enfeite: D-07 dá slug traduzido a cada rota, então `/sobre` e
+> `/en/about` são a mesma página em dois idiomas — sem declarar o par, o Google
+> escolhe uma e trata a outra como duplicata.
+>
+> ⚠️ **`undefined` e `null` significam coisas diferentes em `corpo`.** Escrever
+> `corpo ?? true` misturava as duas: rota sem campo de corpo não passa `corpo`,
+> artigo sem texto passa `null` — e o artigo vazio caía em `true` e era
+> indexado, o oposto de D-08. Achado por teste unitário, antes de ir ao ar.
+
+> **MIG-106 mediu que o site em inglês é só navegação.** Os 4 cases têm, no
+> locale `en`, o **mesmo texto português**; os 207 artigos têm linha em `en` só
+> porque o slug precisa existir nos dois idiomas (senão `/en/blog/<slug>` dá
+> 404). Então "existe conteúdo em inglês" é falso para praticamente tudo, e o
+> sitemap aplica a regra: URL inglesa só entra quando o texto **existe e difere**
+> do português. Resultado: 270 URLs, **16 em inglês** — os 15 índices, cuja
+> interface é traduzida de verdade, e um documento. É P-08 medido.
+
+> ⚠️ **MIG-108 achou dois defeitos que derrubariam o site, e nenhum dos dois
+> aparecia na conferência anterior.**
+>
+> O primeiro: a linha `/,,410`. O WordPress devolve `/` como `link` da página
+> marcada como **página inicial** (`sample-page`), e o gerador transformou isso
+> num "410 Gone" na raiz — o site inteiro fora do ar. A conferência de cobertura
+> não pegou porque ela verifica que toda página **tem** destino, não que o
+> destino faz sentido.
+>
+> O segundo: sete linhas institucionais (`/sobre/` → `/sobre`, `/blog/`,
+> `/contato/`, `/carreiras/`, `/solucoes/`, `/segmentos/`,
+> `/politicas-e-termos/`). Com `trailingSlash: false` — o padrão do Next — a
+> barra final é normalizada antes, a regra vira `/sobre` → `/sobre` e o
+> navegador desiste com ERR_TOO_MANY_REDIRECTS. Medido: 50 saltos até o curl
+> parar. As linhas continuam no CSV porque **é especificação** — "esta URL do WP
+> tem destino" é informação mesmo quando o destino é ela própria; o que não pode
+> é virar regra de servidor.
+>
+> ⚠️ **410 não sai do `redirects()` do Next**, que só emite 307/308. As 3 URLs
+> que saem de propósito são servidas pelo `proxy.ts`. 410 e não 404 porque a
+> diferença importa para o robô: 404 é "não achei agora" e ele volta; 410 é
+> "não existe mais" e ele tira do índice.
 
 ## Fase 6 — Endurecimento
 

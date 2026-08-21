@@ -1,6 +1,7 @@
 import type { Case, Partner, Testimonial as TestimonialDoc } from '@/payload-types'
 import type { CaseCard, CaseDetail, PartnerBadge, Testimonial } from '@/types/content'
 
+import { toSeo } from './seo'
 import {
   isPopulated,
   toImage,
@@ -50,6 +51,7 @@ export function toTestimonial(valor: number | TestimonialDoc | null | undefined)
 export function toCaseDetail(doc: Case): CaseDetail {
   return {
     ...toCaseCard(doc),
+    seo: toSeo(doc.seo, { titulo: doc.title, descricao: doc.summary, imagem: toImage(doc.heroImage, 'cases.heroImage') }),
     // Vazio no CMS cai no resumo: a página nunca fica sem linha de abertura.
     heroSubtitle: doc.heroSubtitle?.trim() || doc.summary,
     challenges: toTextos(doc.challenges, 'text'),

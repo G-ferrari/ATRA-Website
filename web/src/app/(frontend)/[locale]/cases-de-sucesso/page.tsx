@@ -14,6 +14,7 @@ import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import type { CaseCard, Topic } from '@/types/content'
 
 import { ListaDeCases } from './lista-de-cases'
+import { metadataDe } from '@/lib/seo'
 
 /* Listagem de cases — a fatia vertical de referência.
  *
@@ -52,8 +53,13 @@ const TEXTOS = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  const t = TEXTOS[isLocale(locale) ? locale : 'pt']
-  return { title: t.metaTitle, description: t.metaDescription }
+  const idioma = isLocale(locale) ? locale : 'pt'
+  const t = TEXTOS[idioma]
+  return metadataDe({
+    locale: idioma,
+    local: { secao: 'cases' },
+    seo: { title: t.metaTitle, description: t.metaDescription, image: null, noIndex: false },
+  })
 }
 
 /* Subtexto do destaque.

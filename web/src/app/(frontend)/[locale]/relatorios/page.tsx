@@ -10,6 +10,7 @@ import { buscarMateriais } from '@/lib/materiais'
 import { dataPorExtenso } from '@/lib/mappers/resource'
 import { hrefDe } from '@/lib/routes'
 import type { Resource } from '@/types/content'
+import { metadataDe } from '@/lib/seo'
 
 /* /relatorios (MIG-041) — porte de `legacy/src/pages/Reports.tsx`. */
 
@@ -44,8 +45,13 @@ const TEXTOS = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  const t = TEXTOS[isLocale(locale) ? locale : 'pt']
-  return { title: t.metaTitle, description: t.metaDescription }
+  const idioma = isLocale(locale) ? locale : 'pt'
+  const t = TEXTOS[idioma]
+  return metadataDe({
+    locale: idioma,
+    local: { secao: 'relatorios' },
+    seo: { title: t.metaTitle, description: t.metaDescription, image: null, noIndex: false },
+  })
 }
 
 function paraDestaque(r: Resource, locale: Locale, eyebrow: string): FeaturedItem {

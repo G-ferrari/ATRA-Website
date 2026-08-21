@@ -59,6 +59,7 @@ export type CaseDetail = CaseCard & {
   partners: PartnerBadge[]
   testimonial: Testimonial | null
   aboutClient: string | null
+  seo: Seo
 }
 
 export type GlossaryTerm = {
@@ -91,6 +92,7 @@ export type Webinar = {
   dateLabel: string
   duration: string
   videoUrl: string | null
+  seo: Seo
 }
 
 export type PostCard = {
@@ -106,11 +108,13 @@ export type PostCard = {
 export type PostDetail = PostCard & {
   /** Documento Lexical serializado; `null` enquanto ninguém escreveu. */
   body: unknown | null
+  seo: Seo
 }
 
 export type ResourceDetail = Resource & {
   /** Documento Lexical serializado; `null` enquanto ninguém escreveu. */
   body: unknown | null
+  seo: Seo
 }
 
 /* Blocos de página (MIG-047).
@@ -447,6 +451,7 @@ export type VagaDetalhe = Vaga & {
   summary: string
   /** Documento Lexical serializado; `null` enquanto ninguém escreveu. */
   body: unknown | null
+  seo: Seo
 }
 
 export type BlocoCtaContact = Base & {
@@ -596,6 +601,14 @@ export type SolutionCard = {
   hasPage: boolean
 }
 
+/**
+ * SEO de uma rota, **já resolvido** (MIG-105).
+ *
+ * Não é o grupo `seo` do documento: é o resultado depois dos fallbacks de
+ * `seo-e-redirects.md` — `seo.metaTitle` → título da página,
+ * `seo.metaDescription` → resumo, `seo.ogImage` → capa. Quem resolve é
+ * `mappers/seo.ts`; quem consome é `lib/seo.ts`.
+ */
 export type Seo = {
   title: string
   description: string

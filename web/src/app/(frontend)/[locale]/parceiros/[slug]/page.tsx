@@ -7,6 +7,9 @@ import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { getPayload } from '@/lib/payload'
+import { metadataDe } from '@/lib/seo'
+import { toSeo } from '@/lib/mappers/seo'
+import { toImageOpcional } from '@/lib/mappers/shared'
 
 /* /parceiros/[slug] (MIG-054).
  *
@@ -60,7 +63,11 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/parceiro
   if (!isLocale(locale)) return {}
   const p = await buscarParceiro(slug, locale)
   if (!p) return {}
-  return { title: `ATRA / ${p.doc.name}`, description: p.doc.description ?? undefined }
+  return metadataDe({
+    locale,
+    local: { secao: 'parceiros', slug },
+    seo: toSeo(p.doc.seo, { titulo: p.doc.name, descricao: p.doc.description, imagem: toImageOpcional(p.doc.logo, 'partners.logo') }),
+  })
 }
 
 export default async function ParceiroPage({ params }: PageProps<'/[locale]/parceiros/[slug]'>) {

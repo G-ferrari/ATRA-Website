@@ -9,6 +9,7 @@ import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { buscarMateriais } from '@/lib/materiais'
 import { hrefDe } from '@/lib/routes'
 import type { Resource } from '@/types/content'
+import { metadataDe } from '@/lib/seo'
 
 /* /ebooks (MIG-041) — porte de `legacy/src/pages/Ebooks.tsx`. */
 
@@ -39,8 +40,13 @@ const TEXTOS = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  const t = TEXTOS[isLocale(locale) ? locale : 'pt']
-  return { title: t.metaTitle, description: t.metaDescription }
+  const idioma = isLocale(locale) ? locale : 'pt'
+  const t = TEXTOS[idioma]
+  return metadataDe({
+    locale: idioma,
+    local: { secao: 'ebooks' },
+    seo: { title: t.metaTitle, description: t.metaDescription, image: null, noIndex: false },
+  })
 }
 
 /* Sem `eyebrow`: o e-book não tem data no legado, e `getSubtext` devolvia

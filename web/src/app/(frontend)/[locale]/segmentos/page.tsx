@@ -11,6 +11,7 @@ import { toSegmentCard } from '@/lib/mappers/segment'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { SegmentCard } from '@/types/content'
+import { metadataDe } from '@/lib/seo'
 
 /* /segmentos (MIG-091).
  *
@@ -56,7 +57,13 @@ const TEXTOS = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  return META[isLocale(locale) ? locale : 'pt']
+  const idioma = isLocale(locale) ? locale : 'pt'
+  const { title, description } = META[idioma]
+  return metadataDe({
+    locale: idioma,
+    local: { secao: 'segmentos' },
+    seo: { title, description, image: null, noIndex: false },
+  })
 }
 
 export default async function SegmentosPage() {

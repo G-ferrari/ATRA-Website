@@ -6,7 +6,7 @@ import { PaginaDeMaterial, type TextosDoMaterial } from '@/components/content/pa
 import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { buscarMaterial, slugsDeMaterial } from '@/lib/materiais'
-import { robotsDeCorpo } from '@/lib/seo'
+import { metadataDe } from '@/lib/seo'
 
 /* /ebooks/[slug] (MIG-045). Rota **sem gabarito** — não existe no protótipo.
  * A estrutura vive em `PaginaDeMaterial`, compartilhada com a outra rota. */
@@ -65,14 +65,9 @@ export async function generateMetadata({
   const material = await buscarMaterial(KIND, slug, locale)
   if (!material) return {}
 
-  return {
-    title: material.title,
-    description: material.description,
-    openGraph: { images: [{ url: material.image.url }] },
-    /* Sem corpo **e** sem download, a página não entrega nada a quem chega da
-     * busca. Volta a ser indexável quando MIG-104 ligar o formulário. */
-    robots: robotsDeCorpo(material.body),
-  }
+  /* Sem corpo **e** sem download, a página não entrega nada a quem chega da
+     busca. Volta a ser indexável quando MIG-104 ligar o formulário. */
+  return metadataDe({ locale, local: { secao: 'ebooks', slug }, seo: material.seo, corpo: material.body })
 }
 
 export default async function MaterialPage({ params }: PageProps<'/[locale]/ebooks/[slug]'>) {

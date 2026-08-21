@@ -11,6 +11,7 @@ import { toSolutionCard } from '@/lib/mappers/solution'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { SolutionCard, SolutionCategory } from '@/types/content'
+import { metadataDe } from '@/lib/seo'
 
 /* /solucoes (MIG-055).
  *
@@ -63,7 +64,13 @@ const CATEGORIAS: { id: SolutionCategory; label: Record<Locale, string> }[] = [
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  return META[isLocale(locale) ? locale : 'pt']
+  const idioma = isLocale(locale) ? locale : 'pt'
+  const { title, description } = META[idioma]
+  return metadataDe({
+    locale: idioma,
+    local: { secao: 'solucoes' },
+    seo: { title, description, image: null, noIndex: false },
+  })
 }
 
 export default async function SolucoesPage() {

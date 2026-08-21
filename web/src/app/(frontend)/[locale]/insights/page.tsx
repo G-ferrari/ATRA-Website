@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { resolverPagina } from '@/lib/paginas'
+import { metadataDe } from '@/lib/seo'
 
 /* /insights (MIG-060) — o hub central de conteúdo.
  *
@@ -20,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   if (!isLocale(locale)) return {}
   const pagina = await resolverPagina('insights', 'insights', locale)
-  return pagina ? { title: pagina.title } : {}
+  return pagina ? metadataDe({ locale, local: { secao: 'insights' }, seo: pagina.seo }) : {}
 }
 
 export default async function Pagina() {

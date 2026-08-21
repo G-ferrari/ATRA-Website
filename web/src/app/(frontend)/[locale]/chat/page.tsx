@@ -18,6 +18,12 @@ export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
 }
 
+/* ⚠️ Fora do índice de propósito, e não por ser página magra: `/chat` é uma
+ * ferramenta, não conteúdo. Indexá-la traria gente da busca para uma conversa
+ * sem contexto — e cada visita custa cota da API (D-12).
+ *
+ * Sem `metadataDe`: o helper monta canônica e hreflang, que só fazem sentido
+ * para página que se quer encontrada. */
 export const metadata: Metadata = {
   title: 'Converse com a ATRA',
   robots: { index: false, follow: true },

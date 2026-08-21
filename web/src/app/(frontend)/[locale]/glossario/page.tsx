@@ -8,6 +8,7 @@ import { getPayload } from '@/lib/payload'
 import { isLocale, LOCALES } from '@/lib/locales'
 
 import { ListaDeTermos } from './lista-de-termos'
+import { metadataDe } from '@/lib/seo'
 
 /* /glossario (MIG-040). Segue o padrão de cases: a página resolve o dado, a
  * ilha cuida de busca e filtro. */
@@ -31,7 +32,13 @@ const META = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  return META[isLocale(locale) ? locale : 'pt']
+  const idioma = isLocale(locale) ? locale : 'pt'
+  const { title, description } = META[idioma]
+  return metadataDe({
+    locale: idioma,
+    local: { secao: 'glossario' },
+    seo: { title, description, image: null, noIndex: false },
+  })
 }
 
 export default async function GlossarioPage() {

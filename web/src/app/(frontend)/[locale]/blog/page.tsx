@@ -15,6 +15,7 @@ import { hrefDe } from '@/lib/routes'
 import type { PostCard } from '@/types/content'
 
 import { ListaDeArtigos } from './lista-de-artigos'
+import { metadataDe } from '@/lib/seo'
 
 /* /blog (MIG-043) — porte de `legacy/src/pages/Blog.tsx`. */
 
@@ -68,8 +69,13 @@ const TEXTOS = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
-  const t = TEXTOS[isLocale(locale) ? locale : 'pt']
-  return { title: t.metaTitle, description: t.metaDescription }
+  const idioma = isLocale(locale) ? locale : 'pt'
+  const t = TEXTOS[idioma]
+  return metadataDe({
+    locale: idioma,
+    local: { secao: 'blog' },
+    seo: { title: t.metaTitle, description: t.metaDescription, image: null, noIndex: false },
+  })
 }
 
 function paraDestaque(p: PostCard, locale: Locale): FeaturedItem {

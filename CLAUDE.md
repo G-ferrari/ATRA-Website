@@ -126,6 +126,7 @@ pnpm gate                                # build de produção + comparação vi
 pnpm gate --baseline                     # regrava o gabarito a partir do legado
 pnpm gate --sem-build                    # reaproveita o .next existente
 pnpm gate --rota home --viewport desktop # 1 teste em vez de 207, para iterar
+pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 261 linhas
 ```
 
 `pnpm gate` é o único caminho: build de produção em :3100, suíte dentro da imagem
@@ -197,6 +198,10 @@ da página. São 13 rotas sob o gate.
 | Tabela do WordPress vira parágrafo solto, com 100% do texto preservado | `editorConfigFactory.default({ config })` devolve o editor **padrão** do Lexical, não o do projeto — a `EXPERIMENTAL_TableFeature` fica de fora. Tirar a config do próprio campo (`editorConfigFactory.fromField`) |
 | Build morre em "took more than 60 seconds" com muitas páginas | Não é página quebrada, é fila: o Next usa `cpus - 1` workers, e nove instâncias do Payload disputam a máquina com o Postgres. `experimental.cpus` e `staticPageGenerationTimeout` em `next.config.ts` |
 | Campo `unique` recusa um valor que não está duplicado | `%` no valor é **curinga** na checagem de unicidade. Um post do WP tem `%c2%b2` no slug, e só ele falhava, só ao gravar o 2º idioma — o 1º passa porque ainda não há linha com que colidir. Normalizar antes de gravar |
+| Redirect de uma URL para ela mesma trava a página | Com `trailingSlash: false` (padrão) o Next normaliza a barra final **antes** do `redirects()`, então `/sobre/` → `/sobre` vira `/sobre` → `/sobre` e o navegador desiste com ERR_TOO_MANY_REDIRECTS. `redirectsDoNext` descarta `source === destination` |
+| `redirects()` do Next não sabe responder 410 | Ele só emite 307/308. URL que sai de propósito é servida pelo `proxy.ts`. 410 e não 404: 404 é "não achei agora" e o robô volta, 410 é "não existe mais" e ele tira do índice |
+| Página inicial do WordPress vira redirect na raiz | O WP devolve `/` como `link` da página marcada como front page. Virou a linha `/,,410` — o site inteiro fora do ar. O gerador agora recusa `from === '/'` |
+| Teste do gate não acha arquivo de `docs/` | O container monta só `web/` em `/work`. `docs/` entra em `/docs:ro`, e o teste procura nos dois caminhos |
 | Gate roda inteiro e mede o build errado | Servidor de uma corrida anterior segurando :3100. O `next start` novo sai com `EADDRINUSE` e a suíte testa o build velho, sem aviso — 240 testes com falhas plausíveis. `scripts/gate.mjs` agora aborta se a porta estiver ocupada |
 | Rascunho aparece no site | A Local API roda com **`overrideAccess: true`**: o `access.read` da collection, que filtra `_status` para o público, **não se aplica** a consulta de página. Toda listagem precisa do `where: { _status: { equals: 'published' } }` escrito. Ficou invisível até existir o primeiro rascunho |
 | `unique` recusa e o erro aponta para um bloco que está preenchido | Atualizar documento **publicado** revalida os obrigatórios **do idioma gravado**. Mandar só nome e slug para `en` faz o Payload recusar por "Título inválido" nos blocos, que estão vazios naquele idioma. Reenviar o layout com `casarIds` |

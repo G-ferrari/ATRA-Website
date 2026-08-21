@@ -1,6 +1,7 @@
 import type { Job } from '@/payload-types'
 import type { Locale } from '@/lib/locales'
 import type { Vaga, VagaDetalhe } from '@/types/content'
+import { toSeo } from './seo'
 
 const MODELO: Record<Job['locationType'], Record<Locale, string>> = {
   remote: { pt: 'Remoto', en: 'Remote' },
@@ -19,9 +20,11 @@ export function toVaga(doc: Job, locale: Locale): Vaga {
 }
 
 export function toVagaDetalhe(doc: Job, locale: Locale): VagaDetalhe {
+  const base = toVaga(doc, locale)
   return {
-    ...toVaga(doc, locale),
+    ...base,
     summary: doc.summary,
+    seo: toSeo(doc.seo, { titulo: base.title, descricao: doc.summary }),
     body: doc.body ?? null,
   }
 }

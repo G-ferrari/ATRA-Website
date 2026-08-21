@@ -3,10 +3,11 @@ import { draftMode } from 'next/headers'
 import type { Locale } from './locales'
 import { comClientes, comContato, comDepoimentos, comVagas, toBlocos, toMetricas, toSelos } from './mappers/blocks'
 import { toDepoimento, toLogoDeCliente } from './mappers/client'
+import { toSeo } from './mappers/seo'
 import { lerContato } from './contato'
 import { toVaga } from './mappers/job'
 import { getPayload } from './payload'
-import type { Bloco } from '@/types/content'
+import type { Bloco, Seo } from '@/types/content'
 
 /* Resolve uma página montada por blocos, com tudo que os blocos consomem.
  *
@@ -18,7 +19,7 @@ export async function resolverPagina(
   slugPt: string,
   slugEn: string,
   locale: Locale,
-): Promise<{ title: string; blocos: Bloco[] } | null> {
+): Promise<{ title: string; seo: Seo; blocos: Bloco[] } | null> {
   const { isEnabled: rascunho } = await draftMode()
   const payload = await getPayload()
   const slug = locale === 'pt' ? slugPt : slugEn
@@ -88,5 +89,8 @@ export async function resolverPagina(
     comContato(blocos, await lerContato())
   }
 
-  return { title: docs[0].title, blocos }
+  /* O `seo` sai resolvido daqui para o `generateMetadata` da rota não repetir
+     os fallbacks — eles já estavam escritos em quatro lugares com três
+     resultados diferentes (MIG-105). */
+  return { title: docs[0].title, seo: toSeo(docs[0].seo, { titulo: docs[0].title }), blocos }
 }
