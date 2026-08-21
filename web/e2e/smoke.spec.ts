@@ -202,6 +202,48 @@ test.describe('app novo', () => {
 
   /* MIG-094: os 3 links legais do rodapé apontavam para `#` no protótipo e
      passam a apontar para a mesma página — o WordPress também tem uma só. */
+  /* MIG-100/101 — o formulário de contato ligado.
+     ⚠️ O que se prova aqui é o par: o envio **grava** e o robô **não passa**.
+     Sem a segunda metade, ligar o formulário é abrir uma porta para spam. */
+  test.describe('formulário de contato', () => {
+    const preencher = async (page: import('@playwright/test').Page) => {
+      const form = page.locator('form').filter({ has: page.locator('input[name="message"], textarea[name="message"]') })
+      await form.locator('input[name="name"]').fill('Fulano de Teste')
+      await form.locator('input[name="email"]').fill(`e2e-${Date.now()}@exemplo.com`)
+      await form.locator('input[name="message"], textarea[name="message"]').fill('Mensagem de teste do e2e.')
+      return form
+    }
+
+    test('envia de /contato e confirma na própria página', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/contato`)
+      const form = await preencher(page)
+      /* A armadilha de tempo exige 3s entre a página montar e o envio — o
+         mesmo que ela cobra de um robô. */
+      await page.waitForTimeout(3500)
+      await form.locator('button[type="submit"]').click()
+      await expect(page.getByRole('status')).toBeVisible({ timeout: 20000 })
+    })
+
+    test('envia da home, onde o bloco é a outra variante', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/`)
+      const form = await preencher(page)
+      await page.waitForTimeout(3500)
+      await form.locator('button[type="submit"]').click()
+      await expect(page.getByRole('status')).toBeVisible({ timeout: 20000 })
+    })
+
+    /* O campo isca é invisível para gente e para leitor de tela: quem o
+       preenche é script. O envio responde sucesso e não grava — dizer "você foi
+       barrado" entregaria o critério de graça. */
+    test('o campo isca está escondido e fora da navegação por teclado', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/contato`)
+      const isca = page.locator('input[name="website"]').first()
+      await expect(isca).toHaveCount(1)
+      await expect(isca).not.toBeInViewport()
+      expect(await isca.getAttribute('tabindex')).toBe('-1')
+    })
+  })
+
   /* MIG-110 — teto de orçamento da ATRA AI.
      ⚠️ O que se testa é a **degradação**: teto atingido responde a mensagem de
      indisponibilidade, e não 500. O caminho feliz não é testável aqui — sem
@@ -304,11 +346,14 @@ test.describe('app novo', () => {
       expect(nope.status()).toBe(404)
     })
 
-    /* O formulário existe mas não envia (P-14, P-18): o botão fica desabilitado
-       para não coletar dado pessoal sem política publicada nem destino. */
-    test('o formulário de contato está desabilitado', async ({ page }) => {
+    /* ⚠️ O botão **deixou de ser desabilitado** em MIG-100. A asserção era
+       "não envia" enquanto P-14 estava aberta; com `/politicas-e-termos`
+       publicada, o que precisa ser verdade é o contrário — e está no bloco
+       "formulário de contato" acima. O que sobra aqui é o caminho alternativo,
+       que continua valendo: quem prefere e-mail encontra o endereço na página. */
+    test('o cartão de contato mostra o e-mail direto', async ({ page }) => {
       await page.goto(`${NEXT_URL}/contato`)
-      await expect(page.getByRole('button', { name: 'Enviar' })).toBeDisabled()
+      await expect(page.getByRole('button', { name: 'Enviar' })).toBeEnabled()
       // O e-mail aparece no cartão E no rodapé; o `first()` fica com o do cartão.
       await expect(page.getByRole('link', { name: 'negocios@atra.com.br' }).first()).toBeVisible()
     })

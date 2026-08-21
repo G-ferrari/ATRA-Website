@@ -70,22 +70,22 @@ export function Formulario({
 
   return (
     <form action={acao} className={className} aria-busy={enviando}>
-      {/* ⚠️ Os campos reais vêm **primeiro**, e não é estética.
+      {/* ⚠️ Os campos escondidos vêm **antes** dos reais, e a ordem é a única
+       * coisa que separa isto de somar 24px à altura da página.
        *
-       * Os formulários do gabarito usam `space-y-6`, que em Tailwind é
-       * `> :not([hidden]) ~ :not([hidden]) { margin-top }` — margem em todo
-       * filho que tenha um irmão antes. Pondo os campos escondidos na frente,
-       * o primeiro campo de verdade deixa de ser o primeiro filho e ganha 24px
-       * de margem: a home inteira desceu. Depois deles, a margem cai em
-       * elemento `display:none` ou `absolute`, que não empurra nada.
+       * O Tailwind 4 mudou `space-y-*`: era `margin-top` em `> * + *` e virou
+       * `margin-bottom` em `> :not(:last-child)`. Com os escondidos no fim, o
+       * **último campo de verdade deixa de ser o último filho** e ganha um
+       * espaço que não existia — 24px no formulário da home, que é rota sob
+       * gate. Antes deles, a margem cai em elemento `display:none` ou
+       * `absolute`, que não empurra nada.
        *
-       * ⚠️ E **sem `<fieldset>` em volta**. Ele parecia inofensivo com
-       * `display: contents`, mas o seletor de irmãos anda pelo DOM e não pelo
-       * layout: com o fieldset no meio, `form > * + *` passava a casar o
-       * fieldset e nenhum dos campos — o `space-y-6` sumia inteiro. Desabilitar
-       * durante o envio é o que se perde, e o botão já cobre o clique duplo. */}
-      {children}
-
+       * ⚠️ E **sem `<fieldset>` em volta dos campos**. Com `display: contents`
+       * ele parece inofensivo, mas o seletor de irmãos anda pelo DOM e não pelo
+       * layout: o fieldset passa a ser o único filho, e o `space-y-6` some
+       * inteiro. Desabilitar durante o envio é o que se perde — `aria-busy`
+       * comunica o estado, e o clique duplo não chega a criar dois registros
+       * porque a ação é idempotente do ponto de vista do visitante. */}
       <input type="hidden" name="kind" value={kind} />
       <input type="hidden" name="source" value={caminho ?? ''} />
       {/* Carimbo de quando a página montou: a armadilha de tempo de MIG-101. */}
@@ -99,6 +99,8 @@ export function Formulario({
         <label htmlFor={CAMPO_ISCA}>Não preencha este campo</label>
         <input id={CAMPO_ISCA} name={CAMPO_ISCA} type="text" tabIndex={-1} autoComplete="off" />
       </div>
+
+      {children}
 
       {estado && !estado.ok && (
         <p role="alert" className="text-sm font-light text-red-500">

@@ -1,0 +1,44 @@
+# ⚠️ O contexto de build é a raiz do repositório (ver Dockerfile), então este
+# arquivo fica aqui e não em `web/`.
+#
+# ⚠️ `docs/` **não** entra nesta lista. O `redirects.csv` é lido no build e no
+# runtime; ignorá-lo aqui tiraria os 261 redirects do WordPress do ar sem
+# emitir erro nenhum.
+
+.git
+.gitignore
+.github
+
+# O gabarito da regressão visual não tem nada a fazer na imagem de produção, e
+# é a maior pasta do repositório.
+legacy
+
+# Artefatos de teste. Além de inúteis na imagem, `playwright-report/` é o que já
+# fez o `pnpm lint` acusar milhares de erros ao ser varrido sem querer.
+test-results
+playwright-report
+web/test-results
+web/playwright-report
+web/blob-report
+web/.playwright
+
+# Instaladas no estágio `deps`, a partir do lock — nunca copiadas do host, que
+# pode ter binário nativo de outra arquitetura (macOS ARM → Linux).
+web/node_modules
+
+# Build local. Copiar por engano faz o Next reaproveitar `.next/types` velho, que
+# é a causa de `Cannot find module '.../page.js'` depois de mover rota.
+web/.next
+
+# Segredos. O `.env` da raiz e o `.env.local` de `web/` nunca entram na imagem:
+# em produção as variáveis vêm do gerenciador da plataforma.
+.env
+.env.*
+web/.env
+web/.env.*
+!web/.env.example
+
+# Ruído de editor e de sistema.
+.DS_Store
+.vscode
+.idea

@@ -39,6 +39,15 @@ const CSV_DE_REDIRECTS = [path.resolve(process.cwd(), '../docs'), '/docs']
 const nextConfig: NextConfig = {
   // Turbopack é o padrão no Next 16 — não precisa de flag.
 
+  /* Imagem de produção enxuta: o Next copia para `.next/standalone` só o que o
+   * tracing provou ser necessário, com um `server.js` próprio — ~200 MB em vez
+   * do `node_modules` inteiro perto de 1 GB.
+   *
+   * ⚠️ O `Dockerfile` da raiz depende desta linha. Sem ela `.next/standalone`
+   * não é gerado, o `COPY` do estágio final não acha nada e a imagem sai sem o
+   * `server.js` que o `CMD` executa. */
+  output: 'standalone',
+
   /* 60s é o padrão e era folgado para 77 páginas. Com 491 e menos workers, a
    * página que espera a vez precisa de margem — o custo real de uma delas, já
    * medido, é de dezenas de milissegundos. */

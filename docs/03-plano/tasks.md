@@ -379,8 +379,8 @@ muito tempo as três apontaram para `#`.
 
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
-| MIG-100 | `form-submissions` + Server Action de contato | 053 | Envio grava no banco e dispara e-mail | 4h |
-| MIG-101 | Anti-spam (honeypot, time trap, rate limit) | 100 | Bot simulado é barrado; humano passa | 2h |
+| MIG-100 | `form-submissions` + Server Action de contato | 053 | Envio grava no banco e dispara e-mail | 4h | **done** — home e `/contato`; sem chave de e-mail o lead grava e `notified` fica falso |
+| MIG-101 | Anti-spam (honeypot, time trap, rate limit) | 100 | Bot simulado é barrado; humano passa | 2h | **done** — três barreiras, nenhuma delas CAPTCHA |
 | MIG-102 | Formulário de candidatura + upload de CV | 100, 051 | PDF em storage privado, URL assinada | 3h |
 | MIG-103 | Newsletter com double opt-in | 100 | Confirmação por e-mail antes de ativar | 3h |
 | MIG-104 | Download gated de material | 100, 045 | Formulário libera arquivo por URL assinada | 2.5h |
@@ -458,6 +458,33 @@ muito tempo as três apontaram para `#`.
 > conta **no banco**, não em memória como o de IP: contador que zera a cada
 > deploy não protege orçamento, bastaria reiniciar. O valor de partida é
 > provisório até P-04.
+
+> **MIG-100 — a ordem é a garantia, não o e-mail.** A Server Action faz
+> anti-spam → **grava** → avisa. Gravar antes de avisar é o que impede um
+> problema no provedor de e-mail de perder o lead, e é o inverso do que parece
+> natural. Sem `RESEND_API_KEY` o envio devolve `false`, o lead está no banco e
+> `notified` fica falso — a falta aparece no admin em vez de virar silêncio.
+>
+> ⚠️ **Ligar o formulário somou 24px à altura da home**, e a causa não era o
+> formulário: o Tailwind 4 trocou `space-y-*` de `margin-top` em `> * + *` para
+> `margin-bottom` em `> :not(:last-child)`. Com os campos escondidos no fim, o
+> último campo de verdade deixa de ser o último filho e ganha um espaço que não
+> existia. Eles vêm antes. E a primeira tentativa envolvia os campos num
+> `<fieldset disabled>` para o envio: com `display: contents` ele parece
+> inofensivo, mas o seletor de irmãos anda pelo DOM e não pelo layout — o
+> fieldset vira o único filho e o `space-y-6` some inteiro.
+>
+> **MIG-101 não usa CAPTCHA**, de propósito: ele cobra do visitante honesto o
+> preço de um problema que não é dele, e este formulário recebe dezenas de
+> envios por mês. As três barreiras — campo isca, armadilha de tempo e limite
+> por IP — custam zero para quem preenche à mão. Robô barrado recebe **sucesso**:
+> dizer "você foi barrado" entrega o critério de graça.
+>
+> ⚠️ O carimbo de tempo é gravado no DOM por `ref` **depois da montagem**.
+> `Date.now()` no render é função impura e o lint recusa; `setState` em efeito
+> dispara render em cascata e o lint também recusa. Sem JavaScript o carimbo
+> fica em `0`, que `conferir` trata como ausente e deixa passar — recusar envio
+> honesto é pior do que aceitar um automático.
 
 ## Fase 6 — Endurecimento
 

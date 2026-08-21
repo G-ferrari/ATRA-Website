@@ -5,20 +5,19 @@ import { cn } from '@/lib/utils'
 import type { BlocoCtaContact } from '@/types/content'
 
 import { ContatoComFoto } from './contato-com-foto'
+import { Formulario } from '@/components/forms/formulario'
 
 /* Contato com formulário — porte de `legacy/src/App.tsx:2288`.
  *
- * ⚠️ O formulário está **desabilitado**, de propósito, como a landing de
- * material. Ligar o envio é MIG-100, e depende de duas pendências: publicar a
- * política de privacidade (P-14) antes de coletar dado pessoal, e decidir o
- * destino dos leads (P-18). No legado o form também não envia — `onSubmit` só
- * faz `preventDefault`. Até lá, o cartão de contato ao lado dá os caminhos que
- * funcionam: WhatsApp, e-mail e as redes. */
+ * ⚠️ O formulário **envia** desde MIG-100. P-14 saiu do caminho quando
+ * `/politicas-e-termos` foi publicada (MIG-094) — é o que a LGPD exige antes de
+ * coletar dado pessoal. P-18 continua aberta: se a ATRA usa CRM, o destino
+ * final do lead é lá, e o que grava aqui vira registro de passagem. */
 
 const CAMPOS = [
-  { name: 'nome', tipo: 'text', ph: 'Nome completo' },
+  { name: 'name', tipo: 'text', ph: 'Nome completo' },
   { name: 'email', tipo: 'email', ph: 'E-mail' },
-  { name: 'telefone', tipo: 'tel', ph: 'Telefone' },
+  { name: 'phone', tipo: 'tel', ph: 'Telefone' },
 ] as const
 
 export function BlocoContato({ bloco }: { bloco: BlocoCtaContact }) {
@@ -57,37 +56,40 @@ export function BlocoContato({ bloco }: { bloco: BlocoCtaContact }) {
               </h3>
             )}
 
-            {/* Estático: sem `onSubmit`, sem estado. Ver a nota no topo. */}
-            <form className="flex flex-col space-y-6">
+            {/* ⚠️ Esta variante **não** está sob gate visual: D-10 fez `/contato`
+                nascer no site novo, sem gabarito. Por isso ela pode largar o
+                `disabled:opacity-60` e o `bg-primary/60`, que existiam para
+                desenhar "desligado" — na home, onde a outra variante é usada,
+                mexer na cor teria custado pixel. */}
+            <Formulario
+              kind="contact"
+              className="flex flex-col space-y-6"
+              sucesso="Recebemos sua mensagem. A gente responde em breve."
+            >
               {CAMPOS.map((c) => (
                 <input
                   key={c.name}
                   type={c.tipo}
                   name={c.name}
                   placeholder={c.ph}
-                  disabled
-                  className="w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main placeholder:text-text-muted font-light disabled:opacity-60"
+                  required={c.name !== 'phone'}
+                  className="w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main placeholder:text-text-muted font-light"
                 />
               ))}
               <textarea
-                name="mensagem"
+                name="message"
                 placeholder="Sua mensagem"
                 rows={3}
-                disabled
-                className="w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main placeholder:text-text-muted font-light resize-none disabled:opacity-60"
+                required
+                className="w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main placeholder:text-text-muted font-light resize-none"
               />
               <button
-                type="button"
-                disabled
-                title="Em breve. Por ora, fale com a gente pelo WhatsApp ou e-mail ao lado."
-                className="bg-primary/60 text-white py-3 px-6 rounded-[6px] text-sm font-medium flex items-center gap-2 cursor-not-allowed w-fit"
+                type="submit"
+                className="bg-primary text-white py-3 px-6 rounded-[6px] text-sm font-medium flex items-center gap-2 w-fit"
               >
                 Enviar
               </button>
-              <p className="text-xs text-text-muted">
-                O envio pelo site chega em breve. Enquanto isso, use o WhatsApp ou o e-mail ao lado.
-              </p>
-            </form>
+            </Formulario>
           </div>
 
           {bloco.showContactCard && contato && (
