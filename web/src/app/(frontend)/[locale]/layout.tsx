@@ -140,10 +140,29 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
         {/* Não desenha nada: guarda a campanha da URL de chegada para o
             formulário mandar junto no envio (D-26). */}
         <CapturaDeUtm />
+
+        {/* ⚠️ As três chaves não são decoração, e sem elas o overlay de
+            desenvolvimento fica **permanentemente vermelho** em toda rota:
+            "Each child in a list should have a unique key prop. Check the
+            render method of `Casca`".
+
+            Não há lista nenhuma. `Casca` é componente de cliente e recebe os
+            três como **prop**, não como filho; quem os cria é este Server
+            Component. Elemento que atravessa a fronteira do RSC chega ao
+            cliente com o `_store.validated` travado em 0, então a marcação que
+            o `jsxs` faz ("estes filhos são estáticos, não cobre chave") não
+            gruda, e o reconciliador acusa como se fosse lista dinâmica. React
+            avisa uma vez por componente pai — por isso só um dos três aparecia
+            de cada vez, e keyar só ele mudava o aviso de alvo em vez de calar.
+
+            É aviso de desenvolvimento: a build de produção não emite, e o
+            aceite visual sempre passou. O custo era outro — overlay sempre
+            vermelho treina quem revisa a ignorar erro de verdade. Chave
+            constante em posição fixa não muda reconciliação nenhuma. */}
         <Casca
-          cabecalho={<SiteHeader locale={locale} navegacao={navegacao} logo={logo} />}
-          rodape={<SiteFooter locale={locale} rodape={rodape} contato={contato} logo={logo} />}
-          alternadorDeTema={<ThemeToggle locale={locale} />}
+          cabecalho={<SiteHeader key="cabecalho" locale={locale} navegacao={navegacao} logo={logo} />}
+          rodape={<SiteFooter key="rodape" locale={locale} rodape={rodape} contato={contato} logo={logo} />}
+          alternadorDeTema={<ThemeToggle key="tema" locale={locale} />}
         >
           {children}
         </Casca>
