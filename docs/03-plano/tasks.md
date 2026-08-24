@@ -391,6 +391,7 @@ muito tempo as três apontaram para `#`.
 | MIG-108 | `redirects.csv` no `next.config.ts` + teste de CI | 086 | Toda linha: 301 → destino 200 | 3h | **done** — e o teste achou 2 defeitos que derrubariam o site |
 | MIG-109 | GA4/GTM + consentimento de cookies | 105 | Nenhum script não essencial antes do aceite | 3h |
 | MIG-110 | Budget guard da ATRA AI | 061 | Teto atingido degrada com mensagem, não com 500 | 2h | **done** — teto diário **no banco**; e o global da IA não era localizado |
+| MIG-111 | Ícone do site (favicon) | 105 | Aba, atalho de iOS e `/favicon.ico` com a marca da ATRA | 0.5h | **done** — tirado de `atra.com.br`; o protótipo não tem nenhum |
 
 > **O que MIG-105 encontrou: o grupo `seo` nunca tinha sido lido.**
 > `fields/seo.ts` põe "Título para buscadores", "Descrição" e "Imagem de

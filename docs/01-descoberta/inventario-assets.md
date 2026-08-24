@@ -167,6 +167,23 @@ cópias baixadas existem só para a revisão interna, atrás de `SEED_FIXTURES=1
 (D-27) — o endereço devolve foto sem autoria registrada, e não há original a que
 voltar.
 
+## 4b. Ícone do site — o protótipo não tem
+
+`legacy/index.html` não declara `icon` nenhum: o protótipo roda com o ícone
+padrão do browser. Quem tem é o WordPress, e é de lá que veio (MIG-111) —
+`cropped-atra_horizontal_cor-scaled-1`, a marca "A" em 512×512 com fundo
+transparente, da qual o WP deriva 32, 180, 192 e 270.
+
+Portado para `web/src/app/` pela convenção de arquivo do Next: `icon.png` (32),
+`icon1.png` (192), `apple-icon.png` (180) e um `favicon.ico` **de verdade**,
+com 16/32/48 embutidos, gerado do master de 512.
+
+⚠️ Duas notas sobre o original. O `/favicon.ico` que o WordPress serve é um
+**PNG** com nome `.ico` — byte a byte o mesmo 32×32 — e o `270×270` só existe
+para o `msapplication-TileImage`, tile do Windows 8; nenhum dos dois foi
+portado como está. É o único asset do site sem gabarito no protótipo, e ícone
+não aparece em captura de página: o aceite visual não cobre nem poderia.
+
 ## 5. SVGs de marca — 10 arquivos íntegros
 
 `logo_atra.svg`, `logo_aws.svg`, `logo_atlan.svg`, `logo_azure.svg`,

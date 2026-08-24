@@ -93,5 +93,10 @@ export const config = {
    *  - _next, arquivos estáticos e assets com extensão */
   /* ⚠️ `/category/uncategorized/` precisa passar por aqui para receber 410, e
    * ela não tem ponto nem cai em nenhuma exclusão — está coberta. */
+  /* ⚠️ Os ícones do site passam porque **têm ponto** — `/icon.png`,
+   * `/apple-icon.png`, `/favicon.ico`. Trocar algum por versão gerada em código
+   * (`icon.tsx`) muda a URL para `/icon`, sem extensão: aí ele cai no
+   * roteamento de idioma e vira 404. Se for por esse caminho, excluir o nome
+   * aqui. */
   matcher: ['/((?!api|admin|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 }
