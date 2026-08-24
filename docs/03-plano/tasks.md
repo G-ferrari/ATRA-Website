@@ -521,15 +521,20 @@ muito tempo as três apontaram para `#`.
 | Fase | Tasks | Horas |
 |---|---|---|
 | 1 Fundação | 14 | ~23h |
-| 2 Fatia vertical | 14 | ~32h |
-| 3 Fábrica de rotas | 23 | ~78h |
+| 2 Fatia vertical | 18 | ~51,5h |
+| 3 Fábrica de rotas | 26 | ~94h |
 | 4a Seed | 3 | ~7,5h |
-| 4b Migração WP | 7 | ~20h |
-| 4c Conteúdo novo | 5 | ~19h |
-| 5 Formulários/SEO | 11 | ~30h |
-| 6 Endurecimento | 9 | ~25h |
+| 4b Migração WP | 6 | ~15h |
+| 4c Conteúdo novo | 6 | ~21h |
+| 5 Formulários/SEO | 12 | ~30,5h |
+| 6 Endurecimento | 9 | ~24,5h |
 | 7–8 Cutover/limpeza | 7 | ~10h |
-| **Total** | **93** | **~244h** |
+| **Total** | **101** | **~277h** |
+
+⚠️ **A tabela conta as tasks ativas.** Duas foram canceladas por falta de fonte
+de dado, não por corte de escopo — MIG-008 (a fonte já carregava, D-16) e
+MIG-084 (o WordPress não tem taxonomia para mapear, P-27). São 103 linhas de
+backlog no total.
 
 ⚠️ Estas horas cobrem **engenharia**. Não cobrem: curadoria editorial de
 `segments` e `solutions` (Fase 4c), redação dos 9 materiais sem corpo (P-07),
