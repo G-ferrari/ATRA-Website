@@ -15,6 +15,7 @@ import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
 import { casarIds } from './ids'
+import { imagemDoPrototipo } from './imagens-do-prototipo'
 
 const SLUG = 'inteligencia-artificial'
 const CAPA = path.resolve(process.cwd(), 'scripts/seed/assets/capa-pendente.png')
@@ -42,6 +43,14 @@ async function marcador() {
 }
 
 const imagem = await marcador()
+
+/* Com `SEED_FIXTURES=1` cada uma volta a ser a foto que o gabarito desenha —
+ * são **duas** imagens diferentes no legado, e o marcador as igualava. Sem o
+ * sinal, marcador nas duas. Ver `imagens-do-prototipo.ts`. */
+const imagemDoHeroi =
+  (await imagemDoPrototipo(payload, 'solucao-ia.hero', 'Ilustração de Inteligência Artificial')) ?? imagem.id
+const imagemDoMetodo =
+  (await imagemDoPrototipo(payload, 'solucao-ia.como-fazemos', 'Como a ATRA constrói soluções de IA')) ?? imagem.id
 
 const PT = {
   heroTitle: 'Soluções em Inteligência Artificial & IA Generativa',
@@ -347,7 +356,7 @@ function layout(t: typeof PT) {
       ],
       ctas: [{ label: t.hire, href: '#contato' }],
       mediaMode: 'image' as const,
-      images: [imagem.id],
+      images: [imagemDoHeroi],
     },
     { blockType: 'stickyPageNav' as const, variant: 'solution' as const },
     {
@@ -418,7 +427,7 @@ function layout(t: typeof PT) {
       eyebrowIcon: 'settings' as const,
       title: t.s4.title,
       description: t.s4.desc,
-      image: imagem.id,
+      image: imagemDoMetodo,
       imageBadge: { icon: 'workflow' as const, title: t.s4.selo.title, subtitle: t.s4.selo.subtitle },
       steps: t.s4.steps.map((e) => ({ title: e.title, description: e.desc })),
     },

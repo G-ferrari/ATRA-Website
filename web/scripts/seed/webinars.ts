@@ -9,7 +9,9 @@
  * ⚠️ `videoUrl` fica vazio: nenhum dos três tem vídeo no protótipo. A página de
  * detalhe (MIG-046) precisa lidar com isso.
  *
- * ⚠️ Capa é o marcador gerado — no legado são hotlinks do Unsplash.
+ * ⚠️ Capa é o marcador gerado — no legado são hotlinks do Unsplash. Com
+ * `SEED_FIXTURES=1` a do protótipo entra no lugar, para a revisão interna —
+ * ver `imagens-do-prototipo.ts`.
  */
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -17,6 +19,7 @@ import path from 'node:path'
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { type ChaveDoPrototipo, imagemDoPrototipo } from './imagens-do-prototipo'
 
 type Webinar = {
   title: string
@@ -24,11 +27,14 @@ type Webinar = {
   dateLabel: string
   tags: string[]
   order: number
+  /** A capa que o protótipo desenha, usada só com `SEED_FIXTURES=1`. */
+  prototipo: ChaveDoPrototipo
 }
 
 const WEBINARS: Webinar[] = [
   {
     title: 'Tendências Tecnológicas do Novo Mundo com Marcelo Madureira',
+    prototipo: 'webinar.tendencias-madureira',
     description:
       'Uma conversa fascinante sobre como a computação quântica e a IA estão redefinindo limites.',
     dateLabel: 'Amanhã, 15:00',
@@ -37,6 +43,7 @@ const WEBINARS: Webinar[] = [
   },
   {
     title: 'Os impactos da Inteligência Artificial na Sociedade com Thiago Rolemberg',
+    prototipo: 'webinar.ia-sociedade',
     description:
       'Ética, trabalho e o novo contrato social na era da IA.',
     dateLabel: '10 de maio de 2026',
@@ -45,6 +52,7 @@ const WEBINARS: Webinar[] = [
   },
   {
     title: 'Data Show: Como escalar seu Data Lakehouse',
+    prototipo: 'webinar.data-show-lakehouse',
     description:
       'Dicas práticas de arquitetura para grandes volumes de dados.',
     dateLabel: '20 de maio de 2026',
@@ -99,7 +107,7 @@ for (const w of WEBINARS) {
     slug,
     description: w.description,
     dateLabel: w.dateLabel,
-    coverImage: capa.id,
+    coverImage: (await imagemDoPrototipo(payload, w.prototipo, w.title)) ?? capa.id,
     tags: w.tags.map((name) => ({ name })),
     order: w.order,
     _status: 'published' as const,

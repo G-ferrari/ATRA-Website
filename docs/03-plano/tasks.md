@@ -280,6 +280,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-092 | Migrar as 10 páginas de segmento do WP | 091 | 10 publicadas com conteúdo real | 5h | **done** — são **8** verticais + 2 índices; 38 cards nos 2 idiomas |
 | MIG-093 | Expandir `solutions` de 6 para 13 | 056 | 13 publicadas; mega-menu comporta | 5h | **done** — P-16 respondida em 21/08: publicar. **18 no ar** (as 6 do protótipo + as 12 do WP), 13 com página própria |
 | MIG-094 | `/politicas-e-termos` + links do rodapé | 049 | Os 3 links legais deixam de apontar para `#` | 2h | **done** — os 3 apontam para a mesma página, como no WordPress. Destrava a Fase 5 (P-14) |
+| MIG-095 | Imagens do protótipo atrás de `SEED_FIXTURES` (D-27) | 070 | Com a chave, os 35 pontos do gabarito; sem ela, marcador. Gate inalterado | 2h | **done** — 33 arquivos, lidos de `legacy/public/imagens/`; origem no campo `credit`. Inclui os 4 retratos de depoimento, que **não** revogam D-14 |
 
 > **MIG-093 — como a task foi escrita, e o que P-16 respondeu.**
 >

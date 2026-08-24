@@ -32,7 +32,9 @@ explicando.
 - [ ] Microcopy de interface fica no código ou no arquivo de tradução, nunca no CMS
 - [ ] Se faltou campo no modelo, a PR **volta ao spec e adiciona o campo**; não
       contorna no componente
-- [ ] Nenhuma URL de imagem externa (`unsplash`, `picsum`, `wp-content`)
+- [ ] Nenhuma URL de imagem externa (`unsplash`, `picsum`, `wp-content`) —
+      no `src`. O campo `credit` da mídia **guarda** a URL de origem de
+      propósito: é proveniência, não requisição (D-27)
 - [ ] Toda imagem tem `alt` vindo do Media
 
 ## Código

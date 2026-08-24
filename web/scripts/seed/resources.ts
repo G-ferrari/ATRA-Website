@@ -23,7 +23,8 @@
  *
  * ⚠️ A capa é um marcador gerado, não a imagem real — no legado são hotlinks do
  * Unsplash, imagem de banco que não é da ATRA. As capas de verdade entram com
- * o conteúdo.
+ * o conteúdo. Com `SEED_FIXTURES=1` a do protótipo entra no lugar, para a
+ * revisão interna — ver `imagens-do-prototipo.ts`.
  */
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -31,6 +32,7 @@ import path from 'node:path'
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { type ChaveDoPrototipo, imagemDoPrototipo } from './imagens-do-prototipo'
 
 type Material = {
   kind: 'report' | 'ebook'
@@ -39,12 +41,16 @@ type Material = {
   tags: string[]
   pages?: number
   publishedAt: string
+  /* A capa que o protótipo desenha, usada só com `SEED_FIXTURES=1`. Ausente
+   * quando o hotlink do legado responde 404 — aí não há imagem a trazer. */
+  prototipo?: ChaveDoPrototipo
 }
 
 const MATERIAIS: Material[] = [
   {
     kind: 'report',
     title: 'Relatório Anual de Dados 2025: Tendências e Projeções',
+    prototipo: 'relatorio.anual-2025',
     description:
       'Um mergulho profundo nas tecnologias que moldarão as empresas brasileiras nos próximos 12 meses.',
     tags: ['Market', 'Trends', '2026'],
@@ -53,6 +59,7 @@ const MATERIAIS: Material[] = [
   {
     kind: 'report',
     title: 'O Impacto da IA Generativa na Produtividade Corporativa',
+    prototipo: 'relatorio.ia-produtividade',
     description:
       'Pesquisa exclusiva com 200 CEOs sobre como a IA está mudando a forma como trabalhamos.',
     tags: ['IA', 'Business', 'ROI'],
@@ -69,6 +76,7 @@ const MATERIAIS: Material[] = [
   {
     kind: 'ebook',
     title: 'O Guia Definitivo do Data Lakehouse para Executivos',
+    prototipo: 'ebook.lakehouse-executivos',
     description:
       'Saiba como unificar seus dados e IA em uma única arquitetura resiliente e de baixo custo.',
     tags: ['Data', 'Architecture', 'Strategy'],
@@ -78,6 +86,7 @@ const MATERIAIS: Material[] = [
   {
     kind: 'ebook',
     title: 'Governança de Dados na Era da IA Generativa',
+    prototipo: 'ebook.governanca-ia',
     description:
       'Políticas essenciais para garantir segurança e qualidade nos seus modelos de linguagem.',
     tags: ['Governance', 'Security', 'IA'],
@@ -87,6 +96,7 @@ const MATERIAIS: Material[] = [
   {
     kind: 'ebook',
     title: 'Modernizando sua Infraestrutura para Cloud Native',
+    prototipo: 'ebook.cloud-native',
     description:
       'Passo a passo para uma migração segura e eficiente para a nuvem.',
     tags: ['Cloud', 'Migration', 'DevOps'],
@@ -142,7 +152,7 @@ for (const m of MATERIAIS) {
     title: m.title,
     slug,
     description: m.description,
-    coverImage: capa.id,
+    coverImage: (m.prototipo && (await imagemDoPrototipo(payload, m.prototipo, m.title))) || capa.id,
     tags: m.tags.map((name) => ({ name })),
     pages: m.pages,
     publishedAt: new Date(m.publishedAt).toISOString(),

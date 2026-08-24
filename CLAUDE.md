@@ -219,6 +219,7 @@ da página. São 13 rotas sob o gate.
 | `unique` recusa e o erro aponta para um bloco que está preenchido | Atualizar documento **publicado** revalida os obrigatórios **do idioma gravado**. Mandar só nome e slug para `en` faz o Payload recusar por "Título inválido" nos blocos, que estão vazios naquele idioma. Reenviar o layout com `casarIds` |
 | Rota `/en/<coleção>/<slug>` dá 404 com `fallback: true` ligado | O fallback resolve a **leitura**, não a **consulta**: `where: { slug: { equals } }` bate na coluna do locale, que está nula. Gravar o slug nos dois idiomas |
 | Post importado é criado e apagado na mesma corrida | O hook de `slugField` normaliza o slug, e um post do WP tem `%c2%b2` no dele. Comparar por slug para achar o que remover perde exatamente esse; comparar pelos **ids que a importação tocou** |
+| Seed sobe as mesmas imagens de novo a cada corrida | A collection `Media` converte todo upload para **WebP** (`formatOptions`), então o `.jpg` que subiu vira `.webp` no `filename` e um `where: { filename: { equals: nome } }` nunca casa. Deduplicar pelo nome **sem extensão**, com `contains` |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
 ## Estado
@@ -248,5 +249,14 @@ rascunho, e publicar é uma decisão de posicionamento.
 por `scripts/wp-import/`; o seed só cria fixtures de teste, e agora **exige
 `SEED_FIXTURES=1`** — que só o CI liga. Sem isso, doze itens inventados iriam ao
 ar assinados pela ATRA no cutover.
+
+A mesma chave guarda as **imagens do protótipo** (D-27). O legado ilustra 35
+pontos com foto do Unsplash e do `picsum.photos`; o site novo põe marcador em
+todos — `capa-pendente` nas capas, monograma nos 4 retratos de depoimento. Com
+`SEED_FIXTURES=1` a foto do gabarito entra no lugar — é o que torna a revisão
+interna legível sem pôr foto de banco no ar. Os arquivos ficam em
+`legacy/public/imagens/`, com `PROVENIENCIA.md` ao lado; o mapa ponto→arquivo é
+`scripts/seed/imagens-do-prototipo.ts`, e a URL de origem vai para o campo
+`credit` da mídia.
 
 Roadmap em `docs/03-plano/`; backlog em `tasks.md`, uma task por PR.

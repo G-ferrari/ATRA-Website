@@ -155,6 +155,13 @@ marca.
 Funciona com o acervo atual: os depoimentos dos cases já têm nome real e nenhuma
 foto. As 4 URLs do Unsplash são descartadas no seed.
 
+> **Atualização (24/08/2026).** As 4 fotos passaram a existir no seed **atrás de
+> `SEED_FIXTURES=1`**, para a revisão interna comparar a home com o gabarito
+> ([D-27](#d-27--imagem-de-banco-do-protótipo-entra-como-fixture-nunca-como-conteúdo)).
+> Isto **não** revoga D-14: sem a chave o seed **apaga** o campo `photo`, e o
+> site mostra o monograma. Publicá-las continua sendo uma reversão desta
+> decisão, e depende de foto real e autorizada — não de tirar a chave.
+
 ## D-15 — Porte fiel vale também para a decoração
 
 **Contexto.** `Tech*` e `Decorations` somam ~460 linhas de enfeite em 6 rotas.
@@ -425,6 +432,59 @@ Marketing. Os formulários do site passam a alimentá-lo.
   Continua em aberto, junto de [P-14](pendencias.md).
 
 ---
+
+## D-27 — Imagem de banco do protótipo entra como fixture, nunca como conteúdo
+
+**Contexto.** O protótipo ilustra 35 pontos com foto que não é da ATRA: 30
+hotlinks do Unsplash e 5 do `picsum.photos`. O site novo põe marcador em todos —
+`capa-pendente` nas capas, monograma nos 4 retratos de depoimento (D-14) —, e
+isso deixa a revisão interna com uma página cheia de marcador exatamente onde o
+gabarito tem foto: atrapalha quem compara, e o `capa-pendente` também não é o
+que a ATRA quer ver num link enviado para aprovação.
+
+Trazer as fotos é tecnicamente trivial: `legacy/scripts/baixar-imagens.mjs` já
+as baixou para `legacy/public/imagens/`, com manifesto de proveniência.
+
+**Escolha.** As imagens do protótipo entram no seed **só com `SEED_FIXTURES=1`**
+(`scripts/seed/imagens-do-prototipo.ts`). Sem o sinal, o marcador continua. A
+origem de cada arquivo vai junto para o campo `credit` da mídia.
+
+Por quê a chave e não a decisão direta:
+
+1. **Licença.** A licença do Unsplash permite uso comercial, mas não garante
+   autorização de imagem das pessoas retratadas e proíbe uso que sugira endosso.
+   As fotos do protótipo aparecem como equipe e como leitor de material da ATRA —
+   é o mesmo risco que [D-14](#d-14--avatar-de-depoimento-opcional-com-monograma)
+   já usou para descartar os 4 retratos de depoimento.
+2. **`picsum.photos` não tem proveniência.** É gerador de placeholder; o arquivo
+   guardado é o que o endereço devolveu num dia, sem autoria a registrar.
+3. **Escolher capa é conteúdo** ([D-22](#d-22--o-seed-espelha-o-vocabulário-do-legado-consolidar-é-decisão-de-conteúdo)),
+   e as 31 capas ilustram conteúdo fictício — artigos e materiais que não
+   existem. O conteúdo real já veio do WordPress com as capas reais (Fase 4b).
+
+⚠️ **Os 4 retratos de depoimento são de outra natureza que as 31 capas**, e a
+chave protege coisas diferentes nos dois casos. Capa de artigo fictício é
+decoração de algo que não existe. Retrato de depoimento aparece legendado com
+**cargo e empresa reais** — "Superintendente de Risco, Banco Carrefour" —, então
+a foto de um desconhecido se apresenta como pessoa identificável daquele banco.
+D-14 continua valendo: publicá-los é reverter D-14, não estender D-27.
+
+**Consequência.** A revisão interna e o CI passam a ver o protótipo inteiro; o
+banco de produção não recebe nenhuma foto de banco de imagens, pela mesma chave
+que já guarda os 6 posts e as 6 vagas fictícias. Se o marketing decidir adotar
+alguma dessas fotos, é trocar `SEED_FIXTURES` por um upload no CMS — decisão
+deles, com a licença conferida na hora.
+
+⚠️ **Dois pontos a mais seguem no marcador, mesmo com a chave ligada**: a URL do
+relatório "Benchmarks de Cloud Computing" e a do artigo "Data Center no Varejo"
+respondem 404 na origem. O próprio protótipo desenha imagem quebrada ali; não há
+imagem a trazer.
+
+**O aceite visual não muda.** Rodado inteiro depois da troca: 240 testes, zero
+divergência. Era o risco real da mudança — a máscara cobre a **caixa** da
+imagem, e capa-pendente é 4:3 enquanto as do Unsplash são 3:2, então qualquer
+caixa dimensionada pelo intrínseco da imagem teria mexido no layout. Nenhuma é:
+todas usam `aspect-*`, `min-h-*` ou `fill`.
 
 ---
 

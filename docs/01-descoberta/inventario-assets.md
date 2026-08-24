@@ -150,10 +150,22 @@ Distribuição por arquivo: `App.tsx` 9 · `Blog.tsx` 7 · `Insights.tsx` 7 ·
 Depender de `images.unsplash.com` em produção é risco de disponibilidade,
 de licença e de LCP. Toda capa vira upload no Payload.
 
+✅ **Resolvido em duas etapas.** `legacy/scripts/baixar-imagens.mjs` tirou o
+protótipo do hotlink — as 53 imagens estão em `legacy/public/imagens/`, com
+`PROVENIENCIA.md` ao lado. E o site novo nunca as recebeu como conteúdo: cada
+ponto mostra o marcador `capa-pendente`, e a foto do protótipo só entra com
+`SEED_FIXTURES=1`, para revisão interna (D-27,
+`web/scripts/seed/imagens-do-prototipo.ts`).
+
 ## 4. `picsum.photos` — 5 referências, remover
 
 `App.tsx:2201`, `:2210`, `:2224`, `:2233`, `:2243` — placeholders explícitos na
 `BlogSection` da home, com títulos genéricos. Não sobrevivem ao porte.
+
+✅ **Fora do conteúdo, como previsto.** Os 5 cartões saem com `capa-pendente`. As
+cópias baixadas existem só para a revisão interna, atrás de `SEED_FIXTURES=1`
+(D-27) — o endereço devolve foto sem autoria registrada, e não há original a que
+voltar.
 
 ## 5. SVGs de marca — 10 arquivos íntegros
 

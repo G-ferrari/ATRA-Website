@@ -117,6 +117,11 @@ gêmeos íntegros · upload para o Media.
   Unsplash e do `picsum.photos`. Não é defeito de porte: o legado não liga
   aqueles cartões a conteúdo nenhum, e capa real é conteúdo (P-07, D-22). Fica
   para a 4c, com o resto do material editorial
+  > **Fechado em 24/08/2026, mas não como a 4c previa.** Não virou capa real:
+  > virou uma chave. MIG-095 pôs as 31 imagens do protótipo atrás de
+  > `SEED_FIXTURES=1` (D-27) — a revisão interna vê a página como o gabarito a
+  > desenha, e o banco de produção segue só com o marcador. Capa real continua
+  > sendo decisão do marketing, agora sem custar a legibilidade da revisão.
 
 > ✅ **Fase 4a concluída.** As três tasks fecharam. O que ela mudou de fato: o
 > conteúdo do protótipo deixou de morar no repositório. Clientes e depoimentos

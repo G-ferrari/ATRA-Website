@@ -21,6 +21,7 @@ import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
 import { casarIds } from './ids'
+import { imagemDoPrototipo } from './imagens-do-prototipo'
 
 const payload = await getPayload({ config })
 const LEGADO = path.resolve(process.cwd(), '../legacy')
@@ -47,6 +48,12 @@ async function upsertDe(base: string, arquivo: string, alt: string) {
 
 const upsertMidia = (arquivo: string, alt: string) => upsertDe(LEGADO, arquivo, alt)
 const marcador = await upsertDe(process.cwd(), 'scripts/seed/assets/capa-pendente.png', 'CAPA PENDENTE')
+
+/* Com `SEED_FIXTURES=1` as 7 capas viram a foto que o gabarito desenha, para a
+ * revisão interna ver o hub inteiro. Sem o sinal, marcador. Ver
+ * `imagens-do-prototipo.ts`. */
+const doPrototipo = (chave: Parameters<typeof imagemDoPrototipo>[1], alt: string) =>
+  imagemDoPrototipo(payload, chave, alt)
 
 /* Os cinco formatos, com a contagem que o gabarito escreve à mão — ela **não**
  * confere com o número de itens do hub (`Insights.tsx:56`). */
@@ -88,7 +95,7 @@ const ITENS = [
     author: "ATRA Research Labs",
     href: "/relatorios",
     featured: true,
-    image: marcador,
+    image: (await doPrototipo('insights.panorama-dados-ia', 'Panorama de Dados & IA Generativa nas Empresas 2026')) ?? marcador,
     tags: [{ text: "IA Generativa" }, { text: "Analytics & BI" }, { text: "Pesquisa" }],
   },
   {
@@ -101,7 +108,7 @@ const ITENS = [
     author: "Engenharia ATRA",
     href: "/blog",
     featured: true,
-    image: marcador,
+    image: (await doPrototipo('insights.squad-gerenciada', 'Squad Gerenciada: como estruturar equipes de TI mais eficientes')) ?? marcador,
     tags: [{ text: "Squads" }, { text: "Gestão de TI" }, { text: "FinOps" }],
   },
   {
@@ -127,7 +134,7 @@ const ITENS = [
     author: "Especialistas de Governança ATRA",
     href: "/ebooks",
     featured: false,
-    image: marcador,
+    image: (await doPrototipo('insights.guia-governanca', 'Guia Definitivo de Governança de Dados para o Setor Financeiro')) ?? marcador,
     tags: [{ text: "Governança & LGPD" }, { text: "Analytics & BI" }],
   },
   {
@@ -140,7 +147,7 @@ const ITENS = [
     author: "AI Architects Team",
     href: "/webinars",
     featured: false,
-    image: marcador,
+    image: (await doPrototipo('insights.rag-em-producao', 'IA Generativa Corporativa: Do Protótipo ao RAG em Produção')) ?? marcador,
     tags: [{ text: "IA Generativa" }, { text: "Google Cloud" }, { text: "Databricks" }],
   },
   {
@@ -153,7 +160,7 @@ const ITENS = [
     author: "Time de Cloud ATRA",
     href: "/blog",
     featured: false,
-    image: marcador,
+    image: (await doPrototipo('insights.multicloud', 'Arquitetura Multicloud: O que é, por que importa e como fortalecer sua TI')) ?? marcador,
     tags: [{ text: "Google Cloud" }, { text: "Migração de Legados" }, { text: "FinOps" }],
   },
   {
@@ -166,7 +173,7 @@ const ITENS = [
     author: "ATRA FinOps Team",
     href: "/relatorios",
     featured: false,
-    image: marcador,
+    image: (await doPrototipo('insights.finops-benchmark', 'FinOps Benchmark 2026: Otimização de Custos em Data Lakes')) ?? marcador,
     tags: [{ text: "FinOps" }, { text: "Databricks" }, { text: "Google Cloud" }],
   },
   {
@@ -192,7 +199,7 @@ const ITENS = [
     author: "Arquitetura de Dados ATRA",
     href: "/ebooks",
     featured: false,
-    image: marcador,
+    image: (await doPrototipo('insights.playbook-lakehouse', 'Playbook de Migração para Data Lakehouse Moderno')) ?? marcador,
     tags: [{ text: "Lakehouse" }, { text: "Databricks" }, { text: "Migração de Legados" }],
   },
 ]

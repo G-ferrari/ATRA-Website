@@ -20,12 +20,22 @@ import path from 'node:path'
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { type ChaveDoPrototipo, imagemDoPrototipo } from './imagens-do-prototipo'
 
-type Post = { title: string; description: string; tags: string[]; publishedAt: string }
+/* `prototipo` é a capa que o legado desenha para o artigo. Falta no quarto: a
+ * URL dele responde 404 na origem, e o protótipo já mostra imagem quebrada. */
+type Post = {
+  title: string
+  description: string
+  tags: string[]
+  publishedAt: string
+  prototipo?: ChaveDoPrototipo
+}
 
 const POSTS: Post[] = [
   {
     title: 'Squad Gerenciada: como estruturar equipes de TI mais eficientes',
+    prototipo: 'blog.squad-gerenciada',
     description:
       'Saiba como o modelo de squads pode escalar sua operação de tecnologia mantendo a qualidade e cultura.',
     tags: ['Business', 'Managed IT', 'Strategy'],
@@ -33,6 +43,7 @@ const POSTS: Post[] = [
   },
   {
     title: 'IA Generativa e Preditiva: O Futuro da Análise de Dados',
+    prototipo: 'blog.ia-preditiva',
     description:
       'Como a combinação de diferentes tipos de IA está criando uma nova era de insights de negócios.',
     tags: ['Analytics', 'IA', 'Innovation'],
@@ -40,6 +51,7 @@ const POSTS: Post[] = [
   },
   {
     title: 'Arquitetura Multicloud: O que é, por que importa e como fortalecer sua TI',
+    prototipo: 'blog.multicloud',
     description:
       'Explore os benefícios e desafios de manter uma estratégia de nuvem distribuída e resiliente.',
     tags: ['Cloud', 'Infraestrutura', 'Security'],
@@ -54,6 +66,7 @@ const POSTS: Post[] = [
   },
   {
     title: 'ROI em TI: do cálculo ao impacto real no crescimento da empresa',
+    prototipo: 'blog.roi-em-ti',
     description:
       'Métricas e metodologias que o C-level espera ver ao investir em modernização de plataformas de dados.',
     tags: ['Business', 'Finance', 'Strategy'],
@@ -61,6 +74,7 @@ const POSTS: Post[] = [
   },
   {
     title: 'Segurança de Dados em 2026: O que mudou e o que virá',
+    prototipo: 'blog.seguranca-2026',
     description:
       'As novas ameaças cibernéticas e as defesas essenciais para um ecossistema corporativo hiperconectado.',
     tags: ['Cybersecurity', 'Data', 'Privacy'],
@@ -144,7 +158,7 @@ for (const p of POSTS) {
     title: p.title,
     slug,
     description: p.description,
-    coverImage: capa.id,
+    coverImage: (p.prototipo && (await imagemDoPrototipo(payload, p.prototipo, p.title))) || capa.id,
     tags: p.tags.map((name) => ({ name })),
     /* Corpo de uma linha. Até a Fase 4b eles ficavam **sem corpo** de propósito,
      * porque o smoke provava neles a regra de D-08 (página magra sai com

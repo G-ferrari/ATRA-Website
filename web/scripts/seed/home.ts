@@ -16,6 +16,7 @@ import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
 import { casarIds } from './ids'
+import { imagemDoPrototipo } from './imagens-do-prototipo'
 
 const payload = await getPayload({ config })
 const LEGADO = path.resolve(process.cwd(), '../legacy')
@@ -98,11 +99,17 @@ for (const l of LOGOS) {
  * que é. Trocar por foto real é decisão de conteúdo (D-22). */
 const marcador = await upsertMidiaLocal('scripts/seed/assets/capa-pendente.png', 'CAPA PENDENTE')
 
+/* Com `SEED_FIXTURES=1` a foto do protótipo entra no lugar do marcador, para a
+ * revisão interna ver a página como o gabarito a desenha. Sem o sinal devolve
+ * `null` e nada muda. Ver `imagens-do-prototipo.ts`. */
+const doPrototipo = (chave: Parameters<typeof imagemDoPrototipo>[1], alt: string) =>
+  imagemDoPrototipo(payload, chave, alt)
+
 const DESTAQUES = [
-  { image: marcador, icon: 'zap' as const, badge: 'Inovação Cloud', title: 'Acelere sua Transformação', description: 'Modernize sua infraestrutura, integre sistemas e construa uma base de dados escalável em cloud com suporte de ponta a ponta.' },
-  { image: marcador, icon: 'settings' as const, badge: 'Automação & Analytics', title: 'Eficiência Operacional', description: 'Automatize processos complexos, gere insights em tempo real e aumente exponencialmente a produtividade das equipes com BI e Analytics.' },
-  { image: marcador, icon: 'shield-check' as const, badge: 'Governança & FinOps', title: 'Governança, Segurança e FinOps', description: 'Assegure máxima qualidade de dados, proteção e controle rigoroso de custos de nuvem com compliance e governança contínua.' },
-  { image: marcador, icon: 'sparkles' as const, badge: 'Inteligência Artificial', title: 'Decisões Inteligentes e IA', description: 'Aplique IA Generativa, modelos preditivos e soluções digitais avançadas para antecipar cenários e acelerar tomada de decisão.' },
+  { image: (await doPrototipo('home.destaque.transformacao', 'Acelere sua Transformação')) ?? marcador, icon: 'zap' as const, badge: 'Inovação Cloud', title: 'Acelere sua Transformação', description: 'Modernize sua infraestrutura, integre sistemas e construa uma base de dados escalável em cloud com suporte de ponta a ponta.' },
+  { image: (await doPrototipo('home.destaque.eficiencia', 'Eficiência Operacional')) ?? marcador, icon: 'settings' as const, badge: 'Automação & Analytics', title: 'Eficiência Operacional', description: 'Automatize processos complexos, gere insights em tempo real e aumente exponencialmente a produtividade das equipes com BI e Analytics.' },
+  { image: (await doPrototipo('home.destaque.governanca', 'Governança, Segurança e FinOps')) ?? marcador, icon: 'shield-check' as const, badge: 'Governança & FinOps', title: 'Governança, Segurança e FinOps', description: 'Assegure máxima qualidade de dados, proteção e controle rigoroso de custos de nuvem com compliance e governança contínua.' },
+  { image: (await doPrototipo('home.destaque.ia', 'Decisões Inteligentes e IA')) ?? marcador, icon: 'sparkles' as const, badge: 'Inteligência Artificial', title: 'Decisões Inteligentes e IA', description: 'Aplique IA Generativa, modelos preditivos e soluções digitais avançadas para antecipar cenários e acelerar tomada de decisão.' },
 ]
 
 /* Os 5 cartões do carrossel de cases (`App.tsx:1611`).
@@ -133,10 +140,10 @@ for (const c of CASES) {
 }
 
 const CARTOES = [
-  { image: marcador, icon: 'sparkles' as const, category: 'BLOG POST', title: 'Inovação em ação: Onde a criatividade encontra a colaboração', column: 'first' as const },
-  { image: marcador, icon: 'trending-up' as const, category: 'BLOG POST', title: 'Focado no impacto: Três estratégias essenciais', column: 'first' as const },
-  { image: marcador, icon: 'user-check' as const, category: 'ARTIGO', title: 'Liderando em meio a mudanças: 5 imperativos para CEOs', column: 'second' as const },
-  { image: marcador, icon: 'cpu' as const, category: 'ARTIGO', title: 'O futuro da IA generativa nas empresas', column: 'second' as const },
+  { image: (await doPrototipo('home.vitrine.inovacao', 'Inovação em ação: Onde a criatividade encontra a colaboração')) ?? marcador, icon: 'sparkles' as const, category: 'BLOG POST', title: 'Inovação em ação: Onde a criatividade encontra a colaboração', column: 'first' as const },
+  { image: (await doPrototipo('home.vitrine.impacto', 'Focado no impacto: Três estratégias essenciais')) ?? marcador, icon: 'trending-up' as const, category: 'BLOG POST', title: 'Focado no impacto: Três estratégias essenciais', column: 'first' as const },
+  { image: (await doPrototipo('home.vitrine.ceos', 'Liderando em meio a mudanças: 5 imperativos para CEOs')) ?? marcador, icon: 'user-check' as const, category: 'ARTIGO', title: 'Liderando em meio a mudanças: 5 imperativos para CEOs', column: 'second' as const },
+  { image: (await doPrototipo('home.vitrine.ia-generativa', 'O futuro da IA generativa nas empresas')) ?? marcador, icon: 'cpu' as const, category: 'ARTIGO', title: 'O futuro da IA generativa nas empresas', column: 'second' as const },
 ]
 
 const layout = [
@@ -227,7 +234,7 @@ const layout = [
       title: 'Uma empresa familiar traz o poder da IA para a mesa de jantar',
       ctaLabel: 'Ler estudo de caso',
       href: '#',
-      image: marcador,
+      image: (await doPrototipo('home.vitrine.destaque', 'Uma empresa familiar traz o poder da IA para a mesa de jantar')) ?? marcador,
     },
     newsletter: {
       title: 'Inscreva-se para receber os últimos insights da ATRA.',
