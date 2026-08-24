@@ -1,0 +1,44 @@
+# Proxy reverso do site novo. Ver docs/04-infra/ambientes.md.
+#
+# O hostname decide o certificado: o Caddy pede à Let's Encrypt sozinho, na
+# primeira requisição, e renova sem cron. Trocar por `staging.atra.com.br`
+# quando o registro existir no Cloudflare (P-23) é editar esta linha e recarregar.
+
+{$SITE_HOST} {
+	encode zstd gzip
+
+	# ⚠️ Enquanto isto for ambiente de homologação, **noindex é obrigatório**.
+	#
+	# O conteúdo aqui é idêntico ao de atra.com.br — 207 artigos, os mesmos
+	# cases, os mesmos segmentos. Indexado, compete com a produção pelas mesmas
+	# buscas e o Google escolhe um dos dois. É a nota de ambientes.md, e o
+	# estrago é real justamente porque a cópia é fiel.
+	header {
+		X-Robots-Tag "noindex, nofollow, noarchive"
+		# Cabeçalhos de origem não vazam a pilha para quem varre a internet.
+		-Server
+		-X-Powered-By
+	}
+
+	# Mesma razão: robots.txt do app libera o rastreamento, porque ele foi
+	# escrito para a produção. Aqui a resposta é substituída antes de chegar nele.
+	handle /robots.txt {
+		respond "User-agent: *
+Disallow: /" 200
+	}
+
+	# ⚠️ A senha protege o ambiente, não o conteúdo — ele é o mesmo que já está
+	# público em atra.com.br. Serve para robô não entrar e para link vazado não
+	# virar site paralelo. O hash é bcrypt, gerado por `caddy hash-password`.
+	basic_auth {
+		{$BASIC_AUTH_USER} {$BASIC_AUTH_HASH}
+	}
+
+	reverse_proxy web:3000 {
+		# O Next confia nestes para montar URL absoluta e ler o IP de quem
+		# chega — o limite por IP do formulário e do chat dependem disso
+		# (MIG-101, D-12). Sem eles, todo visitante é o container do Caddy.
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+	}
+}

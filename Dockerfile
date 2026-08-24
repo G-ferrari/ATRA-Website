@@ -81,6 +81,23 @@ ENV S3_BUCKET=$S3_BUCKET
 # **em silêncio**.
 RUN pnpm generate:types && pnpm generate:importmap && pnpm build
 
+# ── migrador ──────────────────────────────────────────────────────────────────
+# Código e dependências, **sem** `pnpm build`. Existe por um problema de ordem
+# que só aparece no primeiro deploy: o estágio `build` roda `pnpm build`, que
+# pré-renderiza 563 páginas lendo o banco, e com `push: false` (D-21) o schema
+# só existe depois das migrações. Usar `target: build` para migrar funciona a
+# partir do segundo deploy e é impossível no primeiro — o banco está vazio e a
+# imagem que migraria ainda não pôde ser construída.
+#
+# Serve também para o que mais precisa de código e banco sem precisar de site:
+# `pnpm seed` e os importadores de `scripts/wp-import/`.
+FROM base AS migrator
+COPY --from=deps /app/node_modules ./node_modules
+COPY web/ ./
+COPY docs/ /docs/
+ENV NEXT_TELEMETRY_DISABLED=1
+CMD ["pnpm", "payload", "migrate"]
+
 # ── runtime ───────────────────────────────────────────────────────────────────
 FROM base AS runner
 ENV NODE_ENV=production
@@ -92,6 +109,18 @@ RUN groupadd -r app && useradd -r -g app app
 # O `standalone` já traz o `server.js` e só o `node_modules` que o tracing provou
 # necessário. `static/` e `public/` ficam de fora dele por design e vão à mão.
 COPY --from=build --chown=app:app /app/.next/standalone ./
+# ⚠️ O `node_modules` **completo** por cima do que o `standalone` trouxe, e isto
+# é deliberado: o rastreamento de arquivos do Next não funciona com o layout do
+# pnpm. Ele copia o symlink de `.pnpm/` sem o destino, e copia pacote pela
+# metade — `@swc/helpers` veio só com `cjs/`, sem o `esm/` que o código pede.
+# Cada pacote consertado à mão revelava o próximo (`@swc/helpers` → `@next/env`),
+# e nenhum deles aparece antes de o container subir, porque em desenvolvimento o
+# `node_modules` inteiro está no disco.
+#
+# O custo é tamanho de imagem: entram as dependências de desenvolvimento também.
+# Trocar por um estágio `pnpm install --prod` é otimização legítima, e fica para
+# quando a imagem passar a viajar pelo registry (hoje ela é construída na VPS).
+COPY --from=build --chown=app:app /app/node_modules ./node_modules
 COPY --from=build --chown=app:app /app/.next/static ./.next/static
 COPY --from=build --chown=app:app /app/public ./public
 
