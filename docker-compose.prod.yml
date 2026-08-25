@@ -52,7 +52,6 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      REVALIDATE_SECRET: ${REVALIDATE_SECRET}
       NEXT_TELEMETRY_DISABLED: "1"
     depends_on:
       postgres:

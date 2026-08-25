@@ -57,7 +57,7 @@ Levantado em 17/08/2026, por DNS e headers públicos:
 | `RESEND_API_KEY` | vazio (loga no console) | gerenciador do host | **sim** |
 | `SENTRY_DSN` | vazio | gerenciador do host | não |
 | `NEXT_PUBLIC_GTM_ID` | vazio | id do container | não |
-| `REVALIDATE_SECRET` | `.env.local` | gerenciador do host | **sim** |
+| ~~`REVALIDATE_SECRET`~~ | — | — | ✅ **Removida (MIG-143).** A revalidação virou hook em processo (`hooks/revalidar.ts`): o Payload roda dentro do Next e chama `revalidatePath` direto — não há endpoint HTTP, logo não há segredo |
 | `CRON_SECRET` | `.env.local` | gerenciador do host | **sim** |
 
 ### Onde os segredos vivem

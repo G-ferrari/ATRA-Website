@@ -10,7 +10,9 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
-import { buildConfig } from 'payload'
+import { buildConfig, type CollectionConfig } from 'payload'
+
+import { revalidarSite } from './hooks/revalidar'
 import sharp from 'sharp'
 
 import { Cases } from './collections/Cases'
@@ -39,6 +41,21 @@ import { SiteSettings } from './globals/SiteSettings'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
+function comRevalidacao(collections: CollectionConfig[], fora: string[]): CollectionConfig[] {
+  return collections.map((c) =>
+    fora.includes(c.slug)
+      ? c
+      : {
+          ...c,
+          hooks: {
+            ...c.hooks,
+            afterChange: [...(c.hooks?.afterChange ?? []), () => revalidarSite()],
+            afterDelete: [...(c.hooks?.afterDelete ?? []), () => revalidarSite()],
+          },
+        },
+  )
+}
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -61,14 +78,28 @@ export default buildConfig({
     },
   },
 
-  collections: [
-    Users, Media, Topics, Testimonials,
-    Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Webinars,
-    Clients, Partners, Segments, Solutions, SpecialistRoles,
-    AiUsage, FormSubmissions,
-  ],
+  /* MIG-143: toda mudança de conteúdo invalida as páginas pré-renderizadas —
+   * ver `hooks/revalidar.ts`. Aplicado aqui, programaticamente, e não
+   * collection a collection: são 16 arquivos que esqueceriam o hook um a um.
+   *
+   * ⚠️ As três exclusões não são otimização, são correção: `ai-usage` grava a
+   * CADA requisição do chat e `form-submissions` a cada lead — com o hook, cada
+   * visitante do chat esvaziaria o cache do site inteiro. `users` não desenha
+   * página nenhuma. */
+  collections: comRevalidacao(
+    [
+      Users, Media, Topics, Testimonials,
+      Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Webinars,
+      Clients, Partners, Segments, Solutions, SpecialistRoles,
+      AiUsage, FormSubmissions,
+    ],
+    ['users', 'ai-usage', 'form-submissions'],
+  ),
 
-  globals: [AtraAi, Contact, Footer, Navigation, SiteSettings],
+  globals: [AtraAi, Contact, Footer, Navigation, SiteSettings].map((g) => ({
+    ...g,
+    hooks: { ...g.hooks, afterChange: [...(g.hooks?.afterChange ?? []), () => revalidarSite()] },
+  })),
 
   /* Idioma da INTERFACE do admin (botões, menus, validação) — diferente de
    * `localization`, que é o idioma do CONTEÚDO. São independentes: dá para

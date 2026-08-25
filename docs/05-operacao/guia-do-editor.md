@@ -78,8 +78,8 @@ pré-visualização dizendo **o que falta preencher** — preencha e o aviso som
 - Ao publicar, o site **revalida os campos obrigatórios do idioma que você
   está salvando**. Se ele recusar apontando um campo que parece preenchido,
   confira se você não está no **outro idioma** — é a causa mais comum.
-- A página pública pode levar alguns minutos para refletir a mudança. A
-  pré-visualização é imediata; o site tem um cache curto.
+- Ao publicar, a página pública se atualiza na visita seguinte — a primeira
+  pessoa a abrir depois da mudança já vê a versão nova.
 
 ## 6. Corrigir uma métrica institucional
 
