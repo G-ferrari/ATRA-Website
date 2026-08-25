@@ -226,3 +226,43 @@ jobs:
           name: artefatos-de-falha
           path: web/e2e/.artifacts
           retention-days: 7
+
+  deploy:
+    name: deploy na VPS
+    # Só em push para migracao, e só com os dois jobs verdes. PR não faz deploy:
+    # o código de fora do repositório nunca deve chegar ao servidor.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/migracao'
+    needs: [verify, e2e]
+    runs-on: ubuntu-latest
+    # Um deploy de cada vez, sem cancelar o que está no meio: interromper entre
+    # a migração e a troca de imagem deixa o banco à frente do site.
+    concurrency:
+      group: deploy-vps
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Chave SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Código para a VPS
+        # O mesmo conjunto que o Dockerfile consome (contexto = raiz do repo,
+        # por causa do redirects.csv — ver o topo do Dockerfile). `legacy/` fica
+        # de fora: o runtime não lê nada de lá, só o seed, que não roda aqui.
+        run: |
+          rsync -az --delete \
+            --exclude node_modules --exclude .next --exclude .git \
+            --exclude legacy --exclude test-results --exclude playwright-report \
+            --exclude '.env*' \
+            -e "ssh -i ~/.ssh/deploy" \
+            Dockerfile docker-compose.prod.yml Caddyfile web docs infra \
+            root@${{ secrets.VPS_HOST }}:/opt/atra/
+
+      - name: Migra, builda e troca
+        run: |
+          ssh -i ~/.ssh/deploy root@${{ secrets.VPS_HOST }} \
+            "chmod +x /opt/atra/infra/deploy/deploy.sh /opt/atra/infra/backup/*.sh && /opt/atra/infra/deploy/deploy.sh ${{ github.sha }}"
