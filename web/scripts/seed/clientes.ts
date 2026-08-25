@@ -17,12 +17,12 @@
  * ⚠️ Idempotente por chave natural: cliente por `name`, depoimento pelos 60
  * primeiros caracteres da citação. Rodar duas vezes atualiza, não duplica.
  */
-import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { midiaDe } from './midia'
 import { type ChaveDoPrototipo, imagemDoPrototipo } from './imagens-do-prototipo'
 
 const payload = await getPayload({ config })
@@ -38,19 +38,7 @@ const CLIENTES = [
   { name: 'Porto', arquivo: 'porto.jpg', enlarge: false },
 ]
 
-async function upsertLogo(arquivo: string, alt: string) {
-  const nome = path.basename(arquivo)
-  const chave = nome.replace(/\.[^.]+$/, '')
-  const { docs } = await payload.find({ collection: 'media', where: { filename: { contains: chave } }, limit: 1, depth: 0 })
-  if (docs[0]) return docs[0].id
-  const doc = await payload.create({
-    collection: 'media',
-    data: { alt },
-    file: { data: readFileSync(path.join(LEGADO, arquivo)), mimetype: 'image/jpeg', name: nome, size: 0 },
-    locale: 'pt',
-  })
-  return doc.id
-}
+const upsertLogo = (arquivo: string, alt: string) => midiaDe(payload, path.join(LEGADO, arquivo), alt)
 
 console.log('→ clientes')
 let ordem = 0

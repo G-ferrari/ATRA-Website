@@ -8,17 +8,15 @@
  * `hasPage: false` até MIG-093 escrever as delas — o mesmo layout serve, sem
  * componente novo.
  */
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
 
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { capaPendente } from './midia'
 import { casarIds } from './ids'
 import { imagemDoPrototipo } from './imagens-do-prototipo'
 
 const SLUG = 'inteligencia-artificial'
-const CAPA = path.resolve(process.cwd(), 'scripts/seed/assets/capa-pendente.png')
 
 const payload = await getPayload({ config })
 
@@ -26,31 +24,16 @@ const payload = await getPayload({ config })
  * `:715`) — foto de banco que não é da ATRA. Mesmo encaminhamento das capas de
  * material: entra o marcador, e a imagem real vem com o conteúdo. Ver
  * inventario-assets.md e debito-tecnico.md. */
-async function marcador() {
-  const { docs } = await payload.find({
-    collection: 'media',
-    where: { filename: { contains: 'capa-pendente' } },
-    limit: 1,
-    depth: 0,
-  })
-  if (docs[0]) return docs[0]
-  return payload.create({
-    collection: 'media',
-    data: { alt: 'CAPA PENDENTE — imagem real entra com o conteúdo do material' },
-    file: { data: readFileSync(CAPA), mimetype: 'image/png', name: 'capa-pendente.png', size: 0 },
-    locale: 'pt',
-  })
-}
 
-const imagem = await marcador()
+const imagem = await capaPendente(payload)
 
 /* Com `SEED_FIXTURES=1` cada uma volta a ser a foto que o gabarito desenha —
  * são **duas** imagens diferentes no legado, e o marcador as igualava. Sem o
  * sinal, marcador nas duas. Ver `imagens-do-prototipo.ts`. */
 const imagemDoHeroi =
-  (await imagemDoPrototipo(payload, 'solucao-ia.hero', 'Ilustração de Inteligência Artificial')) ?? imagem.id
+  (await imagemDoPrototipo(payload, 'solucao-ia.hero', 'Ilustração de Inteligência Artificial')) ?? imagem
 const imagemDoMetodo =
-  (await imagemDoPrototipo(payload, 'solucao-ia.como-fazemos', 'Como a ATRA constrói soluções de IA')) ?? imagem.id
+  (await imagemDoPrototipo(payload, 'solucao-ia.como-fazemos', 'Como a ATRA constrói soluções de IA')) ?? imagem
 
 const PT = {
   heroTitle: 'Soluções em Inteligência Artificial & IA Generativa',

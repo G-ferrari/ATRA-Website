@@ -14,40 +14,19 @@
  * Unsplash no gabarito — banco de imagens que não é da ATRA — e entram como o
  * marcador de capa pendente, igual às da home.
  */
-import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { capaPendente, midiaDe } from './midia'
 import { casarIds } from './ids'
 import { imagemDoPrototipo } from './imagens-do-prototipo'
 
 const payload = await getPayload({ config })
 const LEGADO = path.resolve(process.cwd(), '../legacy')
-const MIMES: Record<string, string> = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg' }
-
-async function upsertDe(base: string, arquivo: string, alt: string) {
-  const nome = path.basename(arquivo)
-  const chave = nome.replace(/\.[^.]+$/, '')
-  const { docs } = await payload.find({ collection: 'media', where: { filename: { contains: chave } }, limit: 1, depth: 0 })
-  if (docs[0]) return docs[0].id
-  const doc = await payload.create({
-    collection: 'media',
-    data: { alt },
-    file: {
-      data: readFileSync(path.join(base, arquivo)),
-      mimetype: MIMES[path.extname(nome).toLowerCase()] ?? 'image/png',
-      name: nome,
-      size: 0,
-    },
-    locale: 'pt',
-  })
-  return doc.id
-}
-
-const upsertMidia = (arquivo: string, alt: string) => upsertDe(LEGADO, arquivo, alt)
-const marcador = await upsertDe(process.cwd(), 'scripts/seed/assets/capa-pendente.png', 'CAPA PENDENTE')
+const upsertMidia = (arquivo: string, alt: string) => midiaDe(payload, path.join(LEGADO, arquivo), alt)
+const marcador = await capaPendente(payload)
 
 /* Com `SEED_FIXTURES=1` as 7 capas viram a foto que o gabarito desenha, para a
  * revisão interna ver o hub inteiro. Sem o sinal, marcador. Ver

@@ -512,14 +512,14 @@ o `next/image` só otimiza origem própria e o lockout de login está no default
 
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
-| MIG-140 | **IP confiável** nos limites do chat e do formulário | — | `X-Forwarded-For` forjado não contorna limite; helper `ipDe` num lugar só | 1h |
-| MIG-141 | **Tetos de entrada/saída do chat** | — | Histórico, tamanho por mensagem, `role` e `maxOutputTokens` limitados; requisição gigante recusa em 400 | 1h |
-| MIG-142 | Teto de tamanho nos campos do formulário | — | Nenhum campo entra no banco sem corte | 0.5h |
-| MIG-143 | **Revalidação ao publicar** — o CMS passa a atualizar o site | — | Publicar no admin muda a página pública sem deploy; `REVALIDATE_SECRET` deixa de ser segredo morto; guia do editor corrigido | 4h |
-| MIG-144 | Mídia sem SVG (`mimeTypes` raster+PDF) | — | Upload de SVG recusado; acervo atual inalterado | 0.5h |
-| MIG-145 | Cabeçalhos de segurança no app | — | `nosniff`, `frame-ancestors`, `Referrer-Policy` em toda rota, via `headers()` | 1h |
-| MIG-146 | DRY dos seeds (`midia.ts` + slug compartilhados) | — | 10 cópias de upsert viram 1; `paraSlug` de 5 para 1; seed roda 2× sem mudança de contagem | 2h |
-| MIG-147 | `/design-system` via `lib/routes` no rodapé | — | Nenhum href literal fora de `routes.ts` | 0.25h |
+| MIG-140 | **IP confiável** nos limites do chat e do formulário | — | `X-Forwarded-For` forjado não contorna limite; helper `ipDe` num lugar só | 1h | **done** — `lib/ip.ts` + Caddy sobrescreve XFF; teste cobre o cenário do contorno |
+| MIG-141 | **Tetos de entrada/saída do chat** | — | Histórico, tamanho por mensagem, `role` e `maxOutputTokens` limitados; requisição gigante recusa em 400 | 1h | **done** — `lib/chat.ts`; histórico corta em silêncio (a ilha manda a conversa inteira), mensagem gigante recusa |
+| MIG-142 | Teto de tamanho nos campos do formulário | — | Nenhum campo entra no banco sem corte | 0.5h | **done** — 200 por campo, 5000 na mensagem, no helper único |
+| MIG-143 | **Revalidação ao publicar** — o CMS passa a atualizar o site | — | Publicar no admin muda a página pública sem deploy; `REVALIDATE_SECRET` deixa de ser segredo morto; guia do editor corrigido | 4h | **done** — hook em processo (`hooks/revalidar.ts`), aplicado central em `payload.config` com 3 exclusões que são correção (`ai-usage` grava a cada chat); o segredo saiu em vez de ganhar endpoint |
+| MIG-144 | Mídia sem SVG (`mimeTypes` raster+PDF) | — | Upload de SVG recusado; acervo atual inalterado | 0.5h | **done** — acervo conferido: 100% WebP |
+| MIG-145 | Cabeçalhos de segurança no app | — | `nosniff`, `frame-ancestors`, `Referrer-Policy` em toda rota, via `headers()` | 1h | **done** — sem CSP de propósito (nonce por requisição não existe em página estática); é melhoria própria |
+| MIG-146 | DRY dos seeds (`midia.ts` + slug compartilhados) | — | 10 cópias de upsert viram 1; `paraSlug` de 5 para 1; seed roda 2× sem mudança de contagem | 2h | **done** — `midia.ts` preserva a **regravação** de sobre.ts/cases.ts como opção explícita; idempotência verificada: 2 corridas, contagens idênticas em 8 collections |
+| MIG-147 | `/design-system` via `lib/routes` no rodapé | — | Nenhum href literal fora de `routes.ts` | 0.25h | **done** |
 
 ## Fase 7 — Cutover · Fase 8 — Limpeza
 

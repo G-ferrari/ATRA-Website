@@ -13,12 +13,12 @@
  * `SEED_FIXTURES=1` a do protótipo entra no lugar, para a revisão interna —
  * ver `imagens-do-prototipo.ts`.
  */
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
 
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { slugify as paraSlug } from '../../src/fields/slug'
+import { capaPendente } from './midia'
 import { type ChaveDoPrototipo, imagemDoPrototipo } from './imagens-do-prototipo'
 
 type Webinar = {
@@ -61,36 +61,13 @@ const WEBINARS: Webinar[] = [
   },
 ]
 
-const CAPA = path.resolve(process.cwd(), 'scripts/seed/assets/capa-pendente.png')
 
-const paraSlug = (s: string) =>
-  s
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
 
 const payload = await getPayload({ config })
 
-async function capaMarcadora() {
-  const { docs } = await payload.find({
-    collection: 'media',
-    where: { filename: { contains: 'capa-pendente' } },
-    limit: 1,
-    depth: 0,
-  })
-  if (docs[0]) return docs[0]
-  return payload.create({
-    collection: 'media',
-    data: { alt: 'CAPA PENDENTE — imagem real entra com o conteúdo' },
-    file: { data: readFileSync(CAPA), mimetype: 'image/png', name: 'capa-pendente.png', size: 0 },
-    locale: 'pt',
-  })
-}
 
 console.log('→ webinars')
-const capa = await capaMarcadora()
+const capa = await capaPendente(payload)
 
 for (const w of WEBINARS) {
   const slug = paraSlug(w.title)
@@ -107,7 +84,7 @@ for (const w of WEBINARS) {
     slug,
     description: w.description,
     dateLabel: w.dateLabel,
-    coverImage: (await imagemDoPrototipo(payload, w.prototipo, w.title)) ?? capa.id,
+    coverImage: (await imagemDoPrototipo(payload, w.prototipo, w.title)) ?? capa,
     tags: w.tags.map((name) => ({ name })),
     order: w.order,
     _status: 'published' as const,

@@ -14,12 +14,12 @@
  * linha de runbook, dependia de alguém lembrar na hora do cutover. A variável
  * põe a regra no código — `pnpm seed` sem ela não recria nenhum.
  */
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
 
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { slugify as paraSlug } from '../../src/fields/slug'
+import { capaPendente } from './midia'
 import { type ChaveDoPrototipo, imagemDoPrototipo } from './imagens-do-prototipo'
 
 /* `prototipo` é a capa que o legado desenha para o artigo. Falta no quarto: a
@@ -85,33 +85,10 @@ const POSTS: Post[] = [
 /** Categorias fixas da barra de filtro (`Blog.tsx:62`), fora as "Todos". */
 export const CATEGORIAS_DO_BLOG = ['Business', 'IA', 'Cloud', 'Analytics', 'Cybersecurity', 'Strategy']
 
-const CAPA = path.resolve(process.cwd(), 'scripts/seed/assets/capa-pendente.png')
 
-const paraSlug = (s: string) =>
-  s
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
 
 const payload = await getPayload({ config })
 
-async function capaMarcadora() {
-  const { docs } = await payload.find({
-    collection: 'media',
-    where: { filename: { contains: 'capa-pendente' } },
-    limit: 1,
-    depth: 0,
-  })
-  if (docs[0]) return docs[0]
-  return payload.create({
-    collection: 'media',
-    data: { alt: 'CAPA PENDENTE — imagem real entra com o conteúdo' },
-    file: { data: readFileSync(CAPA), mimetype: 'image/png', name: 'capa-pendente.png', size: 0 },
-    locale: 'pt',
-  })
-}
 
 if (!process.env.SEED_FIXTURES) {
   console.log('→ blog (pulado: fixture de teste, exige SEED_FIXTURES=1 — os artigos reais vêm de scripts/wp-import)')
@@ -142,7 +119,7 @@ const corpo = (texto: string) =>
   }) as never
 
 console.log('→ blog (fixtures de teste)')
-const capa = await capaMarcadora()
+const capa = await capaPendente(payload)
 
 for (const p of POSTS) {
   const slug = paraSlug(p.title)
@@ -158,7 +135,7 @@ for (const p of POSTS) {
     title: p.title,
     slug,
     description: p.description,
-    coverImage: (p.prototipo && (await imagemDoPrototipo(payload, p.prototipo, p.title))) || capa.id,
+    coverImage: (p.prototipo && (await imagemDoPrototipo(payload, p.prototipo, p.title))) || capa,
     tags: p.tags.map((name) => ({ name })),
     /* Corpo de uma linha. Até a Fase 4b eles ficavam **sem corpo** de propósito,
      * porque o smoke provava neles a regra de D-08 (página magra sai com

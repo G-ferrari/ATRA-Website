@@ -9,58 +9,22 @@
  * quarto levantamento escrito a partir do inventário de seções em vez do
  * markup; ver a nota em docs/02-especificacao/blocos.md.
  */
-import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { midiaDe } from './midia'
 import { casarIds } from './ids'
 import { imagemDoPrototipo } from './imagens-do-prototipo'
 
 const payload = await getPayload({ config })
 const LEGADO = path.resolve(process.cwd(), '../legacy')
 
-const MIMES: Record<string, string> = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml' }
-
-/* Igual, mas resolvendo o caminho a partir de web/ em vez de legacy/. */
-async function upsertMidiaLocal(arquivo: string, alt: string) {
-  const nome = path.basename(arquivo)
-  const chave = nome.replace(/\.[^.]+$/, '')
-  const { docs } = await payload.find({ collection: 'media', where: { filename: { contains: chave } }, limit: 1, depth: 0 })
-  if (docs[0]) return docs[0].id
-  const doc = await payload.create({
-    collection: 'media',
-    data: { alt },
-    file: {
-      data: readFileSync(path.resolve(process.cwd(), arquivo)),
-      mimetype: MIMES[path.extname(nome).toLowerCase()] ?? 'image/png',
-      name: nome,
-      size: 0,
-    },
-    locale: 'pt',
-  })
-  return doc.id
-}
-
-async function upsertMidia(arquivo: string, alt: string) {
-  const nome = path.basename(arquivo)
-  const chave = nome.replace(/\.[^.]+$/, '')
-  const { docs } = await payload.find({ collection: 'media', where: { filename: { contains: chave } }, limit: 1, depth: 0 })
-  if (docs[0]) return docs[0].id
-  const doc = await payload.create({
-    collection: 'media',
-    data: { alt },
-    file: {
-      data: readFileSync(path.join(LEGADO, arquivo)),
-      mimetype: MIMES[path.extname(nome).toLowerCase()] ?? 'image/png',
-      name: nome,
-      size: 0,
-    },
-    locale: 'pt',
-  })
-  return doc.id
-}
+/* Os dois resolvem raiz diferente — web/ e legacy/ — e o resto vive em midia.ts. */
+const upsertMidiaLocal = (arquivo: string, alt: string) =>
+  midiaDe(payload, path.resolve(process.cwd(), arquivo), alt)
+const upsertMidia = (arquivo: string, alt: string) => midiaDe(payload, path.join(LEGADO, arquivo), alt)
 
 /* Os 9 logos da faixa, na ordem e com os nomes do legado (`App.tsx:1397`).
  *

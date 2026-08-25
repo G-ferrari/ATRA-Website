@@ -28,12 +28,12 @@
  * foto de banco que não é da ATRA —, e usar uma foto real da empresa é melhor
  * conteúdo pelo mesmo custo.
  */
-import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { midiaDe } from './midia'
 import { casarIds } from './ids'
 
 const LEGADO = path.resolve(process.cwd(), '../legacy')
@@ -98,57 +98,14 @@ const paragrafos = (...textos: string[]) => ({
 
 const payload = await getPayload({ config })
 
-const MIMES: Record<string, string> = {
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.svg': 'image/svg+xml',
-}
-
-/* Igual a upsertMidia, mas resolvendo o caminho a partir de web/, não de
- * legacy/ — e **regravando o arquivo** quando o doc já existe.
- *
- * ⚠️ A regravação não é detalhe: sem ela, MIG-071 não chegaria a um banco que
- * já rodou o seed. Os logos da vitrine foram semeados uma vez como SVG
- * desenhado à mão; a busca por `logo_azure` acha aquele doc, e a versão que só
- * criava devolvia o desenho para sempre. */
-async function upsertMidiaLocal(arquivo: string, alt: string) {
-  const nome = path.basename(arquivo)
-  const { docs } = await payload.find({ collection: 'media', where: { filename: { contains: nome.replace(/\.[^.]+$/, '') } }, limit: 1, depth: 0 })
-  const file = {
-    data: readFileSync(path.resolve(process.cwd(), arquivo)),
-    mimetype: MIMES[path.extname(nome).toLowerCase()] ?? 'image/png',
-    name: nome,
-    size: 0,
-  }
-  return docs[0]
-    ? payload.update({ collection: 'media', id: docs[0].id, data: { alt }, file, locale: 'pt' })
-    : payload.create({ collection: 'media', data: { alt }, file, locale: 'pt' })
-}
-
-async function upsertMidia(arquivo: string, alt: string) {
-  const nome = path.basename(arquivo)
-  const chave = nome.replace(/\.[^.]+$/, '')
-  const { docs } = await payload.find({
-    collection: 'media',
-    where: { filename: { contains: chave } },
-    limit: 1,
-    depth: 0,
-  })
-  if (docs[0]) return docs[0]
-  const ext = path.extname(nome).toLowerCase()
-  return payload.create({
-    collection: 'media',
-    data: { alt },
-    file: {
-      data: readFileSync(path.join(LEGADO, arquivo)),
-      mimetype: ext === '.png' ? 'image/png' : ext === '.svg' ? 'image/svg+xml' : 'image/jpeg',
-      name: nome,
-      size: 0,
-    },
-    locale: 'pt',
-  })
-}
+/* Os dois delegam a midia.ts; a diferença entre eles é raiz e semântica:
+ * `Local` resolve de web/ e **regrava** o arquivo quando o doc existe — sem
+ * isso, MIG-071 não corrigiria um banco que já semeou os logos da vitrine como
+ * SVG desenhado à mão (a nota completa está em midia.ts). O outro resolve de
+ * legacy/ e só acha-ou-cria. */
+const upsertMidiaLocal = (arquivo: string, alt: string) =>
+  midiaDe(payload, path.resolve(process.cwd(), arquivo), alt, { regravar: true })
+const upsertMidia = (arquivo: string, alt: string) => midiaDe(payload, path.join(LEGADO, arquivo), alt)
 
 console.log('→ dados institucionais')
 /* Os 3 selos de `Careers.tsx:306`, na ordem do legado. O LIPT é arquivo local
@@ -170,16 +127,16 @@ await payload.updateGlobal({
     metrics: METRICAS,
     foundedYear: 2011,
     seals: [
-      { name: 'Great Place To Work', image: gptw.id },
-      { name: 'LIPT 2026', image: lipt.id },
-      { name: 'FEEx', image: feex.id },
+      { name: 'Great Place To Work', image: gptw },
+      { name: 'LIPT 2026', image: lipt },
+      { name: 'FEEx', image: feex },
     ],
   },
 })
 
 console.log('→ fotos da ATRA')
 const fotos: number[] = []
-for (const f of FOTOS) fotos.push((await upsertMidia(f, 'Equipe e eventos da ATRA')).id)
+for (const f of FOTOS) fotos.push(await upsertMidia(f, 'Equipe e eventos da ATRA'))
 console.log(`  ${fotos.length} fotos`)
 
 console.log('→ parceiros da vitrine')
@@ -188,7 +145,7 @@ for (const p of PARCEIROS_DA_VITRINE) {
   const logo = await upsertMidiaLocal(p.arquivo, `Logo ${p.name}`)
 
   const { docs } = await payload.find({ collection: 'partners', where: { slug: { equals: p.slug } }, limit: 1, locale: 'pt', depth: 0 })
-  const data = { name: p.name, slug: p.slug, description: 'Parceiro de tecnologia da ATRA.', logo: logo.id, logoScale: p.logoScale }
+  const data = { name: p.name, slug: p.slug, description: 'Parceiro de tecnologia da ATRA.', logo, logoScale: p.logoScale }
   const doc = docs[0]
     ? await payload.update({ collection: 'partners', id: docs[0].id, data, locale: 'pt' })
     : await payload.create({ collection: 'partners', data, locale: 'pt' })

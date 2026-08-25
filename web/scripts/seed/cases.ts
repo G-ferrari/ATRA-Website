@@ -5,12 +5,12 @@
  *
  * Rodar com: pnpm seed
  */
-import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { midiaDe } from './midia'
 
 const LEGADO = path.resolve(process.cwd(), '../legacy')
 
@@ -349,28 +349,9 @@ async function upsertDepoimento(d: NonNullable<DadosCase['testimonial']>) {
     : payload.create({ collection: 'testimonials', data, locale: 'pt' })
 }
 
-/* Procura pelo nome **sem extensão**: o Payload reencoda a imagem em WebP no
- * upload, então o doc criado a partir de `logo_google_cloud.png` fica gravado
- * como `logo_google_cloud.webp`. Buscar pelo nome inteiro nunca casaria, e cada
- * `pnpm seed` criaria uma cópia. */
-async function upsertMidia(arquivo: string, alt: string) {
-  const nome = path.basename(arquivo)
-  const { docs } = await payload.find({
-    collection: 'media',
-    where: { filename: { contains: nome.split('.')[0] } },
-    limit: 1,
-    depth: 0,
-  })
-  const file = {
-    data: readFileSync(arquivo),
-    mimetype: nome.endsWith('.png') ? 'image/png' : 'image/jpeg',
-    name: nome,
-    size: 0,
-  }
-  return docs[0]
-    ? payload.update({ collection: 'media', id: docs[0].id, data: { alt }, file, locale: 'pt' })
-    : payload.create({ collection: 'media', data: { alt }, file, locale: 'pt' })
-}
+/* `regravar`: este seed corrige mídia que corridas antigas gravaram errado —
+ * mesma semântica de sobre.ts. A dedupe por nome-sem-extensão vive em midia.ts. */
+const upsertMidia = (arquivo: string, alt: string) => midiaDe(payload, arquivo, alt, { regravar: true })
 
 async function upsertParceiro(p: (typeof PARCEIROS)[number]) {
   const logo = await upsertMidia(p.logo, `Logo ${p.name}`)
@@ -382,7 +363,7 @@ async function upsertParceiro(p: (typeof PARCEIROS)[number]) {
     locale: 'pt',
     depth: 0,
   })
-  const data = { name: p.name, slug: p.slug, description: p.description, logo: logo.id }
+  const data = { name: p.name, slug: p.slug, description: p.description, logo }
   return docs[0]
     ? payload.update({ collection: 'partners', id: docs[0].id, data, locale: 'pt' })
     : payload.create({ collection: 'partners', data, locale: 'pt' })
@@ -425,7 +406,7 @@ for (const c of CASES) {
       summary: c.summary.pt,
       impact: c.impact?.pt,
       heroSubtitle: c.heroSubtitle?.pt,
-      heroImage: midia.id,
+      heroImage: midia,
       topics: c.topics.map((s) => idsTopicos.get(s)!),
       challenges: (c.challenges?.pt ?? []).map((text) => ({ text })),
       results: (c.results?.pt ?? []).map((text) => ({ text })),
