@@ -2,6 +2,7 @@
 
 import { headers } from 'next/headers'
 
+import { ipDe } from '@/lib/ip'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
 import { enviarAviso } from '@/lib/email'
@@ -23,11 +24,6 @@ import { MAX_POR_VALOR } from '@/lib/utm'
 export type Resultado = { ok: true } | { ok: false; erro: string }
 
 const ERRO_GENERICO = 'Não foi possível enviar agora. Tente pelo WhatsApp ou por negocios@atra.com.br.'
-
-function ipDe(cabecalhos: Headers): string {
-  const encaminhado = cabecalhos.get('x-forwarded-for')
-  return encaminhado?.split(',')[0]?.trim() || cabecalhos.get('x-real-ip') || 'desconhecido'
-}
 
 const texto = (dados: FormData, campo: string): string => String(dados.get(campo) ?? '').trim()
 

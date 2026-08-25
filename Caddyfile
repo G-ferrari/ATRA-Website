@@ -57,6 +57,12 @@ Disallow: /" 200
 		# chega — o limite por IP do formulário e do chat dependem disso
 		# (MIG-101, D-12). Sem eles, todo visitante é o container do Caddy.
 		header_up X-Real-IP {remote_host}
+		# ⚠️ Sobrescreve, não anexa. O padrão do Caddy é ANEXAR o IP real ao
+		# X-Forwarded-For que o cliente mandou — e o app lia o primeiro da
+		# lista, que é o forjado. O app agora prefere o X-Real-IP (lib/ip.ts),
+		# e esta linha garante que, mesmo se alguém voltar a ler XFF, o
+		# conteúdo é só o que o proxy afirma.
+		header_up X-Forwarded-For {remote_host}
 		header_up X-Forwarded-Proto {scheme}
 	}
 }

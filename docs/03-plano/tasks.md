@@ -502,6 +502,25 @@ muito tempo as três apontaram para `#`.
 | MIG-127 | **Teste do objetivo com o marketing** (D-20) | 126, 032 | Alguém do marketing executa os 6 passos sem ajuda; o que travar vira correção | 2h |
 | MIG-128 | Sessão de handoff gravada | 127 | Marketing + RH treinados; gravação arquivada | 2h |
 
+### Revisão crítica de 25/08 — segurança, DRY e a lacuna de revalidação
+
+Achados de uma varredura com foco em segurança, reuso e boas práticas, feita
+enquanto as tasks bloqueadas esperam decisão. O que a varredura **confirmou
+limpo** também vale registro: as 26 consultas com rascunho filtram `_status`,
+o JSON-LD escapa `</script>`, nenhum `components/ui` importa `payload-types`,
+o `next/image` só otimiza origem própria e o lockout de login está no default.
+
+| ID | Título | Dep. | Critério de aceite | Est. |
+|---|---|---|---|---|
+| MIG-140 | **IP confiável** nos limites do chat e do formulário | — | `X-Forwarded-For` forjado não contorna limite; helper `ipDe` num lugar só | 1h |
+| MIG-141 | **Tetos de entrada/saída do chat** | — | Histórico, tamanho por mensagem, `role` e `maxOutputTokens` limitados; requisição gigante recusa em 400 | 1h |
+| MIG-142 | Teto de tamanho nos campos do formulário | — | Nenhum campo entra no banco sem corte | 0.5h |
+| MIG-143 | **Revalidação ao publicar** — o CMS passa a atualizar o site | — | Publicar no admin muda a página pública sem deploy; `REVALIDATE_SECRET` deixa de ser segredo morto; guia do editor corrigido | 4h |
+| MIG-144 | Mídia sem SVG (`mimeTypes` raster+PDF) | — | Upload de SVG recusado; acervo atual inalterado | 0.5h |
+| MIG-145 | Cabeçalhos de segurança no app | — | `nosniff`, `frame-ancestors`, `Referrer-Policy` em toda rota, via `headers()` | 1h |
+| MIG-146 | DRY dos seeds (`midia.ts` + slug compartilhados) | — | 10 cópias de upsert viram 1; `paraSlug` de 5 para 1; seed roda 2× sem mudança de contagem | 2h |
+| MIG-147 | `/design-system` via `lib/routes` no rodapé | — | Nenhum href literal fora de `routes.ts` | 0.25h |
+
 ## Fase 7 — Cutover · Fase 8 — Limpeza
 
 | ID | Título | Dep. | Critério de aceite | Est. |

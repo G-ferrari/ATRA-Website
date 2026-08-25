@@ -1,6 +1,8 @@
 import { GoogleGenAI } from '@google/genai'
 import { NextResponse } from 'next/server'
 
+import { MAX_TOKENS_DE_SAIDA, validarConversa, type Mensagem } from '@/lib/chat'
+import { ipDe } from '@/lib/ip'
 import { getPayload } from '@/lib/payload'
 
 /* POST /api/chat — porte de `legacy/server.ts:38`, com o que D-12 decidiu.
@@ -21,7 +23,6 @@ import { getPayload } from '@/lib/payload'
 
 export const dynamic = 'force-dynamic'
 
-type Mensagem = { role: 'user' | 'model'; content: string }
 
 /**
  * Idioma da conversa, mandado pelo cliente.
@@ -37,11 +38,6 @@ function idiomaDe(corpo: unknown): 'pt' | 'en' {
 
 const JANELA_MS = 60 * 60 * 1000
 const acessos = new Map<string, number[]>()
-
-function ipDe(req: Request): string {
-  const encaminhado = req.headers.get('x-forwarded-for')
-  return encaminhado?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'desconhecido'
-}
 
 /** Conta as chamadas da última hora e registra esta. Devolve se passou do teto. */
 function estourouOLimite(ip: string, teto: number): boolean {
@@ -113,10 +109,15 @@ export async function POST(req: Request) {
    * porque a checagem da chave vinha antes — o cliente recebia "tente mais
    * tarde" para um erro que é dele e nunca vai passar. Pior: o pedido inválido
    * já tinha consumido uma unidade do teto de orçamento. */
-  const mensagens = corpo.messages ?? []
-  if (!Array.isArray(mensagens) || mensagens.length === 0) {
+  /* MIG-141: além do formato, os tetos — o limite por IP conta requisições,
+   * e sem isto uma requisição carregava qualquer volume de tokens. Histórico
+   * longo é cortado em silêncio dentro do validador; mensagem individual
+   * gigante ou role desconhecido recusam aqui. */
+  const validado = validarConversa(corpo.messages)
+  if (!validado.ok) {
     return NextResponse.json({ error: 'Formato de mensagens inválido.' }, { status: 400 })
   }
+  const mensagens = validado.mensagens
 
   const payload = await getPayload()
   const config = await payload.findGlobal({ slug: 'atra-ai', depth: 0, locale: idiomaDe(corpo) })
@@ -129,7 +130,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: indisponivel }, { status: 503 })
   }
 
-  if (estourouOLimite(ipDe(req), config?.requestsPerHour ?? 20)) {
+  if (estourouOLimite(ipDe(req.headers), config?.requestsPerHour ?? 20)) {
     return NextResponse.json({ error: indisponivel }, { status: 429 })
   }
 
@@ -152,7 +153,9 @@ export async function POST(req: Request) {
     const resposta = await ai.models.generateContent({
       model: 'gemini-3.6-flash',
       contents: mensagens.map((m) => ({ role: m.role, parts: [{ text: m.content }] })),
-      config: { systemInstruction: config?.systemPrompt ?? '', temperature: 0.7 },
+      /* `maxOutputTokens`: sem ele a resposta é custo sem teto — e o orçamento
+       * de MIG-110 conta requisições, não tokens. */
+      config: { systemInstruction: config?.systemPrompt ?? '', temperature: 0.7, maxOutputTokens: MAX_TOKENS_DE_SAIDA },
     })
     return NextResponse.json({ text: resposta.text ?? '' })
   } catch (e) {
