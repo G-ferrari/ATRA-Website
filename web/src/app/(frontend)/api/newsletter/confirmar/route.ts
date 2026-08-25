@@ -16,8 +16,13 @@ export const dynamic = 'force-dynamic'
  */
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')?.trim() ?? ''
+  /* ⚠️ A base do redirect é a URL canônica, NUNCA `req.nextUrl.origin`: atrás
+   * do proxy o Next se enxerga pelo bind interno e mandava o visitante para
+   * `https://0.0.0.0:3000/...` — a prova no staging pegou. O clique vem de um
+   * e-mail; o destino tem que ser o site que o mundo alcança. */
+  const origem = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin
   const destino = (ok: boolean) =>
-    NextResponse.redirect(new URL(`/newsletter/${ok ? 'confirmada' : 'invalida'}`, req.nextUrl.origin))
+    NextResponse.redirect(new URL(`/newsletter/${ok ? 'confirmada' : 'invalida'}`, origem))
 
   /* Formato do gerarToken(): 48 hex. Fora disso nem consulta o banco. */
   if (!/^[0-9a-f]{48}$/.test(token)) return destino(false)
