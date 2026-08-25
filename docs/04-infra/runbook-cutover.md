@@ -164,3 +164,20 @@ redirect faltando ou `noindex` esquecido do staging.
 O runbook inteiro roda **antes**, contra staging, com os passos de DNS simulados
 via `/etc/hosts`. Objetivo: descobrir o passo esquecido enquanto ele ainda é
 barato. Nenhum cutover acontece sem ensaio concluído.
+
+### ⚠️ Automatizar algo contra a API do CMS no staging: autentique por cookie
+
+Descoberto na prova da revalidação (25/08, MIG-143). O staging tem a senha do
+Caddy na frente, e ela ocupa o header `Authorization` com o `Basic`. Mandar o
+token do Payload como segundo header `Authorization: JWT …` faz o Caddy
+responder **401 de corpo vazio** — que parece credencial errada do CMS e é
+colisão de header.
+
+O caminho que funciona: o login (`POST /api/users/login`) devolve o token
+também como **cookie** `payload-token`. Guarde e reenvie o cookie
+(`curl -c jar -b jar`), deixando o header `Authorization` só para o Basic do
+proxy.
+
+Isto **desaparece em produção** — sem a senha do proxy, o header fica livre
+para o JWT. Ou seja: script do ensaio que autentica por cookie funciona nos
+dois ambientes; por header, só em produção. Escreva por cookie.
