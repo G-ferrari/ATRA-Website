@@ -34,6 +34,10 @@ export const SECOES = {
      cookies (`/politicas-e-termos/`); os 3 links do rodapé apontam todos para
      ela, que é o que já acontece lá. */
   politicas: { pt: 'politicas-e-termos', en: 'privacy-and-terms' },
+  /* MIG-125/147. Mesmo slug nos dois idiomas: é página interna de trabalho,
+     com noindex — traduzir o caminho só criaria uma URL a mais para o mesmo
+     nada indexável. */
+  designSystem: { pt: 'design-system', en: 'design-system' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type Secao = keyof typeof SECOES

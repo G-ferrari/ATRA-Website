@@ -1,6 +1,7 @@
 import { Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from 'lucide-react'
 import Link from 'next/link'
 
+import { hrefDe } from '@/lib/routes'
 import type { Locale } from '@/lib/locales'
 import { TEXTOS_CASCA } from '@/lib/navegacao'
 import type { Contato, Image as Imagem, Rodape } from '@/types/content'
@@ -126,7 +127,7 @@ export function SiteFooter({
         <div className="pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-[11px] font-light text-white/40">
           <p>{rodape.direitos}</p>
           <div className="flex gap-4">
-            <Link href={`${prefixo}/design-system`} className="hover:text-primary transition-colors">
+            <Link href={hrefDe('designSystem', locale)} className="hover:text-primary transition-colors">
               {t.designSystem}
             </Link>
           </div>
