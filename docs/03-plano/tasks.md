@@ -492,7 +492,7 @@ muito tempo as três apontaram para `#`.
 
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
-| MIG-120 | Otimização de imagem e LCP | Fase 3 | Lighthouse ≥ 90 nas 5 rotas mais vistas | 4h |
+| MIG-120 | Otimização de imagem e LCP | Fase 3 | Lighthouse ≥ 90 nas 5 rotas mais vistas | 4h | **parcial** — medido no staging (25/08): 73→89 após o cache de mídia (era ttl=0; /sobre saiu de 77 para 89 e o LCP de 5,3s para 3,4s). O que resta não é código: TTFB de ~750ms dominado pelos 156ms de RTT até a VPS (CDN é P-21, pós-cutover), e dois artefatos que somem no domínio real — o `noindex` deliberado (SEO 54–61) e um 307 interno do Chromium em `*.hstgr.cloud` (HSTS pré-carregado). Re-medir no domínio real antes de mexer em mais alguma coisa |
 | MIG-121 | axe no CI, reportando (D-13) | 010 | Relatório publicado por PR | 2h | **done** — `acessibilidade.spec.ts` no gate, WCAG A/AA, nunca reprova; `axe.json` sobe como artefato. 1ª medição no staging: **76 ocorrências, todas `color-contrast`** — o contraste do protótipo, portado fiel (D-15) |
 | MIG-122 | Sentry | 010 | Erro de teste chega no painel | 2h |
 | MIG-123 | Backup `pg_dump` + **teste de restore** | Fase 4 | Restore em base limpa, verificado | 3h | **done** — timer diário na VPS (banco -Fc, mídia, segredos cifrados); restore conferido por contagem em base limpa. Cópia externa espera bucket (R2) |
