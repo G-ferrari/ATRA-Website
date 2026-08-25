@@ -1,0 +1,14 @@
+[Unit]
+Description=Backup diário do CMS da ATRA
+
+[Timer]
+# 03:10 UTC — fora do horário comercial brasileiro, e depois da meia-noite UTC
+# para que o carimbo do arquivo case com o dia que ele representa.
+OnCalendar=*-*-* 03:10:00
+# Se a VPS estiver desligada na hora, roda assim que voltar. Sem isto, uma
+# reinicialização às 3h significa um dia sem backup e ninguém percebe.
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

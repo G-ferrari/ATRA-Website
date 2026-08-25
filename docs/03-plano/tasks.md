@@ -495,7 +495,7 @@ muito tempo as três apontaram para `#`.
 | MIG-120 | Otimização de imagem e LCP | Fase 3 | Lighthouse ≥ 90 nas 5 rotas mais vistas | 4h |
 | MIG-121 | axe no CI, reportando (D-13) | 010 | Relatório publicado por PR | 2h |
 | MIG-122 | Sentry | 010 | Erro de teste chega no painel | 2h |
-| MIG-123 | Backup `pg_dump` + **teste de restore** | Fase 4 | Restore em base limpa, verificado | 3h |
+| MIG-123 | Backup `pg_dump` + **teste de restore** | Fase 4 | Restore em base limpa, verificado | 3h | **done** — timer diário na VPS (banco -Fc, mídia, segredos cifrados); restore conferido por contagem em base limpa. Cópia externa espera bucket (R2) |
 | MIG-124 | Uptime e alerta | 122 | Alerta dispara em queda simulada | 1.5h |
 | MIG-125 | `/design-system` com `noIndex` | 025 | Reconstruído dos tokens reais | 4h |
 | MIG-126 | **Guia do editor** (D-20) | Fase 4 | Cobre entrar, criar case, imagem+alt, preview, publicar, corrigir métrica | 4h |
