@@ -22,7 +22,10 @@ COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
 # PID do processo. Como o compose dá precedência ao ambiente do shell sobre o
 # `--env-file`, o source contaminava o Caddy com um hash inválido e o punha em
 # laço de reinício ("illegal base64 data"). Extrai-se só o necessário, por texto.
-valor() { grep "^$1=" "$RAIZ/.env.prod" | head -1 | cut -d= -f2- | sed "s/^'//;s/'\$//"; }
+# ⚠️ O `|| true` cobre o pipeline sob `pipefail`: variável AUSENTE devolve
+# vazio, não mata o script. Sem ele, o primeiro backup com BACKUP_S3_* ainda
+# não configurado morria em silêncio antes do trap — saída 1, zero linhas.
+valor() { { grep "^$1=" "$RAIZ/.env.prod" || true; } | head -1 | cut -d= -f2- | sed "s/^'//;s/'\$//"; }
 POSTGRES_PASSWORD="$(valor POSTGRES_PASSWORD)"
 SITE_URL="$(valor SITE_URL)"
 TAG_ANTERIOR="$(valor TAG)"
