@@ -60,6 +60,26 @@ const nextConfig: NextConfig = {
         source: '/api/media/file/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
+      /* MIG-145: os básicos de segurança, em toda rota. Aqui e não no Caddy,
+       * para valerem em qualquer proxy — inclusive num futuro atrás da
+       * Cloudflare (P-21).
+       *
+       * ⚠️ Sem Content-Security-Policy por enquanto, e é deliberado: o Next
+       * injeta scripts inline e uma CSP séria exige nonce por requisição —
+       * página estática não tem requisição para variar o nonce. Entra como
+       * melhoria própria, não de carona aqui.
+       *
+       * `SAMEORIGIN` e não `DENY`: o Live Preview do admin desenha o site num
+       * iframe da própria origem (payload.config, livePreview). */
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
     ]
   },
 
