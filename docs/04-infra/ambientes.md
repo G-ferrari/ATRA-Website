@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-17
+atualizado_em: 2026-08-25
 depende_de: [../00-contexto/decisoes.md]
 ---
 
@@ -8,16 +8,20 @@ depende_de: [../00-contexto/decisoes.md]
 
 ## Os três ambientes
 
-| | Local | Staging | Produção |
+| | Local | Staging *(no ar desde 24/08)* | Produção |
 |---|---|---|---|
-| URL | `http://localhost:3000` | `https://staging.atra.com.br` | `https://www.atra.com.br` |
-| Next | nativo (`pnpm dev`) | container | container |
-| Postgres | container | container no mesmo host | container no mesmo host |
-| Storage | MinIO em container | volume no host | volume no host |
-| Dado | seed determinístico | **cópia da produção**, anonimizada | real |
-| Acesso | — | protegido por senha (Basic Auth) + `noindex` | público |
-| E-mail | logado no console | Resend em modo teste | Resend |
-| Sentry | desligado | `environment: staging` | `environment: production` |
+| URL | `http://localhost:3000` | `https://srv1927832.hstgr.cloud` — vira `staging.atra.com.br` quando o registro A existir (P-23); o Caddy já aceita os dois | `https://www.atra.com.br` |
+| Next | nativo (`pnpm dev`) | container (imagem por SHA, trocada pela esteira) | container |
+| Postgres | container | container no mesmo host, só em 127.0.0.1 | container no mesmo host |
+| Storage | MinIO em container | MinIO em container, sem porta pública — R2 segue recomendado (deploy-vps.md) | idem, até P-21/R2 |
+| Dado | seed determinístico | **real** — 207 posts, 7 vagas, mídia do WP; zero fixture | real |
+| Acesso | — | senha (Basic Auth) + `noindex` + robots bloqueando | público |
+| E-mail | logado no console | sem chave: lead grava e `notified` fica falso | Resend |
+| Sentry | desligado | pendente (MIG-122, espera conta) | `environment: production` |
+
+⚠️ Automatizar contra a **API do CMS** no staging: autenticar por **cookie**, não
+por header — o Basic do Caddy já ocupa o `Authorization`. A nota completa está
+no runbook (seção do Ensaio).
 
 **Staging não é opcional.** É onde o ensaio de cutover roda (MIG-132) e onde o
 `redirects.csv` é validado antes de valer para o Google.

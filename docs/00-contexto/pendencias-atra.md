@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-21
+atualizado_em: 2026-08-25
 depende_de: [decisoes.md]
 ---
 
@@ -73,7 +73,7 @@ e resolve de uma vez.
 
 | # | Pergunta | O que trava | Custo de não decidir |
 |---|---|---|---|
-| **P-23** | **Quem tem acesso à conta Cloudflare da ATRA?** O DNS do domínio está lá | O cutover | Sem resolver com antecedência, a virada **trava no passo mais crítico**. Barato agora, caro às 7h da manhã do dia marcado |
+| **P-23** | **Quem tem acesso à conta Cloudflare da ATRA?** O DNS do domínio está lá | O cutover — e, desde 25/08, também o endereço amigável da homologação: `staging.atra.com.br` está pronto do lado do servidor, esperando **um registro A** | Sem resolver com antecedência, a virada **trava no passo mais crítico**. Barato agora, caro às 7h da manhã do dia marcado |
 
 > ⚠️ **No dia da virada, não tocar nos registros MX.** O e-mail da ATRA é Google
 > Workspace e está no mesmo DNS. Mexer em DNS e derrubar o e-mail da empresa é o

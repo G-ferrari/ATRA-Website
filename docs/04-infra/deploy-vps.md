@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-17
+atualizado_em: 2026-08-25
 depende_de: [docker.md, ambientes.md]
 ---
 
@@ -75,10 +75,14 @@ tudo na mão continua sendo `docker compose up -d`.
 **Dokploy** é uma alternativa legítima e mais enxuta. A escolha entre os dois é de
 preferência, não de arquitetura: ambos orquestram containers Docker padrão.
 
-> [!DECISÃO PENDENTE] **P-05** — confirmar Coolify. É reversível: nada no código
-> depende da plataforma, e a saída é o compose versionado. Se a ATRA já tiver
-> padrão de infraestrutura (o WP atual roda em RunCloud), seguir o padrão da casa
-> pode valer mais que a escolha técnica isolada.
+> ✅ **P-05 respondida na prática (25/08/2026) → D-28.** O caminho que subiu foi
+> **Compose + Caddy**, com o deploy por GitHub Actions — o que este comparativo
+> apontava como fraqueza do Compose ("precisa montar") custou um job de CI e um
+> script, e o rollback por tag de SHA foi exercitado de verdade. O Coolify
+> perdeu pelo próprio argumento da tabela: +1 GB de RAM e mais um painel exposto
+> à internet, numa VPS de 8 GB que também roda o build. O que roda está em
+> `docker-compose.prod.yml`, `Caddyfile` e `infra/` — tudo no git, que era o
+> critério de reprodutibilidade.
 
 ## Dimensionamento da VPS
 
@@ -92,9 +96,18 @@ majoritariamente estático.
 | Disco | 40 GB | **80 GB SSD** | Imagens Docker acumulam; mídia cresce; backups locais |
 | Banda | — | 2 TB | Folgado para o tráfego esperado |
 
-⚠️ **Buildar na VPS de produção compete por CPU com o site.** Preferir buildar no
-CI (GitHub Actions), publicar a imagem no registry e a VPS só puxar. Além de não
-competir, garante que o que roda em produção é exatamente o que passou nos testes.
+⚠️ **Buildar na VPS de produção compete por CPU com o site** — e por RAM: a
+primeira tentativa matou o Postgres com 70 OOM kills; um swapfile de 4 GB
+(`vm.swappiness=10`) absorve o pico desde então. O plano original era buildar no
+CI e publicar no registry, mas ele esbarra num fato do projeto: as páginas são
+**pré-renderizadas lendo o banco**, e o banco do CI tem fixture, não conteúdo —
+a imagem sairia com as páginas erradas. Por isso o build roda na VPS, contra o
+banco real, depois das migrações (`infra/deploy/deploy.sh`). Registry continua
+valendo para o futuro se a renderização migrar para ISR pura.
+
+⚠️ **Medido na prática (KVM 2, 2 vCPU/8 GB):** build completo em 3–5 min, site
+com ~4,4 GB de RAM em uso com tudo no ar. Funciona — o documento recomendava
+KVM 4 e a folga faria diferença no dia em que staging e produção coexistirem.
 
 ## Estratégia de deploy
 

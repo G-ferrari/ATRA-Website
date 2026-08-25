@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-21
+atualizado_em: 2026-08-25
 depende_de: [decisoes.md]
 ---
 
@@ -29,7 +29,7 @@ Numeradas, com o custo de não decidir. **P-01 a P-03 bloqueiam a Etapa 2.**
 | ~~P-02~~ | ~~Como as vagas chegam ao site~~ | — | ✅ **Respondida por evidência (17/08/2026).** O sitemap do WP mostra 6 vagas publicadas como páginas comuns — não há ATS. A collection `jobs` está correta e o fluxo atual se mantém, só muda o CMS. Resta confirmar com o RH se querem seguir assim ou adotar um ATS na virada |
 | ~~P-03~~ | ~~Tipografia oficial da marca~~ | — | ✅ **Resolvida em 17/08/2026 → D-16.** Mona Sans, SIL OFL 1.1, self-hosted |
 | **P-04** | Qual o **teto de custo mensal** aceitável para a ATRA AI? | números concretos de D-12 | ⚠️ **Agora bloqueia código no ar.** MIG-061 subiu `/chat` com limite de **20 req/IP/hora**, escolhido por ser conservador, e contador em memória do processo. Sem o teto real não dá para dimensionar nem trocar por Redis — e a UI generativa do chat fica de fora, porque testá-la é gastar cota |
-| **P-05** | Plataforma de deploy: **Coolify/Dokploy ou Compose + Caddy**? | provisionamento da VPS | ✳️ **Comparativo entregue em [deploy-vps](../04-infra/deploy-vps.md), com recomendação de Coolify.** Falta confirmar — e vale checar se a ATRA já tem padrão de infra (o WP roda em RunCloud) |
+| ~~P-05~~ | ~~Plataforma de deploy~~ | — | ✅ **Resolvida em 25/08/2026 → D-28.** Compose + Caddy com esteira no GitHub Actions, decidida na prática ao subir o staging na VPS — a recomendação anterior (Coolify) perdeu para o custo do próprio painel numa máquina de 8 GB que também builda |
 | ~~P-06~~ | ~~A branch `migracao` vai para o remoto, ou fork?~~ | — | ✅ **Respondida por evidência (20/08).** O remoto `G-ferrari/ATRA-Website` já existe, `origin/migracao` também, e o CI dispara em push para ela. A branch foi publicada e o CI fechou verde nos dois jobs |
 | **P-07** *(reduzida)* | Quem escreve o corpo dos **9 materiais** (3 relatórios, 3 ebooks, 3 webinars) que só existem no protótipo? | publicação desses 9 itens | ✅ Os **6 posts** saíram do escopo: os fictícios são descartados e os 207 reais vêm do WP com corpo (D-17). Restam os 9 materiais, que não existem em lugar nenhum — ficam em rascunho até alguém escrever |
 | **P-08** | O **conteúdo EN existente** (169 chaves) é tradução aprovada pelo marketing ou saída de máquina do protótipo? | escopo de revisão antes do cutover | Se for de máquina, o site publica inglês não revisado sob o domínio da ATRA. Entra revisão humana no roadmap |

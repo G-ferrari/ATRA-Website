@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-17
+atualizado_em: 2026-08-25
 depende_de: [../02-especificacao/mapa-de-migracao.md, ../00-contexto/decisoes.md]
 ---
 
@@ -20,16 +20,24 @@ depois da paridade de conteúdo.
 | 1 | Fundação | ✅ **concluída em 18/08/2026** | 0 |
 | 2 | Fatia vertical | ✅ **concluída em 20/08/2026** — MIG-072a fechou o megamenu, último item aberto | 1 |
 | 3 | Fábrica de rotas | ✅ **concluída em 20/08/2026** — 20 rotas no ar, 15 sob regressão visual | 2 |
-| 4a | Seed do protótipo | Conteúdo que já existe em `legacy/` no CMS | 2 |
-| 4b | Migração do WordPress | 207 posts + 6 vagas + mídia | 1 |
-| 4c | Conteúdo novo | `segments` (10) + `solutions` (6→13) + página legal | 3 |
-| 5 | Formulários, SEO e analytics | Leads chegando, sitemap, redirects, GA4 | 3 |
-| 6 | Endurecimento | Performance, a11y, observabilidade, backup | 5 |
+| 4a | Seed do protótipo | ✅ **concluída** — o conteúdo do protótipo saiu do repositório e virou CMS | 2 |
+| 4b | Migração do WordPress | ✅ **concluída** — 207 posts, 287 imagens, 7 vagas | 1 |
+| 4c | Conteúdo novo | ✅ **concluída** — 8 segmentos, 18 soluções, página legal, 261 redirects | 3 |
+| 5 | Formulários, SEO e analytics | 🔶 **8 de 12** — o que falta espera chave/conta (GA4, Resend) ou decisão (P-17, P-07) | 3 |
+| 6 | Endurecimento | 🔶 **12 de 17** — staging no ar na VPS, esteira de deploy com rollback, backup com restore provado, axe medindo, revisão crítica (MIG-140–147) fechada. Faltam Sentry, uptime e o treinamento (MIG-127/128) | 5 |
 | 7 | Cutover | DNS apontado, WP desativado | 4c, 6 |
 | 8 | Limpeza | `legacy/` removido, dívida priorizada | 7 |
 
 **4a, 4b e 4c rodam em paralelo com a fábrica de rotas** — são script e conteúdo,
 não dependem das telas ficarem prontas (só a validação final depende).
+
+> **Estado em 25/08/2026.** O site está **no ar em homologação**
+> (`srv1927832.hstgr.cloud`, atrás de senha e `noindex`), com todo o conteúdo
+> real e nenhum inventado. `git push` na `migracao` valida e publica sozinho,
+> com rollback automático; o banco tem backup diário com restore verificado; e
+> **publicar no CMS atualiza o site sem deploy** (MIG-143) — o objetivo de
+> negócio da migração passou a ser verdade na prática. O caminho crítico agora
+> é decisão e acesso, não engenharia: ver `pendencias-atra.md`.
 
 ---
 

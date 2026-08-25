@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-17
+atualizado_em: 2026-08-25
 depende_de: [deploy-vps.md]
 ---
 
@@ -38,6 +38,22 @@ semanal  domingo → retenção estendida
 `DROP TABLE`, não contra perder o servidor. E a credencial de upload deve ser
 **write-only**: se a VPS for comprometida, o invasor não consegue apagar o
 histórico de backups.
+
+### O que está implementado (25/08 — MIG-123) e o que esta spec ainda cobra
+
+Vive em `infra/backup/`: timer de systemd às 03:10 UTC (com `Persistent=true` —
+VPS desligada na hora roda ao religar), três artefatos por corrida (banco em
+`-Fc`, mídia lida direto do volume, `.env.prod` cifrado com AES-256/PBKDF2) e
+**restore verificado por contagem em base limpa** — o `testar-restore.sh` já
+provou o próprio valor pegando um dump que restaurava vazio sem erro.
+
+| Item da spec | Estado |
+|---|---|
+| `pg_dump -Fc` diário + rotação | ✅ 14 dias (a spec pede camadas 7/4/6 — refinar quando houver destino externo) |
+| Restore verificado | ✅ **superado** — por contagem mínima por tabela, não só "rodou" |
+| Cópia externa write-only | ⏳ o script liga sozinho quando `BACKUP_S3_*` existir; **espera o bucket (R2)** e avisa em toda corrida enquanto falta |
+| Cifrar o dump antes do upload externo | ⏳ hoje só os segredos são cifrados; entra junto com a cópia externa — é lá que o dump sai do host |
+| Alerta de tamanho (−20%) | ⏳ junto com uptime/alerta (MIG-124, espera destino de notificação) |
 
 ### Teste de restore — o item que costuma faltar
 

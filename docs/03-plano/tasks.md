@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-17
+atualizado_em: 2026-08-25
 depende_de: [roadmap.md, ../02-especificacao/mapa-de-migracao.md]
 ---
 
@@ -537,18 +537,23 @@ o `next/image` só otimiza origem própria e o lockout de login está no default
 
 ## Totais
 
-| Fase | Tasks | Horas |
-|---|---|---|
-| 1 Fundação | 14 | ~23h |
-| 2 Fatia vertical | 18 | ~51,5h |
-| 3 Fábrica de rotas | 26 | ~94h |
-| 4a Seed | 3 | ~7,5h |
-| 4b Migração WP | 6 | ~15h |
-| 4c Conteúdo novo | 6 | ~21h |
-| 5 Formulários/SEO | 12 | ~30,5h |
-| 6 Endurecimento | 9 | ~24,5h |
-| 7–8 Cutover/limpeza | 7 | ~10h |
-| **Total** | **101** | **~277h** |
+| Fase | Tasks | Feitas | Horas |
+|---|---|---|---|
+| 1 Fundação | 14 | 14 | ~23h |
+| 2 Fatia vertical | 18 | 18 | ~51,5h |
+| 3 Fábrica de rotas | 26 | 26 | ~94h |
+| 4a Seed | 3 | 3 | ~7,5h |
+| 4b Migração WP | 6 | 6 | ~15h |
+| 4c Conteúdo novo | 6 | 6 | ~21h |
+| 5 Formulários/SEO | 12 | 8 | ~30,5h |
+| 6 Endurecimento | 17 | 12 | ~34,75h |
+| 7–8 Cutover/limpeza | 7 | 0 | ~10h |
+| **Total** | **109** | **93 (85%)** | **~287h** |
+
+A Fase 6 cresceu com a revisão crítica de 25/08 (MIG-140–147) e com o que a VPS
+exigiu fora do plano: a esteira de deploy com rollback e o backup com restore
+provado nasceram ali, sem número de task próprio — estão nos commits
+`3d869ce1` e `50b27052`.
 
 ⚠️ **A tabela conta as tasks ativas.** Duas foram canceladas por falta de fonte
 de dado, não por corte de escopo — MIG-008 (a fonte já carregava, D-16) e

@@ -486,6 +486,29 @@ imagem, e capa-pendente é 4:3 enquanto as do Unsplash são 3:2, então qualquer
 caixa dimensionada pelo intrínseco da imagem teria mexido no layout. Nenhuma é:
 todas usam `aspect-*`, `min-h-*` ou `fill`.
 
+## D-28 — Compose + Caddy na VPS, deploy pelo GitHub Actions
+
+*Responde [P-05](pendencias.md), em 25/08/2026 — decidida na prática, durante a
+subida do staging.*
+
+**Contexto.** O comparativo de `deploy-vps.md` recomendava Coolify pelo que ele
+entrega pronto: deploy por git, backup agendado, segredos com UI. A VPS
+contratada (Hostinger KVM 2, 2 vCPU/8 GB) mudou a conta: o painel custaria ~1 GB
+de RAM e 1 vCPU numa máquina que também builda o site — e o build sozinho já
+derrubou o Postgres por memória uma vez.
+
+**Escolha.** **Compose + Caddy**, com a esteira no GitHub Actions: push na
+`migracao` → CI valida → rsync → `infra/deploy/deploy.sh` (migra, builda contra
+o banco real, troca com healthcheck, rollback por tag de SHA). Backup virou
+timer de systemd com restore verificado (`infra/backup/`).
+
+**Consequência.** Tudo que descreve o ambiente vive no git — compose, Caddyfile,
+scripts — que era o critério de reprodutibilidade do comparativo. O que o
+Coolify daria de graça foi pago uma vez em scripts que o repositório versiona e
+o CI exercita a cada push. O rollback não é teórico: foi acionado três vezes por
+falhas reais de rede sem o site piscar. Reversível como sempre foi — nada no
+código sabe onde roda.
+
 ---
 
 ## Pendentes
