@@ -48,6 +48,26 @@ const nextConfig: NextConfig = {
    * `server.js` que o `CMD` executa. */
   output: 'standalone',
 
+  /* MIG-120. A mídia do Payload saía com **ttl=0**: os mesmos logos e selos —
+   * ~438 KB, presentes em toda página — eram re-baixados a cada visita, e o
+   * Lighthouse cobrava exatamente isso (`cache-insight`). Um ano e `immutable`
+   * porque o filename do Payload é efetivamente imutável: upload com nome
+   * repetido ganha sufixo, nunca substitui o arquivo. Trocar a imagem no admin
+   * gera URL nova, então cache longo não segura versão velha. */
+  async headers() {
+    return [
+      {
+        source: '/api/media/file/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+    ]
+  },
+
+  /* O mesmo problema na saída do `next/image`: o padrão são 60s de cache para
+   * a variante otimizada. A origem é a mídia imutável de cima — a variante
+   * pode viver o mesmo ano. */
+  images: { minimumCacheTTL: 31536000 },
+
   /* 60s é o padrão e era folgado para 77 páginas. Com 491 e menos workers, a
    * página que espera a vez precisa de margem — o custo real de uma delas, já
    * medido, é de dezenas de milissegundos. */
