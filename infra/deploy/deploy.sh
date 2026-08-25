@@ -46,7 +46,11 @@ docker build --target runner --network=host --no-cache-filter build,runner \
   --build-arg NEXT_PUBLIC_SITE_URL="${SITE_URL}" \
   --build-arg S3_ENDPOINT="http://127.0.0.1:9000" \
   --build-arg S3_BUCKET="atra-media" \
-  -t "atra-website:$SHA" . 2>&1 | grep -E "Generating static pages using [0-9]+ workers \(5|ERROR" | tail -1
+  -t "atra-website:$SHA" . 2>&1 | grep --line-buffered -E "Generating static pages|ERROR" \
+  || true  # o veredito é do healthcheck adiante; aqui é só progresso fluindo
+# ⚠️ `--line-buffered` e sem `tail`: o progresso precisa **fluir** durante os
+# ~5min de build — era o silêncio deste trecho que deixava o SSH do CI ocioso
+# até o caminho de rede derrubar a conexão ("Broken pipe").
 
 echo "→ troca"
 sed -i "s/^TAG=.*/TAG=$SHA/" .env.prod

@@ -247,7 +247,20 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy
           chmod 600 ~/.ssh/deploy
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          # ⚠️ Keepalive obrigatório: o build na VPS fica minutos sem tráfego e o
+          # caminho Azure→Hostinger derruba conexão ociosa (~4min) — o deploy
+          # morria em "Broken pipe" no meio do build. E o keyscan com retry:
+          # o mesmo caminho já engoliu o primeiro handshake de um job.
+          cat >> ~/.ssh/config <<'CFG'
+          Host *
+            ServerAliveInterval 15
+            ServerAliveCountMax 8
+          CFG
+          for i in 1 2 3; do
+            ssh-keyscan -T 10 -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null && break
+            sleep 5
+          done
+          grep -q . ~/.ssh/known_hosts
 
       - name: Código para a VPS
         # O mesmo conjunto que o Dockerfile consome (contexto = raiz do repo,
