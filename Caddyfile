@@ -52,6 +52,20 @@ Disallow: /" 200
 		{$BASIC_AUTH_USER} {$BASIC_AUTH_HASH}
 	}
 
+	# MIG-104: o caminho público das URLs pré-assinadas do bucket privado.
+	# O MinIO segue sem porta exposta — só se chega por aqui, e sem assinatura
+	# válida ele responde 403 (provado). Declarado ANTES do proxy geral: a
+	# primeira rota que casa vence.
+	#
+	# ⚠️ `-Authorization` é obrigatório: no staging o navegador reanexa o Basic
+	# do site, e o MinIO interpreta qualquer header Authorization como
+	# assinatura AWS — a presença dele quebra a URL pré-assinada. A autenticação
+	# do site já aconteceu no basic_auth acima; daqui para dentro vale a
+	# assinatura da URL.
+	reverse_proxy /atra-privado/* minio:9000 {
+		header_up -Authorization
+	}
+
 	reverse_proxy web:3000 {
 		# O Next confia nestes para montar URL absoluta e ler o IP de quem
 		# chega — o limite por IP do formulário e do chat dependem disso

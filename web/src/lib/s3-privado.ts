@@ -13,8 +13,15 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
  */
 const EXPIRA_EM_SEGUNDOS = 15 * 60
 
+/* ⚠️ Endpoint PÚBLICO, não o interno. A primeira prova no staging pegou:
+ * assinar com `S3_ENDPOINT` (http://minio:9000, hostname da rede do compose)
+ * gera uma URL que o navegador do visitante não resolve. `S3_PUBLIC_ENDPOINT`
+ * é o que o mundo alcança — no staging, o próprio site, com o Caddy roteando
+ * `/atra-privado/*` até o MinIO. A assinatura cobre o Host, então os dois
+ * lados precisam falar do mesmo nome. Sem a variável (dev nativo), cai no
+ * S3_ENDPOINT, que ali é localhost e o browser alcança. */
 const cliente = new S3Client({
-  endpoint: process.env.S3_ENDPOINT,
+  endpoint: process.env.S3_PUBLIC_ENDPOINT || process.env.S3_ENDPOINT,
   region: process.env.S3_REGION || 'us-east-1',
   credentials: {
     accessKeyId: process.env.S3_ACCESS_KEY || '',
