@@ -249,25 +249,29 @@ jobs:
           chmod 600 ~/.ssh/deploy
           # ⚠️ Keepalive obrigatório: o build na VPS fica minutos sem tráfego e o
           # caminho Azure→Hostinger derruba conexão ociosa (~4min) — o deploy
-          # morria em "Broken pipe" no meio do build. E o keyscan com retry:
-          # o mesmo caminho já engoliu o primeiro handshake de um job.
+          # morria em "Broken pipe" no meio do build.
           cat >> ~/.ssh/config <<'CFG'
           Host *
             ServerAliveInterval 15
             ServerAliveCountMax 8
           CFG
-          for i in 1 2 3; do
-            ssh-keyscan -T 10 -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null && break
-            sleep 5
-          done
-          grep -q . ~/.ssh/known_hosts
+          # ⚠️ Chave do host FIXADA, não escaneada. O keyscan por run já falhou
+          # duas vezes — o caminho até a Hostinger engole handshakes de vez em
+          # quando, e numa delas engoliu as três tentativas. Fixar remove a
+          # dependência de rede e fecha o que o scan deixava aberto: aceitar a
+          # chave de quem quer que responda é confiar no primeiro a atender.
+          echo "${{ secrets.VPS_HOST_KEY }}" > ~/.ssh/known_hosts
 
       - name: Código para a VPS
         # O mesmo conjunto que o Dockerfile consome (contexto = raiz do repo,
         # por causa do redirects.csv — ver o topo do Dockerfile). `legacy/` fica
         # de fora: o runtime não lê nada de lá, só o seed, que não roda aqui.
+        #
+        # ⚠️ Com retry: o mesmo filtro intermitente que comia o keyscan pode
+        # comer a primeira conexão do rsync. Três tentativas, 20s entre elas.
         run: |
-          rsync -az --delete \
+          tentar() { for i in 1 2 3; do "$@" && return 0; sleep 20; done; return 1; }
+          tentar rsync -az --delete \
             --exclude node_modules --exclude .next --exclude .git \
             --exclude legacy --exclude test-results --exclude playwright-report \
             --exclude '.env*' \
@@ -276,6 +280,10 @@ jobs:
             root@${{ secrets.VPS_HOST }}:/opt/atra/
 
       - name: Migra, builda e troca
+        # Retry aqui também — e é seguro: o deploy.sh é a própria rotina de
+        # recuperação (build refeito, migração idempotente, troca com
+        # healthcheck e rollback). Cair no meio e recomeçar é o caminho normal.
         run: |
-          ssh -i ~/.ssh/deploy root@${{ secrets.VPS_HOST }} \
+          tentar() { for i in 1 2 3; do "$@" && return 0; sleep 20; done; return 1; }
+          tentar ssh -i ~/.ssh/deploy root@${{ secrets.VPS_HOST }} \
             "chmod +x /opt/atra/infra/deploy/deploy.sh /opt/atra/infra/backup/*.sh && /opt/atra/infra/deploy/deploy.sh ${{ github.sha }}"
