@@ -62,6 +62,15 @@ export const Resources: CollectionConfig = {
       label: { pt: 'Descrição', en: 'Description' },
     },
     {
+      /* MIG-104. A presença deste arquivo é o que **liga** o download gated na
+       * página do material: sem arquivo, o botão segue como está (P-07 — os 9
+       * materiais ainda não têm corpo nem PDF). Subir o PDF aqui é o gatilho. */
+      name: 'file',
+      type: 'relationship',
+      relationTo: 'private-files',
+      label: { pt: 'Arquivo (PDF) — liga o download gated', en: 'File (PDF) — enables the gated download' },
+    },
+    {
       name: 'coverImage',
       type: 'upload',
       relationTo: 'media',

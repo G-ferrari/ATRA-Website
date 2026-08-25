@@ -22,6 +22,9 @@ export function toResourceDetail(doc: Doc): ResourceDetail {
   return {
     ...base,
     body: doc.body ?? null,
+    id: doc.id,
+    /* `file` populado (depth ≥ 1) ou só id — os dois contam como "tem". */
+    temDownload: Boolean(doc.file),
     seo: toSeo(doc.seo, { titulo: base.title, descricao: base.description, imagem: base.image }),
   }
 }

@@ -23,6 +23,7 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Partners } from './collections/Partners'
 import { Posts } from './collections/Posts'
+import { PrivateFiles } from './collections/PrivateFiles'
 import { Resources } from './collections/Resources'
 import { AiUsage } from './collections/AiUsage'
 import { FormSubmissions } from './collections/FormSubmissions'
@@ -91,9 +92,9 @@ export default buildConfig({
       Users, Media, Topics, Testimonials,
       Cases, GlossaryTerms, Jobs, Pages, Posts, Resources, Webinars,
       Clients, Partners, Segments, Solutions, SpecialistRoles,
-      AiUsage, FormSubmissions,
+      AiUsage, FormSubmissions, PrivateFiles,
     ],
-    ['users', 'ai-usage', 'form-submissions'],
+    ['users', 'ai-usage', 'form-submissions', 'private-files'],
   ),
 
   globals: [AtraAi, Contact, Footer, Navigation, SiteSettings].map((g) => ({
@@ -164,6 +165,22 @@ export default buildConfig({
         },
         // MinIO não suporta bucket como subdomínio; sem isto o upload
         // tenta http://atra-media.localhost:9000 e falha na resolução.
+        forcePathStyle: true,
+      },
+    }),
+    /* Segundo bucket, mesma API: `private-files` NÃO pode morar no bucket da
+     * media, que tem download anônimo — e política de anonimato é por bucket.
+     * Currículo em bucket público estaria a uma URL adivinhada de distância. */
+    s3Storage({
+      collections: { 'private-files': true },
+      bucket: process.env.S3_PRIVATE_BUCKET || 'atra-privado',
+      config: {
+        endpoint: process.env.S3_ENDPOINT,
+        region: process.env.S3_REGION || 'us-east-1',
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY || '',
+          secretAccessKey: process.env.S3_SECRET_KEY || '',
+        },
         forcePathStyle: true,
       },
     }),

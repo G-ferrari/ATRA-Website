@@ -42,6 +42,7 @@ import * as migration_20260821_130740_consumo_da_ia from './20260821_130740_cons
 import * as migration_20260821_131123_ia_localizada from './20260821_131123_ia_localizada';
 import * as migration_20260821_132858_envios_de_formulario from './20260821_132858_envios_de_formulario';
 import * as migration_20260821_183445_utm_do_formulario from './20260821_183445_utm_do_formulario';
+import * as migration_20260825_220544_formularios_no_escuro from './20260825_220544_formularios_no_escuro';
 
 export const migrations = [
   {
@@ -262,6 +263,11 @@ export const migrations = [
   {
     up: migration_20260821_183445_utm_do_formulario.up,
     down: migration_20260821_183445_utm_do_formulario.down,
-    name: '20260821_183445_utm_do_formulario'
+    name: '20260821_183445_utm_do_formulario',
+  },
+  {
+    up: migration_20260825_220544_formularios_no_escuro.up,
+    down: migration_20260825_220544_formularios_no_escuro.down,
+    name: '20260825_220544_formularios_no_escuro'
   },
 ];

@@ -52,6 +52,8 @@ export const FormSubmissions: CollectionConfig = {
         { value: 'contact', label: { pt: 'Contato', en: 'Contact' } },
         { value: 'newsletter', label: { pt: 'Newsletter', en: 'Newsletter' } },
         { value: 'talent-pool', label: { pt: 'Banco de talentos', en: 'Talent pool' } },
+        { value: 'job-application', label: { pt: 'Candidatura', en: 'Job application' } },
+        { value: 'material-download', label: { pt: 'Download de material', en: 'Material download' } },
       ],
       label: { pt: 'Origem', en: 'Kind' },
       admin: { position: 'sidebar' },
@@ -70,6 +72,28 @@ export const FormSubmissions: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     { name: 'email', type: 'email', required: true, label: { pt: 'E-mail', en: 'Email' } },
+    /* MIG-103 — dupla confirmação da newsletter. `confirmedAt` vazio = o
+     * visitante pediu mas nunca clicou no link: **não** está na lista. O token
+     * é o segredo do link de confirmação; `hidden` porque não é dado editorial. */
+    { name: 'confirmationToken', type: 'text', index: true, admin: { hidden: true } },
+    {
+      name: 'confirmedAt',
+      type: 'date',
+      label: { pt: 'Confirmado em', en: 'Confirmed at' },
+      admin: {
+        position: 'sidebar',
+        description: {
+          pt: 'Newsletter: vazio significa que o visitante ainda não confirmou pelo e-mail — não conta como inscrito.',
+          en: 'Newsletter: empty means the visitor never confirmed by e-mail — not a subscriber.',
+        },
+      },
+    },
+    /* MIG-102 — candidatura: a vaga e o currículo. O CV mora em
+     * `private-files`; daqui o RH abre pelo admin, autenticado. */
+    { name: 'job', type: 'relationship', relationTo: 'jobs', label: { pt: 'Vaga', en: 'Job' } },
+    { name: 'cv', type: 'relationship', relationTo: 'private-files', label: { pt: 'Currículo', en: 'CV' } },
+    /* MIG-104 — download: qual material o lead pediu. */
+    { name: 'resource', type: 'relationship', relationTo: 'resources', label: { pt: 'Material', en: 'Material' } },
     { name: 'name', type: 'text', label: { pt: 'Nome', en: 'Name' } },
     { name: 'phone', type: 'text', label: { pt: 'Telefone', en: 'Phone' } },
     { name: 'company', type: 'text', label: { pt: 'Empresa', en: 'Company' } },

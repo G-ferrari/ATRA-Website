@@ -6,6 +6,7 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { RichText } from '@/components/content/rich-text'
+import { Candidatura } from '@/components/forms/candidatura'
 import { ContactCta } from '@/components/ui'
 import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
@@ -26,6 +27,7 @@ import { metadataDe } from '@/lib/seo'
 const TEXTOS = {
   pt: {
     voltar: 'Ver todas as vagas',
+    candidatarTitulo: 'Candidate-se a esta vaga',
     semCorpoTitulo: 'Descrição em preparação',
     semCorpoTexto: 'Os detalhes desta vaga ainda estão sendo finalizados. Enquanto isso, fale com a gente pelo banco de talentos.',
     ctaTitulo: 'Quer fazer parte',
@@ -37,6 +39,7 @@ const TEXTOS = {
   },
   en: {
     voltar: 'See all roles',
+    candidatarTitulo: 'Apply for this role',
     semCorpoTitulo: 'Description in preparation',
     semCorpoTexto: 'The details for this role are still being finalized. In the meantime, reach out through the talent pool.',
     ctaTitulo: 'Want to join',
@@ -154,6 +157,24 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
           </div>
         </div>
       </section>
+
+      {/* MIG-102: a candidatura existe e funciona, mas só monta com
+       * `ENABLE_JOB_APPLICATIONS=1` — P-17 (retenção do CV e acesso do RH,
+       * LGPD) é quem liga. Variável de servidor lida aqui no Server Component;
+       * mudar exige rebuild, o que está certo: ligar coleta de dado pessoal
+       * não deveria ser um toggle silencioso. */}
+      {process.env.ENABLE_JOB_APPLICATIONS === '1' && (
+        <section className="pb-24">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-2xl font-display font-light text-text-main mb-6">
+                {t.candidatarTitulo}
+              </h2>
+              <Candidatura jobId={vaga.id} jobTitle={vaga.title} />
+            </div>
+          </div>
+        </section>
+      )}
 
       <ContactCta
         title={t.ctaTitulo}

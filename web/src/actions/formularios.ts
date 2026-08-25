@@ -1,5 +1,7 @@
 'use server'
 
+import { randomBytes } from 'node:crypto'
+
 import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
@@ -88,6 +90,10 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         },
         status: 'new',
         notified: false,
+        /* MIG-103: newsletter é dupla confirmação. O token vai no e-mail; sem
+         * o clique, `confirmedAt` fica vazio e o cadastro NÃO conta como
+         * inscrito — está pendente, visível no admin. */
+        ...(kind === 'newsletter' ? { confirmationToken: gerarToken() } : {}),
       },
     })
   } catch (e) {
@@ -97,13 +103,22 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
 
   /* O aviso é o **segundo** passo e não pode derrubar o primeiro. Sem chave de
    * e-mail, `notified` fica falso e a falta aparece no admin. */
-  const contato = await lerContato()
-  const enviou = await enviarAviso({
-    para: contato.email,
-    assunto: `[site] ${ASSUNTO[kind]}${texto(dados, 'company') ? ` — ${texto(dados, 'company')}` : ''}`,
-    responderPara: email,
-    texto: resumo(dados, email),
-  })
+  let enviou: boolean
+  if (kind === 'newsletter') {
+    /* MIG-103: quem recebe e-mail é o VISITANTE (o link de confirmação), não a
+     * empresa — aviso por inscrito seria ruído; a lista vive no admin. Sem a
+     * chave do Resend o e-mail não sai, o cadastro fica pendente e o admin
+     * mostra exatamente isso. */
+    enviou = await enviarConfirmacaoDeNewsletter(payload, email)
+  } else {
+    const contato = await lerContato()
+    enviou = await enviarAviso({
+      para: contato.email,
+      assunto: `[site] ${ASSUNTO[kind]}${texto(dados, 'company') ? ` — ${texto(dados, 'company')}` : ''}`,
+      responderPara: email,
+      texto: resumo(dados, email),
+    })
+  }
 
   if (enviou) {
     const { docs } = await payload.find({
@@ -117,6 +132,38 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   }
 
   return { ok: true }
+}
+
+function gerarToken(): string {
+  return randomBytes(24).toString('hex')
+}
+
+/** Reenvia o link a partir do doc recém-criado — o token está lá, não em memória. */
+async function enviarConfirmacaoDeNewsletter(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  email: string,
+): Promise<boolean> {
+  const { docs } = await payload.find({
+    collection: 'form-submissions',
+    where: { email: { equals: email }, kind: { equals: 'newsletter' } },
+    sort: '-createdAt',
+    limit: 1,
+    depth: 0,
+  })
+  const token = docs[0]?.confirmationToken
+  if (!token) return false
+  const origem = process.env.NEXT_PUBLIC_SITE_URL ?? ''
+  return enviarAviso({
+    para: email,
+    assunto: 'Confirme sua inscrição na newsletter da ATRA',
+    texto: [
+      'Você pediu para receber os insights da ATRA por e-mail.',
+      '',
+      `Para confirmar, abra este link: ${origem}/api/newsletter/confirmar?token=${token}`,
+      '',
+      'Se não foi você, ignore esta mensagem — sem o clique, nada é ativado.',
+    ].join('\n'),
+  })
 }
 
 const ASSUNTO: Record<string, string> = {

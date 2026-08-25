@@ -114,6 +114,11 @@ export type PostDetail = PostCard & {
 export type ResourceDetail = Resource & {
   /** Documento Lexical serializado; `null` enquanto ninguém escreveu. */
   body: unknown | null
+  /* MIG-104. O id vai para a Server Action do download; `temDownload` é a
+   * presença do PDF em `resources.file` — é ela que liga o formulário gated,
+   * material a material (P-07: subir o arquivo é o interruptor). */
+  id: number
+  temDownload: boolean
   seo: Seo
 }
 
@@ -451,6 +456,8 @@ export type VagaDetalhe = Vaga & {
   summary: string
   /** Documento Lexical serializado; `null` enquanto ninguém escreveu. */
   body: unknown | null
+  /** MIG-102: vai para a Server Action da candidatura. */
+  id: number
   seo: Seo
 }
 

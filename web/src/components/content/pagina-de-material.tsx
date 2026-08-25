@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { RichText } from '@/components/content/rich-text'
+import { DownloadGate } from '@/components/forms/download-gate'
 import { ContactCta } from '@/components/ui'
 import type { Locale } from '@/lib/locales'
 import { dataPorExtenso } from '@/lib/mappers/resource'
@@ -105,16 +106,24 @@ export function PaginaDeMaterial({
                 </div>
               )}
 
-              {/* Inerte até MIG-104 — ver a nota no topo do arquivo. */}
-              <button
-                type="button"
-                disabled
-                title={t.ctaIndisponivel}
-                className="inline-flex items-center gap-3 bg-secondary/60 text-white px-10 py-5 rounded-[6px] font-bold text-lg cursor-not-allowed"
-              >
-                <Download size={20} aria-hidden /> {t.cta}
-              </button>
-              <p className="text-xs text-white/60 mt-3">{t.ctaIndisponivel}</p>
+              {/* MIG-104: com PDF no material, o formulário gated; sem, o
+               * botão inerte de sempre. Subir o arquivo no admin é o que troca
+               * um pelo outro — ver `actions/materiais.ts`. */}
+              {material.temDownload ? (
+                <DownloadGate resourceId={material.id} />
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    disabled
+                    title={t.ctaIndisponivel}
+                    className="inline-flex items-center gap-3 bg-secondary/60 text-white px-10 py-5 rounded-[6px] font-bold text-lg cursor-not-allowed"
+                  >
+                    <Download size={20} aria-hidden /> {t.cta}
+                  </button>
+                  <p className="text-xs text-white/60 mt-3">{t.ctaIndisponivel}</p>
+                </>
+              )}
             </div>
 
             <div className="lg:w-1/3 w-full max-w-xs mx-auto lg:mx-0">

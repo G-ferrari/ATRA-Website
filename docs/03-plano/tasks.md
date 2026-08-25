@@ -382,9 +382,9 @@ muito tempo as três apontaram para `#`.
 |---|---|---|---|---|
 | MIG-100 | `form-submissions` + Server Action de contato | 053 | Envio grava no banco e dispara e-mail | 4h | **done** — home e `/contato`; sem chave de e-mail o lead grava e `notified` fica falso |
 | MIG-101 | Anti-spam (honeypot, time trap, rate limit) | 100 | Bot simulado é barrado; humano passa | 2h | **done** — três barreiras, nenhuma delas CAPTCHA |
-| MIG-102 | Formulário de candidatura + upload de CV | 100, 051 | PDF em storage privado, URL assinada | 3h |
-| MIG-103 | Newsletter com double opt-in | 100 | Confirmação por e-mail antes de ativar | 3h |
-| MIG-104 | Download gated de material | 100, 045 | Formulário libera arquivo por URL assinada | 2.5h |
+| MIG-102 | Formulário de candidatura + upload de CV | 100, 051 | PDF em storage privado, URL assinada | 3h | **construída no escuro** — action, validação de PDF (assinatura real, 5 MB), CV em `private-files` (bucket privado, RH lê pelo admin autenticado — dispensa URL assinada). Liga com `ENABLE_JOB_APPLICATIONS=1` quando **P-17** responder |
+| MIG-103 | Newsletter com double opt-in | 100 | Confirmação por e-mail antes de ativar | 3h | **done** — token + `/api/newsletter/confirmar` + página de aterrissagem; sem `confirmedAt` não é inscrito. Sem chave do Resend o cadastro fica pendente, visível no admin |
+| MIG-104 | Download gated de material | 100, 045 | Formulário libera arquivo por URL assinada | 2.5h | **construída no escuro** — URL pré-assinada de 15 min direto do bucket privado (provada localmente: 200 assinada, 403 sem). **Liga sozinha, material a material**: subir o PDF em `resources.file` é o interruptor (P-07) |
 | MIG-105 | `generateMetadata` em todas as rotas | Fase 3 | Toda rota com title e description próprios | 3h | **done** — e o grupo `seo` passou a ser lido; ganhou canônica e `hreflang` |
 | MIG-106 | `sitemap.ts` + `robots.ts` | 105 | Só publicados; sem locale não traduzido | 2h | **done** — 270 URLs, só 16 em inglês |
 | MIG-107 | JSON-LD | 105 | Rich Results Test valida | 2.5h | **done** — `Organization` no layout, `Article` no artigo, `Service` na solução |

@@ -24,6 +24,7 @@ export function toVagaDetalhe(doc: Job, locale: Locale): VagaDetalhe {
   return {
     ...base,
     summary: doc.summary,
+    id: doc.id,
     seo: toSeo(doc.seo, { titulo: base.title, descricao: doc.summary }),
     body: doc.body ?? null,
   }

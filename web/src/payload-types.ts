@@ -85,6 +85,7 @@ export interface Config {
     'specialist-roles': SpecialistRole;
     'ai-usage': AiUsage;
     'form-submissions': FormSubmission;
+    'private-files': PrivateFile;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -110,6 +111,7 @@ export interface Config {
     'specialist-roles': SpecialistRolesSelect<false> | SpecialistRolesSelect<true>;
     'ai-usage': AiUsageSelect<false> | AiUsageSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
+    'private-files': PrivateFilesSelect<false> | PrivateFilesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -3624,6 +3626,7 @@ export interface Resource {
    */
   slug: string;
   description: string;
+  file?: (number | null) | PrivateFile;
   coverImage: number | Media;
   tags?:
     | {
@@ -3675,6 +3678,31 @@ export interface Resource {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * CVs and gated-material files. Nothing here is public — CVs are personal data.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "private-files".
+ */
+export interface PrivateFile {
+  id: number;
+  /**
+   * Where it came from: "CV — name (job X)" or "PDF — material name".
+   */
+  label: string;
+  kind: 'cv' | 'material';
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * Webinars and online events. The video comes in as a YouTube or Vimeo link.
@@ -6989,9 +7017,17 @@ export interface AiUsage {
  */
 export interface FormSubmission {
   id: number;
-  kind: 'contact' | 'newsletter' | 'talent-pool';
+  kind: 'contact' | 'newsletter' | 'talent-pool' | 'job-application' | 'material-download';
   status: 'new' | 'read' | 'archived';
   email: string;
+  confirmationToken?: string | null;
+  /**
+   * Newsletter: empty means the visitor never confirmed by e-mail — not a subscriber.
+   */
+  confirmedAt?: string | null;
+  job?: (number | null) | Job;
+  cv?: (number | null) | PrivateFile;
+  resource?: (number | null) | Resource;
   name?: string | null;
   phone?: string | null;
   company?: string | null;
@@ -7103,6 +7139,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'form-submissions';
         value: number | FormSubmission;
+      } | null)
+    | ({
+        relationTo: 'private-files';
+        value: number | PrivateFile;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -8168,6 +8208,7 @@ export interface ResourcesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   description?: T;
+  file?: T;
   coverImage?: T;
   tags?:
     | T
@@ -10672,6 +10713,11 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   kind?: T;
   status?: T;
   email?: T;
+  confirmationToken?: T;
+  confirmedAt?: T;
+  job?: T;
+  cv?: T;
+  resource?: T;
   name?: T;
   phone?: T;
   company?: T;
@@ -10689,6 +10735,25 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   notified?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "private-files_select".
+ */
+export interface PrivateFilesSelect<T extends boolean = true> {
+  label?: T;
+  kind?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
