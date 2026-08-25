@@ -67,6 +67,15 @@ export default defineConfig({
 
   use: {
     baseURL: NEXT_URL,
+    /* Permite apontar a suíte para um ambiente atrás de senha (o staging na
+     * VPS): `E2E_BASIC_AUTH=usuario:senha`. Sem a variável, nada muda — o gate
+     * local continua sem credencial nenhuma. */
+    httpCredentials: process.env.E2E_BASIC_AUTH
+      ? {
+          username: process.env.E2E_BASIC_AUTH.split(':')[0],
+          password: process.env.E2E_BASIC_AUTH.split(':').slice(1).join(':'),
+        }
+      : undefined,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     colorScheme: 'dark',

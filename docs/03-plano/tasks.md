@@ -218,7 +218,7 @@ Uma PR por linha. Todas dependem de MIG-031.
 | MIG-083 | Importação dos 207 posts | 081, 082, 043 | 207 publicados, nenhum com corpo vazio | 3h | **done** — 207 publicados, 0 sem corpo ou resumo |
 | MIG-084 | ~~Mapeamento de categorias do WP → `topics`~~ **sem fonte de dado** | 083 | ⚠️ **Repactuar — ver P-27.** MIG-080 mediu: o WP tem 1 categoria (`uncategorized`, com os 207 posts) e 0 tags. Não há taxonomia para mapear, e classificar é decisão de conteúdo (D-22) | 1.5h |
 | MIG-085 | Importação das 6 vagas | 051 | 6 vagas publicadas com URL 1:1 | 2h | **done** — são **7**, não 6; área deduzida do título espera P-28 |
-| MIG-086 | Geração do `redirects.csv` dos posts | 083 | 207 linhas, todas validadas contra staging | 2h | **done (parcial)** — 214 linhas (207 posts + 7 vagas), destino conferido no banco. **Contra staging fica para a Fase 5**, que é quando o `next.config.ts` passa a consumir o arquivo |
+| MIG-086 | Geração do `redirects.csv` dos posts | 083 | 207 linhas, todas validadas contra staging | 2h | **done** — 261 linhas validadas **contra o staging na VPS** em 25/08: cadeia completa seguida (barra final → regra → destino 200), 410s conferidos após a normalização. 261/261 |
 
 > **O que MIG-080 mediu no WP, e que muda as tasks seguintes.** Volumes reais:
 > 207 posts · 52 páginas (as 6 vagas de MIG-085 estão entre elas) · 541 mídias
@@ -493,7 +493,7 @@ muito tempo as três apontaram para `#`.
 | ID | Título | Dep. | Critério de aceite | Est. |
 |---|---|---|---|---|
 | MIG-120 | Otimização de imagem e LCP | Fase 3 | Lighthouse ≥ 90 nas 5 rotas mais vistas | 4h |
-| MIG-121 | axe no CI, reportando (D-13) | 010 | Relatório publicado por PR | 2h |
+| MIG-121 | axe no CI, reportando (D-13) | 010 | Relatório publicado por PR | 2h | **done** — `acessibilidade.spec.ts` no gate, WCAG A/AA, nunca reprova; `axe.json` sobe como artefato. 1ª medição no staging: **76 ocorrências, todas `color-contrast`** — o contraste do protótipo, portado fiel (D-15) |
 | MIG-122 | Sentry | 010 | Erro de teste chega no painel | 2h |
 | MIG-123 | Backup `pg_dump` + **teste de restore** | Fase 4 | Restore em base limpa, verificado | 3h | **done** — timer diário na VPS (banco -Fc, mídia, segredos cifrados); restore conferido por contagem em base limpa. Cópia externa espera bucket (R2) |
 | MIG-124 | Uptime e alerta | 122 | Alerta dispara em queda simulada | 1.5h |
