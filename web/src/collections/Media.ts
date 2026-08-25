@@ -24,7 +24,13 @@ export const Media: CollectionConfig = {
     delete: isEditorOrAdmin,
   },
   upload: {
-    mimeTypes: ['image/*', 'application/pdf'],
+    /* MIG-144: raster enumerado, e não `image/*` — o curinga inclui
+     * `image/svg+xml`, e SVG carrega script: um arquivo malicioso na
+     * biblioteca viraria XSS armazenado servido por /api/media/file/. Só
+     * editor autenticado sobe mídia, mas defesa em profundidade aqui custa uma
+     * linha. O acervo é JPEG/PNG/WebP (tudo convertido a WebP no upload); a
+     * lista restringe uploads novos e não toca no que já existe. */
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif', 'application/pdf'],
     // Tamanhos gerados no upload, uma vez, em vez de a cada requisição.
     // É o que mantém o custo de CPU proporcional ao número de uploads e não
     // ao tráfego — ver docs/04-infra/docker.md.
