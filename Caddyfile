@@ -1,8 +1,26 @@
 # Proxy reverso do site novo. Ver docs/04-infra/ambientes.md.
 #
 # O hostname decide o certificado: o Caddy pede à Let's Encrypt sozinho, na
-# primeira requisição, e renova sem cron. Trocar por `staging.atra.com.br`
-# quando o registro existir no Cloudflare (P-23) é editar esta linha e recarregar.
+# primeira requisição, e renova sem cron.
+#
+# `SITE_HOST` aceita **vários nomes separados por vírgula**, e é assim que ele
+# está: o hostname da Hostinger, que funciona hoje, mais `staging.atra.com.br`,
+# que espera um registro A no Cloudflare (P-23). Enquanto o registro não existe,
+# o Caddy só anota `NXDOMAIN` nesse nome e continua servindo o outro
+# normalmente — verificado. No minuto em que o A for criado, apontando para o IP
+# da VPS com a nuvem **cinza**, basta recriar este container e o certificado sai
+# em segundos.
+#
+# ⚠️ Nuvem cinza, não laranja. Com o proxy da Cloudflare ligado quem chega aqui
+# é a Cloudflare, e o limite por IP do formulário (MIG-101) e do chat (D-12)
+# passa a contar todos os visitantes como um só. Ligar o proxy é a P-21, e a
+# recomendação registrada é depois do cutover estabilizar.
+#
+# ⚠️ Promover `staging.atra.com.br` a endereço principal **não é só trocar este
+# hostname**. `NEXT_PUBLIC_SITE_URL` entra na imagem em tempo de build e é dele
+# que saem a URL canônica, o `hreflang`, o sitemap e o JSON-LD (MIG-105/106/107).
+# Mudar o principal sem reconstruir publica canônicas apontando para o endereço
+# antigo — que é pior do que não ter canônica.
 
 {$SITE_HOST} {
 	encode zstd gzip
