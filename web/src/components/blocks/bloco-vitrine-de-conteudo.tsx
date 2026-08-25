@@ -1,5 +1,7 @@
 import { ArrowRight, BookOpen } from 'lucide-react'
 import Image from 'next/image'
+
+import { NewsletterInline } from '@/components/forms/newsletter-inline'
 import Link from 'next/link'
 
 import { BORDAS } from '@/components/blocks/bordas'
@@ -147,25 +149,9 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
                 <h4 className="text-base md:text-lg font-light font-display mb-4 text-text-main">
                   {bloco.newsletter.title}
                 </h4>
-                {/* Estático, como o resto dos formulários até MIG-100: no
-                    gabarito o botão também não faz nada. */}
-                <div className="flex mt-4">
-                  <input
-                    type="email"
-                    disabled
-                    placeholder={bloco.newsletter.placeholder ?? undefined}
-                    aria-label={bloco.newsletter.placeholder ?? 'E-mail'}
-                    className="flex-1 bg-surface-1 p-3 text-text-main border-r-0 focus:ring-1 focus:ring-primary outline-none text-xs rounded-l-[6px] font-light disabled:opacity-100"
-                  />
-                  <button
-                    type="button"
-                    disabled
-                    aria-label="Inscrever-se"
-                    className="bg-secondary text-white px-4 transition-colors rounded-r-[6px] cursor-not-allowed"
-                  >
-                    <ArrowRight size={16} aria-hidden />
-                  </button>
-                </div>
+                {/* MIG-103: viva, com dupla confirmação. O render inicial
+                    reproduz o estático classe por classe — ver a nota na ilha. */}
+                <NewsletterInline placeholder={bloco.newsletter.placeholder} />
               </div>
             )}
           </div>
