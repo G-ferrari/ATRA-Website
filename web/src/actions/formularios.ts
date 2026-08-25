@@ -25,7 +25,15 @@ export type Resultado = { ok: true } | { ok: false; erro: string }
 
 const ERRO_GENERICO = 'Não foi possível enviar agora. Tente pelo WhatsApp ou por negocios@atra.com.br.'
 
-const texto = (dados: FormData, campo: string): string => String(dados.get(campo) ?? '').trim()
+/* MIG-142: todo campo entra cortado. O cliente já limita, mas quem posta não é
+ * obrigado a ser o nosso JavaScript — era a nota dos parâmetros de campanha, e
+ * vale igual para uma "mensagem" de megabytes indo parar no banco e no e-mail
+ * de aviso. 200 cobre qualquer nome/empresa/telefone reais; a mensagem tem teto
+ * próprio, folgado para texto humano. */
+const MAX_CAMPO = 200
+const MAX_MENSAGEM = 5000
+const texto = (dados: FormData, campo: string, max = MAX_CAMPO): string =>
+  String(dados.get(campo) ?? '').trim().slice(0, max)
 
 /** Um parâmetro de campanha, cortado no teto. `undefined` quando vazio: coluna nula diz "sem campanha", string vazia não diz nada. */
 const campanha = (dados: FormData, campo: string): string | undefined =>
@@ -66,7 +74,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         name: texto(dados, 'name') || undefined,
         phone: texto(dados, 'phone') || undefined,
         company: texto(dados, 'company') || undefined,
-        message: texto(dados, 'message') || undefined,
+        message: texto(dados, 'message', MAX_MENSAGEM) || undefined,
         source: texto(dados, 'source') || undefined,
         /* ⚠️ Cortado **de novo** aqui. O cliente já limita, mas quem posta o
          * formulário não é obrigado a ser o nosso JavaScript — `curl` com um
@@ -125,7 +133,7 @@ function resumo(dados: FormData, email: string): string {
     texto(dados, 'company') && `Empresa: ${texto(dados, 'company')}`,
     texto(dados, 'source') && `Veio de: ${texto(dados, 'source')}`,
     texto(dados, 'utm_campaign') && `Campanha: ${texto(dados, 'utm_campaign')}`,
-    texto(dados, 'message') && `\n${texto(dados, 'message')}`,
+    texto(dados, 'message', MAX_MENSAGEM) && `\n${texto(dados, 'message', MAX_MENSAGEM)}`,
   ].filter(Boolean)
   return linhas.join('\n')
 }
