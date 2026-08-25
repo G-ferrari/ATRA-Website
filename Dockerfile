@@ -81,6 +81,16 @@ ENV S3_BUCKET=$S3_BUCKET
 # **em silêncio**.
 RUN pnpm generate:types && pnpm generate:importmap && pnpm build
 
+# ── dependências de produção ──────────────────────────────────────────────────
+# O runner copia o node_modules inteiro porque o tracing do standalone não
+# funciona com o layout do pnpm (ver o comentário no runner). Mas "inteiro" não
+# precisa incluir as dependências de desenvolvimento — Playwright, ESLint e
+# afins não servem a nenhuma requisição. `--prod` refaz a instalação só com o
+# que o runtime declara.
+FROM base AS prod-deps
+COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile --prod
+
 # ── migrador ──────────────────────────────────────────────────────────────────
 # Código e dependências, **sem** `pnpm build`. Existe por um problema de ordem
 # que só aparece no primeiro deploy: o estágio `build` roda `pnpm build`, que
@@ -117,10 +127,11 @@ COPY --from=build --chown=app:app /app/.next/standalone ./
 # e nenhum deles aparece antes de o container subir, porque em desenvolvimento o
 # `node_modules` inteiro está no disco.
 #
-# O custo é tamanho de imagem: entram as dependências de desenvolvimento também.
-# Trocar por um estágio `pnpm install --prod` é otimização legítima, e fica para
-# quando a imagem passar a viajar pelo registry (hoje ela é construída na VPS).
-COPY --from=build --chown=app:app /app/node_modules ./node_modules
+# As dependências vêm do estágio `prod-deps` — a mesma instalação, sem as de
+# desenvolvimento. O layout do pnpm é determinístico para o mesmo lockfile,
+# então os caminhos dentro de `.pnpm/` que o código compilado gravou continuam
+# resolvendo.
+COPY --from=prod-deps --chown=app:app /app/node_modules ./node_modules
 COPY --from=build --chown=app:app /app/.next/static ./.next/static
 COPY --from=build --chown=app:app /app/public ./public
 

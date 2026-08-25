@@ -498,7 +498,7 @@ muito tempo as três apontaram para `#`.
 | MIG-123 | Backup `pg_dump` + **teste de restore** | Fase 4 | Restore em base limpa, verificado | 3h | **done** — timer diário na VPS (banco -Fc, mídia, segredos cifrados); restore conferido por contagem em base limpa. Cópia externa espera bucket (R2) |
 | MIG-124 | Uptime e alerta | 122 | Alerta dispara em queda simulada | 1.5h |
 | MIG-125 | `/design-system` com `noIndex` | 025 | Reconstruído dos tokens reais | 4h |
-| MIG-126 | **Guia do editor** (D-20) | Fase 4 | Cobre entrar, criar case, imagem+alt, preview, publicar, corrigir métrica | 4h |
+| MIG-126 | **Guia do editor** (D-20) | Fase 4 | Cobre entrar, criar case, imagem+alt, preview, publicar, corrigir métrica | 4h | **done** — `docs/05-operacao/guia-do-editor.md`, escrito para quem não é técnico; os 6 passos do aceite viram seções. A validação de verdade é MIG-127: alguém do marketing executando sem ajuda |
 | MIG-127 | **Teste do objetivo com o marketing** (D-20) | 126, 032 | Alguém do marketing executa os 6 passos sem ajuda; o que travar vira correção | 2h |
 | MIG-128 | Sessão de handoff gravada | 127 | Marketing + RH treinados; gravação arquivada | 2h |
 
