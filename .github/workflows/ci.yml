@@ -122,6 +122,12 @@ jobs:
 
   e2e:
     name: smoke · regressão visual
+    # ⚠️ TEMPORARIAMENTE DESLIGADO (26/08/2026, decisão do Leonardo): durante a
+    # validação em homologação, o pipeline roda só build + deploy para iterar
+    # mais rápido. RELIGAR ANTES DE PRODUÇÃO é pré-requisito do runbook de
+    # cutover — remover este `if` e devolver `e2e` ao `needs` do deploy.
+    # Enquanto isso, `pnpm gate` local continua sendo o aceite visual.
+    if: false
     runs-on: ubuntu-latest
     needs: verify
 
@@ -229,10 +235,12 @@ jobs:
 
   deploy:
     name: deploy na VPS
-    # Só em push para migracao, e só com os dois jobs verdes. PR não faz deploy:
-    # o código de fora do repositório nunca deve chegar ao servidor.
+    # Só em push para migracao. PR não faz deploy: o código de fora do
+    # repositório nunca deve chegar ao servidor.
+    # ⚠️ `needs` sem o e2e ENQUANTO o gate está desligado (ver o job acima).
+    # Ao religar: needs: [verify, e2e].
     if: github.event_name == 'push' && github.ref == 'refs/heads/migracao'
-    needs: [verify, e2e]
+    needs: [verify]
     runs-on: ubuntu-latest
     # Um deploy de cada vez, sem cancelar o que está no meio: interromper entre
     # a migração e a troca de imagem deixa o banco à frente do site.

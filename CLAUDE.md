@@ -275,6 +275,11 @@ contagem** (`infra/backup/`). E **publicar no CMS atualiza o site sem deploy**
 a nota antiga de "estático não muda depois do seed" segue valendo só para o
 `gate --sem-build`.
 
+⚠️ **O gate do CI está temporariamente desligado (26/08)** — o pipeline roda só
+build + deploy durante a validação em homologação, por decisão do Leonardo.
+`pnpm gate` local segue sendo o aceite visual, e religar antes de produção é
+pré-requisito do runbook de cutover.
+
 A revisão crítica de 25/08 (MIG-140–147) fechou: IP confiável nos limites
 (`lib/ip.ts` — nunca ler `x-forwarded-for` primeiro), tetos do chat
 (`lib/chat.ts`), campos do formulário cortados, mídia sem SVG, cabeçalhos de

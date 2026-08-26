@@ -27,6 +27,11 @@ só depois de horas, ninguém quer descobrir no sábado.
 
 ## Pré-requisitos (nada começa sem todos)
 
+- [ ] **Gate visual religado no CI** — desligado temporariamente em 26/08/2026
+      para acelerar a validação em homologação (`if: false` no job `e2e` do
+      `ci.yml`, e o `needs` do deploy sem ele). Religar é remover o `if` e
+      devolver `e2e` ao `needs`. **Nenhum cutover com o gate desligado.**
+
 - [ ] Fase 4c concluída: **paridade de conteúdo** (D-17) — 207 posts, 13 soluções, 10 segmentos, 6 vagas, página legal
 - [ ] Fase 6 concluída: performance, backup **com restore testado**, Sentry, uptime
 - [ ] `redirects.csv` completo e validado em staging — toda linha 301 → destino 200
