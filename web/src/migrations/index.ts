@@ -45,6 +45,7 @@ import * as migration_20260821_183445_utm_do_formulario from './20260821_183445_
 import * as migration_20260825_220544_formularios_no_escuro from './20260825_220544_formularios_no_escuro';
 import * as migration_20260903_122654_add_crm_sync_fields from './20260903_122654_add_crm_sync_fields';
 import * as migration_20260903_123214_add_chat_lead from './20260903_123214_add_chat_lead';
+import * as migration_20260903_131920_add_cookie_consent from './20260903_131920_add_cookie_consent';
 
 export const migrations = [
   {
@@ -280,6 +281,11 @@ export const migrations = [
   {
     up: migration_20260903_123214_add_chat_lead.up,
     down: migration_20260903_123214_add_chat_lead.down,
-    name: '20260903_123214_add_chat_lead'
+    name: '20260903_123214_add_chat_lead',
+  },
+  {
+    up: migration_20260903_131920_add_cookie_consent.up,
+    down: migration_20260903_131920_add_cookie_consent.down,
+    name: '20260903_131920_add_cookie_consent'
   },
 ];

@@ -292,6 +292,15 @@ para ligar — `ENABLE_CHAT_LEAD` (env), toggle no global `atra-ai`, e
 `consentNotice` preenchido (nasce vazio até P-14; produção espera P-14). O
 estado vazio de `/chat` não muda: o gabarito do gate segue válido.
 
+**D-30 (03/09, MIG-151–156)** é o consentimento de cookies: 3 categorias
+(essencial isenta; **estatística** = GA4/GTM com Consent Mode v2, dupla chave
+`NEXT_PUBLIC_GTM_ID` + aceite; **marketing** = a captura de UTM, reclassificada
+para opt-in — a UTM da chegada espera em memória e só persiste com aceite).
+Cookie `atra-consent` versionado guarda a escolha; ilhas conversam por
+CustomEvent (`atra:consentimento`). Vídeo de webinar é click-to-load, fora do
+banner. Mesmo gate de código de D-29: `bannerMessage` (global `cookie-consent`)
+nasce vazio até P-14, e sem ele nada renderiza — gabarito do gate intacto.
+
 A revisão crítica de 25/08 (MIG-140–147) fechou: IP confiável nos limites
 (`lib/ip.ts` — nunca ler `x-forwarded-for` primeiro), tetos do chat
 (`lib/chat.ts`), campos do formulário cortados, mídia sem SVG, cabeçalhos de

@@ -554,6 +554,49 @@ o RD Station Marketing, produto que ela não assina). O e-mail transacional
 continua sendo só o aviso interno de lead. Reversível por camadas: flag, toggle
 no CMS e token são três chaves independentes.
 
+## D-30 — Consentimento de cookies em três categorias; opt-in de verdade
+
+*Em 03/09/2026. Executa MIG-109 (desmembrada em MIG-151–156) e a especificação
+de `formularios-e-integracoes.md`. Interage com P-14 e P-19.*
+
+**Contexto.** O inventário mostrou que o site público guarda **uma** coisa no
+navegador (`sessionStorage atra:utm`) e não carrega terceiro nenhum — fonte
+local, `youtube-nocookie`, zero analytics (nem o WordPress tem). O banner não
+vem legalizar o existente: vem **habilitar** o que se decidiu capturar.
+
+**Escolha.** Três categorias, com base legal explícita por item:
+
+| Item | Categoria | Base |
+|---|---|---|
+| Cookie `atra-consent` (a própria preferência, ~180 dias, 1ª parte) | Essencial | Estritamente necessário — guardar "não quero cookies" exige um cookie. Isento |
+| `payload-token` / draft mode | Essencial | Só editor autenticado; visitante nunca recebe |
+| GA4 via GTM (Consent Mode v2) | **Estatística, opt-in** | Consentimento. Dupla chave: script só existe no DOM com `NEXT_PUBLIC_GTM_ID` preenchido (P-19) **e** aceite do visitante; `consent default denied` precede qualquer script |
+| Captura de UTM (`atra:utm` → RD Station) | **Marketing, opt-in** | Consentimento. Reclassificada: era "abaixo da linha" (comentário de `lib/utm.ts`); vai a terceiro via CRM, então pergunta primeiro. A UTM da chegada espera em memória de módulo e só persiste se o aceite vier |
+| Iframe de vídeo (YouTube/Vimeo) | Fora do banner | **Ação explícita**: click-to-load — o iframe só monta no clique do play. Fecha a brecha do Vimeo (que põe cookie) sem impedir ninguém de assistir |
+
+Mais quatro pontos da decisão:
+
+1. **Gate de código, como D-29**: os textos moram no global `cookie-consent` e
+   `bannerMessage` nasce vazio — texto jurídico é da ATRA (P-14). Sem ele o
+   mapper devolve `null`, o banner não existe, e o gabarito das 13 rotas do
+   aceite visual segue válido. O seed nunca o preenche, nem com fixtures.
+2. **Recusar tão visível quanto aceitar** — mesmo tamanho e tipografia, e é
+   asserção de e2e, não estilo. Consentimento versionado: mudar as categorias
+   sobe `VERSAO_DE_CONSENTIMENTO` e o banner pergunta de novo.
+3. **Revogável por `/politicas-e-termos`** (botão "Gerenciar cookies"). O link
+   "Cookies" do rodapé segue apontando para lá — o rodapé é dado do CMS, e
+   interceptar clique por rótulo seria frágil.
+4. **Consequência anotada, não resolvida**: GTM é script de terceiro injetando
+   script — a CSP futura (a nota deliberada de `next.config.ts`) fica mais
+   cara. E `@iconify/react` segue como risco latente (busca remota se alguém
+   passar string; hoje nenhum call site passa) — higiene em task própria.
+
+**Consequência.** Nenhum script não essencial antes do aceite vira propriedade
+do sistema, não intenção: sem consentimento o script do GTM **não existe no
+DOM**, a UTM não toca o storage e o vídeo não fala com o Google. Reversível por
+camadas: apagar o texto no CMS desliga o banner; esvaziar `NEXT_PUBLIC_GTM_ID`
+remove o GTM.
+
 ---
 
 ## Pendentes

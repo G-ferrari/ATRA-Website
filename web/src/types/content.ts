@@ -688,6 +688,28 @@ export type ConviteDeLead = {
   sucesso: string
 }
 
+/** Uma categoria do painel de cookies, com nome e o que ela registra. */
+export type CategoriaDeCookies = { nome: string; descricao: string }
+
+/** O aviso de cookies (MIG-151, D-30), do global `cookie-consent`.
+ * `null` quando `bannerMessage` está vazio no idioma — sem texto jurídico
+ * (P-14) não há banner. */
+export type AvisoDeCookies = {
+  titulo: string
+  mensagem: string
+  aceitar: string
+  recusar: string
+  preferencias: string
+  salvar: string
+  tituloDoPainel: string
+  mensagemDoPainel: string
+  categorias: {
+    necessarios: CategoriaDeCookies
+    analytics: CategoriaDeCookies
+    marketing: CategoriaDeCookies
+  }
+}
+
 /** Dados de contato da ATRA, do global `contact` (MIG-072). */
 export type Contato = {
   telefone: string

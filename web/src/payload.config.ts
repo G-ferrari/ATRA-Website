@@ -36,6 +36,7 @@ import { Users } from './collections/Users'
 import { Webinars } from './collections/Webinars'
 import { AtraAi } from './globals/AtraAi'
 import { Contact } from './globals/Contact'
+import { CookieConsent } from './globals/CookieConsent'
 import { Footer } from './globals/Footer'
 import { Navigation } from './globals/Navigation'
 import { SiteSettings } from './globals/SiteSettings'
@@ -97,7 +98,7 @@ export default buildConfig({
     ['users', 'ai-usage', 'form-submissions', 'private-files'],
   ),
 
-  globals: [AtraAi, Contact, Footer, Navigation, SiteSettings].map((g) => ({
+  globals: [AtraAi, Contact, CookieConsent, Footer, Navigation, SiteSettings].map((g) => ({
     ...g,
     hooks: { ...g.hooks, afterChange: [...(g.hooks?.afterChange ?? []), () => revalidarSite()] },
   })),

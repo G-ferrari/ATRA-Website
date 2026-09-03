@@ -389,7 +389,7 @@ muito tempo as três apontaram para `#`.
 | MIG-106 | `sitemap.ts` + `robots.ts` | 105 | Só publicados; sem locale não traduzido | 2h | **done** — 270 URLs, só 16 em inglês |
 | MIG-107 | JSON-LD | 105 | Rich Results Test valida | 2.5h | **done** — `Organization` no layout, `Article` no artigo, `Service` na solução |
 | MIG-108 | `redirects.csv` no `next.config.ts` + teste de CI | 086 | Toda linha: 301 → destino 200 | 3h | **done** — e o teste achou 2 defeitos que derrubariam o site |
-| MIG-109 | GA4/GTM + consentimento de cookies | 105 | Nenhum script não essencial antes do aceite | 3h |
+| MIG-109 | GA4/GTM + consentimento de cookies | 105 | Nenhum script não essencial antes do aceite | 3h | **desmembrada** em MIG-151–156 (D-30) — a estimativa de 3h não cabia no que a spec pede |
 | MIG-110 | Budget guard da ATRA AI | 061 | Teto atingido degrada com mensagem, não com 500 | 2h | **done** — teto diário **no banco**; e o global da IA não era localizado |
 | MIG-111 | Ícone do site (favicon) | 105 | Aba, atalho de iOS e `/favicon.ico` com a marca da ATRA | 0.5h | **done** — tirado de `atra.com.br`; o protótipo não tem nenhum |
 
@@ -522,7 +522,13 @@ o `next/image` só otimiza origem própria e o lockout de login está no default
 | MIG-147 | `/design-system` via `lib/routes` no rodapé | — | Nenhum href literal fora de `routes.ts` | 0.25h | **done** |
 | MIG-148 | **Sincronização RD Station CRM** (D-26/D-29) — hook de `form-submissions` | — | Lead comercial vira contato+negociação no CRM; sem token, inerte e visível (`crm.syncedAt` vazio); retry por edição; RH fica fora | 3h | **done** — `lib/crm.ts` + `hooks/sincronizar-crm.ts`; formato fino do payload externo se confirma no lead de ponta a ponta em homolog |
 | MIG-149 | Kind `chat-lead` + action + config `leadCapture` no global `atra-ai` (D-29) | 148 | Action atrás de `ENABLE_CHAT_LEAD`; `chatContext` só com mensagens do visitante; textos localizados; `consentNotice` nasce vazio (P-14) | 3h | **done** — `actions/chat-lead.ts`, `contextoDoLead` em `lib/chat.ts` |
-| MIG-150 | UI do convite de lead no chat (D-29) | 149 | Convite após N mensagens do visitante; dispensável; estado inicial do DOM intacto — `pnpm gate --rota chat` passa sem regravar gabarito | 4h | |
+| MIG-150 | UI do convite de lead no chat (D-29) | 149 | Convite após N mensagens do visitante; dispensável; estado inicial do DOM intacto — `pnpm gate --rota chat` passa sem regravar gabarito | 4h |
+| MIG-151 | **Fundação do consentimento de cookies** (D-30) — global `cookie-consent`, `lib/consentimento.ts`, mapper | — | `bannerMessage` vazio = nada renderiza (gate de código); cookie `atra-consent` versionado; migração aditiva | 3h |
+| MIG-152 | Banner + painel de preferências + revogação | 151 | Recusar tão visível quanto aceitar; persistida e revogável (`/politicas-e-termos`); identidade visual do site; gate integral sem regravar gabarito | 4h |
+| MIG-153 | GTM + Consent Mode v2 + helper `rastrear` | 152 | `consent default denied` antes de qualquer script; script só existe no DOM após aceite E com `NEXT_PUBLIC_GTM_ID` (P-19) | 3h |
+| MIG-154 | `atra:utm` vira opt-in de marketing | 151 | Nada persiste sem consentimento; consentimento tardio efetiva a UTM da chegada (memória de módulo); revogação limpa | 2h |
+| MIG-155 | Vídeo dos webinars click-to-load | 153 | Nenhuma requisição a YouTube/Vimeo antes do clique; capa no padrão do site; `video_play` no aceite de analytics | 2h |
+| MIG-156 | Instrumentação dos eventos GA4 | 153, 155 | `form_submit`/`resource_download`/`chat_*`/`outbound_click` via `rastrear` (no-op sem consentimento); DOM inicial intacto | 2h | |
 
 ## Fase 7 — Cutover · Fase 8 — Limpeza
 

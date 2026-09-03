@@ -124,6 +124,7 @@ export interface Config {
   globals: {
     'atra-ai': AtraAi;
     contact: Contact;
+    'cookie-consent': CookieConsent;
     footer: Footer;
     navigation: Navigation;
     'site-settings': SiteSetting;
@@ -131,6 +132,7 @@ export interface Config {
   globalsSelect: {
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
+    'cookie-consent': CookieConsentSelect<false> | CookieConsentSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
@@ -10882,6 +10884,38 @@ export interface Contact {
   createdAt?: string | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cookie-consent".
+ */
+export interface CookieConsent {
+  id: number;
+  bannerTitle?: string | null;
+  /**
+   * Required for the banner to exist: empty = banner off in this locale. The wording is ATRA’s call (P-14) and should say what each category captures.
+   */
+  bannerMessage?: string | null;
+  acceptLabel?: string | null;
+  rejectLabel?: string | null;
+  preferencesLabel?: string | null;
+  saveLabel?: string | null;
+  panelTitle?: string | null;
+  panelMessage?: string | null;
+  necessary?: {
+    name?: string | null;
+    description?: string | null;
+  };
+  analytics?: {
+    name?: string | null;
+    description?: string | null;
+  };
+  marketing?: {
+    name?: string | null;
+    description?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Footer columns, text and links. Shown on every page except /chat.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -11201,6 +11235,41 @@ export interface ContactSelect<T extends boolean = true> {
         linkedin?: T;
         instagram?: T;
         youtube?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cookie-consent_select".
+ */
+export interface CookieConsentSelect<T extends boolean = true> {
+  bannerTitle?: T;
+  bannerMessage?: T;
+  acceptLabel?: T;
+  rejectLabel?: T;
+  preferencesLabel?: T;
+  saveLabel?: T;
+  panelTitle?: T;
+  panelMessage?: T;
+  necessary?:
+    | T
+    | {
+        name?: T;
+        description?: T;
+      };
+  analytics?:
+    | T
+    | {
+        name?: T;
+        description?: T;
+      };
+  marketing?:
+    | T
+    | {
+        name?: T;
+        description?: T;
       };
   updatedAt?: T;
   createdAt?: T;
