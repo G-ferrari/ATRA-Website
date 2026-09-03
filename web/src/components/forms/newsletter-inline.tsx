@@ -5,6 +5,7 @@ import { useActionState, useEffect, useRef } from 'react'
 
 import { enviarFormulario, type Resultado } from '@/actions/formularios'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
+import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 
 /* MIG-103 — a caixa de newsletter da home, agora viva.
  *
@@ -28,6 +29,9 @@ export function NewsletterInline({ placeholder }: { placeholder: string | null }
     async (_a: Resultado | null, dados: FormData) => enviarFormulario(dados),
     null as Resultado | null,
   )
+
+  /* MIG-156: no-op sem GTM ou sem consentimento de estatística. */
+  useRastrearEnvio(Boolean(estado?.ok), 'form_submit', { form_type: 'newsletter' })
 
   if (estado?.ok) {
     return (

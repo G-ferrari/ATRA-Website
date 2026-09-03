@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from 'react'
 
 import { enviarCandidatura, type ResultadoCandidatura } from '@/actions/candidatura'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
+import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 
 /* MIG-102 — o formulário de candidatura, ilha cliente da página da vaga.
  *
@@ -26,6 +27,9 @@ export function Candidatura({ jobId, jobTitle }: { jobId: number; jobTitle: stri
     async (_a: ResultadoCandidatura | null, dados: FormData) => enviarCandidatura(dados),
     null as ResultadoCandidatura | null,
   )
+
+  /* MIG-156: no-op sem GTM ou sem consentimento de estatística. */
+  useRastrearEnvio(Boolean(estado?.ok), 'form_submit', { form_type: 'job-application' })
 
   if (estado?.ok) {
     return (

@@ -5,6 +5,7 @@ import { useActionState, useEffect, useRef } from 'react'
 
 import { enviarFormulario, type Resultado } from '@/actions/formularios'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
+import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 import { CHAVES_UTM, lerUtmGuardado, type ChaveUtm } from '@/lib/utm'
 
 /* Casca cliente dos formulários do site (MIG-100 / MIG-101).
@@ -70,6 +71,9 @@ export function Formulario({
     async (_anterior: Resultado | null, dados: FormData) => enviarFormulario(dados),
     null as Resultado | null,
   )
+
+  /* MIG-156: no-op sem GTM ou sem consentimento de estatística. */
+  useRastrearEnvio(Boolean(estado?.ok), 'form_submit', { form_type: kind })
 
   if (estado?.ok) {
     /* Inline, não modal — é o que `formularios-e-integracoes.md` especifica. */

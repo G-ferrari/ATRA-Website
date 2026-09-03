@@ -5,6 +5,7 @@ import { useActionState, useEffect, useRef } from 'react'
 
 import { baixarMaterial, type ResultadoDownload } from '@/actions/materiais'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
+import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 
 /* MIG-104 — o formulário que troca contato por download, na página do material.
  *
@@ -27,6 +28,11 @@ export function DownloadGate({ resourceId }: { resourceId: number }) {
     async (_a: ResultadoDownload | null, dados: FormData) => baixarMaterial(dados),
     null as ResultadoDownload | null,
   )
+
+  /* MIG-156: os dois eventos da spec — o envio do formulário e o download em
+     si. No-op sem GTM ou sem consentimento de estatística. */
+  useRastrearEnvio(Boolean(estado?.ok), 'form_submit', { form_type: 'material-download' })
+  useRastrearEnvio(Boolean(estado?.ok), 'resource_download', { resource_id: resourceId })
 
   if (estado?.ok) {
     return (

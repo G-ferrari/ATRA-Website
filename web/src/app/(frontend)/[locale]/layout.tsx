@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import { AvisoDeCookies } from '@/components/layout/aviso-de-cookies'
 import { Casca } from '@/components/layout/casca'
 import { Gtm } from '@/components/layout/gtm'
+import { RastreioDeSaida } from '@/components/layout/rastreio-de-saida'
 import { CapturaDeUtm } from '@/components/layout/captura-de-utm'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 import { SiteFooter } from '@/components/layout/site-footer'
@@ -154,6 +155,9 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
             `consent default denied` no dataLayer — o script em si espera o
             aceite de estatística. */}
         <Gtm />
+        {/* MIG-156: outbound_click por listener delegado — inerte sem GTM ou
+            sem consentimento, e não desenha nada. */}
+        <RastreioDeSaida />
 
         {/* ⚠️ As três chaves não são decoração, e sem elas o overlay de
             desenvolvimento fica **permanentemente vermelho** em toda rota:
