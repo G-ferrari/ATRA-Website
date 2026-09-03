@@ -4,10 +4,10 @@
  * constante de 30 linhas em `server.ts:6`, e mudá-la exige deploy — num texto
  * que é decisão de marketing e vendas (D-22).
  *
- * ⚠️ Ele ainda manda o modelo injetar tags de UI generativa (`[UI_SERVICE:…]`,
- * `[UI_CHART:…]`). O porte **não** as converte em cartões: ver a nota em
- * `chat/conversa.tsx`. O texto entra como está para não mudar a resposta do
- * modelo antes de a UI existir.
+ * As tags de UI generativa que ele manda injetar (`[UI_SERVICE:…]`,
+ * `[UI_CHART:…]`, `[UI_CONTACT]`) são convertidas em cartões por
+ * `chat/ui-generativa.tsx` — mudar o formato delas aqui quebra o parse lá,
+ * em silêncio (as tags que não casam são engolidas, como no legado).
  *
  * ⚠️ `requestsPerHour: 20` é provisório. D-12 decidiu limite por IP com teto de
  * custo, e disse que os números dependem de P-04 — em aberto.

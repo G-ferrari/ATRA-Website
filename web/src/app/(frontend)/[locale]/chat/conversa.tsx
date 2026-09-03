@@ -5,19 +5,22 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { Icone } from '@/components/blocks/icones'
+import { rastrear } from '@/lib/rastreio'
 import { cn } from '@/lib/utils'
 import type { ConviteDeLead } from '@/types/content'
 
 import { ConviteLead } from './convite-lead'
+import { RespostaDoModelo } from './ui-generativa'
 
 /* Conversa com a ATRA AI — porte de `legacy/src/pages/Chat.tsx:163`.
  *
- * ⚠️ A "UI generativa" do gabarito **não** foi portada. O system prompt manda o
- * modelo injetar tags como `[UI_SERVICE:…]`, `[UI_PARTNER:…]`, `[UI_CHART:…]` e
- * `[UI_CONTACT]`, e o cliente as troca por cartões (`Chat.tsx:17`). Portá-las
- * exige o modelo respondendo, e o teto de custo que autoriza isso é P-04, em
- * aberto (D-12). Até lá a resposta sai como texto — que é o que o gabarito
- * também mostra quando o modelo não injeta tag nenhuma. Ver debito-tecnico.md. */
+ * A "UI generativa" ficou de fora enquanto a IA não respondia (P-04/D-12) e
+ * entrou quando o modelo passou a responder em homologação: o system prompt
+ * manda injetar `[UI_SERVICE:…]`, `[UI_PARTNER:…]`, `[UI_CHART:…]` e
+ * `[UI_CONTACT]`, e sem o porte de `Chat.tsx:17` as tags saíam **cruas** na
+ * tela — o convite de contato virava texto morto e o markdown aparecia com os
+ * asteriscos. `ui-generativa.tsx` troca as tags por cartões e renderiza o
+ * resto como markdown, como no gabarito. */
 
 type Mensagem = { role: 'user' | 'model'; content: string }
 
@@ -59,11 +62,14 @@ export function Conversa({
   mensagemInicial,
   locale,
   convite,
+  whatsapp,
 }: {
   mensagemInicial?: string
   locale: 'pt' | 'en'
   /* MIG-150 (D-29): `null` com a feature fechada — e aí nada daqui muda. */
   convite?: ConviteDeLead | null
+  /* Para o cartão de [UI_CONTACT] — vem do global `contact`, resolvido na página. */
+  whatsapp: string
 }) {
   const [mensagens, setMensagens] = useState<Mensagem[]>([])
   const [texto, setTexto] = useState('')
@@ -87,6 +93,11 @@ export function Conversa({
       setTexto('')
       setErro(null)
       setCarregando(true)
+
+      /* MIG-156: no-op sem GTM ou sem consentimento de estatística. Só o fato,
+         nunca o conteúdo — o que a pessoa escreveu não vai ao dataLayer. */
+      if (historicoAtual.length === 0) rastrear('chat_started')
+      rastrear('chat_message_sent')
 
       try {
         const r = await fetch('/api/chat', {
@@ -261,7 +272,11 @@ export function Conversa({
                     : 'bg-surface-3 dark:bg-[#222631] text-text-main rounded-[6px] rounded-tl-[2px] border border-border-main/70 shadow-xs',
                 )}
               >
-                <p className="whitespace-pre-wrap">{m.content}</p>
+                {m.role === 'user' ? (
+                  <p className="whitespace-pre-wrap">{m.content}</p>
+                ) : (
+                  <RespostaDoModelo texto={m.content} whatsapp={whatsapp} />
+                )}
               </div>
 
               {m.role === 'user' && (
