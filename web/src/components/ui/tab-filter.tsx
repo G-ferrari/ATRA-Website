@@ -1,7 +1,7 @@
 'use client'
 
-import { Icon } from '@iconify/react'
 import { motion } from 'motion/react'
+import type { ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -10,12 +10,16 @@ import { cn } from '@/lib/utils'
  * No legado este componente existia e era usado só na vitrine /design-system —
  * as 5 páginas com filtro reimplementavam chips à mão (SuccessStories:137,
  * Blog:140, Insights:426, Consultants:481, Glossary:125). Aqui ele é o único
- * filtro: 5 reimplementações viram 1. Ver inventario-componentes.md, item 4. */
+ * filtro: 5 reimplementações viram 1. Ver inventario-componentes.md, item 4.
+ *
+ * ⚠️ `icon` aceita só ReactNode, nunca string (MIG-157). O `<Icon>` do
+ * `@iconify/react` busca o SVG em api.iconify.design em tempo de execução —
+ * requisição a terceiro sem consentimento, o que a D-30 proíbe. */
 
 export type TabOption = {
   id: string
   label: string
-  icon?: string
+  icon?: ReactNode
   count?: number
 }
 
@@ -66,12 +70,9 @@ export function TabFilter({
               />
             )}
             {tab.icon && (
-              <Icon
-                icon={tab.icon}
-                width={14}
-                height={14}
-                className={ativo ? 'text-white' : 'text-text-muted'}
-              />
+              <span className={cn('inline-flex', ativo ? 'text-white' : 'text-text-muted')}>
+                {tab.icon}
+              </span>
             )}
             <span>{tab.label}</span>
             {typeof tab.count === 'number' && (

@@ -1,11 +1,14 @@
-import { Icon } from '@iconify/react'
 import { ArrowUpRight } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
 /* Portado de legacy/src/components/ui/badge-status.tsx.
- * Usado em 7 rotas do legado. Saída idêntica — as classes são as mesmas. */
+ * Usado em 7 rotas do legado. Saída idêntica — as classes são as mesmas.
+ *
+ * ⚠️ `icon` aceita só ReactNode, nunca string (MIG-157). O `<Icon>` do
+ * `@iconify/react` busca o SVG em api.iconify.design em tempo de execução —
+ * requisição a terceiro sem consentimento, o que a D-30 proíbe. */
 
 type Variante = 'online' | 'beta' | 'primary' | 'secondary' | 'neutral' | 'tech'
 type Tamanho = 'sm' | 'md'
@@ -33,7 +36,7 @@ export type StatusBadgeProps = {
   variant?: Variante
   pulse?: boolean
   size?: Tamanho
-  icon?: string | ReactNode
+  icon?: ReactNode
   className?: string
 }
 
@@ -72,11 +75,7 @@ export function StatusBadge({
         </span>
       )}
 
-      {typeof icon === 'string' ? (
-        <Icon icon={icon} width={size === 'sm' ? 12 : 14} height={size === 'sm' ? 12 : 14} />
-      ) : (
-        icon
-      )}
+      {icon}
 
       <span>{label}</span>
     </span>

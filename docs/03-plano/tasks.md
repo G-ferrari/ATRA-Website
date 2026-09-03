@@ -529,6 +529,7 @@ o `next/image` só otimiza origem própria e o lockout de login está no default
 | MIG-154 | `atra:utm` vira opt-in de marketing | 151 | Nada persiste sem consentimento; consentimento tardio efetiva a UTM da chegada (memória de módulo); revogação limpa | 2h |
 | MIG-155 | Vídeo dos webinars click-to-load | 153 | Nenhuma requisição a YouTube/Vimeo antes do clique; capa no padrão do site; `video_play` no aceite de analytics | 2h |
 | MIG-156 | Instrumentação dos eventos GA4 | 153, 155 | `form_submit`/`resource_download`/`chat_*`/`outbound_click` via `rastrear` (no-op sem consentimento); DOM inicial intacto | 2h | |
+| MIG-157 | Remover `@iconify/react` (D-30) — o `<Icon icon="string">` busca SVG em `api.iconify.design` em runtime; nenhum call site passa string hoje, mas a porta fica aberta | — | Dependência fora do `package.json`; props `icon` de `StatusBadge`/`TabFilter` aceitam só ReactNode (string vira erro de compilação); DOM inicial intacto | 0.5h |
 
 ## Fase 7 — Cutover · Fase 8 — Limpeza
 
