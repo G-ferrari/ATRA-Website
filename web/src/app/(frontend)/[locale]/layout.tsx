@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 
 import { AvisoDeCookies } from '@/components/layout/aviso-de-cookies'
 import { Casca } from '@/components/layout/casca'
+import { Gtm } from '@/components/layout/gtm'
 import { CapturaDeUtm } from '@/components/layout/captura-de-utm'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 import { SiteFooter } from '@/components/layout/site-footer'
@@ -149,6 +150,10 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
             do `_store.validated` logo abaixo vale para qualquer elemento que
             atravesse a fronteira do RSC como prop. */}
         {avisoDeCookies && <AvisoDeCookies textos={avisoDeCookies} locale={locale} />}
+        {/* MIG-153: nulo inerte sem NEXT_PUBLIC_GTM_ID; com id, só põe o
+            `consent default denied` no dataLayer — o script em si espera o
+            aceite de estatística. */}
+        <Gtm />
 
         {/* ⚠️ As três chaves não são decoração, e sem elas o overlay de
             desenvolvimento fica **permanentemente vermelho** em toda rota:
