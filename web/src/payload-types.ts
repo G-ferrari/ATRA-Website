@@ -7017,7 +7017,7 @@ export interface AiUsage {
  */
 export interface FormSubmission {
   id: number;
-  kind: 'contact' | 'newsletter' | 'talent-pool' | 'job-application' | 'material-download';
+  kind: 'contact' | 'chat-lead' | 'newsletter' | 'talent-pool' | 'job-application' | 'material-download';
   status: 'new' | 'read' | 'archived';
   email: string;
   confirmationToken?: string | null;
@@ -7032,6 +7032,7 @@ export interface FormSubmission {
   phone?: string | null;
   company?: string | null;
   message?: string | null;
+  chatContext?: string | null;
   source?: string | null;
   utm?: {
     source?: string | null;
@@ -10731,6 +10732,7 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   phone?: T;
   company?: T;
   message?: T;
+  chatContext?: T;
   source?: T;
   utm?:
     | T
@@ -10838,6 +10840,20 @@ export interface AtraAi {
    * Shown when the limit is hit or the AI is off. Graceful degradation, not an error.
    */
   unavailableMessage: string;
+  leadCapture: {
+    /**
+     * Shows the invite to leave contact details during the conversation. Also requires the consent notice below.
+     */
+    enabled?: boolean | null;
+    inviteAfterUserMessages: number;
+    inviteTitle?: string | null;
+    inviteMessage?: string | null;
+    /**
+     * Required for the invite to show: tells the visitor what happens to the data (it goes to RD Station CRM). Empty = invite off in this locale. The wording is ATRA’s call (P-14).
+     */
+    consentNotice?: string | null;
+    successMessage?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -11155,6 +11171,16 @@ export interface AtraAiSelect<T extends boolean = true> {
   requestsPerHour?: T;
   dailyRequestCap?: T;
   unavailableMessage?: T;
+  leadCapture?:
+    | T
+    | {
+        enabled?: T;
+        inviteAfterUserMessages?: T;
+        inviteTitle?: T;
+        inviteMessage?: T;
+        consentNotice?: T;
+        successMessage?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

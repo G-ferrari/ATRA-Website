@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { MAX_CHARS_POR_MENSAGEM, MAX_MENSAGENS, validarConversa } from './chat'
+import {
+  contextoDoLead,
+  MAX_CHARS_POR_CONTEXTO,
+  MAX_CHARS_POR_MENSAGEM,
+  MAX_MENSAGENS,
+  MAX_MENSAGENS_DO_CONTEXTO,
+  validarConversa,
+} from './chat'
 
 const msg = (content: string, role: 'user' | 'model' = 'user') => ({ role, content })
 
@@ -38,5 +45,32 @@ describe('validarConversa', () => {
     if (!r.ok) throw new Error('devia aceitar')
     expect(r.mensagens).toHaveLength(MAX_MENSAGENS)
     expect(r.mensagens[r.mensagens.length - 1].content).toBe(`mensagem ${MAX_MENSAGENS + 7}`)
+  })
+})
+
+describe('contextoDoLead', () => {
+  /* P-20/D-29: o recorte que acompanha o lead leva SÓ o que o visitante
+     digitou — resposta do modelo nunca vai ao banco. */
+  it('leva só as mensagens do visitante', () => {
+    const r = contextoDoLead([msg('quero FinOps'), msg('Claro! A ATRA…', 'model'), msg('quanto custa?')])
+    expect(r).toBe('quero FinOps\nquanto custa?')
+    expect(r).not.toContain('ATRA…')
+  })
+
+  it('fica com as últimas, dentro do teto de mensagens', () => {
+    const muitas = Array.from({ length: MAX_MENSAGENS_DO_CONTEXTO + 3 }, (_, i) => msg(`pergunta ${i}`))
+    const linhas = contextoDoLead(muitas).split('\n')
+    expect(linhas).toHaveLength(MAX_MENSAGENS_DO_CONTEXTO)
+    expect(linhas[linhas.length - 1]).toBe(`pergunta ${MAX_MENSAGENS_DO_CONTEXTO + 2}`)
+  })
+
+  it('corta cada mensagem no teto de caracteres', () => {
+    const r = contextoDoLead([msg('x'.repeat(MAX_CHARS_POR_CONTEXTO + 100))])
+    expect(r).toHaveLength(MAX_CHARS_POR_CONTEXTO)
+  })
+
+  it('conversa sem mensagem do visitante vira vazio, não lixo', () => {
+    expect(contextoDoLead([msg('Olá!', 'model')])).toBe('')
+    expect(contextoDoLead([])).toBe('')
   })
 })

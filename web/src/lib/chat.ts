@@ -22,6 +22,25 @@ export const MAX_TOKENS_DE_SAIDA = 1024
 
 type Resultado = { ok: true; mensagens: Mensagem[] } | { ok: false }
 
+/* MIG-149 (D-29) — o recorte da conversa que acompanha o lead do chat.
+ *
+ * ⚠️ Só mensagens **do visitante**, nunca a resposta do modelo: é o combinado
+ * de P-20 — a conversa não persiste; o que vai ao banco é o que o titular
+ * digitou e envia conscientemente junto do formulário. A ilha monta o recorte
+ * com isto e a action corta de novo no servidor, porque quem posta não é
+ * obrigado a ser o nosso JavaScript. */
+export const MAX_MENSAGENS_DO_CONTEXTO = 5
+export const MAX_CHARS_POR_CONTEXTO = 500
+
+export function contextoDoLead(mensagens: Mensagem[]): string {
+  return mensagens
+    .filter((m) => m.role === 'user')
+    .slice(-MAX_MENSAGENS_DO_CONTEXTO)
+    .map((m) => m.content.trim().slice(0, MAX_CHARS_POR_CONTEXTO))
+    .filter(Boolean)
+    .join('\n')
+}
+
 export function validarConversa(entrada: unknown): Resultado {
   if (!Array.isArray(entrada) || entrada.length === 0) return { ok: false }
 

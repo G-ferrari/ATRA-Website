@@ -96,5 +96,72 @@ export const AtraAi: GlobalConfig = {
         },
       },
     },
+    {
+      /* MIG-149 (D-29) — o convite de lead dentro do chat.
+       *
+       * ⚠️ São **três chaves independentes**, de propósito: `ENABLE_CHAT_LEAD`
+       * (env, engenharia) põe o código no ar; este `enabled` (editorial) liga o
+       * convite; e o convite só renderiza com `consentNotice` preenchido no
+       * idioma — consentimento é gate de código, não combinado (P-14). O campo
+       * nasce vazio porque o texto é jurídico e é da ATRA, não nosso.
+       *
+       * ⚠️ Nenhum campo de texto visível fica sem `localized` — a lição de
+       * MIG-061 está no `systemPrompt` acima. */
+      name: 'leadCapture',
+      type: 'group',
+      label: { pt: 'Convite de lead no chat', en: 'Chat lead capture' },
+      fields: [
+        {
+          name: 'enabled',
+          type: 'checkbox',
+          defaultValue: false,
+          label: { pt: 'Convite ligado', en: 'Invite enabled' },
+          admin: {
+            description: {
+              pt: 'Mostra o convite para deixar contato durante a conversa. Também exige o aviso de consentimento preenchido abaixo.',
+              en: 'Shows the invite to leave contact details during the conversation. Also requires the consent notice below.',
+            },
+          },
+        },
+        {
+          name: 'inviteAfterUserMessages',
+          type: 'number',
+          required: true,
+          defaultValue: 2,
+          min: 1,
+          label: { pt: 'Convidar após quantas mensagens do visitante', en: 'Invite after how many visitor messages' },
+        },
+        {
+          name: 'inviteTitle',
+          type: 'text',
+          localized: true,
+          label: { pt: 'Título do convite', en: 'Invite title' },
+        },
+        {
+          name: 'inviteMessage',
+          type: 'textarea',
+          localized: true,
+          label: { pt: 'Texto do convite', en: 'Invite message' },
+        },
+        {
+          name: 'consentNotice',
+          type: 'textarea',
+          localized: true,
+          label: { pt: 'Aviso de consentimento', en: 'Consent notice' },
+          admin: {
+            description: {
+              pt: 'Obrigatório para o convite aparecer: diz ao visitante o que acontece com o dado (vai ao RD Station CRM). Vazio = convite desligado neste idioma. O texto é decisão da ATRA (P-14).',
+              en: 'Required for the invite to show: tells the visitor what happens to the data (it goes to RD Station CRM). Empty = invite off in this locale. The wording is ATRA’s call (P-14).',
+            },
+          },
+        },
+        {
+          name: 'successMessage',
+          type: 'textarea',
+          localized: true,
+          label: { pt: 'Mensagem de sucesso', en: 'Success message' },
+        },
+      ],
+    },
   ],
 }

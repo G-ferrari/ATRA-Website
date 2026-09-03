@@ -55,6 +55,7 @@ export const FormSubmissions: CollectionConfig = {
       required: true,
       options: [
         { value: 'contact', label: { pt: 'Contato', en: 'Contact' } },
+        { value: 'chat-lead', label: { pt: 'Lead do chat', en: 'Chat lead' } },
         { value: 'newsletter', label: { pt: 'Newsletter', en: 'Newsletter' } },
         { value: 'talent-pool', label: { pt: 'Banco de talentos', en: 'Talent pool' } },
         { value: 'job-application', label: { pt: 'Candidatura', en: 'Job application' } },
@@ -103,6 +104,18 @@ export const FormSubmissions: CollectionConfig = {
     { name: 'phone', type: 'text', label: { pt: 'Telefone', en: 'Phone' } },
     { name: 'company', type: 'text', label: { pt: 'Empresa', en: 'Company' } },
     { name: 'message', type: 'textarea', label: { pt: 'Mensagem', en: 'Message' } },
+    {
+      /* MIG-149 (D-29) — só o kind `chat-lead` preenche. O recorte de P-20:
+       * as últimas mensagens **do visitante** na conversa com a ATRA AI, nada
+       * do que o modelo respondeu. É o que o comercial precisa ("o que a
+       * pessoa perguntou") e é texto que o titular digitou e enviou
+       * conscientemente junto do formulário — a conversa em si continua sem
+       * persistir. */
+      name: 'chatContext',
+      type: 'textarea',
+      label: { pt: 'O que perguntou à ATRA AI', en: 'What they asked ATRA AI' },
+      admin: { readOnly: true },
+    },
     {
       /* De onde veio, para o marketing saber o que converte. Caminho e idioma
        * bastam: é dado do site, não do visitante. */
