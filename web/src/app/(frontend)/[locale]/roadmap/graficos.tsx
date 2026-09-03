@@ -4,14 +4,11 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  LabelList,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts'
-
-import type { EsforcoDaFase } from '@/lib/roadmap'
 
 /* Os gráficos do /roadmap — Recharts direto, sem shadcn: o invólucro de chart
  * do shadcn é Recharts por baixo, e o projeto já tem a dependência (o chat a
@@ -23,10 +20,10 @@ import type { EsforcoDaFase } from '@/lib/roadmap'
  * 0.67) reprova tanto o azul da marca quanto qualquer clareada dele. O trilho
  * cinza é neutro de propósito: é o "resto", não uma segunda identidade. O
  * contraste do claro fica abaixo de 3:1 por 0,03 — o alívio exigido são os
- * rótulos diretos nas barras e a lista completa logo abaixo, que é a visão
- * de tabela dos mesmos números. */
+ * rótulos diretos no eixo da direita e a lista completa logo abaixo, que é a
+ * visão de tabela dos mesmos números. */
 
-export type ProgressoDaFase = { fase: string; feitas: number; restantes: number }
+export type SerieDaFase = { fase: string; feitas: number; restantes: number }
 
 const dicaEstilizada = {
   contentStyle: {
@@ -41,7 +38,88 @@ const dicaEstilizada = {
   cursor: { fill: 'var(--color-surface-3)', opacity: 0.4 },
 }
 
-export function Graficos({ progresso, esforco }: { progresso: ProgressoDaFase[]; esforco: EsforcoDaFase[] }) {
+function Legenda({ serie }: { serie: [string, string] }) {
+  return (
+    <div className="flex items-center gap-4 text-xs text-text-muted mb-4" aria-hidden>
+      <span className="inline-flex items-center gap-1.5">
+        <span className="w-2.5 h-2.5 rounded-[3px]" style={{ background: 'var(--serie-feitas)' }} />
+        {serie[0]}
+      </span>
+      <span className="inline-flex items-center gap-1.5">
+        <span className="w-2.5 h-2.5 rounded-[3px] bg-surface-3 border border-border-main" />
+        {serie[1]}
+      </span>
+    </div>
+  )
+}
+
+function BarrasEmpilhadas({
+  dados,
+  rotuloDireita,
+  formatarDica,
+}: {
+  dados: SerieDaFase[]
+  rotuloDireita: (d: SerieDaFase) => string
+  formatarDica: (v: number) => string
+}) {
+  return (
+    <ResponsiveContainer width="100%" height={dados.length * 34 + 8}>
+      <BarChart data={dados} layout="vertical" margin={{ top: 0, right: 4, bottom: 0, left: 0 }}>
+        <CartesianGrid horizontal={false} stroke="var(--color-border-main)" strokeDasharray="2 4" />
+        <XAxis type="number" hide domain={[0, 'dataMax']} />
+        <YAxis
+          type="category"
+          dataKey="fase"
+          width={150}
+          tickLine={false}
+          axisLine={false}
+          tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
+        />
+        {/* O rótulo direto mora num segundo eixo, não num LabelList: rótulo
+         * preso à barra some quando o segmento tem valor zero, e fase completa
+         * (ou não começada) zera um dos dois. */}
+        <YAxis
+          yAxisId="rotulos"
+          orientation="right"
+          type="category"
+          dataKey="fase"
+          width={52}
+          tickLine={false}
+          axisLine={false}
+          tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
+          tickFormatter={(_, i) => rotuloDireita(dados[i])}
+        />
+        <Tooltip {...dicaEstilizada} formatter={(v) => formatarDica(Number(v))} />
+        {/* Sem animação: rAF não dispara em aba oculta e as barras nem chegam
+         * a desenhar — e um painel de estado não precisa de tween. */}
+        <Bar
+          dataKey="feitas"
+          name="realizado"
+          stackId="fase"
+          isAnimationActive={false}
+          fill="var(--serie-feitas)"
+          stroke="var(--color-surface-2)"
+          strokeWidth={2}
+          barSize={16}
+          radius={[3, 0, 0, 3]}
+        />
+        <Bar
+          dataKey="restantes"
+          name="restante"
+          stackId="fase"
+          isAnimationActive={false}
+          fill="var(--color-surface-3)"
+          stroke="var(--color-surface-2)"
+          strokeWidth={2}
+          barSize={16}
+          radius={[0, 3, 3, 0]}
+        />
+      </BarChart>
+    </ResponsiveContainer>
+  )
+}
+
+export function Graficos({ tasks, horas }: { tasks: SerieDaFase[]; horas: SerieDaFase[] }) {
   return (
     <div className="graficos-roadmap grid lg:grid-cols-2 gap-4">
       <style>{`
@@ -50,106 +128,26 @@ export function Graficos({ progresso, esforco }: { progresso: ProgressoDaFase[];
       `}</style>
 
       <div className="vort-card dark:vort-card-dark">
-        <h3 className="text-sm font-semibold text-text-main mb-1">Tasks por fase</h3>
-        <div className="flex items-center gap-4 text-xs text-text-muted mb-4" aria-hidden>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-[3px]" style={{ background: 'var(--serie-feitas)' }} />
-            feitas
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-[3px] bg-surface-3 border border-border-main" />
-            restantes
-          </span>
-        </div>
-        <ResponsiveContainer width="100%" height={progresso.length * 34 + 8}>
-          <BarChart data={progresso} layout="vertical" margin={{ top: 0, right: 4, bottom: 0, left: 0 }}>
-            <XAxis type="number" hide domain={[0, 'dataMax']} />
-            <YAxis
-              type="category"
-              dataKey="fase"
-              width={150}
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
-            />
-            {/* O rótulo direto "feitas/total" mora num segundo eixo, não num
-             * LabelList: rótulo preso à barra some quando o segmento tem valor
-             * zero, e fase completa (ou não começada) zera um dos dois. */}
-            <YAxis
-              yAxisId="rotulos"
-              orientation="right"
-              type="category"
-              dataKey="fase"
-              width={44}
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
-              tickFormatter={(_, i) => `${progresso[i].feitas}/${progresso[i].feitas + progresso[i].restantes}`}
-            />
-            <Tooltip {...dicaEstilizada} />
-            {/* Sem animação: rAF não dispara em aba oculta e as barras nem
-             * chegam a desenhar — e um painel de estado não precisa de tween. */}
-            <Bar
-              dataKey="feitas"
-              name="feitas"
-              stackId="fase"
-              isAnimationActive={false}
-              fill="var(--serie-feitas)"
-              stroke="var(--color-surface-2)"
-              strokeWidth={2}
-              barSize={16}
-              radius={[3, 0, 0, 3]}
-            />
-            <Bar
-              dataKey="restantes"
-              name="restantes"
-              stackId="fase"
-              isAnimationActive={false}
-              fill="var(--color-surface-3)"
-              stroke="var(--color-surface-2)"
-              strokeWidth={2}
-              barSize={16}
-              radius={[0, 3, 3, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        <h3 className="text-sm font-semibold text-text-main mb-1">Entrega por fase — tasks</h3>
+        <Legenda serie={['feitas', 'restantes']} />
+        <BarrasEmpilhadas
+          dados={tasks}
+          rotuloDireita={(d) => `${d.feitas}/${d.feitas + d.restantes}`}
+          formatarDica={(v) => `${v} tasks`}
+        />
       </div>
 
       <div className="vort-card dark:vort-card-dark">
-        <h3 className="text-sm font-semibold text-text-main mb-1">Esforço estimado por fase</h3>
-        <p className="text-xs text-text-muted mb-4">
-          Horas de sessão assistida, da tabela de totais do backlog.
-        </p>
-        <ResponsiveContainer width="100%" height={progresso.length * 34 - 24}>
-          <BarChart data={esforco} layout="vertical" margin={{ top: 0, right: 52, bottom: 0, left: 0 }}>
-            <CartesianGrid horizontal={false} stroke="var(--color-border-main)" strokeDasharray="2 4" />
-            <XAxis type="number" hide domain={[0, 'dataMax']} />
-            <YAxis
-              type="category"
-              dataKey="fase"
-              width={150}
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
-            />
-            <Tooltip {...dicaEstilizada} formatter={(v) => [`~${v}h`, 'estimadas']} />
-            <Bar
-              dataKey="horas"
-              name="horas"
-              fill="var(--serie-feitas)"
-              barSize={16}
-              radius={[0, 3, 3, 0]}
-              isAnimationActive={false}
-            >
-              <LabelList
-                dataKey="horas"
-                position="right"
-                formatter={(v) => `~${String(v)}h`}
-                style={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <h3 className="text-sm font-semibold text-text-main mb-1">Esforço por fase — horas estimadas</h3>
+        <Legenda serie={['realizadas', 'restantes']} />
+        <BarrasEmpilhadas
+          dados={horas}
+          rotuloDireita={(d) => {
+            const total = d.feitas + d.restantes
+            return total ? `${Math.round((d.feitas / total) * 100)}%` : '—'
+          }}
+          formatarDica={(v) => `~${v}h`}
+        />
       </div>
     </div>
   )

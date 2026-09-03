@@ -28,6 +28,8 @@ export type Task = {
   estimativa: string
   /** A narrativa que acompanha o status ("done — provado no staging…"). */
   nota: string
+  /** Estimativa em horas (0 quando a célula não é numérica: "—", vazio). */
+  horas: number
 }
 
 export type Fase = {
@@ -53,6 +55,16 @@ export type Pendencia = {
 /** Uma barra do gráfico de esforço — vem da tabela `## Totais` do backlog. */
 export type EsforcoDaFase = { fase: string; horas: number }
 
+export type Risco = {
+  risco: string
+  /** A probabilidade vigente — numa reavaliação ("~~alta~~ → **baixa**"), a de agora. */
+  probabilidade: string
+  mitigacao: string
+  mitigado: boolean
+}
+
+export type ItemDeCutover = { feito: boolean; texto: string }
+
 export type Documento = {
   grupo: string
   nome: string
@@ -66,6 +78,11 @@ export type Roadmap = {
   pendencias: Pendencia[]
   documentos: Documento[]
   esforco: EsforcoDaFase[]
+  riscos: Risco[]
+  /** A seção "Caminho crítico" do roadmap, em markdown, sem o cabeçalho. */
+  caminhoCritico: string
+  /** Os pré-requisitos do runbook de cutover — assinatura manual, não estado inferido. */
+  cutover: ItemDeCutover[]
 }
 
 const raizDocs = (): string | null =>
@@ -156,6 +173,7 @@ const parsearTasks = (md: string): Fase[] => {
       dependencias: semMarcacao(coluna(['Dep.', 'Dep. extra'])),
       estimativa: semMarcacao(coluna(['Est.'])),
       nota,
+      horas: parseFloat(coluna(['Est.']).replace(',', '.')) || 0,
     })
   }
   return fases.filter((f) => f.tasks.length > 0)
@@ -204,6 +222,43 @@ const parsearEsforco = (md: string): EsforcoDaFase[] => {
     })
 }
 
+const parsearRiscos = (md: string): Risco[] => {
+  const secao = md.split(/^## Riscos de cronograma$/m)[1]?.split(/^## /m)[0] ?? ''
+  return secao
+    .split('\n')
+    .filter((l) => l.startsWith('|') && !/^\|\s*(Risco|-)/.test(l))
+    .map((linha) => {
+      const celulas = linha.split('|').slice(1, -1).map((c) => c.trim())
+      const probBruta = celulas[1] ?? ''
+      return {
+        risco: semMarcacao(celulas[0] ?? ''),
+        /* "~~alta~~ → **baixa**" é reavaliação: vale a de depois da seta. */
+        probabilidade: semMarcacao(probBruta.includes('→') ? probBruta.split('→').pop()! : probBruta),
+        mitigacao: semMarcacao(celulas[2] ?? ''),
+        mitigado: (celulas[0] ?? '').includes('~~') || (celulas[2] ?? '').includes('✅'),
+      }
+    })
+    .filter((r) => r.risco)
+}
+
+const extrairCaminhoCritico = (md: string): string =>
+  (md.split(/^## Caminho crítico$/m)[1]?.split(/^## /m)[0] ?? '').trim()
+
+/* Cada item pode continuar em linhas indentadas; elas se juntam ao texto. */
+const parsearCutover = (md: string): ItemDeCutover[] => {
+  const secao = md.split(/^## Pré-requisitos.*$/m)[1]?.split(/^## |^---$/m)[0] ?? ''
+  const itens: ItemDeCutover[] = []
+  for (const linha of secao.split('\n')) {
+    const item = linha.match(/^- \[([ x])\] (.+)$/)
+    if (item) {
+      itens.push({ feito: item[1] === 'x', texto: semMarcacao(item[2]) })
+    } else if (itens.length > 0 && /^\s+\S/.test(linha)) {
+      itens[itens.length - 1].texto += ` ${semMarcacao(linha)}`
+    }
+  }
+  return itens
+}
+
 const lerDocumentos = (raiz: string): Documento[] => {
   const documentos: Documento[] = []
   const entradas = ['.', ...readdirSync(raiz, { withFileTypes: true })
@@ -226,9 +281,20 @@ const lerDocumentos = (raiz: string): Documento[] => {
 export function lerRoadmap(): Roadmap {
   const raiz = raizDocs()
   if (!raiz)
-    return { atualizadoEm: null, fases: [], decisoes: [], pendencias: [], documentos: [], esforco: [] }
+    return {
+      atualizadoEm: null,
+      fases: [],
+      decisoes: [],
+      pendencias: [],
+      documentos: [],
+      esforco: [],
+      riscos: [],
+      caminhoCritico: '',
+      cutover: [],
+    }
 
   const tasksMd = ler(raiz, '03-plano/tasks.md')
+  const roadmapMd = ler(raiz, '03-plano/roadmap.md')
   return {
     atualizadoEm: tasksMd.match(/^atualizado_em:\s*(\S+)/m)?.[1] ?? null,
     fases: parsearTasks(tasksMd),
@@ -236,5 +302,8 @@ export function lerRoadmap(): Roadmap {
     pendencias: parsearPendencias(ler(raiz, '00-contexto/pendencias.md')),
     documentos: lerDocumentos(raiz),
     esforco: parsearEsforco(tasksMd),
+    riscos: parsearRiscos(roadmapMd),
+    caminhoCritico: extrairCaminhoCritico(roadmapMd),
+    cutover: parsearCutover(ler(raiz, '04-infra/runbook-cutover.md')),
   }
 }
