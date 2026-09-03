@@ -6,6 +6,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { Icone } from '@/components/blocks/icones'
 import { cn } from '@/lib/utils'
+import type { ConviteDeLead } from '@/types/content'
+
+import { ConviteLead } from './convite-lead'
 
 /* Conversa com a ATRA AI — porte de `legacy/src/pages/Chat.tsx:163`.
  *
@@ -52,7 +55,16 @@ const SUGESTOES = [
 const ERRO_GERAL =
   'Desculpe, ocorreu um erro ao se comunicar com nossos especialistas. Tente novamente em alguns segundos.'
 
-export function Conversa({ mensagemInicial, locale }: { mensagemInicial?: string; locale: 'pt' | 'en' }) {
+export function Conversa({
+  mensagemInicial,
+  locale,
+  convite,
+}: {
+  mensagemInicial?: string
+  locale: 'pt' | 'en'
+  /* MIG-150 (D-29): `null` com a feature fechada — e aí nada daqui muda. */
+  convite?: ConviteDeLead | null
+}) {
   const [mensagens, setMensagens] = useState<Mensagem[]>([])
   const [texto, setTexto] = useState('')
   const [carregando, setCarregando] = useState(false)
@@ -259,6 +271,15 @@ export function Conversa({ mensagemInicial, locale }: { mensagemInicial?: string
               )}
             </div>
           ))}
+
+          {/* MIG-150 — o convite entra no fluxo depois de N mensagens DO
+              VISITANTE (não do modelo, de propósito: com a IA indisponível a
+              mensagem do usuário fica no estado — ver `enviar` — e capturar o
+              contato é o que resta). Nunca no estado vazio: é o que o gabarito
+              do gate captura, e ele não muda. */}
+          {convite && mensagens.filter((m) => m.role === 'user').length >= convite.aposMensagens && (
+            <ConviteLead convite={convite} mensagens={mensagens} locale={locale} />
+          )}
 
           {carregando && (
             <div className="flex gap-2.5 sm:gap-3.5 max-w-[85%]">

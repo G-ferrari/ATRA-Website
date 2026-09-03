@@ -280,6 +280,18 @@ build + deploy durante a validação em homologação, por decisão do Leonardo.
 `pnpm gate` local segue sendo o aceite visual, e religar antes de produção é
 pré-requisito do runbook de cutover.
 
+**D-29 (03/09, MIG-148–150)** ligou os leads ao **RD Station CRM**: hook
+`afterChange` em `form-submissions` (`hooks/sincronizar-crm.ts` + `lib/crm.ts`)
+sincroniza contato+negociação para os kinds comerciais — RH fica fora; sem
+`RDSTATION_CRM_TOKEN` é inerte e `crm.syncedAt` vazio denuncia no admin;
+qualquer edição do doc não sincronizado tenta de novo. E o chat ganhou convite
+de lead inline (kind `chat-lead`, `actions/chat-lead.ts`, cartão em
+`chat/convite-lead.tsx`): aparece após N mensagens **do visitante**, grava
+`chatContext` só com o que ele digitou (P-20 parcial), e são **três chaves**
+para ligar — `ENABLE_CHAT_LEAD` (env), toggle no global `atra-ai`, e
+`consentNotice` preenchido (nasce vazio até P-14; produção espera P-14). O
+estado vazio de `/chat` não muda: o gabarito do gate segue válido.
+
 A revisão crítica de 25/08 (MIG-140–147) fechou: IP confiável nos limites
 (`lib/ip.ts` — nunca ler `x-forwarded-for` primeiro), tetos do chat
 (`lib/chat.ts`), campos do formulário cortados, mídia sem SVG, cabeçalhos de

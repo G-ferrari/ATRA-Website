@@ -676,6 +676,18 @@ export type SegmentCard = {
   shortDescription: string
 }
 
+/** O convite de lead dentro do chat (MIG-150, D-29), do global `atra-ai`.
+ * `null` quando qualquer uma das três chaves está fechada — env, toggle
+ * editorial ou consentimento vazio no idioma. */
+export type ConviteDeLead = {
+  aposMensagens: number
+  titulo: string
+  mensagem: string
+  /** O aviso de P-14: o que acontece com o dado. Sem ele, não há convite. */
+  consentimento: string
+  sucesso: string
+}
+
 /** Dados de contato da ATRA, do global `contact` (MIG-072). */
 export type Contato = {
   telefone: string

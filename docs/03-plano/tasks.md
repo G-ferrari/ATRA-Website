@@ -521,7 +521,7 @@ o `next/image` só otimiza origem própria e o lockout de login está no default
 | MIG-146 | DRY dos seeds (`midia.ts` + slug compartilhados) | — | 10 cópias de upsert viram 1; `paraSlug` de 5 para 1; seed roda 2× sem mudança de contagem | 2h | **done** — `midia.ts` preserva a **regravação** de sobre.ts/cases.ts como opção explícita; idempotência verificada: 2 corridas, contagens idênticas em 8 collections |
 | MIG-147 | `/design-system` via `lib/routes` no rodapé | — | Nenhum href literal fora de `routes.ts` | 0.25h | **done** |
 | MIG-148 | **Sincronização RD Station CRM** (D-26/D-29) — hook de `form-submissions` | — | Lead comercial vira contato+negociação no CRM; sem token, inerte e visível (`crm.syncedAt` vazio); retry por edição; RH fica fora | 3h | **done** — `lib/crm.ts` + `hooks/sincronizar-crm.ts`; formato fino do payload externo se confirma no lead de ponta a ponta em homolog |
-| MIG-149 | Kind `chat-lead` + action + config `leadCapture` no global `atra-ai` (D-29) | 148 | Action atrás de `ENABLE_CHAT_LEAD`; `chatContext` só com mensagens do visitante; textos localizados; `consentNotice` nasce vazio (P-14) | 3h | |
+| MIG-149 | Kind `chat-lead` + action + config `leadCapture` no global `atra-ai` (D-29) | 148 | Action atrás de `ENABLE_CHAT_LEAD`; `chatContext` só com mensagens do visitante; textos localizados; `consentNotice` nasce vazio (P-14) | 3h | **done** — `actions/chat-lead.ts`, `contextoDoLead` em `lib/chat.ts` |
 | MIG-150 | UI do convite de lead no chat (D-29) | 149 | Convite após N mensagens do visitante; dispensável; estado inicial do DOM intacto — `pnpm gate --rota chat` passa sem regravar gabarito | 4h | |
 
 ## Fase 7 — Cutover · Fase 8 — Limpeza

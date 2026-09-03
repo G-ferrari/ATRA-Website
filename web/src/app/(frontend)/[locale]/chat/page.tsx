@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
+import { lerConviteDeLead } from '@/lib/convite-de-lead'
 import { isLocale, LOCALES } from '@/lib/locales'
 
 import { Conversa } from './conversa'
@@ -36,6 +37,11 @@ export default async function Pagina({ searchParams }: PageProps<'/[locale]/chat
   const { q } = await searchParams
   const inicial = typeof q === 'string' ? q : undefined
 
+  /* MIG-150 — resolvido aqui e injetado pronto (regra 4). `null` enquanto
+     qualquer chave estiver fechada (env, toggle, consentimento), e aí a ilha
+     desenha exatamente o que desenhava antes da feature. */
+  const convite = await lerConviteDeLead(locale)
+
   return (
     /* ⚠️ Sem `min-h-screen` e sem fundo. A casca do site já é uma coluna
        `min-h-screen` cujo filho é `flex-1 min-h-0`; repetir a altura aqui faz a
@@ -43,7 +49,7 @@ export default async function Pagina({ searchParams }: PageProps<'/[locale]/chat
        barra deslocam **tudo** — no aceite visual foram 40% dos pixels. O
        gabarito não tem `<main>` nesta rota: a página é o próprio filho flex. */
     <main className="flex-1 flex flex-col min-h-0">
-      <Conversa mensagemInicial={inicial} locale={locale} />
+      <Conversa mensagemInicial={inicial} locale={locale} convite={convite} />
     </main>
   )
 }
