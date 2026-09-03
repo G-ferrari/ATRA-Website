@@ -7,6 +7,7 @@ import { LOCALES, isLocale } from '@/lib/locales'
 import { lerRoadmap } from '@/lib/roadmap'
 
 import { Documento } from './documento'
+import { Graficos } from './graficos'
 import { Painel } from './painel'
 
 /* /roadmap — o estado da migração, lido da própria especificação.
@@ -47,13 +48,25 @@ export default async function Pagina() {
   const locale = await getLocale()
   if (!isLocale(locale)) notFound()
 
-  const { atualizadoEm, fases, decisoes, pendencias, documentos } = lerRoadmap()
+  const { atualizadoEm, fases, decisoes, pendencias, documentos, esforco } = lerRoadmap()
 
   const todas = fases.flatMap((f) => f.tasks)
   const contaveis = todas.filter((t) => t.status !== 'cancelada')
   const feitas = contaveis.filter((t) => t.status === 'done')
   const pct = contaveis.length ? Math.round((feitas.length / contaveis.length) * 100) : 0
   const pendentesAbertas = pendencias.filter((p) => p.status === 'aberta')
+
+  /* A tabela de totais do backlog tem os nomes curtos das fases, na mesma
+   * ordem das seções — é o rótulo que cabe no eixo do gráfico. */
+  const progresso = fases.map((f, i) => {
+    const doGrafico = f.tasks.filter((t) => t.status !== 'cancelada')
+    const prontas = doGrafico.filter((t) => t.status === 'done').length
+    return {
+      fase: esforco[i]?.fase ?? f.nome.replace(/^Fase /, ''),
+      feitas: prontas,
+      restantes: doGrafico.length - prontas,
+    }
+  })
 
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
@@ -92,9 +105,10 @@ export default async function Pagina() {
                 </div>
               ))}
             </div>
-            <div className="h-2 rounded-full bg-surface-3 overflow-hidden" aria-hidden>
+            <div className="h-2 rounded-full bg-surface-3 overflow-hidden mb-6" aria-hidden>
               <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
             </div>
+            <Graficos progresso={progresso} esforco={esforco} />
           </section>
 
           {/* ── previsto vs realizado ─────────────────────────────────── */}
@@ -110,12 +124,23 @@ export default async function Pagina() {
               Toda decisão da migração vive em <code>docs/00-contexto/decisoes.md</code>. O registro
               completo, com contexto e consequência, está na seção de documentos abaixo.
             </p>
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-2">
               {decisoes.map((d) => (
-                <div key={d.id} className="flex items-baseline gap-3 rounded-[6px] border border-border-main bg-surface-2 px-4 py-3">
-                  <span className="text-xs font-mono text-primary shrink-0">{d.id}</span>
-                  <span className="text-sm text-text-main">{d.titulo}</span>
-                </div>
+                <details
+                  key={d.id}
+                  className="group rounded-[6px] border border-border-main bg-surface-2 open:shadow-md"
+                >
+                  <summary className="cursor-pointer select-none list-none px-4 py-3 flex items-baseline gap-3 hover:text-primary transition-colors [&::-webkit-details-marker]:hidden">
+                    <span className="text-text-muted text-xs shrink-0 transition-transform group-open:rotate-90" aria-hidden>
+                      ›
+                    </span>
+                    <span className="text-xs font-mono text-primary shrink-0">{d.id}</span>
+                    <span className="text-sm text-text-main">{d.titulo}</span>
+                  </summary>
+                  <div className="px-4 sm:px-6 pb-5 border-t border-border-main pt-3">
+                    <Documento md={d.corpo} />
+                  </div>
+                </details>
               ))}
             </div>
           </section>
@@ -126,21 +151,38 @@ export default async function Pagina() {
             <p className="text-sm text-text-muted font-light mb-6">
               O que depende de decisão — da ATRA ou do projeto — para andar. Abertas primeiro.
             </p>
-            <ul className="divide-y divide-border-main">
+            <div className="space-y-2">
               {[...pendentesAbertas, ...pendencias.filter((p) => p.status === 'resolvida')].map((p) => (
-                <li key={p.id} className="py-3 flex flex-col sm:flex-row sm:items-baseline gap-x-4 gap-y-1">
-                  <div className="flex items-center gap-3 shrink-0 sm:w-40">
-                    <StatusBadge
-                      label={p.status}
-                      variant={p.status === 'aberta' ? 'secondary' : 'online'}
-                      size="sm"
-                    />
-                    <span className="text-xs font-mono text-text-muted">{p.id}</span>
+                <details
+                  key={p.id}
+                  className="group rounded-[6px] border border-border-main bg-surface-2 open:shadow-md"
+                >
+                  <summary className="cursor-pointer select-none list-none px-4 py-3 flex flex-col sm:flex-row sm:items-baseline gap-x-4 gap-y-1 [&::-webkit-details-marker]:hidden">
+                    <span className="flex items-center gap-3 shrink-0 sm:w-40">
+                      <span className="text-text-muted text-xs transition-transform group-open:rotate-90" aria-hidden>
+                        ›
+                      </span>
+                      <StatusBadge
+                        label={p.status}
+                        variant={p.status === 'aberta' ? 'secondary' : 'online'}
+                        size="sm"
+                      />
+                      <span className="text-xs font-mono text-text-muted">{p.id}</span>
+                    </span>
+                    <span className="text-sm text-text-main min-w-0">{p.pergunta}</span>
+                  </summary>
+                  <div className="px-4 sm:px-6 pb-4 border-t border-border-main pt-3 space-y-2">
+                    {p.referencia && (
+                      <p className="text-xs text-text-muted">
+                        <span className="font-bold uppercase tracking-wider text-[10px]">Afeta</span>{' '}
+                        <span className="font-mono">{p.referencia}</span>
+                      </p>
+                    )}
+                    {p.nota && <p className="text-sm text-text-subtle font-light">{p.nota}</p>}
                   </div>
-                  <p className="text-sm text-text-main min-w-0">{p.pergunta}</p>
-                </li>
+                </details>
               ))}
-            </ul>
+            </div>
           </section>
 
           {/* ── documentação completa ─────────────────────────────────── */}

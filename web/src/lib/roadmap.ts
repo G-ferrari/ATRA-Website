@@ -22,6 +22,12 @@ export type Task = {
   titulo: string
   criterio: string
   status: StatusDaTask
+  /** Onde mexe — só as tabelas das Fases 1–2 declaram a coluna. */
+  arquivos: string
+  dependencias: string
+  estimativa: string
+  /** A narrativa que acompanha o status ("done — provado no staging…"). */
+  nota: string
 }
 
 export type Fase = {
@@ -29,13 +35,23 @@ export type Fase = {
   tasks: Task[]
 }
 
-export type Decisao = { id: string; titulo: string }
+export type Decisao = {
+  id: string
+  titulo: string
+  /** O registro completo (contexto, alternativas, consequência), em markdown. */
+  corpo: string
+}
 
 export type Pendencia = {
   id: string
   pergunta: string
   status: 'aberta' | 'resolvida'
+  referencia: string
+  nota: string
 }
+
+/** Uma barra do gráfico de esforço — vem da tabela `## Totais` do backlog. */
+export type EsforcoDaFase = { fase: string; horas: number }
 
 export type Documento = {
   grupo: string
@@ -49,6 +65,7 @@ export type Roadmap = {
   decisoes: Decisao[]
   pendencias: Pendencia[]
   documentos: Documento[]
+  esforco: EsforcoDaFase[]
 }
 
 const raizDocs = (): string | null =>
@@ -122,22 +139,35 @@ const parsearTasks = (md: string): Fase[] => {
         : celulas.length > colunas.length
           ? (celulas[celulas.length - 1] ?? '')
           : ''
-    const posCriterio = colunas.indexOf('Critério de aceite')
+    const coluna = (nomes: string[]): string => {
+      const pos = nomes.map((n) => colunas.indexOf(n)).find((p) => p >= 0) ?? -1
+      return pos >= 0 ? (celulas[pos] ?? '') : ''
+    }
+    /* A narrativa vem depois do travessão do status ("**done** — provado…"). */
+    const nota = celulaStatus.includes('—')
+      ? semMarcacao(celulaStatus.slice(celulaStatus.indexOf('—') + 1))
+      : ''
     fase.tasks.push({
       id,
       titulo: semMarcacao(celulas[1] ?? ''),
-      criterio: semMarcacao(celulas[posCriterio] ?? ''),
+      criterio: semMarcacao(coluna(['Critério de aceite'])),
       status: classificarStatus(idBruto, celulas[1] ?? '', celulaStatus),
+      arquivos: semMarcacao(coluna(['Arquivos'])),
+      dependencias: semMarcacao(coluna(['Dep.', 'Dep. extra'])),
+      estimativa: semMarcacao(coluna(['Est.'])),
+      nota,
     })
   }
   return fases.filter((f) => f.tasks.length > 0)
 }
 
 const parsearDecisoes = (md: string): Decisao[] =>
-  [...md.matchAll(/^## (D-\d+) — (.+)$/gm)].map((m) => ({
-    id: m[1],
-    titulo: semMarcacao(m[2]),
-  }))
+  /* O corpo de cada decisão vai do seu `## D-xx` até o próximo `## `. */
+  md
+    .split(/^## /m)
+    .map((secao) => secao.match(/^(D-\d+) — (.+)\n([\s\S]*)$/))
+    .filter((m): m is RegExpMatchArray => m !== null)
+    .map((m) => ({ id: m[1], titulo: semMarcacao(m[2]), corpo: m[3].trim() }))
 
 const parsearPendencias = (md: string): Pendencia[] =>
   md
@@ -152,8 +182,27 @@ const parsearPendencias = (md: string): Pendencia[] =>
         status: (idBruto.includes('~~') || idBruto.includes('✅') ? 'resolvida' : 'aberta') as
           | 'aberta'
           | 'resolvida',
+        referencia: semMarcacao(celulas[2] ?? ''),
+        nota: semMarcacao(celulas[3] ?? ''),
       }
     })
+
+/* A tabela `## Totais` do backlog é a única fonte de horas por fase — as
+ * células de estimativa das tasks têm exceções demais ("—", "?" e formatos
+ * mistos) para somar com honestidade. */
+const parsearEsforco = (md: string): EsforcoDaFase[] => {
+  const secao = md.split(/^## Totais$/m)[1] ?? ''
+  return secao
+    .split('\n')
+    .filter((l) => l.startsWith('|') && /~[\d,.]+h/.test(l) && !l.includes('Total'))
+    .map((linha) => {
+      const celulas = linha.split('|').slice(1, -1).map((c) => c.trim())
+      return {
+        fase: semMarcacao(celulas[0] ?? ''),
+        horas: parseFloat((celulas[3] ?? '').replace(/[^\d,.]/g, '').replace(',', '.')) || 0,
+      }
+    })
+}
 
 const lerDocumentos = (raiz: string): Documento[] => {
   const documentos: Documento[] = []
@@ -176,7 +225,8 @@ const lerDocumentos = (raiz: string): Documento[] => {
 
 export function lerRoadmap(): Roadmap {
   const raiz = raizDocs()
-  if (!raiz) return { atualizadoEm: null, fases: [], decisoes: [], pendencias: [], documentos: [] }
+  if (!raiz)
+    return { atualizadoEm: null, fases: [], decisoes: [], pendencias: [], documentos: [], esforco: [] }
 
   const tasksMd = ler(raiz, '03-plano/tasks.md')
   return {
@@ -185,5 +235,6 @@ export function lerRoadmap(): Roadmap {
     decisoes: parsearDecisoes(ler(raiz, '00-contexto/decisoes.md')),
     pendencias: parsearPendencias(ler(raiz, '00-contexto/pendencias.md')),
     documentos: lerDocumentos(raiz),
+    esforco: parsearEsforco(tasksMd),
   }
 }
