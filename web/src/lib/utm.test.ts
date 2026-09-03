@@ -1,6 +1,15 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { utmDaQueryString } from './utm'
+import { COOKIE_DE_CONSENTIMENTO, VERSAO_DE_CONSENTIMENTO } from './consentimento'
+import {
+  CHAVE_DE_SESSAO,
+  efetivarUtmSeConsentido,
+  esquecerUtmDaChegada,
+  guardarUtm,
+  lerUtmGuardado,
+  limparUtmGuardado,
+  utmDaQueryString,
+} from './utm'
 
 describe('utmDaQueryString', () => {
   it('extrai os cinco parâmetros', () => {
@@ -49,5 +58,76 @@ describe('utmDaQueryString', () => {
    * devolve o primeiro, que é o que o clique original carregava. */
   it('fica com a primeira ocorrência quando o parâmetro repete', () => {
     expect(utmDaQueryString('?utm_source=linkedin&utm_source=facebook')).toEqual({ utm_source: 'linkedin' })
+  })
+})
+
+/* D-30: a captura passou a ser opt-in de marketing. A UTM da chegada espera em
+ * memória de módulo e só toca o sessionStorage com o consentimento dado. */
+describe('guardarUtm com consentimento (D-30)', () => {
+  const armazem = new Map<string, string>()
+  const documento = { cookie: '' }
+
+  const consentir = (marketing: boolean) => {
+    documento.cookie = `${COOKIE_DE_CONSENTIMENTO}=${encodeURIComponent(
+      JSON.stringify({ v: VERSAO_DE_CONSENTIMENTO, analytics: false, marketing, ts: 1 }),
+    )}`
+  }
+
+  beforeEach(() => {
+    armazem.clear()
+    documento.cookie = ''
+    esquecerUtmDaChegada()
+    vi.stubGlobal('sessionStorage', {
+      getItem: (k: string) => armazem.get(k) ?? null,
+      setItem: (k: string, v: string) => void armazem.set(k, v),
+      removeItem: (k: string) => void armazem.delete(k),
+    })
+    vi.stubGlobal('document', documento)
+  })
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('sem resposta ao banner, nada toca o armazenamento', () => {
+    guardarUtm('?utm_source=linkedin')
+    expect(armazem.size).toBe(0)
+    expect(lerUtmGuardado()).toEqual({})
+  })
+
+  it('com o consentimento já no cookie, a chegada grava direto', () => {
+    consentir(true)
+    guardarUtm('?utm_source=linkedin&utm_medium=cpc')
+    expect(lerUtmGuardado()).toEqual({ utm_source: 'linkedin', utm_medium: 'cpc' })
+  })
+
+  /* O caso que a memória de módulo existe para resolver: o visitante chega com
+     UTM, navega, e só aceita marketing páginas depois — quando a URL já não
+     tem parâmetro nenhum. */
+  it('consentimento tardio efetiva a UTM da chegada', () => {
+    guardarUtm('?utm_source=linkedin')
+    expect(lerUtmGuardado()).toEqual({})
+
+    consentir(true)
+    efetivarUtmSeConsentido()
+    expect(lerUtmGuardado()).toEqual({ utm_source: 'linkedin' })
+  })
+
+  it('recusa de marketing não efetiva nada', () => {
+    guardarUtm('?utm_source=linkedin')
+    consentir(false)
+    efetivarUtmSeConsentido()
+    expect(lerUtmGuardado()).toEqual({})
+  })
+
+  it('primeiro toque vence, também na memória', () => {
+    consentir(true)
+    guardarUtm('?utm_source=linkedin')
+    guardarUtm('?utm_source=facebook')
+    expect(lerUtmGuardado()).toEqual({ utm_source: 'linkedin' })
+  })
+
+  it('revogação limpa o guardado', () => {
+    consentir(true)
+    guardarUtm('?utm_source=linkedin')
+    limparUtmGuardado()
+    expect(armazem.has(CHAVE_DE_SESSAO)).toBe(false)
   })
 })
