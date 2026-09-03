@@ -16,6 +16,8 @@ import { paraEmbed } from '@/lib/video'
 import type { Webinar } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
 
+import { VideoSobClique } from './video-sob-clique'
+
 /* /webinars/[slug] (MIG-046). Rota **sem gabarito** — não existe no protótipo.
  *
  * D-11 previu os dois estados e ambos existem no seed: nenhum dos três webinars
@@ -31,6 +33,7 @@ const TEXTOS = {
     semVideoTitulo: 'Gravação em breve',
     semVideoTexto:
       'Este webinar ainda não tem gravação publicada. Assim que o vídeo estiver disponível, ele aparece aqui.',
+    assistir: 'Assistir à gravação',
     ctaTitulo: 'Quer esse tema',
     ctaDestaque: 'dentro da sua empresa?',
     ctaDescricao:
@@ -46,6 +49,7 @@ const TEXTOS = {
     semVideoTitulo: 'Recording coming soon',
     semVideoTexto:
       'This webinar has no published recording yet. The video shows up here as soon as it is available.',
+    assistir: 'Watch the recording',
     ctaTitulo: 'Want this topic',
     ctaDestaque: 'inside your company?',
     ctaDescricao:
@@ -144,16 +148,10 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
         <div className="container mx-auto px-4 md:px-6">
           <div className="max-w-4xl mx-auto">
             {embed ? (
-              <div className="aspect-video rounded-[6px] overflow-hidden border border-slate-200 bg-slate-950 shadow-xl">
-                <iframe
-                  src={embed.src}
-                  title={`${w.title} — ${embed.titulo}`}
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
-              </div>
+              /* MIG-155 (D-30): o iframe só monta no clique — antes disso,
+                 nenhuma requisição sai para YouTube/Vimeo. Ver o comentário do
+                 componente. */
+              <VideoSobClique embed={embed} imagem={w.image} titulo={w.title} rotuloAssistir={t.assistir} />
             ) : (
               <div className="aspect-video rounded-[6px] border border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-center px-8">
                 <Video size={36} className="text-slate-400 mb-4" aria-hidden />
