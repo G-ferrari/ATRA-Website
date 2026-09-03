@@ -3,12 +3,14 @@ import { Mona_Sans } from 'next/font/google'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
+import { AvisoDeCookies } from '@/components/layout/aviso-de-cookies'
 import { Casca } from '@/components/layout/casca'
 import { CapturaDeUtm } from '@/components/layout/captura-de-utm'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
 import { lerContato } from '@/lib/contato'
 import { organizacao } from '@/lib/jsonld'
 import { LOCALES, isLocale } from '@/lib/locales'
@@ -105,6 +107,9 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
 
   const logo = toImageOpcional(institucional.logo, 'site-settings.logo')
   const rodape = toRodape(rodapeGlobal)
+  /* D-30: `null` enquanto `bannerMessage` estiver vazio no idioma (P-14) — e
+     aí o DOM fica idêntico ao de antes da feature, que é o que o gate compara. */
+  const avisoDeCookies = await lerAvisoDeCookies(locale)
 
   const navegacao = toNavegacao({
     global: navGlobal,
@@ -140,6 +145,10 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
         {/* Não desenha nada: guarda a campanha da URL de chegada para o
             formulário mandar junto no envio (D-26). */}
         <CapturaDeUtm />
+        {/* MIG-152 (D-30): direto no body, não como prop da Casca — a armadilha
+            do `_store.validated` logo abaixo vale para qualquer elemento que
+            atravesse a fronteira do RSC como prop. */}
+        {avisoDeCookies && <AvisoDeCookies textos={avisoDeCookies} locale={locale} />}
 
         {/* ⚠️ As três chaves não são decoração, e sem elas o overlay de
             desenvolvimento fica **permanentemente vermelho** em toda rota:

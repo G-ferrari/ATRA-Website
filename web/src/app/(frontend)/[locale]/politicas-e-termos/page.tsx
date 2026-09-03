@@ -3,9 +3,12 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { RenderBlocks } from '@/components/blocks/render-blocks'
+import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { resolverPagina } from '@/lib/paginas'
 import { metadataDe } from '@/lib/seo'
+
+import { GerenciarCookies } from './gerenciar-cookies'
 
 /* /politicas-e-termos (MIG-094) — página montada por blocos, como /sobre.
  *
@@ -35,9 +38,18 @@ export default async function Pagina() {
   const pagina = await resolverPagina('politicas-e-termos', 'privacy-and-terms', locale)
   if (!pagina) notFound()
 
+  /* MIG-152 (D-30): a porta da revogação só existe quando o banner existe —
+     a rota está sob o gate visual, e com a feature desligada o DOM não muda. */
+  const aviso = await lerAvisoDeCookies(locale)
+
   return (
     <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
       <RenderBlocks blocos={pagina.blocos} locale={locale} />
+      {aviso && (
+        <section className="max-w-5xl mx-auto px-6 pb-16">
+          <GerenciarCookies rotulo={aviso.tituloDoPainel} />
+        </section>
+      )}
     </main>
   )
 }
