@@ -509,6 +509,51 @@ o CI exercita a cada push. O rollback não é teórico: foi acionado três vezes
 falhas reais de rede sem o site piscar. Reversível como sempre foi — nada no
 código sabe onde roda.
 
+## D-29 — Lead do chat por formulário inline; o RD Station sincroniza por hook
+
+*Em 03/09/2026. Executa [D-26](#d-26--os-leads-vão-para-o-rd-station-crm-o-payload-é-registro-de-passagem)
+e responde parcialmente P-20. Tasks MIG-148/149/150.*
+
+**Contexto.** A ideia de partida era enviar um formulário de qualificação por
+e-mail para quem conversa com a ATRA AI. Dois problemas: o chat não sabe quem é
+o visitante (nada persiste, P-20), e qualificar **depois** do engajamento, em
+outro canal, é pedir uma segunda conversão de quem já estava convertendo.
+
+**Escolha.**
+
+1. **Qualificar dentro do próprio chat, com formulário inline** — um cartão de
+   convite após N mensagens do visitante (N no CMS), dispensável, com os campos
+   do formulário de contato. **Não** por function calling do Gemini: e-mail
+   extraído pelo modelo é transcrição (um caractere errado perde o lead),
+   reintroduziria a dependência do modelo que deixou a UI generativa de fora
+   (P-04), e o anti-spam de MIG-101 pressupõe um `<form>`. O gatilho conta
+   mensagens **do visitante**, então funciona até com a IA indisponível — que é
+   quando capturar o contato mais importa. O `systemPrompt` pode convidar
+   verbalmente; texto é do marketing (D-22).
+2. **A conversa continua não persistindo.** Junto do lead vai só `chatContext`:
+   as últimas ≤5 mensagens **do próprio visitante** (500 chars cada), nada do
+   que o modelo respondeu. É o que o comercial precisa ("o que a pessoa
+   perguntou"), é texto que o titular digitou e envia conscientemente com o
+   formulário. P-20 fica parcialmente respondida: histórico completo, não.
+3. **A sincronização com o CRM é o hook de D-26** (`hooks/sincronizar-crm.ts`),
+   e vale para todos os formulários. Sincronizam: `contact`, `chat-lead`,
+   `material-download` e `newsletter` **confirmada** (MIG-103). Ficam fora
+   `job-application` e `talent-pool`: currículo é dado de RH, e pipeline de
+   vendas seria desvio de finalidade — se a ATRA quiser o banco de talentos no
+   CRM, é decisão dela. Idempotência por ids gravados (`crm.contactId`/
+   `dealId`); falha deixa `syncedAt` vazio e **qualquer** edição no doc tenta
+   de novo.
+4. **Consentimento é gate de código, não combinado**: o convite só renderiza se
+   o campo localizado `consentNotice` (global `atra-ai`) estiver preenchido — e
+   ele nasce vazio, porque o texto é jurídico e é da ATRA (P-14). Em produção,
+   `ENABLE_CHAT_LEAD` e `RDSTATION_CRM_TOKEN` só ligam depois de P-14.
+
+**Consequência.** O follow-up comercial acontece dentro do RD Station, sem
+régua de e-mail caseira (a ATRA usa o RD Station **CRM**; automação de e-mail é
+o RD Station Marketing, produto que ela não assina). O e-mail transacional
+continua sendo só o aviso interno de lead. Reversível por camadas: flag, toggle
+no CMS e token são três chaves independentes.
+
 ---
 
 ## Pendentes

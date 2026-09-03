@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { isAdmin, isEditorOrAdmin } from '@/access'
+import { sincronizarComCrm } from '@/hooks/sincronizar-crm'
 
 /* Envios de formulário (MIG-100).
  *
@@ -19,9 +20,10 @@ import { isAdmin, isEditorOrAdmin } from '@/access'
  * ⚠️ Isto **não** é o CRM, e agora se sabe qual é: **D-26** respondeu P-18 —
  * a ATRA usa RD Station CRM, e o destino final dos leads é lá. Esta collection
  * é o registro de passagem, e continua sendo a **primeira** escrita: grava aqui,
- * sincroniza depois. Enquanto a sincronização não existe, é a única cópia — e o
- * backup diário deixa o RPO de lead em 24h, que é o que P-22 questiona. Lead
- * perdido não volta.
+ * sincroniza depois. A sincronização é o hook de MIG-148
+ * (`hooks/sincronizar-crm.ts`): sem `RDSTATION_CRM_TOKEN` ela não roda, e o
+ * backup diário volta a ser a única cópia — o RPO de 24h que P-22 questiona.
+ * Lead perdido não volta.
  */
 export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
@@ -42,6 +44,9 @@ export const FormSubmissions: CollectionConfig = {
     update: isEditorOrAdmin,
     delete: isAdmin,
   },
+  /* ⚠️ Fora do `comRevalidacao` central (lead não desenha página), então o
+   * hook entra aqui mesmo — MIG-148. */
+  hooks: { afterChange: [sincronizarComCrm] },
   defaultSort: '-createdAt',
   fields: [
     {
@@ -130,6 +135,35 @@ export const FormSubmissions: CollectionConfig = {
         { name: 'campaign', type: 'text', label: { pt: 'Campanha (utm_campaign)', en: 'Campaign (utm_campaign)' } },
         { name: 'term', type: 'text', label: { pt: 'Termo (utm_term)', en: 'Term (utm_term)' } },
         { name: 'content', type: 'text', label: { pt: 'Conteúdo (utm_content)', en: 'Content (utm_content)' } },
+      ],
+    },
+    {
+      /* MIG-148 — o espelho da sincronização com o RD Station CRM (D-26).
+       *
+       * ⚠️ `syncedAt` **vazio é o sinal**: sem token, ou depois de uma falha
+       * (aí `error` diz qual), o lead não está no CRM — visível no admin em
+       * vez de silêncio. Qualquer edição no doc (marcar como lido serve)
+       * dispara nova tentativa; os ids gravados impedem duplicar contato ou
+       * negociação no retry. */
+      name: 'crm',
+      type: 'group',
+      label: { pt: 'RD Station CRM', en: 'RD Station CRM' },
+      admin: { readOnly: true },
+      fields: [
+        { name: 'contactId', type: 'text', label: { pt: 'Contato (id)', en: 'Contact id' } },
+        { name: 'dealId', type: 'text', label: { pt: 'Negociação (id)', en: 'Deal id' } },
+        {
+          name: 'syncedAt',
+          type: 'date',
+          label: { pt: 'Sincronizado em', en: 'Synced at' },
+          admin: {
+            description: {
+              pt: 'Vazio significa que este lead ainda não chegou ao RD Station CRM. Editar o envio (por exemplo, marcar como lido) tenta de novo.',
+              en: 'Empty means this lead has not reached RD Station CRM yet. Editing the submission (e.g. marking it read) retries.',
+            },
+          },
+        },
+        { name: 'error', type: 'textarea', label: { pt: 'Última falha', en: 'Last error' } },
       ],
     },
     {

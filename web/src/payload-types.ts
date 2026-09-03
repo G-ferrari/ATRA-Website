@@ -7040,6 +7040,15 @@ export interface FormSubmission {
     term?: string | null;
     content?: string | null;
   };
+  crm?: {
+    contactId?: string | null;
+    dealId?: string | null;
+    /**
+     * Empty means this lead has not reached RD Station CRM yet. Editing the submission (e.g. marking it read) retries.
+     */
+    syncedAt?: string | null;
+    error?: string | null;
+  };
   notified?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -10731,6 +10740,14 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
         campaign?: T;
         term?: T;
         content?: T;
+      };
+  crm?:
+    | T
+    | {
+        contactId?: T;
+        dealId?: T;
+        syncedAt?: T;
+        error?: T;
       };
   notified?: T;
   updatedAt?: T;

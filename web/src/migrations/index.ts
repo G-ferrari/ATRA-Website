@@ -43,6 +43,7 @@ import * as migration_20260821_131123_ia_localizada from './20260821_131123_ia_l
 import * as migration_20260821_132858_envios_de_formulario from './20260821_132858_envios_de_formulario';
 import * as migration_20260821_183445_utm_do_formulario from './20260821_183445_utm_do_formulario';
 import * as migration_20260825_220544_formularios_no_escuro from './20260825_220544_formularios_no_escuro';
+import * as migration_20260903_122654_add_crm_sync_fields from './20260903_122654_add_crm_sync_fields';
 
 export const migrations = [
   {
@@ -268,6 +269,11 @@ export const migrations = [
   {
     up: migration_20260825_220544_formularios_no_escuro.up,
     down: migration_20260825_220544_formularios_no_escuro.down,
-    name: '20260825_220544_formularios_no_escuro'
+    name: '20260825_220544_formularios_no_escuro',
+  },
+  {
+    up: migration_20260903_122654_add_crm_sync_fields.up,
+    down: migration_20260903_122654_add_crm_sync_fields.down,
+    name: '20260903_122654_add_crm_sync_fields'
   },
 ];
