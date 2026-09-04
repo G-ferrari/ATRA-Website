@@ -23,7 +23,7 @@ function CampoDaTask({ rotulo, valor, mono = false }: { rotulo: string; valor: s
   return (
     <div>
       <dt className="text-[10px] font-bold uppercase tracking-wider text-text-muted">{rotulo}</dt>
-      <dd className={`text-xs text-text-subtle mt-0.5 ${mono ? 'font-mono break-words' : 'font-light'}`}>
+      <dd className={`text-xs text-text-subtle mt-0.5 ${mono ? 'font-mono' : 'font-light'}`}>
         {valor}
       </dd>
     </div>
@@ -43,8 +43,10 @@ function LinhaDaTask({ t }: { t: Task }) {
         />
       </span>
       <span className="text-xs font-mono text-text-muted shrink-0">{t.id}</span>
+      {/* No mobile o título quebra linha: truncado, sobrariam ~140px e o texto
+        * completo não aparece em lugar nenhum — o corpo do <details> não o repete. */}
       <span
-        className={`text-sm truncate ${t.status === 'cancelada' ? 'line-through text-text-muted' : 'text-text-main'}`}
+        className={`text-sm min-w-0 sm:truncate ${t.status === 'cancelada' ? 'line-through text-text-muted' : 'text-text-main'}`}
       >
         {t.titulo}
       </span>

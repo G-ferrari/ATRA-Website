@@ -127,8 +127,15 @@ export default async function Pagina() {
     baixa: 'neutral',
   }
 
+  /* ⚠️ Os dois utilitários de largura não são decorativos. `w-full`: o main é
+   * item do flex-col da Casca, e o Chrome não encolhe item de flex abaixo do
+   * min-content — o nowrap dos `truncate` propagava e a página ia a ~1046px no
+   * mobile. `wrap-anywhere` (herdado por toda a página): tasks e .md carregam
+   * tokens inquebráveis (caminhos, `code`) mais largos que os 343px úteis, e
+   * `break-words` não entra no cálculo de largura intrínseca — só `anywhere`
+   * deixa o token quebrar em vez de estourar o scrollWidth. */
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+    <main className="w-full wrap-anywhere max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
       <header className="mb-10">
         <StatusBadge label="Interno · noindex" variant="secondary" size="sm" />
         <h1 className="text-3xl md:text-4xl font-display font-light text-text-main mt-4 mb-3">
