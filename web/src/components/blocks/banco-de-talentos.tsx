@@ -1,5 +1,6 @@
 import { Send, Upload } from 'lucide-react'
 
+import { Formulario } from '@/components/forms/formulario'
 import { TechCornerBraces } from '@/components/ui'
 import type { Locale } from '@/lib/locales'
 import type { BlocoJobsList } from '@/types/content'
@@ -13,13 +14,15 @@ import { TextoDestacado } from './texto-destacado'
  * (`href="#banco-talentos"`). MIG-050 o portou como um `ctaContact` final, e a
  * página nasceu com a ordem trocada e 700px a menos.
  *
- * O formulário está **estático**, pelo mesmo motivo de /contato e
- * /consultores: ligar o envio é MIG-102 e depende do prazo de retenção de
- * currículo (P-17) e da política de privacidade publicada (P-14). No legado ele
- * também não envia nada — só troca um estado local por uma tela de sucesso.
+ * O envio é MIG-102: Server Action `enviarFormulario` (kind `talent-pool`)
+ * grava em form-submissions e sincroniza com o ATRAIR (`lib/atrair.ts`) —
+ * melhor esforço, o admin é a fonte primária. Os campos foram portados com o
+ * visual do estado ativo, então ligar o envio não moveu um pixel.
  *
  * Os rótulos não vêm do CMS: são chrome de formulário, não texto de marketing
- * (D-22). Quem edita a página muda o painel da esquerda, não os campos. */
+ * (D-22). Quem edita a página muda o painel da esquerda, não os campos. Os
+ * `value` dos selects são os próprios rótulos, no idioma da página — o ATRAIR
+ * normaliza os valores em inglês para pt-BR do lado de lá. */
 
 const TEXTOS = {
   pt: {
@@ -32,7 +35,7 @@ const TEXTOS = {
     senioridade: 'Senioridade',
     senioridades: ['Júnior', 'Pleno', 'Sênior', 'Lead / Principal', 'Trainee'],
     enviar: 'Enviar Candidatura',
-    aviso: 'O envio pelo site chega em breve. Enquanto isso, escreva para negocios@atra.com.br.',
+    sucesso: 'Candidatura recebida! Nossa equipe de recrutamento avaliará seu perfil e entrará em contato quando surgir uma oportunidade.',
   },
   en: {
     nome: 'Full name *',
@@ -44,13 +47,10 @@ const TEXTOS = {
     senioridade: 'Seniority',
     senioridades: ['Junior', 'Mid-level', 'Senior', 'Lead / Principal', 'Trainee'],
     enviar: 'Send application',
-    aviso: 'Submitting from the site is coming soon. For now, write to negocios@atra.com.br.',
+    sucesso: 'Application received! Our recruiting team will review your profile and reach out when an opportunity comes up.',
   },
 } as const
 
-/* ⚠️ Sem `disabled:opacity-60`, pela mesma razão de /consultores: o gabarito
- * desenha os campos em opacidade cheia. Quem impede o envio é o `disabled` e o
- * `title` do botão, não a cor. */
 const CAMPO =
   'w-full bg-surface-2 border border-slate-200 dark:border-white/10 rounded-[6px] px-3.5 py-2.5 text-xs text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors disabled:opacity-100'
 
@@ -97,18 +97,19 @@ export function BancoDeTalentos({
       </div>
 
       <div className="lg:w-7/12 p-8 lg:p-12 flex flex-col justify-center">
-        {/* Estático: sem `onSubmit`, sem estado. Ver a nota no topo. */}
-        <form className="space-y-3.5">
-          <input type="text" name="nome" placeholder={t.nome} disabled className={CAMPO} />
-          <input type="email" name="email" placeholder={t.email} disabled className={CAMPO} />
+        {/* Os `name` são os que a action lê (`name`/`email`/`phone`); `linkedin`,
+            `area` e `senioridade` são extras do kind `talent-pool`. */}
+        <Formulario kind="talent-pool" className="space-y-3.5" sucesso={t.sucesso}>
+          <input type="text" name="name" placeholder={t.nome} required className={CAMPO} />
+          <input type="email" name="email" placeholder={t.email} required className={CAMPO} />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <input type="text" name="linkedin" placeholder={t.linkedin} disabled className={CAMPO} />
-            <input type="tel" name="telefone" placeholder={t.telefone} disabled className={CAMPO} />
+            <input type="text" name="linkedin" placeholder={t.linkedin} className={CAMPO} />
+            <input type="tel" name="phone" placeholder={t.telefone} className={CAMPO} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <select name="area" disabled aria-label={t.area} className={CAMPO}>
+            <select name="area" aria-label={t.area} className={CAMPO}>
               <option value="">{t.area}</option>
               {t.areas.map((a) => (
                 <option key={a} value={a}>
@@ -117,7 +118,7 @@ export function BancoDeTalentos({
               ))}
             </select>
 
-            <select name="senioridade" disabled aria-label={t.senioridade} className={CAMPO}>
+            <select name="senioridade" aria-label={t.senioridade} className={CAMPO}>
               <option value="">{t.senioridade}</option>
               {t.senioridades.map((s) => (
                 <option key={s} value={s}>
@@ -129,16 +130,14 @@ export function BancoDeTalentos({
 
           <div className="pt-2">
             <button
-              type="button"
-              disabled
-              title={t.aviso}
-              className="w-full sm:w-auto bg-primary text-white px-7 py-3 rounded-[6px] text-xs font-semibold transition-all cursor-not-allowed shadow-md shadow-primary/20 flex items-center justify-center gap-2"
+              type="submit"
+              className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white px-7 py-3 rounded-[6px] text-xs font-semibold transition-all cursor-pointer shadow-md shadow-primary/20 flex items-center justify-center gap-2 active:scale-95"
             >
               <Send size={13} aria-hidden />
               <span>{t.enviar}</span>
             </button>
           </div>
-        </form>
+        </Formulario>
       </div>
     </div>
   )

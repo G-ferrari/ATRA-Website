@@ -63,6 +63,8 @@ Levantado em 17/08/2026, por DNS e headers públicos:
 | `NEXT_PUBLIC_GTM_ID` | vazio | id do container (P-19) — com D-30 o script só entra no DOM após o aceite de estatística no banner | não — id público, aparece no HTML de qualquer site que use GTM |
 | `RDSTATION_CRM_TOKEN` | vazio (sincronização inerte, `crm.syncedAt` vazio no admin) | gerenciador do host — **produção só depois de P-14** (D-26/D-29) | **sim** |
 | `RDSTATION_CRM_DEAL_STAGE_ID` | vazio (a conta usa a etapa padrão) | id da etapa do funil onde a negociação nasce | não |
+| `ATRAIR_API_URL` | `http://localhost:3000` do ATRAIR local (vazio = sincronização inerte) | URL do ATRAIR (Cloud Run) | não |
+| `ATRAIR_API_KEY` | vazio (candidatura fica só no admin, falta aparece no log) | gerenciador do host — mesma `TALENT_POOL_API_KEY` configurada no ATRAIR (MIG-102) | **sim** |
 | `ENABLE_CHAT_LEAD` | ausente | `1` liga o convite de lead no chat (D-29) — as outras duas chaves são o toggle e o `consentNotice` no CMS; **produção só depois de P-14** | não |
 | `S3_PRIVATE_BUCKET` | `atra-privado` | idem | não — nome de bucket; o segredo é a credencial |
 | `ENABLE_JOB_APPLICATIONS` | ausente | `1` **só depois de P-17** — liga o formulário de candidatura; exige rebuild, de propósito | não |

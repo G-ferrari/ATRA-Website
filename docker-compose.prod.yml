@@ -54,6 +54,10 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      # MIG-102: candidaturas do Banco de Talentos seguem para o ATRAIR (R&S).
+      # Vazias = integração desligada; a candidatura fica só no admin.
+      ATRAIR_API_URL: ${ATRAIR_API_URL:-}
+      ATRAIR_API_KEY: ${ATRAIR_API_KEY:-}
       # D-29: chave de engenharia do convite de lead no chat. As outras duas
       # moram no CMS (leadCapture.enabled + consentNotice por idioma).
       ENABLE_CHAT_LEAD: ${ENABLE_CHAT_LEAD:-}

@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto'
 import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
+import { enviarParaAtrair } from '@/lib/atrair'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
 import { enviarAviso } from '@/lib/email'
@@ -67,6 +68,20 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
 
   const payload = await getPayload()
 
+  /* MIG-102: o Banco de Talentos tem campos sem coluna própria em
+   * form-submissions (LinkedIn, área, senioridade) — entram serializados na
+   * mensagem, visíveis no admin e no e-mail de aviso, sem migração. */
+  const extrasDeTalento =
+    kind === 'talent-pool'
+      ? [
+          texto(dados, 'linkedin', 300) && `LinkedIn: ${texto(dados, 'linkedin', 300)}`,
+          texto(dados, 'area') && `Área: ${texto(dados, 'area')}`,
+          texto(dados, 'senioridade') && `Senioridade: ${texto(dados, 'senioridade')}`,
+        ]
+          .filter(Boolean)
+          .join('\n')
+      : ''
+
   try {
     await payload.create({
       collection: 'form-submissions',
@@ -76,7 +91,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         name: texto(dados, 'name') || undefined,
         phone: texto(dados, 'phone') || undefined,
         company: texto(dados, 'company') || undefined,
-        message: texto(dados, 'message', MAX_MENSAGEM) || undefined,
+        message: (kind === 'talent-pool' ? extrasDeTalento : texto(dados, 'message', MAX_MENSAGEM)) || undefined,
         source: texto(dados, 'source') || undefined,
         /* ⚠️ Cortado **de novo** aqui. O cliente já limita, mas quem posta o
          * formulário não é obrigado a ser o nosso JavaScript — `curl` com um
@@ -99,6 +114,21 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   } catch (e) {
     console.error('[formulario] não gravou:', e)
     return { ok: false, erro: ERRO_GENERICO }
+  }
+
+  /* MIG-102: currículo segue para o ATRAIR (sistema de R&S) — melhor esforço,
+   * como a sincronização com o CRM: `false` não muda o `Resultado`, porque a
+   * candidatura já está gravada acima e visível no admin. */
+  if (kind === 'talent-pool') {
+    await enviarParaAtrair({
+      name: texto(dados, 'name'),
+      email,
+      phone: texto(dados, 'phone') || undefined,
+      linkedinUrl: texto(dados, 'linkedin', 300) || undefined,
+      area: texto(dados, 'area') || undefined,
+      senioridade: texto(dados, 'senioridade') || undefined,
+      source: texto(dados, 'source') || undefined,
+    })
   }
 
   /* O aviso é o **segundo** passo e não pode derrubar o primeiro. Sem chave de
