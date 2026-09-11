@@ -40,6 +40,12 @@ não distingue erro de porte de escolha deliberada. Corolário (D-25): não
 introduzir propriedade tipográfica que o legado não tem — ligar `antialiased`
 movia a rasterização de todo glifo do site.
 
+> ⚠️ **Relaxada em 02/09/2026 (D-31), por decisão do dono da ATRA via
+> G-ferrari:** melhoria de UI guiada pelo Impeccable é permitida. O que
+> permanece: cada mudança de UI regrava o gabarito (`pnpm gate --baseline`) com
+> justificativa no PR, e D-22 segue valendo — melhorar UI não autoriza mexer em
+> conteúdo nem preencher pendência `P-xx`.
+
 ### 2. Decisão de conteúdo é do marketing (D-22)
 
 Consolidar vocabulário, reescrever texto, escolher quais categorias aparecem:
@@ -245,11 +251,14 @@ levantamento). A 4c trouxe as **8 verticais** para `/segmentos` e a página lega
 para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas**, com a
 geração reprovando se alguma URL do WordPress ficar sem destino.
 
-Duas tasks pararam em pendência, e as duas pelo mesmo motivo — classificar não é
-migrar. **MIG-084** (P-27): o WP tem 1 categoria e 0 tags, não há taxonomia para
-mapear. **MIG-093** (P-16): as 13 soluções do WP e as 6 no ar são vocabulários
-diferentes para a mesma oferta, não uma expansão; as 12 importadas estão em
-rascunho, e publicar é uma decisão de posicionamento.
+**MIG-084** (P-27) segue em pendência — o WP tem 1 categoria e 0 tags, não há
+taxonomia para mapear, e classificar não é migrar. **MIG-093** foi destravada:
+P-16 foi respondida em 21/08 com **publicar**, as 12 soluções do WP entraram
+publicadas e o site tem **18 ofertas** no menu e em `/solucoes`. ⚠️ Num banco
+local elas só ganham conteúdo real com
+`scripts/wp-import/import-solutions.ts`: a fixture do seed escreve "Texto de
+exemplo" nelas, e foi isso — não rascunho vazando — que a crítica do Impeccable
+de 10/09 viu no mega-menu.
 
 ⚠️ **Conteúdo de verdade não vem do `pnpm seed`.** Os artigos e as vagas entram
 por `scripts/wp-import/`; o seed só cria fixtures de teste, e agora **exige

@@ -597,6 +597,41 @@ DOM**, a UTM não toca o storage e o vídeo não fala com o Google. Reversível 
 camadas: apagar o texto no CMS desliga o banner; esvaziar `NEXT_PUBLIC_GTM_ID`
 remove o GTM.
 
+## D-31 — Melhoria de UI liberada para o trabalho do Impeccable; D-15 deixa de vetar design deliberado
+
+*Decidida em 02/09/2026 pelo dono da ATRA, comunicada via G-ferrari (designer do
+site). Registrada aqui em 10/09/2026, quando o commit `14e070f3` trouxe a
+decisão dentro de `PRODUCT.md` sem o `D-xx` correspondente — decisão sem
+registro é exatamente o que este arquivo existe para impedir.*
+
+**Contexto.** D-15 servia à migração: com o porte fiel como contrato, um aceite
+visual reprovado distingue erro de porte de escolha deliberada. As 20 rotas
+estão portadas, o conteúdo real está no CMS e o site roda em homologação — e a
+crítica de design do Impeccable (`.impeccable/critique/`) passou a apontar
+melhorias que a regra proibia executar.
+
+**Escolha.** Melhorias de UI guiadas pelo Impeccable **são permitidas**. D-15
+continua descrevendo o que o porte **foi**, mas deixa de vetar mudança
+deliberada de design.
+
+**Limites que permanecem:**
+
+1. **Toda mudança de UI regrava o gabarito** (`pnpm gate --baseline`) **com
+   justificativa no PR** — consequência mecânica do aceite visual, independente
+   da postura de design. O gabarito regravado vira o novo contrato, e a
+   regressão visual segue sendo a rede de segurança — agora do design melhorado.
+2. **D-22 segue intacta**: melhorar UI não autoriza reescrever texto, consolidar
+   vocabulário nem escolher categorias. Decisão de conteúdo continua sendo do
+   marketing.
+3. **Os fatos em aberto continuam em aberto**: melhoria de UI não preenche
+   número institucional (P-01), telefone (P-09) nem nenhum outro `P-xx` — não
+   inventar.
+
+**Consequência.** Os artefatos de design do repositório (`DESIGN.md`,
+`.impeccable/design.json`, `PRODUCT.md`, `.ksdd/specs/`) passam a ser insumo de
+trabalho legítimo. A nota de `PRODUCT.md` de que "os docs ainda descrevem a
+política anterior" fica resolvida por esta decisão.
+
 ---
 
 ## Pendentes

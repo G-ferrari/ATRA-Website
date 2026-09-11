@@ -23,6 +23,13 @@ depende_de: [../00-contexto/decisoes.md]
 por header — o Basic do Caddy já ocupa o `Authorization`. A nota completa está
 no runbook (seção do Ensaio).
 
+**Onde fica a credencial do Basic Auth:** na própria VPS. O repositório e o
+`.env.prod` guardam só o **hash bcrypt** (irreversível); o usuário e a senha em
+texto estão anotados na VPS. Perdeu? Não se recupera — troca-se: `caddy
+hash-password` gera o hash novo, que substitui o antigo no `.env.prod` **por
+edição de texto** (nunca `source` — o `$$` do bcrypt vira PID no bash), e o
+Caddy é recriado.
+
 **Staging não é opcional.** É onde o ensaio de cutover roda (MIG-132) e onde o
 `redirects.csv` é validado antes de valer para o Google.
 
