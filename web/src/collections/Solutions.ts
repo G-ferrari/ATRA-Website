@@ -44,10 +44,14 @@ export const Solutions: CollectionConfig = {
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     slugField(),
     {
-      /* As 3 categorias do mega-menu (`App.tsx:45`). `select` e não relacionamento
+      /* As categorias do mega-menu (`App.tsx:45`). `select` e não relacionamento
        * a `topics`: aquela taxonomia classifica conteúdo editorial (case, post,
-       * glossário) e é curada pelo marketing. Estas três são a espinha do menu —
-       * criar uma quarta muda a navegação do site, não a etiqueta de um artigo. */
+       * glossário) e é curada pelo marketing. Estas são a espinha do menu —
+       * criar uma categoria muda a navegação do site, não a etiqueta de um artigo.
+       * `rc18` é a 4ª categoria, adicionada de propósito (feature rc18): uma aba
+       * própria para a landing da RC 18/2025, ao lado das três originais. Quem
+       * adicionar uma quinta precisa refletir em `GRUPOS` (mappers/navigation.ts)
+       * e `CATEGORIAS` (solucoes/page.tsx) e gerar migração aditiva de enum. */
       name: 'category',
       type: 'select',
       required: true,
@@ -55,6 +59,7 @@ export const Solutions: CollectionConfig = {
         { value: 'innovation-ai', label: { pt: 'Inovação & IA', en: 'Innovation & AI' } },
         { value: 'data-bi', label: { pt: 'Dados, BI & Advanced Analytics', en: 'Data, BI & Advanced Analytics' } },
         { value: 'governance-culture', label: { pt: 'Governança & Cultura', en: 'Governance & Culture' } },
+        { value: 'rc18', label: { pt: 'RC18', en: 'RC18' } },
       ],
       label: { pt: 'Categoria', en: 'Category' },
     },

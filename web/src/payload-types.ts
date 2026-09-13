@@ -5363,7 +5363,7 @@ export interface Solution {
    * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
    */
   slug: string;
-  category: 'innovation-ai' | 'data-bi' | 'governance-culture';
+  category: 'innovation-ai' | 'data-bi' | 'governance-culture' | 'rc18';
   icon:
     | 'sparkles'
     | 'target'

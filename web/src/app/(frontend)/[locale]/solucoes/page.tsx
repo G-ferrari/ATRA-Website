@@ -60,6 +60,7 @@ const CATEGORIAS: { id: SolutionCategory; label: Record<Locale, string> }[] = [
   { id: 'innovation-ai', label: { pt: 'Inovação & IA', en: 'Innovation & AI' } },
   { id: 'data-bi', label: { pt: 'Dados, BI & Advanced Analytics', en: 'Data, BI & Advanced Analytics' } },
   { id: 'governance-culture', label: { pt: 'Governança & Cultura', en: 'Governance & Culture' } },
+  { id: 'rc18', label: { pt: 'RC18', en: 'RC18' } },
 ]
 
 export async function generateMetadata(): Promise<Metadata> {

@@ -250,7 +250,9 @@ function PainelDeSolucoes({
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-6 pt-2">
+      {/* Categoria de item único (ex.: RC18) ocupa a largura toda — sem coluna
+       * vazia ao lado — para a aba funcionar como entrada direta para a página. */}
+      <div className={cn('grid gap-6 pt-2', grupo.items.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
         {grupo.items.map((item) => {
           const conteudo = (
             <>
