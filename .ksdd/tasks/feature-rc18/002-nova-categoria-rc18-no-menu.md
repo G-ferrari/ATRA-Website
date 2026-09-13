@@ -1,7 +1,7 @@
 ---
 id: 002
 title: Adicionar categoria/aba "RC18" ao mega-menu de Soluções
-status: para implementar
+status: em revisão
 feature: rc18
 area: data-model
 priority: P0
