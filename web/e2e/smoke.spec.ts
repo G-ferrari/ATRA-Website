@@ -400,16 +400,16 @@ test.describe('app novo', () => {
      ela serve a página de IA, aqui vira índice. Não há gabarito visual, então o
      aceite é este. */
   test.describe('/solucoes — índice novo (D-09)', () => {
-    /* ⚠️ **18, e não 6.** P-16 foi respondida em 21/08/2026 com "publicar": as 6
-       do protótipo convivem com as 12 do WordPress (MIG-093). O número é
-       asserção de verdade e não contagem frouxa — se voltar a 6, alguém
-       despublicou as 12; se passar de 18, rascunho está vazando de novo. */
-    test('lista as 18 soluções agrupadas nas 3 categorias', async ({ page }) => {
+    /* ⚠️ **19, e não 6.** P-16 (21/08/2026): as 6 do protótipo convivem com as 12
+       do WordPress (MIG-093); a 19ª é a RC18 (feature rc18), a 4ª categoria do
+       menu. O número é asserção de verdade e não contagem frouxa — se cair, alguém
+       despublicou; se subir, rascunho está vazando. */
+    test('lista as 19 soluções agrupadas nas 4 categorias', async ({ page }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
-      for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
+      for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura', 'RC18']) {
         await expect(page.getByRole('heading', { name: categoria, level: 2 })).toBeVisible()
       }
-      await expect(page.getByRole('heading', { level: 3 })).toHaveCount(18)
+      await expect(page.getByRole('heading', { level: 3 })).toHaveCount(19)
     })
 
     /* Só quem tem `hasPage` vira link: a de IA, portada em MIG-056, mais as 12
@@ -419,10 +419,11 @@ test.describe('app novo', () => {
     test('só as soluções com página viram link, e elas respondem', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
       const links = page.locator('a[href*="/solucoes/"]')
-      await expect(links).toHaveCount(13)
+      await expect(links).toHaveCount(14)
 
       const hrefs = await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')))
       expect(hrefs).toContain('/solucoes/inteligencia-artificial')
+      expect(hrefs).toContain('/solucoes/rc18')
       for (const href of hrefs) {
         expect((await request.get(`${NEXT_URL}${href}`)).status(), href!).toBe(200)
       }
@@ -439,6 +440,48 @@ test.describe('app novo', () => {
       // `/en/solucoes` serviria o mesmo conteúdo numa segunda URL (D-07).
       const r = await request.get(`${NEXT_URL}/en/solucoes`, { maxRedirects: 0 })
       expect(r.status()).toBe(308)
+    })
+  })
+
+  /* Feature rc18 — a landing da RC 18/2025 (`/solucoes/rc18`, documento da coleção
+     Solutions) e o diagnóstico de prontidão (`/diagnostico-rc18`, rota própria).
+     Rotas novas sem gabarito: aqui é a rede. */
+  test.describe('RC 18/2025 — página e diagnóstico', () => {
+    test('a página de solução responde nos dois idiomas', async ({ request }) => {
+      for (const url of [`${NEXT_URL}/solucoes/rc18`, `${NEXT_URL}/en/solutions/rc18`]) {
+        expect((await request.get(url)).status(), url).toBe(200)
+      }
+    })
+
+    /* A landing é conteúdo de SEO: indexável e com `Service` (o diagnóstico, não —
+       ver abaixo). */
+    test('a página é indexável e declara Service', async ({ page, request }) => {
+      expect(await (await request.get(`${NEXT_URL}/solucoes/rc18`)).text()).not.toContain('noindex')
+      await page.goto(`${NEXT_URL}/solucoes/rc18`)
+      const servico = (await page.locator('script[type="application/ld+json"]').allTextContents())
+        .map((t) => JSON.parse(t) as Record<string, unknown>)
+        .find((d) => d['@type'] === 'Service')
+      expect(servico, 'nenhum nó Service em /solucoes/rc18').toBeTruthy()
+    })
+
+    /* O diagnóstico é ferramenta de conversão, não conteúdo: `noindex`, como `/chat`. */
+    test('o diagnóstico responde nos dois idiomas e é noindex', async ({ request }) => {
+      for (const url of [`${NEXT_URL}/diagnostico-rc18`, `${NEXT_URL}/en/rc18-diagnostic`]) {
+        expect((await request.get(url)).status(), url).toBe(200)
+      }
+      expect(await (await request.get(`${NEXT_URL}/diagnostico-rc18`)).text()).toContain('noindex')
+    })
+
+    /* A autoavaliação calcula na hora: 12 dimensões no maior nível → 100% / Avançado.
+       O score em si é unitário (`lib/diagnostico-rc18.test.ts`); aqui é a fiação. */
+    test('a autoavaliação calcula o índice a partir das respostas', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/diagnostico-rc18`)
+      const maximo = page.getByRole('button', { name: 'Regra, medição e evidência — o piso da norma.' })
+      await expect(maximo).toHaveCount(12)
+      const total = await maximo.count()
+      for (let i = 0; i < total; i++) await maximo.nth(i).click()
+      await page.getByRole('button', { name: 'Ver minha prontidão' }).click()
+      await expect(page.getByText('Avançado')).toBeVisible()
     })
   })
 
