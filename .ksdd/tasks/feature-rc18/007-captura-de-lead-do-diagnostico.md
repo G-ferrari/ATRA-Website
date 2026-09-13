@@ -1,7 +1,7 @@
 ---
 id: 007
 title: Captura de lead do diagnóstico (kind + Server Action + CRM)
-status: para implementar
+status: em revisão
 feature: rc18
 area: backend
 priority: P0
