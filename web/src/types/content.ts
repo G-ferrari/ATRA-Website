@@ -596,7 +596,7 @@ export type ConsultantRole = {
   certifications: string[]
 }
 
-export type SolutionCategory = 'innovation-ai' | 'data-bi' | 'governance-culture'
+export type SolutionCategory = 'innovation-ai' | 'data-bi' | 'governance-culture' | 'rc18'
 
 export type SolutionCard = {
   slug: string

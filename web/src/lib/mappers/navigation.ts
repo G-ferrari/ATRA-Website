@@ -34,6 +34,7 @@ const GRUPOS: { id: Solution['category']; pt: string; en: string }[] = [
   { id: 'innovation-ai', pt: 'Inovação & IA', en: 'Innovation & AI' },
   { id: 'data-bi', pt: 'Dados, BI & Advanced Analytics', en: 'Data, BI & Advanced Analytics' },
   { id: 'governance-culture', pt: 'Governança & Cultura', en: 'Governance & Culture' },
+  { id: 'rc18', pt: 'RC18', en: 'RC18' },
 ]
 
 export function toGruposDeSolucoes(
