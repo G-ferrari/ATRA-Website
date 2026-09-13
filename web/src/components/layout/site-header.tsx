@@ -266,6 +266,22 @@ export function SiteHeader({
                 )
               })}
             </div>
+
+            {/* No desktop o CTA "Fale Conosco" fica na barra (`hidden lg:flex`),
+                então no celular ele sumia — e nenhuma categoria da gaveta leva a
+                contato, o objetivo de conversão do site. Trazido para o pé da
+                gaveta: mesma cópia (`t.faleConosco`) e mesmo destino
+                (`/#fale-conosco`) do botão de desktop, nada novo. A gaveta não
+                entra na regressão visual (só o estado fechado é capturado). */}
+            <div className="p-4 pt-3 border-t border-slate-100 dark:border-white/5">
+              <Link
+                href={`${prefixo}/#fale-conosco`}
+                onClick={fechar}
+                className="flex items-center justify-center gap-2 w-full rounded-[6px] bg-primary text-white text-sm font-semibold py-3 shadow-md hover:bg-primary-dark active:scale-[0.99] transition-all"
+              >
+                {t.faleConosco} <ArrowRight size={16} aria-hidden />
+              </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
