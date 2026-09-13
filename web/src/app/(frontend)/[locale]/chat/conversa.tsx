@@ -152,7 +152,7 @@ export function Conversa({
               <div className="relative">
                 <div className="w-9 h-9 rounded-[6px] bg-gradient-to-tr from-primary to-secondary p-[1px] shadow-xs">
                   <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[4px] flex items-center justify-center text-primary">
-                    <Sparkles size={16} className="text-primary animate-pulse" aria-hidden />
+                    <Sparkles size={16} className="text-primary" aria-hidden />
                   </div>
                 </div>
                 <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-surface-2 dark:border-[#181b22]" />

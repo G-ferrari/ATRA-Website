@@ -115,7 +115,7 @@ export function SiteHeader({
                   aria-expanded={false}
                   aria-label={t.abrirMenu}
                 >
-                  <span>{t.menu}</span> <Menu size={14} className="text-primary animate-pulse" aria-hidden />
+                  <span>{t.menu}</span> <Menu size={14} className="text-primary" aria-hidden />
                 </motion.button>
               ) : (
                 <motion.div
