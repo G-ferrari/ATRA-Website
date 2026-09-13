@@ -130,7 +130,13 @@ export function SolicitarConsultores({ locale, contato }: { locale: Locale; cont
                 />
               </div>
 
-              <div className="flex justify-end pt-3">
+              {/* O aviso de "ainda não está no ar" vivia só no `title` do botão —
+                  invisível no toque e para quem navega por teclado, então o
+                  visitante preenchia o formulário inteiro antes de descobrir que
+                  ele não envia. Agora fica visível ao lado do botão; a cópia
+                  (`t.aviso`) já existia nos dois idiomas, nada de texto novo. */}
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 pt-3">
+                <p className="text-xs text-text-muted dark:text-white/60 font-light max-w-sm">{t.aviso}</p>
                 <button
                   type="button"
                   disabled
@@ -138,7 +144,7 @@ export function SolicitarConsultores({ locale, contato }: { locale: Locale; cont
                   /* Mesma cor do legado, e não um `bg-primary/60` de botão
                      apagado: o aceite visual compara com ele. O que impede o
                      envio é o `disabled` e o `title`, não a cor. */
-                  className="bg-primary text-white dark:bg-white dark:text-[#12151c] py-3 px-6 rounded-[6px] text-sm font-medium transition-all flex items-center gap-2 cursor-not-allowed shadow-md"
+                  className="bg-primary text-white dark:bg-white dark:text-[#12151c] py-3 px-6 rounded-[6px] text-sm font-medium transition-all flex items-center gap-2 cursor-not-allowed shadow-md shrink-0"
                 >
                   <span>{t.enviar}</span>
                   <ArrowRight size={16} aria-hidden />
