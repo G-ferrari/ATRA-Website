@@ -5,8 +5,9 @@ import { locale as getLocale } from 'next/root-params'
 
 import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
-import { toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
+import { comContato, toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
 import { getPayload } from '@/lib/payload'
+import { lerContato } from '@/lib/contato'
 import { toSeo } from '@/lib/mappers/seo'
 import { metadataDe } from '@/lib/seo'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
@@ -26,7 +27,7 @@ async function buscarSolucao(slug: string, locale: Locale) {
   const { isEnabled: rascunho } = await draftMode()
   const payload = await getPayload()
 
-  const [{ docs }, global] = await Promise.all([
+  const [{ docs }, global, contato] = await Promise.all([
     payload.find({
       collection: 'solutions',
       locale,
@@ -41,13 +42,16 @@ async function buscarSolucao(slug: string, locale: Locale) {
         : { slug: { equals: slug }, hasPage: { equals: true }, _status: { equals: 'published' } },
     }),
     payload.findGlobal({ slug: 'site-settings', locale, depth: 1 }),
+    lerContato(),
   ])
 
   if (!docs[0]) return null
-  return {
-    doc: docs[0],
-    blocos: toBlocos(docs[0].layout, { metricas: toMetricas(global), selos: toSelos(global) }),
-  }
+  const blocos = toBlocos(docs[0].layout, { metricas: toMetricas(global), selos: toSelos(global) })
+  /* O `ctaContact` desenha telefone/e-mail/endereço/redes do global `contact` —
+   * mesmo passo de `lib/paginas.ts`. A rota de solução não o fazia, então o cartão
+   * nascia vazio aqui (a página RC18 usa o formulário no padrão da home). */
+  comContato(blocos, contato)
+  return { doc: docs[0], blocos }
 }
 
 export async function generateStaticParams() {

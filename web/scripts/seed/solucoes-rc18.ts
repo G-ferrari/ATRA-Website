@@ -23,11 +23,14 @@
  * ⚠️ Conteúdo é rascunho: a consolidação de texto é do marketing no CMS (D-22).
  */
 
+import path from 'node:path'
+
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
 import { ICONES } from '../../src/blocks/shared'
 import { casarIds } from './ids'
+import { midiaDe } from './midia'
 
 /* O ícone dos blocos é uma união fechada (blocks/shared.ts). O conteúdo abaixo
  * guarda os nomes como string; casamos com a união na montagem do layout. */
@@ -36,6 +39,15 @@ type Icone = (typeof ICONES)[number]
 const SLUG = 'rc18'
 
 const payload = await getPayload({ config })
+
+/* Resolve a partir de web/ (process.cwd()), sem tocar em legacy/ — o container do
+ * seed não monta legacy/. Mesma foto real da home, para o formulário de contato
+ * seguir o padrão da home (variante com foto + cartão de contato). */
+const fotoContato = await midiaDe(
+  payload,
+  path.resolve(process.cwd(), 'public/fotos/equipe-atra.jpg'),
+  'Equipe da ATRA',
+)
 
 const PT = {
   base: {
@@ -298,10 +310,12 @@ function layout(t: typeof PT) {
       navLabel: t.nav.contato,
       title: t.contato.title,
       subtitle: t.contato.subtitle,
-      /* Form-only na 003: `comContato` (cartão de contato) e a variante com foto,
-       * no padrão da home, entram na task 004. */
-      showContactCard: false,
-      variant: 'panel' as const,
+      /* Padrão da home (task 004): variante com foto + cartão de contato. O cartão
+       * (telefone/e-mail/endereço/redes) é populado por `comContato` na rota de
+       * solução, que passou a lê-lo do global `contact`. */
+      showContactCard: true,
+      variant: 'photo' as const,
+      photo: fotoContato,
     },
   ]
 }
