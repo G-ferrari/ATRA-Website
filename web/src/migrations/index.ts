@@ -47,6 +47,7 @@ import * as migration_20260903_122654_add_crm_sync_fields from './20260903_12265
 import * as migration_20260903_123214_add_chat_lead from './20260903_123214_add_chat_lead';
 import * as migration_20260903_131920_add_cookie_consent from './20260903_131920_add_cookie_consent';
 import * as migration_20260913_195223_add_rc18_category from './20260913_195223_add_rc18_category';
+import * as migration_20260913_211713_add_rc18_diagnostic_kind from './20260913_211713_add_rc18_diagnostic_kind';
 
 export const migrations = [
   {
@@ -292,6 +293,11 @@ export const migrations = [
   {
     up: migration_20260913_195223_add_rc18_category.up,
     down: migration_20260913_195223_add_rc18_category.down,
-    name: '20260913_195223_add_rc18_category'
+    name: '20260913_195223_add_rc18_category',
+  },
+  {
+    up: migration_20260913_211713_add_rc18_diagnostic_kind.up,
+    down: migration_20260913_211713_add_rc18_diagnostic_kind.down,
+    name: '20260913_211713_add_rc18_diagnostic_kind'
   },
 ];

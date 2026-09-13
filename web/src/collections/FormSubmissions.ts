@@ -60,6 +60,7 @@ export const FormSubmissions: CollectionConfig = {
         { value: 'talent-pool', label: { pt: 'Banco de talentos', en: 'Talent pool' } },
         { value: 'job-application', label: { pt: 'Candidatura', en: 'Job application' } },
         { value: 'material-download', label: { pt: 'Download de material', en: 'Material download' } },
+        { value: 'rc18-diagnostic', label: { pt: 'Diagnóstico RC 18', en: 'RC 18 diagnostic' } },
       ],
       label: { pt: 'Origem', en: 'Kind' },
       admin: { position: 'sidebar' },

@@ -7019,7 +7019,14 @@ export interface AiUsage {
  */
 export interface FormSubmission {
   id: number;
-  kind: 'contact' | 'chat-lead' | 'newsletter' | 'talent-pool' | 'job-application' | 'material-download';
+  kind:
+    | 'contact'
+    | 'chat-lead'
+    | 'newsletter'
+    | 'talent-pool'
+    | 'job-application'
+    | 'material-download'
+    | 'rc18-diagnostic';
   status: 'new' | 'read' | 'archived';
   email: string;
   confirmationToken?: string | null;
