@@ -1,7 +1,7 @@
 ---
 id: 003
 title: Criar a página de solução RC18 (blocos CMS + seed idempotente)
-status: para implementar
+status: em revisão
 feature: rc18
 area: frontend
 priority: P0
