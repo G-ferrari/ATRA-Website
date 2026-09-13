@@ -120,16 +120,15 @@ export function ContatoComFoto({ bloco }: { bloco: BlocoCtaContact }) {
                     E-mail
                   </p>
                   {/* ⚠️ E-mail e endereço continuam **escritos aqui**, e não vindos
-                      do global `contact` (MIG-072), por causa das quebras: o gabarito
-                      parte o e-mail no meio da palavra (`negocios@atra.` / `com.br`,
-                      `App.tsx:2374`) e o endereço em três linhas, com pontuação
-                      diferente da string do rodapé. Reconstituir isso a partir de um
-                      texto corrido seria adivinhação, e a quebra é pixel. Registrado
-                      em `debito-tecnico.md`. */}
+                      do global `contact` (MIG-072): o endereço quebra em três linhas
+                      com pontuação diferente da string do rodapé, e reconstituir isso
+                      a partir de um texto corrido seria adivinhação — a quebra é pixel.
+                      O e-mail antes também era partido no meio (`negocios@atra.` /
+                      `com.br`, `App.tsx:2374`, porte fiel D-15); a quebra saiu a pedido,
+                      como melhoria de UI sancionada (D-31). Débito do endereço em
+                      `debito-tecnico.md`. */}
                   <p className="text-sm font-light text-text-main dark:text-white/90">
-                    negocios@atra.
-                    <br />
-                    com.br
+                    negocios@atra.com.br
                   </p>
                 </div>
                 <div>
