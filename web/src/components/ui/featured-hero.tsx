@@ -123,7 +123,7 @@ export function FeaturedHero({
                   {ativo.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2.5 py-1 bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-primary shadow-xs"
+                      className="px-2.5 py-1 bg-surface-2 rounded-[6px] text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-primary shadow-xs"
                     >
                       {tag}
                     </span>
@@ -151,7 +151,7 @@ export function FeaturedHero({
             <div className="w-full flex justify-center lg:justify-end relative group">
               <div
                 className={cn(
-                  'overflow-hidden shadow-xl sm:shadow-2xl relative w-full border border-slate-200 dark:border-white/10 rounded-[6px] bg-surface-2',
+                  'overflow-hidden shadow-xl sm:shadow-2xl relative w-full rounded-[6px] bg-surface-2',
                   variante === 'cover' ? 'aspect-[3/4] max-w-xs sm:max-w-sm p-2' : 'aspect-[16/10]',
                 )}
               >
@@ -193,7 +193,7 @@ export function FeaturedHero({
                 indiceAtivo === idx && 'opacity-100',
               )}
             >
-              <div className="h-1 w-full bg-slate-200 dark:bg-white/10 mb-3 overflow-hidden rounded-sm relative">
+              <div className="h-1 w-full bg-slate-200 dark:bg-white/10 mb-3 overflow-hidden rounded-[4px] relative">
                 {indiceAtivo === idx && (
                   <motion.div
                     key={indiceAtivo}

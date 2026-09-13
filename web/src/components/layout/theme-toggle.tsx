@@ -27,7 +27,7 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
     <button
       type="button"
       onClick={alternar}
-      className="fixed bottom-6 md:bottom-12 right-0 z-[100] bg-surface-2 dark:bg-surface-3 text-text-main p-3 pl-4 pr-2.5 rounded-l-lg shadow-[-6px_4px_20px_rgba(0,0,0,0.12)] dark:shadow-[-8px_4px_24px_rgba(0,0,0,0.4)] hover:pr-4 transition-all duration-300 group flex items-center justify-center cursor-pointer"
+      className="fixed bottom-6 md:bottom-12 right-0 z-[100] bg-surface-2 dark:bg-surface-3 text-text-main p-3 pl-4 pr-2.5 rounded-l-[6px] shadow-[-6px_4px_20px_rgba(0,0,0,0.12)] dark:shadow-[-8px_4px_24px_rgba(0,0,0,0.4)] hover:pr-4 transition-all duration-300 group flex items-center justify-center cursor-pointer"
       aria-label={TEXTOS_CASCA[locale].alternarTema}
     >
       <motion.div

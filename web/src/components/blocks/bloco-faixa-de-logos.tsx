@@ -44,7 +44,7 @@ export function BlocoFaixaDeLogos({ bloco }: { bloco: BlocoLogoMarquee }) {
     <section
       id={bloco.anchor ?? undefined}
       className={cn(
-        'py-8 overflow-hidden shadow-inner relative scroll-mt-32',
+        'py-10 md:py-14 overflow-hidden shadow-inner relative scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
         BORDAS[bloco.borda],
       )}

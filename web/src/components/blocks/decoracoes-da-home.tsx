@@ -58,11 +58,11 @@ export function DecoracoesDaHome() {
       </FormaEmParallax>
 
       <FormaEmParallax velocidade={0.15} rotacao={0.04} className="top-[18%] right-[8%] z-10 transform-gpu">
-        <div className="w-16 h-16 md:w-24 md:h-24 rounded-[22%] bg-gradient-to-br from-primary/20 to-secondary/10 border border-white/10 shadow-lg" />
+        <div className="w-16 h-16 md:w-24 md:h-24 rounded-[22%] bg-gradient-to-br from-primary/20 to-secondary/10  shadow-lg" />
       </FormaEmParallax>
 
       <FormaEmParallax velocidade={0.1} rotacao={-0.05} className="top-[28%] left-[6%] z-10 transform-gpu">
-        <div className="w-12 h-12 md:w-16 md:h-16 rounded-[22%] bg-gradient-to-br from-secondary/15 to-primary/10 border border-white/5 shadow-md" />
+        <div className="w-12 h-12 md:w-16 md:h-16 rounded-[22%] bg-gradient-to-br from-secondary/15 to-primary/10  shadow-md" />
       </FormaEmParallax>
 
       <FormaEmParallax velocidade={0.18} rotacao={0.03} className="top-[38%] right-[12%] transform-gpu">
@@ -88,7 +88,7 @@ export function DecoracoesDaHome() {
       </FormaEmParallax>
 
       <FormaEmParallax velocidade={0.2} rotacao={0.08} className="top-[72%] right-[6%] transform-gpu">
-        <div className="w-14 h-14 md:w-20 md:h-20 rounded-[22%] bg-gradient-to-br from-primary/15 to-secondary/15 border border-white/10 shadow-lg" />
+        <div className="w-14 h-14 md:w-20 md:h-20 rounded-[22%] bg-gradient-to-br from-primary/15 to-secondary/15  shadow-lg" />
       </FormaEmParallax>
 
       <FormaEmParallax velocidade={0.14} rotacao={-0.04} className="top-[82%] left-[10%] transform-gpu">

@@ -214,7 +214,7 @@ export function SiteHeader({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -12, scale: 0.98 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="pointer-events-auto w-full max-w-lg mt-2 bg-surface-2 border border-slate-200/80 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden relative z-40 mx-auto md:hidden max-h-[82vh] flex flex-col"
+            className="pointer-events-auto w-full max-w-lg mt-2 bg-surface-2  rounded-xl shadow-2xl overflow-hidden relative z-40 mx-auto md:hidden max-h-[82vh] flex flex-col"
           >
             <div data-testid="menu-gaveta" className="overflow-y-auto no-scrollbar p-4 space-y-1.5 flex-1">
               {categorias.map((categoria) => {
@@ -225,9 +225,9 @@ export function SiteHeader({
                 const expandida = gavetaAberta === categoria.label
 
                 return (
-                  <div key={categoria.label} className="flex flex-col rounded-lg overflow-hidden">
+                  <div key={categoria.label} className="flex flex-col rounded-[6px] overflow-hidden">
                     <div
-                      className="flex items-center justify-between py-3 px-3.5 hover:bg-slate-100 dark:hover:bg-white/5 active:bg-slate-200/60 dark:active:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                      className="flex items-center justify-between py-3 px-3.5 hover:bg-slate-100 dark:hover:bg-white/5 active:bg-slate-200/60 dark:active:bg-white/10 rounded-[6px] transition-colors cursor-pointer"
                       onClick={() => (expansivel ? setGavetaAberta(expandida ? null : categoria.label) : fechar())}
                     >
                       <Link
@@ -251,7 +251,7 @@ export function SiteHeader({
                     </div>
 
                     {expansivel && expandida && (
-                      <div className="overflow-hidden bg-surface-1/60 dark:bg-surface-1/40 rounded-lg mx-1 mb-2 border border-slate-200/50 dark:border-white/5">
+                      <div className="overflow-hidden bg-surface-1/60 dark:bg-surface-1/40 rounded-[6px] mx-1 mb-2 ">
                         <div className="p-2.5 grid grid-cols-1 gap-1.5">
                           <ItensDaGaveta
                             categoria={categoria}
@@ -290,7 +290,7 @@ function ItensDaGaveta({
   aoNavegar: () => void
 }) {
   const linha =
-    'text-text-main hover:text-primary font-medium py-2 px-3 flex items-center gap-3 bg-surface-2/80 hover:bg-surface-2 rounded-lg hover:shadow-xs transition-all active:scale-[0.99]'
+    'text-text-main hover:text-primary font-medium py-2 px-3 flex items-center gap-3 bg-surface-2/80 hover:bg-surface-2 rounded-[6px] hover:shadow-xs transition-all active:scale-[0.99]'
   const caixa = 'w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary shrink-0'
 
   if (categoria.panel === 'solutions') {

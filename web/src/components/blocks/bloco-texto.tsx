@@ -90,7 +90,7 @@ export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
             ) : null}
 
             {bloco.callout?.text && (
-              <div className="p-4 rounded-[6px] bg-surface-1 border border-slate-200 dark:border-white/5 text-xs text-text-muted font-light">
+              <div className="p-4 rounded-[6px] bg-surface-1  text-xs text-text-muted font-light">
                 {bloco.callout.label && (
                   <strong className="text-primary font-semibold block mb-1">{bloco.callout.label}</strong>
                 )}
@@ -121,7 +121,7 @@ export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
             <div className={cn('relative', bloco.imagePosition === 'left' && 'lg:order-1')}>
               <div
                 className={cn(
-                  'rounded-[6px] overflow-hidden border border-slate-200 dark:border-white/10 relative',
+                  'rounded-[6px] overflow-hidden  relative',
                   centrado ? 'aspect-[16/10] shadow-lg' : 'aspect-[4/3] shadow-xl',
                 )}
               >

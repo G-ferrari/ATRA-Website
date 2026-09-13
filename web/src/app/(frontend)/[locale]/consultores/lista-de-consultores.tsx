@@ -96,7 +96,7 @@ const SENIORIDADES = ['Senior', 'Pleno', 'Lead / Principal'] as const
 
 const PILULA_ATIVA = 'bg-primary text-white font-semibold shadow-xs'
 const PILULA_INATIVA =
-  'bg-surface-1 text-text-muted hover:text-text-main border border-slate-200 dark:border-white/5'
+  'bg-surface-1 text-text-muted hover:text-text-main '
 
 export function ListaDeConsultores({
   perfis,
@@ -141,7 +141,7 @@ export function ListaDeConsultores({
   return (
     <>
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-10">
-        <div className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-4 sm:p-5 shadow-xs">
+        <div className="bg-surface-2  rounded-[6px] p-4 sm:p-5 shadow-xs">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2">
               <Filter size={15} className="text-primary" aria-hidden />
@@ -160,7 +160,7 @@ export function ListaDeConsultores({
                 aria-label={t.buscar}
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-surface-1 border border-slate-200 dark:border-white/10 rounded-[6px] text-xs font-normal text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-all"
+                className="w-full pl-8 pr-3 py-1.5 bg-surface-1  rounded-[6px] text-xs font-normal text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-all"
               />
             </div>
           </div>
@@ -233,7 +233,7 @@ export function ListaDeConsultores({
         </div>
 
         {filtrados.length === 0 ? (
-          <div className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-8 text-center max-w-md mx-auto">
+          <div className="bg-surface-2  rounded-[6px] p-8 text-center max-w-md mx-auto">
             <UserCheck size={32} className="mx-auto text-text-muted mb-2" aria-hidden />
             <h3 className="text-sm font-bold text-text-main mb-1">{t.vazioTitulo}</h3>
             <p className="text-xs text-text-muted font-light mb-4">{t.vazioTexto}</p>
@@ -253,7 +253,7 @@ export function ListaDeConsultores({
                 glowColor="blue"
                 customSize
                 radius={6}
-                className="p-5 sm:p-6 md:p-7 bg-surface-2 text-text-main shadow-sm flex flex-col justify-between h-full rounded-[6px] border border-slate-200 dark:border-white/5 hover:border-primary/40 transition-all duration-300 group"
+                className="p-5 sm:p-6 md:p-7 bg-surface-2 text-text-main shadow-sm flex flex-col justify-between h-full rounded-[6px]  hover:border-primary/40 transition-all duration-300 group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-4 mb-4">
@@ -283,7 +283,7 @@ export function ListaDeConsultores({
                       </div>
                     </div>
 
-                    <div className="hidden sm:flex items-center gap-1.5 text-xs text-text-muted bg-surface-1 px-3 py-1 rounded-[4px] border border-slate-200 dark:border-white/5 font-semibold shrink-0">
+                    <div className="hidden sm:flex items-center gap-1.5 text-xs text-text-muted bg-surface-1 px-3 py-1 rounded-[4px]  font-semibold shrink-0">
                       <Users size={12} className="text-primary" aria-hidden />
                       <span>
                         {p.ecosystem} {t.ecossistema}
@@ -303,14 +303,14 @@ export function ListaDeConsultores({
                           'text-[11px] px-2.5 py-1 rounded-[4px] transition-colors font-medium',
                           tag === especialidade
                             ? PILULA_ATIVA
-                            : 'bg-surface-1 text-text-muted border border-slate-200 dark:border-white/5 hover:text-text-main',
+                            : 'bg-surface-1 text-text-muted  hover:text-text-main',
                         )}
                       >
                         {tag}
                       </span>
                     ))}
                     {p.tags.length > 7 && (
-                      <span className="text-[11px] px-2 py-1 rounded-[4px] bg-surface-1 text-text-muted border border-slate-200 dark:border-white/5">
+                      <span className="text-[11px] px-2 py-1 rounded-[4px] bg-surface-1 text-text-muted ">
                         +{p.tags.length - 7}
                       </span>
                     )}
@@ -326,7 +326,7 @@ export function ListaDeConsultores({
                     <button
                       type="button"
                       onClick={() => setAberto(p)}
-                      className="py-2 px-3.5 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-main border border-slate-200 dark:border-white/10 text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                      className="py-2 px-3.5 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-main  text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
                     >
                       <HelpCircle size={14} className="text-primary" aria-hidden />
                       <span>{t.detalhes}</span>
@@ -361,12 +361,12 @@ export function ListaDeConsultores({
             className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs cursor-default"
           />
 
-          <div className="relative w-full max-w-2xl bg-surface-2 border border-slate-200 dark:border-white/10 rounded-[6px] p-6 sm:p-8 shadow-2xl z-10 my-8 max-h-[90vh] overflow-y-auto">
+          <div className="relative w-full max-w-2xl bg-surface-2  rounded-[6px] p-6 sm:p-8 shadow-2xl z-10 my-8 max-h-[90vh] overflow-y-auto">
             <button
               type="button"
               aria-label={t.fechar}
               onClick={() => setAberto(null)}
-              className="absolute top-6 right-6 p-2 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-muted hover:text-text-main transition-colors cursor-pointer border border-slate-200 dark:border-white/5"
+              className="absolute top-6 right-6 p-2 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-muted hover:text-text-main transition-colors cursor-pointer "
             >
               <X size={18} aria-hidden />
             </button>
@@ -393,7 +393,7 @@ export function ListaDeConsultores({
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-text-muted font-light leading-relaxed mb-6 bg-surface-1 p-4 rounded-[6px] border border-slate-200 dark:border-white/5">
+            <p className="text-xs sm:text-sm text-text-muted font-light leading-relaxed mb-6 bg-surface-1 p-4 rounded-[6px] ">
               {aberto.description}
             </p>
 
@@ -411,7 +411,7 @@ export function ListaDeConsultores({
                   {aberto.certifications.map((c) => (
                     <div
                       key={c}
-                      className="text-xs text-text-main font-medium flex items-center gap-2 bg-surface-1 p-2 rounded-[6px] border border-slate-200 dark:border-white/5"
+                      className="text-xs text-text-main font-medium flex items-center gap-2 bg-surface-1 p-2 rounded-[6px] "
                     >
                       <Award size={14} className="text-amber-400 shrink-0" aria-hidden />
                       <span>{c}</span>
@@ -429,7 +429,7 @@ export function ListaDeConsultores({
                 {aberto.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs px-2.5 py-1 rounded-[6px] bg-surface-1 border border-slate-200 dark:border-white/5 text-text-muted font-medium"
+                    className="text-xs px-2.5 py-1 rounded-[6px] bg-surface-1  text-text-muted font-medium"
                   >
                     {tag}
                   </span>

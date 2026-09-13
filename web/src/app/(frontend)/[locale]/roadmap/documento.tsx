@@ -46,7 +46,7 @@ export function Documento({ md }: { md: string }) {
             <blockquote className="my-3 border-l-2 border-primary/40 pl-4 text-text-muted" {...p} />
           ),
           table: (p) => (
-            <div className="my-4 overflow-x-auto rounded-[6px] border border-border-main">
+            <div className="my-4 overflow-x-auto rounded-[6px] ">
               <table className="w-full text-xs" {...p} />
             </div>
           ),

@@ -207,7 +207,7 @@ export default async function BlogPage() {
             <div className="flex-1 w-full max-w-2xl">
               <Link
                 href={hrefDe('webinars', locale)}
-                className="block aspect-video rounded-[6px] overflow-hidden relative group shadow-2xl border border-slate-200 dark:border-white/10 cursor-pointer bg-surface-1 dark:bg-[#0e1015]"
+                className="block aspect-video rounded-[6px] overflow-hidden relative group shadow-2xl  cursor-pointer bg-surface-1 dark:bg-[#0e1015]"
               >
                 {capaDoWebinar && (
                   <Image

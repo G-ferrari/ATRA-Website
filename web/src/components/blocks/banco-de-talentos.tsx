@@ -52,7 +52,7 @@ const TEXTOS = {
 } as const
 
 const CAMPO =
-  'w-full bg-surface-2 border border-slate-200 dark:border-white/10 rounded-[6px] px-3.5 py-2.5 text-xs text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors disabled:opacity-100'
+  'w-full bg-surface-2  rounded-[6px] px-3.5 py-2.5 text-xs text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors disabled:opacity-100'
 
 export function BancoDeTalentos({
   banco,
@@ -66,7 +66,7 @@ export function BancoDeTalentos({
   return (
     <div
       id="banco-talentos"
-      className="bg-surface-1 border border-slate-200 dark:border-white/5 rounded-[6px] shadow-xl overflow-hidden max-w-5xl mx-auto flex flex-col lg:flex-row relative scroll-mt-32"
+      className="bg-surface-1  rounded-[6px] shadow-xl overflow-hidden max-w-5xl mx-auto flex flex-col lg:flex-row relative scroll-mt-32"
     >
       <div className="lg:w-5/12 bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] p-8 lg:p-12 text-white flex flex-col justify-center relative">
         <TechCornerBraces color="blue" position="top-left" size={14} />
@@ -88,7 +88,7 @@ export function BancoDeTalentos({
           )}
 
           {banco.note && (
-            <div className="flex items-center gap-4 bg-white/5 border border-white/10 p-4 rounded-[6px]">
+            <div className="flex items-center gap-4 bg-white/5  p-4 rounded-[6px]">
               <Upload size={20} className="text-primary shrink-0" aria-hidden />
               <p className="text-xs text-white/80 font-light leading-relaxed">{banco.note}</p>
             </div>

@@ -63,7 +63,7 @@ function LinhaDaTask({ t }: { t: Task }) {
           ›
         </span>
       </summary>
-      <dl className="mx-2 mb-3 mt-1 rounded-[6px] bg-surface-1 dark:bg-[#0e1015] border border-border-main p-4 grid sm:grid-cols-2 gap-x-6 gap-y-3">
+      <dl className="mx-2 mb-3 mt-1 rounded-[6px] bg-surface-1 dark:bg-[#0e1015]  p-4 grid sm:grid-cols-2 gap-x-6 gap-y-3">
         <CampoDaTask rotulo="Critério de aceite" valor={t.criterio} />
         <CampoDaTask rotulo="Como terminou" valor={t.nota} />
         <CampoDaTask rotulo="Arquivos" valor={t.arquivos} mono />

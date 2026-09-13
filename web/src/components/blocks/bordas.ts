@@ -14,6 +14,6 @@ export const BORDAS: Record<'nenhuma' | 'topo' | 'ambas', string> = {
  * /sobre e /carreiras usam escalas diferentes, e a diferença é de centenas de
  * pixels ao longo da página. */
 export const ESPACOS: Record<'normal' | 'amplo', string> = {
-  normal: 'py-16 md:py-20',
-  amplo: 'py-20 md:py-24',
+  normal: 'py-16 md:py-24',
+  amplo: 'py-20 md:py-28',
 }

@@ -21,7 +21,7 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
       className="relative pt-4 pb-12 overflow-hidden px-3 sm:px-6 scroll-mt-32"
     >
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
+        <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
           <TechCornerBraces color="blue" position="top-left" size={16} />
           <TechCornerBraces color="orange" position="bottom-right" size={16} />
 
@@ -60,7 +60,7 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
                 {bloco.awards.map((p) => (
                   <div
                     key={`${p.title}-${p.highlight}`}
-                    className="bg-white/5 border border-white/10 backdrop-blur-md p-4 rounded-[6px] shadow-sm flex flex-col items-center justify-center min-w-[140px] shrink-0"
+                    className="bg-white/5  backdrop-blur-md p-4 rounded-[6px] shadow-sm flex flex-col items-center justify-center min-w-[140px] shrink-0"
                   >
                     {bloco.logo && (
                       /* `h-6 w-auto`: a altura manda e a largura sai do aspecto

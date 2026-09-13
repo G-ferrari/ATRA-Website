@@ -39,7 +39,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
     <section
       id={bloco.anchor ?? undefined}
       className={cn(
-        'py-10 relative overflow-hidden scroll-mt-32',
+        'py-16 md:py-24 relative overflow-hidden scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
         BORDAS[bloco.borda],
       )}
@@ -51,7 +51,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
           {bloco.title}
         </h2>
 
-        <div className="max-w-3xl mx-auto bg-surface-3 p-6 md:p-10 rounded-lg shadow-xl relative flex flex-col items-center justify-center">
+        <div className="max-w-3xl mx-auto bg-surface-3 p-6 md:p-10 rounded-[6px] shadow-xl relative flex flex-col items-center justify-center">
           <Quote size={32} className="text-primary/40 mb-4" aria-hidden />
 
           <div className="flex gap-1 justify-center mb-4 text-amber-400">
@@ -64,7 +64,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
             <button
               type="button"
               onClick={() => setAtivo((i) => (i - 1 + total) % total)}
-              className="flex w-8 h-8 sm:w-10 sm:h-10 rounded-[6px] border border-border-main items-center justify-center text-text-muted hover:text-white hover:bg-primary transition-all shrink-0 cursor-pointer active:scale-95"
+              className="flex w-8 h-8 sm:w-10 sm:h-10 rounded-[6px]  items-center justify-center text-text-muted hover:text-white hover:bg-primary transition-all shrink-0 cursor-pointer active:scale-95"
               aria-label="Depoimento anterior"
             >
               <ChevronLeft size={18} aria-hidden />
@@ -131,7 +131,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
             <button
               type="button"
               onClick={() => setAtivo((i) => (i + 1) % total)}
-              className="flex w-8 h-8 sm:w-10 sm:h-10 rounded-[6px] border border-border-main items-center justify-center text-text-muted hover:text-white hover:bg-primary transition-all shrink-0 cursor-pointer active:scale-95"
+              className="flex w-8 h-8 sm:w-10 sm:h-10 rounded-[6px]  items-center justify-center text-text-muted hover:text-white hover:bg-primary transition-all shrink-0 cursor-pointer active:scale-95"
               aria-label="Próximo depoimento"
             >
               <ChevronRight size={18} aria-hidden />
@@ -145,7 +145,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
                 type="button"
                 onClick={() => setAtivo(i)}
                 className={cn(
-                  'h-1.5 rounded-xs transition-all duration-300 cursor-pointer',
+                  'h-1.5 rounded-full transition-all duration-300 cursor-pointer',
                   i === ativo ? 'w-6 bg-primary' : 'w-2 bg-text-muted/30 hover:bg-text-muted',
                 )}
                 aria-label={`Ir para depoimento ${i + 1}`}

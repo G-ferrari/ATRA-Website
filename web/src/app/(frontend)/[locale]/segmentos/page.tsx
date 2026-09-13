@@ -93,7 +93,7 @@ export default async function SegmentosPage() {
   return (
     <main className="pt-24 md:pt-36 pb-20 min-h-screen bg-surface-1 text-text-main">
       <section className="relative px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pt-6 pb-12">
-        <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid">
+        <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid">
           <TechCornerBraces color="blue" position="top-left" size={16} />
           <TechCornerBraces color="orange" position="bottom-right" size={16} />
           <div className="max-w-2xl relative z-10">
@@ -143,7 +143,7 @@ function CartaoDeSegmento({
   return (
     <Link
       href={hrefDe('segmentos', locale, segmento.slug)}
-      className="flex flex-col p-5 rounded-md bg-surface-2 border border-slate-200 dark:border-white/5 transition-all group hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:shadow-lg hover:border-primary/30"
+      className="flex flex-col p-5 rounded-md bg-surface-2  transition-all group hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:shadow-lg hover:border-primary/30"
     >
       <div className="flex items-center gap-3 mb-3">
         <div className="w-9 h-9 rounded-md bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">

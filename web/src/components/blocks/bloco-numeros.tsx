@@ -19,7 +19,7 @@ export function BlocoNumeros({ bloco }: { bloco: BlocoStatsGrid }) {
         {bloco.items.map((m) => (
           <div
             key={m.label}
-            className="bg-surface-2 border border-slate-200 dark:border-white/5 p-5 rounded-[6px] shadow-sm flex flex-col items-center text-center group hover:border-primary/30 transition-all duration-300"
+            className="bg-surface-2  p-5 rounded-[6px] shadow-sm flex flex-col items-center text-center group hover:border-primary/30 transition-all duration-300"
           >
             <div className="text-2xl sm:text-3xl font-bold font-display text-primary mb-1">
               <ContadorAnimado ate={m.value} sufixo={m.suffix} />

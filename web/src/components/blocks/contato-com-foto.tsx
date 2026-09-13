@@ -32,7 +32,7 @@ export function ContatoComFoto({ bloco }: { bloco: BlocoCtaContact }) {
     <section
       id={bloco.anchor ?? 'fale-conosco'}
       className={cn(
-        'py-16 relative overflow-hidden px-3 sm:px-6 transition-colors duration-500',
+        'py-16 md:py-24 relative overflow-hidden px-3 sm:px-6 transition-colors duration-500',
         bloco.theme === 'surface-2' ? 'bg-surface-2 dark:bg-[#12151c]' : 'bg-surface-1',
       )}
     >
@@ -153,7 +153,7 @@ export function ContatoComFoto({ bloco }: { bloco: BlocoCtaContact }) {
                   href={contato.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group bg-surface-2/95 dark:bg-[#181b22]/95 hover:bg-emerald-500/10 dark:hover:bg-emerald-500/15 backdrop-blur-sm border border-border-main dark:border-white/10 hover:border-emerald-500/40 rounded-[6px] px-4 py-3 shadow-lg flex items-center justify-between gap-4 transition-all duration-300 flex-1 sm:flex-initial h-[76px]"
+                  className="group bg-surface-2/95 dark:bg-[#181b22]/95 hover:bg-emerald-500/10 dark:hover:bg-emerald-500/15 backdrop-blur-sm rounded-[6px] px-4 py-3 shadow-lg flex items-center justify-between gap-4 transition-all duration-300 flex-1 sm:flex-initial h-[76px]"
                 >
                   <div className="flex flex-col justify-center">
                     <div className="flex items-center gap-1.5 mb-1">
@@ -171,7 +171,7 @@ export function ContatoComFoto({ bloco }: { bloco: BlocoCtaContact }) {
                   </div>
                 </a>
 
-                <div className="bg-surface-2/95 dark:bg-[#181b22]/95 backdrop-blur-sm border border-border-main dark:border-white/10 rounded-[6px] px-4 py-3 shadow-lg flex flex-col justify-center gap-1.5 flex-1 sm:flex-initial h-[76px]">
+                <div className="bg-surface-2/95 dark:bg-[#181b22]/95 backdrop-blur-sm rounded-[6px] px-4 py-3 shadow-lg flex flex-col justify-center gap-1.5 flex-1 sm:flex-initial h-[76px]">
                   <p className="text-[10px] uppercase font-normal tracking-wider text-text-muted dark:text-white/60">
                     Nossas redes sociais
                   </p>

@@ -45,7 +45,7 @@ function Cartao({ item, destaque }: { item: ItemDeInsight; destaque: boolean }) 
             />
           )}
           <div className="absolute top-3 left-3 flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-[6px] bg-surface-1/90 text-text-main text-[10px] font-bold border border-slate-200/40 dark:border-white/10 backdrop-blur-md">
+            <span className="px-2.5 py-1 rounded-[6px] bg-surface-1/90 text-text-main text-[10px] font-bold  backdrop-blur-md">
               {item.category}
             </span>
           </div>
@@ -93,7 +93,7 @@ function Cartao({ item, destaque }: { item: ItemDeInsight; destaque: boolean }) 
           {item.tags.map((t) => (
             <span
               key={t}
-              className="text-[10px] font-medium px-2 py-0.5 rounded-[6px] bg-surface-1 text-text-muted border border-slate-200 dark:border-white/5"
+              className="text-[10px] font-medium px-2 py-0.5 rounded-[6px] bg-surface-1 text-text-muted "
             >
               {t}
             </span>
@@ -111,7 +111,7 @@ function Cartao({ item, destaque }: { item: ItemDeInsight; destaque: boolean }) 
         ) : (
           <Link
             href={item.href}
-            className="w-full py-2.5 px-4 rounded-[6px] bg-surface-1 hover:bg-primary hover:text-white text-text-main border border-slate-200 dark:border-white/10 text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2 group/btn cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-[6px] bg-surface-1 hover:bg-primary hover:text-white text-text-main  text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2 group/btn cursor-pointer"
           >
             <span>
               {item.format === 'ebook'
@@ -199,7 +199,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
                   'inline-flex items-center gap-2 px-3.5 py-2 rounded-[6px] text-xs font-semibold transition-all duration-200 cursor-pointer',
                   formato === f.key
                     ? 'bg-primary text-white shadow-xs'
-                    : 'bg-surface-2 text-text-muted hover:text-text-main border border-slate-200 dark:border-white/5 hover:bg-surface-3',
+                    : 'bg-surface-2 text-text-muted hover:text-text-main  hover:bg-surface-3',
                 )}
               >
                 <Icone nome={f.icon} size={14} />
@@ -233,7 +233,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
       )}
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-10">
-        <div className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-6 shadow-sm">
+        <div className="bg-surface-2  rounded-[6px] p-6 shadow-sm">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-2">
               <Filter size={16} className="text-primary" aria-hidden />
@@ -248,7 +248,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
                 aria-label="Buscar conteúdos"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-surface-1 border border-slate-200 dark:border-white/10 rounded-[6px] text-xs text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-all"
+                className="w-full pl-9 pr-4 py-2 bg-surface-1  rounded-[6px] text-xs text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-all"
               />
             </div>
           </div>
@@ -263,7 +263,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
                   'px-3.5 py-1.5 rounded-[6px] text-xs font-semibold transition-all whitespace-nowrap cursor-pointer',
                   formato === f.key
                     ? 'bg-primary text-white shadow-xs'
-                    : 'bg-surface-1 text-text-muted hover:text-text-main border border-slate-200 dark:border-white/5 hover:bg-surface-3',
+                    : 'bg-surface-1 text-text-muted hover:text-text-main  hover:bg-surface-3',
                 )}
               >
                 {f.label}
@@ -281,7 +281,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
                   'px-3 py-1 rounded-[6px] text-xs transition-all cursor-pointer whitespace-nowrap',
                   topico === t
                     ? 'bg-primary text-white font-semibold shadow-xs'
-                    : 'bg-surface-1 text-text-muted hover:text-text-main border border-slate-200 dark:border-white/5 hover:bg-surface-3',
+                    : 'bg-surface-1 text-text-muted hover:text-text-main  hover:bg-surface-3',
                 )}
               >
                 {t}
@@ -318,7 +318,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
         </div>
 
         {filtrados.length === 0 ? (
-          <div className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-12 text-center max-w-md mx-auto">
+          <div className="bg-surface-2  rounded-[6px] p-12 text-center max-w-md mx-auto">
             <BookOpen size={48} className="mx-auto text-text-muted mb-4" aria-hidden />
             <h4 className="text-base font-bold text-text-main mb-2">Nenhum conteúdo encontrado</h4>
             <p className="text-xs text-text-muted font-light mb-6">
@@ -359,7 +359,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
                 <Link
                   key={f.key}
                   href={f.href ?? '#'}
-                  className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-5 flex flex-col items-center text-center transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group"
+                  className="bg-surface-2  rounded-[6px] p-5 flex flex-col items-center text-center transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 group"
                 >
                   <div className="w-12 h-12 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-all">
                     <Icone nome={f.icon} size={22} />
@@ -378,7 +378,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
 
       {bloco.newsletter && (
         <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mb-16">
-          <div className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-8 md:p-12 shadow-xl relative overflow-hidden text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="bg-surface-2  rounded-[6px] p-8 md:p-12 shadow-xl relative overflow-hidden text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
             <TechCornerBraces color="blue" position="top-left" size={14} />
             <TechCornerBraces color="orange" position="bottom-right" size={14} />
 
@@ -404,7 +404,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
                   disabled
                   placeholder="Seu e-mail corporativo"
                   aria-label="Seu e-mail corporativo"
-                  className="w-full px-4 py-3 bg-surface-1 border border-slate-200 dark:border-white/10 rounded-[6px] text-xs text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-all disabled:opacity-100"
+                  className="w-full px-4 py-3 bg-surface-1  rounded-[6px] text-xs text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-all disabled:opacity-100"
                 />
                 <button
                   type="button"
@@ -423,7 +423,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
 
       {bloco.closing && (
         <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
-          <div className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-8 md:p-10 shadow-sm">
+          <div className="bg-surface-2  rounded-[6px] p-8 md:p-10 shadow-sm">
             <h3 className="text-xl md:text-2xl font-bold font-display text-text-main mb-3">{bloco.closing.title}</h3>
             {bloco.closing.description && (
               <p className="text-xs md:text-sm text-text-muted font-light max-w-2xl mx-auto mb-6">
@@ -442,7 +442,7 @@ export function BlocoHubDeInsights({ bloco }: { bloco: BlocoInsightsHub }) {
               {bloco.closing.secondaryLabel && (
                 <Link
                   href={bloco.closing.secondaryHref ?? '#'}
-                  className="px-6 py-3 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-main border border-slate-200 dark:border-white/10 text-xs md:text-sm font-semibold transition-all"
+                  className="px-6 py-3 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-main  text-xs md:text-sm font-semibold transition-all"
                 >
                   {bloco.closing.secondaryLabel}
                 </Link>

@@ -34,7 +34,7 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
     <section
       id={bloco.anchor ?? undefined}
       className={cn(
-        'py-20 relative overflow-hidden scroll-mt-32',
+        'py-16 md:py-24 relative overflow-hidden scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
         BORDAS[bloco.borda],
       )}
@@ -75,7 +75,7 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
                   type="button"
                   onClick={() => setAtiva(i)}
                   className={cn(
-                    'w-full text-left p-4 sm:p-5 rounded-lg transition-all duration-300 flex items-center justify-between gap-4 cursor-pointer group border',
+                    'w-full text-left p-4 sm:p-5 rounded-[6px] transition-all duration-300 flex items-center justify-between gap-4 cursor-pointer group border',
                     atual
                       ? 'bg-surface-2 shadow-md border-primary/40 text-text-main'
                       : 'bg-surface-2/60 hover:bg-surface-2 border-transparent',
@@ -126,7 +126,7 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.3 }}
-                className="vort-card dark:vort-card-dark border border-border-main dark:border-white/10 h-full min-h-[380px] flex flex-col justify-between p-6 sm:p-10 relative overflow-hidden rounded-lg shadow-xl dark:shadow-2xl transition-colors duration-300 group"
+                className="vort-card dark:vort-card-dark h-full min-h-[380px] flex flex-col justify-between p-6 sm:p-10 relative overflow-hidden rounded-[6px] shadow-xl dark:shadow-2xl transition-colors duration-300 group"
               >
                 {item.image && (
                   <Image

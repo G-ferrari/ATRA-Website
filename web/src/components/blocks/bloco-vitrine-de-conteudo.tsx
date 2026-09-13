@@ -30,7 +30,7 @@ function Cartao({
   return (
     <Link
       href={card.href ?? '#'}
-      className={cn('relative group overflow-hidden rounded-lg block shadow-xl', aspecto)}
+      className={cn('relative group overflow-hidden rounded-[6px] block shadow-xl', aspecto)}
     >
       {card.image && (
         <Image
@@ -67,7 +67,7 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
     <section
       id={bloco.anchor ?? undefined}
       className={cn(
-        'py-20 text-text-subtle overflow-hidden relative scroll-mt-32',
+        'py-16 md:py-24 text-text-subtle overflow-hidden relative scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
         BORDAS[bloco.borda],
       )}
@@ -113,7 +113,7 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
 
           <div className="flex flex-col gap-6">
             {bloco.featured && (
-              <div className="relative group overflow-hidden rounded-lg min-h-[280px] md:min-h-[340px] shadow-xl">
+              <div className="relative group overflow-hidden rounded-[6px] min-h-[280px] md:min-h-[340px] shadow-xl">
                 {bloco.featured.image && (
                   <Image
                     src={bloco.featured.image.url}

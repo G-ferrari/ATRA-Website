@@ -91,10 +91,10 @@ export default async function EbooksPage() {
               <EntradaAnimada
                 key={r.slug}
                 index={i}
-                className="bg-surface-2 border border-slate-200 dark:border-white/5 hover:border-primary/40 rounded-[6px] p-6 sm:p-8 shadow-sm hover:shadow-xl hover:bg-surface-3 transition-all duration-300 group flex flex-col justify-between"
+                className="bg-surface-2  hover:border-primary/40 rounded-[6px] p-6 sm:p-8 shadow-sm hover:shadow-xl hover:bg-surface-3 transition-all duration-300 group flex flex-col justify-between"
               >
                 <div>
-                  <div className="aspect-[3/4] rounded-[6px] overflow-hidden mb-6 shadow-inner relative border border-slate-200 dark:border-white/5">
+                  <div className="aspect-[3/4] rounded-[6px] overflow-hidden mb-6 shadow-inner relative ">
                     <Image
                       src={r.image.url}
                       alt={r.image.alt}

@@ -87,7 +87,7 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
               <div
                 key={v.title}
                 className={cn(
-                  'group relative flex flex-col justify-between bg-surface-2 border border-slate-200 dark:border-white/10 rounded-[8px] p-7 sm:p-8 lg:p-9 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1',
+                  'group relative flex flex-col justify-between bg-surface-2  rounded-[6px] p-7 sm:p-8 lg:p-9 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1',
                   laranja ? 'hover:border-secondary/50' : 'hover:border-primary/50',
                 )}
               >
@@ -100,7 +100,7 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
                 <div>
                   <div
                     className={cn(
-                      'w-14 h-14 rounded-[8px] flex items-center justify-center mb-6 shadow-xs group-hover:scale-105 transition-transform',
+                      'w-14 h-14 rounded-[6px] flex items-center justify-center mb-6 shadow-xs group-hover:scale-105 transition-transform',
                       laranja ? 'bg-secondary/10 text-secondary' : 'bg-primary/10 text-primary',
                     )}
                   >

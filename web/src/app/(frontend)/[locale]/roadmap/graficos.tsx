@@ -46,7 +46,7 @@ function Legenda({ serie }: { serie: [string, string] }) {
         {serie[0]}
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span className="w-2.5 h-2.5 rounded-[3px] bg-surface-3 border border-border-main" />
+        <span className="w-2.5 h-2.5 rounded-[3px] bg-surface-3 " />
         {serie[1]}
       </span>
     </div>

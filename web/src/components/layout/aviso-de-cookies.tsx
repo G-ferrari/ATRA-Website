@@ -79,7 +79,7 @@ export function AvisoDeCookies({ textos, locale }: { textos: TextosDoAviso; loca
           role="dialog"
           aria-label={textos.titulo}
           data-testid="aviso-de-cookies"
-          className="fixed z-[110] bottom-3 left-3 right-3 md:bottom-8 md:left-8 md:right-auto md:max-w-md bg-surface-2 dark:bg-[#181b22] border border-border-main rounded-[6px] shadow-xl dark:shadow-2xl backdrop-blur-md p-4 sm:p-5"
+          className="fixed z-[110] bottom-3 left-3 right-3 md:bottom-8 md:left-8 md:right-auto md:max-w-md bg-surface-2 dark:bg-[#181b22]  rounded-[6px] shadow-xl dark:shadow-2xl backdrop-blur-md p-4 sm:p-5"
         >
           <div className="flex items-start justify-between gap-3 mb-2">
             <div className="flex items-center gap-2">
@@ -184,7 +184,7 @@ function Categoria({
 }) {
   const ativo = aoAlternar ? Boolean(ligado) : true
   return (
-    <div className="flex items-start justify-between gap-3 p-2.5 rounded-[6px] bg-surface-3/70 dark:bg-[#222631]/70 border border-border-main">
+    <div className="flex items-start justify-between gap-3 p-2.5 rounded-[6px] bg-surface-3/70 dark:bg-[#222631]/70 ">
       <div className="min-w-0">
         <p className="text-[11.5px] font-bold text-text-main mb-0.5">{nome}</p>
         <p className="text-[10.5px] text-text-muted leading-relaxed">{descricao}</p>
@@ -197,7 +197,7 @@ function Categoria({
         disabled={!aoAlternar}
         onClick={aoAlternar}
         className={`relative shrink-0 w-9 h-5 rounded-full transition-colors mt-0.5 ${
-          ativo ? 'bg-gradient-to-r from-primary to-primary-dark' : 'bg-surface-1 dark:bg-[#0e1015] border border-border-main'
+          ativo ? 'bg-gradient-to-r from-primary to-primary-dark' : 'bg-surface-1 dark:bg-[#0e1015] '
         } ${aoAlternar ? 'cursor-pointer' : 'opacity-60 cursor-not-allowed'}`}
       >
         <span
@@ -213,4 +213,4 @@ function Categoria({
 const CTA =
   'px-4 py-2 bg-gradient-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:shadow-md hover:shadow-primary/25 active:scale-[0.98] transition-all cursor-pointer'
 const SECUNDARIO =
-  'px-4 py-2 bg-surface-1 dark:bg-[#0e1015] border border-border-main text-text-main font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:border-primary/50 active:scale-[0.98] transition-all cursor-pointer'
+  'px-4 py-2 bg-surface-1 dark:bg-[#0e1015]  text-text-main font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:border-primary/50 active:scale-[0.98] transition-all cursor-pointer'

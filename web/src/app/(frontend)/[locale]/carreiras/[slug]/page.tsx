@@ -149,7 +149,7 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
             {vaga.body ? (
               <RichText data={vaga.body} />
             ) : (
-              <div className="rounded-[6px] border border-slate-200 bg-slate-50 p-8 text-center mb-12">
+              <div className="rounded-[6px]  bg-slate-50 p-8 text-center mb-12">
                 <h2 className="font-bold text-slate-900 mb-1">{t.semCorpoTitulo}</h2>
                 <p className="text-sm text-slate-600">{t.semCorpoTexto}</p>
               </div>

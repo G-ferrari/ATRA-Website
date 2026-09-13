@@ -66,7 +66,7 @@ export function PromptDaIa({
               }}
               className="w-full"
             >
-              <div className="bg-surface-2 dark:bg-[#141720] border border-slate-200 dark:border-white/10 rounded-2xl p-3 sm:p-4 flex flex-col gap-2 shadow-lg focus-within:border-primary/50 transition-all text-left">
+              <div className="bg-surface-2 dark:bg-[#141720] rounded-[12px] p-3 sm:p-4 flex flex-col gap-2 shadow-lg focus-within:ring-1 focus-within:ring-primary/50 transition-all text-left">
                 <div className="w-full px-1">
                   <textarea
                     value={texto}
@@ -134,7 +134,7 @@ export function PromptDaIa({
                       {esteira.map((c, i) => (
                         <div
                           key={`${c.name}-${i}`}
-                          className="flex items-center justify-center bg-white dark:bg-white px-4 py-2.5 rounded-[7px] h-14 w-[156px] mx-3.5 shrink-0 shadow-xs border border-slate-200/80 dark:border-white/10 hover:scale-105 transition-transform duration-200 cursor-default"
+                          className="flex items-center justify-center bg-white dark:bg-white px-4 py-2.5 rounded-[6px] h-14 w-[156px] mx-3.5 shrink-0 shadow-xs hover:scale-105 transition-transform duration-200 cursor-default"
                         >
                           {/* A caixa é fixa e a imagem se ajusta por `max-h`; o
                               next/image fixaria a caixa pelas dimensões do

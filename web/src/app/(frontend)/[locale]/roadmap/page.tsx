@@ -234,7 +234,7 @@ export default async function Pagina() {
                 return (
                   <div
                     key={f.nomeCurto}
-                    className="rounded-[6px] border border-border-main bg-surface-2 px-2.5 py-2"
+                    className="rounded-[6px]  bg-surface-2 px-2.5 py-2"
                     title={`${f.nomeCurto}: ${estado}, ${pctFase}%`}
                   >
                     <p className="text-[11px] font-semibold text-text-main truncate">{f.nomeCurto}</p>
@@ -283,7 +283,7 @@ export default async function Pagina() {
             <div className="grid lg:grid-cols-2 gap-4">
               <div className="space-y-2">
                 {[...riscosAtivos, ...riscos.filter((r) => r.mitigado)].map((r) => (
-                  <div key={r.risco} className="rounded-[6px] border border-border-main bg-surface-2 px-4 py-3">
+                  <div key={r.risco} className="rounded-[6px]  bg-surface-2 px-4 py-3">
                     <div className="flex items-center gap-2 mb-1">
                       {r.mitigado ? (
                         <StatusBadge label="mitigado" variant="online" size="sm" />
@@ -315,7 +315,7 @@ export default async function Pagina() {
               Os pré-requisitos do runbook — nada começa sem todos. A marcação é assinatura manual no
               documento, de propósito: estado inferido não substitui conferência.
             </p>
-            <div className="rounded-[6px] border border-border-main bg-surface-2 divide-y divide-border-main">
+            <div className="rounded-[6px]  bg-surface-2 divide-y divide-border-main">
               {cutover.map((item) => (
                 <div key={item.texto} className="px-4 py-3 flex items-start gap-3">
                   <span
@@ -347,7 +347,7 @@ export default async function Pagina() {
               {decisoes.map((d) => (
                 <details
                   key={d.id}
-                  className="group rounded-[6px] border border-border-main bg-surface-2 open:shadow-md"
+                  className="group rounded-[6px]  bg-surface-2 open:shadow-md"
                 >
                   <summary className="cursor-pointer select-none list-none px-4 py-3 flex items-baseline gap-3 hover:text-primary transition-colors [&::-webkit-details-marker]:hidden">
                     <span className="text-text-muted text-xs shrink-0 transition-transform group-open:rotate-90" aria-hidden>
@@ -375,7 +375,7 @@ export default async function Pagina() {
               {[...pendentesAbertas, ...pendencias.filter((p) => p.status === 'resolvida')].map((p) => (
                 <details
                   key={p.id}
-                  className="group rounded-[6px] border border-border-main bg-surface-2 open:shadow-md"
+                  className="group rounded-[6px]  bg-surface-2 open:shadow-md"
                 >
                   <summary className="cursor-pointer select-none list-none px-4 py-3 flex flex-col sm:flex-row sm:items-baseline gap-x-4 gap-y-1 [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center gap-3 shrink-0 sm:w-40">
@@ -424,7 +424,7 @@ export default async function Pagina() {
                       {doGrupo.map((d) => (
                         <details
                           key={d.nome}
-                          className="group rounded-[6px] border border-border-main bg-surface-2 open:shadow-md"
+                          className="group rounded-[6px]  bg-surface-2 open:shadow-md"
                         >
                           <summary className="cursor-pointer select-none px-4 py-3 text-sm font-mono text-text-main marker:text-text-muted hover:text-primary transition-colors">
                             {d.nome}

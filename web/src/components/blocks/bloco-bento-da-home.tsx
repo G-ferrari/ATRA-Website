@@ -27,7 +27,7 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
     <section
       id={bloco.anchor ?? undefined}
       className={cn(
-        'py-16 sm:py-20 relative z-20 scroll-mt-32',
+        'py-16 md:py-24 relative z-20 scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
         BORDAS[bloco.borda],
       )}
@@ -71,7 +71,7 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                   {bloco.partnerCard.items.map((i) => (
                     <div
                       key={i.name}
-                      className="p-2.5 rounded-[6px] border border-border-main/50 flex items-center gap-2.5 hover:border-primary/50 transition-all group/item bg-surface-1/40"
+                      className="p-2.5 rounded-[6px] flex items-center gap-2.5 hover:bg-surface-1/70 transition-all group/item bg-surface-1/40"
                     >
                       <div className="w-7 h-7 rounded-[6px] bg-white/10 dark:bg-white/5 flex items-center justify-center shrink-0">
                         {i.logo && (
@@ -118,7 +118,7 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                     {bloco.sealsCard.seals.length > 0 && (
                       /* Os dois selos dividem **uma** caixa branca, com um
                          divisor de 1px entre eles — não são duas caixas. */
-                      <div className="flex items-center justify-center gap-4 shrink-0 bg-white p-3 sm:p-3.5 rounded-[8px] shadow-sm border border-slate-200/80 dark:border-white/20 transform group-hover:scale-105 transition-transform duration-300">
+                      <div className="flex items-center justify-center gap-4 shrink-0 bg-white p-3 sm:p-3.5 rounded-[6px] shadow-sm transform group-hover:scale-105 transition-transform duration-300">
                         {bloco.sealsCard.seals.map((s, i) => (
                           <div key={s.url} className="flex items-center gap-4">
                             {i > 0 && <div className="w-[1px] h-20 sm:h-24 bg-slate-200" />}
@@ -149,7 +149,7 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                         </p>
                       )}
                       {bloco.sealsCard.badge && (
-                        <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-[5px] bg-amber-400/10 text-amber-500 text-xs font-bold">
+                        <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-[4px] bg-amber-400/10 text-amber-500 text-xs font-bold">
                           <Star size={12} className="fill-amber-400 text-amber-400" aria-hidden />
                           <span>{bloco.sealsCard.badge}</span>
                         </div>

@@ -54,7 +54,7 @@ export function BlocoParaQuem({ bloco }: { bloco: BlocoAudienceSplit }) {
               return (
                 <div
                   key={item.title}
-                  className="flex items-start gap-4 p-5 rounded-[6px] bg-surface-2 border border-slate-200 dark:border-white/5 shadow-xs hover:border-primary/40 transition-all"
+                  className="flex items-start gap-4 p-5 rounded-[6px] bg-surface-2  shadow-xs hover:border-primary/40 transition-all"
                 >
                   <div className="shrink-0 p-3 rounded-[6px] bg-primary/10">
                     <Icone size={22} className={COR_DO_ICONE[item.accent]} aria-hidden />

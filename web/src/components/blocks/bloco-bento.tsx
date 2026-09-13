@@ -68,7 +68,7 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
                   customSize
                   radius={6}
                   className={cn(
-                    'bg-surface-1 text-text-main h-full flex flex-col justify-between rounded-[6px] border border-slate-200 dark:border-white/5 transition-all duration-300',
+                    'bg-surface-1 text-text-main h-full flex flex-col justify-between rounded-[6px]  transition-all duration-300',
                     destaque
                       ? 'p-6 sm:p-8 shadow-lg relative overflow-hidden group'
                       : cn('p-6 sm:p-7 shadow-md', cor.borda),
@@ -143,7 +143,7 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
                         {item.metrics.map((m) => (
                           <div
                             key={m.label}
-                            className="p-3 rounded-[6px] bg-surface-2 border border-slate-200 dark:border-white/5"
+                            className="p-3 rounded-[6px] bg-surface-2 "
                           >
                             <div className={cn('text-base font-bold', COR_DO_NUMERO[m.color])}>{m.value}</div>
                             <div className="text-[11px] text-text-muted font-light mt-0.5">{m.label}</div>
@@ -157,7 +157,7 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
                         {item.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="text-[11px] font-medium px-2.5 py-1 rounded-[6px] bg-surface-2 border border-slate-200 dark:border-white/5 text-text-main"
+                            className="text-[11px] font-medium px-2.5 py-1 rounded-[6px] bg-surface-2  text-text-main"
                           >
                             {tag}
                           </span>

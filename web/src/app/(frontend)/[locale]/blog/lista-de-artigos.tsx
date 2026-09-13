@@ -102,7 +102,7 @@ export function ListaDeArtigos({
       </div>
 
       {filtrados.length === 0 ? (
-        <div className="bg-surface-2 border border-slate-200 dark:border-white/10 rounded-[6px] p-10 text-center max-w-md mx-auto">
+        <div className="bg-surface-2  rounded-[6px] p-10 text-center max-w-md mx-auto">
           <Search size={32} className="mx-auto text-text-muted mb-3" aria-hidden />
           <h3 className="text-base font-bold text-text-main mb-1">{t.vazioTitulo}</h3>
           <p className="text-xs text-text-muted font-light mb-4">{t.vazioTexto}</p>
@@ -123,7 +123,7 @@ export function ListaDeArtigos({
             <EntradaAnimada
               key={p.slug}
               index={i}
-              className="group flex flex-col bg-surface-2 border border-slate-200 dark:border-white/10 hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 transition-all duration-300"
+              className="group flex flex-col bg-surface-2  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 transition-all duration-300"
             >
               <div className="aspect-[16/10] overflow-hidden relative border-b border-slate-200 dark:border-white/10">
                 <Image
@@ -162,7 +162,7 @@ export function ListaDeArtigos({
                     {p.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 rounded-[4px] bg-surface-1 text-[10px] font-medium text-text-muted uppercase flex items-center gap-1 border border-slate-200 dark:border-white/5"
+                        className="px-2 py-0.5 rounded-[4px] bg-surface-1 text-[10px] font-medium text-text-muted uppercase flex items-center gap-1 "
                       >
                         <Tag size={10} className="text-primary/70" aria-hidden /> {tag}
                       </span>
@@ -195,7 +195,7 @@ export function ListaDeArtigos({
           type="button"
           onClick={() => setPagina((p) => Math.max(1, p - 1))}
           aria-label="Página anterior"
-          className="w-9 h-9 rounded-[6px] border border-slate-200 dark:border-white/10 bg-surface-2 flex items-center justify-center text-text-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
+          className="w-9 h-9 rounded-[6px]  bg-surface-2 flex items-center justify-center text-text-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
         >
           <ChevronLeft size={16} aria-hidden />
         </button>
@@ -210,7 +210,7 @@ export function ListaDeArtigos({
                 'w-9 h-9 rounded-[6px] font-bold text-xs cursor-pointer transition-all',
                 pagina === n
                   ? 'bg-primary text-white shadow-sm'
-                  : 'bg-surface-2 border border-slate-200 dark:border-white/10 text-text-main hover:border-primary',
+                  : 'bg-surface-2  text-text-main hover:border-primary',
               )}
             >
               {n}
@@ -221,7 +221,7 @@ export function ListaDeArtigos({
           type="button"
           onClick={() => setPagina((p) => Math.min(2, p + 1))}
           aria-label="Próxima página"
-          className="w-9 h-9 rounded-[6px] border border-slate-200 dark:border-white/10 bg-surface-2 flex items-center justify-center text-text-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
+          className="w-9 h-9 rounded-[6px]  bg-surface-2 flex items-center justify-center text-text-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
         >
           <ChevronRight size={16} aria-hidden />
         </button>

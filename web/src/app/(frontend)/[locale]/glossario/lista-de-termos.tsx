@@ -75,7 +75,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
     <div className="pt-24 md:pt-36 pb-20 min-h-screen bg-surface-1 text-text-main">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <section className="mb-10">
-          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
+          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
             <TechCornerBraces color="blue" position="top-left" size={14} />
             <TechCornerBraces color="orange" position="bottom-right" size={14} />
 
@@ -101,7 +101,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
                   aria-label={t.buscar}
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/15 rounded-[6px] text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-primary transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white/10  rounded-[6px] text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-primary transition-all"
                 />
               </div>
             </div>
@@ -117,7 +117,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
               'px-3 py-1.5 rounded-[6px] text-xs font-semibold transition-all cursor-pointer',
               letra === null
                 ? 'bg-primary text-white shadow-xs'
-                : 'bg-surface-2 text-text-muted hover:text-text-main border border-slate-200 dark:border-white/5',
+                : 'bg-surface-2 text-text-muted hover:text-text-main ',
             )}
           >
             {t.todos}
@@ -132,7 +132,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
                 'w-8 h-8 rounded-[6px] text-xs font-semibold transition-all cursor-pointer flex items-center justify-center',
                 letra === l
                   ? 'bg-primary text-white shadow-xs'
-                  : 'bg-surface-2 text-text-muted hover:text-text-main border border-slate-200 dark:border-white/5 hover:bg-surface-3',
+                  : 'bg-surface-2 text-text-muted hover:text-text-main  hover:bg-surface-3',
               )}
             >
               {l}
@@ -140,7 +140,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
           ))}
         </div>
 
-        <section className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-6 mb-12 shadow-sm">
+        <section className="bg-surface-2  rounded-[6px] p-6 mb-12 shadow-sm">
           <h2 className="text-sm font-bold text-text-main mb-6 flex items-center gap-2">
             <BookOpen size={16} className="text-primary" aria-hidden />
             <span>{t.indice}</span>
@@ -170,7 +170,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
         </section>
 
         {letras.length === 0 ? (
-          <div className="text-center py-16 bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-8">
+          <div className="text-center py-16 bg-surface-2  rounded-[6px] p-8">
             <BookOpen size={36} className="mx-auto text-text-muted mb-3" aria-hidden />
             <h3 className="text-base font-bold text-text-main mb-1">{t.vazioTitulo}</h3>
             <p className="text-xs text-text-muted font-light mb-4">{t.vazioTexto}</p>
@@ -209,14 +209,14 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
                     <div
                       key={i.slug}
                       id={ancora(i.term)}
-                      className="p-5 rounded-[6px] bg-surface-2 border border-slate-200 dark:border-white/5 hover:border-primary/40 transition-all scroll-mt-32 flex flex-col justify-between"
+                      className="p-5 rounded-[6px] bg-surface-2  hover:border-primary/40 transition-all scroll-mt-32 flex flex-col justify-between"
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <h3 className="text-sm font-bold text-text-main group-hover:text-primary transition-colors">
                             {i.term}
                           </h3>
-                          <span className="px-2 py-0.5 rounded-[4px] bg-surface-1 text-text-muted text-[10px] font-medium border border-slate-200 dark:border-white/5">
+                          <span className="px-2 py-0.5 rounded-[4px] bg-surface-1 text-text-muted text-[10px] font-medium ">
                             {i.category}
                           </span>
                         </div>

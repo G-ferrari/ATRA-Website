@@ -98,7 +98,7 @@ export function PaginaDeMaterial({
                   {material.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 rounded-[4px] bg-white/10 text-[10px] font-medium text-white/80 uppercase flex items-center gap-1 border border-white/15"
+                      className="px-2 py-0.5 rounded-[4px] bg-white/10 text-[10px] font-medium text-white/80 uppercase flex items-center gap-1 "
                     >
                       <Tag size={10} aria-hidden /> {tag}
                     </span>
@@ -127,7 +127,7 @@ export function PaginaDeMaterial({
             </div>
 
             <div className="lg:w-1/3 w-full max-w-xs mx-auto lg:mx-0">
-              <div className="aspect-[3/4] rounded-[6px] overflow-hidden relative border border-white/15 bg-white/5 p-2 shadow-2xl">
+              <div className="aspect-[3/4] rounded-[6px] overflow-hidden relative  bg-white/5 p-2 shadow-2xl">
                 <div className="relative w-full h-full">
                   <Image
                     src={material.image.url}
@@ -149,7 +149,7 @@ export function PaginaDeMaterial({
             {material.body ? (
               <RichText data={material.body} />
             ) : (
-              <div className="rounded-[6px] border border-slate-200 bg-slate-50 p-8 text-center mb-12">
+              <div className="rounded-[6px]  bg-slate-50 p-8 text-center mb-12">
                 <h2 className="font-bold text-slate-900 mb-1">{t.semCorpoTitulo}</h2>
                 <p className="text-sm text-slate-600">{t.semCorpoTexto}</p>
               </div>

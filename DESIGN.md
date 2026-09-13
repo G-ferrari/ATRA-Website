@@ -180,6 +180,7 @@ A paleta é **dual (claro/escuro)**: os mesmos papéis trocam de valor por tema.
 - **Body** (400, 1rem, lh 1.6): texto corrido; alvo de 65–75 caracteres por linha em leitura longa (blog, materiais).
 - **Body-sm** (400, 0.875rem, lh 1.5): metadados, resumos de cartão.
 - **Label** (600, 0.75rem, ls 0.08em, **CAIXA-ALTA**): rótulos de botão, eyebrows, etiquetas.
+- **Caption / Micro** (500–600, **11px / 10px / 9px**): tier de meta densa — chips de tag, legendas de cartão, rótulos de bento. Herdado do porte fiel (D-15); registrado aqui como parte real do sistema. Padronizar/consolidar esse tier é trabalho de `typeset`, não de layout.
 
 ### Named Rules
 **A Regra do Título Leve.** Todo heading é peso **300** com `letter-spacing −0.02em`; a hierarquia entre níveis vem do **tamanho**, não do peso. Isto é imposto globalmente por `h1..h6{font-weight:300}` (`globals.css:151`), que vence classes de peso — inclusive nos títulos de cartão. Não há exceção de peso no build atual.
@@ -191,7 +192,8 @@ Grid fluido centrado, com contêiner de largura máxima e respiro lateral cresce
 
 - **Espaçamento** em múltiplos de 8/4px. Cartões respiram em 24px (`p-6`), subindo a 32px (`sm:p-8`) a partir de tablet.
 - **Breakpoints** de referência (os três do gate visual): **375**, **768**, **1280**. Tailwind: `sm 640 · md 768 · lg 1024 · xl 1280`.
-- **Densidade:** confortável, não compacta — o respiro é parte da "serenidade". Padronizar as escalas de respiro (hoje `/sobre` usa `py-16/20` e `/carreiras` `py-20/24`) rumo à escala da home é um alvo de consistência.
+- **Ritmo de seção (padronizado na home):** seções de conteúdo em **`py-16 md:py-24`** (64→96px); *strips* finos (a faixa de logos) em `py-10 md:py-14`. Propagar essa escala para as demais páginas (`/sobre` usava `py-16/20`, `/carreiras` `py-20/24`) é o próximo alvo de consistência.
+- **Densidade:** confortável, não compacta — o respiro é parte da "serenidade".
 
 ## Elevation & Depth
 

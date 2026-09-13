@@ -137,21 +137,21 @@ export function Conversa({
       <div className="absolute top-1/4 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10" />
       <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-secondary/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
-      <div className="flex-1 flex flex-col min-h-0 bg-surface-2 dark:bg-[#181b22] border border-border-main rounded-[6px] shadow-xl dark:shadow-2xl overflow-hidden relative">
+      <div className="flex-1 flex flex-col min-h-0 bg-surface-2 dark:bg-[#181b22]  rounded-[6px] shadow-xl dark:shadow-2xl overflow-hidden relative">
         <div className="px-4 sm:px-5 py-3.5 border-b border-border-main flex items-center justify-between bg-surface-2/90 dark:bg-[#181b22]/90 backdrop-blur-md z-10">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => router.push('/')}
               aria-label="Voltar para a página inicial"
-              className="w-8 h-8 flex items-center justify-center rounded-[6px] bg-surface-3 dark:bg-[#222631] border border-border-main text-text-muted hover:text-text-main hover:border-primary/50 transition-all active:scale-95 cursor-pointer"
+              className="w-8 h-8 flex items-center justify-center rounded-[6px] bg-surface-3 dark:bg-[#222631]  text-text-muted hover:text-text-main hover:border-primary/50 transition-all active:scale-95 cursor-pointer"
             >
               <ArrowLeft size={16} aria-hidden />
             </button>
             <div className="flex items-center gap-2.5">
               <div className="relative">
                 <div className="w-9 h-9 rounded-[6px] bg-gradient-to-tr from-primary to-secondary p-[1px] shadow-xs">
-                  <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[5px] flex items-center justify-center text-primary">
+                  <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[4px] flex items-center justify-center text-primary">
                     <Sparkles size={16} className="text-primary animate-pulse" aria-hidden />
                   </div>
                 </div>
@@ -179,7 +179,7 @@ export function Conversa({
                   setTexto('')
                 }}
                 title="Reiniciar conversa"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-surface-3 dark:bg-[#222631] border border-border-main text-text-muted hover:text-text-main hover:border-primary/50 text-[11px] font-semibold transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-surface-3 dark:bg-[#222631]  text-text-muted hover:text-text-main hover:border-primary/50 text-[11px] font-semibold transition-all active:scale-95 cursor-pointer"
               >
                 <RotateCcw size={12} aria-hidden />
                 <span className="hidden sm:inline">Nova conversa</span>
@@ -226,7 +226,7 @@ export function Conversa({
                     key={s.titulo}
                     type="button"
                     onClick={() => void enviar(s.prompt, mensagens)}
-                    className="p-3.5 rounded-[6px] bg-surface-3/70 dark:bg-[#222631]/70 border border-border-main hover:border-primary/60 hover:bg-surface-3 dark:hover:bg-[#222631] transition-all duration-200 group flex items-start gap-3 shadow-xs cursor-pointer text-left"
+                    className="p-3.5 rounded-[6px] bg-surface-3/70 dark:bg-[#222631]/70  hover:border-primary/60 hover:bg-surface-3 dark:hover:bg-[#222631] transition-all duration-200 group flex items-start gap-3 shadow-xs cursor-pointer text-left"
                   >
                     <div className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-200">
                       <Icone nome={s.icone} size={18} />
@@ -258,7 +258,7 @@ export function Conversa({
             >
               {m.role === 'model' && (
                 <div className="w-8 h-8 rounded-[6px] bg-gradient-to-tr from-primary to-secondary p-[1px] shrink-0 mt-0.5 shadow-sm shadow-primary/10">
-                  <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[5px] flex items-center justify-center text-primary">
+                  <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[4px] flex items-center justify-center text-primary">
                     <Sparkles size={14} className="text-primary" aria-hidden />
                   </div>
                 </div>
@@ -269,7 +269,7 @@ export function Conversa({
                   'p-3.5 sm:p-4 text-[13px] leading-relaxed overflow-hidden',
                   m.role === 'user'
                     ? 'bg-primary text-white font-medium rounded-[6px] rounded-tr-[2px] shadow-md shadow-primary/20'
-                    : 'bg-surface-3 dark:bg-[#222631] text-text-main rounded-[6px] rounded-tl-[2px] border border-border-main/70 shadow-xs',
+                    : 'bg-surface-3 dark:bg-[#222631] text-text-main rounded-[6px] rounded-tl-[2px]  shadow-xs',
                 )}
               >
                 {m.role === 'user' ? (
@@ -280,7 +280,7 @@ export function Conversa({
               </div>
 
               {m.role === 'user' && (
-                <div className="w-8 h-8 rounded-[6px] bg-surface-3 dark:bg-[#222631] border border-border-main text-text-main flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                <div className="w-8 h-8 rounded-[6px] bg-surface-3 dark:bg-[#222631]  text-text-main flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                   <User size={14} aria-hidden />
                 </div>
               )}
@@ -299,11 +299,11 @@ export function Conversa({
           {carregando && (
             <div className="flex gap-2.5 sm:gap-3.5 max-w-[85%]">
               <div className="w-8 h-8 rounded-[6px] bg-gradient-to-tr from-primary to-secondary p-[1px] shrink-0 mt-0.5 shadow-sm shadow-primary/10">
-                <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[5px] flex items-center justify-center text-primary">
+                <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[4px] flex items-center justify-center text-primary">
                   <Sparkles size={14} className="text-primary animate-pulse" aria-hidden />
                 </div>
               </div>
-              <div className="px-4 py-3 rounded-[6px] rounded-tl-[2px] bg-surface-3 dark:bg-[#222631] border border-border-main/70 flex items-center gap-2 shadow-xs">
+              <div className="px-4 py-3 rounded-[6px] rounded-tl-[2px] bg-surface-3 dark:bg-[#222631]  flex items-center gap-2 shadow-xs">
                 <span className="text-[11px] text-text-muted mr-1 font-medium">Consultando especialistas ATRA</span>
                 <div className="flex gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -332,7 +332,7 @@ export function Conversa({
               placeholder="O que você deseja construir hoje?"
               aria-label="O que você deseja construir hoje?"
               disabled={carregando}
-              className="flex-1 bg-surface-1 dark:bg-[#0e1015] border border-border-main text-text-main placeholder:text-text-muted px-4 py-2.5 sm:py-3 rounded-[6px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-xs sm:text-[13px] shadow-inner"
+              className="flex-1 bg-surface-1 dark:bg-[#0e1015]  text-text-main placeholder:text-text-muted px-4 py-2.5 sm:py-3 rounded-[6px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-xs sm:text-[13px] shadow-inner"
             />
             <button
               type="submit"

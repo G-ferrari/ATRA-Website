@@ -49,7 +49,7 @@ export function StatusBadge({
   return (
     <span
       className={cn(
-        'inline-flex items-center font-semibold border tracking-wide transition-colors',
+        'inline-flex items-center font-semibold tracking-wide transition-colors',
         VARIANTES[variant],
         TAMANHOS[size],
         className,
@@ -103,7 +103,7 @@ export function MetricChip({
   return (
     <div
       className={cn(
-        'inline-flex items-center rounded-[6px] border border-border-main shadow-xs',
+        'inline-flex items-center rounded-[6px] shadow-xs',
         size === 'sm' ? 'gap-1.5 px-2.5 py-1 text-[10px]' : 'gap-2.5 px-3 py-1.5 text-xs',
         variant === 'primary'
           ? 'bg-primary/10 text-primary border-primary/20'

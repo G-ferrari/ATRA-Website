@@ -39,7 +39,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
       <div className="max-w-7xl mx-auto relative z-10">
         <div
           className={cn(
-            'rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid',
+            'rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid',
             centro && 'text-center',
           )}
         >
@@ -107,7 +107,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                   )}
                 >
                   {bloco.metrics.map((m) => (
-                    <div key={m.label} className="p-3 rounded-[6px] bg-white/5 border border-white/10 text-center">
+                    <div key={m.label} className="p-3 rounded-[6px] bg-white/5  text-center">
                       <div className={cn('text-lg sm:text-xl font-bold', COR_DA_METRICA[m.color])}>
                         <ContadorAnimado ate={m.value} sufixo={m.suffix} />
                       </div>
@@ -125,7 +125,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                       href={cta.href}
                       className={cn(
                         i > 0
-                          ? 'px-5 py-2.5 rounded-[6px] bg-white/5 border border-white/10 text-white text-xs font-semibold hover:bg-white/10 transition-all'
+                          ? 'px-5 py-2.5 rounded-[6px] bg-white/5  text-white text-xs font-semibold hover:bg-white/10 transition-all'
                           : solucao
                             ? 'inline-flex items-center justify-center bg-secondary hover:bg-orange-600 text-white px-6 py-3 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-lg hover:-translate-y-0.5 cursor-pointer'
                             : 'px-5 py-2.5 rounded-[6px] bg-primary text-white text-xs font-semibold hover:bg-primary-dark transition-all cursor-pointer shadow-md shadow-primary/20',
@@ -144,7 +144,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
               <div className="lg:col-span-5 relative hidden lg:block">
                 {bloco.mediaMode === 'marquee' ? (
                   <div
-                    className="w-full h-[400px] rounded-[6px] overflow-hidden relative bg-black/40 border border-white/10 shadow-2xl"
+                    className="w-full h-[400px] rounded-[6px] overflow-hidden relative bg-black/40  shadow-2xl"
                     style={{
                       maskImage: 'linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)',
                       WebkitMaskImage:
@@ -157,7 +157,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                       {[...bloco.images, ...bloco.images].map((img, i) => (
                         <div
                           key={`${img.url}-${i}`}
-                          className="relative w-full aspect-[16/10] rounded-[6px] overflow-hidden shrink-0 shadow-sm border border-white/5"
+                          className="relative w-full aspect-[16/10] rounded-[6px] overflow-hidden shrink-0 shadow-sm "
                         >
                           <Image
                             src={img.url}
@@ -171,7 +171,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full aspect-[4/3] rounded-[6px] overflow-hidden relative border border-white/10 shadow-2xl">
+                  <div className="w-full aspect-[4/3] rounded-[6px] overflow-hidden relative  shadow-2xl">
                     <Image
                       src={bloco.images[0].url}
                       alt={bloco.images[0].alt}

@@ -104,7 +104,7 @@ export function BlocoCarrosselDeCases({ bloco }: { bloco: BlocoCaseCarousel }) {
                       <span className="text-xs sm:text-sm font-semibold tracking-wider text-white/90 uppercase font-display">
                         {c.company}
                       </span>
-                      <div className="w-7 h-7 rounded-lg bg-white/10 backdrop-blur-md flex items-center justify-center text-white shrink-0">
+                      <div className="w-7 h-7 rounded-[6px] bg-white/10 backdrop-blur-md flex items-center justify-center text-white shrink-0">
                         <Icone size={14} aria-hidden />
                       </div>
                     </div>
@@ -174,7 +174,7 @@ export function BlocoCarrosselDeCases({ bloco }: { bloco: BlocoCaseCarousel }) {
                 key={d}
                 type="button"
                 onClick={() => rolar(d)}
-                className="w-10 h-10 md:w-11 md:h-11 rounded-[6px] border border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-primary hover:border-primary hover:text-white dark:hover:bg-primary dark:hover:border-primary transition-all active:scale-90 cursor-pointer shadow-xs"
+                className="w-10 h-10 md:w-11 md:h-11 rounded-[6px]  dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-primary hover:border-primary hover:text-white dark:hover:bg-primary dark:hover:border-primary transition-all active:scale-90 cursor-pointer shadow-xs"
                 aria-label={d === -1 ? 'Anterior' : 'Próximo'}
               >
                 {d === -1 ? <ChevronLeft size={20} aria-hidden /> : <ChevronRight size={20} aria-hidden />}

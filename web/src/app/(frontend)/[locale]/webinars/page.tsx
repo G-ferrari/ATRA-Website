@@ -112,9 +112,9 @@ export default async function WebinarsPage() {
                 key={w.slug}
                 index={i}
                 escala
-                className="group flex flex-col gap-5 bg-surface-2 dark:bg-[#181b22] border border-slate-200 dark:border-white/10 hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] p-4 sm:p-5 transition-all duration-300 shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 dark:hover:bg-[#1e222b]"
+                className="group flex flex-col gap-5 bg-surface-2 dark:bg-[#181b22]  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] p-4 sm:p-5 transition-all duration-300 shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 dark:hover:bg-[#1e222b]"
               >
-                <div className="aspect-video rounded-[6px] overflow-hidden relative shadow-md group cursor-pointer border border-slate-200 dark:border-white/10">
+                <div className="aspect-video rounded-[6px] overflow-hidden relative shadow-md group cursor-pointer ">
                   <Image
                     src={w.image.url}
                     alt={w.image.alt}

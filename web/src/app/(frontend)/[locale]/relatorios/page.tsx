@@ -100,7 +100,7 @@ export default async function RelatoriosPage() {
               <EntradaAnimada
                 key={r.slug}
                 index={i}
-                className="group flex flex-col bg-surface-2 dark:bg-[#181b22] border border-slate-200 dark:border-white/10 hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 dark:hover:bg-[#1e222b] transition-all duration-300"
+                className="group flex flex-col bg-surface-2 dark:bg-[#181b22]  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 dark:hover:bg-[#1e222b] transition-all duration-300"
               >
                 <div className="aspect-[16/10] overflow-hidden relative border-b border-slate-200 dark:border-white/10">
                   <Image

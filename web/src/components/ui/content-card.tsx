@@ -52,7 +52,7 @@ export function ContentCard({
     <Link
       href={href}
       className={cn(
-        'group flex flex-col bg-surface-2 border border-slate-200 dark:border-white/5 hover:border-primary/40 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl hover:bg-surface-3 transition-all duration-300 w-full focus:outline-none',
+        'group flex flex-col bg-surface-2 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl hover:bg-surface-3 transition-all duration-300 w-full focus:outline-none',
         className,
       )}
     >
@@ -81,7 +81,7 @@ export function ContentCard({
              não tinha: no tema claro a etiqueta ficava verde-claro sobre
              quase-branco, ilegível. O `dark:` guarda o valor que o gabarito
              compara. */
-          <div className="absolute bottom-3 right-3 bg-surface-1/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-[4px] border border-white/10 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+          <div className="absolute bottom-3 right-3 bg-surface-1/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-[4px] text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
             {highlight}
           </div>
         )}
@@ -111,7 +111,7 @@ export function ContentCard({
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2.5 py-1 rounded-[4px] bg-surface-1 text-[11px] font-medium text-text-muted uppercase flex items-center gap-1.5 border border-slate-200 dark:border-white/5"
+                  className="px-2.5 py-1 rounded-[4px] bg-surface-1 text-[11px] font-medium text-text-muted uppercase flex items-center gap-1.5"
                 >
                   <Tag size={11} className="text-primary/70" aria-hidden /> {tag}
                 </span>

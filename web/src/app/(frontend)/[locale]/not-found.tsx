@@ -77,7 +77,7 @@ export default async function NaoEncontrada() {
               <Link
                 key={a.href}
                 href={a.href}
-                className="px-3 py-1 rounded-[4px] text-xs font-medium bg-surface-2 text-text-muted hover:text-text-main border border-slate-200 dark:border-white/5 hover:bg-surface-3 transition-all"
+                className="px-3 py-1 rounded-[4px] text-xs font-medium bg-surface-2 text-text-muted hover:text-text-main  hover:bg-surface-3 transition-all"
               >
                 {a.label}
               </Link>

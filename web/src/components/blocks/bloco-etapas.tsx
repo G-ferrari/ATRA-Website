@@ -44,7 +44,7 @@ export function BlocoEtapas({ bloco }: { bloco: BlocoProcessSteps }) {
           {bloco.steps.map((etapa, i) => (
             <div
               key={etapa.title}
-              className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-6 shadow-sm flex flex-col justify-between group hover:border-primary/30 transition-colors"
+              className="bg-surface-2  rounded-[6px] p-6 shadow-sm flex flex-col justify-between group hover:border-primary/30 transition-colors"
             >
               <div>
                 <div className="w-10 h-10 rounded-[6px] bg-primary/10 text-primary font-bold text-sm flex items-center justify-center mb-4">

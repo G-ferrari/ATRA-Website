@@ -86,7 +86,7 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
                   return (
                     <div
                       key={nome}
-                      className="group flex items-center gap-3 p-3 bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] shadow-xs hover:border-primary/40 transition-all duration-300"
+                      className="group flex items-center gap-3 p-3 bg-surface-2  rounded-[6px] shadow-xs hover:border-primary/40 transition-all duration-300"
                     >
                       <div className="w-8 h-8 rounded-[6px] bg-primary/10 flex items-center justify-center shrink-0 text-primary">
                         <Icone size={16} aria-hidden />
@@ -125,7 +125,7 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
               {bloco.items.map((texto) => (
                 <div
                   key={texto}
-                  className="flex items-start gap-3 bg-surface-1 border border-slate-200 dark:border-white/5 p-4 rounded-[6px] shadow-xs"
+                  className="flex items-start gap-3 bg-surface-1  p-4 rounded-[6px] shadow-xs"
                 >
                   <CheckCircle2 className="text-primary shrink-0 mt-0.5" size={16} aria-hidden />
                   <p className="text-text-main text-xs sm:text-sm font-light leading-relaxed">{texto}</p>
@@ -134,12 +134,12 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
             </div>
           ) : especializacoes ? (
             <div className="relative">
-              <div className="bg-surface-2 border border-slate-200 dark:border-white/5 p-6 rounded-[6px] shadow-sm flex items-center justify-center min-h-[320px]">
+              <div className="bg-surface-2  p-6 rounded-[6px] shadow-sm flex items-center justify-center min-h-[320px]">
                 <div className="grid grid-cols-2 gap-3 relative w-full max-w-sm mx-auto">
                   {bloco.items.map((nome) => (
                     <div
                       key={nome}
-                      className="bg-surface-1 border border-slate-200 dark:border-white/5 p-4 rounded-[6px] aspect-square flex flex-col items-center justify-center text-center shadow-xs hover:border-primary/40 transition-all"
+                      className="bg-surface-1  p-4 rounded-[6px] aspect-square flex flex-col items-center justify-center text-center shadow-xs hover:border-primary/40 transition-all"
                     >
                       {bloco.logo && (
                         // eslint-disable-next-line @next/next/no-img-element -- altura fixa, largura pelo aspecto
@@ -162,7 +162,7 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
           ) : (
             bloco.image && (
               <div className="relative">
-                <div className="relative rounded-[6px] shadow-xl w-full h-[360px] md:h-[420px] border border-slate-200 dark:border-white/10 overflow-hidden">
+                <div className="relative rounded-[6px] shadow-xl w-full h-[360px] md:h-[420px]  overflow-hidden">
                   <Image
                     src={bloco.image.url}
                     alt={bloco.image.alt}
@@ -172,7 +172,7 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
                   />
                 </div>
                 {bloco.imageLabel && (
-                  <div className="absolute bottom-4 left-4 bg-surface-1/95 backdrop-blur-md p-3.5 rounded-[6px] shadow-xl flex items-center gap-3 border border-slate-200 dark:border-white/10">
+                  <div className="absolute bottom-4 left-4 bg-surface-1/95 backdrop-blur-md p-3.5 rounded-[6px] shadow-xl flex items-center gap-3 ">
                     {bloco.logo && (
                       // eslint-disable-next-line @next/next/no-img-element -- altura fixa, largura pelo aspecto
                       <img

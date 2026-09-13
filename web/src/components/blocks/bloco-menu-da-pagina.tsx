@@ -71,7 +71,7 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
           'pointer-events-auto w-full max-w-7xl mx-auto flex items-center overflow-x-auto no-scrollbar transition-all duration-300 shadow-xl bg-surface-2',
           solucao
             ? 'py-4 md:py-4.5 min-h-[52px] md:min-h-[56px] px-6 md:px-8 justify-center'
-            : 'py-2.5 sm:py-3.5 md:py-4.5 min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 sm:px-6 md:px-8 justify-start md:justify-center border border-slate-200/60 dark:border-white/5',
+            : 'py-2.5 sm:py-3.5 md:py-4.5 min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 sm:px-6 md:px-8 justify-start md:justify-center ',
           grudado ? 'rounded-b-[6px] rounded-t-none' : 'rounded-[6px] mt-2',
         )}
       >

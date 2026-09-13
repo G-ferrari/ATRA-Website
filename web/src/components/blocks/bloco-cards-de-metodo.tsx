@@ -82,7 +82,7 @@ export function BlocoCardsDeMetodo({ bloco }: { bloco: BlocoMethodCards }) {
                 customSize
                 radius={6}
                 className={cn(
-                  'p-6 sm:p-8 bg-surface-2 text-text-main shadow-md flex flex-col justify-between h-full rounded-[6px] border border-slate-200 dark:border-white/5 transition-all duration-300 group',
+                  'p-6 sm:p-8 bg-surface-2 text-text-main shadow-md flex flex-col justify-between h-full rounded-[6px]  transition-all duration-300 group',
                   cor.borda,
                 )}
               >

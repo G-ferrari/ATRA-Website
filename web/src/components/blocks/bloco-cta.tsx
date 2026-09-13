@@ -30,7 +30,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
         className="py-16 md:py-24 bg-surface-1 relative overflow-hidden px-3 sm:px-6 scroll-mt-32"
       >
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/10 text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid">
+          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid">
             <TechCornerBraces color="blue" position="top-left" size={14} />
             <TechCornerBraces color="orange" position="bottom-right" size={14} />
 
@@ -63,7 +63,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                   <div className="flex flex-col items-center w-full">
                     <Link
                       href={bloco.secondaryCta.href}
-                      className="inline-flex w-full md:w-auto items-center justify-center bg-white/10 hover:bg-white/20 text-white px-8 py-2.5 rounded-[6px] text-xs font-medium transition-all whitespace-nowrap border border-white/10"
+                      className="inline-flex w-full md:w-auto items-center justify-center bg-white/10 hover:bg-white/20 text-white px-8 py-2.5 rounded-[6px] text-xs font-medium transition-all whitespace-nowrap "
                     >
                       {bloco.secondaryCta.label}
                     </Link>
@@ -96,7 +96,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
         )}
       >
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
+          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
             <TechCornerBraces color="blue" position="top-left" size={14} />
             <TechCornerBraces color="orange" position="bottom-right" size={14} />
 
@@ -121,7 +121,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                 {bloco.secondaryCta && (
                   <Link
                     href={bloco.secondaryCta.href}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-6 py-2.5 rounded-[6px] text-xs sm:text-sm font-medium transition-all"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white  px-6 py-2.5 rounded-[6px] text-xs sm:text-sm font-medium transition-all"
                   >
                     <Bot size={16} aria-hidden />
                     <span>{bloco.secondaryCta.label}</span>
@@ -177,7 +177,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
             'rounded-[6px] p-8 md:p-16 text-center relative overflow-hidden',
             azul
               ? 'bg-primary text-white shadow-xl shadow-primary/20'
-              : 'bg-surface-2 text-text-main border border-slate-200 dark:border-white/10',
+              : 'bg-surface-2 text-text-main ',
           )}
         >
           {azul && (

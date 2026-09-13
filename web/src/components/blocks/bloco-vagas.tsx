@@ -60,7 +60,7 @@ export function BlocoVagas({ bloco, locale }: { bloco: BlocoJobsList; locale: Lo
               <Link
                 key={v.slug}
                 href={hrefDe('carreiras', locale, v.slug)}
-                className="group flex items-center justify-between p-5 bg-surface-1 border border-slate-200 dark:border-white/5 rounded-[6px] hover:border-primary/40 hover:shadow-md transition-all duration-300"
+                className="group flex items-center justify-between p-5 bg-surface-1  rounded-[6px] hover:border-primary/40 hover:shadow-md transition-all duration-300"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0">

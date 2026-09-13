@@ -46,7 +46,7 @@ export function BlocoAcordeao({ bloco }: { bloco: BlocoAccordionSteps }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
           {bloco.image && (
             <div className="lg:col-span-5 relative">
-              <div className="relative rounded-[6px] overflow-hidden shadow-xl border border-slate-200 dark:border-white/10 aspect-[4/3] lg:aspect-square w-full">
+              <div className="relative rounded-[6px] overflow-hidden shadow-xl  aspect-[4/3] lg:aspect-square w-full">
                 <Image
                   src={bloco.image.url}
                   alt={bloco.image.alt}
@@ -56,7 +56,7 @@ export function BlocoAcordeao({ bloco }: { bloco: BlocoAccordionSteps }) {
                 />
 
                 {bloco.imageBadge && (
-                  <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto bg-surface-1/95 backdrop-blur-md p-3 rounded-[6px] shadow-lg border border-slate-200 dark:border-white/10 flex items-center gap-3">
+                  <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto bg-surface-1/95 backdrop-blur-md p-3 rounded-[6px] shadow-lg  flex items-center gap-3">
                     <div className="w-8 h-8 rounded-[4px] bg-primary/10 flex items-center justify-center text-primary shrink-0">
                       {bloco.imageBadge.icon && <Icone nome={bloco.imageBadge.icon} size={16} />}
                     </div>

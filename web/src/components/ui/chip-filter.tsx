@@ -36,8 +36,8 @@ export function ChipFilter({
 }: ChipFilterProps) {
   const inativo =
     variante === 'blog'
-      ? 'bg-surface-2 text-text-muted dark:text-gray-300 hover:text-text-main dark:hover:text-white border border-slate-200 dark:border-white/5 hover:bg-surface-3'
-      : 'bg-surface-2 text-text-muted hover:text-text-main border border-slate-200 dark:border-white/5 hover:bg-surface-3'
+      ? 'bg-surface-2 text-text-muted dark:text-gray-300 hover:text-text-main dark:hover:text-white hover:bg-surface-3'
+      : 'bg-surface-2 text-text-muted hover:text-text-main hover:bg-surface-3'
 
   return (
     <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 no-scrollbar">

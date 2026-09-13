@@ -165,7 +165,7 @@ export default async function ConsultoresPage() {
             {METRICAS.map(({ Icone, cor, marca }, i) => (
               <div
                 key={t.metricas[i]}
-                className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] px-4 py-3 shadow-xs flex items-center justify-between"
+                className="bg-surface-2  rounded-[6px] px-4 py-3 shadow-xs flex items-center justify-between"
               >
                 <div>
                   <div className="text-xs text-text-muted font-normal">{t.metricas[i]}</div>
@@ -187,7 +187,7 @@ export default async function ConsultoresPage() {
       <ListaDeConsultores perfis={perfis} contatoHref={hrefDe('contato', locale)} locale={locale} />
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
-        <div className="bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-5 sm:p-7 shadow-xs">
+        <div className="bg-surface-2  rounded-[6px] p-5 sm:p-7 shadow-xs">
           <div className="max-w-2xl mb-6">
             <h2 className="text-base md:text-lg font-bold font-display text-text-main mb-1">{t.diferenciaisTitulo}</h2>
             <p className="text-xs text-text-muted font-light">{t.diferenciaisTexto}</p>
@@ -199,7 +199,7 @@ export default async function ConsultoresPage() {
               return (
                 <div
                   key={d.title}
-                  className="bg-surface-1 border border-slate-200 dark:border-white/5 rounded-[6px] p-4 flex items-start gap-3.5"
+                  className="bg-surface-1  rounded-[6px] p-4 flex items-start gap-3.5"
                 >
                   <div className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
                     <Icone size={16} aria-hidden />

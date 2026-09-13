@@ -82,7 +82,7 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
             return compacto ? (
               <div
                 key={item.title}
-                className="p-5 bg-surface-1 border border-slate-200 dark:border-white/5 rounded-[6px] hover:border-primary/40 hover:shadow-md transition-all duration-300 flex flex-col justify-center items-center text-center group"
+                className="p-5 bg-surface-1  rounded-[6px] hover:border-primary/40 hover:shadow-md transition-all duration-300 flex flex-col justify-center items-center text-center group"
               >
                 <div className="w-10 h-10 rounded-[6px] bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary transition-all">
                   <Icone className="w-5 h-5 text-primary group-hover:text-white transition-colors" aria-hidden />
@@ -95,7 +95,7 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
               <div
                 key={item.title}
                 className={cn(
-                  'bg-surface-2 border border-slate-200 dark:border-white/5 rounded-[6px] p-6 group hover:border-primary/30 transition-all',
+                  'bg-surface-2  rounded-[6px] p-6 group hover:border-primary/30 transition-all',
                   centrado && 'text-center',
                 )}
               >

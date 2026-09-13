@@ -38,7 +38,7 @@ export function TabFilter({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center gap-1.5 p-1.5 rounded-[6px] bg-surface-3/70 dark:bg-[#222631]/70 border border-border-main backdrop-blur-sm',
+        'flex flex-wrap items-center gap-1.5 p-1.5 rounded-[6px] bg-surface-3/70 dark:bg-[#222631]/70 backdrop-blur-sm',
         className,
       )}
       role="tablist"

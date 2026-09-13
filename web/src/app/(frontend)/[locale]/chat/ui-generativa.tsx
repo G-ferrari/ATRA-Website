@@ -29,10 +29,10 @@ import { tokenizarUiGenerativa } from '@/lib/ui-generativa'
  *   dos 4 retratos de depoimento (D-27): foto de banco não vai ao ar. */
 function CartaoContato({ whatsapp }: { whatsapp: string }) {
   return (
-    <div className="bg-surface-2 dark:bg-[#181b22] border border-border-main rounded-[6px] shadow-lg p-4 my-3 max-w-sm">
+    <div className="bg-surface-2 dark:bg-[#181b22]  rounded-[6px] shadow-lg p-4 my-3 max-w-sm">
       <div className="flex items-center gap-3 mb-3">
         <div className="relative">
-          <div className="w-10 h-10 rounded-[6px] bg-primary/15 text-primary flex items-center justify-center border border-border-main shadow-inner text-xs font-bold tracking-wide">
+          <div className="w-10 h-10 rounded-[6px] bg-primary/15 text-primary flex items-center justify-center  shadow-inner text-xs font-bold tracking-wide">
             AT
           </div>
           <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-surface-2 dark:border-[#181b22]" />
@@ -76,7 +76,7 @@ function CartaoServico({ titulo, descricao, icone }: { titulo: string; descricao
   }
 
   return (
-    <div className="bg-surface-2 dark:bg-[#181b22] border border-border-main hover:border-primary/50 rounded-[6px] shadow-sm p-3.5 my-2.5 flex flex-col gap-2.5 group transition-all cursor-pointer">
+    <div className="bg-surface-2 dark:bg-[#181b22]  hover:border-primary/50 rounded-[6px] shadow-sm p-3.5 my-2.5 flex flex-col gap-2.5 group transition-all cursor-pointer">
       <div className="flex items-start gap-3">
         <div className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300">
           <Icon icon={iconeResolvido} width={18} height={18} />
@@ -120,7 +120,7 @@ function SeloParceiro({ nome }: { nome: string }) {
   const temCorPropria = n.includes('google') || n.includes('azure') || n.includes('databricks')
 
   return (
-    <span className="inline-flex items-center gap-1.5 bg-surface-2 dark:bg-[#181b22] border border-border-main rounded-[6px] px-2.5 py-1 text-[11px] font-semibold text-text-main shadow-xs mx-1 my-0.5 align-middle hover:border-primary/40 transition-colors">
+    <span className="inline-flex items-center gap-1.5 bg-surface-2 dark:bg-[#181b22]  rounded-[6px] px-2.5 py-1 text-[11px] font-semibold text-text-main shadow-xs mx-1 my-0.5 align-middle hover:border-primary/40 transition-colors">
       <Icon icon={icone} width={13} height={13} className={temCorPropria ? '' : 'text-primary'} />
       {nome}
       <CheckCircle2 size={11} className="text-emerald-500 ml-0.5" aria-hidden />
@@ -160,7 +160,7 @@ function CartaoGrafico({ tipo }: { tipo: string }) {
   }
 
   return (
-    <div className="bg-surface-2 dark:bg-[#181b22] border border-border-main rounded-[6px] shadow-lg p-3.5 my-3">
+    <div className="bg-surface-2 dark:bg-[#181b22]  rounded-[6px] shadow-lg p-3.5 my-3">
       <div className="flex items-center gap-2.5 mb-2.5">
         <div className="w-7 h-7 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center">
           <Icon icon={finOps ? 'fluent:money-calculator-24-regular' : 'fluent:data-pie-24-regular'} width={16} />

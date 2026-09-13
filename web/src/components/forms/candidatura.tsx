@@ -15,7 +15,7 @@ import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
  * ⚠️ Só é montado quando `ENABLE_JOB_APPLICATIONS=1` — a página decide, não
  * este componente. P-17 (retenção do CV, LGPD) é o interruptor. */
 
-const CAMPO = 'w-full bg-surface-2 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[6px] px-4 py-3 text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
+const CAMPO = 'w-full bg-surface-2 dark:bg-white/5  rounded-[6px] px-4 py-3 text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
 
 export function Candidatura({ jobId, jobTitle }: { jobId: number; jobTitle: string }) {
   const carimbo = useRef<HTMLInputElement>(null)

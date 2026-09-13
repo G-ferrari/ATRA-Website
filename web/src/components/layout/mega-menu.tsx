@@ -35,10 +35,10 @@ const COR_DO_DESTAQUE: Record<CorDeDestaque, string> = {
 }
 
 const CARTAO =
-  'flex flex-col p-4 rounded-lg bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all hover:shadow-md group'
+  'flex flex-col p-4 rounded-[6px] bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all hover:shadow-md group'
 
 const CELULA_DA_GRADE =
-  'flex flex-col items-center text-center gap-2 p-4 rounded-lg bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all group shadow-sm'
+  'flex flex-col items-center text-center gap-2 p-4 rounded-[6px] bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all group shadow-sm'
 
 export function PainelDoMenu({
   categoria,
@@ -97,7 +97,7 @@ export function PainelDoMenu({
             onClick={aoNavegar}
             className={CELULA_DA_GRADE}
           >
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary group-hover:text-white transition-all duration-200">
+            <div className="w-10 h-10 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary group-hover:text-white transition-all duration-200">
               <Icone nome={s.icon} size={20} />
             </div>
             <div>
@@ -117,7 +117,7 @@ export function PainelDoMenu({
       <div className="grid grid-cols-5 gap-3 pt-3">
         {categoria.links.map((l) => (
           <Link key={l.href} href={l.href} onClick={aoNavegar} className={CELULA_DA_GRADE}>
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary group-hover:text-white transition-all duration-200">
+            <div className="w-10 h-10 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary group-hover:text-white transition-all duration-200">
               <Icone nome={l.icon} size={20} />
             </div>
             <div>
@@ -138,7 +138,7 @@ export function PainelDoMenu({
 /* Coluna dupla: texto e destaques à esquerda, cartão de chamada à direita.
  *
  * ⚠️ A caixa do ícone dos destaques sai em `rounded-[6px]`, que é o que três
- * dos quatro painéis do legado usam; o de Consultores usa `rounded-lg`
+ * dos quatro painéis do legado usam; o de Consultores usa `rounded-[6px]`
  * (`App.tsx:612`). Diferença de 2px num painel que a regressão visual não
  * cobre — unificado de propósito, e registrado em debito-tecnico.md. */
 function PainelDividido({
@@ -255,7 +255,7 @@ function PainelDeSolucoes({
           const conteudo = (
             <>
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                <div className="w-8 h-8 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                   <Icone nome={item.icon} size={18} />
                 </div>
                 <h4 className="text-text-main font-normal text-xs leading-tight group-hover:text-primary transition-colors capitalize">

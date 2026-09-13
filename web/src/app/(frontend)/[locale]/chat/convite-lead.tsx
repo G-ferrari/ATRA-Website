@@ -138,4 +138,4 @@ export function ConviteLead({
 }
 
 const CAMPO =
-  'w-full bg-surface-1 dark:bg-[#0e1015] border border-border-main text-text-main placeholder:text-text-muted px-3 py-2 rounded-[6px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-[12px] shadow-inner'
+  'w-full bg-surface-1 dark:bg-[#0e1015]  text-text-main placeholder:text-text-muted px-3 py-2 rounded-[6px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-[12px] shadow-inner'

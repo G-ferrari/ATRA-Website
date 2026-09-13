@@ -30,7 +30,7 @@ export function BlocoSelos({ bloco }: { bloco: BlocoSealsBanner }) {
           {bloco.seals.map((s) => (
             <div
               key={s.name}
-              className="bg-white p-3 sm:p-4 rounded-[8px] border border-slate-200/80 dark:border-white/20 shadow-sm flex items-center justify-center shrink-0 min-w-[140px] h-[100px] sm:h-[120px] md:h-[136px]"
+              className="bg-white p-3 sm:p-4 rounded-[6px]  shadow-sm flex items-center justify-center shrink-0 min-w-[140px] h-[100px] sm:h-[120px] md:h-[136px]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- a caixa é
                   fixa e a imagem se ajusta por `max-h`/`max-w`; o next/image

@@ -39,7 +39,7 @@ export function VideoSobClique({
 
   if (tocando) {
     return (
-      <div className="aspect-video rounded-[6px] overflow-hidden border border-slate-200 bg-slate-950 shadow-xl">
+      <div className="aspect-video rounded-[6px] overflow-hidden  bg-slate-950 shadow-xl">
         <iframe
           src={`${embed.src}${embed.src.includes('?') ? '&' : '?'}autoplay=1`}
           title={`${titulo} — ${embed.titulo}`}
@@ -59,7 +59,7 @@ export function VideoSobClique({
         rastrear('video_play', { video_title: titulo, video_provider: embed.titulo })
       }}
       aria-label={`${rotuloAssistir}: ${titulo}`}
-      className="relative block w-full aspect-video rounded-[6px] overflow-hidden border border-slate-200 bg-slate-950 shadow-xl group cursor-pointer"
+      className="relative block w-full aspect-video rounded-[6px] overflow-hidden  bg-slate-950 shadow-xl group cursor-pointer"
     >
       <Image src={imagem.url} alt="" fill sizes="(max-width: 896px) 100vw, 896px" className="object-cover opacity-60 group-hover:opacity-70 transition-opacity" />
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
