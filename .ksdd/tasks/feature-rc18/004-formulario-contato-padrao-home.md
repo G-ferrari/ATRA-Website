@@ -1,7 +1,7 @@
 ---
 id: 004
 title: Formulário de contato na página RC18 no padrão da home
-status: para implementar
+status: em revisão
 feature: rc18
 area: frontend
 priority: P0
