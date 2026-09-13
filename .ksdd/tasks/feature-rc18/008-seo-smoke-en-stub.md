@@ -1,7 +1,7 @@
 ---
 id: 008
 title: SEO, JSON-LD, smoke e EN stub das rotas RC18
-status: para implementar
+status: em revisão
 feature: rc18
 area: qa
 priority: P1
