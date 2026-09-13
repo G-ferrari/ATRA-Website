@@ -1,7 +1,7 @@
 ---
 id: 005
 title: Motor de pontuação do diagnóstico RC18 (lib + testes)
-status: para implementar
+status: em revisão
 feature: rc18
 area: backend
 priority: P0
