@@ -12,7 +12,7 @@
 | 004 | Formulário de contato na página RC18 no padrão da home | frontend | P0 | S | em revisão | 003 |
 | 005 | Motor de pontuação do diagnóstico RC18 (lib + testes) | backend | P0 | M | em revisão | — |
 | 006 | Rota e ilha do diagnóstico RC18 (autoavaliação com nota na hora) | frontend | P0 | L | em revisão | 005 |
-| 007 | Captura de lead do diagnóstico (kind + Server Action + CRM) | backend | P0 | M | para implementar | 006 |
+| 007 | Captura de lead do diagnóstico (kind + Server Action + CRM) | backend | P0 | M | em revisão | 006 |
 | 008 | SEO, JSON-LD, smoke e EN stub das rotas RC18 | qa | P1 | M | para implementar | 003, 006 |
 
 ## Ordem sugerida (por dependência)
