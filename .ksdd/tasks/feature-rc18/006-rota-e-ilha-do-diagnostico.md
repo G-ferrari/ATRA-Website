@@ -1,7 +1,7 @@
 ---
 id: 006
 title: Rota e ilha do diagnóstico RC18 (autoavaliação com nota na hora)
-status: para implementar
+status: em revisão
 feature: rc18
 area: frontend
 priority: P0
