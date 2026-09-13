@@ -1,8 +1,10 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { useActionState, useEffect, useRef, useState } from 'react'
 
-import { cn } from '@/lib/utils'
+import { enviarDiagnosticoRc18, type ResultadoDiagnosticoLead } from '@/actions/diagnostico-rc18'
+import { CAMPO_ISCA } from '@/lib/anti-spam'
 import {
   calcularIndice,
   DIMENSOES,
@@ -12,6 +14,8 @@ import {
   type Nivel,
   type ResultadoDiagnostico,
 } from '@/lib/diagnostico-rc18'
+import { cn } from '@/lib/utils'
+import { CHAVES_UTM, lerUtmGuardado, type ChaveUtm } from '@/lib/utm'
 
 /* Ilha do diagnóstico RC 18/2025 (feature rc18, task 006).
  *
@@ -19,6 +23,9 @@ import {
  * `@/lib/diagnostico-rc18` (a mesma que o servidor usará para gravar o lead na
  * task 007 — o cliente não é fonte de verdade). Sem `motion`: transições em CSS,
  * para não depender do IntersectionObserver. */
+
+const CAMPO =
+  'w-full rounded-[6px] bg-surface-1 px-3 py-2 text-sm text-text-main placeholder:text-text-muted shadow-inner transition-all focus:outline-none focus:ring-2 focus:ring-primary/20'
 
 const FAIXA: Record<Faixa, { titulo: string; texto: string }> = {
   inicial: {
@@ -42,6 +49,23 @@ export function Diagnostico({ hrefContato }: { hrefContato: string }) {
   const [respostas, setRespostas] = useState<Partial<Record<DimensaoId, Nivel>>>({})
   const [resultado, setResultado] = useState<ResultadoDiagnostico | null>(null)
   const resultadoRef = useRef<HTMLElement>(null)
+
+  /* Captura do lead (task 007). Escondidos (carimbo/UTM/isca) seguem o padrão do
+     `Formulario` (MIG-100/101); a action recorta tudo de novo no servidor. */
+  const caminho = usePathname()
+  const carimbo = useRef<HTMLInputElement>(null)
+  const utm = useRef<HTMLInputElement[]>([])
+  const [envio, acao, enviando] = useActionState(
+    async (_anterior: ResultadoDiagnosticoLead | null, dados: FormData) => enviarDiagnosticoRc18(dados),
+    null as ResultadoDiagnosticoLead | null,
+  )
+
+  useEffect(() => {
+    if (!resultado) return
+    if (carimbo.current) carimbo.current.value = String(Date.now())
+    const guardado = lerUtmGuardado()
+    for (const campo of utm.current) campo.value = guardado[campo.name as ChaveUtm] ?? ''
+  }, [resultado])
 
   const respondidas = Object.keys(respostas).length
   const total = DIMENSOES.length
@@ -180,18 +204,81 @@ export function Diagnostico({ hrefContato }: { hrefContato: string }) {
             })}
           </div>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a href={hrefContato} className="pill-btn-primary">
-              Falar com um especialista
-            </a>
-            <button type="button" onClick={refazer} className="pill-btn-outline">
-              Refazer diagnóstico
-            </button>
+          {/* Captura do lead com o resumo do diagnóstico (task 007). O índice é
+              recalculado no servidor a partir de `respostas`. */}
+          <div className="mt-8 vort-card">
+            {envio?.ok ? (
+              <p role="status" className="text-center text-sm text-text-main">
+                Recebemos seu diagnóstico. Um especialista da ATRA vai retornar em breve.
+              </p>
+            ) : (
+              <>
+                <h3 className="mb-1 text-lg font-semibold text-text-main">
+                  Receba a análise e fale com um especialista
+                </h3>
+                <p className="mb-4 text-sm text-text-muted">
+                  Um assessment inicial de 30 minutos, dimensionado pelo porte da sua instituição, aprofunda este
+                  resultado.
+                </p>
+                <form action={acao} aria-busy={enviando} className="space-y-3">
+                  <input type="hidden" name="source" value={caminho ?? ''} />
+                  <input ref={carimbo} type="hidden" name="carimbo" defaultValue="0" />
+                  <input type="hidden" name="respostas" value={JSON.stringify(respostas)} />
+                  {CHAVES_UTM.map((chave, i) => (
+                    <input
+                      key={chave}
+                      ref={(el) => {
+                        if (el) utm.current[i] = el
+                      }}
+                      type="hidden"
+                      name={chave}
+                      defaultValue=""
+                    />
+                  ))}
+                  <div aria-hidden className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
+                    <label htmlFor={`diag-${CAMPO_ISCA}`}>Não preencha este campo</label>
+                    <input id={`diag-${CAMPO_ISCA}`} name={CAMPO_ISCA} type="text" tabIndex={-1} autoComplete="off" />
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <input type="text" name="name" placeholder="Nome" aria-label="Nome" className={CAMPO} />
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      placeholder="E-mail corporativo"
+                      aria-label="E-mail corporativo"
+                      className={CAMPO}
+                    />
+                    <input type="text" name="company" placeholder="Instituição" aria-label="Instituição" className={CAMPO} />
+                    <input type="tel" name="phone" placeholder="Telefone" aria-label="Telefone" className={CAMPO} />
+                  </div>
+                  <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                    <button
+                      type="submit"
+                      disabled={enviando}
+                      className={cn('pill-btn-primary', enviando && 'cursor-not-allowed opacity-50')}
+                    >
+                      Enviar diagnóstico
+                    </button>
+                    <button type="button" onClick={refazer} className="pill-btn-outline">
+                      Refazer
+                    </button>
+                  </div>
+                  <p className="text-xs text-text-muted">
+                    Seus dados são tratados conforme a nossa Política de Privacidade.{' '}
+                    <a href={hrefContato} className="text-primary underline">
+                      Prefere falar direto? Fale conosco.
+                    </a>
+                  </p>
+                  {envio && !envio.ok && (
+                    <p role="alert" className="text-sm font-medium text-red-500 dark:text-red-400">
+                      {envio.erro}
+                    </p>
+                  )}
+                </form>
+              </>
+            )}
           </div>
-          <p className="mt-4 text-center text-xs text-text-muted">
-            Um assessment inicial de 30 minutos, dimensionado pelo porte da sua instituição, aprofunda este
-            resultado.
-          </p>
         </section>
       )}
     </div>

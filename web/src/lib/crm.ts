@@ -60,7 +60,7 @@ export type ResultadoDaSincronizacao =
  * dado de RH — currículo dentro de pipeline comercial seria vazamento de
  * finalidade (LGPD), não integração. Se a ATRA quiser o banco de talentos lá,
  * é decisão dela, não default nosso (D-29). */
-const KINDS_COMERCIAIS = new Set(['contact', 'chat-lead', 'material-download'])
+const KINDS_COMERCIAIS = new Set(['contact', 'chat-lead', 'material-download', 'rc18-diagnostic'])
 
 /**
  * Se este doc deve ir ao CRM **agora**. Pura, para a matriz de teste.
@@ -99,6 +99,7 @@ const ROTULO: Record<string, string> = {
   contact: 'Contato pelo site',
   'chat-lead': 'Lead do chat (ATRA AI)',
   'material-download': 'Download de material',
+  'rc18-diagnostic': 'Diagnóstico RC 18/2025',
   newsletter: 'Inscrição na newsletter',
 }
 
