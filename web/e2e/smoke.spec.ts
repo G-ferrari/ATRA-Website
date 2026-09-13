@@ -24,8 +24,6 @@ const ROTAS_PORTADAS = {
     // Fase 4c: as duas nascem aqui, sem equivalente no protótipo (D-17).
     '/segmentos',
     '/politicas-e-termos',
-    // MIG-125: reconstruída, não portada — o rodapé aponta para cá em toda página.
-    '/design-system',
   ],
   en: [
     '/en',
@@ -38,7 +36,6 @@ const ROTAS_PORTADAS = {
     '/en/solutions',
     '/en/segments',
     '/en/privacy-and-terms',
-    '/en/design-system',
   ],
 } as const
 

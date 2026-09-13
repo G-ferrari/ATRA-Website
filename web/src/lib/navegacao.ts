@@ -16,7 +16,7 @@ export const TEXTOS_CASCA = {
     fecharMenu: 'Fechar menu',
     abrirMenu: 'Abrir menu',
     logo: 'ATRA Logo',
-    designSystem: 'Design System',
+    areaRestrita: 'Área Restrita',
     alternarTema: 'Alternar tema',
   },
   en: {
@@ -25,7 +25,7 @@ export const TEXTOS_CASCA = {
     fecharMenu: 'Close menu',
     abrirMenu: 'Open menu',
     logo: 'ATRA Logo',
-    designSystem: 'Design System',
+    areaRestrita: 'Restricted Area',
     alternarTema: 'Toggle theme',
   },
 } as const
