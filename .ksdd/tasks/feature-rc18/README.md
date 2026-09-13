@@ -7,7 +7,7 @@
 
 | ID | Título | Área | Prioridade | Estimativa | Status | Depende de |
 |----|--------|------|------------|------------|--------|------------|
-| 002 | Adicionar categoria/aba "RC18" ao mega-menu de Soluções | data-model | P0 | M | para implementar | — |
+| 002 | Adicionar categoria/aba "RC18" ao mega-menu de Soluções | data-model | P0 | M | em revisão | — |
 | 003 | Criar a página de solução RC18 (blocos CMS + seed idempotente) | frontend | P0 | L | para implementar | 002 |
 | 004 | Formulário de contato na página RC18 no padrão da home | frontend | P0 | S | para implementar | 003 |
 | 005 | Motor de pontuação do diagnóstico RC18 (lib + testes) | backend | P0 | M | para implementar | — |
