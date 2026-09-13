@@ -147,7 +147,7 @@ A paleta é **dual (claro/escuro)**: os mesmos papéis trocam de valor por tema.
 - **Azul Profundo** (`#2A75C5`, `--color-primary-dark`): estado hover do primário.
 
 ### Secondary
-- **Laranja ATRA** (`#FF8B08`, `--color-secondary`): o acento de destaque e o segundo pé do gradiente. CTAs secundários, selos, pontos de ênfase. Escasso por design. ⚠️ A linha de ênfase do **herói da home é laranja sólido**, não o gradiente — e hoje via **hex hardcoded** (`text-[#FF8B08]`); migrar para o token `--color-secondary`. A utility `.text-gradient` (azul→laranja) fica reservada a realces/CTA pontuais, não ao herói.
+- **Laranja ATRA** (`#FF8B08`, `--color-secondary`): o acento de destaque e o segundo pé do gradiente. CTAs secundários, selos, pontos de ênfase. Escasso por design. ⚠️ A linha de ênfase do **herói da home é laranja sólido**, não o gradiente — e usa o token `text-secondary` (`--color-secondary`, `#FF8B08`), migrado do hex hardcoded no `polish`. A utility `.text-gradient` (azul→laranja) fica reservada a realces/CTA pontuais, não ao herói.
 - **Laranja Queimado** (`#D67200`, `--color-secondary-dark`): hover do secundário.
 
 ### Neutral — tema claro

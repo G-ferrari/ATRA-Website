@@ -1,33 +1,45 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-02T16:45:00Z",
+  "generatedAt": "2026-09-13T00:00:00Z",
   "title": "Design System: ATRA",
   "extensions": {
     "colorMeta": {
       "atra-blue": { "role": "primary", "displayName": "Azul ATRA", "canonical": "#3C98FA", "tonalRamp": ["#0A2A4D", "#123F70", "#1A5596", "#2472C2", "#3C98FA", "#6DB4FB", "#9ECFFC", "#CDE7FE"] },
+      "atra-blue-deep": { "role": "primary", "displayName": "Azul Profundo", "canonical": "#2A75C5", "tonalRamp": ["#08203C", "#0E325C", "#17457E", "#2059A2", "#2A75C5", "#5A97D6", "#8FBAE5", "#C4DCF3"] },
       "atra-orange": { "role": "secondary", "displayName": "Laranja ATRA", "canonical": "#FF8B08", "tonalRamp": ["#4D2A00", "#7A4300", "#A85C00", "#D67200", "#FF8B08", "#FFA943", "#FFC77E", "#FFE3B8"] },
-      "graphite": { "role": "neutral", "displayName": "Grafite", "canonical": "#0E1015", "tonalRamp": ["#0E1015", "#181B22", "#222631", "#333949", "#4B5568", "#6B7488", "#9CA3AF", "#D1D5DB"] },
+      "atra-orange-burnt": { "role": "secondary", "displayName": "Laranja Queimado", "canonical": "#D67200", "tonalRamp": ["#3D2000", "#613400", "#874800", "#AB5C00", "#D67200", "#F08C1F", "#F6B266", "#FBD8AF"] },
       "ink": { "role": "neutral", "displayName": "Tinta", "canonical": "#0F172A", "tonalRamp": ["#0F172A", "#1E293B", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#F1F5F9"] },
-      "paper": { "role": "surface", "displayName": "Papel", "canonical": "#FFFFFF", "tonalRamp": ["#E2E8F0", "#EEF2F6", "#F1F5F9", "#F8FAFC", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"] }
+      "slate": { "role": "neutral", "displayName": "Ardósia", "canonical": "#334155", "tonalRamp": ["#0F172A", "#1E293B", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0"] },
+      "slate-muted": { "role": "neutral", "displayName": "Ardósia Clara", "canonical": "#64748B", "tonalRamp": ["#1E293B", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F1F5F9"] },
+      "paper": { "role": "surface", "displayName": "Papel", "canonical": "#FFFFFF", "tonalRamp": ["#E2E8F0", "#EEF2F6", "#F1F5F9", "#F8FAFC", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"] },
+      "mist": { "role": "surface", "displayName": "Névoa", "canonical": "#F8FAFC", "tonalRamp": ["#CBD5E1", "#DCE3EB", "#E7EDF3", "#F1F5F9", "#F8FAFC", "#FCFDFE", "#FFFFFF", "#FFFFFF"] },
+      "mist-sunken": { "role": "surface", "displayName": "Névoa Recuada", "canonical": "#F1F5F9", "tonalRamp": ["#B4C0CE", "#CBD5E1", "#DCE3EB", "#E7EDF3", "#F1F5F9", "#F8FAFC", "#FDFDFE", "#FFFFFF"] },
+      "hairline": { "role": "border", "displayName": "Traço Névoa", "canonical": "#E2E8F0", "tonalRamp": ["#94A3B8", "#B4C0CE", "#CBD5E1", "#D8E0E8", "#E2E8F0", "#EEF2F6", "#F5F8FA", "#FFFFFF"] },
+      "graphite": { "role": "neutral", "displayName": "Grafite", "canonical": "#0E1015", "tonalRamp": ["#0E1015", "#181B22", "#222631", "#333949", "#4B5568", "#6B7488", "#9CA3AF", "#D1D5DB"] },
+      "graphite-raised": { "role": "neutral", "displayName": "Grafite Elevado", "canonical": "#181B22", "tonalRamp": ["#0E1015", "#181B22", "#222631", "#2E333F", "#3D4350", "#565C6B", "#7C8394", "#A8AEBC"] },
+      "graphite-light": { "role": "neutral", "displayName": "Grafite Claro", "canonical": "#222631", "tonalRamp": ["#0E1015", "#181B22", "#222631", "#2E333F", "#3D4350", "#565C6B", "#7C8394", "#A8AEBC"] },
+      "on-graphite": { "role": "text", "displayName": "Alvo", "canonical": "#F3F4F6", "tonalRamp": ["#6B7280", "#9CA3AF", "#B7BDC6", "#D1D5DB", "#E5E7EB", "#F3F4F6", "#FAFBFC", "#FFFFFF"] },
+      "on-graphite-subtle": { "role": "text", "displayName": "Alvo Suave", "canonical": "#D1D5DB", "tonalRamp": ["#4B5563", "#6B7280", "#858D99", "#9CA3AF", "#B7BDC6", "#D1D5DB", "#E5E7EB", "#F3F4F6"] },
+      "on-graphite-muted": { "role": "text", "displayName": "Alvo Discreto", "canonical": "#9CA3AF", "tonalRamp": ["#374151", "#4B5563", "#6B7280", "#858D99", "#9CA3AF", "#C0C5CD", "#E5E7EB", "#F3F4F6"] }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Heróis e aberturas. Mona Sans peso 300, apertado (-0.02em)." },
-      "headline": { "displayName": "Headline", "purpose": "Títulos de seção. Peso 300 leve." },
-      "title": { "displayName": "Title", "purpose": "Títulos de cartão — o único ponto onde o peso sobe (700)." },
-      "body": { "displayName": "Body", "purpose": "Texto corrido; alvo 65–75ch em leitura longa." },
-      "label": { "displayName": "Label", "purpose": "Rótulos de botão, eyebrows e etiquetas — CAIXA-ALTA 600, espaçado." }
+      "display": { "displayName": "Display", "purpose": "Heróis e aberturas. Mona Sans peso 300, apertado (letter-spacing -0.02em), clamp(2.5rem,6vw,4rem)." },
+      "headline": { "displayName": "Headline", "purpose": "Títulos de seção. Mona Sans peso 300, letter-spacing -0.02em, clamp(1.75rem,3.5vw,2.5rem)." },
+      "title": { "displayName": "Title", "purpose": "Títulos de cartão (~1.25rem). Renderiza peso 300 como todo heading — a regra global h1..h6{font-weight:300} (globals.css:151, fora de @layer) vence os utilitários, então font-bold/font-extrabold em heading são inertes. NÃO é 700." },
+      "body": { "displayName": "Body", "purpose": "Texto corrido. Peso 400, 1rem, lh 1.6; alvo 65–75ch em leitura longa (blog, materiais)." },
+      "body-sm": { "displayName": "Body-sm", "purpose": "Metadados e resumos de cartão. Peso 400, 0.875rem, lh 1.5." },
+      "label": { "displayName": "Label", "purpose": "Rótulos de botão, eyebrows e etiquetas. CAIXA-ALTA, peso 600, 0.75rem, letter-spacing 0.08em." }
     },
     "shadows": [
-      { "name": "rest", "value": "0 1px 2px rgba(0,0,0,0.05)", "purpose": "Cartão em repouso (shadow-sm). A separação em repouso é sobretudo tonal." },
+      { "name": "rest", "value": "0 1px 2px rgba(0,0,0,0.05)", "purpose": "Cartão em repouso (shadow-sm). A separação em repouso é sobretudo tonal — A Regra Plano-em-Repouso." },
       { "name": "hover", "value": "0 20px 25px -5px rgba(0,0,0,0.15)", "purpose": "Cartão ao passar o mouse (shadow-xl) — o cartão sobe." },
       { "name": "hover-dark", "value": "0 25px 50px -12px rgba(0,0,0,0.6)", "purpose": "Equivalente no tema escuro (shadow-2xl shadow-black/60): a sombra é o peso da caixa no grafite." },
-      { "name": "glow", "value": "radial-gradient border via ::before/::after seguindo --x/--y/--hue", "purpose": "Brilho de assinatura do GlowCard — borda de LUZ, não linha. Reservado a destaques." },
-      { "name": "drawer", "value": "-6px 4px 20px rgba(0,0,0,0.12)", "purpose": "Sombra lateral do alternador de tema fixo (dark: -8px 4px 24px rgba(0,0,0,0.4))." }
+      { "name": "glow", "value": "radial-gradient em ::before/::after mascarado (padding-box XOR border-box) seguindo --x/--y/--hue", "purpose": "Brilho de assinatura do GlowCard — borda de LUZ, não linha. Reservado a destaques." }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Easing padrão de transições de estado (transition-all)." },
-      { "name": "duration-quick", "value": "200ms", "purpose": "Hover de botões, chips, ícones." },
-      { "name": "duration-card", "value": "300ms", "purpose": "Transição de cartão (sombra, fundo, cor)." },
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Easing padrão do sistema, confirmado nos componentes (site-header, home-hero, contador-de-texto)." },
+      { "name": "duration-quick", "value": "200ms", "purpose": "Hover de botões, chips, ícones (transition-all duration-200)." },
+      { "name": "duration-card", "value": "300ms", "purpose": "Transição de cartão (sombra, fundo, cor); típica 0.2–0.5s." },
       { "name": "duration-image", "value": "700ms", "purpose": "Zoom lento da imagem no hover do cartão (scale-105)." },
       { "name": "press", "value": "transform: scale(0.98)", "purpose": "Feedback tátil de :active em botões." },
       { "name": "marquee", "value": "26s–30s linear infinite", "purpose": "Esteira de logos; pausa no hover." }
@@ -35,9 +47,9 @@
     "breakpoints": [
       { "name": "reg-mobile", "value": "375px", "purpose": "Viewport de regressão visual (gate)." },
       { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px", "purpose": "Também viewport de regressão visual." },
+      { "name": "md", "value": "768px", "purpose": "Também viewport de regressão visual (gate)." },
       { "name": "lg", "value": "1024px" },
-      { "name": "xl", "value": "1280px", "purpose": "Também viewport de regressão visual (desktop)." }
+      { "name": "xl", "value": "1280px", "purpose": "Também viewport de regressão visual (gate, desktop)." }
     ]
   },
   "components": [
@@ -45,70 +57,78 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Ação principal. Azul ATRA, rótulo em caixa-alta, sobe no hover.",
+      "description": "Ação principal. Azul ATRA, rótulo CAIXA-ALTA espaçado, border-0, 6px, sobe no hover. Espelha a utility .pill-btn-primary.",
       "html": "<button class=\"ds-btn-primary\">Fale conosco</button>",
-      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--color-primary,#3C98FA);color:#fff;padding:12px 24px;border:none;border-radius:6px;font-weight:600;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 4px 6px rgba(0,0,0,.1);cursor:pointer;transition:all .2s}.ds-btn-primary:hover{background:var(--color-primary-dark,#2A75C5);box-shadow:0 10px 15px rgba(0,0,0,.12)}.ds-btn-primary:active{transform:scale(.98)}"
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--color-primary,#3C98FA);color:#fff;padding:12px 24px;border:0;border-radius:6px;font-weight:600;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;box-shadow:0 4px 6px -1px rgba(0,0,0,.1);cursor:pointer;transition:all .2s cubic-bezier(0.16,1,0.3,1)}.ds-btn-primary:hover{background:var(--color-primary-dark,#2A75C5);box-shadow:0 10px 15px -3px rgba(0,0,0,.1)}.ds-btn-primary:active{transform:scale(.98)}"
     },
     {
       "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Ação secundária / destaque. Laranja ATRA (acento escasso).",
+      "description": "Ação secundária / destaque. Laranja ATRA (acento escasso) → Laranja Queimado no hover. Espelha .pill-btn-secondary.",
       "html": "<button class=\"ds-btn-secondary\">Baixar material</button>",
-      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--color-secondary,#FF8B08);color:#fff;padding:12px 24px;border:none;border-radius:6px;font-weight:600;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 4px 6px rgba(0,0,0,.1);cursor:pointer;transition:all .2s}.ds-btn-secondary:hover{background:var(--color-secondary-dark,#D67200);box-shadow:0 10px 15px rgba(0,0,0,.12)}.ds-btn-secondary:active{transform:scale(.98)}"
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--color-secondary,#FF8B08);color:#fff;padding:12px 24px;border:0;border-radius:6px;font-weight:600;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;box-shadow:0 4px 6px -1px rgba(0,0,0,.1);cursor:pointer;transition:all .2s cubic-bezier(0.16,1,0.3,1)}.ds-btn-secondary:hover{background:var(--color-secondary-dark,#D67200);box-shadow:0 10px 15px -3px rgba(0,0,0,.1)}.ds-btn-secondary:active{transform:scale(.98)}"
     },
     {
       "name": "Outline Button",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "Ação terciária. Sem borda: realce por fundo no hover, não por traço (Regra Sem-Borda).",
+      "description": "Ação terciária. Sem borda (border-0): realce por fundo primary/10 no hover, não por traço (Regra Sem-Borda). Espelha .pill-btn-outline.",
       "html": "<button class=\"ds-btn-outline\">Saiba mais</button>",
-      "css": ".ds-btn-outline{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--color-text-main,#0F172A);padding:12px 24px;border:none;border-radius:6px;font-weight:600;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s}.ds-btn-outline:hover{background:rgba(60,152,250,.1);color:var(--color-primary,#3C98FA)}"
+      "css": ".ds-btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:transparent;color:var(--color-text-main,#0F172A);padding:12px 24px;border:0;border-radius:6px;font-weight:600;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .2s cubic-bezier(0.16,1,0.3,1)}.ds-btn-outline:hover{background:rgba(60,152,250,.1);color:var(--color-primary,#3C98FA)}.ds-btn-outline:active{transform:scale(.98)}"
     },
     {
       "name": "Filter Chip",
       "kind": "chip",
       "refersTo": "chip-filter",
-      "description": "Chip de filtro de listagem. Ativo = azul cheio; inativo sem borda (alvo de padronização). aria-pressed no estado.",
-      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\">Todos</button><button class=\"ds-chip\" aria-pressed=\"false\">Governança</button><button class=\"ds-chip\" aria-pressed=\"false\">Cloud</button></div>",
-      "css": ".ds-chips{display:flex;gap:8px}.ds-chip{padding:4px 12px;border-radius:4px;font-size:.75rem;font-weight:500;background:var(--color-surface-2,#fff);color:var(--color-text-muted,#64748b);border:none;cursor:pointer;transition:all .2s}.ds-chip:hover{color:var(--color-text-main,#0F172A);background:var(--color-surface-3,#F1F5F9)}.ds-chip[aria-pressed=\"true\"]{background:var(--color-primary,#3C98FA);color:#fff;font-weight:600}"
+      "description": "Barra de filtro de listagem (cases, blog, webinars, ebooks, relatórios). Ativo = azul cheio + font-semibold + shadow-xs; inativo sem borda, realce tonal no hover. aria-pressed no estado. Rótulo em 11px bold CAIXA-ALTA.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-chips-label\">Categoria</span><button class=\"ds-chip\" aria-pressed=\"true\">Todos</button><button class=\"ds-chip\" aria-pressed=\"false\">Governança</button><button class=\"ds-chip\" aria-pressed=\"false\">Cloud</button></div>",
+      "css": ".ds-chips{display:flex;align-items:center;gap:8px;overflow-x:auto;padding-bottom:8px}.ds-chips-label{flex:0 0 auto;margin-right:4px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--color-text-muted,#64748b)}.ds-chip{white-space:nowrap;padding:4px 12px;border:0;border-radius:4px;font-size:.75rem;font-weight:500;background:var(--color-surface-2,#fff);color:var(--color-text-muted,#64748b);cursor:pointer;transition:all .2s cubic-bezier(0.16,1,0.3,1)}.ds-chip:hover{color:var(--color-text-main,#0F172A);background:var(--color-surface-3,#F1F5F9)}.ds-chip[aria-pressed=\"true\"]{background:var(--color-primary,#3C98FA);color:#fff;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.05)}"
     },
     {
       "name": "Status Badge",
       "kind": "chip",
       "refersTo": "status-badge",
-      "description": "Selo de estado com ponto pulsante. Fundo tonal da cor, sem contorno (alvo).",
+      "description": "Selo de estado com ponto pulsante opcional. 6px, text-xs font-semibold tracking-wide, fundo tonal da cor. SHIPPED: ainda carrega borda tonal de acento (border-primary/20); DESIGN.md marca o de-bordering como alvo, não feito.",
       "html": "<span class=\"ds-badge\"><span class=\"ds-dot\"></span>Online</span>",
-      "css": ".ds-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600;letter-spacing:.02em;background:rgba(60,152,250,.1);color:var(--color-primary,#3C98FA)}.ds-dot{position:relative;display:inline-flex;width:8px;height:8px}.ds-dot::before{content:\"\";position:absolute;inset:0;border-radius:9999px;background:var(--color-primary,#3C98FA);opacity:.75;animation:ds-ping 1s cubic-bezier(0,0,.2,1) infinite}.ds-dot::after{content:\"\";position:relative;width:8px;height:8px;border-radius:9999px;background:var(--color-primary,#3C98FA)}@keyframes ds-ping{75%,100%{transform:scale(2);opacity:0}}"
+      "css": ".ds-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600;letter-spacing:.02em;background:rgba(60,152,250,.1);color:var(--color-primary,#3C98FA);border:1px solid rgba(60,152,250,.2)}.ds-dot{position:relative;display:inline-flex;width:8px;height:8px}.ds-dot::before{content:\"\";position:absolute;inset:0;border-radius:9999px;background:var(--color-primary,#3C98FA);opacity:.75;animation:ds-ping 1s cubic-bezier(0,0,.2,1) infinite}.ds-dot::after{content:\"\";position:relative;width:8px;height:8px;border-radius:9999px;background:var(--color-primary,#3C98FA)}@keyframes ds-ping{75%,100%{transform:scale(2);opacity:0}}"
+    },
+    {
+      "name": "Metric Chip",
+      "kind": "chip",
+      "refersTo": "status-badge",
+      "description": "Métrica compacta: número em font-mono font-extrabold text-primary + rótulo Ardósia Clara, 6px, shadow-xs. SHIPPED: a variante primary ainda carrega border-primary/20 (de-bordering é alvo, não feito).",
+      "html": "<div class=\"ds-metric\"><span class=\"ds-metric-value\">+38%</span><span class=\"ds-metric-label\">eficiência</span></div>",
+      "css": ".ds-metric{display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border-radius:6px;font-size:.75rem;background:rgba(60,152,250,.1);border:1px solid rgba(60,152,250,.2);box-shadow:0 1px 2px rgba(0,0,0,.05)}.ds-metric-value{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:800;color:var(--color-primary,#3C98FA)}.ds-metric-label{font-weight:500;color:var(--color-text-muted,#64748b)}"
     },
     {
       "name": "Search Input",
       "kind": "input",
       "refersTo": "input-field",
-      "description": "Campo de busca com lupa. Foco por anel de sombra azul (sem borda, aplicando a Regra Sem-Borda).",
+      "description": "Campo de busca com lupa à esquerda e limpar (X) à direita. 6px, bg Papel, shadow-xs. Foco por ANEL (focus:ring-1 ring-primary), sem borda — coerente com a Regra Sem-Borda.",
       "html": "<div class=\"ds-search\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><path d=\"m21 21-4.3-4.3\"></path></svg><input type=\"text\" placeholder=\"Buscar...\" aria-label=\"Buscar\"></div>",
-      "css": ".ds-search{position:relative;width:288px;max-width:100%}.ds-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--color-text-muted,#64748b)}.ds-search input{width:100%;padding:10px 16px 10px 40px;border-radius:6px;background:var(--color-surface-2,#fff);color:var(--color-text-main,#0F172A);border:none;box-shadow:0 0 0 1px rgba(0,0,0,.06);font-size:.875rem;transition:box-shadow .2s}.ds-search input:focus{outline:none;box-shadow:0 0 0 2px var(--color-primary,#3C98FA)}.ds-search input::placeholder{color:var(--color-text-muted,#64748b)}"
+      "css": ".ds-search{position:relative;width:288px;max-width:100%}.ds-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--color-text-muted,#64748b)}.ds-search input{width:100%;padding:10px 16px 10px 40px;border-radius:6px;background:var(--color-surface-2,#fff);color:var(--color-text-main,#0F172A);border:0;box-shadow:0 1px 2px rgba(0,0,0,.05);font-size:.875rem;transition:all .2s cubic-bezier(0.16,1,0.3,1)}.ds-search input:focus{outline:none;box-shadow:0 0 0 1px var(--color-primary,#3C98FA)}.ds-search input::placeholder{color:var(--color-text-muted,#64748b)}"
     },
     {
       "name": "Content Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "Cartão de listagem (cases/blog/materiais). Imagem 16:9 com overlay, título que vira azul no hover, CTA com seta. Sem borda de contorno (alvo).",
-      "html": "<a class=\"ds-card\"><div class=\"ds-card-media\"></div><div class=\"ds-card-body\"><span class=\"ds-card-eyebrow\">Banco ABC</span><h3 class=\"ds-card-title\">Governança de dados em escala</h3><p class=\"ds-card-summary\">Como a ATRA estruturou a plataforma de dados e reduziu o tempo de decisão.</p><span class=\"ds-card-cta\">Ler o case &rarr;</span></div></a>",
-      "css": ".ds-card{display:flex;flex-direction:column;background:var(--color-surface-2,#fff);border-radius:6px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.05);transition:all .3s;cursor:pointer;width:320px;max-width:100%;text-decoration:none}.ds-card:hover{box-shadow:0 20px 25px -5px rgba(0,0,0,.15);background:var(--color-surface-3,#F1F5F9)}.ds-card-media{aspect-ratio:16/9;background:linear-gradient(135deg,#3C98FA,#FF8B08)}.ds-card-body{padding:24px;display:flex;flex-direction:column;gap:12px}.ds-card-eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--color-primary,#3C98FA)}.ds-card-title{margin:0;font-size:1.25rem;font-weight:700;line-height:1.35;color:var(--color-text-main,#0F172A);transition:color .3s}.ds-card:hover .ds-card-title{color:var(--color-primary,#3C98FA)}.ds-card-summary{margin:0;font-size:.875rem;font-weight:300;line-height:1.6;color:var(--color-text-muted,#64748b)}.ds-card-cta{display:inline-flex;align-items:center;gap:8px;font-size:.875rem;font-weight:700;color:var(--color-primary,#3C98FA)}"
+      "description": "Cartão de listagem (cases/blog/materiais). Imagem 16:9 com overlay em gradiente + scale-105 no hover, eyebrow CAIXA-ALTA azul, título que vira azul no hover, CTA com seta. SEM borda de contorno (já removida); mantém divisores funcionais border-b (mídia) e border-t (rodapé) como hairline. Título é h3: renderiza peso 300 em runtime (Regra do Título Leve vence font-bold).",
+      "html": "<a class=\"ds-card\"><div class=\"ds-card-media\"></div><div class=\"ds-card-body\"><span class=\"ds-card-eyebrow\">Banco ABC</span><h3 class=\"ds-card-title\">Governança de dados em escala</h3><p class=\"ds-card-summary\">Como a ATRA estruturou a plataforma de dados e reduziu o tempo de decisão.</p><div class=\"ds-card-footer\"><span class=\"ds-card-cta\">Ler o case &rarr;</span></div></div></a>",
+      "css": ".ds-card{display:flex;flex-direction:column;background:var(--color-surface-2,#fff);border:0;border-radius:6px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.05);transition:all .3s cubic-bezier(0.16,1,0.3,1);cursor:pointer;width:320px;max-width:100%;text-decoration:none}.ds-card:hover{box-shadow:0 20px 25px -5px rgba(0,0,0,.15);background:var(--color-surface-3,#F1F5F9)}.ds-card-media{aspect-ratio:16/9;background:linear-gradient(135deg,#3C98FA,#FF8B08);border-bottom:1px solid var(--color-border-main,#e2e8f0)}.ds-card-body{padding:24px;display:flex;flex-direction:column;gap:12px}.ds-card-eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--color-primary,#3C98FA)}.ds-card-title{margin:0;font-family:var(--font-display,inherit);font-size:1.25rem;font-weight:300;letter-spacing:-.02em;line-height:1.35;color:var(--color-text-main,#0F172A);transition:color .3s}.ds-card:hover .ds-card-title{color:var(--color-primary,#3C98FA)}.ds-card-summary{margin:0;font-size:.875rem;font-weight:300;line-height:1.6;color:var(--color-text-muted,#64748b)}.ds-card-footer{padding-top:16px;border-top:1px solid var(--color-border-main,#e2e8f0)}.ds-card-cta{display:inline-flex;align-items:center;gap:8px;font-size:.875rem;font-weight:700;color:var(--color-primary,#3C98FA)}"
     },
     {
       "name": "Glow Card",
       "kind": "custom",
       "refersTo": "card-dark",
-      "description": "Cartão de assinatura sobre grafite, com borda de brilho (luz, não linha). Reservado a destaques.",
-      "html": "<div class=\"ds-glow\"><h4 class=\"ds-glow-title\">Plataforma de Dados</h4><p class=\"ds-glow-text\">Arquitetura Lakehouse em BigQuery e Databricks.</p></div>",
-      "css": ".ds-glow{position:relative;background:var(--color-surface-2,#181B22);border-radius:6px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden}.ds-glow::before{content:\"\";position:absolute;inset:-1px;border-radius:6px;padding:1px;background:radial-gradient(140px 140px at 30% 20%,rgba(60,152,250,.9),transparent 60%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}.ds-glow-title{margin:0 0 8px;font-size:1.25rem;font-weight:700;color:var(--color-text-main,#F3F4F6)}.ds-glow-text{margin:0;font-size:.875rem;font-weight:300;line-height:1.6;color:var(--color-text-muted,#9CA3AF)}"
+      "description": "Cartão de assinatura sobre grafite, com borda de brilho (luz, não linha) que segue o cursor via ::before/::after mascarados. Raio PADRÃO 12px (prop radius=12), não 6px. Reservado a destaques; o brilho ativa no hover (--border-spot-opacity).",
+      "html": "<div class=\"ds-glow\" data-glow><div class=\"ds-glow-inner\"><h4 class=\"ds-glow-title\">Plataforma de Dados</h4><p class=\"ds-glow-text\">Arquitetura Lakehouse em BigQuery e Databricks.</p></div></div>",
+      "css": ".ds-glow{position:relative;background:var(--color-surface-2,#181B22);border-radius:12px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden;transition:all .3s cubic-bezier(0.16,1,0.3,1)}.ds-glow::before{content:\"\";position:absolute;inset:-1px;border:1px solid transparent;border-radius:12px;background-image:radial-gradient(180px 180px at var(--x,30%) var(--y,20%),hsl(210 100% 60% / .8),transparent 100%);-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0) border-box;-webkit-mask-composite:destination-out;mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0) border-box;mask-composite:exclude;filter:brightness(1.5);pointer-events:none}.ds-glow-inner{position:relative;z-index:1}.ds-glow-title{margin:0 0 8px;font-family:var(--font-display,inherit);font-size:1.25rem;font-weight:300;letter-spacing:-.02em;color:var(--color-text-main,#F3F4F6)}.ds-glow-text{margin:0;font-size:.875rem;font-weight:300;line-height:1.6;color:var(--color-text-muted,#9CA3AF)}"
     }
   ],
   "narrative": {
     "northStar": "O Console Sereno",
-    "overview": "A ATRA é uma consultoria de Dados & IA. O sistema visual soa como o console de uma plataforma de dados madura: fundo grafite, superfícies calmas, e o brilho reservado para os detalhes — a corrente azul→laranja da marca. É técnico e confiável sem gritar; a autoridade vem da precisão, não do volume. Competência tranquila. A home é a lei: a página inicial é a superfície mais refinada e validada pelos stakeholders, e é a referência canônica do sistema — toda outra tela se compõe dos componentes da home ou de variações documentadas deles. O tema escuro é o padrão (grafite #0E1015), com tema claro alternável; a profundidade é contida (planas em repouso, sombra suave no hover, o brilho do GlowCard como assinatura).",
+    "overview": "A ATRA é uma consultoria de Dados & IA. O sistema visual soa como o console de uma plataforma de dados madura: fundo grafite, superfícies calmas, e o brilho reservado para os detalhes — a corrente azul→laranja da marca. É técnico e confiável sem gritar; a autoridade vem da precisão, não do volume. Competência tranquila. A home é a lei: a página inicial é a superfície mais refinada e a mais validada pelos stakeholders — ela é a referência canônica deste sistema. Toda outra tela se compõe a partir dos componentes da home ou de variações documentadas deles; nenhuma tela inventa uma linguagem visual própria. Quando este documento e a home discordarem, a home vence, e este documento é atualizado para segui-la. O tema escuro é o padrão (o <html> nasce em dark, grafite #0E1015); existe um tema claro alternável, e ambos são a mesma linguagem com os tokens trocando de valor. A profundidade é contida: superfícies planas em repouso, sombra suave crescendo no hover, e um brilho de assinatura no GlowCard. Nada de contorno pesado.",
     "keyCharacteristics": [
       "Grafite escuro por padrão; acento azul→laranja usado com parcimônia.",
       "Títulos leves (Mona Sans peso 300) contra rótulos técnicos em caixa-alta.",
@@ -117,26 +137,27 @@
       "A home é o gabarito; o resto deriva dela."
     ],
     "rules": [
-      { "name": "A home é a lei", "body": "A página inicial é a referência canônica. Toda outra tela usa os componentes da home ou variações documentadas deles; nenhuma tela inventa linguagem própria. Se este documento e a home discordarem, a home vence.", "section": "overview" },
-      { "name": "A Regra Sem-Borda", "body": "Nenhuma caixa do layout carrega linha de borda. Cartões, chips, campos, painéis e selos se separam por tom de superfície + sombra suave + brilho, nunca por traço. Divisor funcional (hairline entre conteúdos) é permitido; borda que contorna a caixa, não.", "section": "elevation" },
-      { "name": "A Regra da Escala de Raio", "body": "Escala enxuta, não valor único: 6px padrão de caixa/controle; 12px em superfícies maiores; 4px nos chips menores; círculo só para pontos de status e avatares. O que foge disso em runtime (8/7px, 5px, 16px) snapa ao passo mais próximo. Nada fora de {4,6,12,full}.", "section": "shapes" },
-      { "name": "A Regra do Acento Escasso", "body": "Azul e laranja são pontuação, não tinta de parede: usados em ação, realce e estado, nunca em grandes áreas. A raridade é o efeito.", "section": "colors" },
-      { "name": "A Regra do Par", "body": "Toda cor nasce com par claro/escuro e o valor escuro vem por último (text-slate-900 dark:text-white) — é ele que o gabarito escuro compara.", "section": "colors" },
-      { "name": "A Regra do Título Leve", "body": "Todo heading é Mona Sans peso 300 com letter-spacing -0.02em; a hierarquia vem do tamanho, não do peso. Imposto por h1..h6{font-weight:300} (globals.css:151), que vence utilitários de peso — inclusive nos títulos de cartão. Sem exceção de peso no build atual.", "section": "typography" }
+      { "name": "A Regra do Acento Escasso", "body": "O azul e o laranja são pontuação, não tinta de parede. Usados em ação, realce e estado — não em grandes áreas. Sua raridade é o efeito.", "section": "colors" },
+      { "name": "A Regra do Par", "body": "Toda cor de texto/superfície nasce com par claro/escuro, e o valor escuro vem por último (text-slate-900 dark:text-white) — é ele que o gabarito escuro compara. Cor sem par some no tema alternado.", "section": "colors" },
+      { "name": "A Regra do Título Leve", "body": "Todo heading é peso 300 com letter-spacing −0.02em; a hierarquia entre níveis vem do tamanho, não do peso. Isto é imposto globalmente por h1..h6{font-weight:300} (globals.css:151), que vence classes de peso — inclusive nos títulos de cartão. Não há exceção de peso no build atual.", "section": "typography" },
+      { "name": "A Regra Sem-Suavização", "body": "Nunca introduzir antialiased/-webkit-font-smoothing nem pedir o eixo wdth na fonte — muda a rasterização/métrica e estoura o gate visual (D-16/D-25).", "section": "typography" },
+      { "name": "A Regra Plano-em-Repouso", "body": "Nenhuma caixa nasce com sombra forte; a sombra aparece como resposta a hover/foco. Em repouso, a separação é tonal.", "section": "elevation" },
+      { "name": "A Regra da Escala de Raio", "body": "Uma escala enxuta, não um valor único: 6px é o padrão de caixa e controle (cartão, botão, campo, painel); 12px para superfícies maiores que pedem mais suavidade (ex.: painéis grandes, cards de destaque); 4px nos chips de filtro menores; círculo (9999px) só para pontos de status e avatares/monogramas. O que hoje foge da escala em runtime — 8px, 7px, 5px, 16px — deve snapar ao passo mais próximo (8/7→6, 16→12, 5→4 ou 6). Nada de raio avulso fora de {4, 6, 12, full}.", "section": "shapes" },
+      { "name": "A Regra Sem-Borda", "body": "Nenhuma caixa do layout carrega linha de borda. Cartões, chips, campos, painéis e selos se separam por tom de superfície + sombra suave + brilho, nunca por traço. Os componentes da home já são assim (border-0 + glow). Divergências a padronizar: ContentCard já teve a borda de contorno removida (mantém divisores border-t/border-b funcionais); ChipFilter (inativo), StatusBadge, MetricChip e SearchInput ainda carregam vestígios (border-primary/20 nos selos, foco por anel no campo) — migrar para sem-borda é alvo, não feito. Distinto de um divisor funcional (hairline border-t que separa conteúdo dentro de um cartão), que é permitido; a regra proíbe a borda que contorna a caixa.", "section": "shapes" }
     ],
     "dos": [
-      "Do ancorar toda tela nova nos componentes da home ou em variações documentadas deles.",
-      "Do usar 6px em toda caixa/controle e as utilities pill-btn-* para botões.",
-      "Do comunicar profundidade por superfície + sombra suave; GlowCard como único brilho de assinatura.",
-      "Do escrever cor sempre em par claro/escuro, valor escuro por último, medindo contraste nos dois temas.",
+      "Do ancorar toda tela nova nos componentes da home ou em variações documentadas deles (A home é a lei).",
+      "Do usar 6px em toda caixa/controle e o par de utilities pill-btn-* para botões.",
+      "Do comunicar profundidade por superfície + sombra suave; use o GlowCard como o único brilho de assinatura.",
+      "Do escrever cor sempre em par claro/escuro, com o valor escuro por último, e medir contraste nos dois temas.",
       "Do manter títulos em Mona Sans peso 300 e rótulos em CAIXA-ALTA 600."
     ],
     "donts": [
-      "Don't pôr linha de borda em caixa (cartão, chip, campo, selo, painel) — separe por tom e sombra.",
+      "Don't pôr linha de borda em caixa (cartão, chip, campo, selo, painel) — separe por tom e sombra (Regra Sem-Borda).",
       "Don't introduzir um segundo raio (8px/rounded-lg) nem um segundo brilho concorrente ao GlowCard.",
-      "Don't espalhar o acento azul/laranja em grandes áreas — ele é pontuação.",
+      "Don't espalhar o acento azul/laranja em grandes áreas — ele é pontuação (Regra do Acento Escasso).",
       "Don't adicionar antialiased/-webkit-font-smoothing nem o eixo wdth (quebra o gate).",
-      "Don't inventar linguagem visual por página; se a home não tem, é variação a documentar, não invenção."
+      "Don't inventar uma linguagem visual por página; se a home não tem, é variação a documentar, não invenção."
     ]
   }
 }
