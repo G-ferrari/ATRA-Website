@@ -38,6 +38,15 @@
         ],
         "createdAt": "2026-09-10T21:44:55.865Z",
         "reason": "falso positivo confirmado (Assessment B, critique 2026-09-10): <img src={c.image.url}> condicional e real com eslint-disable; <img> deliberado para paridade de pixel D-15"
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "animate-bounce",
+        "files": [
+          "web/src/app/(frontend)/[locale]/chat/conversa.tsx"
+        ],
+        "createdAt": "2026-09-13T18:05:48.877Z",
+        "reason": "Indicador de digitação do chat (3 pontos saltitantes) — convenção universal de 'IA respondendo' (iMessage/WhatsApp); feedback funcional, não enfeite. Mantido de propósito no quieter. Bounce fora do chat segue reprovado."
       }
     ]
   }
