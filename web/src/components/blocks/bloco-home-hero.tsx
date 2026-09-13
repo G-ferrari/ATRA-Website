@@ -59,7 +59,7 @@ export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale:
               {/* `min-h-[1.2em]` e `align-top` seguram a altura da linha enquanto
                   a palavra troca: sem eles o título pula meio caractere a cada
                   2,5s, e no gabarito a captura pegaria alturas diferentes. */}
-              <span className="inline-block relative min-h-[1.2em] align-top text-[#FF8B08]">
+              <span className="inline-block relative min-h-[1.2em] align-top text-secondary">
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={palavra}
@@ -67,7 +67,7 @@ export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale:
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -18 }}
                     transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="inline-block text-[#FF8B08]"
+                    className="inline-block text-secondary"
                   >
                     {palavra}
                   </motion.span>

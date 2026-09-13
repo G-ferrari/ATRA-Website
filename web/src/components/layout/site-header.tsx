@@ -169,9 +169,18 @@ export function SiteHeader({
           </div>
 
           <div className="flex items-center gap-2 lg:gap-4 pointer-events-auto">
+            {/* ⚠️ Some quando o megamenu abre. A fileira de categorias é centrada
+                em absoluto e, perto de ~1024px (largura de laptop muito comum),
+                sua borda direita invadia este botão — saía "Glossárique Conosco".
+                O estado fechado (o que a regressão visual captura) fica idêntico:
+                a condição só troca `hidden lg:flex` por `hidden` com o menu
+                aberto, que não entra em nenhum gabarito. */}
             <Link
               href={`${prefixo}/#fale-conosco`}
-              className="hidden lg:flex items-center gap-2 rounded-[6px] text-sm font-normal transition-all shadow-md hover:shadow-lg capitalize border border-primary text-primary hover:bg-primary/10 bg-transparent px-5 py-2.5 active:scale-95 cursor-pointer"
+              className={cn(
+                'items-center gap-2 rounded-[6px] text-sm font-normal transition-all shadow-md hover:shadow-lg capitalize border border-primary text-primary hover:bg-primary/10 bg-transparent px-5 py-2.5 active:scale-95 cursor-pointer',
+                aberto ? 'hidden' : 'hidden lg:flex',
+              )}
             >
               {t.faleConosco} <ArrowRight size={16} aria-hidden />
             </Link>
