@@ -1,64 +1,65 @@
 import { describe, expect, it } from 'vitest'
 
 import {
-  calcularIndice,
-  DIMENSOES,
-  faixaDe,
+  PILARES,
+  PONTUACAO_MAXIMA,
+  TOTAL_PILARES,
+  pontuacao,
+  resumoRespostas,
   validarRespostas,
-  type Nivel,
-  type RespostasDiagnostico,
+  type RespostasQuickCheck,
 } from './diagnostico-rc18'
 
-const todas = (nivel: Nivel): RespostasDiagnostico =>
-  Object.fromEntries(DIMENSOES.map((d) => [d.id, nivel])) as RespostasDiagnostico
+/** Respostas escolhendo, em cada pilar, a opção de maior/menor pontuação. */
+const extremo = (maior: boolean): RespostasQuickCheck =>
+  Object.fromEntries(
+    PILARES.map((p) => {
+      const opcao = p.opcoes.reduce((a, b) => (maior ? (b.pontos > a.pontos ? b : a) : b.pontos < a.pontos ? b : a))
+      return [p.id, opcao.valor]
+    }),
+  ) as RespostasQuickCheck
 
-describe('diagnostico-rc18', () => {
-  it('tem exatamente as 12 dimensões oficiais', () => {
-    expect(DIMENSOES).toHaveLength(12)
-    expect(DIMENSOES.map((d) => d.id)).toContain('rastreabilidade')
+describe('diagnostico-rc18 (quick check, 11 pilares)', () => {
+  it('tem exatamente 11 pilares, cada um com opções pontuadas', () => {
+    expect(PILARES).toHaveLength(11)
+    expect(TOTAL_PILARES).toBe(11)
+    expect(PILARES.map((p) => p.id)).toContain('rastreabilidade')
+    for (const p of PILARES) {
+      expect(p.opcoes.length).toBeGreaterThanOrEqual(2)
+      expect(Math.max(...p.opcoes.map((o) => o.pontos))).toBe(10)
+    }
   })
 
-  it('tudo no nível 0 → índice 0, faixa inicial, 12 lacunas', () => {
-    const r = calcularIndice(todas(0))
-    expect(r.ipRc18).toBe(0)
-    expect(r.faixa).toBe('inicial')
-    expect(r.lacunas).toHaveLength(12)
-    expect(r.respondidas).toBe(12)
+  it('teto de pontuação é 11 × 10 = 110', () => {
+    expect(PONTUACAO_MAXIMA).toBe(110)
   })
 
-  it('tudo no nível 3 (piso da norma) → índice 100, avançado, sem lacunas', () => {
-    const r = calcularIndice(todas(3))
-    expect(r.ipRc18).toBe(100)
-    expect(r.faixa).toBe('avancado')
-    expect(r.lacunas).toEqual([])
+  it('melhor opção em todos → 110/110 (100%)', () => {
+    const r = pontuacao(extremo(true))
+    expect(r.total).toBe(110)
+    expect(r.maximo).toBe(110)
+    expect(r.pct).toBe(100)
   })
 
-  it('tudo no nível 2 → 67% (intermediário) e as 12 ainda são lacunas (abaixo do piso 3)', () => {
-    const r = calcularIndice(todas(2))
-    expect(r.ipRc18).toBe(67) // 24 / 36 = 66,67 → 67
-    expect(r.faixa).toBe('intermediario')
-    expect(r.lacunas).toHaveLength(12)
+  it('pior opção em todos → soma dos mínimos, pct arredondado', () => {
+    const minimos = PILARES.reduce((acc, p) => acc + Math.min(...p.opcoes.map((o) => o.pontos)), 0)
+    const r = pontuacao(extremo(false))
+    expect(r.total).toBe(minimos)
+    expect(r.pct).toBe(Math.round((minimos / 110) * 100))
   })
 
-  it('respostas parciais: não respondida conta como 0', () => {
-    const r = calcularIndice({ acuracia: 3, completude: 3 })
-    expect(r.respondidas).toBe(2)
-    // 6 de 36 pontos possíveis
-    expect(r.ipRc18).toBe(17)
-    expect(r.lacunas).not.toContain('acuracia')
-    expect(r.lacunas).toContain('acessibilidade')
+  it('entrada vazia → 0', () => {
+    expect(pontuacao({})).toEqual({ total: 0, maximo: 110, pct: 0 })
   })
 
-  it('entrada vazia → índice 0 e nada respondido', () => {
-    const r = calcularIndice({})
-    expect(r.ipRc18).toBe(0)
-    expect(r.respondidas).toBe(0)
-    expect(r.porDimensao).toHaveLength(12)
-  })
-
-  it('validarRespostas descarta chaves desconhecidas e níveis fora de 0–3', () => {
-    const limpo = validarRespostas({ acuracia: 3, inexistente: 2, clareza: 9, integridade: -1, comparabilidade: 1.5 })
-    expect(limpo).toEqual({ acuracia: 3 })
+  it('validarRespostas descarta pilar desconhecido e opção inválida', () => {
+    const limpo = validarRespostas({
+      governanca: 'sim',
+      inexistente: 'sim',
+      controles: 'opcao-que-nao-existe',
+      cultura: 'em-parte',
+    })
+    expect(limpo).toEqual({ governanca: 'sim', cultura: 'em-parte' })
   })
 
   it('validarRespostas tolera entradas não-objeto', () => {
@@ -67,17 +68,18 @@ describe('diagnostico-rc18', () => {
     expect(validarRespostas(42)).toEqual({})
   })
 
-  it('faixaDe respeita os limites indicativos', () => {
-    expect(faixaDe(0)).toBe('inicial')
-    expect(faixaDe(44)).toBe('inicial')
-    expect(faixaDe(45)).toBe('intermediario')
-    expect(faixaDe(74)).toBe('intermediario')
-    expect(faixaDe(75)).toBe('avancado')
-    expect(faixaDe(100)).toBe('avancado')
+  it('resumoRespostas traz a pontuação e uma linha por pilar', () => {
+    const texto = resumoRespostas({ governanca: 'sim' })
+    expect(texto).toContain('Pontuação:')
+    expect(texto).toContain('Governança: Sim (10 pts)')
+    // pilar não respondido aparece com travessão
+    expect(texto).toContain('Cultura: —')
+    expect(texto.split('\n').filter((l) => l.startsWith('- '))).toHaveLength(11)
   })
 
   it('é determinístico: mesma entrada, mesma saída', () => {
-    const entrada = todas(2)
-    expect(calcularIndice(entrada)).toEqual(calcularIndice(entrada))
+    const entrada = extremo(true)
+    expect(pontuacao(entrada)).toEqual(pontuacao(entrada))
+    expect(resumoRespostas(entrada)).toEqual(resumoRespostas(entrada))
   })
 })

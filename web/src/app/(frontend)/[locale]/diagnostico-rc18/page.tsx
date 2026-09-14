@@ -21,9 +21,9 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  title: 'Diagnóstico de prontidão · RC 18/2025',
+  title: 'RC18 Quick Check · prontidão para a RC 18/2025',
   description:
-    'Autoavaliação rápida e gratuita da prontidão da sua instituição para a Resolução Conjunta nº 18/2025, pelas 12 dimensões de qualidade da informação.',
+    'Autoavaliação rápida e gratuita da prontidão da sua instituição para a Resolução Conjunta nº 18/2025, em onze pilares de qualidade das informações regulatórias.',
   robots: { index: false, follow: true },
 }
 
