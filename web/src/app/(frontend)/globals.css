@@ -67,7 +67,21 @@
     @apply rounded-[6px] border-0 hover:border-primary text-text-main hover:bg-primary/10 px-6 py-3 font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wider text-xs;
   }
 
+  /* ⚠️ Os pontos vão num overlay (`::after`), não no `background-image` do
+   * próprio bloco. O herói grafite declara o gradiente por
+   * `bg-linear-to-br from-…to-…` (que é `background-image`); se o dot-grid também
+   * escrevesse `background-image` no mesmo elemento, uma regra venceria a outra —
+   * e vencia o dot-grid, deixando o bloco **transparente**: letra branca em fundo
+   * branco no tema claro. (O escuro escondia, porque a página atrás já é grafite,
+   * e o gate só captura o escuro.) Como overlay, gradiente e pontos convivem. */
   .vort-dot-grid {
+    position: relative;
+  }
+  .vort-dot-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
     background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
     background-size: 24px 24px;
   }
