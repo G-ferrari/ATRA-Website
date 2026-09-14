@@ -75,7 +75,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
     <div className="pt-24 md:pt-36 pb-20 min-h-screen bg-surface-1 text-text-main">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <section className="mb-10">
-          <div className="rounded-[6px] bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
+          <div className="rounded-[6px] bg-surface-2 dark:bg-linear-to-br dark:from-[#12151c] dark:via-[#1a2130] dark:to-[#0e1015] text-slate-900 dark:text-white p-6 sm:p-10 md:p-12 shadow-xl dark:shadow-2xl relative overflow-hidden vort-dot-grid text-center">
             <TechCornerBraces color="blue" position="top-left" size={14} />
             <TechCornerBraces color="orange" position="bottom-right" size={14} />
 
@@ -89,19 +89,19 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
                 {t.titulo} <span className="text-primary font-normal">{t.tituloDestaque}</span>
               </h1>
 
-              <p className="text-xs sm:text-sm text-white/70 font-light max-w-xl mx-auto mb-6">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-white/70 font-light max-w-xl mx-auto mb-6">
                 {t.subtitulo}
               </p>
 
               <div className="relative max-w-lg mx-auto">
-                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" aria-hidden />
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40" aria-hidden />
                 <input
                   type="text"
                   placeholder={t.buscar}
                   aria-label={t.buscar}
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/10  rounded-[6px] text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-primary transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-white/10  rounded-[6px] text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-primary transition-all"
                 />
               </div>
             </div>

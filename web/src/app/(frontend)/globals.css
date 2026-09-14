@@ -82,8 +82,13 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
+    /* Pontos escuros no cartão claro; brancos no grafite. O bloco agora é
+       temático (D-31), então a textura acompanha — ponto branco no claro sumia. */
+    background-image: radial-gradient(circle, rgba(15, 23, 42, 0.08) 1.5px, transparent 1.5px);
     background-size: 24px 24px;
+  }
+  .dark .vort-dot-grid::after {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
   }
 
   .vort-dot-grid-light {

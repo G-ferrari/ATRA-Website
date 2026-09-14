@@ -21,7 +21,7 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
       className="relative pt-4 pb-12 overflow-hidden px-3 sm:px-6 scroll-mt-32"
     >
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="rounded-[6px] bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
+        <div className="rounded-[6px] bg-surface-2 dark:bg-linear-to-br dark:from-[#12151c] dark:via-[#1a2130] dark:to-[#0e1015] text-slate-900 dark:text-white p-6 sm:p-10 md:p-14 shadow-xl dark:shadow-2xl relative overflow-hidden vort-dot-grid text-center">
           <TechCornerBraces color="blue" position="top-left" size={16} />
           <TechCornerBraces color="orange" position="bottom-right" size={16} />
 
@@ -41,12 +41,12 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
               </div>
             )}
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold font-display text-white mb-4 tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold font-display text-slate-900 dark:text-white mb-4 tracking-tight leading-tight">
               <TextoDestacado texto={bloco.title} destaque={bloco.highlight} className="text-primary" />
             </h1>
 
             {bloco.description && (
-              <p className="text-xs sm:text-sm md:text-base text-white/70 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+              <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
                 {bloco.description}
               </p>
             )}
@@ -60,7 +60,7 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
                 {bloco.awards.map((p) => (
                   <div
                     key={`${p.title}-${p.highlight}`}
-                    className="bg-white/5  backdrop-blur-md p-4 rounded-[6px] shadow-sm flex flex-col items-center justify-center min-w-[140px] shrink-0"
+                    className="bg-slate-100 dark:bg-white/5  backdrop-blur-md p-4 rounded-[6px] shadow-sm flex flex-col items-center justify-center min-w-[140px] shrink-0"
                   >
                     {bloco.logo && (
                       /* `h-6 w-auto`: a altura manda e a largura sai do aspecto
@@ -71,17 +71,17 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
                       <img
                         src={bloco.logo.url}
                         alt={bloco.logo.alt}
-                        className="h-6 mb-2 pointer-events-none object-contain brightness-110"
+                        className="h-6 mb-2 pointer-events-none object-contain dark:brightness-110"
                       />
                     )}
                     {p.topText && (
-                      <div className="text-[9px] font-bold text-white/50 mb-0.5 uppercase tracking-wider">
+                      <div className="text-[9px] font-bold text-slate-500 dark:text-white/50 mb-0.5 uppercase tracking-wider">
                         {p.topText}
                       </div>
                     )}
                     {/* `whitespace-pre-line`: no gabarito o título do prêmio tem
                         quebra de linha embutida ("Partner of the Year\nService"). */}
-                    <div className="text-xs font-semibold text-white leading-tight text-center whitespace-pre-line">
+                    <div className="text-xs font-semibold text-slate-700 dark:text-white leading-tight text-center whitespace-pre-line">
                       {p.title}
                     </div>
                     {p.highlight && <div className="mt-2 text-primary text-xs font-bold">{p.highlight}</div>}
