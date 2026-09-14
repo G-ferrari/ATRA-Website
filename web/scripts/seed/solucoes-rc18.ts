@@ -23,19 +23,20 @@
  *
  * ⚠️ Conteúdo é rascunho: a consolidação de texto é do marketing no CMS (D-22).
  * Limitações do porte do brief para os blocos existentes: o `pageHero` não embute
- * formulário (o brief pede um no herói) — o formulário fica no `ctaContact` do
- * rodapé; e o `iconCardGrid` não tem parágrafo de abertura, então os "textos de
- * abertura" dos blocos de cards do brief não foram portados (ficam eyebrow+título).
+ * formulário; e o `iconCardGrid` não tem parágrafo de abertura, então os "textos
+ * de abertura" dos blocos de cards do brief não foram portados (ficam
+ * eyebrow+título).
+ *
+ * ⚠️ O formulário do rodapé **não é bloco de CMS**: é o RC18 Quick Check (ilha
+ * `/diagnostico-rc18`), que a página de solução renderiza para o slug `rc18` no
+ * lugar do `ctaContact`. Por isso este seed não grava mais o bloco de contato.
  */
-
-import path from 'node:path'
 
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
 import { ICONES } from '../../src/blocks/shared'
 import { casarIds } from './ids'
-import { midiaDe } from './midia'
 
 /* O ícone dos blocos é uma união fechada (blocks/shared.ts). O conteúdo abaixo
  * guarda os nomes como string; casamos com a união na montagem do layout. */
@@ -44,15 +45,6 @@ type Icone = (typeof ICONES)[number]
 const SLUG = 'rc18'
 
 const payload = await getPayload({ config })
-
-/* Resolve a partir de web/ (process.cwd()), sem tocar em legacy/ — o container do
- * seed não monta legacy/. Mesma foto real da home, para o formulário de contato
- * seguir o padrão da home (variante com foto + cartão de contato). */
-const fotoContato = await midiaDe(
-  payload,
-  path.resolve(process.cwd(), 'public/fotos/equipe-atra.jpg'),
-  'Equipe da ATRA',
-)
 
 const PT = {
   base: {
@@ -184,17 +176,12 @@ const PT = {
     secondary: 'Falar com especialista',
     caption: 'diagnóstico rápido e gratuito',
   },
-  contato: {
-    title: 'Fale com o time especializado da ATRA',
-    subtitle: 'Comece pela avaliação do cenário atual e pelos principais gaps de governança, qualidade, processos e tecnologia.',
-  },
   nav: {
     contexto: 'A norma',
     dimensoes: 'Dimensões',
     desafio: 'O desafio',
     jornada: 'Como ajudamos',
     capacidades: 'Capacidades',
-    contato: 'Contato',
   },
 }
 
@@ -213,8 +200,8 @@ const HREF_DIAG = '/diagnostico-rc18'
 
 function layout(t: typeof PT) {
   return [
-    /* BLOCO 01 | HERO. `pageHero` não embute formulário (o brief pede um no
-       herói); a captação fica no `ctaContact` do rodapé. */
+    /* BLOCO 01 | HERO. `pageHero` não embute formulário; a captação fica no
+       RC18 Quick Check do rodapé (#contato), renderizado pela página de solução. */
     {
       blockType: 'pageHero' as const,
       badge: t.heroBadge,
@@ -335,19 +322,8 @@ function layout(t: typeof PT) {
       cta: { label: t.ctaBanner.label, href: HREF_DIAG },
       secondaryCta: { label: t.ctaBanner.secondary, href: '#contato', caption: t.ctaBanner.caption },
     },
-    /* BLOCO 11 | FORMULÁRIO. Padrão da home (task 004): variante com foto + cartão
-       de contato. O brief pede campos extras (empresa, cargo, "já iniciou a
-       adequação?") que o `ctaContact` não tem — fica o formulário padrão. */
-    {
-      blockType: 'ctaContact' as const,
-      anchor: 'contato',
-      navLabel: t.nav.contato,
-      title: t.contato.title,
-      subtitle: t.contato.subtitle,
-      showContactCard: true,
-      variant: 'photo' as const,
-      photo: fotoContato,
-    },
+    /* BLOCO 11 | FORMULÁRIO — não é bloco: a página de solução renderiza o RC18
+       Quick Check (ilha) para o slug rc18, com id="contato". Ver o cabeçalho. */
   ]
 }
 
@@ -378,5 +354,5 @@ await payload.update({
   locale: 'en',
 })
 
-console.log('  1 página, 12 blocos, 2 idiomas (EN stub)')
+console.log('  1 página, 11 blocos, 2 idiomas (EN stub)')
 process.exit(0)
