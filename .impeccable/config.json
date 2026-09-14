@@ -47,6 +47,12 @@
         ],
         "createdAt": "2026-09-13T18:05:48.877Z",
         "reason": "Indicador de digitação do chat (3 pontos saltitantes) — convenção universal de 'IA respondendo' (iMessage/WhatsApp); feedback funcional, não enfeite. Mantido de propósito no quieter. Bounce fora do chat segue reprovado."
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "1px",
+        "createdAt": "2026-09-14T13:41:27.053Z",
+        "reason": "GlowCard [data-glow] usa border-radius: calc(var(--radius) * 1px) — raio dinamico que casa com o proprio elemento, nao 1px literal; a regex do detector le o token 1px. Codigo pre-existente (assinatura do GlowCard, DESIGN.md), nao autorado nesta sessao."
       }
     ]
   }
