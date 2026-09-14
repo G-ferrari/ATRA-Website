@@ -1,11 +1,10 @@
-import { Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from 'lucide-react'
-
 import { TechCornerBraces } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/lib/locales'
 import type { BlocoCtaContact } from '@/types/content'
 
 import { ContatoComFoto } from './contato-com-foto'
+import { PainelDeContatos } from './painel-de-contatos'
 import { Formulario } from '@/components/forms/formulario'
 
 /* Contato com formulário — porte de `legacy/src/App.tsx:2288`.
@@ -93,54 +92,11 @@ export function BlocoContato({ bloco, locale }: { bloco: BlocoCtaContact; locale
             </Formulario>
           </div>
 
+          {/* Painel de contatos compartilhado (fonte única) — antes esta variante
+              tinha um card próprio de lista de ícones, que divergia da home.
+              Ver painel-de-contatos.tsx. */}
           {bloco.showContactCard && contato && (
-            <div className="bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] rounded-[6px] p-8 lg:p-12 text-white flex flex-col justify-center gap-8 relative overflow-hidden">
-              <TechCornerBraces color="blue" position="top-left" size={14} />
-
-              <div className="grid sm:grid-cols-2 gap-8 relative z-10">
-                <div>
-                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Phone size={12} aria-hidden /> Telefone
-                  </p>
-                  <a href={contato.whatsapp} target="_blank" rel="noopener noreferrer" className="text-sm font-light hover:text-primary transition-colors">
-                    {contato.telefone}
-                  </a>
-                </div>
-                <div>
-                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Mail size={12} aria-hidden /> E-mail
-                  </p>
-                  <a href={`mailto:${contato.email}`} className="text-sm font-light hover:text-primary transition-colors">
-                    {contato.email}
-                  </a>
-                </div>
-                <div className="sm:col-span-2">
-                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <MapPin size={12} aria-hidden /> Endereço
-                  </p>
-                  <p className="text-sm font-light text-white/90 leading-relaxed">{contato.endereco}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-2.5 relative z-10">
-                {[
-                  { Icone: Linkedin, nome: 'LinkedIn', url: contato.redes.linkedin },
-                  { Icone: Instagram, nome: 'Instagram', url: contato.redes.instagram },
-                  { Icone: Youtube, nome: 'YouTube', url: contato.redes.youtube },
-                ].map(({ Icone, nome, url }) => (
-                  <a
-                    key={nome}
-                    href={url ?? '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={nome}
-                    className="w-9 h-9 rounded-md bg-white/10 hover:bg-primary transition-all flex items-center justify-center text-white"
-                  >
-                    <Icone size={16} aria-hidden />
-                  </a>
-                ))}
-              </div>
-            </div>
+            <PainelDeContatos contato={contato} locale={locale} foto={bloco.photo} />
           )}
         </div>
       </div>
