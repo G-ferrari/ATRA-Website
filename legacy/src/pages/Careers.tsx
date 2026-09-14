@@ -98,7 +98,7 @@ const Careers = () => {
       {/* Hero Section */}
       <section className="relative pt-6 pb-12 overflow-hidden bg-surface-1 px-3 sm:px-6">
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
+          <div className="rounded-[6px] bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
             
             <TechCornerBraces color="blue" position="top-left" size={16} />
             <TechCornerBraces color="orange" position="bottom-right" size={16} />
@@ -448,7 +448,7 @@ const Careers = () => {
 
           {/* Banco de Talentos Form */}
           <div id="banco-talentos" className="bg-surface-1 border border-slate-200 dark:border-white/5 rounded-[6px] shadow-xl overflow-hidden max-w-5xl mx-auto flex flex-col lg:flex-row relative">
-            <div className="lg:w-5/12 bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] p-8 lg:p-12 text-white flex flex-col justify-center relative">
+            <div className="lg:w-5/12 bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] p-8 lg:p-12 text-white flex flex-col justify-center relative">
               <TechCornerBraces color="blue" position="top-left" size={14} />
               <div className="relative z-10">
                 <span className="text-primary font-bold uppercase tracking-wider text-xs mb-3 block">Banco de Talentos</span>

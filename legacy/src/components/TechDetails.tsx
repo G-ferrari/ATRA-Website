@@ -29,7 +29,7 @@ export const TechHorizontalLine: React.FC<TechDetailProps> = ({
     ? 'bg-primary' 
     : color === 'orange' 
     ? 'bg-secondary' 
-    : 'bg-gradient-to-r from-primary to-secondary';
+    : 'bg-linear-to-r from-primary to-secondary';
     
   const textColClass = color === 'blue' 
     ? 'text-primary' 
@@ -114,7 +114,7 @@ export const TechVerticalLine: React.FC<TechDetailProps & { alignY?: 'top' | 'bo
     ? 'bg-primary' 
     : color === 'orange' 
     ? 'bg-secondary' 
-    : 'bg-gradient-to-b from-primary to-secondary';
+    : 'bg-linear-to-b from-primary to-secondary';
 
   const textColClass = color === 'blue' 
     ? 'text-primary' 
@@ -270,7 +270,7 @@ export const TechSectionBoundary: React.FC<{
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1.2, delay: delay, ease: "easeInOut" }}
-          className={`h-[1px] w-full bg-gradient-to-r ${lineColorClass}`}
+          className={`h-[1px] w-full bg-linear-to-r ${lineColorClass}`}
         />
 
         {/* Tech badge overlay */}

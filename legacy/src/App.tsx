@@ -1586,7 +1586,7 @@ const Features = () => {
                   decoding="async"
                   className="absolute inset-0 w-full h-full object-cover opacity-15 dark:opacity-25 group-hover:scale-105 transition-transform duration-700 pointer-events-none"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-surface-1 via-surface-1/90 to-surface-1/40 dark:from-[#0f1117] dark:via-[#0f1117]/90 dark:to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-t from-surface-1 via-surface-1/90 to-surface-1/40 dark:from-[#0f1117] dark:via-[#0f1117]/90 dark:to-transparent pointer-events-none" />
 
                 {/* Feature content */}
                 <div className="relative z-10">
@@ -1839,7 +1839,7 @@ const CustomerStories = () => {
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                 </div>
               </div>
             );
@@ -2175,7 +2175,7 @@ const BlogCard = ({ category, title, image, aspect, icon: IconComp }: { category
       decoding="async"
       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
     />
-    <div className="absolute inset-0 bg-gradient-to-t from-surface-1/95 via-surface-1/60 to-transparent p-5 flex flex-col justify-end">
+    <div className="absolute inset-0 bg-linear-to-t from-surface-1/95 via-surface-1/60 to-transparent p-5 flex flex-col justify-end">
       <div className="flex items-center gap-1.5 mb-1.5">
         {IconComp && <IconComp size={13} className="text-secondary" />}
         <span className="text-[10px] font-bold tracking-widest uppercase text-secondary">{category}</span>
@@ -2270,7 +2270,7 @@ const BlogSection = () => {
                 decoding="async"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-surface-1/95 via-surface-1/50 to-transparent p-6 flex flex-col justify-between">
+              <div className="absolute inset-0 bg-linear-to-t from-surface-1/95 via-surface-1/50 to-transparent p-6 flex flex-col justify-between">
                 <div>
                   <span className="text-[10px] font-bold tracking-widest uppercase mb-1.5 block text-secondary">CASE STUDY</span>
                   <h3 className="text-base font-display leading-snug text-text-main">
@@ -2377,7 +2377,7 @@ const CTA = () => {
               className="absolute inset-0 w-full h-full object-cover opacity-25 dark:opacity-35 scale-105"
             />
             {/* Gradient overlay for readability */}
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-1/90 via-surface-1/80 to-surface-2/95 dark:from-black/90 dark:via-black/60 dark:to-[#12151c]/95 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-linear-to-br from-surface-1/90 via-surface-1/80 to-surface-2/95 dark:from-black/90 dark:via-black/60 dark:to-[#12151c]/95 mix-blend-multiply" />
             <div className="absolute inset-0 bg-surface-1/40 dark:bg-[#12151c]/30" />
 
             {/* Top Content: Contact Information */}
