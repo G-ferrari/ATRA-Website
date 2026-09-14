@@ -107,10 +107,11 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
       <RenderBlocks blocos={solucao.blocos} locale={locale} />
       {/* RC18: o formulário do rodapé é o quick-check de 11 pilares (ilha
           interativa que envia por e-mail), no lugar do `ctaContact` genérico. A
-          seed da RC18 não grava mais o bloco de contato. `#contato` é o alvo do
-          CTA do herói e do submenu. */}
+          seed da RC18 não grava mais o bloco de contato. O `#contato` (item do
+          submenu e CTA do herói) é o `ctaBanner` logo acima; o formulário vem na
+          sequência, então não repete o id. */}
       {slug === 'rc18' && (
-        <section id="contato" className="scroll-mt-32">
+        <section className="scroll-mt-32">
           <Diagnostico hrefContato={hrefDe('contato', locale)} />
         </section>
       )}

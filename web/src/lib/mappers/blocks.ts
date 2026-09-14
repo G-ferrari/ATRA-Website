@@ -681,8 +681,12 @@ export function comDepoimentos(blocos: Bloco[], depoimentos: Depoimento[]): Bloc
  * /carreiras ancoram seções de conteúdo, nunca a faixa de chamada.
  */
 export function ancorasDe(blocos: Bloco[]): { anchor: string; label: string }[] {
+  /* `ctaBanner` fica fora do submenu por padrão — seu `anchor` costuma ser só
+     alvo de link (ex.: `#contato`), não uma seção navegável. Exceção opt-in:
+     quando o bloco define `navLabel` explícito, ele entra (a RC18 usa o CTA final
+     como "Contato" do submenu, com o formulário logo abaixo). */
   return blocos
-    .filter((b) => b.anchor && b.tipo !== 'ctaBanner')
+    .filter((b) => b.anchor && (b.tipo !== 'ctaBanner' || Boolean(b.navLabel)))
     .map((b) => ({
       anchor: b.anchor as string,
       label: b.navLabel ?? ('title' in b && b.title ? b.title : (b.anchor as string)),
