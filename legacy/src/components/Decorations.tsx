@@ -114,12 +114,12 @@ export const HomeParallaxDecorations = () => {
 
       {/* Floating glassy rounded diamond 1 */}
       <ScrollParallaxShape speed={0.15} rotateSpeed={0.04} className="top-[18%] right-[8%] z-10 transform-gpu">
-        <div className="w-16 h-16 md:w-24 md:h-24 rounded-[22%] bg-gradient-to-br from-primary/20 to-secondary/10 border border-white/10 shadow-lg" />
+        <div className="w-16 h-16 md:w-24 md:h-24 rounded-[22%] bg-linear-to-br from-primary/20 to-secondary/10 border border-white/10 shadow-lg" />
       </ScrollParallaxShape>
 
       {/* Floating glassy rounded diamond 2 */}
       <ScrollParallaxShape speed={0.1} rotateSpeed={-0.05} className="top-[28%] left-[6%] z-10 transform-gpu">
-        <div className="w-12 h-12 md:w-16 md:h-16 rounded-[22%] bg-gradient-to-br from-secondary/15 to-primary/10 border border-white/5 shadow-md" />
+        <div className="w-12 h-12 md:w-16 md:h-16 rounded-[22%] bg-linear-to-br from-secondary/15 to-primary/10 border border-white/5 shadow-md" />
       </ScrollParallaxShape>
 
       {/* 2. STATS / PARTNERS ZONE */}
@@ -152,7 +152,7 @@ export const HomeParallaxDecorations = () => {
       {/* 4. STORIES & TESTIMONIALS ZONE */}
       {/* Glassy rounded diamond 3 */}
       <ScrollParallaxShape speed={0.2} rotateSpeed={0.08} className="top-[72%] right-[6%] transform-gpu">
-        <div className="w-14 h-14 md:w-20 md:h-20 rounded-[22%] bg-gradient-to-br from-primary/15 to-secondary/15 border border-white/10 shadow-lg" />
+        <div className="w-14 h-14 md:w-20 md:h-20 rounded-[22%] bg-linear-to-br from-primary/15 to-secondary/15 border border-white/10 shadow-lg" />
       </ScrollParallaxShape>
 
       {/* Outline Tech Ring 2 */}

@@ -190,7 +190,7 @@ const SuccessStories = () => {
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                          <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                           
                           <div className="absolute top-4 left-4 flex items-center gap-2">
                             <span className="px-3 py-1.5 rounded-[4px] bg-secondary text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-md shadow-md flex items-center gap-1.5">

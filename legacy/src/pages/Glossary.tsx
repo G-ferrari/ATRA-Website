@@ -69,7 +69,7 @@ export default function Glossary() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero */}
         <section className="mb-10">
-          <div className="rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
+          <div className="rounded-[6px] bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] border border-white/5 text-white p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden vort-dot-grid text-center">
             <TechCornerBraces color="blue" position="top-left" size={14} />
             <TechCornerBraces color="orange" position="bottom-right" size={14} />
 

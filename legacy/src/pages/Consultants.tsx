@@ -565,7 +565,7 @@ export default function Consultants() {
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-3.5 min-w-0">
                           <div className={cn(
-                            "w-10 h-10 sm:w-11 sm:h-11 rounded-[6px] bg-gradient-to-br flex items-center justify-center text-white font-bold text-xs shadow-xs shrink-0",
+                            "w-10 h-10 sm:w-11 sm:h-11 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-xs shadow-xs shrink-0",
                             role.iconBg
                           )}>
                             {role.code}
@@ -838,7 +838,7 @@ export default function Consultants() {
                 className="absolute inset-0 w-full h-full object-cover opacity-25 dark:opacity-35 scale-105"
               />
               {/* Gradient overlay for readability */}
-              <div className="absolute inset-0 bg-gradient-to-br from-surface-1/90 via-surface-1/80 to-surface-2/95 dark:from-black/90 dark:via-black/60 dark:to-[#12151c]/95 mix-blend-multiply" />
+              <div className="absolute inset-0 bg-linear-to-br from-surface-1/90 via-surface-1/80 to-surface-2/95 dark:from-black/90 dark:via-black/60 dark:to-[#12151c]/95 mix-blend-multiply" />
               <div className="absolute inset-0 bg-surface-1/40 dark:bg-[#12151c]/30" />
 
               {/* Top Content: Contact Information */}
@@ -953,7 +953,7 @@ export default function Consultants() {
 
               <div className="flex items-start gap-4 mb-6 pr-10">
                 <div className={cn(
-                  "w-12 h-12 rounded-[6px] bg-gradient-to-br flex items-center justify-center text-white font-bold text-base shadow-md shrink-0",
+                  "w-12 h-12 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-base shadow-md shrink-0",
                   activeModalRole.iconBg
                 )}>
                   {activeModalRole.code}

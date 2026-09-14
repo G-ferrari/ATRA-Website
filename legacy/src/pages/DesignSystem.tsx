@@ -484,7 +484,7 @@ const DesignSystem = () => {
               <div className="pt-4 border-t border-border-main space-y-3">
                 <h4 className="text-xs font-bold text-text-main">Botão de Envio de Mensagem / Chat:</h4>
                 <div className="flex gap-2">
-                  <button className="px-5 py-2.5 bg-gradient-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] flex items-center gap-2 hover:shadow-md hover:shadow-primary/25 cursor-pointer active:scale-95 transition-all">
+                  <button className="px-5 py-2.5 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] flex items-center gap-2 hover:shadow-md hover:shadow-primary/25 cursor-pointer active:scale-95 transition-all">
                     <Send size={13} />
                     <span>Enviar Mensagem</span>
                   </button>

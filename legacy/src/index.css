@@ -60,7 +60,18 @@
     @apply rounded-[6px] border-0 hover:border-primary text-text-main hover:bg-primary/10 px-6 py-3 font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wider text-xs;
   }
 
+  /* ⚠️ Pontos num overlay (::after), não no background-image do bloco: o herói
+     grafite declara o gradiente por bg-linear-to-br (que também é
+     background-image) e o dot-grid vencia a cascata, deixando o bloco
+     transparente. Mesmo conserto do app novo, para o gabarito bater no gate. */
   .vort-dot-grid {
+    position: relative;
+  }
+  .vort-dot-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
     background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
     background-size: 24px 24px;
   }
@@ -71,11 +82,11 @@
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
+    @apply bg-clip-text text-transparent bg-linear-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
   }
 
   .bg-gradient-atra {
-    @apply bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
+    @apply bg-linear-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
   }
 
   /* Infinite vertical scroll for image carousel */

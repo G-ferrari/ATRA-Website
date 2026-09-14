@@ -40,7 +40,7 @@ const CaseDetailBase: React.FC<CaseDetailProps> = ({
       <section className="relative min-h-[50vh] md:min-h-[60vh] bg-primary overflow-hidden flex items-center pt-32 md:pt-48 pb-16">
         <div className="absolute inset-0">
           <img src={heroImage} alt={title} className="w-full h-full object-cover opacity-40 mix-blend-overlay" referrerPolicy="no-referrer" />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/80 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-t from-primary via-primary/80 to-transparent"></div>
         </div>
         
         <div className="container mx-auto px-4 md:px-6 relative z-10">
