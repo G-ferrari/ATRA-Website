@@ -109,7 +109,7 @@ export default async function SolucoesPage() {
   return (
     <main className="pt-24 md:pt-36 pb-20 min-h-screen bg-surface-1 text-text-main">
       <section className="relative px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pt-6 pb-12">
-        <div className="rounded-[6px] bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid">
+        <div className="rounded-[6px] bg-surface-2 dark:bg-linear-to-br dark:from-[#12151c] dark:via-[#1a2130] dark:to-[#0e1015] text-slate-900 dark:text-white p-6 sm:p-10 md:p-14 shadow-xl dark:shadow-2xl relative overflow-hidden vort-dot-grid">
           <TechCornerBraces color="blue" position="top-left" size={16} />
           <TechCornerBraces color="orange" position="bottom-right" size={16} />
           <div className="max-w-2xl relative z-10">

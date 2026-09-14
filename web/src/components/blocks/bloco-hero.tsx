@@ -13,7 +13,8 @@ import { TextoDestacado } from './texto-destacado'
 const COR_DA_METRICA = {
   primary: 'text-primary',
   secondary: 'text-secondary',
-  emerald: 'text-emerald-400',
+  /* emerald-400 é claro demais sobre o cartão claro do tema claro; escurece nele. */
+  emerald: 'text-emerald-600 dark:text-emerald-400',
 } as const
 
 /* Abertura de página — porte de `legacy/src/pages/About.tsx:150`, que é a mesma
@@ -39,7 +40,10 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
       <div className="max-w-7xl mx-auto relative z-10">
         <div
           className={cn(
-            'rounded-[6px] bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid',
+            /* ⚠️ Bloco temático (D-31): claro no tema claro, grafite no escuro. O
+               gradiente e o texto branco ficam **só** no `dark:`; no claro é
+               cartão claro (`bg-surface-2`) com texto escuro (Regra do Par). */
+            'rounded-[6px] bg-surface-2 dark:bg-linear-to-br dark:from-[#12151c] dark:via-[#1a2130] dark:to-[#0e1015] text-slate-900 dark:text-white p-6 sm:p-10 md:p-14 shadow-xl dark:shadow-2xl relative overflow-hidden vort-dot-grid',
             centro && 'text-center',
           )}
         >
@@ -75,7 +79,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
               </h1>
 
               {bloco.subtitle && (
-                <p className="text-sm md:text-lg font-medium text-white/90 mb-3">{bloco.subtitle}</p>
+                <p className="text-sm md:text-lg font-medium text-slate-700 dark:text-white/90 mb-3">{bloco.subtitle}</p>
               )}
 
               {bloco.description && (
@@ -88,9 +92,9 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                 <p
                   className={
                     centro
-                      ? 'text-xs sm:text-sm text-white/70 font-light max-w-xl mx-auto mb-8'
+                      ? 'text-xs sm:text-sm text-slate-600 dark:text-white/70 font-light max-w-xl mx-auto mb-8'
                       : cn(
-                          'text-xs sm:text-sm md:text-base text-white/70 font-light leading-relaxed mb-6',
+                          'text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 font-light leading-relaxed mb-6',
                           bloco.descriptionWidth === 'wide' ? 'max-w-2xl' : 'max-w-xl',
                         )
                   }
@@ -107,11 +111,11 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                   )}
                 >
                   {bloco.metrics.map((m) => (
-                    <div key={m.label} className="p-3 rounded-[6px] bg-white/5  text-center">
+                    <div key={m.label} className="p-3 rounded-[6px] bg-slate-100 dark:bg-white/5  text-center">
                       <div className={cn('text-lg sm:text-xl font-bold', COR_DA_METRICA[m.color])}>
                         <ContadorAnimado ate={m.value} sufixo={m.suffix} />
                       </div>
-                      <div className="text-[10px] text-white/60 font-medium mt-0.5">{m.label}</div>
+                      <div className="text-[10px] text-slate-500 dark:text-white/60 font-medium mt-0.5">{m.label}</div>
                     </div>
                   ))}
                 </div>
@@ -125,7 +129,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                       href={cta.href}
                       className={cn(
                         i > 0
-                          ? 'px-5 py-2.5 rounded-[6px] bg-white/5  text-white text-xs font-semibold hover:bg-white/10 transition-all'
+                          ? 'px-5 py-2.5 rounded-[6px] bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 text-xs font-semibold transition-all'
                           : solucao
                             ? 'inline-flex items-center justify-center bg-secondary hover:bg-orange-600 text-white px-6 py-3 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-lg hover:-translate-y-0.5 cursor-pointer'
                             : 'px-5 py-2.5 rounded-[6px] bg-primary text-white text-xs font-semibold hover:bg-primary-dark transition-all cursor-pointer shadow-md shadow-primary/20',
