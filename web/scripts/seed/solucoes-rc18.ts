@@ -6,9 +6,10 @@
  *   (Art. 5º), o relatório semestral (Art. 3º), a retenção de 5 anos (Art. 11) e
  *   o prazo de adequação 31/12/2026 (Art. 12). Verificado em
  *   www.bcb.gov.br/.../exibeversao (id 52771).
- * - E-mail ATRA × Google Cloud (RC18_2026.pdf): arquitetura de referência e o
- *   roadmap de adequação em 4 fases.
- * - Estrutura inspirada em logiks.com.br/RC-18 (referência de conteúdo).
+ * - **Brief de conteúdo `RC18_2026.pdf` (12 blocos)** — cópia oficial do marketing,
+ *   adaptada aqui. O FAQ (bloco 10) ficou de fora: o brief traz as perguntas sem
+ *   as respostas, e conteúdo não vai ao ar sem corpo (D-08). A "Arquitetura sobre
+ *   Google Cloud" da v1 foi substituída pelo bloco genérico "Capacidades" do brief.
  *
  * Diferente de `solucao-ia.ts`, este seed **cria** o documento (RC18 não está
  * entre as 6 soluções-base de `solucoes.ts`) e depois grava o layout. Idempotente
@@ -21,6 +22,10 @@
  * sem texto em branco. Tradução completa fica para depois (FEATURE §2.2).
  *
  * ⚠️ Conteúdo é rascunho: a consolidação de texto é do marketing no CMS (D-22).
+ * Limitações do porte do brief para os blocos existentes: o `pageHero` não embute
+ * formulário (o brief pede um no herói) — o formulário fica no `ctaContact` do
+ * rodapé; e o `iconCardGrid` não tem parágrafo de abertura, então os "textos de
+ * abertura" dos blocos de cards do brief não foram portados (ficam eyebrow+título).
  */
 
 import path from 'node:path'
@@ -51,57 +56,46 @@ const fotoContato = await midiaDe(
 
 const PT = {
   base: {
-    title: 'RC 18/2025 — Governança de Qualidade da Informação',
+    title: 'RC 18/2025 — Qualidade e governança da informação prestada ao Banco Central',
     shortDescription:
-      'Adequação à Resolução Conjunta nº 18/2025 do Banco Central: as 12 dimensões de qualidade, arquitetura sobre Google Cloud e roadmap em 4 fases, com diagnóstico gratuito.',
+      'A Resolução Conjunta nº 18/2025 exige comprovar, continuamente, a qualidade das informações prestadas ao Banco Central — governança, processos, tecnologia e evidências. Prazo de adequação: 31/12/2026. A ATRA apoia a jornada ponta a ponta.',
   },
-  heroBadge: 'ATRA × Google Cloud · Parceiro Oficial',
-  heroChip: 'Prazo do BCB: 31/12/2026',
-  heroTitle: 'RC 18/2025: governança de qualidade da informação prestada ao Banco Central',
-  heroHighlight: 'RC 18/2025',
+  /* BLOCO 01 | HERO */
+  heroBadge: 'Resolução Conjunta nº 18/2025 · BCB + CMN',
+  heroChip: 'Prazo de adequação: 31 de dezembro de 2026',
+  heroTitle: 'RC 18/2025: sua instituição está preparada para comprovar a qualidade dos dados?',
+  heroHighlight: 'comprovar a qualidade dos dados',
   heroDesc:
-    'A Resolução Conjunta nº 18/2025 (BCB e CMN) exige qualidade sistemática e auditável das informações prestadas ao regulador — com prazo de adequação em 31/12/2026. Não é uma ferramenta, é um programa de governança. A ATRA constrói a adequação ponta a ponta sobre o Google Cloud.',
-  ctaDiag: 'Fazer diagnóstico gratuito',
+    'A nova exigência regulatória não termina na criação de uma política. É preciso estruturar processos, tecnologia e evidências capazes de demonstrar, continuamente, a qualidade das informações prestadas ao Banco Central.',
+  ctaDiag: 'Avaliar a prontidão da minha instituição',
   ctaSpecialist: 'Falar com especialista',
-  metricas: [
-    { value: 12, suffix: '', label: 'dimensões de qualidade' },
-    { value: 4, suffix: '', label: 'fases de adequação' },
-    { value: 5, suffix: ' anos', label: 'de dossiê de auditoria' },
-  ],
-  exige: {
-    eyebrow: 'O que a RC 18/2025 exige',
-    title: 'Um programa de governança, não uma ferramenta',
+  /* BLOCO 02 | CONTEXTO */
+  contexto: {
+    eyebrow: 'A norma',
+    title: 'A RC 18 mudou o nível de exigência sobre os dados regulatórios',
     cards: [
-      {
-        icon: 'shield',
-        title: 'Política de qualidade aprovada pelo conselho',
-        desc: 'Política das Informações Prestadas, própria e segregada, aprovada e revisada pelo conselho no mínimo anualmente (Art. 4º).',
-      },
-      {
-        icon: 'user-check',
-        title: 'Diretor responsável perante o BCB',
-        desc: 'Designação formal de um diretor responsável pelo cumprimento do previsto na norma junto ao Banco Central (Art. 5º).',
-      },
-      {
-        icon: 'target',
-        title: '12 dimensões de qualidade',
-        desc: 'Cada dimensão mensurada, monitorada e comprovável — com regra, medição e evidência, não declaração (Art. 2º).',
-      },
-      {
-        icon: 'workflow',
-        title: 'Validação automatizada antes do envio',
-        desc: 'Arquitetura de dados com portão de validação antes da prestação da informação ao BCB.',
-      },
-      {
-        icon: 'file-text',
-        title: 'Relatório semestral e dossiê por 5 anos',
-        desc: 'Relatório semestral consolidado (Art. 3º) e documentação retida por, no mínimo, cinco anos (Art. 11).',
-      },
+      { icon: 'shield', title: 'Governar', desc: 'Responsabilidades e controles claramente definidos.' },
+      { icon: 'shield-check', title: 'Validar', desc: 'Testes, verificações e reconciliações antes do envio.' },
+      { icon: 'search', title: 'Rastrear', desc: 'Capacidade de acompanhar a origem e o tratamento das informações.' },
+      { icon: 'chart', title: 'Monitorar', desc: 'Acompanhamento contínuo da qualidade e identificação de inconsistências.' },
+      { icon: 'file-text', title: 'Evidenciar', desc: 'Registros e trilhas que permitam comprovar os controles realizados.' },
     ],
   },
+  /* BLOCO 03 | O QUE A RC 18 EXIGE */
+  exige: {
+    eyebrow: 'O que a RC 18 exige',
+    title: 'Qualidade de dados agora precisa estar sustentada por governança',
+    cards: [
+      { icon: 'user-check', title: 'Governança e responsabilidade', desc: 'Papéis definidos, responsabilidades claras e envolvimento da alta administração.' },
+      { icon: 'database', title: 'Dados e tecnologia', desc: 'Arquitetura, infraestrutura e ferramentas adequadas para gestão e qualidade das informações.' },
+      { icon: 'shield-check', title: 'Controles e evidências', desc: 'Validações, testes, reconciliações, documentação e trilhas de auditoria.' },
+      { icon: 'chart', title: 'Monitoramento contínuo', desc: 'Acompanhamento da qualidade, identificação de irregularidades e ações corretivas.' },
+    ],
+  },
+  /* BLOCO 04 | 12 DIMENSÕES (Art. 2º) */
   dimensoes: {
     eyebrow: 'As 12 dimensões de qualidade (Art. 2º)',
-    title: 'Cada dimensão precisa de regra, medição e evidência',
+    title: '12 dimensões para uma informação de qualidade',
     cards: [
       { icon: 'user-check', title: 'Acessibilidade', desc: 'Condições para o usuário obter a informação — local, forma de demanda e prazos —, com tratamento especial a pessoas com deficiência.' },
       { icon: 'target', title: 'Acurácia', desc: 'A informação reflete a realidade de maneira precisa e confiável, de acordo com a metodologia utilizada.' },
@@ -117,81 +111,89 @@ const PT = {
       { icon: 'zap', title: 'Tempestividade', desc: 'Fornecimento em tempo hábil, no prazo, com curto intervalo entre o fato e a prestação da informação.' },
     ],
   },
-  arquitetura: {
-    eyebrow: 'Arquitetura de referência',
-    title: 'Adequação ponta a ponta sobre o Google Cloud',
+  /* BLOCO 05 | O VERDADEIRO DESAFIO */
+  desafio: {
+    eyebrow: 'O verdadeiro desafio',
+    title: 'O desafio não é apenas ter dados corretos. É conseguir provar a qualidade.',
     cards: [
-      {
-        icon: 'database',
-        glow: 'blue',
-        title: 'BigQuery',
-        desc: 'Plataforma de informação regulatória com zonas segregadas (Raw imutável, Trusted com regra de negócio, Marts regulatórios) e congelamento por data-base.',
-      },
-      {
-        icon: 'book',
-        glow: 'orange',
-        title: 'Knowledge Catalog',
-        desc: 'Dicionário de dados vivo, com glossário de negócio, classificação de sensibilidade e linhagem coluna a coluna.',
-      },
-      {
-        icon: 'workflow',
-        glow: 'blue',
-        title: 'Dataform',
-        desc: 'Regras de qualidade versionadas, com portão automático de validação antes do envio ao BCB.',
-      },
-      {
-        icon: 'cloud',
-        glow: 'orange',
-        title: 'Datastream + Pub/Sub',
-        desc: 'Captura com rastreabilidade desde a origem.',
-      },
-      {
-        icon: 'chart',
-        glow: 'blue',
-        title: 'Looker',
-        desc: 'Painéis executivos de qualidade e o relatório semestral gerado a partir do dado.',
-      },
+      { icon: 'database', title: 'Dados distribuídos', desc: 'Informações espalhadas entre diferentes sistemas e fontes.' },
+      { icon: 'search', title: 'Baixa rastreabilidade', desc: 'Dificuldade para identificar origem, transformação e responsáveis.' },
+      { icon: 'info', title: 'Inconsistências identificadas tarde', desc: 'Erros descobertos apenas próximo ao momento do reporte.' },
+      { icon: 'file-text', title: 'Evidências dispersas', desc: 'Controles e registros distribuídos em diferentes processos e ferramentas.' },
+      { icon: 'workflow', title: 'Baixa escalabilidade', desc: 'Dependência excessiva de controles manuais.' },
     ],
   },
-  roadmap: {
-    eyebrow: 'Roadmap de adequação',
-    title: 'Quatro fases até a conformidade',
-    desc: 'O ponto de partida é um assessment inicial, dimensionado pelo porte e complexidade da sua instituição. 30 minutos de conversa mapeiam o cenário e definem os próximos passos.',
+  /* BLOCO 06 | O PRAZO */
+  prazo: {
+    eyebrow: 'O prazo',
+    title: '31 de dezembro de 2026. O prazo está correndo.',
+    desc: 'A resolução entrou em vigor em janeiro de 2026 e estabelece até 31 de dezembro de 2026 para que as instituições realizem os procedimentos necessários à adequação. O desafio é transformar requisitos regulatórios em uma estrutura operacional que funcione de forma contínua, e não apenas para atender a uma data.',
     steps: [
-      { title: 'Diagnóstico', desc: 'Inventário, assessment DMBOK e gap das 12 dimensões — mapeando o cenário atual e a distância até o nível exigido.' },
-      { title: 'Fundação', desc: 'Política ao conselho, comitê de dados, catálogo e dicionário — papéis formais e governança estabelecidos.' },
-      { title: 'Evidência', desc: 'Regras de qualidade em produção, portão de validação antes do envio, linhagem e painéis.' },
-      { title: 'Sustentação', desc: 'Relatório semestral ao conselho, auditoria e capacitação contínua.' },
+      { title: 'Hoje', desc: 'Situação atual da instituição.' },
+      { title: 'Diagnóstico', desc: 'Avaliação do cenário, dos processos e dos controles.' },
+      { title: 'Roadmap', desc: 'Plano de adequação priorizado por risco e esforço.' },
+      { title: 'Implementação', desc: 'Execução das mudanças de governança, dados e tecnologia.' },
+      { title: 'Evidências', desc: 'Registros e trilhas que comprovam os controles realizados.' },
+      { title: 'Adequação', desc: 'Conformidade contínua com a norma.' },
     ],
   },
-  porque: {
-    eyebrow: 'Por que ATRA',
-    title: 'Especialização em dados e parceria oficial Google Cloud',
-    desc: '15+ anos em dados, IA e cloud. 140+ profissionais especializados. Agnóstica em plataforma, com 9 parceiros oficiais — e uma arquitetura especialmente robusta para a RC 18/2025 sobre o Google Cloud.',
+  /* BLOCO 07 | COMO A ATRA AJUDA */
+  jornada: {
+    eyebrow: 'Como a ATRA ajuda',
+    title: 'Da exigência regulatória à operação de dados',
+    desc: 'A ATRA combina experiência em dados, governança, qualidade, engenharia e tecnologia para apoiar instituições financeiras na construção de uma estrutura preparada para os requisitos da RC 18/2025.',
+    steps: [
+      { title: 'Diagnosticar', desc: 'Avaliação do cenário atual: processos, dados, controles e nível de prontidão.' },
+      { title: 'Governar', desc: 'Definição de responsabilidades, políticas, processos e mecanismos de controle.' },
+      { title: 'Estruturar', desc: 'Evolução da arquitetura, integração, qualidade e gestão dos dados.' },
+      { title: 'Evidenciar', desc: 'Construção de mecanismos de rastreabilidade, testes, registros e evidências.' },
+      { title: 'Sustentar', desc: 'Monitoramento contínuo, indicadores, melhoria e evolução da maturidade.' },
+    ],
+  },
+  /* BLOCO 08 | CAPACIDADES */
+  capacidades: {
+    eyebrow: 'Capacidades',
+    title: 'Tecnologia como meio para uma governança de dados mais eficiente',
+    cards: [
+      { icon: 'shield-check', glow: 'blue', title: 'Data Governance', desc: 'Políticas, responsabilidades, catálogo e gestão dos dados.' },
+      { icon: 'target', glow: 'orange', title: 'Data Quality', desc: 'Regras, validações, monitoramento e tratamento de inconsistências.' },
+      { icon: 'workflow', glow: 'blue', title: 'Data Integration', desc: 'Integração das diferentes fontes e sistemas de informação.' },
+      { icon: 'database', glow: 'orange', title: 'Data Engineering', desc: 'Pipelines, processamento e estruturação dos dados.' },
+      { icon: 'cloud', glow: 'blue', title: 'Cloud & Architecture', desc: 'Arquiteturas modernas e escaláveis para ambientes regulados.' },
+      { icon: 'chart', glow: 'orange', title: 'Analytics', desc: 'Indicadores e análises para acompanhamento da qualidade e do desempenho.' },
+    ],
+  },
+  /* BLOCO 09 | EXPERIÊNCIA / PROVA */
+  experiencia: {
+    eyebrow: 'Experiência',
+    title: 'Experiência em dados no ambiente financeiro',
+    desc: 'A ATRA atua há mais de 15 anos com dados, tecnologia e transformação de ambientes complexos, incluindo projetos para instituições do setor financeiro.',
     items: [
-      { icon: 'award', accent: 'primary', title: 'Parceira oficial Google Cloud', desc: 'Arquitetura de referência validada para a RC 18/2025.' },
-      { icon: 'users', accent: 'secondary', title: '140+ especialistas · 15+ anos', desc: 'Time especializado em dados, IA, governança e cloud.' },
-      { icon: 'shield-check', accent: 'primary', title: 'Foco regulatório', desc: 'Do assessment à sustentação, com evidência para o Banco Central.' },
+      { icon: 'award', accent: 'primary', title: 'Banco ABC', desc: 'Projetos envolvendo governança, qualidade, integração e marketplace de dados.' },
+      { icon: 'award', accent: 'secondary', title: 'Banco Carrefour', desc: 'Modernização de processos regulatórios com Google Cloud, alcançando 51x mais velocidade no processamento.' },
+      { icon: 'users', accent: 'primary', title: '+15 anos', desc: 'Experiência em dados, cloud, engenharia, analytics e governança.' },
+      { icon: 'shield-check', accent: 'secondary', title: 'Setor financeiro', desc: 'Ambientes de risco, compliance, dados regulatórios e proteção de informações.' },
     ],
   },
+  /* BLOCO 11 | CTA FINAL */
   ctaBanner: {
-    title: 'Descubra a prontidão da sua instituição para a RC 18/2025',
+    title: 'Sua instituição está preparada para a RC 18/2025?',
     highlight: 'RC 18/2025',
-    desc: 'Faça o diagnóstico rápido e gratuito e receba um índice de prontidão pelas 12 dimensões da norma.',
-    label: 'Fazer diagnóstico gratuito',
+    desc: 'O prazo de adequação termina em 31 de dezembro de 2026. Comece avaliando o cenário atual e identificando os principais gaps de governança, qualidade, processos e tecnologia.',
+    label: 'Avaliar a prontidão da minha instituição',
     secondary: 'Falar com especialista',
-    caption: 'assessment inicial de 30 minutos',
+    caption: 'diagnóstico rápido e gratuito',
   },
   contato: {
     title: 'Fale com o time especializado da ATRA',
-    subtitle: 'Assessment inicial de 30 minutos, dimensionado pelo porte da sua instituição.',
+    subtitle: 'Comece pela avaliação do cenário atual e pelos principais gaps de governança, qualidade, processos e tecnologia.',
   },
   nav: {
-    exige: 'A norma',
+    contexto: 'A norma',
     dimensoes: 'Dimensões',
-    arquitetura: 'Arquitetura',
-    roadmap: 'Roadmap',
-    porque: 'Por que ATRA',
+    desafio: 'O desafio',
+    jornada: 'Como ajudamos',
+    capacidades: 'Capacidades',
     contato: 'Contato',
   },
 }
@@ -211,6 +213,8 @@ const HREF_DIAG = '/diagnostico-rc18'
 
 function layout(t: typeof PT) {
   return [
+    /* BLOCO 01 | HERO. `pageHero` não embute formulário (o brief pede um no
+       herói); a captação fica no `ctaContact` do rodapé. */
     {
       blockType: 'pageHero' as const,
       badge: t.heroBadge,
@@ -223,26 +227,33 @@ function layout(t: typeof PT) {
       mediaMode: 'none' as const,
       ctaVariant: 'secondary' as const,
       ctas: [
-        { label: t.ctaDiag, href: HREF_DIAG},
+        { label: t.ctaDiag, href: HREF_DIAG },
         { label: t.ctaSpecialist, href: '#contato' },
       ],
-      metrics: [
-        { value: t.metricas[0].value, suffix: t.metricas[0].suffix, label: t.metricas[0].label, color: 'primary' as const },
-        { value: t.metricas[1].value, suffix: t.metricas[1].suffix, label: t.metricas[1].label, color: 'secondary' as const },
-        { value: t.metricas[2].value, suffix: t.metricas[2].suffix, label: t.metricas[2].label, color: 'emerald' as const },
-      ],
+      metrics: [],
     },
     { blockType: 'stickyPageNav' as const, variant: 'solution' as const },
+    /* BLOCO 02 | CONTEXTO */
     {
       blockType: 'iconCardGrid' as const,
-      anchor: 'o-que-exige',
-      navLabel: t.nav.exige,
+      anchor: 'a-norma',
+      navLabel: t.nav.contexto,
+      eyebrow: t.contexto.eyebrow,
+      title: t.contexto.title,
+      columns: '3' as const,
+      variant: 'card' as const,
+      items: t.contexto.cards.map((c) => ({ icon: c.icon as Icone, title: c.title, description: c.desc })),
+    },
+    /* BLOCO 03 | O QUE A RC 18 EXIGE */
+    {
+      blockType: 'iconCardGrid' as const,
       eyebrow: t.exige.eyebrow,
       title: t.exige.title,
-      columns: '3' as const,
+      columns: '4' as const,
       variant: 'card' as const,
       items: t.exige.cards.map((c) => ({ icon: c.icon as Icone, title: c.title, description: c.desc })),
     },
+    /* BLOCO 04 | 12 DIMENSÕES */
     {
       blockType: 'iconCardGrid' as const,
       anchor: 'dimensoes',
@@ -254,14 +265,45 @@ function layout(t: typeof PT) {
       variant: 'card' as const,
       items: t.dimensoes.cards.map((c) => ({ icon: c.icon as Icone, title: c.title, description: c.desc })),
     },
+    /* BLOCO 05 | O VERDADEIRO DESAFIO */
+    {
+      blockType: 'iconCardGrid' as const,
+      anchor: 'o-desafio',
+      navLabel: t.nav.desafio,
+      eyebrow: t.desafio.eyebrow,
+      title: t.desafio.title,
+      columns: '3' as const,
+      variant: 'card' as const,
+      items: t.desafio.cards.map((c) => ({ icon: c.icon as Icone, title: c.title, description: c.desc })),
+    },
+    /* BLOCO 06 | O PRAZO */
+    {
+      blockType: 'processSteps' as const,
+      theme: 'surface-2' as const,
+      eyebrow: t.prazo.eyebrow,
+      title: t.prazo.title,
+      description: t.prazo.desc,
+      steps: t.prazo.steps.map((s) => ({ title: s.title, description: s.desc })),
+    },
+    /* BLOCO 07 | COMO A ATRA AJUDA */
+    {
+      blockType: 'processSteps' as const,
+      anchor: 'como-ajudamos',
+      navLabel: t.nav.jornada,
+      eyebrow: t.jornada.eyebrow,
+      title: t.jornada.title,
+      description: t.jornada.desc,
+      steps: t.jornada.steps.map((s) => ({ title: s.title, description: s.desc })),
+    },
+    /* BLOCO 08 | CAPACIDADES */
     {
       blockType: 'valueCards' as const,
-      anchor: 'arquitetura',
-      navLabel: t.nav.arquitetura,
+      anchor: 'capacidades',
+      navLabel: t.nav.capacidades,
       variant: 'glow' as const,
-      eyebrow: t.arquitetura.eyebrow,
-      title: t.arquitetura.title,
-      items: t.arquitetura.cards.map((c) => ({
+      eyebrow: t.capacidades.eyebrow,
+      title: t.capacidades.title,
+      items: t.capacidades.cards.map((c) => ({
         icon: c.icon as Icone,
         glowColor: c.glow as 'blue' | 'orange',
         title: c.title,
@@ -269,50 +311,39 @@ function layout(t: typeof PT) {
         bullets: [],
       })),
     },
-    {
-      blockType: 'processSteps' as const,
-      anchor: 'roadmap',
-      navLabel: t.nav.roadmap,
-      theme: 'surface-2' as const,
-      eyebrow: t.roadmap.eyebrow,
-      title: t.roadmap.title,
-      description: t.roadmap.desc,
-      steps: t.roadmap.steps.map((s) => ({ title: s.title, description: s.desc })),
-    },
+    /* BLOCO 09 | EXPERIÊNCIA / PROVA */
     {
       blockType: 'audienceSplit' as const,
-      anchor: 'por-que-atra',
-      navLabel: t.nav.porque,
-      eyebrow: t.porque.eyebrow,
+      eyebrow: t.experiencia.eyebrow,
       eyebrowIcon: 'award' as const,
-      title: t.porque.title,
-      description: t.porque.desc,
-      cta: { label: t.ctaSpecialist, href: '#contato' },
-      items: t.porque.items.map((it) => ({
+      title: t.experiencia.title,
+      description: t.experiencia.desc,
+      items: t.experiencia.items.map((it) => ({
         icon: it.icon as Icone,
         accent: it.accent as 'primary' | 'secondary',
         title: it.title,
         description: it.desc,
       })),
     },
+    /* BLOCO 11 | CTA FINAL */
     {
       blockType: 'ctaBanner' as const,
       variant: 'dark' as const,
       title: t.ctaBanner.title,
       highlight: t.ctaBanner.highlight,
       description: t.ctaBanner.desc,
-      cta: { label: t.ctaBanner.label, href: HREF_DIAG},
+      cta: { label: t.ctaBanner.label, href: HREF_DIAG },
       secondaryCta: { label: t.ctaBanner.secondary, href: '#contato', caption: t.ctaBanner.caption },
     },
+    /* BLOCO 11 | FORMULÁRIO. Padrão da home (task 004): variante com foto + cartão
+       de contato. O brief pede campos extras (empresa, cargo, "já iniciou a
+       adequação?") que o `ctaContact` não tem — fica o formulário padrão. */
     {
       blockType: 'ctaContact' as const,
       anchor: 'contato',
       navLabel: t.nav.contato,
       title: t.contato.title,
       subtitle: t.contato.subtitle,
-      /* Padrão da home (task 004): variante com foto + cartão de contato. O cartão
-       * (telefone/e-mail/endereço/redes) é populado por `comContato` na rota de
-       * solução, que passou a lê-lo do global `contact`. */
       showContactCard: true,
       variant: 'photo' as const,
       photo: fotoContato,
@@ -347,5 +378,5 @@ await payload.update({
   locale: 'en',
 })
 
-console.log('  1 página, 9 blocos, 2 idiomas (EN stub)')
+console.log('  1 página, 12 blocos, 2 idiomas (EN stub)')
 process.exit(0)
