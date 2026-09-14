@@ -54,8 +54,14 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
     <div
       className={cn(
         'sticky w-full flex flex-col items-center pointer-events-none transition-all duration-300',
+        /* ⚠️ z-30 nas duas variantes: **abaixo** do cabeçalho (`z-40`), senão o
+           mega-menu do cabeçalho abre atrás desta barra de submenu da página. A
+           variante de solução estava em `z-50` e cobria o dropdown. O cabeçalho
+           fica em z-40 de propósito — o modal de /consultores é z-50 e precisa
+           cobri-lo, então subir o cabeçalho quebraria aquilo; quem desce é a
+           barra. */
         solucao
-          ? cn('z-50 px-4', grudado ? 'top-[62px] md:top-[74px]' : 'top-[76px] md:top-[88px]')
+          ? cn('z-30 px-4', grudado ? 'top-[62px] md:top-[74px]' : 'top-[76px] md:top-[88px]')
           : cn(
               'z-30 px-3 sm:px-4',
               /* ⚠️ O respiro abaixo é do menu de /sobre (`About.tsx:259`), não
