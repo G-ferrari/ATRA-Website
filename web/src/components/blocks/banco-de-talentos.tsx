@@ -68,7 +68,7 @@ export function BancoDeTalentos({
       id="banco-talentos"
       className="bg-surface-1  rounded-[6px] shadow-xl overflow-hidden max-w-5xl mx-auto flex flex-col lg:flex-row relative scroll-mt-32"
     >
-      <div className="lg:w-5/12 bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] p-8 lg:p-12 text-white flex flex-col justify-center relative">
+      <div className="lg:w-5/12 bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] p-8 lg:p-12 text-white flex flex-col justify-center relative">
         <TechCornerBraces color="blue" position="top-left" size={14} />
         <div className="relative z-10">
           {banco.eyebrow && (

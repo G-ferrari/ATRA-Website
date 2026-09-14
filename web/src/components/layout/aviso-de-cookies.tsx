@@ -197,7 +197,7 @@ function Categoria({
         disabled={!aoAlternar}
         onClick={aoAlternar}
         className={`relative shrink-0 w-9 h-5 rounded-full transition-colors mt-0.5 ${
-          ativo ? 'bg-gradient-to-r from-primary to-primary-dark' : 'bg-surface-1 dark:bg-[#0e1015] '
+          ativo ? 'bg-linear-to-r from-primary to-primary-dark' : 'bg-surface-1 dark:bg-[#0e1015] '
         } ${aoAlternar ? 'cursor-pointer' : 'opacity-60 cursor-not-allowed'}`}
       >
         <span
@@ -211,6 +211,6 @@ function Categoria({
 /* O CTA padrão do site — copiado do convite de lead (`convite-lead.tsx`),
  * que copiou do chat. O secundário tem o MESMO padding e tipografia. */
 const CTA =
-  'px-4 py-2 bg-gradient-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:shadow-md hover:shadow-primary/25 active:scale-[0.98] transition-all cursor-pointer'
+  'px-4 py-2 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:shadow-md hover:shadow-primary/25 active:scale-[0.98] transition-all cursor-pointer'
 const SECUNDARIO =
   'px-4 py-2 bg-surface-1 dark:bg-[#0e1015]  text-text-main font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:border-primary/50 active:scale-[0.98] transition-all cursor-pointer'

@@ -137,7 +137,7 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
                     className="absolute inset-0 w-full h-full object-cover opacity-15 dark:opacity-25 group-hover:scale-105 transition-transform duration-700 pointer-events-none"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-surface-1 via-surface-1/90 to-surface-1/40 dark:from-[#0f1117] dark:via-[#0f1117]/90 dark:to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-t from-surface-1 via-surface-1/90 to-surface-1/40 dark:from-[#0f1117] dark:via-[#0f1117]/90 dark:to-transparent pointer-events-none" />
 
                 <div className="relative z-10">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 text-xs font-bold uppercase tracking-wider text-primary mb-6">

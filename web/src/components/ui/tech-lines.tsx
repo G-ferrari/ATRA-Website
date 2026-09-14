@@ -19,7 +19,7 @@ type Cor = 'blue' | 'orange' | 'mixed'
 const FUNDO: Record<Cor, string> = {
   blue: 'bg-primary',
   orange: 'bg-secondary',
-  mixed: 'bg-gradient-to-r from-primary to-secondary',
+  mixed: 'bg-linear-to-r from-primary to-secondary',
 }
 
 const BRILHO: Record<Cor, string> = {
@@ -103,7 +103,7 @@ export function TechVerticalLine({
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 1, delay, ease: [0.25, 1, 0.5, 1] }}
           style={{ originY: cima ? 0 : 1, height: '100%' }}
-          className={`w-[1px] ${color === 'mixed' ? 'bg-gradient-to-b from-primary to-secondary' : FUNDO[color]} opacity-40 relative`}
+          className={`w-[1px] ${color === 'mixed' ? 'bg-linear-to-b from-primary to-secondary' : FUNDO[color]} opacity-40 relative`}
         >
           {/* O nó que desliza pela linha roda em laço infinito; a captura o
               congela porque `stabilize()` zera a duração de toda animação. */}

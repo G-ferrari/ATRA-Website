@@ -150,7 +150,7 @@ export function Conversa({
             </button>
             <div className="flex items-center gap-2.5">
               <div className="relative">
-                <div className="w-9 h-9 rounded-[6px] bg-gradient-to-tr from-primary to-secondary p-[1px] shadow-xs">
+                <div className="w-9 h-9 rounded-[6px] bg-linear-to-tr from-primary to-secondary p-[1px] shadow-xs">
                   <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[4px] flex items-center justify-center text-primary">
                     <Sparkles size={16} className="text-primary" aria-hidden />
                   </div>
@@ -204,7 +204,7 @@ export function Conversa({
 
           {mensagens.length === 0 && !carregando && (
             <div className="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto py-6 sm:py-10 px-2">
-              <div className="w-14 h-14 rounded-[6px] bg-gradient-to-br from-primary/20 via-primary/5 to-secondary/20 border border-primary/20 flex items-center justify-center mb-4 shadow-md shadow-primary/10">
+              <div className="w-14 h-14 rounded-[6px] bg-linear-to-br from-primary/20 via-primary/5 to-secondary/20 border border-primary/20 flex items-center justify-center mb-4 shadow-md shadow-primary/10">
                 <Sparkles size={26} className="text-primary" aria-hidden />
               </div>
 
@@ -257,7 +257,7 @@ export function Conversa({
               )}
             >
               {m.role === 'model' && (
-                <div className="w-8 h-8 rounded-[6px] bg-gradient-to-tr from-primary to-secondary p-[1px] shrink-0 mt-0.5 shadow-sm shadow-primary/10">
+                <div className="w-8 h-8 rounded-[6px] bg-linear-to-tr from-primary to-secondary p-[1px] shrink-0 mt-0.5 shadow-sm shadow-primary/10">
                   <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[4px] flex items-center justify-center text-primary">
                     <Sparkles size={14} className="text-primary" aria-hidden />
                   </div>
@@ -298,7 +298,7 @@ export function Conversa({
 
           {carregando && (
             <div className="flex gap-2.5 sm:gap-3.5 max-w-[85%]">
-              <div className="w-8 h-8 rounded-[6px] bg-gradient-to-tr from-primary to-secondary p-[1px] shrink-0 mt-0.5 shadow-sm shadow-primary/10">
+              <div className="w-8 h-8 rounded-[6px] bg-linear-to-tr from-primary to-secondary p-[1px] shrink-0 mt-0.5 shadow-sm shadow-primary/10">
                 <div className="w-full h-full bg-surface-2 dark:bg-[#181b22] rounded-[4px] flex items-center justify-center text-primary">
                   <Sparkles size={14} className="text-primary animate-pulse" aria-hidden />
                 </div>
@@ -338,7 +338,7 @@ export function Conversa({
               type="submit"
               disabled={!texto.trim() || carregando}
               aria-label="Enviar mensagem"
-              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] flex items-center justify-center gap-1.5 hover:shadow-md hover:shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] transition-all cursor-pointer shrink-0"
+              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] flex items-center justify-center gap-1.5 hover:shadow-md hover:shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] transition-all cursor-pointer shrink-0"
             >
               <Send size={14} className={cn(carregando && 'opacity-0')} aria-hidden />
               <span className="hidden sm:inline">Enviar</span>

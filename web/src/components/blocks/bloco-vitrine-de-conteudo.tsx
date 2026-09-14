@@ -41,7 +41,7 @@ function Cartao({
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-surface-1/95 via-surface-1/60 to-transparent p-5 flex flex-col justify-end">
+      <div className="absolute inset-0 bg-linear-to-t from-surface-1/95 via-surface-1/60 to-transparent p-5 flex flex-col justify-end">
         <div className="flex items-center gap-1.5 mb-1.5">
           <Icone nome={card.icon} size={13} className="text-secondary" />
           <span className="text-[10px] font-bold tracking-widest uppercase text-secondary">{card.category}</span>
@@ -123,7 +123,7 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-surface-1/95 via-surface-1/50 to-transparent p-6 flex flex-col justify-between">
+                <div className="absolute inset-0 bg-linear-to-t from-surface-1/95 via-surface-1/50 to-transparent p-6 flex flex-col justify-between">
                   <div>
                     {bloco.featured.category && (
                       <span className="text-[10px] font-bold tracking-widest uppercase mb-1.5 block text-secondary">
