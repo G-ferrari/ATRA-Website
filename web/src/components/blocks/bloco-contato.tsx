@@ -2,6 +2,7 @@ import { Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from 'lucide-react'
 
 import { TechCornerBraces } from '@/components/ui'
 import { cn } from '@/lib/utils'
+import type { Locale } from '@/lib/locales'
 import type { BlocoCtaContact } from '@/types/content'
 
 import { ContatoComFoto } from './contato-com-foto'
@@ -20,10 +21,10 @@ const CAMPOS = [
   { name: 'phone', tipo: 'tel', ph: 'Telefone' },
 ] as const
 
-export function BlocoContato({ bloco }: { bloco: BlocoCtaContact }) {
+export function BlocoContato({ bloco, locale }: { bloco: BlocoCtaContact; locale: Locale }) {
   /* A forma com foto é outro markup, não outra pele: ver a nota do campo
      `variant` em `blocks/index.ts`. */
-  if (bloco.variant === 'photo') return <ContatoComFoto bloco={bloco} />
+  if (bloco.variant === 'photo') return <ContatoComFoto bloco={bloco} locale={locale} />
 
   /* O cartão some se o contato não veio resolvido — é o que acontece no preview
      de um bloco solto no admin. A página o injeta (MIG-072). */

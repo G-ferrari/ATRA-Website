@@ -54,7 +54,7 @@ export function RenderBlocks({ blocos, locale }: { blocos: Bloco[]; locale: Loca
           case 'processSteps':
             return <BlocoEtapas key={b.id} bloco={b} />
           case 'ctaContact':
-            return <BlocoContato key={b.id} bloco={b} />
+            return <BlocoContato key={b.id} bloco={b} locale={locale} />
           case 'jobsList':
             return <BlocoVagas key={b.id} bloco={b} locale={locale} />
           case 'partnerShowcase':
