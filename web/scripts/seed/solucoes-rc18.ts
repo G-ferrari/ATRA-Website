@@ -182,6 +182,7 @@ const PT = {
     desafio: 'O desafio',
     jornada: 'Como ajudamos',
     capacidades: 'Capacidades',
+    contato: 'Contato',
   },
 }
 
@@ -312,10 +313,14 @@ function layout(t: typeof PT) {
         description: it.desc,
       })),
     },
-    /* BLOCO 11 | CTA FINAL */
+    /* BLOCO 11 | CTA FINAL. Leva o anchor `contato`: o item "Contato" do submenu e
+       o `#contato` do herói caem aqui, com o RC18 Quick Check logo abaixo (a ilha
+       renderizada pela página não é bloco e não entra no submenu por si). */
     {
       blockType: 'ctaBanner' as const,
       variant: 'dark' as const,
+      anchor: 'contato' as const,
+      navLabel: t.nav.contato,
       title: t.ctaBanner.title,
       highlight: t.ctaBanner.highlight,
       description: t.ctaBanner.desc,
