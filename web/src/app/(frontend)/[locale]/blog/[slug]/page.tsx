@@ -147,7 +147,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
   }).format(new Date(post.publishedAt))
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white dark:bg-[#0e1015]">
       {/* Invisível: vai num `<script type="application/ld+json">`. */}
       <DadosEstruturados dados={dadosDoArtigo} />
       <section className="relative min-h-[50vh] md:min-h-[60vh] bg-primary overflow-hidden flex items-center pt-32 md:pt-48 pb-16">
@@ -191,7 +191,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
                 {post.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-0.5 rounded-[4px] bg-slate-50 text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1 "
+                    className="px-2 py-0.5 rounded-[4px] bg-slate-50 dark:bg-[#181b22] text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1 "
                   >
                     <Tag size={10} className="text-primary/70" aria-hidden /> {tag}
                   </span>
@@ -202,9 +202,9 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
             {post.body ? (
               <RichText data={post.body} />
             ) : (
-              <div className="rounded-[6px]  bg-slate-50 p-8 text-center mb-12">
-                <h2 className="font-bold text-slate-900 mb-1">{t.semCorpoTitulo}</h2>
-                <p className="text-sm text-slate-600">{t.semCorpoTexto}</p>
+              <div className="rounded-[6px]  bg-slate-50 dark:bg-[#181b22] p-8 text-center mb-12">
+                <h2 className="font-bold text-slate-900 dark:text-white mb-1">{t.semCorpoTitulo}</h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{t.semCorpoTexto}</p>
               </div>
             )}
           </div>

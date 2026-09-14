@@ -25,14 +25,22 @@ const conversores = (classeDoParagrafo?: string): JSXConvertersFunction =>
   paragraph: ({ node, nodesToJSX }) => (
     <p className={classeDoParagrafo}>{nodesToJSX({ nodes: node.children })}</p>
   ),
+  /* ⚠️ Regra do Par (DESIGN.md), com o valor escuro **por último**: sem o
+   * `dark:` o título e a lista saíam `slate-900`/`slate-700` sobre o grafite do
+   * tema escuro — invisíveis dentro de `bloco-texto`, que tem superfície
+   * temática. Corolário: toda página que renderiza este componente precisa de
+   * fundo temático (as páginas de detalhe ganharam `dark:bg-[#0e1015]` junto);
+   * `dark:text-white` sobre um `bg-white` fixo seria o mesmo bug ao contrário. */
   heading: ({ node, nodesToJSX }) => {
     const Tag = node.tag
-    return <Tag className="text-2xl font-bold text-slate-900">{nodesToJSX({ nodes: node.children })}</Tag>
+    return (
+      <Tag className="text-2xl font-bold text-slate-900 dark:text-white">{nodesToJSX({ nodes: node.children })}</Tag>
+    )
   },
   list: ({ node, nodesToJSX }) => {
     const Tag = node.tag
     return (
-      <Tag className="list-inside space-y-2 text-slate-700 text-lg leading-relaxed data-[type=number]:list-decimal data-[type=bullet]:list-disc" data-type={node.listType}>
+      <Tag className="list-inside space-y-2 text-slate-700 dark:text-slate-300 text-lg leading-relaxed data-[type=number]:list-decimal data-[type=bullet]:list-disc" data-type={node.listType}>
         {nodesToJSX({ nodes: node.children })}
       </Tag>
     )
@@ -42,7 +50,7 @@ const conversores = (classeDoParagrafo?: string): JSXConvertersFunction =>
 export function RichText({
   data,
   className,
-  classeDoParagrafo = 'text-slate-700 text-lg leading-relaxed',
+  classeDoParagrafo = 'text-slate-700 dark:text-slate-300 text-lg leading-relaxed',
 }: {
   data: unknown
   className?: string
