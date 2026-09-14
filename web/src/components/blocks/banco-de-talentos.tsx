@@ -68,7 +68,8 @@ export function BancoDeTalentos({
       id="banco-talentos"
       className="bg-surface-1  rounded-[6px] shadow-xl overflow-hidden max-w-5xl mx-auto flex flex-col lg:flex-row relative scroll-mt-32"
     >
-      <div className="lg:w-5/12 bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] p-8 lg:p-12 text-white flex flex-col justify-center relative">
+      {/* Painel temático (D-31): claro no tema claro, grafite no escuro. */}
+      <div className="lg:w-5/12 bg-surface-2 dark:bg-linear-to-br dark:from-[#12151c] dark:via-[#1a2130] dark:to-[#0e1015] p-8 lg:p-12 text-slate-900 dark:text-white flex flex-col justify-center relative">
         <TechCornerBraces color="blue" position="top-left" size={14} />
         <div className="relative z-10">
           {banco.eyebrow && (
@@ -84,13 +85,13 @@ export function BancoDeTalentos({
             </h3>
           )}
           {banco.description && (
-            <p className="text-white/70 text-xs sm:text-sm leading-relaxed mb-6 font-light">{banco.description}</p>
+            <p className="text-slate-600 dark:text-white/70 text-xs sm:text-sm leading-relaxed mb-6 font-light">{banco.description}</p>
           )}
 
           {banco.note && (
-            <div className="flex items-center gap-4 bg-white/5  p-4 rounded-[6px]">
+            <div className="flex items-center gap-4 bg-slate-100 dark:bg-white/5  p-4 rounded-[6px]">
               <Upload size={20} className="text-primary shrink-0" aria-hidden />
-              <p className="text-xs text-white/80 font-light leading-relaxed">{banco.note}</p>
+              <p className="text-xs text-slate-600 dark:text-white/80 font-light leading-relaxed">{banco.note}</p>
             </div>
           )}
         </div>
