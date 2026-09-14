@@ -62,10 +62,10 @@ export function VideoSobClique({
       className="relative block w-full aspect-video rounded-[6px] overflow-hidden  bg-slate-950 shadow-xl group cursor-pointer"
     >
       <Image src={imagem.url} alt="" fill sizes="(max-width: 896px) 100vw, 896px" className="object-cover opacity-60 group-hover:opacity-70 transition-opacity" />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
 
       <span className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-        <span className="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-primary-dark text-white flex items-center justify-center shadow-md shadow-primary/25 group-hover:scale-105 active:scale-[0.98] transition-transform">
+        <span className="w-16 h-16 rounded-full bg-linear-to-r from-primary to-primary-dark text-white flex items-center justify-center shadow-md shadow-primary/25 group-hover:scale-105 active:scale-[0.98] transition-transform">
           <Play size={24} className="ml-1" aria-hidden />
         </span>
         <span className="text-white font-bold text-[11px] uppercase tracking-wider">{rotuloAssistir}</span>

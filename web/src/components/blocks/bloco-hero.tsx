@@ -39,7 +39,7 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
       <div className="max-w-7xl mx-auto relative z-10">
         <div
           className={cn(
-            'rounded-[6px] bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid',
+            'rounded-[6px] bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015]  text-white p-6 sm:p-10 md:p-14 shadow-2xl relative overflow-hidden vort-dot-grid',
             centro && 'text-center',
           )}
         >

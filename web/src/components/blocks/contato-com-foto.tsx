@@ -107,7 +107,7 @@ export function ContatoComFoto({ bloco }: { bloco: BlocoCtaContact }) {
                 className="absolute inset-0 w-full h-full object-cover opacity-25 dark:opacity-35 scale-105"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-1/90 via-surface-1/80 to-surface-2/95 dark:from-black/90 dark:via-black/60 dark:to-[#12151c]/95 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-linear-to-br from-surface-1/90 via-surface-1/80 to-surface-2/95 dark:from-black/90 dark:via-black/60 dark:to-[#12151c]/95 mix-blend-multiply" />
             <div className="absolute inset-0 bg-surface-1/40 dark:bg-[#12151c]/30" />
 
             <div className="relative z-10 text-text-main dark:text-white">

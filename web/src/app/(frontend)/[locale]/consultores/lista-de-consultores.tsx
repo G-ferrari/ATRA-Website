@@ -260,7 +260,7 @@ export function ListaDeConsultores({
                     <div className="flex items-center gap-3.5 min-w-0">
                       <div
                         className={cn(
-                          'w-10 h-10 sm:w-11 sm:h-11 rounded-[6px] bg-gradient-to-br flex items-center justify-center text-white font-bold text-xs shadow-xs shrink-0',
+                          'w-10 h-10 sm:w-11 sm:h-11 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-xs shadow-xs shrink-0',
                           GRADIENTES[p.gradient] ?? GRADIENTES['blue-cyan'],
                         )}
                       >
@@ -374,7 +374,7 @@ export function ListaDeConsultores({
             <div className="flex items-start gap-4 mb-6 pr-10">
               <div
                 className={cn(
-                  'w-12 h-12 rounded-[6px] bg-gradient-to-br flex items-center justify-center text-white font-bold text-base shadow-md shrink-0',
+                  'w-12 h-12 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-base shadow-md shrink-0',
                   GRADIENTES[aberto.gradient] ?? GRADIENTES['blue-cyan'],
                 )}
               >

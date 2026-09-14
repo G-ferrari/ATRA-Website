@@ -93,7 +93,7 @@ export function BlocoContato({ bloco }: { bloco: BlocoCtaContact }) {
           </div>
 
           {bloco.showContactCard && contato && (
-            <div className="bg-gradient-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] rounded-[6px] p-8 lg:p-12 text-white flex flex-col justify-center gap-8 relative overflow-hidden">
+            <div className="bg-linear-to-br from-[#12151c] via-[#1a2130] to-[#0e1015] rounded-[6px] p-8 lg:p-12 text-white flex flex-col justify-center gap-8 relative overflow-hidden">
               <TechCornerBraces color="blue" position="top-left" size={14} />
 
               <div className="grid sm:grid-cols-2 gap-8 relative z-10">

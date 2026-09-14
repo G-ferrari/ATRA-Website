@@ -117,7 +117,7 @@ export function ConviteLead({
             <button
               type="submit"
               disabled={enviando}
-              className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:shadow-md hover:shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full sm:w-auto px-4 py-2 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:shadow-md hover:shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] transition-all cursor-pointer"
             >
               {t.enviar}
             </button>

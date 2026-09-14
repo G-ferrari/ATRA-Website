@@ -77,12 +77,19 @@
     background-size: 24px 24px;
   }
 
+  /* ⚠️ `bg-linear-to-*`, não `bg-gradient-to-*`. O Tailwind 4 renomeou o
+   * utilitário (o antigo nome não gera nada em v4), então `bg-gradient-to-r`
+   * saía sem `background-image`: aqui `text-transparent` + `bg-clip-text`
+   * clipava um gradiente inexistente e o texto sumia; nos heróis de fundo
+   * grafite o bloco ficava transparente e, no tema claro, dava letra branca em
+   * fundo branco (o escuro escondia porque a página atrás já é grafite, e o gate
+   * só captura o escuro). Portado em massa de `bg-gradient-to-*`. */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
+    @apply bg-clip-text text-transparent bg-linear-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
   }
 
   .bg-gradient-atra {
-    @apply bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
+    @apply bg-linear-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
   }
 
   @keyframes marquee-vertical {

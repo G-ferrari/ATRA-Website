@@ -114,7 +114,7 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
   return (
     <main className="min-h-screen bg-white">
       <section className="relative bg-primary overflow-hidden pt-32 md:pt-44 pb-16">
-        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/90 to-primary/70" />
+        <div className="absolute inset-0 bg-linear-to-t from-primary via-primary/90 to-primary/70" />
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <Link
             href={`${hrefDe('carreiras', locale)}#trabalhe-conosco`}

@@ -171,7 +171,7 @@ export function FeaturedHero({
                 </div>
 
                 {variante === 'cover' && rotuloDaCapa && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent flex flex-col justify-end p-5 sm:p-6">
+                  <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/30 to-transparent flex flex-col justify-end p-5 sm:p-6">
                     <div className="text-white font-bold text-base sm:text-lg uppercase tracking-widest opacity-90">
                       {rotuloDaCapa}
                     </div>

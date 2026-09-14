@@ -66,7 +66,7 @@ export function PaginaDeMaterial({
             sizes="100vw"
             className="object-cover opacity-25 mix-blend-overlay"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/85 to-primary/60" />
+          <div className="absolute inset-0 bg-linear-to-t from-primary via-primary/85 to-primary/60" />
         </div>
 
         <div className="container mx-auto px-4 md:px-6 relative z-10">
