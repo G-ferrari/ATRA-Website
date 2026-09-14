@@ -114,7 +114,7 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
   const embed = paraEmbed(w.videoUrl)
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white dark:bg-[#0e1015]">
       <section className="relative bg-primary overflow-hidden pt-32 md:pt-44 pb-12">
         <div className="absolute inset-0">
           <Image src={w.image.url} alt="" fill priority sizes="100vw" className="object-cover opacity-25 mix-blend-overlay" />
@@ -153,10 +153,10 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
                  componente. */
               <VideoSobClique embed={embed} imagem={w.image} titulo={w.title} rotuloAssistir={t.assistir} />
             ) : (
-              <div className="aspect-video rounded-[6px]  bg-slate-50 flex flex-col items-center justify-center text-center px-8">
+              <div className="aspect-video rounded-[6px]  bg-slate-50 dark:bg-[#181b22] flex flex-col items-center justify-center text-center px-8">
                 <Video size={36} className="text-slate-400 mb-4" aria-hidden />
-                <h2 className="font-bold text-slate-900 mb-1">{t.semVideoTitulo}</h2>
-                <p className="text-sm text-slate-600 max-w-md">{t.semVideoTexto}</p>
+                <h2 className="font-bold text-slate-900 dark:text-white mb-1">{t.semVideoTitulo}</h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md">{t.semVideoTexto}</p>
               </div>
             )}
 
@@ -165,7 +165,7 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
                 {w.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-0.5 rounded-[4px] bg-slate-50 text-[10px] font-medium text-slate-500 uppercase flex items-center gap-1 "
+                    className="px-2 py-0.5 rounded-[4px] bg-slate-50 dark:bg-[#181b22] text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1 "
                   >
                     <Tag size={10} className="text-primary/70" aria-hidden /> {tag}
                   </span>

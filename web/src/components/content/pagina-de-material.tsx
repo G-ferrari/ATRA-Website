@@ -55,7 +55,7 @@ export function PaginaDeMaterial({
   const ehEbook = material.kind === 'ebook'
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white dark:bg-[#0e1015]">
       <section className="relative bg-primary overflow-hidden pt-32 md:pt-44 pb-16 md:pb-20">
         <div className="absolute inset-0">
           <Image
@@ -149,9 +149,9 @@ export function PaginaDeMaterial({
             {material.body ? (
               <RichText data={material.body} />
             ) : (
-              <div className="rounded-[6px]  bg-slate-50 p-8 text-center mb-12">
-                <h2 className="font-bold text-slate-900 mb-1">{t.semCorpoTitulo}</h2>
-                <p className="text-sm text-slate-600">{t.semCorpoTexto}</p>
+              <div className="rounded-[6px]  bg-slate-50 dark:bg-[#181b22] p-8 text-center mb-12">
+                <h2 className="font-bold text-slate-900 dark:text-white mb-1">{t.semCorpoTitulo}</h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{t.semCorpoTexto}</p>
               </div>
             )}
           </div>
