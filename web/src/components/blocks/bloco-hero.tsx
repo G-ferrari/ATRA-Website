@@ -9,6 +9,10 @@ import type { BlocoPageHero } from '@/types/content'
 import { ContadorAnimado } from './contador-animado'
 import { TextoDestacado } from './texto-destacado'
 
+/* CTA com href absoluto (http/https) é link externo — ex.: o WhatsApp do diretor
+   na RC18. Abre em nova aba; `rel` fecha o vazamento de opener/referrer. */
+const ehExterno = (href: string) => /^https?:\/\//i.test(href)
+
 /* Classe literal por cor: o Tailwind não enxerga `text-${cor}` no build. */
 const COR_DA_METRICA = {
   primary: 'text-primary',
@@ -127,6 +131,8 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                     <Link
                       key={cta.href}
                       href={cta.href}
+                      target={ehExterno(cta.href) ? '_blank' : undefined}
+                      rel={ehExterno(cta.href) ? 'noopener noreferrer' : undefined}
                       className={cn(
                         i > 0
                           ? 'px-5 py-2.5 rounded-[6px] bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 text-xs font-semibold transition-all'

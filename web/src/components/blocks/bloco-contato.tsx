@@ -33,7 +33,7 @@ export function BlocoContato({ bloco, locale }: { bloco: BlocoCtaContact; locale
     <section
       id={bloco.anchor ?? 'fale-conosco'}
       className={cn(
-        'py-16 relative overflow-hidden px-3 sm:px-6',
+        'py-16 relative overflow-hidden px-3 sm:px-6 scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2 dark:bg-[#12151c]' : 'bg-surface-1',
       )}
     >
