@@ -30,10 +30,6 @@ export const SECOES = {
   // home já aponta para ela, e link escrito à mão é o que a regra 6 proíbe.
   chat: { pt: 'chat', en: 'chat' },
   insights: { pt: 'insights', en: 'insights' },
-  /* Diagnóstico de prontidão da RC 18/2025 (feature rc18). Rota de conversão
-     ligada à página /solucoes/rc18. Diagnóstico é PT-only na v1; o alias EN existe
-     só para a arquitetura de slug traduzido resolver sem 404. */
-  diagnosticoRc18: { pt: 'diagnostico-rc18', en: 'rc18-diagnostic' },
   /* MIG-094. O WordPress serve **uma** página para privacidade, termos e
      cookies (`/politicas-e-termos/`); os 3 links do rodapé apontam todos para
      ela, que é o que já acontece lá. */
