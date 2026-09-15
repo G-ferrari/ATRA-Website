@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation'
 import { locale as getLocale } from 'next/root-params'
 
 import { RenderBlocks } from '@/components/blocks/render-blocks'
-import { Diagnostico } from '../../diagnostico-rc18/diagnostico'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { comContato, toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
 import { getPayload } from '@/lib/payload'
@@ -105,16 +104,6 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
         })}
       />
       <RenderBlocks blocos={solucao.blocos} locale={locale} />
-      {/* RC18: o formulário do rodapé é o quick-check de 11 pilares (ilha
-          interativa que envia por e-mail), no lugar do `ctaContact` genérico. A
-          seed da RC18 não grava mais o bloco de contato. O `#contato` (item do
-          submenu e CTA do herói) é o `ctaBanner` logo acima; o formulário vem na
-          sequência, então não repete o id. */}
-      {slug === 'rc18' && (
-        <section className="scroll-mt-32">
-          <Diagnostico hrefContato={hrefDe('contato', locale)} />
-        </section>
-      )}
     </main>
   )
 }
