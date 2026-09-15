@@ -1,15 +1,33 @@
-/* Seed da página de solução RC18 (feature rc18, task 003).
+/* Seed da página de solução RC18 (feature rc18, task 003; revisto para espelhar a
+ * landing oficial).
  *
  * Fonte de conteúdo:
- * - Resolução Conjunta nº 18, de 28/11/2025 (BCB + CMN), texto oficial — as 12
- *   dimensões (Art. 2º), a política ao conselho (Art. 4º), o diretor responsável
- *   (Art. 5º), o relatório semestral (Art. 3º), a retenção de 5 anos (Art. 11) e
- *   o prazo de adequação 31/12/2026 (Art. 12). Verificado em
- *   www.bcb.gov.br/.../exibeversao (id 52771).
- * - **Brief de conteúdo `RC18_2026.pdf` (12 blocos)** — cópia oficial do marketing,
- *   adaptada aqui. O FAQ (bloco 10) ficou de fora: o brief traz as perguntas sem
- *   as respostas, e conteúdo não vai ao ar sem corpo (D-08). A "Arquitetura sobre
- *   Google Cloud" da v1 foi substituída pelo bloco genérico "Capacidades" do brief.
+ * - **Landing oficial `rc18-25` (RD Station), em www-atrainformatica-com-br.rds.land** —
+ *   é o gabarito de conteúdo atual do marketing. Textos das seções, ordem e CTAs
+ *   foram alinhados a ela em 14/09/2026. As 12 dimensões usam as descrições curtas
+ *   da landing (decisão do dono via G-ferrari), no lugar do texto longo da norma.
+ * - Resolução Conjunta nº 18, de 28/11/2025 (BCB + CMN) — referência das 12
+ *   dimensões (Art. 2º) e do prazo de adequação 31/12/2026 (Art. 12).
+ *
+ * Diferenças em relação à landing (decididas com o dono):
+ * - **Sem o questionário de autoavaliação** (o quick-check foi removido do site):
+ *   a landing aponta para uma conversa direta com o diretor. Por isso os CTAs
+ *   levam ao **formulário de contato** (nosso `ctaContact`, no fim) e ao **WhatsApp
+ *   do diretor**, e não a um diagnóstico interativo.
+ * - **Sem os blocos "Capacidades" e "Experiência"** da versão anterior: a landing
+ *   não os tem, e o dono pediu para igualar a ela.
+ * - Mantido o nosso **formulário de contato** (`ctaContact`, forma "panel": os
+ *   campos Nome/E-mail/Telefone/Mensagem + o painel de contatos compartilhado),
+ *   no lugar do formulário RD da landing.
+ * - Mantida a **linha do tempo do prazo** (`processSteps`), que enriquece a seção
+ *   do prazo sem sair do conteúdo da landing.
+ *
+ * CTAs (espelhando a landing, "dois para o formulário, um para o WhatsApp"):
+ * - Herói: "Agendar diagnóstico" → `#contato` (rola até o formulário) e
+ *   "Falar com um especialista" → WhatsApp do diretor.
+ * - Faixa final (`ctaBanner`): "Agendar diagnóstico" → `#contato`.
+ * - O `#contato` é o **formulário** (`ctaContact`), que também é o item "Contato"
+ *   do submenu.
  *
  * Diferente de `solucao-ia.ts`, este seed **cria** o documento (RC18 não está
  * entre as 6 soluções-base de `solucoes.ts`) e depois grava o layout. Idempotente
@@ -19,17 +37,13 @@
  * do BCB para instituições brasileiras, público 100% nacional. O layout de blocos
  * é compartilhado entre locales (só os campos de texto são localizados), então o
  * EN reusa o conteúdo PT — o suficiente para a rota `/en/solutions/rc18` resolver
- * sem texto em branco. Tradução completa fica para depois (FEATURE §2.2).
+ * sem texto em branco.
  *
  * ⚠️ Conteúdo é rascunho: a consolidação de texto é do marketing no CMS (D-22).
- * Limitações do porte do brief para os blocos existentes: o `pageHero` não embute
+ * Limitações do porte para os blocos existentes: o `pageHero` não embute
  * formulário; e o `iconCardGrid` não tem parágrafo de abertura, então os "textos
- * de abertura" dos blocos de cards do brief não foram portados (ficam
+ * de abertura" das seções de cards da landing não foram portados (ficam
  * eyebrow+título).
- *
- * ⚠️ O formulário do rodapé **não é bloco de CMS**: é o RC18 Quick Check (ilha
- * `/diagnostico-rc18`), que a página de solução renderiza para o slug `rc18` no
- * lugar do `ctaContact`. Por isso este seed não grava mais o bloco de contato.
  */
 
 import { getPayload } from 'payload'
@@ -59,11 +73,11 @@ const PT = {
   heroHighlight: 'comprovar a qualidade dos dados',
   heroDesc:
     'A nova exigência regulatória não termina na criação de uma política. É preciso estruturar processos, tecnologia e evidências capazes de demonstrar, continuamente, a qualidade das informações prestadas ao Banco Central.',
-  ctaDiag: 'Avaliar a prontidão da minha instituição',
-  ctaSpecialist: 'Falar com especialista',
-  /* BLOCO 02 | CONTEXTO */
+  ctaDiag: 'Agendar diagnóstico',
+  ctaSpecialist: 'Falar com um especialista',
+  /* BLOCO 02 | O NOVO CENÁRIO */
   contexto: {
-    eyebrow: 'A norma',
+    eyebrow: 'O novo cenário',
     title: 'A RC 18 mudou o nível de exigência sobre os dados regulatórios',
     cards: [
       { icon: 'shield', title: 'Governar', desc: 'Responsabilidades e controles claramente definidos.' },
@@ -73,9 +87,9 @@ const PT = {
       { icon: 'file-text', title: 'Evidenciar', desc: 'Registros e trilhas que permitam comprovar os controles realizados.' },
     ],
   },
-  /* BLOCO 03 | O QUE A RC 18 EXIGE */
+  /* BLOCO 03 | O QUE PRECISA ESTAR ESTRUTURADO */
   exige: {
-    eyebrow: 'O que a RC 18 exige',
+    eyebrow: 'O que precisa estar estruturado',
     title: 'Qualidade de dados agora precisa estar sustentada por governança',
     cards: [
       { icon: 'user-check', title: 'Governança e responsabilidade', desc: 'Papéis definidos, responsabilidades claras e envolvimento da alta administração.' },
@@ -84,23 +98,23 @@ const PT = {
       { icon: 'chart', title: 'Monitoramento contínuo', desc: 'Acompanhamento da qualidade, identificação de irregularidades e ações corretivas.' },
     ],
   },
-  /* BLOCO 04 | 12 DIMENSÕES (Art. 2º) */
+  /* BLOCO 04 | 12 DIMENSÕES (Art. 2º) — descrições curtas da landing */
   dimensoes: {
-    eyebrow: 'As 12 dimensões de qualidade (Art. 2º)',
-    title: '12 dimensões para uma informação de qualidade',
+    eyebrow: 'Qualidade da informação',
+    title: 'As 12 dimensões para uma informação de qualidade',
     cards: [
-      { icon: 'user-check', title: 'Acessibilidade', desc: 'Condições para o usuário obter a informação — local, forma de demanda e prazos —, com tratamento especial a pessoas com deficiência.' },
-      { icon: 'target', title: 'Acurácia', desc: 'A informação reflete a realidade de maneira precisa e confiável, de acordo com a metodologia utilizada.' },
-      { icon: 'settings', title: 'Adaptabilidade', desc: 'Capacidade de gerar informações em formato que atenda a demandas diversas, inclusive não periódicas e em situações de crise.' },
-      { icon: 'info', title: 'Clareza', desc: 'Apresentação concisa, de fácil compreensão, atendendo às necessidades do usuário.' },
-      { icon: 'chart', title: 'Comparabilidade', desc: 'Permitir identificar semelhanças e diferenças entre informações em diferentes períodos, áreas ou domínios.' },
-      { icon: 'database', title: 'Completude', desc: 'A informação atende integralmente os aspectos requeridos, com dados completos.' },
-      { icon: 'shield-check', title: 'Confiabilidade', desc: 'Ausência de desvio relevante nos dados revisados em relação ao seu valor inicial.' },
-      { icon: 'workflow', title: 'Consistência', desc: 'Informações do mesmo evento padronizadas e sem contradição, mesmo geradas por fontes ou métodos diferentes.' },
-      { icon: 'lock', title: 'Integridade', desc: 'Garantia de que a informação é autêntica e não foi modificada de forma não autorizada ou acidental.' },
-      { icon: 'search', title: 'Rastreabilidade', desc: 'Condições para rastrear a informação desde a origem até a disponibilização ao usuário final.' },
-      { icon: 'star', title: 'Relevância', desc: 'Informação útil, capaz de influenciar a tomada de decisão pelos usuários.' },
-      { icon: 'zap', title: 'Tempestividade', desc: 'Fornecimento em tempo hábil, no prazo, com curto intervalo entre o fato e a prestação da informação.' },
+      { icon: 'user-check', title: 'Acessibilidade', desc: 'Informações disponíveis nas condições adequadas.' },
+      { icon: 'target', title: 'Acurácia', desc: 'Dados que refletem a realidade com precisão.' },
+      { icon: 'settings', title: 'Adaptabilidade', desc: 'Capacidade de atender diferentes demandas e cenários.' },
+      { icon: 'info', title: 'Clareza', desc: 'Informações apresentadas de forma compreensível.' },
+      { icon: 'chart', title: 'Comparabilidade', desc: 'Possibilidade de comparar informações entre períodos e contextos.' },
+      { icon: 'database', title: 'Completude', desc: 'Atendimento integral aos aspectos requeridos.' },
+      { icon: 'shield-check', title: 'Confiabilidade', desc: 'Redução de desvios relevantes entre dados revisados e iniciais.' },
+      { icon: 'workflow', title: 'Consistência', desc: 'Ausência de contradições entre fontes e métodos.' },
+      { icon: 'lock', title: 'Integridade', desc: 'Garantia de autenticidade e proteção contra alterações indevidas.' },
+      { icon: 'search', title: 'Rastreabilidade', desc: 'Capacidade de acompanhar o dado desde sua origem até o usuário final.' },
+      { icon: 'star', title: 'Relevância', desc: 'Informação útil para a tomada de decisão.' },
+      { icon: 'zap', title: 'Tempestividade', desc: 'Informação disponível no prazo e no momento adequado.' },
     ],
   },
   /* BLOCO 05 | O VERDADEIRO DESAFIO */
@@ -117,8 +131,8 @@ const PT = {
   },
   /* BLOCO 06 | O PRAZO */
   prazo: {
-    eyebrow: 'O prazo',
-    title: '31 de dezembro de 2026. O prazo está correndo.',
+    eyebrow: 'O prazo está correndo',
+    title: '31 de dezembro de 2026',
     desc: 'A resolução entrou em vigor em janeiro de 2026 e estabelece até 31 de dezembro de 2026 para que as instituições realizem os procedimentos necessários à adequação. O desafio é transformar requisitos regulatórios em uma estrutura operacional que funcione de forma contínua, e não apenas para atender a uma data.',
     steps: [
       { title: 'Hoje', desc: 'Situação atual da instituição.' },
@@ -129,59 +143,36 @@ const PT = {
       { title: 'Adequação', desc: 'Conformidade contínua com a norma.' },
     ],
   },
-  /* BLOCO 07 | COMO A ATRA AJUDA */
+  /* BLOCO 07 | COMO A ATRA TE AJUDA */
   jornada: {
-    eyebrow: 'Como a ATRA ajuda',
-    title: 'Da exigência regulatória à operação de dados',
-    desc: 'A ATRA combina experiência em dados, governança, qualidade, engenharia e tecnologia para apoiar instituições financeiras na construção de uma estrutura preparada para os requisitos da RC 18/2025.',
+    eyebrow: 'Como a ATRA te ajuda',
+    title: 'Nossa jornada de adequação',
+    desc: 'Uma abordagem estruturada, com foco na sua realidade e no seu cenário regulatório.',
     steps: [
-      { title: 'Diagnosticar', desc: 'Avaliação do cenário atual: processos, dados, controles e nível de prontidão.' },
-      { title: 'Governar', desc: 'Definição de responsabilidades, políticas, processos e mecanismos de controle.' },
-      { title: 'Estruturar', desc: 'Evolução da arquitetura, integração, qualidade e gestão dos dados.' },
-      { title: 'Evidenciar', desc: 'Construção de mecanismos de rastreabilidade, testes, registros e evidências.' },
-      { title: 'Sustentar', desc: 'Monitoramento contínuo, indicadores, melhoria e evolução da maturidade.' },
+      { title: 'Diagnosticar', desc: 'Avaliação da maturidade, processos, dados críticos e principais gaps.' },
+      { title: 'Governar', desc: 'Políticas, responsabilidades, papéis, processos e indicadores.' },
+      { title: 'Estruturar', desc: 'Arquitetura de dados, catálogo, metadados, qualidade e rastreabilidade.' },
+      { title: 'Evidenciar', desc: 'Automação de controles, testes, monitoramento e geração de evidências.' },
+      { title: 'Sustentar', desc: 'Acompanhamento contínuo, auditoria e evolução.' },
     ],
   },
-  /* BLOCO 08 | CAPACIDADES */
-  capacidades: {
-    eyebrow: 'Capacidades',
-    title: 'Tecnologia como meio para uma governança de dados mais eficiente',
-    cards: [
-      { icon: 'shield-check', glow: 'blue', title: 'Data Governance', desc: 'Políticas, responsabilidades, catálogo e gestão dos dados.' },
-      { icon: 'target', glow: 'orange', title: 'Data Quality', desc: 'Regras, validações, monitoramento e tratamento de inconsistências.' },
-      { icon: 'workflow', glow: 'blue', title: 'Data Integration', desc: 'Integração das diferentes fontes e sistemas de informação.' },
-      { icon: 'database', glow: 'orange', title: 'Data Engineering', desc: 'Pipelines, processamento e estruturação dos dados.' },
-      { icon: 'cloud', glow: 'blue', title: 'Cloud & Architecture', desc: 'Arquiteturas modernas e escaláveis para ambientes regulados.' },
-      { icon: 'chart', glow: 'orange', title: 'Analytics', desc: 'Indicadores e análises para acompanhamento da qualidade e do desempenho.' },
-    ],
-  },
-  /* BLOCO 09 | EXPERIÊNCIA / PROVA */
-  experiencia: {
-    eyebrow: 'Experiência',
-    title: 'Experiência em dados no ambiente financeiro',
-    desc: 'A ATRA atua há mais de 15 anos com dados, tecnologia e transformação de ambientes complexos, incluindo projetos para instituições do setor financeiro.',
-    items: [
-      { icon: 'award', accent: 'primary', title: 'Banco ABC', desc: 'Projetos envolvendo governança, qualidade, integração e marketplace de dados.' },
-      { icon: 'award', accent: 'secondary', title: 'Banco Carrefour', desc: 'Modernização de processos regulatórios com Google Cloud, alcançando 51x mais velocidade no processamento.' },
-      { icon: 'users', accent: 'primary', title: '+15 anos', desc: 'Experiência em dados, cloud, engenharia, analytics e governança.' },
-      { icon: 'shield-check', accent: 'secondary', title: 'Setor financeiro', desc: 'Ambientes de risco, compliance, dados regulatórios e proteção de informações.' },
-    ],
-  },
-  /* BLOCO 11 | CTA FINAL */
+  /* BLOCO 08 | CTA FINAL (faixa "Próximo passo") */
   ctaBanner: {
     title: 'Sua instituição está preparada para a RC 18/2025?',
     highlight: 'RC 18/2025',
     desc: 'O prazo de adequação termina em 31 de dezembro de 2026. Comece avaliando o cenário atual e identificando os principais gaps de governança, qualidade, processos e tecnologia.',
-    label: 'Avaliar a prontidão da minha instituição',
-    secondary: 'Falar com especialista',
-    caption: 'diagnóstico rápido e gratuito',
+    label: 'Agendar diagnóstico',
+  },
+  /* BLOCO 09 | FORMULÁRIO DE CONTATO (nosso ctaContact) */
+  contato: {
+    title: 'Agende seu diagnóstico gratuito',
+    subtitle: 'Preencha os dados e nossa equipe entra em contato para avaliar o cenário da sua instituição.',
   },
   nav: {
-    contexto: 'A norma',
+    contexto: 'O novo cenário',
     dimensoes: 'Dimensões',
     desafio: 'O desafio',
     jornada: 'Como ajudamos',
-    capacidades: 'Capacidades',
     contato: 'Contato',
   },
 }
@@ -189,20 +180,20 @@ const PT = {
 /* EN é stub em PT (decisão PT-only da v1) — ver cabeçalho. */
 const EN = PT
 
-/* Destino do diagnóstico. String literal como o resto dos seeds (solucao-ia.ts
- * usa `/chat`, `#contato`): é conteúdo de CMS, não link de app. A rota
- * `/diagnostico-rc18` chega na task 006.
- *
- * ⚠️ **Não** localizar por locale. O `href` do CTA **não** é `localized`, então
- * é gravado uma vez só; escrever `/en/...` no passo EN sobrescreveria o PT na
- * mesma coluna (armadilha do CLAUDE.md). Um path só, válido nos dois locales —
- * o EN é stub e o diagnóstico é PT-only na v1. */
-const HREF_DIAG = '/diagnostico-rc18'
+/* Destino do formulário de contato, no fim da página. String literal como o resto
+ * dos seeds (é conteúdo de CMS, não link de app). O `ctaContact` carrega o
+ * `id="contato"`, então os CTAs "Agendar diagnóstico" rolam até ele. */
+const HREF_CONTATO = '#contato'
+
+/* WhatsApp do diretor (Fábio) — copiado da landing oficial. Link externo: o
+ * componente do herói o abre em nova aba. `href` **não** é `localized`, então é
+ * gravado uma vez e vale nos dois locales. */
+const HREF_WHATSAPP = 'https://wa.me/5511963060267?text=Oi+Fabio+vamos+agendar+um+papo'
 
 function layout(t: typeof PT) {
   return [
-    /* BLOCO 01 | HERO. `pageHero` não embute formulário; a captação fica no
-       RC18 Quick Check do rodapé (#contato), renderizado pela página de solução. */
+    /* BLOCO 01 | HERO. `pageHero` não embute formulário; o botão primário rola até
+       o formulário (#contato) e o secundário abre o WhatsApp do diretor. */
     {
       blockType: 'pageHero' as const,
       badge: t.heroBadge,
@@ -215,13 +206,13 @@ function layout(t: typeof PT) {
       mediaMode: 'none' as const,
       ctaVariant: 'secondary' as const,
       ctas: [
-        { label: t.ctaDiag, href: HREF_DIAG },
-        { label: t.ctaSpecialist, href: '#contato' },
+        { label: t.ctaDiag, href: HREF_CONTATO },
+        { label: t.ctaSpecialist, href: HREF_WHATSAPP },
       ],
       metrics: [],
     },
     { blockType: 'stickyPageNav' as const, variant: 'solution' as const },
-    /* BLOCO 02 | CONTEXTO */
+    /* BLOCO 02 | O NOVO CENÁRIO */
     {
       blockType: 'iconCardGrid' as const,
       anchor: 'a-norma',
@@ -232,7 +223,7 @@ function layout(t: typeof PT) {
       variant: 'card' as const,
       items: t.contexto.cards.map((c) => ({ icon: c.icon as Icone, title: c.title, description: c.desc })),
     },
-    /* BLOCO 03 | O QUE A RC 18 EXIGE */
+    /* BLOCO 03 | O QUE PRECISA ESTAR ESTRUTURADO */
     {
       blockType: 'iconCardGrid' as const,
       eyebrow: t.exige.eyebrow,
@@ -273,7 +264,7 @@ function layout(t: typeof PT) {
       description: t.prazo.desc,
       steps: t.prazo.steps.map((s) => ({ title: s.title, description: s.desc })),
     },
-    /* BLOCO 07 | COMO A ATRA AJUDA */
+    /* BLOCO 07 | COMO A ATRA TE AJUDA */
     {
       blockType: 'processSteps' as const,
       anchor: 'como-ajudamos',
@@ -283,52 +274,29 @@ function layout(t: typeof PT) {
       description: t.jornada.desc,
       steps: t.jornada.steps.map((s) => ({ title: s.title, description: s.desc })),
     },
-    /* BLOCO 08 | CAPACIDADES */
-    {
-      blockType: 'valueCards' as const,
-      anchor: 'capacidades',
-      navLabel: t.nav.capacidades,
-      variant: 'glow' as const,
-      eyebrow: t.capacidades.eyebrow,
-      title: t.capacidades.title,
-      items: t.capacidades.cards.map((c) => ({
-        icon: c.icon as Icone,
-        glowColor: c.glow as 'blue' | 'orange',
-        title: c.title,
-        description: c.desc,
-        bullets: [],
-      })),
-    },
-    /* BLOCO 09 | EXPERIÊNCIA / PROVA */
-    {
-      blockType: 'audienceSplit' as const,
-      eyebrow: t.experiencia.eyebrow,
-      eyebrowIcon: 'award' as const,
-      title: t.experiencia.title,
-      description: t.experiencia.desc,
-      items: t.experiencia.items.map((it) => ({
-        icon: it.icon as Icone,
-        accent: it.accent as 'primary' | 'secondary',
-        title: it.title,
-        description: it.desc,
-      })),
-    },
-    /* BLOCO 11 | CTA FINAL. Leva o anchor `contato`: o item "Contato" do submenu e
-       o `#contato` do herói caem aqui, com o RC18 Quick Check logo abaixo (a ilha
-       renderizada pela página não é bloco e não entra no submenu por si). */
+    /* BLOCO 08 | CTA FINAL. Botão único "Agendar diagnóstico" → #contato (o
+       formulário logo abaixo). Sem âncora própria: o item "Contato" do submenu e o
+       #contato dos CTAs apontam para o formulário. */
     {
       blockType: 'ctaBanner' as const,
       variant: 'dark' as const,
-      anchor: 'contato' as const,
-      navLabel: t.nav.contato,
       title: t.ctaBanner.title,
       highlight: t.ctaBanner.highlight,
       description: t.ctaBanner.desc,
-      cta: { label: t.ctaBanner.label, href: HREF_DIAG },
-      secondaryCta: { label: t.ctaBanner.secondary, href: '#contato', caption: t.ctaBanner.caption },
+      cta: { label: t.ctaBanner.label, href: HREF_CONTATO },
     },
-    /* BLOCO 11 | FORMULÁRIO — não é bloco: a página de solução renderiza o RC18
-       Quick Check (ilha) para o slug rc18, com id="contato". Ver o cabeçalho. */
+    /* BLOCO 09 | FORMULÁRIO DE CONTATO (nosso ctaContact, forma "panel"). Carrega
+       `id="contato"` e entra no submenu como "Contato". O contato (telefone,
+       e-mail, endereço, redes) é injetado pela página (comContato). */
+    {
+      blockType: 'ctaContact' as const,
+      anchor: 'contato' as const,
+      navLabel: t.nav.contato,
+      variant: 'panel' as const,
+      title: t.contato.title,
+      subtitle: t.contato.subtitle,
+      showContactCard: true,
+    },
   ]
 }
 
@@ -359,5 +327,5 @@ await payload.update({
   locale: 'en',
 })
 
-console.log('  1 página, 11 blocos, 2 idiomas (EN stub)')
+console.log('  1 página, 9 blocos, 2 idiomas (EN stub)')
 process.exit(0)

@@ -8,6 +8,12 @@ import type { BlocoCtaBanner } from '@/types/content'
 
 import { TextoDestacado } from './texto-destacado'
 
+/* CTA com href absoluto (http/https) é link externo — ex.: o WhatsApp do diretor
+   na RC18. Abre em nova aba; `rel` fecha o vazamento de opener/referrer. */
+const ehExterno = (href: string) => /^https?:\/\//i.test(href)
+const propsExternas = (href: string) =>
+  ehExterno(href) ? { target: '_blank', rel: 'noopener noreferrer' } : {}
+
 /* Faixa de chamada — porte de `legacy/src/components/CaseDetailBase.tsx:185`,
  * a mesma caixa que fecha `About.tsx:456`.
  *
@@ -54,6 +60,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                 {bloco.cta && (
                   <Link
                     href={bloco.cta.href}
+                    {...propsExternas(bloco.cta.href)}
                     className="inline-flex w-full md:w-auto items-center justify-center bg-secondary hover:bg-orange-600 text-white px-8 py-3 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer"
                   >
                     {bloco.cta.label}
@@ -63,6 +70,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                   <div className="flex flex-col items-center w-full">
                     <Link
                       href={bloco.secondaryCta.href}
+                      {...propsExternas(bloco.secondaryCta.href)}
                       className="inline-flex w-full md:w-auto items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white px-8 py-2.5 rounded-[6px] text-xs font-medium transition-all whitespace-nowrap "
                     >
                       {bloco.secondaryCta.label}
@@ -113,6 +121,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                 {bloco.cta && (
                   <Link
                     href={bloco.cta.href}
+                    {...propsExternas(bloco.cta.href)}
                     className="w-full sm:w-auto inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-md shadow-primary/20"
                   >
                     {bloco.cta.label}
@@ -121,6 +130,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                 {bloco.secondaryCta && (
                   <Link
                     href={bloco.secondaryCta.href}
+                    {...propsExternas(bloco.secondaryCta.href)}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white  px-6 py-2.5 rounded-[6px] text-xs sm:text-sm font-medium transition-all"
                   >
                     <Bot size={16} aria-hidden />
@@ -156,6 +166,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
           {bloco.cta && (
             <Link
               href={bloco.cta.href}
+              {...propsExternas(bloco.cta.href)}
               className="inline-flex items-center justify-center px-8 py-3.5 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold transition-all shadow-md shadow-primary/20"
             >
               {bloco.cta.label}
@@ -205,6 +216,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
             {bloco.cta && (
               <Link
                 href={bloco.cta.href}
+                {...propsExternas(bloco.cta.href)}
                 className={cn(
                   'inline-flex items-center gap-3 px-10 py-5 rounded-[6px] font-bold text-lg transition-all hover:-translate-y-1 shadow-lg',
                   azul ? 'bg-secondary hover:bg-orange-600 text-white' : 'bg-primary hover:bg-primary-dark text-white',
