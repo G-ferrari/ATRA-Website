@@ -156,6 +156,9 @@ export type BlocoPageHero = Base & {
   images: Image[]
   /** Números da própria oferta, não da empresa — o `statsGrid` é que lê o global. */
   metrics: { value: number; suffix: string; label: string; color: 'primary' | 'secondary' | 'emerald' }[]
+  /** Data-limite em destaque (ex.: RC 18/2025). Presentation-only, injetada pela
+   *  página; quando presente, o herói mostra o selo de prazo no lugar do `chip`. */
+  prazoDestaque?: string | null
 }
 
 export type BlocoRichTextSection = Base & {
@@ -377,6 +380,9 @@ export type BlocoCtaBanner = Base & {
   cta: { label: string; href: string } | null
   secondaryCta: { label: string; href: string; caption: string | null } | null
   variant: 'primary' | 'subtle' | 'dark' | 'dark-centered'
+  /** Data-limite em destaque (ex.: RC 18/2025). Presentation-only, injetada pela
+   *  página; quando presente, a faixa mostra o selo de prazo. */
+  prazoDestaque?: string | null
 }
 
 export type MetricaInstitucional = {

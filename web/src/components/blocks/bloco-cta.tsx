@@ -6,6 +6,7 @@ import { TechCornerBraces } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { BlocoCtaBanner } from '@/types/content'
 
+import { SeloPrazo } from './selo-prazo'
 import { TextoDestacado } from './texto-destacado'
 
 /* CTA com href absoluto (http/https) é link externo — ex.: o WhatsApp do diretor
@@ -53,6 +54,11 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                   <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 leading-relaxed max-w-xl font-light">
                     {bloco.description}
                   </p>
+                )}
+                {bloco.prazoDestaque && (
+                  <div className="mt-5">
+                    <SeloPrazo prazo={bloco.prazoDestaque} />
+                  </div>
                 )}
               </div>
 
