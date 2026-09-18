@@ -73,8 +73,8 @@ const PT = {
   heroHighlight: 'comprovar a qualidade dos dados',
   heroDesc:
     'A nova exigência regulatória não termina na criação de uma política. É preciso estruturar processos, tecnologia e evidências capazes de demonstrar, continuamente, a qualidade das informações prestadas ao Banco Central.',
-  ctaDiag: 'Agendar diagnóstico',
-  ctaSpecialist: 'Falar com um especialista',
+  ctaEspecialista: 'Falar com especialista',
+  ctaVerificar: 'Verificar diagnóstico',
   /* BLOCO 02 | O NOVO CENÁRIO */
   contexto: {
     eyebrow: 'O novo cenário',
@@ -160,7 +160,7 @@ const PT = {
   ctaBanner: {
     title: 'Sua instituição está preparada para a RC 18/2025?',
     highlight: 'RC 18/2025',
-    desc: 'O prazo de adequação termina em 31 de dezembro de 2026. Comece avaliando o cenário atual e identificando os principais gaps de governança, qualidade, processos e tecnologia.',
+    desc: 'Comece avaliando o cenário atual e identificando os principais gaps de governança, qualidade, processos e tecnologia.',
     label: 'Agendar diagnóstico',
   },
   /* BLOCO 09 | FORMULÁRIO DE CONTATO (nosso ctaContact) */
@@ -185,15 +185,20 @@ const EN = PT
  * `id="contato"`, então os CTAs "Agendar diagnóstico" rolam até ele. */
 const HREF_CONTATO = '#contato'
 
-/* WhatsApp do diretor (Fábio) — copiado da landing oficial. Link externo: o
- * componente do herói o abre em nova aba. `href` **não** é `localized`, então é
- * gravado uma vez e vale nos dois locales. */
-const HREF_WHATSAPP = 'https://wa.me/5511963060267?text=Oi+Fabio+vamos+agendar+um+papo'
+/* WhatsApp do diretor (Fábio) — link externo, aberto em nova aba pelo componente.
+ * Mesmo formato do /diagnostico-rc18 (api.whatsapp.com). `href` não é `localized`:
+ * gravado uma vez, vale nos dois locales. */
+const HREF_WHATSAPP =
+  'https://api.whatsapp.com/send/?phone=5511963060267&text=Oi+Fabio+vamos+agendar+um+papo&type=phone_number&app_absent=0'
+
+/* Quick check de prontidão (rota /diagnostico-rc18). Link interno literal, como o
+ * resto dos seeds; PT-only, vale nos dois locales (EN é stub). */
+const HREF_DIAGNOSTICO = '/diagnostico-rc18'
 
 function layout(t: typeof PT) {
   return [
-    /* BLOCO 01 | HERO. `pageHero` não embute formulário; o botão primário rola até
-       o formulário (#contato) e o secundário abre o WhatsApp do diretor. */
+    /* BLOCO 01 | HERO. `pageHero` não embute formulário. Botão primário (laranja)
+       abre o WhatsApp do diretor; o secundário leva ao quick check. */
     {
       blockType: 'pageHero' as const,
       badge: t.heroBadge,
@@ -206,8 +211,8 @@ function layout(t: typeof PT) {
       mediaMode: 'none' as const,
       ctaVariant: 'secondary' as const,
       ctas: [
-        { label: t.ctaDiag, href: HREF_CONTATO },
-        { label: t.ctaSpecialist, href: HREF_WHATSAPP },
+        { label: t.ctaEspecialista, href: HREF_WHATSAPP },
+        { label: t.ctaVerificar, href: HREF_DIAGNOSTICO },
       ],
       metrics: [],
     },

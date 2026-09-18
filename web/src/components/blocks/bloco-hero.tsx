@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import type { BlocoPageHero } from '@/types/content'
 
 import { ContadorAnimado } from './contador-animado'
+import { SeloPrazo } from './selo-prazo'
 import { TextoDestacado } from './texto-destacado'
 
 /* CTA com href absoluto (http/https) é link externo — ex.: o WhatsApp do diretor
@@ -74,7 +75,17 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                       icon={<Sparkles size={12} />}
                     />
                   )}
-                  {bloco.chip && <MetricChip label={bloco.chip} variant="neutral" size="sm" />}
+                  {/* Com prazo em destaque, o selo abaixo assume a data — o chip
+                      pequeno sairia redundante. */}
+                  {bloco.chip && !bloco.prazoDestaque && (
+                    <MetricChip label={bloco.chip} variant="neutral" size="sm" />
+                  )}
+                </div>
+              )}
+
+              {bloco.prazoDestaque && (
+                <div className={cn('mb-5', centro && 'text-center')}>
+                  <SeloPrazo prazo={bloco.prazoDestaque} />
                 </div>
               )}
 
@@ -134,11 +145,18 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                       target={ehExterno(cta.href) ? '_blank' : undefined}
                       rel={ehExterno(cta.href) ? 'noopener noreferrer' : undefined}
                       className={cn(
-                        i > 0
-                          ? 'px-5 py-2.5 rounded-[6px] bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 text-xs font-semibold transition-all'
-                          : solucao
+                        /* ⚠️ Alinhamento: na variante de solução o primário (laranja)
+                           é `px-6 py-3 inline-flex` e o secundário vinha `px-5 py-2.5`
+                           inline — saía mais baixo e menor. Aqui o secundário de
+                           solução casa a mesma caixa do primário. As demais variantes
+                           (heróis sob gate) ficam intactas. */
+                        i === 0
+                          ? solucao
                             ? 'inline-flex items-center justify-center bg-secondary hover:bg-orange-600 text-white px-6 py-3 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-lg hover:-translate-y-0.5 cursor-pointer'
-                            : 'px-5 py-2.5 rounded-[6px] bg-primary text-white text-xs font-semibold hover:bg-primary-dark transition-all cursor-pointer shadow-md shadow-primary/20',
+                            : 'px-5 py-2.5 rounded-[6px] bg-primary text-white text-xs font-semibold hover:bg-primary-dark transition-all cursor-pointer shadow-md shadow-primary/20'
+                          : solucao
+                            ? 'inline-flex items-center justify-center bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 px-6 py-3 rounded-[6px] text-xs sm:text-sm font-semibold transition-all cursor-pointer'
+                            : 'px-5 py-2.5 rounded-[6px] bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 text-xs font-semibold transition-all',
                       )}
                     >
                       {cta.label}

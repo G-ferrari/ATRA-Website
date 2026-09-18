@@ -94,6 +94,17 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
   const solucao = await buscarSolucao(slug, locale)
   if (!solucao) notFound()
 
+  /* Destaque do prazo (RC 18/2025, Art. 12 — 31/12/2026) no herói e na faixa
+     final. É a data-limite legal, fixa; entra como ênfase de apresentação sobre o
+     conteúdo já publicado no CMS (D-31), escopada a este slug para não afetar as
+     outras soluções, que compartilham os mesmos blocos. */
+  if (slug === 'rc18') {
+    const PRAZO_RC18 = '31 de dezembro de 2026'
+    for (const b of solucao.blocos) {
+      if (b.tipo === 'pageHero' || b.tipo === 'ctaBanner') b.prazoDestaque = PRAZO_RC18
+    }
+  }
+
   return (
     <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
       {/* Invisível: vai num `<script type="application/ld+json">`. */}
