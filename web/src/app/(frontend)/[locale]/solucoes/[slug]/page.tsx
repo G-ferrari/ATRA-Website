@@ -102,6 +102,17 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
     const PRAZO_RC18 = '31 de dezembro de 2026'
     for (const b of solucao.blocos) {
       if (b.tipo === 'pageHero' || b.tipo === 'ctaBanner') b.prazoDestaque = PRAZO_RC18
+      /* "O verdadeiro desafio" no layout da landing: os 5 desafios viram uma faixa
+         compacta de ícone+rótulo, com uma frase de intro acima. Sem campo CMS para
+         isso — é apresentação, escopada a este slug (como o selo de prazo). */
+      if (b.tipo === 'audienceSplit' && b.anchor === 'o-desafio') {
+        b.itemLayout = 'strip'
+        b.itemsIntro = 'Quando esses caminhos não estão devidamente estruturados, surgem desafios como:'
+      }
+      /* "Como a ATRA te ajuda" (a jornada) no layout da landing: linha do tempo
+         horizontal com círculos numerados. "O prazo" (também processSteps) fica
+         como grade — o que também diferencia os dois. */
+      if (b.tipo === 'processSteps' && b.anchor === 'como-ajudamos') b.layout = 'timeline'
     }
   }
 

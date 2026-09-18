@@ -415,6 +415,10 @@ export type BlocoProcessSteps = Base & {
   title: string | null
   description: string | null
   steps: { title: string; description: string }[]
+  /** Apresentação-only, injetada pela página: `timeline` troca a grade de cards
+   *  por uma linha do tempo horizontal com círculos numerados (layout da jornada
+   *  da landing). Padrão `cards`. */
+  layout?: 'cards' | 'timeline'
 }
 
 export type BlocoPartnerShowcase = Base & {
@@ -548,6 +552,11 @@ export type BlocoAudienceSplit = Base &
     tipo: 'audienceSplit'
     cta: { label: string; href: string } | null
     items: { icon: string; accent: Acento; title: string; description: string }[]
+    /** Apresentação-only, injetada pela página: `strip` troca os cards empilhados
+     *  por uma faixa compacta de ícone + rótulo num painel (layout da landing do
+     *  "verdadeiro desafio"). `itemsIntro` é a frase acima da faixa. */
+    itemLayout?: 'stack' | 'strip'
+    itemsIntro?: string | null
   }
 
 export type BlocoAccordionSteps = Base &
