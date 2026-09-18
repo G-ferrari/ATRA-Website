@@ -33,29 +33,61 @@ export function BlocoEtapas({ bloco }: { bloco: BlocoProcessSteps }) {
               </h2>
             )}
             {bloco.description && (
-              <p className="text-text-muted text-xs sm:text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">
+              <p
+                className={cn(
+                  'text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed',
+                  /* Na timeline (layout da jornada da landing) o subtítulo é o azul
+                     de destaque; na grade, texto de apoio. */
+                  bloco.layout === 'timeline' ? 'text-primary font-medium' : 'text-text-muted font-light',
+                )}
+              >
                 {bloco.description}
               </p>
             )}
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {bloco.steps.map((etapa, i) => (
-            <div
-              key={etapa.title}
-              className="bg-surface-2  rounded-[6px] p-6 shadow-sm flex flex-col justify-between group hover:border-primary/30 transition-colors"
-            >
-              <div>
-                <div className="w-10 h-10 rounded-[6px] bg-primary/10 text-primary font-bold text-sm flex items-center justify-center mb-4">
-                  {String(i + 1).padStart(2, '0')}
+        {bloco.layout === 'timeline' ? (
+          /* Linha do tempo horizontal (layout da jornada da landing): círculos
+             numerados sobre uma linha, com título + descrição abaixo. A linha fica
+             atrás e os círculos opacos a cobrem entre um e outro. Empilha no mobile;
+             `flex-1` adapta a qualquer número de etapas. */
+          <div className="relative">
+            <div className="hidden lg:block absolute top-7 left-0 right-0 h-0.5 bg-primary/20" aria-hidden />
+            <div className="flex flex-col lg:flex-row lg:items-start gap-y-10">
+              {bloco.steps.map((etapa, i) => (
+                <div key={etapa.title} className="group relative lg:flex-1 flex flex-col items-center text-center px-3">
+                  <div className="relative z-10 mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-base font-bold text-white shadow-md shadow-primary/20 transition duration-200 group-hover:shadow-lg group-hover:shadow-primary/30 motion-safe:group-hover:scale-110">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-text-main mb-2 transition-colors group-hover:text-primary">
+                    {etapa.title}
+                  </h3>
+                  <p className="text-xs text-text-muted font-light leading-relaxed max-w-[240px]">
+                    {etapa.description}
+                  </p>
                 </div>
-                <h3 className="text-sm sm:text-base font-bold text-text-main mb-2">{etapa.title}</h3>
-                <p className="text-xs text-text-muted font-light leading-relaxed">{etapa.description}</p>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {bloco.steps.map((etapa, i) => (
+              <div
+                key={etapa.title}
+                className="bg-surface-2 rounded-[6px] p-6 shadow-sm flex flex-col justify-between group transition duration-200 hover:shadow-md motion-safe:hover:-translate-y-0.5"
+              >
+                <div>
+                  <div className="w-10 h-10 rounded-[6px] bg-primary/10 text-primary font-bold text-sm flex items-center justify-center mb-4 transition-colors group-hover:bg-primary group-hover:text-white">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                  <h3 className="text-sm sm:text-base font-bold text-text-main mb-2">{etapa.title}</h3>
+                  <p className="text-xs text-text-muted font-light leading-relaxed">{etapa.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

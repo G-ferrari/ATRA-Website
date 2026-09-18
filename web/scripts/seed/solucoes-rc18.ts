@@ -79,6 +79,10 @@ const PT = {
   contexto: {
     eyebrow: 'O novo cenário',
     title: 'A RC 18 mudou o nível de exigência sobre os dados regulatórios',
+    /* Parágrafo de abertura restaurado da landing oficial (o `iconCardGrid` não
+       tinha slot de intro; o `audienceSplit` tem). */
+    intro:
+      'A Resolução Conjunta nº 18/2025 estabelece requisitos para a política de qualidade das informações prestadas ou disponibilizadas ao Banco Central. Na prática, isso significa governança, validação, rastreabilidade, monitoramento e evidências.',
     cards: [
       { icon: 'shield', title: 'Governar', desc: 'Responsabilidades e controles claramente definidos.' },
       { icon: 'shield-check', title: 'Validar', desc: 'Testes, verificações e reconciliações antes do envio.' },
@@ -121,6 +125,9 @@ const PT = {
   desafio: {
     eyebrow: 'O verdadeiro desafio',
     title: 'O desafio não é apenas ter dados corretos. É conseguir provar a qualidade.',
+    /* Parágrafo à esquerda (coluna do texto), restaurado da landing. A frase de
+       intro da faixa é injetada pela página (não há campo CMS p/ ela). */
+    lead: 'Em ambientes financeiros, uma mesma informação pode passar por diferentes sistemas, áreas, regras de negócio e processos antes de chegar ao reporte regulatório.',
     cards: [
       { icon: 'database', title: 'Dados distribuídos', desc: 'Informações espalhadas entre diferentes sistemas e fontes.' },
       { icon: 'search', title: 'Baixa rastreabilidade', desc: 'Dificuldade para identificar origem, transformação e responsáveis.' },
@@ -217,16 +224,22 @@ function layout(t: typeof PT) {
       metrics: [],
     },
     { blockType: 'stickyPageNav' as const, variant: 'solution' as const },
-    /* BLOCO 02 | O NOVO CENÁRIO */
+    /* BLOCO 02 | O NOVO CENÁRIO — audienceSplit: intro da norma + CTA à esquerda,
+       as 5 capacidades empilhadas à direita (recompõe a antiga grade uniforme e
+       recupera o parágrafo de abertura da landing). */
     {
-      blockType: 'iconCardGrid' as const,
+      blockType: 'audienceSplit' as const,
       anchor: 'a-norma',
       navLabel: t.nav.contexto,
       eyebrow: t.contexto.eyebrow,
       title: t.contexto.title,
-      columns: '3' as const,
-      variant: 'card' as const,
-      items: t.contexto.cards.map((c) => ({ icon: c.icon as Icone, title: c.title, description: c.desc })),
+      description: t.contexto.intro,
+      items: t.contexto.cards.map((c, i) => ({
+        icon: c.icon as Icone,
+        accent: (i % 2 === 0 ? 'primary' : 'secondary') as 'primary' | 'secondary',
+        title: c.title,
+        description: c.desc,
+      })),
     },
     /* BLOCO 03 | O QUE PRECISA ESTAR ESTRUTURADO */
     {
@@ -237,28 +250,37 @@ function layout(t: typeof PT) {
       variant: 'card' as const,
       items: t.exige.cards.map((c) => ({ icon: c.icon as Icone, title: c.title, description: c.desc })),
     },
-    /* BLOCO 04 | 12 DIMENSÕES */
+    /* BLOCO 04 | 12 DIMENSÕES — accordionSteps: recolhe a parede de 12 cards
+       (ganho grande no mobile) e vira interativo. Sem imagem → acordeão em largura
+       cheia; a 1ª nasce aberta. Os ícones das dimensões não entram (o acordeão
+       numera 01–12); os títulos ficam sempre visíveis. */
     {
-      blockType: 'iconCardGrid' as const,
+      blockType: 'accordionSteps' as const,
       anchor: 'dimensoes',
       navLabel: t.nav.dimensoes,
       theme: 'surface-2' as const,
       eyebrow: t.dimensoes.eyebrow,
       title: t.dimensoes.title,
-      columns: '4' as const,
-      variant: 'card' as const,
-      items: t.dimensoes.cards.map((c) => ({ icon: c.icon as Icone, title: c.title, description: c.desc })),
+      steps: t.dimensoes.cards.map((c) => ({ title: c.title, description: c.desc })),
     },
-    /* BLOCO 05 | O VERDADEIRO DESAFIO */
+    /* BLOCO 05 | O VERDADEIRO DESAFIO — audienceSplit no layout da landing: texto
+       (eyebrow + título + parágrafo) à esquerda; à direita, a frase de intro + uma
+       faixa compacta de ícone+rótulo num painel. O modo "strip" e a frase de intro
+       são injetados pela página (apresentação-only, escopada ao slug rc18). Ícones
+       todos `primary` (azul), como a faixa toda azul da landing. */
     {
-      blockType: 'iconCardGrid' as const,
+      blockType: 'audienceSplit' as const,
       anchor: 'o-desafio',
       navLabel: t.nav.desafio,
       eyebrow: t.desafio.eyebrow,
       title: t.desafio.title,
-      columns: '3' as const,
-      variant: 'card' as const,
-      items: t.desafio.cards.map((c) => ({ icon: c.icon as Icone, title: c.title, description: c.desc })),
+      description: t.desafio.lead,
+      items: t.desafio.cards.map((c) => ({
+        icon: c.icon as Icone,
+        accent: 'primary' as const,
+        title: c.title,
+        description: c.desc,
+      })),
     },
     /* BLOCO 06 | O PRAZO */
     {

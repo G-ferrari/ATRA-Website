@@ -83,12 +83,6 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                 </div>
               )}
 
-              {bloco.prazoDestaque && (
-                <div className={cn('mb-5', centro && 'text-center')}>
-                  <SeloPrazo prazo={bloco.prazoDestaque} />
-                </div>
-              )}
-
               <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display mb-4 tracking-tight leading-tight">
                 <TextoDestacado texto={bloco.title} destaque={bloco.highlight} />
               </h1>
@@ -133,6 +127,14 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                       <div className="text-[10px] text-slate-500 dark:text-white/60 font-medium mt-0.5">{m.label}</div>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* Prazo em destaque logo acima dos botões (pedido do dono): fecha o
+                  discurso do herói com a urgência antes da ação. */}
+              {bloco.prazoDestaque && (
+                <div className={cn('mb-5', centro && 'text-center')}>
+                  <SeloPrazo prazo={bloco.prazoDestaque} />
                 </div>
               )}
 
