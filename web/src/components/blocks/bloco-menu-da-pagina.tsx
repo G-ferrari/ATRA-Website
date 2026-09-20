@@ -52,6 +52,10 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
 
   return (
     <div
+      /* Marcador para o cabeçalho: quando o sticky prende esta barra no topo, o
+         cabeçalho a detecta (rect.top) e funde-se a ela, largando a própria
+         sombra no encontro. Ver `site-header.tsx`. */
+      data-sticky-subnav
       className={cn(
         'sticky w-full flex flex-col items-center pointer-events-none transition-all duration-300',
         /* ⚠️ z-30 nas duas variantes: **abaixo** do cabeçalho (`z-40`), senão o
@@ -74,11 +78,21 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
     >
       <nav
         className={cn(
-          'pointer-events-auto w-full max-w-7xl mx-auto flex items-center overflow-x-auto no-scrollbar transition-all duration-300 shadow-xl bg-surface-2',
+          'pointer-events-auto w-full max-w-7xl mx-auto flex items-center overflow-x-auto no-scrollbar transition-all duration-300 bg-surface-2',
           solucao
             ? 'py-4 md:py-4.5 min-h-[52px] md:min-h-[56px] px-6 md:px-8 justify-center'
             : 'py-2.5 sm:py-3.5 md:py-4.5 min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 sm:px-6 md:px-8 justify-start md:justify-center ',
-          grudado ? 'rounded-b-[6px] rounded-t-none' : 'rounded-[6px] mt-2',
+          /* ⚠️ Sombra por estado. Flutuando (topo da página, o único estado que a
+             regressão visual captura), a barra é um cartão solto: `shadow-xl` nas
+             quatro direções. Grudada sob o cabeçalho, a sombra que sobe encontra a
+             sombra que o cabeçalho joga para baixo — o par vira a faixa escura no
+             encontro. Aí a sombra é só para baixo: offset positivo + spread
+             negativo zeram o vazamento para cima, separando a barra do conteúdo
+             que rola sem duplicar contra o topo. O cabeçalho (z-40) fica acima
+             desta barra (z-30) e não é tocado — o mega-menu segue abrindo por cima. */
+          grudado
+            ? 'rounded-b-[6px] rounded-t-none shadow-[0_9px_14px_-8px_rgba(2,6,23,0.22)]'
+            : 'rounded-[6px] mt-2 shadow-xl',
         )}
       >
         {/* ⚠️ Sem `whitespace-nowrap` nem `shrink-0` na variante de solução, de

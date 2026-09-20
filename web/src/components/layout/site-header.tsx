@@ -38,6 +38,9 @@ export function SiteHeader({
   const [aberto, setAberto] = useState(false)
   const [categoriaAtiva, setCategoriaAtiva] = useState<string | null>(null)
   const [gavetaAberta, setGavetaAberta] = useState<string | null>(null)
+  /* Verdadeiro quando a barra de sub-nav da página está encaixada logo abaixo:
+     aí cabeçalho e barra viram uma peça só (o cabeçalho larga a sombra de baixo). */
+  const [subNavGrudada, setSubNavGrudada] = useState(false)
 
   const categorias = navegacao.categorias
   /* O legado abre já com Soluções selecionada (`App.tsx:283`), então o painel
@@ -50,9 +53,18 @@ export function SiteHeader({
   }
 
   useEffect(() => {
-    const aoRolar = () => setRolou(window.scrollY > 20)
+    const aoRolar = () => {
+      setRolou(window.scrollY > 20)
+      /* A barra de sub-nav (`data-sticky-subnav`) só está encaixada sob o
+         cabeçalho quando o sticky a prende no topo (rect.top ~58–74px). Só aí as
+         duas viram uma peça e o cabeçalho abre mão da própria sombra; antes disso
+         ele ainda flutua sozinho sobre o conteúdo e mantém a sombra. Páginas sem a
+         barra nunca casam (o seletor não acha nada). */
+      const barra = document.querySelector('[data-sticky-subnav]')
+      setSubNavGrudada(!!barra && barra.getBoundingClientRect().top <= 80)
+    }
     aoRolar()
-    window.addEventListener('scroll', aoRolar)
+    window.addEventListener('scroll', aoRolar, { passive: true })
     return () => window.removeEventListener('scroll', aoRolar)
   }, [])
 
@@ -67,12 +79,24 @@ export function SiteHeader({
     >
       <div
         className={cn(
-          'pointer-events-auto w-full max-w-7xl mx-auto transition-all duration-500 flex flex-col px-6 md:px-8 relative z-40 rounded-[6px]',
+          'pointer-events-auto w-full max-w-7xl mx-auto transition-all duration-500 flex flex-col px-6 md:px-8 relative z-40',
           aberto
-            ? 'bg-surface-2 shadow-2xl py-5 text-text-main'
+            ? 'bg-surface-2 shadow-2xl py-5 text-text-main rounded-[6px]'
             : rolou
-              ? 'bg-surface-2 shadow-md py-2 md:py-2 text-text-main'
-              : 'bg-transparent py-3 md:py-3 text-text-main dark:text-white',
+              ? cn(
+                  'bg-surface-2 py-2 md:py-2 text-text-main',
+                  /* ⚠️ Com a barra de sub-nav encaixada logo abaixo, cabeçalho e
+                     barra são uma peça só: o cabeçalho larga a sombra e o
+                     arredondamento de baixo, e a sombra só-para-baixo da barra
+                     serve as duas — senão a sombra do cabeçalho reaparece como
+                     faixa no encontro. Sem a barra, mantém a sombra flutuante. O
+                     mega-menu aberto não passa por aqui (é o ramo `aberto`), então
+                     abrir o menu não é afetado. */
+                  subNavGrudada
+                    ? 'shadow-none rounded-t-[6px] rounded-b-none'
+                    : 'shadow-md rounded-[6px]',
+                )
+              : 'bg-transparent py-3 md:py-3 text-text-main dark:text-white rounded-[6px]',
         )}
         onMouseLeave={fechar}
       >
