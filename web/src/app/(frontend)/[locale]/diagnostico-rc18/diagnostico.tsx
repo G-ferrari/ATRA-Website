@@ -26,7 +26,7 @@ const CAMPO =
 const HREF_ESPECIALISTA =
   'https://api.whatsapp.com/send/?phone=5511963060267&text=Oi+Fabio+vamos+agendar+um+papo&type=phone_number&app_absent=0'
 
-export function Diagnostico({ hrefContato }: { hrefContato: string }) {
+export function Diagnostico() {
   const [respostas, setRespostas] = useState<Partial<Record<PilarId, string>>>({})
 
   const caminho = usePathname()
@@ -204,8 +204,16 @@ export function Diagnostico({ hrefContato }: { hrefContato: string }) {
 
           <p className="mt-3 text-xs text-text-muted">
             Seus dados são tratados conforme a nossa Política de Privacidade.{' '}
-            <a href={hrefContato} className="text-primary underline">
-              Prefere falar direto? Fale conosco.
+            {/* Mesmo WhatsApp do caminho rápido no topo e dos CTAs de
+                /solucoes/rc18 — quem chegou ao fim do questionário e prefere
+                falar agora não volta ao topo para achar o link. */}
+            <a
+              href={HREF_ESPECIALISTA}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              Prefere falar direto? Fale com o especialista.
             </a>
           </p>
           {envio && !envio.ok && (

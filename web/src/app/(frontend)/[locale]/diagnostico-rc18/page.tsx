@@ -3,7 +3,6 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { isLocale, LOCALES } from '@/lib/locales'
-import { hrefDe } from '@/lib/routes'
 
 import { Diagnostico } from './diagnostico'
 
@@ -31,13 +30,13 @@ export default async function Pagina() {
   const locale = await getLocale()
   if (!isLocale(locale)) notFound()
 
-  /* O CTA do resultado leva ao formulário da página de solução (regra 6 — sem
-     URL na mão). O lead do próprio diagnóstico chega na task 007. */
-  const hrefContato = `${hrefDe('solucoes', locale, 'rc18')}#contato`
-
+  /* Sem props: o único link que a ilha recebia era o do formulário de contato,
+     e ele virou o WhatsApp do especialista — o mesmo dos CTAs de
+     /solucoes/rc18. Link externo não passa por `routes.ts` (regra 6 vale para
+     URL do site). */
   return (
     <main className="flex-1">
-      <Diagnostico hrefContato={hrefContato} />
+      <Diagnostico />
     </main>
   )
 }
