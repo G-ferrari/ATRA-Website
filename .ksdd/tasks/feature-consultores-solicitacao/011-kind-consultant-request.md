@@ -1,7 +1,7 @@
 ---
 id: 011
 title: kind consultant-request — enum, migração e classificação comercial no CRM
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: data-model
 priority: P0
