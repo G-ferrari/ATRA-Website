@@ -11,8 +11,11 @@ const lead = (extra: Partial<LeadParaCrm> = {}): LeadParaCrm => ({
 })
 
 describe('deveSincronizar', () => {
+  /* ⚠️ A lista tem de espelhar `KINDS_COMERCIAIS` inteiro. `rc18-diagnostic`
+     entrou no conjunto e nunca entrou aqui — um kind comercial sem cobertura
+     nenhuma até esta task. */
   it('manda os kinds comerciais', () => {
-    for (const kind of ['contact', 'chat-lead', 'material-download']) {
+    for (const kind of ['contact', 'chat-lead', 'material-download', 'rc18-diagnostic', 'consultant-request']) {
       expect(deveSincronizar(lead({ kind }))).toBe(true)
     }
   })
@@ -78,6 +81,20 @@ describe('sincronizarLead', () => {
     expect(urls[0]).toContain('/contacts?email=lead%40empresa.com.br')
     expect(urls[0]).toContain('token=tok-teste')
     expect(urls[1]).toContain('/deals?token=')
+  })
+
+  /* O rótulo da origem é o que o comercial lê no RD Station para saber de onde
+     veio o lead. Sem ele, "Solicitação de consultores" chega como negociação
+     indistinguível de um "Fale conosco". */
+  it('leva a origem legível do kind na negociação', async () => {
+    fetchMock
+      .mockResolvedValueOnce(resposta({ contacts: [{ _id: 'c1' }] }))
+      .mockResolvedValueOnce(resposta({ _id: 'd1' }))
+      .mockResolvedValueOnce(resposta({ ok: true }))
+
+    await sincronizarLead(lead({ kind: 'consultant-request' }))
+    const corpo = String(fetchMock.mock.calls[1][1]?.body)
+    expect(corpo).toContain('Solicitação de consultores')
   })
 
   it('cria o contato quando a busca volta vazia', async () => {

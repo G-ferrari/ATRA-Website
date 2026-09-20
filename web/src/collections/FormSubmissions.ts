@@ -61,6 +61,7 @@ export const FormSubmissions: CollectionConfig = {
         { value: 'job-application', label: { pt: 'Candidatura', en: 'Job application' } },
         { value: 'material-download', label: { pt: 'Download de material', en: 'Material download' } },
         { value: 'rc18-diagnostic', label: { pt: 'Diagnóstico RC 18', en: 'RC 18 diagnostic' } },
+        { value: 'consultant-request', label: { pt: 'Solicitação de consultores', en: 'Consultant request' } },
       ],
       label: { pt: 'Origem', en: 'Kind' },
       admin: { position: 'sidebar' },
