@@ -22,12 +22,12 @@
  * - Mantida a **linha do tempo do prazo** (`processSteps`), que enriquece a seção
  *   do prazo sem sair do conteúdo da landing.
  *
- * CTAs (espelhando a landing, "dois para o formulário, um para o WhatsApp"):
- * - Herói: "Agendar diagnóstico" → `#contato` (rola até o formulário) e
- *   "Falar com um especialista" → WhatsApp do diretor.
- * - Faixa final (`ctaBanner`): "Agendar diagnóstico" → `#contato`.
- * - O `#contato` é o **formulário** (`ctaContact`), que também é o item "Contato"
- *   do submenu.
+ * CTAs (espelhando a landing):
+ * - Herói: "Falar com especialista" → WhatsApp do diretor e "Verificar
+ *   diagnóstico" → quick check (`/diagnostico-rc18`).
+ * - Faixa final (`ctaBanner`): "Falar com especialista" → WhatsApp do diretor.
+ * - O formulário (`ctaContact`) segue na página e é o item "Contato" do submenu
+ *   (`#contato`).
  *
  * Diferente de `solucao-ia.ts`, este seed **cria** o documento (RC18 não está
  * entre as 6 soluções-base de `solucoes.ts`) e depois grava o layout. Idempotente
@@ -140,7 +140,7 @@ const PT = {
   prazo: {
     eyebrow: 'O prazo está correndo',
     title: '31 de dezembro de 2026',
-    desc: 'A resolução entrou em vigor em janeiro de 2026 e estabelece até 31 de dezembro de 2026 para que as instituições realizem os procedimentos necessários à adequação. O desafio é transformar requisitos regulatórios em uma estrutura operacional que funcione de forma contínua, e não apenas para atender a uma data.',
+    desc: 'Em vigor desde janeiro de 2026, a resolução dá prazo até 31 de dezembro de 2026 para a adequação — o desafio é transformar a exigência em uma estrutura contínua, não só para bater a data.',
     steps: [
       { title: 'Hoje', desc: 'Situação atual da instituição.' },
       { title: 'Diagnóstico', desc: 'Avaliação do cenário, dos processos e dos controles.' },
@@ -168,7 +168,6 @@ const PT = {
     title: 'Sua instituição está preparada para a RC 18/2025?',
     highlight: 'RC 18/2025',
     desc: 'Comece avaliando o cenário atual e identificando os principais gaps de governança, qualidade, processos e tecnologia.',
-    label: 'Agendar diagnóstico',
   },
   /* BLOCO 09 | FORMULÁRIO DE CONTATO (nosso ctaContact) */
   contato: {
@@ -186,11 +185,6 @@ const PT = {
 
 /* EN é stub em PT (decisão PT-only da v1) — ver cabeçalho. */
 const EN = PT
-
-/* Destino do formulário de contato, no fim da página. String literal como o resto
- * dos seeds (é conteúdo de CMS, não link de app). O `ctaContact` carrega o
- * `id="contato"`, então os CTAs "Agendar diagnóstico" rolam até ele. */
-const HREF_CONTATO = '#contato'
 
 /* WhatsApp do diretor (Fábio) — link externo, aberto em nova aba pelo componente.
  * Mesmo formato do /diagnostico-rc18 (api.whatsapp.com). `href` não é `localized`:
@@ -301,16 +295,16 @@ function layout(t: typeof PT) {
       description: t.jornada.desc,
       steps: t.jornada.steps.map((s) => ({ title: s.title, description: s.desc })),
     },
-    /* BLOCO 08 | CTA FINAL. Botão único "Agendar diagnóstico" → #contato (o
-       formulário logo abaixo). Sem âncora própria: o item "Contato" do submenu e o
-       #contato dos CTAs apontam para o formulário. */
+    /* BLOCO 08 | CTA FINAL. Botão único "Falar com especialista" → WhatsApp do
+       diretor (mesmo do herói). Sem âncora própria; o formulário fica logo abaixo
+       e é alcançável pelo item "Contato" do submenu. */
     {
       blockType: 'ctaBanner' as const,
       variant: 'dark' as const,
       title: t.ctaBanner.title,
       highlight: t.ctaBanner.highlight,
       description: t.ctaBanner.desc,
-      cta: { label: t.ctaBanner.label, href: HREF_CONTATO },
+      cta: { label: t.ctaEspecialista, href: HREF_WHATSAPP },
     },
     /* BLOCO 09 | FORMULÁRIO DE CONTATO (nosso ctaContact, forma "panel"). Carrega
        `id="contato"` e entra no submenu como "Contato". O contato (telefone,

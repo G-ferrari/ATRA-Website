@@ -36,9 +36,10 @@ export function BlocoEtapas({ bloco }: { bloco: BlocoProcessSteps }) {
               <p
                 className={cn(
                   'text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed',
-                  /* Na timeline (layout da jornada da landing) o subtítulo é o azul
-                     de destaque; na grade, texto de apoio. */
-                  bloco.layout === 'timeline' ? 'text-primary font-medium' : 'text-text-muted font-light',
+                  /* Subtítulo em texto de apoio, não azul: o azul fica para títulos
+                     e destaques, não para parágrafos inteiros (menos acento azul na
+                     página). Vale para os dois layouts. */
+                  'text-text-muted font-light',
                 )}
               >
                 {bloco.description}

@@ -183,7 +183,9 @@ export type BlocoIconCardGrid = Base & {
   columns: 2 | 3 | 4
   variant: 'compact' | 'card' | 'card-centered'
   headerWidth: 'full' | 'narrow'
-  items: { icon: string; title: string; description: string | null }[]
+  /** `accent` intercala a cor do traço do ícone (azul padrão, laranja escasso);
+   *  presentation-only, injetado pela página — o CMS não tem o campo. */
+  items: { icon: string; title: string; description: string | null; accent?: 'primary' | 'secondary' }[]
 }
 
 /* Blocos do template de página de parceiro (MIG-054a). A justificativa de cada

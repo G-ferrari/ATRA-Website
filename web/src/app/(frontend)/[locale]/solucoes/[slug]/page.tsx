@@ -94,12 +94,25 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
   const solucao = await buscarSolucao(slug, locale)
   if (!solucao) notFound()
 
-  /* Destaque do prazo (RC 18/2025, Art. 12 — 31/12/2026) no herói e na faixa
-     final. É a data-limite legal, fixa; entra como ênfase de apresentação sobre o
-     conteúdo já publicado no CMS (D-31), escopada a este slug para não afetar as
-     outras soluções, que compartilham os mesmos blocos. */
+  /* Ênfases de apresentação da RC18 sobre o conteúdo já publicado no CMS (D-31),
+     escopadas a este slug para não afetar as outras soluções, que compartilham os
+     mesmos blocos. */
+  let blocos = solucao.blocos
   if (slug === 'rc18') {
     const PRAZO_RC18 = '31 de dezembro de 2026'
+    /* Ícones das 12 dimensões, na ordem do dicionário `dimensoes.cards` do seed
+       (`scripts/seed/solucoes-rc18.ts`). Ficam aqui porque no CMS o bloco é um
+       `accordionSteps` (só título+descrição): ao renderizar como grade, a página
+       reidrata os ícones que o acordeão descarta. Manter em sincronia com a ordem
+       do seed. */
+    const ICONES_DIMENSOES = [
+      'user-check', 'target', 'settings', 'info', 'chart', 'database',
+      'shield-check', 'workflow', 'lock', 'search', 'star', 'zap',
+    ]
+    /* Laranja escasso e espalhado nos ícones das seções: ~1 a cada 4, deslocando por
+       linha (`cols`) para não formar uma coluna; o resto fica azul. */
+    const acento = (idx: number, cols: number): 'primary' | 'secondary' =>
+      idx % cols === (Math.floor(idx / cols) * 3 + 2) % cols ? 'secondary' : 'primary'
     for (const b of solucao.blocos) {
       if (b.tipo === 'pageHero' || b.tipo === 'ctaBanner') b.prazoDestaque = PRAZO_RC18
       /* "O verdadeiro desafio" no layout da landing: os 5 desafios viram uma faixa
@@ -108,12 +121,46 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
       if (b.tipo === 'audienceSplit' && b.anchor === 'o-desafio') {
         b.itemLayout = 'strip'
         b.itemsIntro = 'Quando esses caminhos não estão devidamente estruturados, surgem desafios como:'
+        /* A faixa "desafio" era toda azul; intercala 1 laranja (escasso). */
+        b.items.forEach((it, idx) => (it.accent = acento(idx, 5)))
       }
-      /* "Como a ATRA te ajuda" (a jornada) no layout da landing: linha do tempo
-         horizontal com círculos numerados. "O prazo" (também processSteps) fica
-         como grade — o que também diferencia os dois. */
-      if (b.tipo === 'processSteps' && b.anchor === 'como-ajudamos') b.layout = 'timeline'
+      /* Ícones da grade "O que precisa" (toda azul) ganham laranja escasso; a grade
+         das 12 dimensões recebe o mesmo mais abaixo, na transformação. */
+      if (b.tipo === 'iconCardGrid') b.items.forEach((it, idx) => (it.accent = acento(idx, b.columns)))
+      /* Os dois `processSteps` — "O prazo" e a jornada "Como a ATRA te ajuda" —
+         viram linha do tempo horizontal, como na landing. Ficam em fundos alternados
+         (surface-2 / surface-1), o que os mantém distintos apesar do mesmo formato. */
+      if (b.tipo === 'processSteps') b.layout = 'timeline'
     }
+    /* As 12 dimensões saem do acordeão (parede de 12 linhas, ~1290px) para uma grade
+       de cards (ícone + título + descrição, 3 linhas de 4). O bloco no CMS continua
+       um `accordionSteps` — a troca é de apresentação e reidrata os ícones. Mantém
+       âncora/navLabel/tema, então o item "Dimensões" do submenu segue apontando para
+       cá (a lista do submenu é resolvida no mapper, antes desta troca). */
+    blocos = solucao.blocos.map((b) =>
+      b.tipo === 'accordionSteps' && b.anchor === 'dimensoes'
+        ? {
+            id: b.id,
+            anchor: b.anchor,
+            navLabel: b.navLabel,
+            theme: b.theme,
+            borda: b.borda,
+            espaco: b.espaco,
+            tipo: 'iconCardGrid' as const,
+            eyebrow: b.eyebrow,
+            title: b.title,
+            columns: 4 as const,
+            variant: 'card' as const,
+            headerWidth: 'full' as const,
+            items: b.steps.map((s, idx) => ({
+              icon: ICONES_DIMENSOES[idx] ?? 'sparkles',
+              title: s.title,
+              description: s.description,
+              accent: acento(idx, 4),
+            })),
+          }
+        : b,
+    )
   }
 
   return (
@@ -125,7 +172,7 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
           url: `${ORIGEM}${hrefDe('solucoes', locale, slug)}`,
         })}
       />
-      <RenderBlocks blocos={solucao.blocos} locale={locale} />
+      <RenderBlocks blocos={blocos} locale={locale} />
     </main>
   )
 }

@@ -37,10 +37,9 @@ export function BlocoParaQuem({ bloco }: { bloco: BlocoAudienceSplit }) {
               <p
                 className={cn(
                   'text-xs sm:text-sm md:text-base mb-8 leading-relaxed',
-                  /* No modo faixa (layout do "verdadeiro desafio" da landing) o
-                     parágrafo é o azul de destaque; nas demais telas, texto de
-                     apoio. */
-                  bloco.itemLayout === 'strip' ? 'text-primary font-medium' : 'text-text-muted font-light',
+                  /* Parágrafo em texto de apoio, não azul: o azul fica para títulos
+                     e destaques, não para subtítulos inteiros. */
+                  'text-text-muted font-light',
                 )}
               >
                 {bloco.description}
