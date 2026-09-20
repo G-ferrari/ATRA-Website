@@ -1,0 +1,11 @@
+[Unit]
+Description=Backup do CMS da ATRA (banco + mídia)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/atra/infra/backup/backup.sh
+# Saída vai para o journal: `journalctl -u atra-backup`
+StandardOutput=journal
+StandardError=journal

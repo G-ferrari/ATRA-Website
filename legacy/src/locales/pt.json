@@ -1,0 +1,284 @@
+{
+  "nav": {
+    "solutions": "Soluções",
+    "segments": "Segmentos",
+    "consultants": "Consultores",
+    "insights": "Insights",
+    "partners": "Parceiros",
+    "careers": "Carreiras",
+    "about": "Sobre",
+    "glossary": "Glossário",
+    "contact": "Fale Conosco"
+  },
+  "hero": {
+    "title_span1": "construir juntos",
+    "title_rest1": " hoje?",
+    "title_start1": "O que vamos ",
+    "phrase1": "O que vamos <1>construir juntos</1> hoje?",
+    "phrase2": "Como podemos escalar seu negócio com <1>dados</1>?",
+    "phrase3": "Preparado para aplicar <1>Inteligência Artificial</1> na sua empresa?",
+    "phrase4": "Vamos modernizar a <1>arquitetura</1> do seu sistema legado?",
+    "phrase5": "Transformando seus dados em <1>decisões inteligentes</1>. Por onde começamos?",
+    "phrase6": "Qual é o seu maior <1>desafio tecnológico</1> hoje?",
+    "input_placeholder": "Descreva seu projeto, dúvida ou dor...",
+    "subtitle": "Fale com a nossa IA especialista para que consigamos te ajudar.",
+    "suggestion1": "Quero implementar IA Generativa",
+    "suggestion2": "Preciso organizar meus dados na nuvem",
+    "suggestion3": "Quero criar dashboards de BI",
+    "suggestion4": "Conhecer cases de sucesso da ATRA",
+    "suggestion5": "Otimizar custos de Cloud (FinOps)"
+  },
+  "sections": {
+    "partnersTitle": "Parceiros de Confiança",
+    "clientsTitle": "Clientes que confiam em nós",
+    "featuresTitle": "Soluções Integradas",
+    "learnMore": "Saiba mais",
+    "successStories": "Histórias de Sucesso",
+    "successDesc": "Veja como nossos clientes estão transformando seus setores com nossas soluções.",
+    "readFullCase": "Ler case completo",
+    "whyClientsTitle": "Por que os clientes nos escolhem"
+  },
+  "stats": {
+    "years": "Anos de experiência",
+    "professionals": "Profissionais Especializados",
+    "certifications": "Certificações de Parceiros",
+    "clients": "Clientes Estratégicos",
+    "gptw": "Reconhecida como GPTW",
+    "partners": "Parceiros Oficiais"
+  },
+  "about": {
+    "heroTitle": "SOBRE",
+    "heroSubtitle": "A <1>ATRA</1> transforma desafios em oportunidades e prepara seu negócio para a era da <1>Transformação Digital</1>.",
+    "whoWeAre": {
+      "title": "Quem somos",
+      "p1": "Somos uma empresa de TI inovadora, responsável por serviços e soluções de Integração, Migração, Governança, Engenharia e Qualidade de Dados.",
+      "p2": "Nossa marca é apresentar soluções em dados, é observação e ação sobre cada ponto de melhoria identificado.",
+      "saibaMais": "Saiba mais"
+    },
+    "history": {
+      "title": "História da ATRA"
+    },
+    "values": {
+      "title": "Nossos valores",
+      "items": [
+        "PESSOAS",
+        "QUALIDADE",
+        "INOVAÇÃO"
+      ]
+    },
+    "purpose": {
+      "title": "Nosso Propósito"
+    },
+    "gptw": {
+      "title": "Uma das melhores empresas para trabalhar",
+      "glassdoor": "Encontre-nos no Glassdoor."
+    },
+    "partners": {
+      "title": "Somos parceiros das maiores empresas de tecnologia"
+    },
+    "whyChoose": {
+      "title": "Por que escolher nossos serviços em dados?",
+      "items": [
+        "Somos experts em DADOS há mais de 15 anos",
+        "Estamos com os melhores profissionais do mercado",
+        "Queremos gerar valor para nossos clientes",
+        "Nossos valores são PESSOAS, QUALIDADE E INOVAÇÃO",
+        "Somos parceiros das maiores plataformas de tecnologia",
+        "Temos uma equipe de suporte especializada",
+        "Desenvolvemos estratégias personalizadas para cada cliente",
+        "Temos o comprometimento com a qualidade dos serviços"
+      ]
+    },
+    "solutions": {
+      "title": "Nossas Soluções",
+      "items": [
+        "ALOCAÇÃO DE CONSULTORES",
+        "INTELIGÊNCIA ARTIFICIAL",
+        "CLOUD",
+        "CUSTOMER 360º",
+        "DATA ANALYTICS",
+        "DATA DISCOVERY",
+        "DATA GOVERNANCE",
+        "DATA INTEGRATION",
+        "FÁBRICA DE TRANSFORMAÇÃO DE DADOS",
+        "MASTER DATA MANAGEMENT",
+        "SUSTENTAÇÃO REMOTA",
+        "TREINAMENTO"
+      ]
+    },
+    "cta": {
+      "title": "Vem ser ATRA",
+      "desc": "Faça parte de um time focado em soluções tecnológicas e de uma empresa eleita como uma das melhores para se trabalhar no Brasil.",
+      "button": "Confira nossas vagas disponíveis"
+    }
+  },
+  "aboutStats": {
+    "years": "anos no mercado",
+    "professionals": "profissionais",
+    "clients": "clientes de diversos segmentos",
+    "partners": "parceiros estratégicos",
+    "gptw": "GPTW"
+  },
+  "glossary": {
+    "title": "Glossário de <1>Dados e IA</1>",
+    "subtitle": "Explore os termos mais utilizados no universo da tecnologia, dados e inteligência artificial.",
+    "indexTitle": "Índice de Termos"
+  },
+  "partner": {
+    "title": "<0>ATRA</0> / Google Cloud Partner",
+    "subtitle": "Quer agilidade, inovação e resultados? Conheça o Google Cloud com a expertise ATRA.",
+    "learnMore": "Saiba mais",
+    "aboutTitle": "Parceria estratégica para sua transformação digital!",
+    "aboutP1": "O Google Cloud é a plataforma de nuvem do Google que oferece serviços de dados, inteligência artificial e colaboração para empresas. A ATRA, parceira oficial de Google Workspace, Google Cloud Platform e Google Maps Platform, foi Latin America Partner of the Year em 2018, 2020, 2022, 2024 e 2025.",
+    "aboutP2": "Com mais de 20 anos de experiência, ajudamos organizações a migrar, modernizar e inovar na nuvem, unindo nossa expertise à tecnologia do Google.",
+    "benefitsTitle": "Por que escolher um Google Cloud Partner?",
+    "benefitsDesc": "Como parceiro certificado Google Cloud, temos a expertise para compreender suas necessidades e transform desafios em oportunidades. Apoiamos sua empresa em todas as etapas da jornada na nuvem, aproveitando ao máximo a infraestrutura e as ferramentas do Google.",
+    "contactExpert": "Fale com um especialista!",
+    "specTitle": "Nossas especializações",
+    "specDesc": "A ATRA está preparada para ajudar sua empresa a migrar, modernizar e inovar com o Google Cloud.",
+    "specLink": "Impulsione seu negócio com a nuvem do Google",
+    "contactTitle": "Entre em contato",
+    "contactDesc": "Saiba mais sobre quem somos e como trabalhamos, ou entre em contato conosco para descobrir como podemos moldar o futuro da sua empresa juntos.",
+    "contactUs": "Fale conosco",
+    "seeMore": "Ver mais"
+  },
+  "solution": {
+    "heroTitle": "Soluções em <1>Inteligência Artificial</1> & IA Generativa",
+    "heroDesc": "Transforme a maneira como sua empresa opera com nosso serviço de IA, projetado para automatizar processos, gerar conteúdo inteligente e criar agentes autônomos que impulsionam a inovação e garantem resultados precisos.",
+    "hireService": "Contrate o serviço",
+    "menu": {
+      "howItWorks": "Como funciona",
+      "benefits": "Benefícios",
+      "whoIsFor": "Para quem é este serviço",
+      "howWeDo": "Como fazemos"
+    },
+    "section1": {
+      "title": "Estruturando a Inovação com Inteligência Artificial",
+      "p1": "Nosso serviço de IA foca na construção de infraestruturas e modelos robustos que permitem a automação avançada, geração de conteúdo e análise preditiva de maneira eficiente.",
+      "p2": "Avaliamos as necessidades da empresa, projetamos arquiteturas personalizadas e desenvolvemos agentes autônomos e LLMs que suportam operações de negócios de alta performance. Além disso, garantimos que os modelos sejam precisos, acessíveis e seguros, operacionalizando-os com as melhores práticas de MLOps.",
+      "card1Title": "Análise de Oportunidades de IA",
+      "card1Desc": "Avaliamos as necessidades específicas da sua empresa para identificar os melhores casos de uso para LLMs, Machine Learning e automação inteligente.",
+      "card2Title": "Desenvolvimento de Agentes e LLMs",
+      "card2Desc": "Criamos assistentes virtuais, copilotos corporativos e modelos personalizados que garantem a geração de conteúdo e automação de atendimento.",
+      "card3Title": "Operacionalização (MLOps)",
+      "card3Desc": "Integramos e monitoramos as soluções de IA (MLOps) para assegurar escalabilidade, governança, desempenho eficiente e segurança contínua."
+    },
+    "section2": {
+      "title": "Benefícios do Serviço de IA Generativa",
+      "b1Title": "Eficiência Operacional",
+      "b1Desc": "Automação de tarefas repetitivas e atendimento ao cliente com agentes autônomos rápidos e eficientes.",
+      "b2Title": "Inovação em Conteúdo",
+      "b2Desc": "Geração automatizada de textos, relatórios e insights, acelerando a produção e criatividade.",
+      "b3Title": "Escalabilidade Inteligente",
+      "b3Desc": "Infraestrutura de MLOps flexível que cresce com as necessidades do seu negócio, mantendo a governança."
+    },
+    "section3": {
+      "title": "Pra quem é esse serviço?",
+      "desc": "Nosso serviço de Inteligência Artificial é ideal para empresas que buscam liderar a inovação em seus setores, automatizando processos complexos e gerando valor através de tecnologias de ponta. Este serviço é particularmente útil para organizações que:",
+      "item1": "Precisam de assistentes virtuais e copilotos corporativos robustos para suportar operações de atendimento e vendas.",
+      "item2": "Desejam otimizar a geração de conteúdo, relatórios e análises preditivas para melhorar a eficiência.",
+      "item3": "Buscam garantir a governança, escalabilidade e segurança dos modelos de Machine Learning (MLOps)."
+    },
+    "section4": {
+      "title": "Como fazemos?",
+      "acc1Title": "Abordagem Centrada no Problema",
+      "acc1Desc": "Focamos em entender profundamente os desafios do seu negócio antes de aplicar a tecnologia, garantindo que a IA resolva problemas reais e gere ROI.",
+      "acc2Title": "Tecnologias Avançadas (LLMs & ML)",
+      "acc2Desc": "Utilizamos os modelos de linguagem fundacionais mais avançados e frameworks de Machine Learning modernos para construir soluções precisas e escaláveis.",
+      "acc3Title": "Iteração e MLOps",
+      "acc3Desc": "Implementamos ciclos de feedback contínuo e práticas de MLOps para monitorar, retreinar e garantir a governança dos modelos em produção."
+    },
+    "contact": {
+      "title": "Comece a <1>revolução da IA</1> na sua empresa",
+      "desc": "Entre em contato conosco hoje e descubra como a ATRA pode transformar seus processos com Inteligência Artificial. Faça a mudança agora!",
+      "contactUs": "Entre em contato",
+      "quickDoubt": "Dúvida Rápida?",
+      "talkToAI": "fale com nosso assistente de IA"
+    }
+  },
+  "chat": {
+    "header": "Converse com a ATRA",
+    "beta": "BETA",
+    "subtext": "IA Especialista em Dados & Negócios",
+    "error": "Erro ao conectar com a IA da ATRA. Verifique se a chave de API está configurada.",
+    "timeout": "A resposta demorou muito. Por favor, tente enviar novamente.",
+    "errorGeneral": "Desculpe, ocorreu um erro ao se comunicar com nossos especialistas. Tente novamente em alguns segundos.",
+    "botWelcome": "Nossa IA está pronta para responder suas dúvidas sobre Transformação Digital, Dados, IA e Nuvem.",
+    "placeholder": "O que você deseja construir hoje?",
+    "poweredBy": "POWERED BY ATRA AI"
+  },
+  "careers": {
+    "title": "Trabalhe Conosco",
+    "subtitle": "Venha fazer parte de um time focado em soluções de dados",
+    "desc": "Aqui você pode alcançar todo o seu potencial profissional",
+    "m1": "Jeito ATRA de ser",
+    "m2": "Selos e Premiações",
+    "m3": "Processo Seletivo",
+    "m4": "Trabalhe Conosco",
+    "m5": "Vantagens",
+    "m6": "Trainee"
+  },
+  "megaMenu": {
+    "solutions": [
+      {
+        "title": "Inovação & IA",
+        "sections": [
+          {
+            "title": "Inteligência Artificial & IA Generativa",
+            "desc": "Soluções de IA Generativa, agentes conversacionais, modelos preditivos e extração inteligente de documentos com governança e uso responsável."
+          },
+          {
+            "title": "Apps & Soluções Digitais",
+            "desc": "Aplicações web e mobile integradas ao Lakehouse e modernização de sistemas legados para colocar inteligência e dados na ponta da decisão."
+          }
+        ]
+      },
+      {
+        "title": "Dados, BI & Advanced Analytics",
+        "sections": [
+          {
+            "title": "Engenharia de Dados & Cloud",
+            "desc": "Arquiteturas Lakehouse modernas em nuvem com pipelines de alta performance para unificar dados e suportar BI, analytics e IA."
+          },
+          {
+            "title": "Business Intelligence & Advanced Analytics",
+            "desc": "Dashboards executivos, análises preditivas e estruturas de Self-Service BI para transformar dados operacionais em decisões estratégicas."
+          }
+        ]
+      },
+      {
+        "title": "Governança & Cultura",
+        "sections": [
+          {
+            "title": "Governança de Dados & FinOps",
+            "desc": "Catálogo, conformidade e qualidade de dados alinhados a práticas de FinOps para otimização contínua dos custos em nuvem."
+          },
+          {
+            "title": "Cultura de Dados (Enablement)",
+            "desc": "Programas de alfabetização em dados e IA (Data Literacy) para capacitar times, acelerar a adoção e maximizar o ROI de tecnologia."
+          }
+        ]
+      }
+    ],
+    "insights": [
+      { "title": "Cases de Sucesso", "desc": "Histórias reais de transformação digital." },
+      { "title": "Relatórios", "desc": "Análises profundas do mercado de dados." },
+      { "title": "Blog", "desc": "Artigos, tendências e novidades técnicas." },
+      { "title": "Webinars", "desc": "Conteúdo em vídeo com nossos especialistas." },
+      { "title": "Ebooks", "desc": "Guias completos para sua jornada de dados." }
+    ],
+    "partners": [
+      { "name": "Google Cloud", "desc": "Nuvem pública líder em dados e IA." },
+      { "name": "Denodo", "desc": "Virtualização de dados para agilidade." },
+      { "name": "BigID", "desc": "Descoberta e proteção de dados sensíveis." },
+      { "name": "Partner", "desc": "Parceiro estratégico em tecnologia." },
+      { "name": "Azure", "desc": "Plataforma de nuvem abrangente da Microsoft." },
+      { "name": "Atlan", "desc": "Catálogo de dados moderno e colaborativo." },
+      { "name": "IBM", "desc": "Inovação em IA e nuvem híbrida." },
+      { "name": "Salesforce Informatica", "desc": "Gestão de dados em nuvem líder de mercado." },
+      { "name": "Databricks", "desc": "Lakehouse unificado para dados e IA." }
+    ],
+    "lastUpdates": "Últimas atualizações",
+    "seeAll": "Ver tudo"
+  }
+}

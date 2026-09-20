@@ -1,0 +1,281 @@
+{
+  "nav": {
+    "solutions": "Solutions",
+    "segments": "Segments",
+    "consultants": "Consultants",
+    "insights": "Insights",
+    "partners": "Partners",
+    "careers": "Careers",
+    "about": "About",
+    "glossary": "Glossary",
+    "contact": "Contact Us"
+  },
+  "hero": {
+    "phrase1": "What are we going to <1>build together</1> today?",
+    "phrase2": "How can we scale your business with <1>data</1>?",
+    "phrase3": "Ready to apply <1>Artificial Intelligence</1> to your company?",
+    "phrase4": "Shall we modernize the <1>architecture</1> of your legacy system?",
+    "phrase5": "Transforming your data into <1>smart decisions</1>. Where do we start?",
+    "phrase6": "What is your biggest <1>technological challenge</1> today?",
+    "input_placeholder": "Describe your project, doubt, or pain...",
+    "subtitle": "Talk to our expert AI so we can help you.",
+    "suggestion1": "I want to implement Generative AI",
+    "suggestion2": "I need to organize my data in the cloud",
+    "suggestion3": "I want to create BI dashboards",
+    "suggestion4": "Learn about ATRA's success cases",
+    "suggestion5": "Optimize Cloud costs (FinOps)"
+  },
+  "sections": {
+    "partnersTitle": "Trusted Partners",
+    "clientsTitle": "Clients who trust us",
+    "featuresTitle": "Integrated Solutions",
+    "learnMore": "Learn more",
+    "successStories": "Success Stories",
+    "successDesc": "See how our clients are transforming their sectors with our solutions.",
+    "readFullCase": "Read full case",
+    "whyClientsTitle": "Why clients choose us"
+  },
+  "stats": {
+    "years": "Years of experience",
+    "professionals": "Specialized Professionals",
+    "certifications": "Partner Certifications",
+    "clients": "Strategic Clients",
+    "gptw": "Recognized as GPTW",
+    "partners": "Official Partners"
+  },
+  "about": {
+    "heroTitle": "ABOUT",
+    "heroSubtitle": "<1>ATRA</1> transforms challenges into opportunities and prepares your business for the era of <1>Digital Transformation</1>.",
+    "whoWeAre": {
+      "title": "Who we are",
+      "p1": "We are an innovative IT company, responsible for Integration, Migration, Governance, Engineering, and Data Quality services and solutions.",
+      "p2": "Our hallmark is presenting data solutions; it's observation and action on each identified improvement point.",
+      "saibaMais": "Learn more"
+    },
+    "history": {
+      "title": "ATRA's History"
+    },
+    "values": {
+      "title": "Our Values",
+      "items": [
+        "PEOPLE",
+        "QUALITY",
+        "INNOVATION"
+      ]
+    },
+    "purpose": {
+      "title": "Our Purpose"
+    },
+    "gptw": {
+      "title": "One of the best companies to work for",
+      "glassdoor": "Find us on Glassdoor."
+    },
+    "partners": {
+      "title": "We are partners with the largest technology companies"
+    },
+    "whyChoose": {
+      "title": "Why choose our data services?",
+      "items": [
+        "We have been DATA experts for over 15 years",
+        "We have the best professionals in the market",
+        "We want to generate value for our clients",
+        "Our values are PEOPLE, QUALITY AND INNOVATION",
+        "We are partners with the largest technology platforms",
+        "We have a specialized support team",
+        "We develop personalized strategies for each client",
+        "We are committed to the quality of our services"
+      ]
+    },
+    "solutions": {
+      "title": "Our Solutions",
+      "items": [
+        "CONSULTANT ALLOCATION",
+        "ARTIFICIAL INTELLIGENCE",
+        "CLOUD",
+        "CUSTOMER 360º",
+        "DATA ANALYTICS",
+        "DATA DISCOVERY",
+        "DATA GOVERNANCE",
+        "DATA INTEGRATION",
+        "DATA TRANSFORMATION FACTORY",
+        "MASTER DATA MANAGEMENT",
+        "REMOTE SUPPORT",
+        "TRAINING"
+      ]
+    },
+    "cta": {
+      "title": "Be ATRA",
+      "desc": "Join a team focused on technological solutions and a company elected as one of the best to work for in Brazil.",
+      "button": "Check our available vacancies"
+    }
+  },
+  "aboutStats": {
+    "years": "years in the market",
+    "professionals": "professionals",
+    "clients": "clients from various segments",
+    "partners": "strategic partners",
+    "gptw": "GPTW"
+  },
+  "glossary": {
+    "title": "<1>Data and AI</1> Glossary",
+    "subtitle": "Explore the most used terms in the universe of technology, data, and artificial intelligence.",
+    "indexTitle": "Index of Terms"
+  },
+  "partner": {
+    "title": "<0>ATRA</0> / Google Cloud Partner",
+    "subtitle": "Want agility, innovation, and results? Discover Google Cloud with ATRA's expertise.",
+    "learnMore": "Learn more",
+    "aboutTitle": "Strategic partnership for your digital transformation!",
+    "aboutP1": "Google Cloud is Google's cloud platform that offers data, artificial intelligence, and collaboration services for companies. ATRA, an official partner of Google Workspace, Google Cloud Platform, and Google Maps Platform, was Latin America Partner of the Year in 2018, 2020, 2022, 2024, and 2025.",
+    "aboutP2": "With over 20 years of experience, we help organizations migrate, modernize, and innovate in the cloud, uniting our expertise with Google's technology.",
+    "benefitsTitle": "Why choose a Google Cloud Partner?",
+    "benefitsDesc": "As a certified Google Cloud partner, we have the expertise to understand your needs and transform challenges into opportunities. We support your company at every stage of the cloud journey, making the most of Google's infrastructure and tools.",
+    "contactExpert": "Talk to an expert!",
+    "specTitle": "Our specializations",
+    "specDesc": "ATRA is prepared to help your company migrate, modernize, and innovate with Google Cloud.",
+    "specLink": "Boost your business with Google Cloud",
+    "contactTitle": "Get in touch",
+    "contactDesc": "Learn more about who we are and how we work, or contact us to discover how we can shape your company's future together.",
+    "contactUs": "Contact us",
+    "seeMore": "See more"
+  },
+  "solution": {
+    "heroTitle": "Solutions in <1>Artificial Intelligence</1> & Generative AI",
+    "heroDesc": "Transform how your company operates with our AI service, designed to automate processes, generate intelligent content, and create autonomous agents that drive innovation and ensure precise results.",
+    "hireService": "Hire the service",
+    "menu": {
+      "howItWorks": "How it works",
+      "benefits": "Benefits",
+      "whoIsFor": "Who is this service for",
+      "howWeDo": "How we do it"
+    },
+    "section1": {
+      "title": "Structuring Innovation with Artificial Intelligence",
+      "p1": "Our AI service focuses on building robust infrastructures and models that enable advanced automation, content generation, and predictive analysis efficiently.",
+      "p2": "We evaluate the company's needs, design custom architectures, and develop autonomous agents and LLMs that support high-performance business operations. Furthermore, we ensure the models are precise, accessible, and secure, operationalizing them with MLOps best practices.",
+      "card1Title": "AI Opportunities Analysis",
+      "card1Desc": "We evaluate your company's specific needs to identify the best use cases for LLMs, Machine Learning, and intelligent automation.",
+      "card2Title": "Agent and LLM Development",
+      "card2Desc": "We create virtual assistants, corporate copilots, and custom models that guarantee content generation and customer service automation.",
+      "card3Title": "Operationalization (MLOps)",
+      "card3Desc": "We integrate and monitor AI solutions (MLOps) to ensure scalability, governance, efficient performance, and continuous security."
+    },
+    "section2": {
+      "title": "Benefits of the Generative AI Service",
+      "b1Title": "Operational Efficiency",
+      "b1Desc": "Automation of repetitive tasks and customer service with fast and efficient autonomous agents.",
+      "b2Title": "Innovation in Content",
+      "b2Desc": "Automated generation of texts, reports, and insights, accelerating production and creativity.",
+      "b3Title": "Intelligent Scalability",
+      "b3Desc": "Flexible MLOps infrastructure that grows with your business needs while maintaining governance."
+    },
+    "section3": {
+      "title": "Who is this service for?",
+      "desc": "Our Artificial Intelligence service is ideal for companies looking to lead innovation in their sectors, automating complex processes and generating value through cutting-edge technologies. This service is particularly useful for organizations that:",
+      "item1": "Need robust virtual assistants and corporate copilots to support customer service and sales operations.",
+      "item2": "Want to optimize content generation, reports, and predictive analysis to improve efficiency.",
+      "item3": "Seek to ensure governance, scalability, and security of Machine Learning (MLOps) models."
+    },
+    "section4": {
+      "title": "How we do it?",
+      "acc1Title": "Problem-Centric Approach",
+      "acc1Desc": "We focus on deeply understanding your business challenges before applying technology, ensuring AI solves real problems and generates ROI.",
+      "acc2Title": "Advanced Technologies (LLMs & ML)",
+      "acc2Desc": "We use the most advanced foundational language models and modern Machine Learning frameworks to build precise and scalable solutions.",
+      "acc3Title": "Iteration and MLOps",
+      "acc3Desc": "We implement continuous feedback loops and MLOps practices to monitor, retrain, and ensure the governance of models in production."
+    },
+    "contact": {
+      "title": "Start the <1>AI revolution</1> in your company",
+      "desc": "Contact us today and discover how ATRA can transform your processes with Artificial Intelligence. Make the change now!",
+      "contactUs": "Contact us",
+      "quickDoubt": "Quick Question?",
+      "talkToAI": "talk to our AI assistant"
+    }
+  },
+  "chat": {
+    "header": "Chat with ATRA",
+    "beta": "BETA",
+    "subtext": "Data & Business Expert AI",
+    "error": "Error connecting to ATRA AI. Check if the API key is configured.",
+    "timeout": "The response took too long. Please try sending again.",
+    "errorGeneral": "Sorry, an error occurred communicating with our experts. Try again in a few seconds.",
+    "botWelcome": "Our AI is ready to answer your questions about Digital Transformation, Data, AI, and Cloud.",
+    "placeholder": "What do you want to build today?",
+    "poweredBy": "POWERED BY ATRA AI"
+  },
+  "careers": {
+    "title": "Careers",
+    "subtitle": "Come be part of a team focused on data solutions",
+    "desc": "Here you can reach your full professional potential",
+    "m1": "The ATRA Way",
+    "m2": "Badges and Awards",
+    "m3": "Selection Process",
+    "m4": "Work With Us",
+    "m5": "Advantages",
+    "m6": "Trainee"
+  },
+  "megaMenu": {
+    "solutions": [
+      {
+        "title": "Innovation & AI",
+        "sections": [
+          {
+            "title": "Artificial Intelligence & Generative AI",
+            "desc": "Generative AI solutions, conversational agents, predictive models, and intelligent document extraction guided by strict governance."
+          },
+          {
+            "title": "Apps & Digital Solutions",
+            "desc": "Web and mobile applications integrated with Lakehouse alongside legacy modernization to place intelligence directly at decision points."
+          }
+        ]
+      },
+      {
+        "title": "Data, BI & Advanced Analytics",
+        "sections": [
+          {
+            "title": "Data Engineering & Cloud",
+            "desc": "Modern cloud Lakehouse architectures and high-performance pipelines to unify data and power advanced analytics."
+          },
+          {
+            "title": "Business Intelligence & Advanced Analytics",
+            "desc": "Executive dashboards, predictive modeling, and Self-Service BI frameworks to turn raw data into business intelligence."
+          }
+        ]
+      },
+      {
+        "title": "Governance & Culture",
+        "sections": [
+          {
+            "title": "Data Governance & FinOps",
+            "desc": "Data cataloging, compliance, and quality aligned with FinOps practices for continuous cloud cost optimization."
+          },
+          {
+            "title": "Data Culture (Enablement)",
+            "desc": "Data and AI literacy programs to empower teams, accelerate adoption, and maximize technology ROI."
+          }
+        ]
+      }
+    ],
+    "insights": [
+      { "title": "Success Stories", "desc": "Real stories of digital transformation." },
+      { "title": "Reports", "desc": "Deep analysis of the data market." },
+      { "title": "Blog", "desc": "Articles, trends, and technical news." },
+      { "title": "Webinars", "desc": "Video content with our experts." },
+      { "title": "Ebooks", "desc": "Complete guides for your data journey." }
+    ],
+    "partners": [
+      { "name": "Google Cloud", "desc": "Leading public cloud for data and AI." },
+      { "name": "Denodo", "desc": "Data virtualization for agility." },
+      { "name": "BigID", "desc": "Discovery and protection of sensitive data." },
+      { "name": "Partner", "desc": "Strategic technology partner." },
+      { "name": "Azure", "desc": "Microsoft's comprehensive cloud platform." },
+      { "name": "Atlan", "desc": "Modern and collaborative data catalog." },
+      { "name": "IBM", "desc": "Innovation in AI and hybrid cloud." },
+      { "name": "Salesforce Informatica", "desc": "Market-leading cloud data management." },
+      { "name": "Databricks", "desc": "Unified Lakehouse for data and AI." }
+    ],
+    "lastUpdates": "Latest updates",
+    "seeAll": "See all"
+  }
+}

@@ -1,0 +1,159 @@
+# Produção/staging na VPS. Ver docs/04-infra/deploy-vps.md e ambientes.md.
+#
+# Sobe com:
+#     docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+#
+# ⚠️ O compose de **desenvolvimento** é o `docker-compose.yml`. Este é outro
+# arquivo de propósito: lá o Next roda em modo dev com bind mount do código,
+# aqui roda a imagem construída, sem código-fonte no host.
+#
+# ⚠️ Postgres e MinIO **não publicam porta no host**. Só o Caddy escuta na
+# internet (80/443). Banco exposto em VPS com IP público é varrido em minutos —
+# e nada fora desta rede precisa falar com eles.
+
+name: atra
+
+services:
+  # ── proxy reverso + TLS ─────────────────────────────────────────────────────
+  # O Caddy resolve o certificado sozinho contra a Let's Encrypt, usando o
+  # hostname do arquivo Caddyfile. É o que dispensa cron de renovação.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # O Caddyfile lê estes três com a sintaxe `{$VAR}`. Sem passá-los aqui,
+      # o placeholder resolve vazio: o site responderia em qualquer hostname,
+      # sem certificado e sem senha.
+      SITE_HOST: ${SITE_HOST}
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER}
+      BASIC_AUTH_HASH: ${BASIC_AUTH_HASH}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data      # certificados: perder isto refaz o ACME do zero
+      - caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+
+  # ── o site ──────────────────────────────────────────────────────────────────
+  web:
+    image: atra-website:${TAG:-local}
+    restart: unless-stopped
+    environment:
+      DATABASE_URI: postgres://atra:${POSTGRES_PASSWORD}@postgres:5432/atra
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      NEXT_PUBLIC_SITE_URL: ${SITE_URL}
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: atra-media
+      S3_PRIVATE_BUCKET: atra-privado
+      S3_PUBLIC_ENDPOINT: ${SITE_URL}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      # MIG-102: candidaturas do Banco de Talentos seguem para o ATRAIR (R&S).
+      # Vazias = integração desligada; a candidatura fica só no admin.
+      ATRAIR_API_URL: ${ATRAIR_API_URL:-}
+      ATRAIR_API_KEY: ${ATRAIR_API_KEY:-}
+      # D-29: chave de engenharia do convite de lead no chat. As outras duas
+      # moram no CMS (leadCapture.enabled + consentNotice por idioma).
+      ENABLE_CHAT_LEAD: ${ENABLE_CHAT_LEAD:-}
+      NEXT_TELEMETRY_DISABLED: "1"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  # ── migrações ───────────────────────────────────────────────────────────────
+  # Roda e sai. Usa o estágio `migrator`, e não o `runner` nem o `build`: o
+  # runner é o standalone do Next, que não traz o CLI do Payload; e o `build`
+  # não serve no primeiro deploy, porque construí-lo já exige o banco migrado.
+  # Ver o comentário do estágio no Dockerfile. Perfil próprio para não subir
+  # junto com `up -d`.
+  #
+  # ⚠️ Migração **antes** do site receber tráfego (deploy-vps.md, regra 2):
+  #     docker compose -f docker-compose.prod.yml --profile tarefas run --rm migrate
+  migrate:
+    profiles: ["tarefas"]
+    image: atra-website:${TAG:-local}-migrator
+    environment:
+      DATABASE_URI: postgres://atra:${POSTGRES_PASSWORD}@postgres:5432/atra
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: atra-media
+      S3_PRIVATE_BUCKET: atra-privado
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+    command: ["pnpm", "payload", "migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── banco ───────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: atra
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: atra
+    # ⚠️ Só em 127.0.0.1, nunca em 0.0.0.0. O build da imagem precisa alcançar
+    # o banco e o BuildKit não entra em rede nomeada — então ele usa
+    # `--network=host` e chega por aqui. Publicar sem o prefixo poria o Postgres
+    # na internet, que é o que a nota do topo deste arquivo evita.
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atra -d atra"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── mídia ───────────────────────────────────────────────────────────────────
+  # ⚠️ Volume local, e isso é uma escolha com prazo. deploy-vps.md recomenda
+  # Cloudflare R2: perder a VPS aqui é perder a mídia se o backup falhar. Fica
+  # local até alguém criar o bucket no R2 — a API é a mesma, muda o endpoint.
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Cria o bucket e sai. Fora do `--wait` porque contêiner que encerra é lido
+  # como falha por ele, mesmo saindo com 0.
+  createbucket:
+    profiles: ["tarefas"]
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    # ⚠️ atra-privado fica SEM `anonymous set download`, e é o ponto:
+    # currículo e material gated saem só por URL assinada ou pelo admin.
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${S3_ACCESS_KEY} ${S3_SECRET_KEY} &&
+      mc mb --ignore-existing local/atra-media &&
+      mc anonymous set download local/atra-media &&
+      mc mb --ignore-existing local/atra-privado &&
+      echo 'buckets prontos'"
+
+volumes:
+  pgdata:
+  miniodata:
+  caddy_data:
+  caddy_config:

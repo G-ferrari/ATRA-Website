@@ -1,0 +1,30 @@
+services:
+  web:
+    build:
+      context: .
+      target: dev
+    ports:
+      # 3001 no host: a porta 3000 é do app novo em web/.
+      # O legado segue no ar durante toda a migração — é o gabarito da
+      # regressão visual. Sai do repositório só na Fase 8.
+      - "3001:3000"
+      # HMR: em middlewareMode o Vite sobe o websocket numa porta própria
+      - "24678:24678"
+    env_file:
+      # Opcional: o `.env` é local e fora do git. No CI ele não existe, e o
+      # compose abortava antes de subir o gabarito da regressão visual. O
+      # legado só precisa dele para a rota /chat, que não entra nos testes.
+      - path: .env
+        required: false
+    environment:
+      NODE_ENV: development
+      # Vite dentro do container precisa de polling para ver mudanças no bind mount
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - .:/app
+      # mantém o node_modules construído na imagem (não sobrescrito pelo host)
+      - node_modules:/app/node_modules
+    restart: unless-stopped
+
+volumes:
+  node_modules:

@@ -1,0 +1,172 @@
+/* Mona Sans local — ver public/fonts/mona-sans.css e MIG-035. */
+@import url('/fonts/mona-sans.css');
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-surface-1: #f8fafc;
+  --color-surface-2: #ffffff;
+  --color-surface-3: #f1f5f9;
+  --color-surface-inverse: #0e1015;
+  
+  --color-text-main: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-subtle: #334155;
+  
+  --color-border-main: #e2e8f0;
+  --color-border-subtle: transparent;
+
+  --font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Mona Sans", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary: #3C98FA;
+  --color-secondary: #FF8B08;
+  --color-primary-dark: #2A75C5;
+  --color-secondary-dark: #D67200;
+  
+  /* Additional Dark Graphite Colors */
+  --color-dark-bg: #0e1015;       /* Deep Graphite Canvas */
+  --color-dark-surface: #181b22;  /* Dark Charcoal Card surface */
+  --color-dark-surface-2: #222631; /* Elevated Graphite surface */
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white shadow-xl border-0 rounded-[6px];
+  }
+  
+  .glass-card-dark {
+    @apply bg-[#181b22] shadow-2xl shadow-black/60 text-white border-0 rounded-[6px];
+  }
+
+  .vort-card {
+    @apply rounded-[6px] bg-surface-2 p-6 sm:p-8 shadow-md border-0 transition-all duration-200 relative overflow-hidden;
+  }
+
+  .vort-card-dark {
+    @apply rounded-[6px] bg-[#181b22] p-6 sm:p-8 shadow-xl text-white border-0 transition-all duration-200 relative overflow-hidden;
+  }
+
+  .pill-btn-primary {
+    @apply rounded-[6px] bg-primary hover:bg-primary-dark text-white px-6 py-3 font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-[0.98] uppercase tracking-wider text-xs border-0;
+  }
+
+  .pill-btn-secondary {
+    @apply rounded-[6px] bg-secondary hover:bg-secondary-dark text-white px-6 py-3 font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-[0.98] uppercase tracking-wider text-xs border-0;
+  }
+
+  .pill-btn-outline {
+    @apply rounded-[6px] border-0 hover:border-primary text-text-main hover:bg-primary/10 px-6 py-3 font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wider text-xs;
+  }
+
+  /* ⚠️ Pontos num overlay (::after), não no background-image do bloco: o herói
+     grafite declara o gradiente por bg-linear-to-br (que também é
+     background-image) e o dot-grid vencia a cascata, deixando o bloco
+     transparente. Mesmo conserto do app novo, para o gabarito bater no gate. */
+  .vort-dot-grid {
+    position: relative;
+  }
+  .vort-dot-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+  }
+
+  .vort-dot-grid-light {
+    background-image: radial-gradient(circle, rgba(15, 23, 42, 0.08) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-linear-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
+  }
+
+  .bg-gradient-atra {
+    @apply bg-linear-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
+  }
+
+  /* Infinite vertical scroll for image carousel */
+  @keyframes marquee-vertical {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
+  }
+  
+  .animate-marquee-vertical {
+    animation: marquee-vertical 30s linear infinite;
+  }
+
+  /* Smooth, ultra-lightweight GPU compositor horizontal marquee */
+  @keyframes marquee-horizontal {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-marquee-horizontal {
+    display: flex;
+    width: max-content;
+    animation: marquee-horizontal 26s linear infinite;
+  }
+
+  .animate-marquee-horizontal:hover {
+    animation-play-state: paused;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+*:focus:not(input):not(textarea):not(select):not([contenteditable="true"]),
+*:focus-visible:not(input):not(textarea):not(select):not([contenteditable="true"]),
+*:active:not(input):not(textarea):not(select):not([contenteditable="true"]) {
+  outline: none !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-width: 0px !important;
+}
+
+button, a, summary, [role="button"], [tabindex] {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus, button:focus-visible, button:active,
+a:focus, a:focus-visible, a:active,
+summary:focus, summary:focus-visible, summary:active,
+[role="button"]:focus, [role="button"]:focus-visible, [role="button"]:active,
+[tabindex]:focus, [tabindex]:focus-visible, [tabindex]:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-surface-1);
+  color: var(--color-text-main);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+html.dark {
+  --color-surface-1: #0e1015;
+  --color-surface-2: #181b22;
+  --color-surface-3: #222631;
+  --color-surface-inverse: #0e1015;
+  
+  --color-text-main: #f3f4f6;
+  --color-text-muted: #9ca3af;
+  --color-text-subtle: #d1d5db;
+  
+  --color-border-main: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+}
+

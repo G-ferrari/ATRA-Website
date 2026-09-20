@@ -1,0 +1,20 @@
+# Scripts de build permitidos. O pnpm bloqueia postinstall por padrão — é uma
+# proteção de supply chain, então cada liberação aqui é deliberada.
+#
+# Atenção: um build bloqueado faz o CLI do Payload abortar, porque ele roda um
+# check de dependências que trata o aviso como erro. Toda entrada precisa de
+# valor explícito, mesmo que seja `false`.
+allowBuilds:
+  # Payload usa esbuild para empacotar a config; precisa do binário da plataforma.
+  esbuild: true
+  # Watcher nativo usado por sass/Next em desenvolvimento.
+  "@parcel/watcher": true
+  # sharp já traz binário pré-compilado via optionalDependencies — o postinstall
+  # não é necessário. Verificado: libvips 8.18.3 carrega normalmente.
+  sharp: false
+  unrs-resolver: false
+  # MIG-061. Os dois vêm com o SDK do Gemini. O postinstall do `protobufjs`
+  # gera código que o uso em TypeScript não precisa, e o do `@google/genai` só
+  # o encadeia. Verificado: a rota `/api/chat` compila e responde sem eles.
+  '@google/genai': false
+  protobufjs: false

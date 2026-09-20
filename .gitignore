@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Segredos de produção: gerados na VPS, nunca versionados (deploy-vps.md).
+.env.prod

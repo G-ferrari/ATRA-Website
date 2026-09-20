@@ -1,0 +1,895 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Migração do Site ATRA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:wght@300;400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600&display=swap">
+
+<style>
+/* ---------- tokens: tema claro é o padrão, porque o documento nasce para virar PDF ---------- */
+:root{
+  --papel:#ffffff;
+  --painel:#f4f7fa;
+  --painel-2:#eaeff5;
+  --tinta:#0e1726;
+  --tinta-media:#3d4c60;
+  --tinta-fraca:#697a90;
+  --risco:#d7e0ea;
+  --risco-forte:#b9c6d6;
+  --azul:#0a6fce;
+  --azul-claro:#e3f0fc;
+  --ciano:#0092dc;
+  --ambar:#c47a00;
+  --ambar-claro:#fdf1dc;
+  --alerta:#a83c2c;
+  --alerta-claro:#fbe9e5;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --papel:#0d1420;
+    --painel:#151e2c;
+    --painel-2:#1c2736;
+    --tinta:#eef3f9;
+    --tinta-media:#b3c1d2;
+    --tinta-fraca:#8496ab;
+    --risco:#26344a;
+    --risco-forte:#36485f;
+    --azul:#54abff;
+    --azul-claro:#122a42;
+    --ciano:#3cb8f5;
+    --ambar:#e8a23c;
+    --ambar-claro:#33270f;
+    --alerta:#f0806c;
+    --alerta-claro:#38201b;
+  }
+}
+:root[data-theme="dark"]{
+  --papel:#0d1420;
+  --painel:#151e2c;
+  --painel-2:#1c2736;
+  --tinta:#eef3f9;
+  --tinta-media:#b3c1d2;
+  --tinta-fraca:#8496ab;
+  --risco:#26344a;
+  --risco-forte:#36485f;
+  --azul:#54abff;
+  --azul-claro:#122a42;
+  --ciano:#3cb8f5;
+  --ambar:#e8a23c;
+  --ambar-claro:#33270f;
+  --alerta:#f0806c;
+  --alerta-claro:#38201b;
+}
+
+*{box-sizing:border-box}
+
+body{
+  background:var(--papel);
+  color:var(--tinta);
+  font-family:"Source Serif 4","Iowan Old Style",Georgia,serif;
+  font-size:15.5px;
+  line-height:1.62;
+  margin:0;
+  -moz-osx-font-smoothing:auto;
+}
+
+.folha{
+  max-width:940px;
+  margin:0 auto;
+  padding:56px 40px 80px;
+}
+
+/* ---------- tipografia ---------- */
+h1,h2,h3,h4,.dado,.rotulo,.chip,.codigo,th,.barra-rotulo{
+  font-family:"Mona Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+h1{
+  font-size:40px;
+  line-height:1.08;
+  font-weight:800;
+  letter-spacing:-.022em;
+  margin:0 0 10px;
+  text-wrap:balance;
+}
+h2{
+  font-size:21px;
+  font-weight:700;
+  letter-spacing:-.012em;
+  margin:0 0 4px;
+  text-wrap:balance;
+}
+h3{
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:-.005em;
+  margin:0 0 8px;
+}
+p{margin:0 0 14px;max-width:66ch}
+a{color:var(--azul)}
+strong{font-weight:600;color:var(--tinta)}
+
+.rotulo{
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--tinta-fraca);
+}
+.codigo{
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.06em;
+  color:var(--tinta-fraca);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+
+/* ---------- cabeçalho ---------- */
+.capa{
+  border-top:5px solid var(--azul);
+  padding-top:26px;
+  margin-bottom:40px;
+}
+.capa .marca{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  margin-bottom:22px;
+}
+.capa .marca .rotulo{color:var(--azul)}
+.capa .data{margin-left:auto;color:var(--tinta-fraca);font-size:10.5px;letter-spacing:.13em;font-weight:700;text-transform:uppercase}
+.linha-fina{
+  font-family:"Mona Sans",sans-serif;
+  font-size:17px;
+  font-weight:400;
+  color:var(--tinta-media);
+  max-width:60ch;
+  line-height:1.45;
+  margin:0;
+}
+
+/* ---------- seções ---------- */
+section{margin-bottom:44px}
+.cabeca-secao{
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  border-bottom:1.5px solid var(--tinta);
+  padding-bottom:7px;
+  margin-bottom:20px;
+}
+.cabeca-secao .rotulo{margin-left:auto}
+
+/* ---------- números ---------- */
+.destaques{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--risco);
+  border:1px solid var(--risco);
+  margin-bottom:22px;
+}
+.destaques .celula{
+  background:var(--papel);
+  padding:20px 22px 18px;
+}
+.dado{
+  font-size:44px;
+  font-weight:800;
+  letter-spacing:-.03em;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+  color:var(--azul);
+  display:block;
+}
+.dado .sufixo{font-size:22px;font-weight:600;letter-spacing:-.01em}
+.dado-legenda{
+  font-family:"Mona Sans",sans-serif;
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--tinta-media);
+  margin-top:7px;
+  line-height:1.35;
+  display:block;
+}
+
+.grade-numeros{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  background:var(--risco);
+  border:1px solid var(--risco);
+}
+.grade-numeros .celula{background:var(--papel);padding:14px 16px}
+.grade-numeros .n{
+  font-family:"Mona Sans",sans-serif;
+  font-size:24px;
+  font-weight:700;
+  letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+  display:block;
+  line-height:1.1;
+}
+.grade-numeros .d{
+  font-family:"Mona Sans",sans-serif;
+  font-size:11.5px;
+  color:var(--tinta-fraca);
+  font-weight:500;
+  display:block;
+  margin-top:4px;
+  line-height:1.3;
+}
+
+/* ---------- roadmap ---------- */
+.fase{
+  display:grid;
+  grid-template-columns:38px 1fr 132px 78px;
+  gap:16px;
+  align-items:center;
+  padding:11px 0;
+  border-bottom:1px solid var(--risco);
+  break-inside:avoid;
+}
+.fase:first-child{border-top:1px solid var(--risco)}
+.fase-n{
+  font-family:"Mona Sans",sans-serif;
+  font-size:12px;
+  font-weight:700;
+  color:var(--tinta-fraca);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.02em;
+}
+.fase-nome{
+  font-family:"Mona Sans",sans-serif;
+  font-size:14.5px;
+  font-weight:600;
+  line-height:1.3;
+}
+.fase-nome span{
+  display:block;
+  font-weight:400;
+  font-size:12.5px;
+  color:var(--tinta-fraca);
+  margin-top:2px;
+}
+.barra{
+  height:7px;
+  background:var(--painel-2);
+  border-radius:0;
+  overflow:hidden;
+}
+.barra i{display:block;height:100%;background:var(--azul)}
+.fase.pendente .barra i{background:var(--ambar)}
+.fase-status{
+  font-family:"Mona Sans",sans-serif;
+  font-size:12px;
+  font-weight:600;
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+  color:var(--azul);
+}
+.fase.pendente .fase-status{color:var(--ambar)}
+.fase.zero .fase-status{color:var(--tinta-fraca)}
+.fase.zero .barra i{background:var(--risco-forte)}
+
+/* ---------- listas de entrega ---------- */
+.blocos{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.bloco{
+  border:1px solid var(--risco);
+  padding:16px 18px 14px;
+  break-inside:avoid;
+  background:var(--papel);
+}
+.bloco h3{margin-bottom:9px}
+.bloco ul{margin:0;padding-left:17px}
+.bloco li{
+  font-size:14px;
+  margin-bottom:5px;
+  line-height:1.45;
+}
+.bloco li::marker{color:var(--azul)}
+
+.lista-tarefas{list-style:none;margin:0;padding:0}
+.lista-tarefas li{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:14px;
+  align-items:baseline;
+  padding:8px 0;
+  border-bottom:1px solid var(--risco);
+  font-size:14.5px;
+  break-inside:avoid;
+}
+.lista-tarefas li:first-child{border-top:1px solid var(--risco)}
+.lista-tarefas .quem{
+  font-family:"Mona Sans",sans-serif;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--tinta-fraca);
+  white-space:nowrap;
+}
+
+/* ---------- painéis por frente ---------- */
+.frente{
+  border:1px solid var(--risco);
+  margin-bottom:18px;
+  break-inside:avoid;
+  background:var(--papel);
+}
+.frente-topo{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  padding:12px 18px;
+  background:var(--painel);
+  border-bottom:1px solid var(--risco);
+}
+.frente-topo h3{margin:0;font-size:14.5px}
+.frente-topo .contagem{
+  margin-left:auto;
+  font-family:"Mona Sans",sans-serif;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--tinta-fraca);
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+th{
+  text-align:left;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--tinta-fraca);
+  padding:9px 18px 7px;
+  border-bottom:1px solid var(--risco);
+}
+td{
+  padding:10px 18px;
+  border-bottom:1px solid var(--risco);
+  vertical-align:top;
+  line-height:1.45;
+}
+tr:last-child td{border-bottom:0}
+td.pergunta{width:46%}
+td.trava{color:var(--tinta-media);font-size:13.5px}
+.tabela-rolavel{overflow-x:auto}
+
+/* ---------- chips ---------- */
+.chip{
+  display:inline-block;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  padding:3px 7px;
+  border:1px solid currentColor;
+  white-space:nowrap;
+  print-color-adjust:exact;
+  -webkit-print-color-adjust:exact;
+}
+.chip.feito{color:var(--azul);background:var(--azul-claro)}
+.chip.aberto{color:var(--ambar);background:var(--ambar-claro)}
+.chip.urgente{color:var(--alerta);background:var(--alerta-claro)}
+
+/* ---------- destaque de urgência ---------- */
+.urgencia{
+  border:1px solid var(--alerta);
+  border-left-width:5px;
+  padding:18px 20px 14px;
+  background:var(--alerta-claro);
+  print-color-adjust:exact;
+  -webkit-print-color-adjust:exact;
+  break-inside:avoid;
+}
+.urgencia h3{color:var(--alerta)}
+.urgencia p{margin-bottom:10px}
+.urgencia p:last-child{margin-bottom:0}
+
+.nota{
+  border-left:3px solid var(--risco-forte);
+  padding:2px 0 2px 16px;
+  color:var(--tinta-media);
+  font-size:14px;
+  margin:18px 0 0;
+}
+.nota p{margin-bottom:8px}
+.nota p:last-child{margin-bottom:0}
+
+/* ---------- riscos ---------- */
+.risco-item{
+  display:grid;
+  grid-template-columns:1fr 90px;
+  gap:16px;
+  padding:11px 0;
+  border-bottom:1px solid var(--risco);
+  align-items:start;
+  break-inside:avoid;
+}
+.risco-item:first-child{border-top:1px solid var(--risco)}
+.risco-item .grau{
+  font-family:"Mona Sans",sans-serif;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  text-align:right;
+  padding-top:3px;
+}
+.grau.alto{color:var(--alerta)}
+.grau.medio{color:var(--ambar)}
+.grau.baixo{color:var(--tinta-fraca)}
+.risco-item .t{font-size:14.5px;line-height:1.45}
+.risco-item .t b{font-weight:600}
+.risco-item .t span{display:block;color:var(--tinta-media);font-size:13.5px;margin-top:2px}
+
+/* ---------- rodapé ---------- */
+.rodape{
+  margin-top:52px;
+  padding-top:16px;
+  border-top:1px solid var(--risco);
+  color:var(--tinta-fraca);
+  font-size:12.5px;
+  font-family:"Mona Sans",sans-serif;
+  line-height:1.5;
+}
+
+/* ---------- responsivo ---------- */
+@media screen and (max-width:760px){
+  .folha{padding:36px 22px 60px}
+  h1{font-size:31px}
+  .destaques,.grade-numeros{grid-template-columns:repeat(2,1fr)}
+  .blocos{grid-template-columns:1fr}
+  .fase{grid-template-columns:30px 1fr 64px;row-gap:8px}
+  .fase .barra{grid-column:2/4}
+  td.pergunta{width:auto}
+}
+
+/* ---------- impressão ---------- */
+@page{size:A4;margin:15mm 13mm}
+@media print{
+  :root{
+    --papel:#ffffff;--painel:#f4f7fa;--painel-2:#eaeff5;
+    --tinta:#0e1726;--tinta-media:#3d4c60;--tinta-fraca:#697a90;
+    --risco:#d7e0ea;--risco-forte:#b9c6d6;
+    --azul:#0a6fce;--azul-claro:#e3f0fc;--ciano:#0092dc;
+    --ambar:#c47a00;--ambar-claro:#fdf1dc;
+    --alerta:#a83c2c;--alerta-claro:#fbe9e5;
+  }
+  body{font-size:10.4pt;line-height:1.5}
+  .grade-numeros{grid-template-columns:repeat(3,1fr)}
+  .blocos{gap:12px}
+  .folha{max-width:none;padding:0}
+  h1{font-size:26pt}
+  h2{font-size:14pt}
+  .dado{font-size:30pt}
+  .grade-numeros .n{font-size:16pt}
+  section{margin-bottom:26px;break-inside:auto}
+  .cabeca-secao{break-after:avoid}
+  h2,h3{break-after:avoid}
+  a{color:var(--tinta);text-decoration:none}
+  .quebra{break-before:page}
+}
+</style>
+<div class="folha">
+
+  <header class="capa">
+    <div class="marca">
+      <span class="rotulo">ATRA · Migração do site institucional</span>
+      <span class="data">25 de agosto de 2026 · v3, fim do dia</span>
+    </div>
+    <h1>Relatório de andamento</h1>
+    <p class="linha-fina">O novo site está no ar em ambiente de homologação, com todo o conteúdo real, publicação automatizada e backup diário. O caminho até a virada agora passa mais por decisões das áreas do que por engenharia.</p>
+  </header>
+
+  <section>
+    <div class="cabeca-secao"><h2>Onde estamos</h2><span class="rotulo">Resumo</span></div>
+    <p>O site foi reconstruído, recebeu todo o conteúdo do WordPress e agora <strong>está no ar em um servidor de homologação</strong>, protegido por senha, para as áreas revisarem e aprovarem. São os 207 artigos, as 7 vagas, os 8 segmentos e as 18 soluções reais — nenhum conteúdo inventado.</p>
+    <p>A operação também amadureceu: <strong>toda alteração aprovada vai ao ar sozinha</strong>, depois de passar por 240 verificações automáticas, e se algo falhar o site volta à versão anterior sem sair do ar — isso já aconteceu três vezes em teste, sem um minuto de indisponibilidade. O conteúdo tem <strong>backup diário com restauração testada</strong>, não apenas gravada.</p>
+    <p>Na última rodada, os <strong>três formulários restantes foram construídos e provados no ambiente real</strong>: a newsletter está no ar com dupla confirmação, e candidatura e download de material estão prontos, aguardando apenas seus gatilhos (a definição de LGPD e os textos dos materiais). O ensaio da virada foi <strong>parcialmente executado</strong> — tudo que não depende do DNS — e pegou três defeitos que só ambiente real mostra, todos corrigidos e re-testados no mesmo dia.</p>
+    <p>Das <strong>109 atividades</strong> registradas, <strong>94 estão concluídas (86%)</strong>. O que resta de engenharia pura é pouco (~30h); a maior parte do que falta depende de definições das áreas — CRM, retenção de currículos, acessos de infraestrutura — e da sequência final de virada.</p>
+  </section>
+
+  <section>
+    <div class="cabeca-secao"><h2>Os números</h2><span class="rotulo">Panorama</span></div>
+
+    <div class="destaques">
+      <div class="celula">
+        <span class="dado">86<span class="sufixo">%</span></span>
+        <span class="dado-legenda">do projeto concluído<br>94 de 109 atividades</span>
+      </div>
+      <div class="celula">
+        <span class="dado">100<span class="sufixo">%</span></span>
+        <span class="dado-legenda">do conteúdo real no ar<br>em homologação</span>
+      </div>
+      <div class="celula">
+        <span class="dado">18</span>
+        <span class="dado-legenda">decisões aguardando<br>as áreas de negócio</span>
+      </div>
+    </div>
+
+    <div class="grade-numeros">
+      <div class="celula"><span class="n">207</span><span class="d">artigos do blog migrados e publicados na homologação</span></div>
+      <div class="celula"><span class="n">287</span><span class="d">imagens trazidas do WordPress para a nova biblioteca</span></div>
+      <div class="celula"><span class="n">261</span><span class="d">redirecionamentos validados um a um no ambiente real</span></div>
+      <div class="celula"><span class="n">270</span><span class="d">endereços no mapa do site para o Google</span></div>
+      <div class="celula"><span class="n">240</span><span class="d">verificações automáticas antes de cada publicação</span></div>
+      <div class="celula"><span class="n">0</span><span class="d">minutos fora do ar nos deploys — falha volta a versão anterior sozinha</span></div>
+      <div class="celula"><span class="n">1×</span><span class="d">backup por dia, com restauração testada em base limpa</span></div>
+      <div class="celula"><span class="n">18</span><span class="d">soluções no menu, 13 com página própria</span></div>
+      <div class="celula"><span class="n">8</span><span class="d">segmentos de mercado no ar</span></div>
+      <div class="celula"><span class="n">7</span><span class="d">vagas reais, no mesmo endereço de hoje</span></div>
+      <div class="celula"><span class="n">76</span><span class="d">pontos de acessibilidade mapeados para a fase de melhoria</span></div>
+      <div class="celula"><span class="n">89</span><span class="d">chegou a nota de velocidade da página "Sobre" (era 77)</span></div>
+    </div>
+
+    <div class="nota">
+      <p><strong>O ambiente de homologação</strong> fica em um endereço provisório, protegido por senha (peça o acesso ao responsável do projeto). O endereço amigável <strong>staging.atra.com.br</strong> já está preparado do lado do servidor — falta apenas um registro na conta Cloudflare da ATRA, que ninguém localizou ainda quem acessa.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="cabeca-secao"><h2>Roadmap</h2><span class="rotulo">Nove etapas</span></div>
+
+    <div class="fase">
+      <span class="fase-n">01</span>
+      <span class="fase-nome">Fundação<span>Plataforma, ambiente e testes automáticos</span></span>
+      <span class="barra"><i style="width:100%"></i></span>
+      <span class="fase-status">14 de 14</span>
+    </div>
+    <div class="fase">
+      <span class="fase-n">02</span>
+      <span class="fase-nome">Primeira página ponta a ponta<span>Cases de sucesso, do banco de dados à tela</span></span>
+      <span class="barra"><i style="width:100%"></i></span>
+      <span class="fase-status">18 de 18</span>
+    </div>
+    <div class="fase">
+      <span class="fase-n">03</span>
+      <span class="fase-nome">Construção das páginas<span>As 20 telas do protótipo, cabeçalho, menu e rodapé</span></span>
+      <span class="barra"><i style="width:100%"></i></span>
+      <span class="fase-status">26 de 26</span>
+    </div>
+    <div class="fase">
+      <span class="fase-n">04a</span>
+      <span class="fase-nome">Conteúdo do protótipo no CMS<span>Cases, clientes, depoimentos, parceiros e glossário</span></span>
+      <span class="barra"><i style="width:100%"></i></span>
+      <span class="fase-status">3 de 3</span>
+    </div>
+    <div class="fase">
+      <span class="fase-n">04b</span>
+      <span class="fase-nome">Migração do WordPress<span>207 artigos, 287 imagens e as 7 vagas</span></span>
+      <span class="barra"><i style="width:100%"></i></span>
+      <span class="fase-status">6 de 6</span>
+    </div>
+    <div class="fase">
+      <span class="fase-n">04c</span>
+      <span class="fase-nome">Conteúdo que o protótipo não tinha<span>Segmentos, catálogo de soluções e página legal</span></span>
+      <span class="barra"><i style="width:100%"></i></span>
+      <span class="fase-status">6 de 6</span>
+    </div>
+    <div class="fase pendente">
+      <span class="fase-n">05</span>
+      <span class="fase-nome">Formulários, buscadores e medição<span>Leads chegando, presença no Google, analytics</span></span>
+      <span class="barra"><i style="width:75%"></i></span>
+      <span class="fase-status">9 de 12</span>
+    </div>
+    <div class="fase pendente">
+      <span class="fase-n">06</span>
+      <span class="fase-nome">Preparação para produção<span>Servidor no ar · publicação automática · backup · guia do editor</span></span>
+      <span class="barra"><i style="width:71%"></i></span>
+      <span class="fase-status">12 de 17</span>
+    </div>
+    <div class="fase zero">
+      <span class="fase-n">07–08</span>
+      <span class="fase-nome">Virada e desligamento<span>Troca de endereço, acompanhamento e saída do WordPress</span></span>
+      <span class="barra"><i style="width:0%"></i></span>
+      <span class="fase-status">0 de 7</span>
+    </div>
+
+    <div class="nota">
+      <p>A etapa 6 avançou além do previsto: o servidor de produção foi contratado, configurado e <strong>já está servindo a homologação</strong> — com publicação automatizada e backup, itens que nem constavam do plano original. O que falta nela: monitoramento de erros e de disponibilidade (dependem de contas a criar) e o treinamento do marketing.</p>
+    </div>
+  </section>
+
+  <section class="quebra">
+    <div class="cabeca-secao"><h2>O que foi entregue desde o último relatório</h2><span class="rotulo">25/08 · rodada final</span></div>
+
+    <div class="blocos">
+      <div class="bloco">
+        <h3>O site no ar, em homologação</h3>
+        <ul>
+          <li>Servidor contratado (Hostinger) e configurado com certificado e senha</li>
+          <li>Todo o conteúdo real publicado — e o inventado, removido</li>
+          <li>Painel de edição funcionando, com o primeiro administrador criado</li>
+          <li>Endereço amigável preparado, aguardando só o acesso ao Cloudflare</li>
+        </ul>
+      </div>
+      <div class="bloco">
+        <h3>Publicação automatizada</h3>
+        <ul>
+          <li>Alteração aprovada vai ao ar sozinha, após as 240 verificações</li>
+          <li>Se algo falhar, o site volta à versão anterior — sem sair do ar</li>
+          <li>Testado de verdade: três falhas simuladas, zero indisponibilidade</li>
+        </ul>
+      </div>
+      <div class="bloco">
+        <h3>Backup que prova que funciona</h3>
+        <ul>
+          <li>Cópia diária do banco, das imagens e das configurações</li>
+          <li>Restauração <em>testada</em> em base limpa — não apenas gravada</li>
+          <li>O teste já pagou por si: pegou uma falha que gravava backup vazio</li>
+        </ul>
+      </div>
+      <div class="bloco">
+        <h3>Os três formulários restantes</h3>
+        <ul>
+          <li><strong>Newsletter no ar</strong>, com dupla confirmação — inscrição só ativa após o clique no e-mail</li>
+          <li><strong>Candidatura com currículo</strong> pronta; invisível até a definição de LGPD (currículo vai para armazenamento privado)</li>
+          <li><strong>Download de material</strong> pronto; liga sozinho quando o marketing subir cada PDF</li>
+        </ul>
+      </div>
+      <div class="bloco">
+        <h3>Guia do editor</h3>
+        <ul>
+          <li>Manual escrito para quem não é técnico: entrar, criar, revisar, publicar</li>
+          <li>Cobre os seis passos que o treinamento vai validar com o marketing</li>
+          <li>Já aponta a primeira tarefa real: a descrição da home para o Google</li>
+        </ul>
+      </div>
+      <div class="bloco">
+        <h3>Ensaio parcial da virada</h3>
+        <ul>
+          <li>Tudo que não depende do DNS foi executado contra o ambiente real e documentado</li>
+          <li>Pegou 3 defeitos invisíveis em teste local — corrigidos e re-testados no mesmo dia</li>
+          <li>No dia do ensaio completo, só o DNS será novidade</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cabeca-secao"><h2>O que falta</h2><span class="rotulo">15 atividades</span></div>
+
+    <h3 style="margin-top:6px">Engenharia com definição pendente <span class="chip aberto">bloqueadas por decisões</span></h3>
+    <ul class="lista-tarefas">
+      <li><span>Ligar a candidatura a vagas (formulário pronto e testado)</span><span class="quem">aguarda RH (retenção LGPD)</span></li>
+            <li><span>Ligar o download de materiais (mecanismo pronto; ativa por material, ao subir cada PDF)</span><span class="quem">aguarda os 9 textos</span></li>
+      <li><span>Google Analytics e aviso de cookies</span><span class="quem">aguarda conta GA4 (TI)</span></li>
+      <li><span>Monitoramento de erros em produção</span><span class="quem">aguarda conta Sentry</span></li>
+      <li><span>Alerta de site fora do ar</span><span class="quem">aguarda destino do alerta</span></li>
+      <li><span>Velocidade: o que resta depende de CDN e do domínio real</span><span class="quem">decisão pós-virada</span></li>
+    </ul>
+
+    <h3 style="margin-top:26px">Com as áreas <span class="chip aberto">agenda</span></h3>
+    <ul class="lista-tarefas">
+      <li><span>Teste do guia do editor: alguém do marketing executa os 6 passos sem ajuda</span><span class="quem">marketing</span></li>
+      <li><span>Treinamento gravado para marketing e RH</span><span class="quem">marketing + rh</span></li>
+    </ul>
+
+    <h3 style="margin-top:26px">Virada (etapas 7 e 8) <span class="chip">sequência final</span></h3>
+    <ul class="lista-tarefas">
+      <li><span>Endereço staging.atra.com.br no ar (1 registro no Cloudflare)</span><span class="quem">depende de ti</span></li>
+      <li><span>Ensaio completo da virada no ambiente de homologação</span><span class="quem">engenharia</span></li>
+      <li><span>Preparação do DNS 48h antes, e a virada em si</span><span class="quem">ti + engenharia</span></li>
+      <li><span>Acompanhamento por 30 dias, com o site antigo de reserva</span><span class="quem">engenharia</span></li>
+      <li><span>Desligamento do WordPress e limpeza final</span><span class="quem">ti + engenharia</span></li>
+    </ul>
+  </section>
+
+  <section class="quebra">
+    <div class="cabeca-secao"><h2>Três pedidos que destravam tudo</h2><span class="rotulo">Prioridade</span></div>
+
+    <div class="urgencia">
+      <h3>Cada um custa minutos de quem tem o acesso — e segura o resto do projeto.</h3>
+      <p><strong>1. Descobrir quem tem a senha da conta Cloudflare da ATRA.</strong>
+      A Cloudflare é o serviço onde ficam os <em>endereços</em> do site — é lá que se diz
+      "atra.com.br aponta para tal servidor". Hoje ninguém sabe quem na empresa acessa essa conta.
+      Sem ela, duas coisas ficam paradas: dar um endereço fácil de digitar para o ambiente de
+      revisão (<strong>staging.atra.com.br</strong> — já está tudo pronto do lado do servidor,
+      falta um único cadastro lá) e, mais adiante, a própria virada do site.
+      <em>O que fazer: perguntar internamente quem criou ou administra a conta Cloudflare e pedir o acesso. É uma conversa, não uma tarefa técnica.</em></p>
+
+      <p><strong>2. Confirmar se o site atual tem medidor de visitas (Google Analytics).</strong>
+      É a ferramenta gratuita do Google que conta quantas pessoas visitam o site e de onde vêm.
+      Precisamos saber se ela está instalada no site de hoje e ter acesso à conta. Sem medir o
+      site atual <em>antes</em> da troca, nunca vai dar para responder "o site novo melhorou ou
+      piorou?" — a comparação precisa dos dois lados, e cada semana sem medição é uma semana de
+      histórico perdida para sempre.
+      <em>O que fazer: quem cuida do site/marketing digital verifica se existe conta de Google Analytics da ATRA e compartilha o acesso. Se não existir, avisar — instalar hoje ainda gera base de comparação.</em></p>
+
+      <p><strong>3. Exportar um relatório do Google Search Console.</strong>
+      É o painel gratuito onde o Google mostra quais páginas do site aparecem nas buscas e quantas
+      pessoas chegam por elas. Um relatório de um clique ("Desempenho → Páginas → Exportar") diz
+      exatamente quais páginas trazem visitantes — e portanto quais não podem quebrar na virada.
+      Sem ele, a priorização é palpite.
+      <em>O que fazer: quem tiver acesso ao Search Console da ATRA exporta o relatório dos últimos 12 meses e envia. Literalmente um clique.</em></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="cabeca-secao"><h2>Decisões pendentes, por frente</h2><span class="rotulo">18 abertas</span></div>
+    <p style="margin-bottom:10px"><strong>Como ler esta seção:</strong> a engenharia do site novo está pronta ou encaminhada — o que falta são
+    respostas que só a ATRA pode dar. Cada bloco abaixo pertence a uma área da empresa; dentro dele, cada linha explica <em>o que está em
+    aberto</em> (em linguagem simples) e <em>o que fazer — e o que acontece se ficar parado</em>. Nada aqui exige conhecimento técnico:
+    são decisões de negócio, textos e acessos.</p>
+    <p style="margin-bottom:22px">Nenhuma trava o desenvolvimento de hoje. Todas travam alguma parte da publicação ou a virada final.</p>
+
+    <div class="frente">
+      <div class="frente-topo"><h3>Marketing e conteúdo</h3><span class="contagem">7 decisões</span></div>
+      <div class="tabela-rolavel"><table>
+        <tr><th>O que está em aberto — e o que significa</th><th>O que fazer · o que acontece parado</th></tr>
+        <tr>
+          <td class="pergunta"><strong>Os números oficiais da empresa.</strong> O site atual se contradiz: uma página diz "150+ profissionais", outra diz "140+"; uma diz "20+ clientes", outra "30+"; e o selo Great Place to Work aparece como 5x e como 4x.</td>
+          <td class="trava">Alguém do marketing bate o martelo sobre cada número e preenche no painel do site (campo já existe, marcado como "pendente"). <em>Parado:</em> o site novo publica um número só, lido pelo Google — se for o errado, é o errado em todo lugar de uma vez.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>A frase da página inicial no Google.</strong> Quando um site aparece numa busca, o texto cinza abaixo do título é escrito pelo dono do site. O da página inicial está vazio.</td>
+          <td class="trava">Uma ou duas frases, escritas no campo "SEO → Descrição" do painel. Cinco minutos de quem conhece o posicionamento. <em>Parado:</em> o Google inventa a frase — e escolhe mal.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Nove materiais que só existem como capa.</strong> O site anuncia 3 relatórios, 3 e-books e 3 webinars que nunca foram escritos ou gravados — vieram do protótipo como vitrine.</td>
+          <td class="trava">Decidir quem escreve (ou se saem do ar). O mecanismo de download em troca de contato <strong>já está pronto</strong>: no dia em que um PDF for enviado ao painel, aquele material passa a gerar leads sozinho. <em>Parado:</em> as páginas seguem no ar com um botão que não entrega nada.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>O inglês do site foi revisado por alguém?</strong> São 169 textos em inglês herdados do protótipo, possivelmente tradução automática nunca lida por um humano.</td>
+          <td class="trava">Alguém que domine inglês lê e aprova (ou manda revisar). <em>Parado:</em> a versão em inglês fica no mínimo — só navegação — em vez de publicar texto de máquina sob a marca ATRA, que é o pior dos mundos.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Qual é o telefone oficial?</strong> O site mostra um número; o cadastro institucional da empresa tem outro.</td>
+          <td class="trava">Confirmar qual vale e ajustar no painel (um campo, um lugar). <em>Parado:</em> cliente em potencial ligando para o número errado.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Um parceiro sem nome.</strong> Na lista de parceiros do site há um cadastrado literalmente como "Partner" — ninguém sabe qual empresa é.</td>
+          <td class="trava">Identificar a empresa e corrigir o nome no painel. <em>Parado:</em> um card genérico no meio dos parceiros reais.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>O case "RD Saúde" existe?</strong> A página inicial anuncia um caso de sucesso da RD Saúde, mas o link dele abre o caso de outro cliente (Banco ABC).</td>
+          <td class="trava">Se o projeto existiu, alguém fornece o conteúdo e ele vira um case de verdade; se não, sai do carrossel. <em>Parado:</em> um cliente anunciado levando ao projeto de outro — ruim para os dois.</td>
+        </tr>
+      </table></div>
+    </div>
+
+    <div class="frente">
+      <div class="frente-topo"><h3>Jurídico e proteção de dados (LGPD)</h3><span class="contagem">3 decisões</span></div>
+      <div class="tabela-rolavel"><table>
+        <tr><th>O que está em aberto — e o que significa</th><th>O que fazer · o que acontece parado</th></tr>
+        <tr>
+          <td class="pergunta"><strong>Validar o texto de "Políticas e Termos".</strong> A página existe e está ligada ao rodapé — o texto veio do site antigo e ninguém do jurídico releu.</td>
+          <td class="trava">Uma leitura do jurídico, com eventuais ajustes direto no painel. <em>Parado:</em> o site novo tem formulários que <strong>funcionam de verdade</strong> (o antigo não enviava nada) — coletar dados pessoais com uma política desatualizada é risco de LGPD que o site antigo, por ironia, não tinha.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Regras para os currículos recebidos.</strong> A lei (LGPD) exige definir por quanto tempo currículos ficam guardados e quem no RH pode vê-los, <em>antes</em> de começar a recebê-los.</td>
+          <td class="trava">RH + jurídico definem prazo e responsáveis — duas respostas curtas. O formulário de candidatura <strong>já está pronto e testado</strong>, guardando o currículo em área restrita; ele fica invisível no site até essa definição existir, e ligar é apertar um interruptor. <em>Parado:</em> candidatos seguem sem canal no site.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Deixar inteligências artificiais treinarem com o conteúdo do site?</strong> O site atual tem uma configuração que diz "sim" para robôs de IA usarem os textos da ATRA como material de treino.</td>
+          <td class="trava">Decisão de negócio: manter o "sim" ou trocar por "não". <em>Parado:</em> replicamos o que está lá hoje (sim), por fidelidade — mas aí foi escolha de ninguém.</td>
+        </tr>
+      </table></div>
+    </div>
+
+    <div class="frente">
+      <div class="frente-topo"><h3>Comercial, marketing e RH</h3><span class="contagem">3 decisões</span></div>
+      <div class="tabela-rolavel"><table>
+        <tr><th>O que está em aberto — e o que significa</th><th>O que fazer · o que acontece parado</th></tr>
+        <tr>
+          <td class="pergunta"><strong>Quem da ATRA vai cuidar do site?</strong> O objetivo central desta migração é o marketing publicar conteúdo sem depender de programador. O manual do editor está escrito — falta saber quem é o editor.</td>
+          <td class="trava">Nomear a(s) pessoa(s) e marcar uma sessão curta de treinamento (o roteiro está pronto; a pessoa executa os passos e o que travar vira correção). <em>Parado:</em> o benefício que justificou o projeto não chega a ninguém.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Vagas continuam sendo páginas do site?</strong> Hoje cada vaga é uma página comum, publicada à mão — e o site novo mantém esse modelo. A alternativa seria adotar um sistema especializado de recrutamento.</td>
+          <td class="trava">Só confirmar que o modelo atual serve (funciona bem). <em>Parado:</em> nada quebra — mas vale confirmar antes de investir mais na tela de candidatura.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Conferir a área das 7 vagas.</strong> O site novo mostra a área de cada vaga (Comercial, Engenharia…), mas o site antigo não guardava esse dado — hoje as vagas estão sem área marcada.</td>
+          <td class="trava">RH abre as 7 no painel e marca a área de cada uma — minutos. <em>Parado:</em> o filtro de vagas por área fica sem função.</td>
+        </tr>
+      </table></div>
+    </div>
+
+    <div class="frente">
+      <div class="frente-topo"><h3>TI e infraestrutura</h3><span class="contagem">5 decisões</span></div>
+      <div class="tabela-rolavel"><table>
+        <tr><th>O que está em aberto — e o que significa</th><th>O que fazer · o que acontece parado</th></tr>
+        <tr>
+          <td class="pergunta"><strong>Acesso à Cloudflare</strong> <span class="chip urgente">urgente</span> — detalhado no quadro vermelho acima.</td>
+          <td class="trava">Localizar quem tem a senha. <em>Parado:</em> sem endereço amigável para a revisão agora, e sem virada depois.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Google Analytics no site atual</strong> <span class="chip urgente">urgente</span> — detalhado no quadro vermelho acima.</td>
+          <td class="trava">Confirmar se existe e compartilhar o acesso. <em>Parado:</em> a virada acontece sem régua de comparação.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Relatório do Search Console</strong> <span class="chip urgente">urgente</span> — detalhado no quadro vermelho acima.</td>
+          <td class="trava">Exportar e enviar. <em>Parado:</em> priorização dos redirecionamentos no palpite.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Ligar a "CDN" depois da virada.</strong> CDN é uma rede que entrega o site de servidores próximos de cada visitante — deixa as páginas mais rápidas. A Cloudflare oferece isso de graça, e é o que falta para a meta de velocidade nas páginas mais pesadas.</td>
+          <td class="trava">Nada agora, de propósito: a recomendação registrada é ligar <em>depois</em> da virada estabilizar, uma mudança por vez. Fica aqui para não se perder.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Cópia extra dos contatos recebidos?</strong> Os contatos do formulário (leads) têm backup diário — no pior caso, perde-se um dia. Para conteúdo isso é aceitável; para um lead, talvez não.</td>
+          <td class="trava">Decidir se um dia de janela é aceitável. Atenua o risco: cada lead já vai também para o RD Station (o sistema do comercial), que funciona como segunda cópia. <em>Parado:</em> convive-se com a janela de um dia.</td>
+        </tr>
+      </table></div>
+    </div>
+
+    <div class="frente">
+      <div class="frente-topo"><h3>Diretoria</h3><span class="contagem">2 decisões</span></div>
+      <div class="tabela-rolavel"><table>
+        <tr><th>O que está em aberto — e o que significa</th><th>O que fazer · o que acontece parado</th></tr>
+        <tr>
+          <td class="pergunta"><strong>Quanto pode custar por mês o assistente de IA do site?</strong> O site tem um chat que responde visitantes usando inteligência artificial — e cada resposta custa alguns centavos. Sem um teto definido, escolhemos um limite conservador arbitrário.</td>
+          <td class="trava">Definir um valor mensal aceitável (ex.: R$ 100? R$ 500?). Com o número, calibramos os limites para servir o máximo de visitantes dentro dele. <em>Parado:</em> o assistente segue mais restrito do que talvez precisasse.</td>
+        </tr>
+        <tr>
+          <td class="pergunta"><strong>Guardar as conversas do assistente?</strong> Salvar o que os visitantes perguntam ajudaria a melhorar as respostas — mas conversa é dado pessoal, com implicações de LGPD.</td>
+          <td class="trava">Decidir entre guardar (com política adequada) ou registrar só números agregados (quantas conversas, sem conteúdo). <em>Parado:</em> hoje nada é guardado, que é o padrão mais seguro.</td>
+        </tr>
+      </table></div>
+    </div>
+
+    <div class="nota">
+      <p><strong>Uma decisão saiu desta lista</strong> desde o último relatório, resolvida na prática: onde o site fica hospedado. Ele roda num servidor próprio da ATRA (contratado na Hostinger), e toda alteração aprovada é publicada automaticamente, com retorno automático à versão anterior se algo falhar — mecanismo já testado em uso real.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="cabeca-secao"><h2>Riscos</h2><span class="rotulo">Atualizados</span></div>
+
+    <div class="risco-item">
+      <div class="t"><b>Acesso à Cloudflare ainda não localizado</b><span>Subiu de importância: agora segura também o endereço amigável da homologação, além da virada. É a pendência mais barata e mais travante da lista.</span></div>
+      <div class="grau alto">Alto</div>
+    </div>
+    <div class="risco-item">
+      <div class="t"><b>Decisões de conteúdo concentradas na semana da virada</b><span>Continua sendo o maior risco de prazo. Nenhuma das 18 depende de engenharia.</span></div>
+      <div class="grau alto">Alto</div>
+    </div>
+    <div class="risco-item">
+      <div class="t"><b>Virar sem base de comparação de tráfego</b><span>Sem analytics no site atual, não há como demonstrar o resultado da migração nem detectar perda a tempo.</span></div>
+      <div class="grau alto">Alto</div>
+    </div>
+    <div class="risco-item">
+      <div class="t"><b>Inglês publicado sem revisão</b><span>Hoje o site em inglês é quase todo navegação; decidir entre revisar, traduzir ou lançar só em português.</span></div>
+      <div class="grau medio">Médio</div>
+    </div>
+    <div class="risco-item">
+      <div class="t"><b>Servidor único</b><span>Mitigado: backup diário com restauração testada e cópia das configurações. A cópia externa (fora do servidor) ativa quando houver o bucket — recomendação já registrada.</span></div>
+      <div class="grau medio">Médio</div>
+    </div>
+    <div class="risco-item">
+      <div class="t"><b>Infraestrutura e conversão de conteúdo</b><span>Os dois maiores riscos técnicos do projeto — migrar 207 artigos e operar em produção — foram executados e validados. Resolvidos.</span></div>
+      <div class="grau baixo">Resolvido</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cabeca-secao"><h2>Próximos passos</h2><span class="rotulo">Encaminhamento</span></div>
+    <ul class="lista-tarefas">
+      <li><span><strong>Esta semana:</strong> localizar o acesso Cloudflare e criar o registro de staging.atra.com.br</span><span class="quem">ti</span></li>
+      <li><span><strong>Esta semana:</strong> circular o link de homologação para as áreas revisarem o site</span><span class="quem">você</span></li>
+      <li><span><strong>Esta semana:</strong> confirmar analytics e exportar o Search Console</span><span class="quem">ti</span></li>
+      <li><span><strong>Próximas duas semanas:</strong> números institucionais, telefone, parceiro "Partner", case RD Saúde e descrição da home</span><span class="quem">marketing</span></li>
+      <li><span><strong>Próximas duas semanas:</strong> nomear quem edita o site e agendar o teste do guia do editor</span><span class="quem">marketing</span></li>
+      <li><span><strong>Em paralelo:</strong> engenharia fecha monitoramento e alerta assim que as contas existirem, e prepara o ensaio da virada</span><span class="quem">engenharia</span></li>
+    </ul>
+  </section>
+
+  <footer class="rodape">
+    Relatório gerado a partir do backlog, do roadmap e do estado real do ambiente de homologação em 25 de agosto de 2026.
+    Contagens sobre as 103 atividades registradas (101 ativas e 2 canceladas por falta de fonte de dado).
+    As horas referem-se a esforço de engenharia e não incluem produção editorial.
+  </footer>
+
+</div>

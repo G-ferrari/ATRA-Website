@@ -1,0 +1,39 @@
+import type { Metadata } from 'next'
+import { locale as getLocale } from 'next/root-params'
+import { notFound } from 'next/navigation'
+
+import { RenderBlocks } from '@/components/blocks/render-blocks'
+import { isLocale, LOCALES } from '@/lib/locales'
+import { resolverPagina } from '@/lib/paginas'
+import { metadataDe } from '@/lib/seo'
+
+/* /insights (MIG-060) — o hub central de conteúdo.
+ *
+ * ⚠️ O plano dizia "agrega 4 collections", e o legado **não agrega nada**: é uma
+ * lista curada com texto próprio. Dos 10 itens, só 3 repetem o título da página
+ * de origem. Ver a nota do campo `items` em `blocks/index.ts`. */
+
+export function generateStaticParams() {
+  return LOCALES.map((locale) => ({ locale }))
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  if (!isLocale(locale)) return {}
+  const pagina = await resolverPagina('insights', 'insights', locale)
+  return pagina ? metadataDe({ locale, local: { secao: 'insights' }, seo: pagina.seo }) : {}
+}
+
+export default async function Pagina() {
+  const locale = await getLocale()
+  if (!isLocale(locale)) notFound()
+
+  const pagina = await resolverPagina('insights', 'insights', locale)
+  if (!pagina) notFound()
+
+  return (
+    <main className="pt-24 md:pt-36 pb-20 bg-surface-1 min-h-screen text-text-main relative overflow-hidden">
+      <RenderBlocks blocos={pagina.blocos} locale={locale} />
+    </main>
+  )
+}
