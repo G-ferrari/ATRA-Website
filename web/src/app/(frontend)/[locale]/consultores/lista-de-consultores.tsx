@@ -112,7 +112,14 @@ const TODOS = '__todos__'
 const SENIORIDADES = ['Senior', 'Pleno', 'Lead / Principal'] as const
 
 /* ⚠️ `Set` não dispara render por mutação — cada alternância devolve um conjunto
- * novo. `delete` responde se removeu, então serve de teste e de remoção. */
+ * novo. `delete` responde se removeu, então serve de teste e de remoção.
+ *
+ * ⚠️ E quem chama tem de usar a forma **funcional** do `setState`. Ler
+ * `tagsMarcadas` do render e passar o resultado perde atualização: dois cliques
+ * no mesmo tick partem os dois do mesmo conjunto antigo, e o segundo sobrescreve
+ * o primeiro. Com o dedo não aparece — há render entre um clique e outro —, mas
+ * aparece em teste que clica em sequência, e foi assim que isto foi pego:
+ * marcar GCP, FinOps e PySpark de uma vez deixava só PySpark. */
 function alternarEm(atual: ReadonlySet<string>, valor: string): ReadonlySet<string> {
   const novo = new Set(atual)
   if (!novo.delete(valor)) novo.add(valor)
@@ -196,8 +203,13 @@ export function ListaDeConsultores({
                 <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-primary/10 text-primary border border-primary/20 shrink-0">
                   {p.level}
                 </span>
+                {/* ⚠️ Par claro/escuro, ao contrário da pílula de nível ao lado.
+                    O laranja da marca sobre `bg-secondary/10` mede 7,34:1 no
+                    escuro e **2,35:1 no claro** — seria o pior contraste da
+                    página. Elemento novo não tem gabarito a honrar, então aqui
+                    o par vale (mesmo caso do âmbar em `page.tsx`). */}
                 {selo && (
-                  <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-secondary/10 text-secondary border border-secondary/20 shrink-0">
+                  <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-secondary/10 text-amber-700 dark:text-secondary border border-secondary/20 shrink-0">
                     {t.selo(cobertura, resultado.alvo)}
                   </span>
                 )}
@@ -311,7 +323,7 @@ export function ListaDeConsultores({
                   type="button"
                   aria-pressed={ativo}
                   onClick={() =>
-                    setNiveisMarcados(s === TODOS ? new Set() : alternarEm(niveisMarcados, s))
+                    setNiveisMarcados((atual) => (s === TODOS ? new Set() : alternarEm(atual, s)))
                   }
                   className={cn(
                     'px-2.5 py-0.5 rounded-[4px] text-[11px] font-medium transition-all whitespace-nowrap cursor-pointer',
@@ -358,7 +370,7 @@ export function ListaDeConsultores({
                   type="button"
                   aria-pressed={ativo}
                   onClick={() =>
-                    setTagsMarcadas(e === TODOS ? new Set() : alternarEm(tagsMarcadas, e))
+                    setTagsMarcadas((atual) => (e === TODOS ? new Set() : alternarEm(atual, e)))
                   }
                   className={cn(
                     'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
