@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { deveSincronizar, sincronizarLead, type LeadParaCrm } from './crm'
+import { deveSincronizar, KINDS_COMERCIAIS, sincronizarLead, type LeadParaCrm } from './crm'
 
 const lead = (extra: Partial<LeadParaCrm> = {}): LeadParaCrm => ({
   kind: 'contact',
@@ -10,14 +10,23 @@ const lead = (extra: Partial<LeadParaCrm> = {}): LeadParaCrm => ({
   ...extra,
 })
 
+/* Espelho declarado de `KINDS_COMERCIAIS`, conferido pelo teste logo abaixo. */
+const COMERCIAIS = ['contact', 'chat-lead', 'material-download', 'rc18-diagnostic', 'consultant-request']
+
 describe('deveSincronizar', () => {
-  /* ⚠️ A lista tem de espelhar `KINDS_COMERCIAIS` inteiro. `rc18-diagnostic`
-     entrou no conjunto e nunca entrou aqui — um kind comercial sem cobertura
-     nenhuma até esta task. */
   it('manda os kinds comerciais', () => {
-    for (const kind of ['contact', 'chat-lead', 'material-download', 'rc18-diagnostic', 'consultant-request']) {
+    for (const kind of COMERCIAIS) {
       expect(deveSincronizar(lead({ kind }))).toBe(true)
     }
+  })
+
+  /* ⚠️ É este teste que impede a próxima pessoa de repetir o que aconteceu com
+     `rc18-diagnostic`: ele entrou em `KINDS_COMERCIAIS` e ficou **sete dias**
+     sem cobertura, porque a lista acima é escrita à mão e ninguém conferia se
+     ela ainda espelhava o conjunto. Acrescentar kind comercial sem tocar aqui
+     agora reprova. */
+  it('a lista deste arquivo ainda espelha KINDS_COMERCIAIS', () => {
+    expect([...COMERCIAIS].sort()).toEqual([...KINDS_COMERCIAIS].sort())
   })
 
   /* Candidatura e banco de talentos são RH: currículo em pipeline de vendas

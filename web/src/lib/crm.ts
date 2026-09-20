@@ -60,7 +60,7 @@ export type ResultadoDaSincronizacao =
  * dado de RH — currículo dentro de pipeline comercial seria vazamento de
  * finalidade (LGPD), não integração. Se a ATRA quiser o banco de talentos lá,
  * é decisão dela, não default nosso (D-29). */
-const KINDS_COMERCIAIS = new Set([
+export const KINDS_COMERCIAIS = new Set([
   'contact',
   'chat-lead',
   'material-download',
