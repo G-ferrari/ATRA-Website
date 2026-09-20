@@ -37,6 +37,31 @@ export function emOrdem({ completos, parciais }: ResultadoFiltro): PerfilComCobe
   return [...completos, ...parciais]
 }
 
+export type ModoFiltro = 'ou' | 'e'
+
+export type Exibicao = {
+  /** Grade de cima. Vazia quando ninguém cobre tudo — a UI não a desenha. */
+  principais: PerfilComCobertura[]
+  /** Grade de baixo, sob a faixa. Vazia fora do modo `E`. */
+  parciais: PerfilComCobertura[]
+  /** `separador` divide dois grupos que existem; `aviso` encabeça os parciais
+   *  quando **não há** grupo de cima. A cópia das duas é diferente, e é por isso
+   *  que são valores distintos e não um booleano. */
+  faixa: 'nenhuma' | 'separador' | 'aviso'
+}
+
+/** Como o resultado deve ser **lido** na tela. Mora aqui, e não na ilha, porque
+ *  foi exatamente esta decisão que passou sem teste e produziu uma faixa dizendo
+ *  "nenhum perfil reúne tudo" com dois perfis que reúnem logo acima. */
+export function exibicao(r: ResultadoFiltro, modo: ModoFiltro): Exibicao {
+  if (modo === 'ou' || r.alvo === 0 || r.parciais.length === 0) {
+    return { principais: modo === 'e' ? r.completos : emOrdem(r), parciais: [], faixa: 'nenhuma' }
+  }
+  return r.completos.length > 0
+    ? { principais: r.completos, parciais: r.parciais, faixa: 'separador' }
+    : { principais: [], parciais: r.parciais, faixa: 'aviso' }
+}
+
 export function total({ completos, parciais }: ResultadoFiltro): number {
   return completos.length + parciais.length
 }

@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest'
 
-import { emOrdem, filtrarPerfis, total } from './consultores'
+import { emOrdem, exibicao, filtrarPerfis, total } from './consultores'
 import type { ConsultantRole } from '@/types/content'
 
 /* Fixture com os 8 perfis semeados e suas tags reais
  * (`web/scripts/seed/consultores.ts:23-96`). Os números destes testes vêm do
  * feedback de 20/09 e são os mesmos da FEATURE §1.1 — se o seed mudar, estes
  * testes mudam junto, de propósito. */
-const perfil = (role: string, level: string, tags: string[]): ConsultantRole => ({
+const perfil = (role: string, level: string, tags: string[], description?: string): ConsultantRole => ({
   slug: role, role, code: role.slice(0, 2).toUpperCase(), level, gradient: 'blue-cyan',
-  description: `Descrição de ${role}`, tags, ecosystem: 0, allocatedProjects: 0,
+  description: description ?? `Descrição de ${role}`, tags, ecosystem: 0, allocatedProjects: 0,
   totalTeamSize: 0, certifications: [],
 })
 
@@ -19,7 +19,10 @@ const PERFIS: ConsultantRole[] = [
   perfil('Cloud Architect', 'Lead / Principal', ['GCP', 'AWS', 'Terraform', 'Kubernetes', 'FinOps', 'Azure IoT', 'Edge Computing']),
   perfil('Analytics Engineer', 'Senior', ['dbt', 'Snowflake', 'BigQuery', 'Looker', 'Power BI', 'DAX', 'SQL']),
   perfil('Data Governance Specialist', 'Lead / Principal', ['Collibra', 'Data Catalog', 'LGPD', 'ISO 27001', 'Privacy', 'SQL']),
-  perfil('Data Scientist', 'Senior', ['Python', 'PySpark', 'SQL', 'Storytelling', 'Tableau', 'TensorFlow', 'LLM']),
+  /* Descrição própria, com um termo que não aparece no cargo nem nas tags: é o
+     único jeito de provar que a busca olha a descrição. */
+  perfil('Data Scientist', 'Senior', ['Python', 'PySpark', 'SQL', 'Storytelling', 'Tableau', 'TensorFlow', 'LLM'],
+    'Modelagem preditiva e desenho de experimentos para decisão de negócio.'),
   perfil('FinOps & Cloud Cost Specialist', 'Senior', ['FinOps', 'GCP', 'AWS', 'BigQuery', 'Looker', 'Kubernetes']),
   perfil('IoT & Edge Computing Specialist', 'Senior', ['Azure IoT', 'IoT', 'MQTT', 'Edge Computing', 'Python', 'Airflow']),
 ]
@@ -120,8 +123,21 @@ describe('filtrarPerfis (catálogo de /consultores)', () => {
       ])
     })
 
+    /* ⚠️ Sem a tag, a união dos dois níveis **é** o catálogo inteiro (não há
+       perfil "Pleno"), e o teste passaria mesmo se a multi-seleção fosse
+       ignorada — que é a regressão que ele existe para pegar. `AWS` isola:
+       tem dois Senior e um Lead. */
     it('dois níveis devolvem a união, não a interseção', () => {
-      expect(total(filtrar([], ['Senior', 'Lead / Principal']))).toBe(8)
+      expect(nomes(emOrdem(filtrar(['AWS'], ['Senior'])))).toEqual([
+        'Data Engineer',
+        'FinOps & Cloud Cost Specialist',
+      ])
+      expect(nomes(emOrdem(filtrar(['AWS'], ['Lead / Principal'])))).toEqual(['Cloud Architect'])
+      expect(nomes(emOrdem(filtrar(['AWS'], ['Senior', 'Lead / Principal'])))).toEqual([
+        'Data Engineer',
+        'Cloud Architect',
+        'FinOps & Cloud Cost Specialist',
+      ])
     })
 
     it('nível sem nenhum perfil esvazia — este é um caminho legítimo para o estado vazio', () => {
@@ -136,12 +152,22 @@ describe('filtrarPerfis (catálogo de /consultores)', () => {
   })
 
   describe('busca textual', () => {
-    it('casa cargo, descrição e tags, ignorando caixa', () => {
+    it('casa a tag, ignorando caixa', () => {
       expect(nomes(emOrdem(filtrar([], [], 'LOOKER')))).toEqual([
         'Analytics Engineer',
         'FinOps & Cloud Cost Specialist',
       ])
+    })
+
+    it('casa o cargo', () => {
       expect(nomes(emOrdem(filtrar([], [], 'governance')))).toEqual(['Data Governance Specialist'])
+    })
+
+    /* ⚠️ "experimentos" só existe na descrição do Data Scientist — não no cargo
+       nem nas tags. Sem isto, tirar `p.description` do texto buscado não
+       reprovaria teste nenhum. */
+    it('casa a descrição', () => {
+      expect(nomes(emOrdem(filtrar([], [], 'experimentos')))).toEqual(['Data Scientist'])
     })
 
     it('espaço em branco não filtra nada', () => {
@@ -151,5 +177,56 @@ describe('filtrarPerfis (catálogo de /consultores)', () => {
     it('termo sem casamento esvazia — o outro caminho legítimo para o estado vazio', () => {
       expect(total(filtrar([], [], 'cobol'))).toBe(0)
     })
+  })
+})
+
+describe('exibicao (como o resultado é lido na tela)', () => {
+  const ver = (tags: string[], modo: 'ou' | 'e') => exibicao(filtrar(tags), modo)
+
+  it('modo OU: lista plana, sem faixa, mesmo com cobertura desigual', () => {
+    const e = ver(['GCP', 'FinOps', 'PySpark'], 'ou')
+    expect(e.faixa).toBe('nenhuma')
+    expect(e.parciais).toHaveLength(0)
+    expect(nomes(e.principais)).toHaveLength(4)
+  })
+
+  it('sem tag marcada não há cobertura a comparar, nem no modo E', () => {
+    const e = ver([], 'e')
+    expect(e.faixa).toBe('nenhuma')
+    expect(e.principais).toHaveLength(8)
+  })
+
+  /* ⚠️ O caso que a primeira versão errava: a faixa aparecia como separador e
+     dizia "nenhum perfil reúne tudo" com dois que reúnem renderizados acima. */
+  it('modo E com os dois grupos: faixa é separador, e o grupo de cima existe', () => {
+    const e = ver(['AWS', 'GCP'], 'e')
+    expect(e.faixa).toBe('separador')
+    expect(nomes(e.principais)).toEqual(['Cloud Architect', 'FinOps & Cloud Cost Specialist'])
+    expect(nomes(e.parciais)).toEqual(['Data Engineer'])
+  })
+
+  it('modo E sem ninguém cobrindo tudo: faixa é aviso e não há grade de cima', () => {
+    const e = ver(['GCP', 'FinOps', 'PySpark'], 'e')
+    expect(e.faixa).toBe('aviso')
+    expect(e.principais).toHaveLength(0)
+    expect(e.parciais).toHaveLength(4)
+  })
+
+  it('modo E com todos cobrindo tudo: sem faixa e sem grade de baixo', () => {
+    const e = ver(['MQTT'], 'e')
+    expect(e.faixa).toBe('nenhuma')
+    expect(nomes(e.principais)).toEqual(['IoT & Edge Computing Specialist'])
+    expect(e.parciais).toHaveLength(0)
+  })
+
+  it('a faixa nunca é separador sem grupo de cima, em nenhuma combinação de tags', () => {
+    const TAGS = [...new Set(PERFIS.flatMap((p) => p.tags))]
+    for (const a of TAGS) {
+      for (const b of TAGS) {
+        const e = exibicao(filtrar([a, b]), 'e')
+        if (e.faixa === 'separador') expect(e.principais.length).toBeGreaterThan(0)
+        if (e.faixa === 'aviso') expect(e.principais).toHaveLength(0)
+      }
+    }
   })
 })

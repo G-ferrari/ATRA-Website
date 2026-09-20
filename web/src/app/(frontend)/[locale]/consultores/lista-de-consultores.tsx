@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
 import { GlowCard } from '@/components/ui'
-import { emOrdem, filtrarPerfis, total, type PerfilComCobertura } from '@/lib/consultores'
+import { exibicao, filtrarPerfis, total, type PerfilComCobertura } from '@/lib/consultores'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
 import type { ConsultantRole } from '@/types/content'
@@ -35,7 +35,9 @@ const TEXTOS = {
     cobremTudo: (n: number) => `${n} ${n === 1 ? 'cobre' : 'cobrem'} tudo`,
     cobremParte: (n: number) => `${n} ${n === 1 ? 'cobre' : 'cobrem'} parte`,
     parteTitulo: 'Cobrem parte do que você marcou',
-    parteTexto: 'Nenhum perfil sozinho reúne tudo — combine dois na mesma solicitação.',
+    parteTexto: 'Estes trazem só uma parte — dá para pedir mais de um perfil na mesma solicitação.',
+    avisoTitulo: 'Nenhum perfil reúne tudo o que você marcou',
+    avisoTexto: 'Nenhum perfil sozinho reúne tudo — combine dois na mesma solicitação.',
     selo: (n: number, de: number) => `cobre ${n} de ${de}`,
     titulo: 'Perfis Especializados Disponíveis',
     exibindo: (n: number) => `Exibindo ${n} ${n === 1 ? 'perfil especializado' : 'perfis especializados'}`,
@@ -68,7 +70,9 @@ const TEXTOS = {
     cobremTudo: (n: number) => `${n} cover${n === 1 ? 's' : ''} everything`,
     cobremParte: (n: number) => `${n} cover${n === 1 ? 's' : ''} part`,
     parteTitulo: 'Cover part of what you selected',
-    parteTexto: 'No single profile has it all — combine two in the same request.',
+    parteTexto: 'These bring only part of it — you can request more than one profile at once.',
+    avisoTitulo: 'No profile has everything you selected',
+    avisoTexto: 'No single profile has it all — combine two in the same request.',
     selo: (n: number, de: number) => `covers ${n} of ${de}`,
     titulo: 'Available specialist profiles',
     exibindo: (n: number) => `Showing ${n} ${n === 1 ? 'profile' : 'profiles'}`,
@@ -160,10 +164,10 @@ export function ListaDeConsultores({
     [perfis, tagsMarcadas, niveisMarcados, busca],
   )
   const visiveis = total(resultado)
-  /* A faixa de parciais só existe no modo `E` e só quando há parciais: em `OU` a
-   * lista é plana, e sem tag marcada não há cobertura a comparar. */
-  const mostrarParciais = modo === 'e' && resultado.alvo > 0 && resultado.parciais.length > 0
-  const lista = mostrarParciais ? resultado.completos : emOrdem(resultado)
+  /* Como isto é lido na tela é decisão de `exibicao`, não da ilha: escrita aqui,
+   * ela passou sem teste e produziu uma faixa dizendo "nenhum perfil reúne tudo"
+   * com dois perfis que reúnem renderizados logo acima. */
+  const vista = exibicao(resultado, modo)
 
   const limpar = () => {
     setTagsMarcadas(new Set())
@@ -444,22 +448,39 @@ export function ListaDeConsultores({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-            {lista.map((x) => cartao(x, false))}
-          </div>
-        )}
-
-        {mostrarParciais && (
           <>
-            {/* Faixa que explica por que estes cartões estão aqui. É ela que
-                transforma "nenhum perfil serve" em "peça dois". */}
-            <div className="mt-8 mb-6 pt-6 border-t border-slate-200 dark:border-white/5">
-              <h3 className="text-sm font-bold text-text-main">{t.parteTitulo}</h3>
-              <p className="text-xs text-text-muted font-light mt-0.5">{t.parteTexto}</p>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-              {resultado.parciais.map((x) => cartao(x, true))}
-            </div>
+            {vista.principais.length > 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                {vista.principais.map((x) => cartao(x, false))}
+              </div>
+            )}
+
+            {vista.faixa !== 'nenhuma' && (
+              <>
+                {/* ⚠️ Duas cópias, e não uma. Como `separador`, a faixa divide
+                    dois grupos e não pode dizer que ninguém reúne tudo — os que
+                    reúnem estão logo acima. Como `aviso`, ela encabeça os
+                    parciais e é aí que a frase vale. É ela que transforma
+                    "nenhum perfil serve" em "peça dois". */}
+                <div
+                  className={cn(
+                    'mb-6',
+                    vista.faixa === 'separador' &&
+                      'mt-8 pt-6 border-t border-slate-200 dark:border-white/5',
+                  )}
+                >
+                  <h3 className="text-sm font-bold text-text-main">
+                    {vista.faixa === 'separador' ? t.parteTitulo : t.avisoTitulo}
+                  </h3>
+                  <p className="text-xs text-text-muted font-light mt-0.5">
+                    {vista.faixa === 'separador' ? t.parteTexto : t.avisoTexto}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                  {vista.parciais.map((x) => cartao(x, true))}
+                </div>
+              </>
+            )}
           </>
         )}
       </section>
