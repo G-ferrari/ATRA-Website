@@ -7,7 +7,7 @@
 
 | ID | Título | Área | Prioridade | Estimativa | Status | Depende de |
 |----|--------|------|------------|------------|--------|------------|
-| 009 | Filtro multi-seleção com alternador OU\|E e ordenação por cobertura | frontend | P0 | L | para implementar | — |
+| 009 | Filtro multi-seleção com alternador OU\|E e ordenação por cobertura | frontend | P0 | L | em revisão | — |
 | 010 | Lista cumulativa "Minha solicitação" com quantidade por perfil | frontend | P0 | L | para implementar | 009 |
 | 011 | kind consultant-request — enum, migração e classificação comercial no CRM | data-model | P0 | S | para implementar | — |
 | 012 | Server Action solicitarConsultores com revalidação no servidor e aviso por e-mail | backend | P0 | M | para implementar | 011 |

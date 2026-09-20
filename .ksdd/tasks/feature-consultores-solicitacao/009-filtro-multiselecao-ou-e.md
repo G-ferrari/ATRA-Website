@@ -1,7 +1,7 @@
 ---
 id: 009
 title: Filtro multi-seleção com alternador OU|E e ordenação por cobertura
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: frontend
 priority: P0
