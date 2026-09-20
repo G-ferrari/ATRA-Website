@@ -4,7 +4,12 @@ import { headers } from 'next/headers'
 
 import { CAMPO_ISCA, conferir, excedeuPorIp } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
-import { resumoRespostas, validarRespostas, type RespostasQuickCheck } from '@/lib/diagnostico-rc18'
+import {
+  questionarioEmTexto,
+  resumoRespostas,
+  validarRespostas,
+  type RespostasQuickCheck,
+} from '@/lib/diagnostico-rc18'
 import { enviarAviso } from '@/lib/email'
 import { ipDe } from '@/lib/ip'
 import { getPayload } from '@/lib/payload'
@@ -19,7 +24,14 @@ import { MAX_POR_VALOR } from '@/lib/utm'
  *
  * ⚠️ As respostas são **revalidadas no servidor** (Server Action é endpoint
  * público, MIG-142); o resumo dos 11 pilares vai para `message`, cortado no teto
- * do campo, e para o e-mail que a ATRA recebe. Sem índice na tela (decisão do dono).
+ * do campo, e o questionário inteiro — pergunta e resposta — vai no e-mail que a
+ * ATRA recebe. Sem índice na tela (decisão do dono).
+ *
+ * ⚠️ **Destino do e-mail: `RC18_LEAD_EMAIL`, com o `contact.email` do CMS como
+ * padrão** (P-29). O dono pediu caixa própria para o diagnóstico e informa o
+ * endereço depois; enquanto a variável não existir, o aviso continua indo para o
+ * contato institucional — deixar o padrão vazio perderia o lead em silêncio até
+ * alguém configurar. A gravação em `form-submissions` não depende disto.
  */
 
 export type ResultadoDiagnosticoLead = { ok: true } | { ok: false; erro: string }
@@ -93,18 +105,27 @@ export async function enviarDiagnosticoRc18(dados: FormData): Promise<ResultadoD
   const contato = await lerContato()
   const empresa = texto(dados, 'company')
   const enviou = await enviarAviso({
-    para: contato.email,
+    para: process.env.RC18_LEAD_EMAIL?.trim() || contato.email,
     assunto: `[site] diagnóstico RC 18${empresa ? ` — ${empresa}` : ''}`,
     responderPara: email,
+    /* ⚠️ O `filter(Boolean)` vale só para as linhas de contato, que são
+       opcionais: aplicado ao corpo inteiro ele comeria as linhas em branco
+       entre os blocos, e o e-mail chegaria num parágrafo só. */
     texto: [
-      `E-mail: ${email}`,
-      texto(dados, 'name') && `Nome: ${texto(dados, 'name')}`,
-      texto(dados, 'phone') && `Telefone: ${texto(dados, 'phone')}`,
-      empresa && `Empresa: ${empresa}`,
-      mensagem,
-    ]
-      .filter(Boolean)
-      .join('\n'),
+      'Novo RC18 Quick Check preenchido no site.',
+      [
+        'Contato do respondente',
+        texto(dados, 'name') && `Nome: ${texto(dados, 'name')}`,
+        empresa && `Instituição: ${empresa}`,
+        `E-mail: ${email}`,
+        texto(dados, 'phone') && `Telefone: ${texto(dados, 'phone')}`,
+      ]
+        .filter(Boolean)
+        .join('\n'),
+      /* O questionário completo, e não o `mensagem` que foi para o banco: este
+         repete a pergunta de cada pilar (ver `questionarioEmTexto`). */
+      questionarioEmTexto(respostas),
+    ].join('\n\n'),
   })
 
   if (enviou) {

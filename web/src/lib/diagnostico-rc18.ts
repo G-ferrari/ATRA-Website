@@ -207,3 +207,33 @@ export function resumoRespostas(entrada: RespostasQuickCheck): string {
   })
   return [`Pontuação: ${total}/${maximo} (${pct}%).`, '', 'Respostas por pilar:', ...linhas].join('\n')
 }
+
+/** Questionário inteiro em texto — pergunta e resposta de cada pilar — para o
+ * e-mail que a ATRA recebe.
+ *
+ * ⚠️ Separado de `resumoRespostas` de propósito, e não é o mesmo texto. O resumo
+ * é o que fica no `message` do lead (admin e RD Station) e precisa caber num
+ * campo: lista só o nome do pilar. Quem abre a caixa de entrada não tem a tela
+ * do quick check ao lado para saber a que pergunta o respondente disse "Sim",
+ * então aqui a **pergunta vai junto**.
+ */
+export function questionarioEmTexto(entrada: RespostasQuickCheck): string {
+  const respostas = validarRespostas(entrada)
+  const { total, maximo, pct } = pontuacao(respostas)
+  const blocos = PILARES.map((p, i) => {
+    const valor = respostas[p.id]
+    const opcao = valor ? p.opcoes.find((o) => o.valor === valor) : undefined
+    return [
+      `${String(i + 1).padStart(2, '0')}. ${p.nome}`,
+      `    ${p.pergunta}`,
+      `    → ${opcao ? `${opcao.rotulo} (${opcao.pontos} pts)` : 'não respondido'}`,
+    ].join('\n')
+  })
+  return [
+    `Pontuação: ${total}/${maximo} (${pct}%).`,
+    '',
+    `Questionário RC18 Quick Check — ${TOTAL_PILARES} pilares:`,
+    '',
+    blocos.join('\n\n'),
+  ].join('\n')
+}

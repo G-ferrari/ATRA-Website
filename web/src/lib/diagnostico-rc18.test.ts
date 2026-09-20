@@ -5,6 +5,7 @@ import {
   PONTUACAO_MAXIMA,
   TOTAL_PILARES,
   pontuacao,
+  questionarioEmTexto,
   resumoRespostas,
   validarRespostas,
   type RespostasQuickCheck,
@@ -81,5 +82,31 @@ describe('diagnostico-rc18 (quick check, 11 pilares)', () => {
     const entrada = extremo(true)
     expect(pontuacao(entrada)).toEqual(pontuacao(entrada))
     expect(resumoRespostas(entrada)).toEqual(resumoRespostas(entrada))
+  })
+
+  describe('questionarioEmTexto (corpo do e-mail da ATRA)', () => {
+    it('repete a pergunta de cada pilar, que é o que o resumo não faz', () => {
+      const entrada = extremo(true)
+      const corpo = questionarioEmTexto(entrada)
+      for (const p of PILARES) {
+        expect(corpo).toContain(p.pergunta)
+        expect(corpo).toContain(p.nome)
+      }
+      // o resumo do `message` continua sem as perguntas — são textos diferentes
+      expect(resumoRespostas(entrada)).not.toContain(PILARES[0].pergunta)
+    })
+
+    it('traz a resposta escolhida e marca o pilar em branco', () => {
+      const corpo = questionarioEmTexto({ governanca: 'sim' })
+      expect(corpo).toContain('→ Sim (10 pts)')
+      expect(corpo).toContain('→ não respondido')
+      expect(corpo).toContain('Pontuação: 10/110')
+      expect(corpo.split('\n').filter((l) => l.trimStart().startsWith('→'))).toHaveLength(TOTAL_PILARES)
+    })
+
+    it('separa os pilares com linha em branco', () => {
+      const corpo = questionarioEmTexto(extremo(true))
+      expect(corpo).toContain('\n\n02. ')
+    })
   })
 })
