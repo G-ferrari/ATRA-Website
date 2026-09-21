@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
 import { GlowCard } from '@/components/ui'
+import { exibicao, filtrarPerfis, total, type PerfilComCobertura } from '@/lib/consultores'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
 import type { ConsultantRole } from '@/types/content'
@@ -28,6 +29,16 @@ const TEXTOS = {
     senioridade: 'Senioridade:',
     todas: 'Todas',
     todos: 'Todos',
+    modo: 'Perfis que tenham',
+    modoOu: 'Qualquer uma',
+    modoE: 'Todas estas',
+    cobremTudo: (n: number) => `${n} ${n === 1 ? 'cobre' : 'cobrem'} tudo`,
+    cobremParte: (n: number) => `${n} ${n === 1 ? 'cobre' : 'cobrem'} parte`,
+    parteTitulo: 'Cobrem parte do que você marcou',
+    parteTexto: 'Estes trazem só uma parte — dá para pedir mais de um perfil na mesma solicitação.',
+    avisoTitulo: 'Nenhum perfil reúne tudo o que você marcou',
+    avisoTexto: 'Nenhum perfil sozinho reúne tudo — combine dois na mesma solicitação.',
+    selo: (n: number, de: number) => `cobre ${n} de ${de}`,
     titulo: 'Perfis Especializados Disponíveis',
     exibindo: (n: number) => `Exibindo ${n} ${n === 1 ? 'perfil especializado' : 'perfis especializados'}`,
     ativos: 'Filtros ativos:',
@@ -53,6 +64,16 @@ const TEXTOS = {
     senioridade: 'Seniority:',
     todas: 'All',
     todos: 'All',
+    modo: 'Profiles that have',
+    modoOu: 'Any of these',
+    modoE: 'All of these',
+    cobremTudo: (n: number) => `${n} cover${n === 1 ? 's' : ''} everything`,
+    cobremParte: (n: number) => `${n} cover${n === 1 ? 's' : ''} part`,
+    parteTitulo: 'Cover part of what you selected',
+    parteTexto: 'These bring only part of it — you can request more than one profile at once.',
+    avisoTitulo: 'No profile has everything you selected',
+    avisoTexto: 'No single profile has it all — combine two in the same request.',
+    selo: (n: number, de: number) => `covers ${n} of ${de}`,
     titulo: 'Available specialist profiles',
     exibindo: (n: number) => `Showing ${n} ${n === 1 ? 'profile' : 'profiles'}`,
     ativos: 'Active filters:',
@@ -94,6 +115,21 @@ const TODOS = '__todos__'
  * `GRADIENTES`, que também espelha um `select` do schema. */
 const SENIORIDADES = ['Senior', 'Pleno', 'Lead / Principal'] as const
 
+/* ⚠️ `Set` não dispara render por mutação — cada alternância devolve um conjunto
+ * novo. `delete` responde se removeu, então serve de teste e de remoção.
+ *
+ * ⚠️ E quem chama tem de usar a forma **funcional** do `setState`. Ler
+ * `tagsMarcadas` do render e passar o resultado perde atualização: dois cliques
+ * no mesmo tick partem os dois do mesmo conjunto antigo, e o segundo sobrescreve
+ * o primeiro. Com o dedo não aparece — há render entre um clique e outro —, mas
+ * aparece em teste que clica em sequência, e foi assim que isto foi pego:
+ * marcar GCP, FinOps e PySpark de uma vez deixava só PySpark. */
+function alternarEm(atual: ReadonlySet<string>, valor: string): ReadonlySet<string> {
+  const novo = new Set(atual)
+  if (!novo.delete(valor)) novo.add(valor)
+  return novo
+}
+
 const PILULA_ATIVA = 'bg-primary text-white font-semibold shadow-xs'
 const PILULA_INATIVA =
   'bg-surface-1 text-text-muted hover:text-text-main '
@@ -110,8 +146,9 @@ export function ListaDeConsultores({
   const t = TEXTOS[locale]
   const [busca, setBusca] = useState('')
   const [aberto, setAberto] = useState<ConsultantRole | null>(null)
-  const [especialidade, setEspecialidade] = useState(TODOS)
-  const [senioridade, setSenioridade] = useState(TODOS)
+  const [tagsMarcadas, setTagsMarcadas] = useState<ReadonlySet<string>>(new Set())
+  const [niveisMarcados, setNiveisMarcados] = useState<ReadonlySet<string>>(new Set())
+  const [modo, setModo] = useState<'ou' | 'e'>('ou')
 
   /* A lista de especialidades **é** derivada dos perfis: no legado é uma
    * literal de 36 tags (`Consultants.tsx:50`) que sai de sincronia na primeira
@@ -120,23 +157,134 @@ export function ListaDeConsultores({
   const especialidades = useMemo(() => [...new Set(perfis.flatMap((p) => p.tags))].sort(), [perfis])
   const senioridades = SENIORIDADES
 
-  const filtrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase()
-    return perfis.filter((p) => {
-      const casaEsp = especialidade === TODOS || p.tags.includes(especialidade)
-      const casaSen = senioridade === TODOS || p.level === senioridade
-      const casaBusca =
-        termo === '' || [p.role, p.description, ...p.tags].join(' ').toLowerCase().includes(termo)
-      return casaEsp && casaSen && casaBusca
-    })
-  }, [perfis, busca, especialidade, senioridade])
+  /* A regra vive em `lib/consultores.ts` — ver lá por que ela **não** conhece o
+   * modo: `OU` e `E` devolvem o mesmo conjunto, e só a leitura muda. */
+  const resultado = useMemo(
+    () => filtrarPerfis({ perfis, tags: tagsMarcadas, niveis: niveisMarcados, busca }),
+    [perfis, tagsMarcadas, niveisMarcados, busca],
+  )
+  const visiveis = total(resultado)
+  /* Como isto é lido na tela é decisão de `exibicao`, não da ilha: escrita aqui,
+   * ela passou sem teste e produziu uma faixa dizendo "nenhum perfil reúne tudo"
+   * com dois perfis que reúnem renderizados logo acima. */
+  const vista = exibicao(resultado, modo)
 
   const limpar = () => {
-    setEspecialidade(TODOS)
-    setSenioridade(TODOS)
+    setTagsMarcadas(new Set())
+    setNiveisMarcados(new Set())
     setBusca('')
   }
-  const temFiltro = especialidade !== TODOS || senioridade !== TODOS || busca !== ''
+  const temFiltro = tagsMarcadas.size > 0 || niveisMarcados.size > 0 || busca !== ''
+
+  /* O cartão é o mesmo nos dois grupos; só os parciais ganham o selo de
+   * cobertura. Função local, e não componente à parte, porque depende de
+   * quatro estados da ilha e não é reutilizada fora daqui. */
+  const cartao = ({ perfil: p, cobertura }: PerfilComCobertura, selo: boolean) => (
+    <GlowCard
+      key={p.slug}
+      glowColor="blue"
+      customSize
+      radius={6}
+      className="p-5 sm:p-6 md:p-7 bg-surface-2 text-text-main shadow-sm flex flex-col justify-between h-full rounded-[6px]  hover:border-primary/40 transition-all duration-300 group"
+    >
+      <div>
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div
+              className={cn(
+                'w-10 h-10 sm:w-11 sm:h-11 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-xs shadow-xs shrink-0',
+                GRADIENTES[p.gradient] ?? GRADIENTES['blue-cyan'],
+              )}
+            >
+              {p.code}
+            </div>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h3 className="text-base sm:text-lg font-bold text-text-main leading-snug group-hover:text-primary transition-colors truncate">
+                  {p.role}
+                </h3>
+                <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-primary/10 text-primary border border-primary/20 shrink-0">
+                  {p.level}
+                </span>
+                {/* ⚠️ Par claro/escuro, ao contrário da pílula de nível ao lado.
+                    O laranja da marca sobre `bg-secondary/10` mede 7,34:1 no
+                    escuro e **2,35:1 no claro** — seria o pior contraste da
+                    página. Elemento novo não tem gabarito a honrar, então aqui
+                    o par vale (mesmo caso do âmbar em `page.tsx`). */}
+                {selo && (
+                  <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-secondary/10 text-amber-700 dark:text-secondary border border-secondary/20 shrink-0">
+                    {t.selo(cobertura, resultado.alvo)}
+                  </span>
+                )}
+              </div>
+              <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1.5 mt-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                {t.pronto}
+              </span>
+            </div>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-1.5 text-xs text-text-muted bg-surface-1 px-3 py-1 rounded-[4px]  font-semibold shrink-0">
+            <Users size={12} className="text-primary" aria-hidden />
+            <span>
+              {p.ecosystem} {t.ecossistema}
+            </span>
+          </div>
+        </div>
+
+        <p className="text-xs sm:text-sm text-text-muted font-light leading-relaxed mb-4 line-clamp-2">
+          {p.description}
+        </p>
+
+        <div className="flex flex-wrap gap-2 mb-5">
+          {p.tags.slice(0, 7).map((tag) => (
+            <span
+              key={tag}
+              className={cn(
+                'text-[11px] px-2.5 py-1 rounded-[4px] transition-colors font-medium',
+                tagsMarcadas.has(tag)
+                  ? PILULA_ATIVA
+                  : 'bg-surface-1 text-text-muted  hover:text-text-main',
+              )}
+            >
+              {tag}
+            </span>
+          ))}
+          {p.tags.length > 7 && (
+            <span className="text-[11px] px-2 py-1 rounded-[4px] bg-surface-1 text-text-muted ">
+              +{p.tags.length - 7}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="pt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between gap-3">
+        <span className="sm:hidden text-xs text-text-muted flex items-center gap-1.5">
+          <Users size={12} className="text-primary" aria-hidden /> {p.ecosystem} {t.noTime}
+        </span>
+
+        <div className="flex items-center gap-3 ml-auto">
+          <button
+            type="button"
+            onClick={() => setAberto(p)}
+            className="py-2 px-3.5 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-main  text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+          >
+            <HelpCircle size={14} className="text-primary" aria-hidden />
+            <span>{t.detalhes}</span>
+          </button>
+
+          <Link
+            href={contatoHref}
+            className="py-2 px-4 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-xs shadow-primary/20"
+          >
+            <span>{t.solicitar}</span>
+            <ArrowRight size={14} aria-hidden />
+          </Link>
+        </div>
+      </div>
+    </GlowCard>
+  )
 
   return (
     <>
@@ -169,47 +317,90 @@ export function ListaDeConsultores({
             <span className="text-[10px] font-bold text-text-muted uppercase mr-1 shrink-0">
               {t.senioridade}
             </span>
-            {[TODOS, ...senioridades].map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setSenioridade(s)}
-                className={cn(
-                  'px-2.5 py-0.5 rounded-[4px] text-[11px] font-medium transition-all whitespace-nowrap cursor-pointer',
-                  senioridade === s ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
-                )}
-              >
-                {s === TODOS ? t.todos : s}
-              </button>
-            ))}
+            {[TODOS, ...senioridades].map((s) => {
+              /* "Todos" não é um valor: é o conjunto vazio, e fica aceso quando
+                 nenhum nível está marcado. */
+              const ativo = s === TODOS ? niveisMarcados.size === 0 : niveisMarcados.has(s)
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  aria-pressed={ativo}
+                  onClick={() =>
+                    setNiveisMarcados((atual) => (s === TODOS ? new Set() : alternarEm(atual, s)))
+                  }
+                  className={cn(
+                    'px-2.5 py-0.5 rounded-[4px] text-[11px] font-medium transition-all whitespace-nowrap cursor-pointer',
+                    ativo ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
+                  )}
+                >
+                  {s === TODOS ? t.todos : s}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* ⚠️ O alternador muda a **leitura**, não o conjunto: ver a nota em
+              `lib/consultores.ts`. Em `E` os que cobrem tudo sobem e os demais
+              ficam sob a faixa de parciais, em vez de a lista esvaziar. */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[10px] font-bold text-text-muted uppercase mr-1 shrink-0">
+              {t.modo}
+            </span>
+            <div className="flex gap-1" role="group" aria-label={t.modo}>
+              {(['ou', 'e'] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={modo === m}
+                  onClick={() => setModo(m)}
+                  className={cn(
+                    'px-2.5 py-0.5 rounded-[4px] text-[11px] font-medium transition-all whitespace-nowrap cursor-pointer',
+                    modo === m ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
+                  )}
+                >
+                  {m === 'ou' ? t.modoOu : t.modoE}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1 custom-scrollbar">
-            {[TODOS, ...especialidades].map((e) => (
-              <button
-                key={e}
-                type="button"
-                onClick={() => setEspecialidade(e)}
-                className={cn(
-                  'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
-                  especialidade === e ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
-                )}
-              >
-                {e === TODOS ? t.todas : e}
-              </button>
-            ))}
+            {[TODOS, ...especialidades].map((e) => {
+              const ativo = e === TODOS ? tagsMarcadas.size === 0 : tagsMarcadas.has(e)
+              return (
+                <button
+                  key={e}
+                  type="button"
+                  aria-pressed={ativo}
+                  onClick={() =>
+                    setTagsMarcadas((atual) => (e === TODOS ? new Set() : alternarEm(atual, e)))
+                  }
+                  className={cn(
+                    'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
+                    ativo ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
+                  )}
+                >
+                  {e === TODOS ? t.todas : e}
+                </button>
+              )
+            })}
           </div>
 
           {temFiltro && (
             <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-white/5 flex items-center justify-between text-xs text-text-muted">
               <span>
                 {t.ativos}{' '}
-                {especialidade !== TODOS && (
-                  <strong className="text-primary font-semibold mr-2">{especialidade}</strong>
-                )}
-                {senioridade !== TODOS && (
-                  <strong className="text-secondary font-semibold mr-2">[{senioridade}]</strong>
-                )}
+                {[...tagsMarcadas].map((e) => (
+                  <strong key={e} className="text-primary font-semibold mr-2">
+                    {e}
+                  </strong>
+                ))}
+                {[...niveisMarcados].map((s) => (
+                  <strong key={s} className="text-secondary font-semibold mr-2">
+                    [{s}]
+                  </strong>
+                ))}
                 {busca && <span className="text-amber-400 font-semibold">&quot;{busca}&quot;</span>}
               </span>
               <button
@@ -228,11 +419,22 @@ export function ListaDeConsultores({
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-base md:text-lg font-bold font-display text-text-main">{t.titulo}</h2>
-            <p className="text-xs text-text-muted font-light mt-0.5">{t.exibindo(filtrados.length)}</p>
+            {/* Em `E` o contador responde "quem cobre tudo?" — inclusive com
+                zero, que é informação, não falha. Metade nula fica de fora. */}
+            <p className="text-xs text-text-muted font-light mt-0.5">
+              {modo === 'e' && resultado.alvo > 0
+                ? [
+                    t.cobremTudo(resultado.completos.length),
+                    resultado.parciais.length > 0 && t.cobremParte(resultado.parciais.length),
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')
+                : t.exibindo(visiveis)}
+            </p>
           </div>
         </div>
 
-        {filtrados.length === 0 ? (
+        {visiveis === 0 ? (
           <div className="bg-surface-2  rounded-[6px] p-8 text-center max-w-md mx-auto">
             <UserCheck size={32} className="mx-auto text-text-muted mb-2" aria-hidden />
             <h3 className="text-sm font-bold text-text-main mb-1">{t.vazioTitulo}</h3>
@@ -246,104 +448,40 @@ export function ListaDeConsultores({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-            {filtrados.map((p) => (
-              <GlowCard
-                key={p.slug}
-                glowColor="blue"
-                customSize
-                radius={6}
-                className="p-5 sm:p-6 md:p-7 bg-surface-2 text-text-main shadow-sm flex flex-col justify-between h-full rounded-[6px]  hover:border-primary/40 transition-all duration-300 group"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div
-                        className={cn(
-                          'w-10 h-10 sm:w-11 sm:h-11 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-xs shadow-xs shrink-0',
-                          GRADIENTES[p.gradient] ?? GRADIENTES['blue-cyan'],
-                        )}
-                      >
-                        {p.code}
-                      </div>
+          <>
+            {vista.principais.length > 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                {vista.principais.map((x) => cartao(x, false))}
+              </div>
+            )}
 
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2.5 flex-wrap">
-                          <h3 className="text-base sm:text-lg font-bold text-text-main leading-snug group-hover:text-primary transition-colors truncate">
-                            {p.role}
-                          </h3>
-                          <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-primary/10 text-primary border border-primary/20 shrink-0">
-                            {p.level}
-                          </span>
-                        </div>
-                        <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1.5 mt-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          {t.pronto}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="hidden sm:flex items-center gap-1.5 text-xs text-text-muted bg-surface-1 px-3 py-1 rounded-[4px]  font-semibold shrink-0">
-                      <Users size={12} className="text-primary" aria-hidden />
-                      <span>
-                        {p.ecosystem} {t.ecossistema}
-                      </span>
-                    </div>
-                  </div>
-
-                  <p className="text-xs sm:text-sm text-text-muted font-light leading-relaxed mb-4 line-clamp-2">
-                    {p.description}
+            {vista.faixa !== 'nenhuma' && (
+              <>
+                {/* ⚠️ Duas cópias, e não uma. Como `separador`, a faixa divide
+                    dois grupos e não pode dizer que ninguém reúne tudo — os que
+                    reúnem estão logo acima. Como `aviso`, ela encabeça os
+                    parciais e é aí que a frase vale. É ela que transforma
+                    "nenhum perfil serve" em "peça dois". */}
+                <div
+                  className={cn(
+                    'mb-6',
+                    vista.faixa === 'separador' &&
+                      'mt-8 pt-6 border-t border-slate-200 dark:border-white/5',
+                  )}
+                >
+                  <h3 className="text-sm font-bold text-text-main">
+                    {vista.faixa === 'separador' ? t.parteTitulo : t.avisoTitulo}
+                  </h3>
+                  <p className="text-xs text-text-muted font-light mt-0.5">
+                    {vista.faixa === 'separador' ? t.parteTexto : t.avisoTexto}
                   </p>
-
-                  <div className="flex flex-wrap gap-2 mb-5">
-                    {p.tags.slice(0, 7).map((tag) => (
-                      <span
-                        key={tag}
-                        className={cn(
-                          'text-[11px] px-2.5 py-1 rounded-[4px] transition-colors font-medium',
-                          tag === especialidade
-                            ? PILULA_ATIVA
-                            : 'bg-surface-1 text-text-muted  hover:text-text-main',
-                        )}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                    {p.tags.length > 7 && (
-                      <span className="text-[11px] px-2 py-1 rounded-[4px] bg-surface-1 text-text-muted ">
-                        +{p.tags.length - 7}
-                      </span>
-                    )}
-                  </div>
                 </div>
-
-                <div className="pt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between gap-3">
-                  <span className="sm:hidden text-xs text-text-muted flex items-center gap-1.5">
-                    <Users size={12} className="text-primary" aria-hidden /> {p.ecosystem} {t.noTime}
-                  </span>
-
-                  <div className="flex items-center gap-3 ml-auto">
-                    <button
-                      type="button"
-                      onClick={() => setAberto(p)}
-                      className="py-2 px-3.5 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-main  text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <HelpCircle size={14} className="text-primary" aria-hidden />
-                      <span>{t.detalhes}</span>
-                    </button>
-
-                    <Link
-                      href={contatoHref}
-                      className="py-2 px-4 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-xs shadow-primary/20"
-                    >
-                      <span>{t.solicitar}</span>
-                      <ArrowRight size={14} aria-hidden />
-                    </Link>
-                  </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                  {vista.parciais.map((x) => cartao(x, true))}
                 </div>
-              </GlowCard>
-            ))}
-          </div>
+              </>
+            )}
+          </>
         )}
       </section>
 
