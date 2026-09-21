@@ -1,4 +1,4 @@
-import { Award, CheckCircle2, Cpu, ShieldCheck, Sparkles, Users, Zap } from 'lucide-react'
+import { Award, Cpu, ShieldCheck, Sparkles, Users, Zap } from 'lucide-react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { locale as getLocale } from 'next/root-params'
@@ -41,8 +41,8 @@ const TEXTOS = {
     titulo: 'Acelere seus projetos de Dados e IA com',
     destaque: 'consultores de elite',
     descricao:
-      'Engenheiros de dados, cientistas, arquitetos cloud, analytics engineers e especialistas em governança prontos para integrar sua equipe em até 48 horas.',
-    metricas: ['No Time', 'Projetos Ativos', 'Tempo Médio', 'Satisfação'],
+      'Engenheiros de dados, cientistas, arquitetos cloud, analytics engineers e especialistas em governança prontos para integrar sua equipe.',
+    metricas: ['No Time', 'Projetos Ativos', 'Satisfação'],
     diferenciaisTitulo: 'Por que os maiores players do mercado confiam nos consultores ATRA?',
     diferenciaisTexto:
       'Garantimos alto padrão técnico, governança de processos e alinhamento total com as metas do seu negócio.',
@@ -71,8 +71,8 @@ const TEXTOS = {
     titulo: 'Accelerate your data and AI projects with',
     destaque: 'elite consultants',
     descricao:
-      'Data engineers, scientists, cloud architects, analytics engineers and governance specialists ready to join your team within 48 hours.',
-    metricas: ['On the team', 'Active projects', 'Average time', 'Satisfaction'],
+      'Data engineers, scientists, cloud architects, analytics engineers and governance specialists ready to join your team.',
+    metricas: ['On the team', 'Active projects', 'Satisfaction'],
     diferenciaisTitulo: 'Why the biggest players trust ATRA consultants',
     diferenciaisTexto:
       'We guarantee a high technical standard, process governance and full alignment with your business goals.',
@@ -97,17 +97,26 @@ const TEXTOS = {
   },
 } as const
 
-/* Ícone e cor de cada número, na ordem do legado (`Consultants.tsx:395`).
+/* Ícone, cor e valor de cada número, na ordem do legado (`Consultants.tsx:395`).
  *
- * ⚠️ Verde e âmbar carregam par claro/escuro; azul e laranja não precisam,
- * porque as cores da marca já contrastam com os dois fundos. Sem o par, "< 48h"
- * e "99.4%" saíam verde-claro e âmbar-claro sobre superfície clara — ilegíveis
- * no tema claro, e o valor `dark:` é o que o gabarito compara. */
+ * O legado tinha um quarto, "Tempo Médio: < 48h". Saiu em 21/09/2026 junto com
+ * o "em até 48 horas" da abertura e o "Pronto em < 48h" dos cards: a página
+ * deixou de prometer prazo, por decisão de conteúdo repassada por G-ferrari
+ * (D-22). Divergência deliberada do gabarito, sob D-31.
+ *
+ * ⚠️ `valor` pelo nome, e não pelo índice. Eram três listas paralelas — ícones
+ * aqui, rótulos em `TEXTOS`, valores em `i === 2`, `i === 3` no JSX —, e tirar
+ * o número do meio obrigava a renumerar as três: o ícone de um acabava com o
+ * valor de outro sem ninguém ver.
+ *
+ * ⚠️ Âmbar carrega par claro/escuro; azul e laranja não precisam, porque as
+ * cores da marca já contrastam com os dois fundos. Sem o par, "99.4%" saía
+ * âmbar-claro sobre superfície clara — ilegível no tema claro, e o valor
+ * `dark:` é o que o gabarito compara. */
 const METRICAS = [
-  { Icone: Users, cor: 'text-primary', marca: 'text-primary/40' },
-  { Icone: Zap, cor: 'text-secondary', marca: 'text-secondary/40' },
-  { Icone: CheckCircle2, cor: 'text-emerald-700 dark:text-emerald-400', marca: 'text-emerald-500/40' },
-  { Icone: Award, cor: 'text-amber-600 dark:text-amber-400', marca: 'text-amber-400/40' },
+  { Icone: Users, cor: 'text-primary', marca: 'text-primary/40', valor: 'noTime' },
+  { Icone: Zap, cor: 'text-secondary', marca: 'text-secondary/40', valor: 'emProjetos' },
+  { Icone: Award, cor: 'text-amber-600 dark:text-amber-400', marca: 'text-amber-400/40', valor: 'satisfacao' },
 ] as const
 
 const ICONES_DIFERENCIAIS = [Award, Cpu, Zap, ShieldCheck] as const
@@ -161,20 +170,20 @@ export default async function ConsultoresPage() {
             {t.descricao}
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 max-w-4xl pt-1">
-            {METRICAS.map(({ Icone, cor, marca }, i) => (
+          {/* Três números: 3 colunas a partir do tablet; no celular, 2 colunas e o
+              último ocupando a linha inteira, em vez de deixar um buraco ao lado. */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 max-w-4xl pt-1">
+            {METRICAS.map(({ Icone, cor, marca, valor }, i) => (
               <div
                 key={t.metricas[i]}
-                className="bg-surface-2  rounded-[6px] px-4 py-3 shadow-xs flex items-center justify-between"
+                className="bg-surface-2  rounded-[6px] px-4 py-3 shadow-xs flex items-center justify-between last:col-span-2 sm:last:col-span-1"
               >
                 <div>
                   <div className="text-xs text-text-muted font-normal">{t.metricas[i]}</div>
                   <div className={`text-lg md:text-xl font-bold ${cor}`}>
-                    {/* O terceiro é texto fixo no legado, não contador. */}
-                    {i === 0 && <ContadorAnimado ate={noTime} sufixo="+" />}
-                    {i === 1 && <ContadorAnimado ate={emProjetos} sufixo="+" />}
-                    {i === 2 && <>&lt; 48h</>}
-                    {i === 3 && <ContadorAnimado ate={99} sufixo=".4%" />}
+                    {valor === 'noTime' && <ContadorAnimado ate={noTime} sufixo="+" />}
+                    {valor === 'emProjetos' && <ContadorAnimado ate={emProjetos} sufixo="+" />}
+                    {valor === 'satisfacao' && <ContadorAnimado ate={99} sufixo=".4%" />}
                   </div>
                 </div>
                 <Icone size={20} className={`${marca} shrink-0`} aria-hidden />
