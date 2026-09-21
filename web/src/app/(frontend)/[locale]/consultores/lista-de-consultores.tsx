@@ -385,9 +385,15 @@ export function ListaDeConsultores({
    * pessoa, então não rouba foco de ninguém, e o leitor de tela anuncia o
    * rótulo do campo ao chegar. */
   const irParaDescricao = (evento: React.MouseEvent<HTMLAnchorElement>) => {
+    /* Cmd/Ctrl/Shift+clique é do navegador (aba nova, janela nova): não
+       sequestrar. */
+    if (evento.button !== 0 || evento.metaKey || evento.ctrlKey || evento.shiftKey || evento.altKey) return
     const campo = document.getElementById(ID_DESCRICAO)
     if (!campo) return
     evento.preventDefault()
+    /* O hash vai para o histórico como numa âncora comum: sem isto, "Voltar"
+       depois do CTA saía de /consultores em vez de voltar à grade. */
+    history.pushState(null, '', `#${ID_DESCRICAO}`)
     campo.scrollIntoView({ block: 'center' })
     campo.focus({ preventScroll: true })
   }
@@ -397,7 +403,10 @@ export function ListaDeConsultores({
       <a
         href={`#${ID_DESCRICAO}`}
         onClick={irParaDescricao}
-        className="mt-1 inline-flex items-center gap-1.5 text-sm text-primary underline underline-offset-2 hover:no-underline"
+        /* ⚠️ Par claro/escuro. `text-primary` sozinho mediu 2,97:1 sobre a
+           superfície clara — abaixo do AA, justo no convite. `primary-dark` no
+           claro dá 4,72:1, e o escuro, que o gabarito captura, fica igual. */
+        className="mt-1 inline-flex items-center gap-1.5 text-sm text-primary-dark dark:text-primary underline underline-offset-2 hover:no-underline"
       >
         {t.pedirSobMedida}
         <ArrowRight size={14} className="shrink-0" aria-hidden />

@@ -347,7 +347,9 @@ export function FormularioDeSolicitacao({
           rows={3}
           placeholder={t.mensagem}
           aria-label={t.mensagem}
-          className={`${CAMPO} resize-none`}
+          /* `scroll-mt-32`: sem JavaScript, a âncora do CTA "Não encontrou…" pousa
+             o campo sob a barra fixa do topo — 83% encoberto em 375px. */
+          className={`${CAMPO} resize-none scroll-mt-32`}
         />
       </div>
 
