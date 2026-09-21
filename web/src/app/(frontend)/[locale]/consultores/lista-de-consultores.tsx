@@ -19,7 +19,7 @@ import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
 import type { ConsultantRole } from '@/types/content'
 
-import { useSolicitacao } from './solicitacao-contexto'
+import { ID_DESCRICAO, useSolicitacao } from './solicitacao-contexto'
 
 /* Filtros e catálogo — porte de `legacy/src/pages/Consultants.tsx:438` e `:521`.
  *
@@ -57,6 +57,9 @@ const TEXTOS = {
     vazioTitulo: 'Nenhum perfil encontrado',
     vazioTexto: 'Não encontramos perfis com os filtros aplicados. Tente alterar os critérios de busca.',
     resetar: 'Resetar Filtros',
+    /* Cópia do dono da ATRA, do feedback de 20/09, tal como veio (D-22). */
+    naoEncontrou: 'Não encontrou um consultor nesta lista?',
+    pedirSobMedida: 'Clique aqui e solicite que vamos encontrar um candidato ideal para você.',
     pronto: 'Pronto em < 48h',
     ecossistema: 'no ecossistema',
     noTime: 'no time',
@@ -103,6 +106,8 @@ const TEXTOS = {
     vazioTitulo: 'No profile found',
     vazioTexto: 'No profiles match the filters. Try changing the search criteria.',
     resetar: 'Reset filters',
+    naoEncontrou: "Couldn't find a consultant on this list?",
+    pedirSobMedida: 'Click here and request one — we will find the ideal candidate for you.',
     pronto: 'Ready in < 48h',
     ecossistema: 'in the ecosystem',
     noTime: 'on the team',
@@ -364,6 +369,42 @@ export function ListaDeConsultores({
     </GlowCard>
   )
 
+  /* CTA "Não encontrou um consultor nesta lista?" (task 014) — a saída para
+   * quem não se identifica com nenhum dos arquétipos.
+   *
+   * ⚠️ Chamada com link, e não `pill-btn-*` como pedia a nota da task: aquelas
+   * classes são `uppercase tracking-wider`, e a cópia do dono tem mais de 100
+   * caracteres — em caixa-alta espaçada, dentro de um botão, não se lê.
+   *
+   * ⚠️ **Não esvazia o carrinho.** O caso esperado é o carrinho já vazio (nada
+   * serviu); quem escolheu dois perfis e quer descrever um terceiro perderia os
+   * dois sem ter pedido.
+   *
+   * A âncora leva ao campo mesmo sem JavaScript. Com JavaScript, o clique
+   * centraliza o campo e dá foco nele — consequência do clique da própria
+   * pessoa, então não rouba foco de ninguém, e o leitor de tela anuncia o
+   * rótulo do campo ao chegar. */
+  const irParaDescricao = (evento: React.MouseEvent<HTMLAnchorElement>) => {
+    const campo = document.getElementById(ID_DESCRICAO)
+    if (!campo) return
+    evento.preventDefault()
+    campo.scrollIntoView({ block: 'center' })
+    campo.focus({ preventScroll: true })
+  }
+  const naoEncontrou = (classe: string) => (
+    <div className={classe}>
+      <p className="text-sm font-semibold text-text-main">{t.naoEncontrou}</p>
+      <a
+        href={`#${ID_DESCRICAO}`}
+        onClick={irParaDescricao}
+        className="mt-1 inline-flex items-center gap-1.5 text-sm text-primary underline underline-offset-2 hover:no-underline"
+      >
+        {t.pedirSobMedida}
+        <ArrowRight size={14} className="shrink-0" aria-hidden />
+      </a>
+    </div>
+  )
+
   return (
     <>
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-10">
@@ -524,6 +565,7 @@ export function ListaDeConsultores({
             >
               {t.resetar}
             </button>
+            {naoEncontrou('mt-6 pt-5 border-t border-slate-200 dark:border-white/5')}
           </div>
         ) : (
           <>
@@ -559,6 +601,10 @@ export function ListaDeConsultores({
                 </div>
               </>
             )}
+
+            {/* Ao fim da grade, depois dos parciais. Não compete com a faixa de
+                "combine dois perfis": é a saída de quem nem combinando encontra. */}
+            {naoEncontrou('mt-10 rounded-[6px] bg-surface-2 p-5 text-center')}
           </>
         )}
       </section>
