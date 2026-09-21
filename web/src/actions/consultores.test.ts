@@ -205,7 +205,7 @@ describe('solicitarConsultores — recusa sem gravar', () => {
      depois despublicado lia "escolha ao menos um perfil". */
   it('só perfis que sumiram do catálogo: mensagem que não engana', async () => {
     const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '999' }]) }))
-    expect(r).toEqual({ ok: false, erro: expect.stringMatching(/não estão mais disponíveis/) })
+    expect(r).toEqual({ ok: false, codigo: 'indisponiveis', erro: expect.stringMatching(/não estão mais disponíveis/) })
   })
 
   /* ⚠️ Id acima do `integer` do Postgres estourava a consulta e derrubava o
@@ -232,14 +232,14 @@ describe('solicitarConsultores — recusa sem gravar', () => {
 
   it('sem perfil e sem descrição: erro legível, e nem consulta o banco', async () => {
     const r = await solicitarConsultores(valido())
-    expect(r).toEqual({ ok: false, erro: expect.stringMatching(/perfil|descreva/i) })
+    expect(r).toEqual({ ok: false, codigo: 'vazio', erro: expect.stringMatching(/perfil|descreva/i) })
     expect(payload.find).not.toHaveBeenCalled()
     expect(payload.create).not.toHaveBeenCalled()
   })
 
   it('e-mail inválido', async () => {
     const r = await solicitarConsultores(form({ email: 'sem-arroba', message: 'x' }))
-    expect(r).toMatchObject({ ok: false })
+    expect(r).toMatchObject({ ok: false, codigo: 'email' })
     expect(payload.create).not.toHaveBeenCalled()
   })
 })
@@ -279,7 +279,7 @@ describe('solicitarConsultores — anti-spam devolve sucesso falso', () => {
      técnica sem nunca ser aceito. */
   it('envio vazio recebe o erro de vazio mesmo com a isca preenchida', async () => {
     const r = await solicitarConsultores(valido({ [CAMPO_ISCA]: 'http://spam' }))
-    expect(r).toEqual({ ok: false, erro: expect.stringMatching(/perfil|descreva/i) })
+    expect(r).toEqual({ ok: false, codigo: 'vazio', erro: expect.stringMatching(/perfil|descreva/i) })
     expect(excedeuPorIp).not.toHaveBeenCalled()
   })
 
@@ -318,7 +318,7 @@ describe('solicitarConsultores — depois de gravar, é sucesso', () => {
   it('falha ao GRAVAR: aí sim é erro — nada foi salvo', async () => {
     payload.create.mockRejectedValue(new Error('constraint'))
     const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
-    expect(r).toMatchObject({ ok: false })
+    expect(r).toMatchObject({ ok: false, codigo: 'falha' })
     expect(enviarAviso).not.toHaveBeenCalled()
   })
 
