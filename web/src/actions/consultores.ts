@@ -45,6 +45,8 @@ export type ResultadoSolicitacao = { ok: true } | { ok: false; erro: string }
 
 const ERRO = 'Não foi possível enviar agora. Tente pelo WhatsApp ou por negocios@atra.com.br.'
 const VAZIO = 'Escolha ao menos um perfil ou descreva o profissional que você procura.'
+const INDISPONIVEIS =
+  'Os perfis escolhidos não estão mais disponíveis. Atualize a página e escolha de novo, ou descreva o profissional que você procura.'
 const MAX_CAMPO = 200
 const MAX_MENSAGEM = 5000
 
@@ -53,8 +55,29 @@ const texto = (dados: FormData, campo: string, max = MAX_CAMPO): string =>
     .trim()
     .slice(0, max)
 
+/** Campo de uma linha só — nome, empresa, telefone.
+ *
+ * ⚠️ `texto()` só apara as pontas. Com quebra de linha no meio, o telefone
+ * podia carregar um bloco forjado — "Perfis solicitados (40 pessoas): …" — para
+ * dentro do e-mail do comercial, com cara de texto gerado pelo sistema. O
+ * `<input>` do navegador já tira quebras, então colapsar não custa nada a quem
+ * preenche de boa-fé. */
+const linha = (dados: FormData, campo: string): string => texto(dados, campo).replace(/\s+/g, ' ')
+
 const campanha = (dados: FormData, campo: string): string | undefined =>
   texto(dados, campo).slice(0, MAX_POR_VALOR) || undefined
+
+/** O que um erro pode deixar no log: o código do Postgres ou o nome.
+ *
+ * ⚠️ **Nunca `console.error(..., e)`.** A mensagem do erro do Drizzle leva
+ * `params:` — e-mail, nome, telefone, empresa e a mensagem do visitante vão
+ * inteiros para o log do servidor. Bastava mandar um caractere NUL no nome para
+ * o `create` falhar e gravar o lead no log. O modelo (`diagnostico-rc18.ts`) e
+ * `formularios.ts` têm o mesmo defeito. */
+const semDadoPessoal = (e: unknown): string => {
+  const erro = e as { cause?: { code?: unknown }; code?: unknown; name?: unknown } | null
+  return String(erro?.cause?.code ?? erro?.code ?? erro?.name ?? 'erro desconhecido')
+}
 
 export async function solicitarConsultores(dados: FormData): Promise<ResultadoSolicitacao> {
   const email = texto(dados, 'email')
@@ -62,7 +85,20 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
     return { ok: false, erro: 'Confira o e-mail informado.' }
   }
 
-  /* Robô barrado recebe sucesso: dizer "você foi barrado" entrega o critério. */
+  /* Sem perfil e sem descrição não há pedido.
+   *
+   * ⚠️ **Antes** das barreiras, e não depois. Na ordem inversa, um envio vazio
+   * virava oráculo: o robô recebia `{ ok: true }` se tinha sido barrado e o erro
+   * de vazio se não tinha — testava cada técnica sem nunca ser aceito, que é
+   * exatamente o "entregar o critério" que o sucesso falso existe para evitar.
+   * E de quebra não gasta a cota por IP, que é compartilhada com os outros
+   * formulários. */
+  const pedidos = lerPerfisPedidos(texto(dados, 'perfis', MAX_MENSAGEM))
+  const descricao = texto(dados, 'message', MAX_MENSAGEM)
+  if (pedidos.length === 0 && !descricao) return { ok: false, erro: VAZIO }
+
+  /* Robô barrado recebe sucesso: dizer "você foi barrado" entrega o critério.
+   * O limite por IP vem antes de qualquer trabalho caro (a consulta ao banco). */
   const veredito = conferir({ isca: texto(dados, CAMPO_ISCA), carimbo: texto(dados, 'carimbo') })
   if (!veredito.ok) {
     console.warn(`[consultores] barrado por ${veredito.motivo}`)
@@ -70,12 +106,15 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
   }
   if (excedeuPorIp(ipDe(await headers()))) return { ok: true }
 
-  const pedidos = lerPerfisPedidos(texto(dados, 'perfis', MAX_MENSAGEM))
-  const descricao = texto(dados, 'message', MAX_MENSAGEM)
-  /* Sem perfil e sem descrição não há pedido. Recusado antes de tocar no banco. */
-  if (pedidos.length === 0 && !descricao) return { ok: false, erro: VAZIO }
-
-  const payload = await getPayload()
+  /* B4: dentro de `try` — banco fora do ar na inicialização vira resposta, não
+   * exceção que o formulário teria de tratar. */
+  let payload: Awaited<ReturnType<typeof getPayload>>
+  try {
+    payload = await getPayload()
+  } catch (e) {
+    console.error('[consultores] sem conexão com o banco:', semDadoPessoal(e))
+    return { ok: false, erro: ERRO }
+  }
 
   let perfis: PerfilConfirmado[] = []
   if (pedidos.length > 0) {
@@ -99,12 +138,17 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
         return d ? [{ cargo: d.role, nivel: d.level, quantidade: p.quantidade }] : []
       })
     } catch (e) {
-      console.error('[consultores] não conferiu os perfis:', e)
+      console.error('[consultores] não conferiu os perfis:', semDadoPessoal(e))
       return { ok: false, erro: ERRO }
     }
   }
-  /* Todos os ids eram forjados ou de perfis que saíram do catálogo. */
-  if (perfis.length === 0 && !descricao) return { ok: false, erro: VAZIO }
+  /* Todos os ids eram forjados ou de perfis que saíram do catálogo.
+   *
+   * ⚠️ Mensagem própria. Com a mesma do vazio, quem estava com a página aberta
+   * enquanto o perfil era despublicado lia "escolha ao menos um perfil" — tendo
+   * escolhido — e tentava de novo até a cota por IP virar sucesso falso, sem
+   * nada gravado. */
+  if (perfis.length === 0 && !descricao) return { ok: false, erro: INDISPONIVEIS }
 
   const mensagem = resumoDaSolicitacao({
     perfis,
@@ -113,9 +157,9 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
     descricao,
   }).slice(0, MAX_MENSAGEM)
 
-  const nome = texto(dados, 'name')
-  const telefone = texto(dados, 'phone')
-  const empresa = texto(dados, 'company')
+  const nome = linha(dados, 'name')
+  const telefone = linha(dados, 'phone')
+  const empresa = linha(dados, 'company')
 
   let id: number | string
   try {
@@ -128,7 +172,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
         phone: telefone || undefined,
         company: empresa || undefined,
         message: mensagem,
-        source: texto(dados, 'source') || undefined,
+        source: linha(dados, 'source') || undefined,
         utm: {
           source: campanha(dados, 'utm_source'),
           medium: campanha(dados, 'utm_medium'),
@@ -142,7 +186,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
     })
     id = doc.id
   } catch (e) {
-    console.error('[consultores] não gravou:', e)
+    console.error('[consultores] não gravou:', semDadoPessoal(e))
     return { ok: false, erro: ERRO }
   }
 
@@ -171,7 +215,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
     })
     if (enviou) await payload.update({ collection: 'form-submissions', id, data: { notified: true } })
   } catch (e) {
-    console.error(`[consultores] lead ${id} gravado, mas o aviso falhou:`, e)
+    console.error(`[consultores] lead ${id} gravado, mas o aviso falhou:`, semDadoPessoal(e))
   }
 
   return { ok: true }

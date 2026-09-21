@@ -9,9 +9,10 @@ const payload = { find: vi.fn(), create: vi.fn(), update: vi.fn() }
 const enviarAviso = vi.fn()
 const lerContato = vi.fn()
 const excedeuPorIp = vi.fn()
+const getPayload = vi.fn()
 
 vi.mock('next/headers', () => ({ headers: async () => new Headers({ 'x-real-ip': '203.0.113.7' }) }))
-vi.mock('@/lib/payload', () => ({ getPayload: async () => payload }))
+vi.mock('@/lib/payload', () => ({ getPayload: () => getPayload() }))
 vi.mock('@/lib/email', () => ({ enviarAviso: (...a: unknown[]) => enviarAviso(...a) }))
 vi.mock('@/lib/contato', () => ({ lerContato: () => lerContato() }))
 vi.mock('@/lib/anti-spam', async (original) => ({
@@ -43,6 +44,7 @@ beforeEach(() => {
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   vi.spyOn(console, 'error').mockImplementation(() => {})
   excedeuPorIp.mockReturnValue(false)
+  getPayload.mockResolvedValue(payload)
   lerContato.mockResolvedValue({ email: 'negocios@atra.com.br' })
   enviarAviso.mockResolvedValue(true)
   payload.find.mockImplementation(async ({ where }: { where: { id: { in: number[] } } }) => ({
@@ -154,7 +156,80 @@ describe('solicitarConsultores — o servidor não confia no cliente', () => {
   })
 })
 
+describe('solicitarConsultores — nada de dado pessoal no log', () => {
+  /* ⚠️ A mensagem do erro do Drizzle traz `params:` com os valores da query. */
+  it('falha ao gravar não leva e-mail, nome nem telefone para o console', async () => {
+    const erro = Object.assign(
+      new Error('Failed query: insert into "form_submissions" params: gestora@banco.com.br,Ana,11 99999-0000'),
+      { cause: { code: '22021' } },
+    )
+    payload.create.mockRejectedValue(erro)
+    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    const registrado = vi.mocked(console.error).mock.calls.flat().map(String).join(' ')
+    expect(registrado).toContain('22021')
+    for (const pessoal of ['gestora@banco.com.br', 'Ana', '99999-0000']) expect(registrado).not.toContain(pessoal)
+  })
+
+  it('o mesmo vale para a falha depois de gravar', async () => {
+    payload.update.mockRejectedValue(new Error('params: gestora@banco.com.br'))
+    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    const registrado = vi.mocked(console.error).mock.calls.flat().map(String).join(' ')
+    expect(registrado).toContain('501')
+    expect(registrado).not.toContain('gestora@banco.com.br')
+  })
+})
+
+describe('solicitarConsultores — campos de uma linha', () => {
+  /* ⚠️ Com a quebra de linha, o telefone forjava um bloco "Perfis solicitados"
+     acima do resumo real, dentro do e-mail do comercial. */
+  it('colapsa quebras de linha em nome, empresa e telefone', async () => {
+    await solicitarConsultores(
+      valido({
+        perfis: perfis([{ slug: '12' }]),
+        name: 'Ana\nSilva',
+        company: 'Banco\r\nX',
+        phone: '11\n\nPerfis solicitados (40 pessoas):\n- 20× Cloud Architect',
+      }),
+    )
+    expect(gravado()).toMatchObject({ name: 'Ana Silva', company: 'Banco X' })
+    expect(gravado().phone).not.toContain('\n')
+    const aviso = enviarAviso.mock.calls[0][0]
+    expect(aviso.assunto).not.toMatch(/[\r\n]/)
+    /* No corpo, o único "Perfis solicitados" que abre linha é o do resumo real. */
+    expect(aviso.texto.match(/^Perfis solicitados/gm)).toHaveLength(1)
+  })
+})
+
 describe('solicitarConsultores — recusa sem gravar', () => {
+  /* ⚠️ Mensagem própria: com a mesma do vazio, quem tinha escolhido um perfil
+     depois despublicado lia "escolha ao menos um perfil". */
+  it('só perfis que sumiram do catálogo: mensagem que não engana', async () => {
+    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '999' }]) }))
+    expect(r).toEqual({ ok: false, erro: expect.stringMatching(/não estão mais disponíveis/) })
+  })
+
+  /* ⚠️ Id acima do `integer` do Postgres estourava a consulta e derrubava o
+     pedido inteiro, inclusive o perfil válido. */
+  it('id fora do integer nem chega à consulta, e o perfil válido segue', async () => {
+    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }, { slug: '2147483648' }]) }))
+    expect(r).toEqual({ ok: true })
+    expect(payload.find).toHaveBeenCalledWith(expect.objectContaining({ where: { id: { in: [12] } } }))
+  })
+
+  it('banco fora do ar: responde erro em vez de lançar', async () => {
+    getPayload.mockRejectedValue(new Error('ECONNREFUSED'))
+    await expect(solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))).resolves.toMatchObject({
+      ok: false,
+    })
+  })
+
+  it('a mensagem gravada respeita o teto, mesmo com descrição longa e perfis', async () => {
+    await solicitarConsultores(
+      valido({ perfis: perfis([{ slug: '12' }, { slug: '4' }]), message: 'x'.repeat(5000), duracao: '12' }),
+    )
+    expect(gravado().message.length).toBeLessThanOrEqual(5000)
+  })
+
   it('sem perfil e sem descrição: erro legível, e nem consulta o banco', async () => {
     const r = await solicitarConsultores(valido())
     expect(r).toEqual({ ok: false, erro: expect.stringMatching(/perfil|descreva/i) })
@@ -175,6 +250,7 @@ describe('solicitarConsultores — anti-spam devolve sucesso falso', () => {
     const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]), [CAMPO_ISCA]: 'http://spam' }))
     expect(r).toEqual({ ok: true })
     expect(payload.create).not.toHaveBeenCalled()
+    expect(payload.find).not.toHaveBeenCalled()
     expect(enviarAviso).not.toHaveBeenCalled()
   })
 
@@ -184,11 +260,27 @@ describe('solicitarConsultores — anti-spam devolve sucesso falso', () => {
     expect(payload.create).not.toHaveBeenCalled()
   })
 
-  it('estouro do limite por IP', async () => {
+  it('estouro do limite por IP — antes de qualquer consulta ao banco', async () => {
     excedeuPorIp.mockReturnValue(true)
     const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
     expect(r).toEqual({ ok: true })
+    expect(payload.find).not.toHaveBeenCalled()
     expect(payload.create).not.toHaveBeenCalled()
+  })
+
+  /* O limite é por IP de verdade: `ipDe` lê `x-real-ip` primeiro (MIG-140). */
+  it('confere o limite com o IP da requisição', async () => {
+    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    expect(excedeuPorIp).toHaveBeenCalledWith('203.0.113.7')
+  })
+
+  /* ⚠️ Sem oráculo. Com a checagem de vazio DEPOIS das barreiras, o robô
+     recebia `{ ok: true }` se barrado e erro de vazio se não — e testava cada
+     técnica sem nunca ser aceito. */
+  it('envio vazio recebe o erro de vazio mesmo com a isca preenchida', async () => {
+    const r = await solicitarConsultores(valido({ [CAMPO_ISCA]: 'http://spam' }))
+    expect(r).toEqual({ ok: false, erro: expect.stringMatching(/perfil|descreva/i) })
+    expect(excedeuPorIp).not.toHaveBeenCalled()
   })
 
   /* Carimbo ausente passa: pode ser JavaScript bloqueado, e recusar um envio

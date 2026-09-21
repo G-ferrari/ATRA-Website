@@ -20,6 +20,9 @@ export const MAX_PESSOAS_POR_PERFIL = 20
  *  com milhares de ids. */
 export const MAX_PERFIS_POR_ENVIO = 50
 
+/** Maior valor de `integer` no Postgres — o tipo do `id` das collections. */
+const MAX_ID_POSTGRES = 2_147_483_647
+
 /** Duração estimada, em meses. Acima de 5 anos já é contrato, não estimativa. */
 export const MAX_MESES = 60
 
@@ -58,11 +61,16 @@ export function lerPerfisPedidos(bruto: string): PerfilPedido[] {
     if (typeof item !== 'object' || item === null) continue
     const { slug, quantidade } = item as { slug?: unknown; quantidade?: unknown }
 
-    /* Só dígitos, e poucos: é id de Postgres. Qualquer outra coisa nem chega à
-       consulta — `where: { id: { in } }` com lixo dentro não é problema que a
-       action deva descobrir em runtime. */
-    if (typeof slug !== 'string' || !/^\d{1,12}$/.test(slug)) continue
+    /* Só dígitos, e dentro do `integer` do Postgres: é id de collection.
+       Qualquer outra coisa nem chega à consulta.
+
+       ⚠️ O limite é o do tipo, não o de dígitos. A primeira versão aceitava até
+       12 dígitos, e um id acima de 2.147.483.647 não "sumia": a consulta
+       estourava com `value out of range for type integer`, e o pedido inteiro
+       — inclusive os perfis válidos — voltava como erro. */
+    if (typeof slug !== 'string' || !/^\d{1,10}$/.test(slug)) continue
     const id = Number(slug)
+    if (id < 1 || id > MAX_ID_POSTGRES) continue
     if (vistos.has(id)) continue
     vistos.add(id)
 

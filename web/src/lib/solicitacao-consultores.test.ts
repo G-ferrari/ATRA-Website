@@ -36,6 +36,20 @@ describe('lerPerfisPedidos (o que o cliente manda em `perfis`)', () => {
     expect(lerPerfisPedidos(json(entrada)).map((p) => p.id)).toEqual([12])
   })
 
+  /* ⚠️ O caso que a primeira versão deixava passar: 10 a 12 dígitos cabiam na
+     regex e estouravam o `integer` do Postgres na consulta, derrubando o pedido
+     inteiro. O limite é o do tipo. */
+  it('descarta id acima do integer do Postgres, e aceita o próprio limite', () => {
+    const entrada = [
+      { slug: '2147483647' },
+      { slug: '2147483648' },
+      { slug: '9999999999' },
+      { slug: '0' },
+      { slug: '12' },
+    ]
+    expect(lerPerfisPedidos(json(entrada)).map((p) => p.id)).toEqual([2147483647, 12])
+  })
+
   it('prende a quantidade em 1..20 e trunca fração', () => {
     const r = lerPerfisPedidos(
       json([
