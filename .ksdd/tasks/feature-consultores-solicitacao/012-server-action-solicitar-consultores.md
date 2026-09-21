@@ -1,7 +1,7 @@
 ---
 id: 012
 title: Server Action solicitarConsultores com revalidação no servidor e aviso por e-mail
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: backend
 priority: P0
