@@ -19,6 +19,16 @@ export const MAX_PESSOAS_POR_PERFIL = 20
  *  com milhares de ids. */
 export const MAX_PERFIS_POR_ENVIO = 50
 
+/** O que conta como e-mail — **fonte única** entre o `pattern` do campo e a
+ *  checagem da Server Action. Sem anchors: o atributo `pattern` do HTML já
+ *  casa a string inteira, e a action monta a regex com `^…$`.
+ *
+ *  ⚠️ Existe porque os dois divergiam: `joao@empresa` passava no
+ *  `type="email"` do navegador e a action recusava por falta de domínio. A
+ *  recusa só vinha depois do envio — gastando a cota por IP — e o React 19
+ *  apagava o formulário ao terminar a action. */
+export const PADRAO_EMAIL = '[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}'
+
 /** Maior valor de `integer` no Postgres — o tipo do `id` das collections. */
 const MAX_ID_POSTGRES = 2_147_483_647
 

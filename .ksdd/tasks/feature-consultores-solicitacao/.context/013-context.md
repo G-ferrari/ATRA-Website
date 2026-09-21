@@ -78,8 +78,12 @@ alocação (opcional)". Os quatro rótulos existentes não mudam (D-22).
 - ⚠️ **Escondidos ANTES dos reais.** Tailwind 4 trocou `space-y-*` para `margin-bottom`
   em `> :not(:last-child)`; escondido no fim tira do último campo real a condição de
   último filho e soma 24px. Nada de `<fieldset>` em volta.
-- ⚠️ **Limpar o carrinho depois do sucesso dentro do callback da action**, não num
-  efeito: `setState` em efeito é render em cascata que o lint recusa.
+- ~~Limpar o carrinho no callback da action, não num efeito.~~ **Revisto na
+  implementação:** o callback teria de ser um embrulho cliente em volta da Server
+  Action, e isso faz o HTML sair com `action="javascript:throw …"` — o formulário
+  deixa de funcionar sem JavaScript. O carrinho esvazia num `useEffect` que observa o
+  resultado: é sincronizar com algo que vem de fora (o servidor confirmou), e a
+  render extra acontece uma vez por envio bem-sucedido.
 - ⚠️ **Carimbo e UTM por `ref`, depois da montagem** — `Date.now()` e `sessionStorage`
   no render fariam o HTML do servidor divergir do cliente.
 - Rastreio: `useRastrearEnvio(ok, 'form_submit', { form_type: 'consultant-request' })`.

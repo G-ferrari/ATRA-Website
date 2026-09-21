@@ -8,7 +8,7 @@ import { solicitarConsultoresNoFormulario, type CodigoDeErro } from '@/actions/c
 import { CAMPO_ISCA } from '@/lib/anti-spam'
 import { itensEscolhidos, totalDePessoas } from '@/lib/consultores'
 import type { Locale } from '@/lib/locales'
-import { MAX_MESES, type Modelo } from '@/lib/solicitacao-consultores'
+import { MAX_MESES, PADRAO_EMAIL, type Modelo } from '@/lib/solicitacao-consultores'
 import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 import { CHAVES_UTM, lerUtmGuardado, type ChaveUtm } from '@/lib/utm'
 import type { ConsultantRole } from '@/types/content'
@@ -133,6 +133,20 @@ export function FormularioDeSolicitacao({
    * campo sai vazio, que o servidor trata igual a `0`. */
   const carimbo = useRef<HTMLInputElement>(null)
   const utm = useRef<HTMLInputElement[]>([])
+  /* ⚠️ O carimbo é renovado na **primeira interação com o formulário**, e não
+   * só na montagem. O anti-spam descarta envio com carimbo de mais de 120
+   * minutos — e devolve **sucesso falso**. Numa página de catálogo, aba
+   * esquecida aberta é comum: quem abria às 9h e enviava às 11h30 via a
+   * confirmação, o carrinho esvaziava, e nada era gravado. A regra ficou
+   * visível quando o carimbo parou de ser zerado a cada render (ver a nota
+   * acima): o bug escondia outro. Medido da primeira interação, os 3 s mínimos
+   * seguem barrando robô rápido, e os 120 min só pegam sessão realmente velha. */
+  const interagiu = useRef(false)
+  const carimbarNaPrimeiraInteracao = () => {
+    if (interagiu.current || !carimbo.current) return
+    interagiu.current = true
+    carimbo.current.value = String(Date.now())
+  }
   useEffect(() => {
     if (carimbo.current) carimbo.current.value = String(Date.now())
     const guardado = lerUtmGuardado()
@@ -150,24 +164,37 @@ export function FormularioDeSolicitacao({
    * fora (o servidor), não estado derivado: a render extra acontece uma vez,
    * depois de um envio bem-sucedido. */
   useEffect(() => {
-    if (envio?.ok) setEscolhidos(new Map())
+    if (!envio?.ok) return
+    setEscolhidos(new Map())
+    /* O próximo pedido começa uma sessão nova de preenchimento. */
+    interagiu.current = false
   }, [envio, setEscolhidos])
+
+  /* ⚠️ O que o visitante mandou, quando o servidor recusou. O React 19 reseta o
+   * formulário ao fim da action — com sucesso ou com erro —, e o reset volta ao
+   * `defaultValue`: sem isto, a recusa apagava tudo o que foi digitado. Em campo
+   * **visível** reaplicar o `defaultValue` não sobrescreve o que a pessoa digitou
+   * (é o oposto dos escondidos lá em cima), então pode ficar. */
+  const antes = envio && !envio.ok ? envio.valores : undefined
 
   /* MIG-156: no-op sem GTM ou sem consentimento de estatística. */
   useRastrearEnvio(Boolean(envio?.ok), 'form_submit', { form_type: 'consultant-request' })
 
-  if (envio?.ok) {
-    /* Inline, não modal — como os demais formulários do site. Verde em par
-       claro/escuro: `text-emerald-500` puro fica ilegível na superfície clara. */
-    return (
-      <p role="status" className="text-sm font-light text-emerald-700 dark:text-emerald-400">
-        {t.sucesso}
-      </p>
-    )
-  }
-
+  /* ⚠️ A confirmação **não substitui** o formulário, ao contrário dos demais do
+   * site. Aqui a lista continua interativa depois do envio: quem montava um
+   * segundo carrinho e clicava em "Enviar solicitação" caía numa confirmação
+   * sem formulário, e só recarregando a página. O formulário volta vazio (o
+   * reset do React, e sucesso não devolve `valores`) com a faixa acima. */
   return (
-    <form action={acao} aria-busy={enviando} className="flex flex-col space-y-6">
+    <>
+      {envio?.ok && (
+        /* Verde em par claro/escuro: `text-emerald-500` puro fica ilegível na
+           superfície clara. */
+        <p role="status" className="mb-6 text-sm font-light text-emerald-700 dark:text-emerald-400">
+          {t.sucesso}
+        </p>
+      )}
+    <form action={acao} aria-busy={enviando} onFocus={carimbarNaPrimeiraInteracao} className="flex flex-col space-y-6">
       {/* ⚠️ Os escondidos vêm **antes** dos campos reais. O Tailwind 4 põe o
           `space-y-*` como `margin-bottom` em `> :not(:last-child)`: um escondido
           no fim tira do último campo real a condição de último filho e soma 24px
@@ -221,6 +248,7 @@ export function FormularioDeSolicitacao({
         <input
           type="text"
           name="name"
+          defaultValue={antes?.name}
           required
           autoComplete="name"
           placeholder={t.nome}
@@ -230,6 +258,7 @@ export function FormularioDeSolicitacao({
         <input
           type="text"
           name="company"
+          defaultValue={antes?.company}
           autoComplete="organization"
           placeholder={t.empresa}
           aria-label={t.empresa}
@@ -242,6 +271,11 @@ export function FormularioDeSolicitacao({
           type="email"
           name="email"
           required
+          defaultValue={antes?.email}
+          /* Mesma regra da Server Action (`PADRAO_EMAIL`): `joao@empresa` passava
+             no `type="email"` e só era recusado depois do envio. */
+          pattern={PADRAO_EMAIL}
+          title={t.erros.email}
           autoComplete="email"
           placeholder={t.email}
           aria-label={t.email}
@@ -250,6 +284,7 @@ export function FormularioDeSolicitacao({
         <input
           type="tel"
           name="phone"
+          defaultValue={antes?.phone}
           autoComplete="tel"
           placeholder={t.telefone}
           aria-label={t.telefone}
@@ -261,7 +296,18 @@ export function FormularioDeSolicitacao({
         {/* ⚠️ Opção vazia primeiro. Sem ela, o `select` sempre enviava
             "full-time", e todo lead chegava ao comercial com "Modelo de alocação:
             Full-time" — inclusive de quem nunca abriu o campo. */}
-        <select name="modelo" defaultValue="" aria-label={t.modeloVazio} className={`${CAMPO} cursor-pointer`}>
+        {/* ⚠️ `key` porque em `<select>` não controlado o React só aplica o
+            `defaultValue` na **montagem** — mudar depois é ignorado, e o reset
+            voltava à opção vazia. Medido: com os valores devolvidos, os campos de
+            texto voltavam e o modelo não. A `key` remonta o campo quando a recusa
+            traz outro modelo. */}
+        <select
+          key={antes?.modelo ?? ''}
+          name="modelo"
+          defaultValue={antes?.modelo ?? ''}
+          aria-label={t.modeloVazio}
+          className={`${CAMPO} cursor-pointer`}
+        >
           <option value="" className="bg-surface-2 text-text-main">
             {t.modeloVazio}
           </option>
@@ -274,6 +320,7 @@ export function FormularioDeSolicitacao({
         <input
           type="number"
           name="duracao"
+          defaultValue={antes?.duracao}
           min={1}
           max={MAX_MESES}
           step={1}
@@ -288,8 +335,14 @@ export function FormularioDeSolicitacao({
           legado usava: é o campo onde se descreve um perfil que não está no
           catálogo, e isso pede parágrafo. */}
       <div className="pt-2">
+        {/* `required` só com o carrinho vazio: aí a descrição é o pedido inteiro,
+            e sem ela o servidor recusaria. Barrado no navegador não gasta a cota
+            por IP — e sem JavaScript o carrinho está sempre vazio, então vale
+            também para esse caminho. */}
         <textarea
           name="message"
+          required={itens.length === 0}
+          defaultValue={antes?.message}
           rows={3}
           placeholder={t.mensagem}
           aria-label={t.mensagem}
@@ -322,5 +375,6 @@ export function FormularioDeSolicitacao({
         </button>
       </div>
     </form>
+    </>
   )
 }

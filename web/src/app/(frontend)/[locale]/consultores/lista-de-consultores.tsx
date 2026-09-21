@@ -645,8 +645,8 @@ export function ListaDeConsultores({
               ))}
             </ul>
 
-            {/* Âncora, e não router: a seção está na mesma página, logo abaixo.
-                Ligar o envio é a task 013. */}
+            {/* Âncora, e não router: a seção está na mesma página, logo abaixo,
+                e o envio acontece lá (`formulario-de-solicitacao.tsx`). */}
             <div className="mt-4 pt-3 border-t border-slate-200 dark:border-white/5 flex justify-end">
               <a
                 href="#solicitar-consultores"
