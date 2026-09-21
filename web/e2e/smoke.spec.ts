@@ -363,12 +363,17 @@ test.describe('app novo', () => {
      é o comportamento, que a captura não pega: o filtro. */
   test('o catálogo de consultores filtra pela pílula de senioridade', async ({ page }) => {
     await page.goto(`${NEXT_URL}/consultores`)
-    // 8 perfis no total, cada um com um botão Solicitar.
-    await expect(page.getByRole('link', { name: 'Solicitar' })).toHaveCount(8)
+    /* 8 perfis, cada um com um botão Solicitar. ⚠️ `button` e não `link`
+       desde a task 010: o Solicitar deixou de levar a /contato — que perdia o
+       perfil que o visitante estava olhando — e passou a pôr o perfil na
+       lista "Minha solicitação". `exact` porque o mesmo botão vira "Na
+       solicitação" depois de clicado. */
+    const solicitar = page.getByRole('button', { name: 'Solicitar', exact: true })
+    await expect(solicitar).toHaveCount(8)
     /* Pílula, não `select`: a primeira versão da ilha usou dois `select` e isso
        foi parte dos 300px que faltavam na seção de filtros. */
     await page.getByRole('button', { name: 'Lead / Principal', exact: true }).click()
-    const n = await page.getByRole('link', { name: 'Solicitar' }).count()
+    const n = await solicitar.count()
     expect(n).toBeGreaterThan(0)
     expect(n).toBeLessThan(8)
   })
