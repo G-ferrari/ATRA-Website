@@ -68,6 +68,13 @@ pelo usuário"* pedido no feedback de 20/09.
 - [ ] `pnpm test` cobre resumo e saneamento; `pnpm lint` e `pnpm typecheck` passam.
 
 ## Notas técnicas
+- ⚠️ **`ASSUNTO` de `actions/formularios.ts:199` não tem entrada para
+  `consultant-request`** — achado na revisão da task 011. Hoje é inerte, porque
+  `enviarFormulario` (`:50`) recusa kind fora de `contact | newsletter |
+  talent-pool`. Mas rotear o pedido pelo caminho comum em vez de criar action
+  própria faz o aviso interno sair com assunto **`[site] undefined`** (`:147`).
+  Esta task cria action própria, como fez `diagnostico-rc18.ts` — se mudar de
+  ideia, a entrada do mapa vem junto.
 - ⚠️ **Server Action é endpoint público** (MIG-142): nada do que o cliente manda
   é confiável. Mesmo motivo pelo qual `diagnostico-rc18.ts` recalcula o índice no
   servidor em vez de aceitar o número enviado.

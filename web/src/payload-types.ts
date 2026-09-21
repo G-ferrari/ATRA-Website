@@ -7026,7 +7026,8 @@ export interface FormSubmission {
     | 'talent-pool'
     | 'job-application'
     | 'material-download'
-    | 'rc18-diagnostic';
+    | 'rc18-diagnostic'
+    | 'consultant-request';
   status: 'new' | 'read' | 'archived';
   email: string;
   confirmationToken?: string | null;
