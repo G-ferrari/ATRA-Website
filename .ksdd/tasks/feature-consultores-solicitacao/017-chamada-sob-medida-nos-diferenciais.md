@@ -1,7 +1,7 @@
 ---
 id: 017
 title: Chamada "Não encontrou um consultor?" junto dos diferenciais, em destaque
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: frontend
 priority: P1

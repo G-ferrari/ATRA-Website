@@ -19,7 +19,8 @@ import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
 import type { ConsultantRole } from '@/types/content'
 
-import { ID_DESCRICAO, useSolicitacao } from './solicitacao-contexto'
+import { ChamadaSobMedida } from './chamada-sob-medida'
+import { useSolicitacao } from './solicitacao-contexto'
 
 /* Filtros e catálogo — porte de `legacy/src/pages/Consultants.tsx:438` e `:521`.
  *
@@ -58,8 +59,6 @@ const TEXTOS = {
     vazioTexto: 'Não encontramos perfis com os filtros aplicados. Tente alterar os critérios de busca.',
     resetar: 'Resetar Filtros',
     /* Cópia do dono da ATRA, do feedback de 20/09, tal como veio (D-22). */
-    naoEncontrou: 'Não encontrou um consultor nesta lista?',
-    pedirSobMedida: 'Clique aqui e solicite que vamos encontrar um candidato ideal para você.',
     ecossistema: 'no ecossistema',
     noTime: 'no time',
     solicitar: 'Solicitar',
@@ -104,8 +103,6 @@ const TEXTOS = {
     vazioTitulo: 'No profile found',
     vazioTexto: 'No profiles match the filters. Try changing the search criteria.',
     resetar: 'Reset filters',
-    naoEncontrou: "Couldn't find a consultant on this list?",
-    pedirSobMedida: 'Click here and request one — we will find the ideal candidate for you.',
     ecossistema: 'in the ecosystem',
     noTime: 'on the team',
     solicitar: 'Request',
@@ -361,51 +358,6 @@ export function ListaDeConsultores({
     </GlowCard>
   )
 
-  /* CTA "Não encontrou um consultor nesta lista?" (task 014) — a saída para
-   * quem não se identifica com nenhum dos arquétipos.
-   *
-   * ⚠️ Chamada com link, e não `pill-btn-*` como pedia a nota da task: aquelas
-   * classes são `uppercase tracking-wider`, e a cópia do dono tem mais de 100
-   * caracteres — em caixa-alta espaçada, dentro de um botão, não se lê.
-   *
-   * ⚠️ **Não esvazia o carrinho.** O caso esperado é o carrinho já vazio (nada
-   * serviu); quem escolheu dois perfis e quer descrever um terceiro perderia os
-   * dois sem ter pedido.
-   *
-   * A âncora leva ao campo mesmo sem JavaScript. Com JavaScript, o clique
-   * centraliza o campo e dá foco nele — consequência do clique da própria
-   * pessoa, então não rouba foco de ninguém, e o leitor de tela anuncia o
-   * rótulo do campo ao chegar. */
-  const irParaDescricao = (evento: React.MouseEvent<HTMLAnchorElement>) => {
-    /* Cmd/Ctrl/Shift+clique é do navegador (aba nova, janela nova): não
-       sequestrar. */
-    if (evento.button !== 0 || evento.metaKey || evento.ctrlKey || evento.shiftKey || evento.altKey) return
-    const campo = document.getElementById(ID_DESCRICAO)
-    if (!campo) return
-    evento.preventDefault()
-    /* O hash vai para o histórico como numa âncora comum: sem isto, "Voltar"
-       depois do CTA saía de /consultores em vez de voltar à grade. */
-    history.pushState(null, '', `#${ID_DESCRICAO}`)
-    campo.scrollIntoView({ block: 'center' })
-    campo.focus({ preventScroll: true })
-  }
-  const naoEncontrou = (classe: string) => (
-    <div className={classe}>
-      <p className="text-sm font-semibold text-text-main">{t.naoEncontrou}</p>
-      <a
-        href={`#${ID_DESCRICAO}`}
-        onClick={irParaDescricao}
-        /* ⚠️ Par claro/escuro. `text-primary` sozinho mediu 2,97:1 sobre a
-           superfície clara — abaixo do AA, justo no convite. `primary-dark` no
-           claro dá 4,72:1, e o escuro, que o gabarito captura, fica igual. */
-        className="mt-1 inline-flex items-center gap-1.5 text-sm text-primary-dark dark:text-primary underline underline-offset-2 hover:no-underline"
-      >
-        {t.pedirSobMedida}
-        <ArrowRight size={14} className="shrink-0" aria-hidden />
-      </a>
-    </div>
-  )
-
   return (
     <>
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-10">
@@ -566,7 +518,11 @@ export function ListaDeConsultores({
             >
               {t.resetar}
             </button>
-            {naoEncontrou('mt-6 pt-5 border-t border-slate-200 dark:border-white/5')}
+            <ChamadaSobMedida
+              locale={locale}
+              variante="discreta"
+              className="mt-6 pt-5 border-t border-slate-200 dark:border-white/5"
+            />
           </div>
         ) : (
           <>
@@ -603,9 +559,6 @@ export function ListaDeConsultores({
               </>
             )}
 
-            {/* Ao fim da grade, depois dos parciais. Não compete com a faixa de
-                "combine dois perfis": é a saída de quem nem combinando encontra. */}
-            {naoEncontrou('mt-10 rounded-[6px] bg-surface-2 p-5 text-center')}
           </>
         )}
       </section>
