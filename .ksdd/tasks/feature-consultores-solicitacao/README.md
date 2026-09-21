@@ -11,8 +11,8 @@
 | 010 | Lista cumulativa "Minha solicitação" com quantidade por perfil | frontend | P0 | L | concluída | 009 |
 | 011 | kind consultant-request — enum, migração e classificação comercial no CRM | data-model | P0 | S | concluída | — |
 | 012 | Server Action solicitarConsultores com revalidação no servidor e aviso por e-mail | backend | P0 | M | concluída | 011 |
-| 013 | Seção de solicitação deixa de ser estática e envia com os perfis escolhidos | frontend | P0 | M | em revisão | 010, 012 |
-| 014 | CTA "Não encontrou um consultor nesta lista?" | frontend | P1 | S | para implementar | 013 |
+| 013 | Seção de solicitação deixa de ser estática e envia com os perfis escolhidos | frontend | P0 | M | concluída | 010, 012 |
+| 014 | CTA "Não encontrou um consultor nesta lista?" | frontend | P1 | S | em andamento | 013 |
 | 015 | Acabamento de UI da página guiado pelo Impeccable | design | P1 | M | para implementar | 013, 014 |
 | 016 | e2e do filtro, do acúmulo e do envio + regravação do gabarito | qa | P0 | M | para implementar | 015 |
 
