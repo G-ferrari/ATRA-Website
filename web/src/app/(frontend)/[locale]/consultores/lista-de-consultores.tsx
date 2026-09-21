@@ -13,12 +13,13 @@ import {
   MAX_POR_PERFIL,
   total,
   totalDePessoas,
-  type Escolhidos,
   type PerfilComCobertura,
 } from '@/lib/consultores'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
 import type { ConsultantRole } from '@/types/content'
+
+import { useSolicitacao } from './solicitacao-contexto'
 
 /* Filtros e catálogo — porte de `legacy/src/pages/Consultants.tsx:438` e `:521`.
  *
@@ -179,12 +180,16 @@ export function ListaDeConsultores({
   const [tagsMarcadas, setTagsMarcadas] = useState<ReadonlySet<string>>(new Set())
   const [niveisMarcados, setNiveisMarcados] = useState<ReadonlySet<string>>(new Set())
   const [modo, setModo] = useState<'ou' | 'e'>('ou')
-  /* ⚠️ Como os `Set` do filtro: `Map` não dispara render por mutação, e o
+  /* O carrinho vem do provedor, e não de um `useState` daqui: o formulário da
+   * seção de solicitação, mais abaixo na página, precisa ler o mesmo carrinho
+   * (task 013 — ver `solicitacao-contexto.tsx`).
+   *
+   * ⚠️ Como os `Set` do filtro: `Map` não dispara render por mutação, e o
    * `setState` é sempre **funcional** — e o valor novo sai de `atual`, **nunca
    * do render**. `(atual) => definirQuantidade(atual, slug, quantidade + 1)`
    * parece funcional e não é: `quantidade` é do render. Use `ajustarQuantidade`.
    * Ver a nota em `lib/consultores.ts`. */
-  const [escolhidos, setEscolhidos] = useState<Escolhidos>(new Map())
+  const { escolhidos, setEscolhidos } = useSolicitacao()
 
   /* A lista de especialidades **é** derivada dos perfis: no legado é uma
    * literal de 36 tags (`Consultants.tsx:50`) que sai de sincronia na primeira
@@ -563,7 +568,11 @@ export function ListaDeConsultores({
           quando vazio: um carrinho vazio ocupando altura é ruído, e o gate
           compara a página sem nenhum perfil escolhido. */}
       {itens.length > 0 && (
-        <section aria-label={t.minhaSolicitacao} className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
+        <section
+          id="minha-solicitacao"
+          aria-label={t.minhaSolicitacao}
+          className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16"
+        >
           <div className="bg-surface-2 rounded-[6px] p-4 sm:p-5 shadow-xs">
             <div className="flex items-center justify-between gap-3 mb-4">
               {/* `tabIndex={-1}`: recebe o foco quando um item é removido e ainda

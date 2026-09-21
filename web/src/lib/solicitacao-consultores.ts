@@ -8,11 +8,10 @@
  * ⚠️ Arquivo próprio, e não `lib/consultores.ts`: a task 010 também edita aquele,
  * e as duas vão para a mesma branch de integração. */
 
-/** Teto de pessoas por perfil.
- *
- * ⚠️ Mesmo valor de `MAX_POR_PERFIL` em `lib/consultores.ts` (task 010), que
- * ainda não está na base desta task. A 013 unifica quando as duas estiverem na
- * integração — até lá, o servidor prende no mesmo limite que o cliente mostra. */
+/** Teto de pessoas por perfil — **a fonte única**. `MAX_POR_PERFIL`, que o
+ *  stepper de `/consultores` usa, é esta constante reexportada por
+ *  `lib/consultores.ts`: o cliente não pode oferecer uma quantidade que o
+ *  servidor depois corta. */
 export const MAX_PESSOAS_POR_PERFIL = 20
 
 /** Quantos perfis distintos um envio pode carregar. O catálogo tem 8; o teto só

@@ -1,5 +1,7 @@
 import type { ConsultantRole } from '@/types/content'
 
+import { MAX_PESSOAS_POR_PERFIL } from './solicitacao-consultores'
+
 /* Filtro do catálogo de /consultores (task 009).
  *
  * Separado da ilha pelo mesmo motivo de `lib/diagnostico-rc18.ts`: é a regra que
@@ -117,8 +119,13 @@ export function filtrarPerfis({
 export type Escolhidos = ReadonlyMap<string, number>
 
 /** Teto por perfil. Pedir 20 pessoas de um mesmo arquétipo já é conversa de
- *  squad, não de formulário — acima disso o campo livre serve melhor. */
-export const MAX_POR_PERFIL = 20
+ *  squad, não de formulário — acima disso o campo livre serve melhor.
+ *
+ *  ⚠️ **Vem do servidor**, e não é um número escrito aqui. A 010 e a 012 foram
+ *  feitas em paralelo e cada uma tinha o seu 20: bastava alguém mudar um para o
+ *  stepper deixar escolher uma quantidade que a Server Action depois cortava em
+ *  silêncio. Unificado na 013. */
+export const MAX_POR_PERFIL = MAX_PESSOAS_POR_PERFIL
 
 export function alternarPerfil(atual: Escolhidos, slug: string): Escolhidos {
   const novo = new Map(atual)

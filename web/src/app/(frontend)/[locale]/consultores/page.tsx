@@ -11,6 +11,7 @@ import { toConsultantRole } from '@/lib/mappers/consultant'
 import { getPayload } from '@/lib/payload'
 
 import { ListaDeConsultores } from './lista-de-consultores'
+import { ProvedorDaSolicitacao } from './solicitacao-contexto'
 import { SolicitarConsultores } from './solicitar-consultores'
 import { metadataDe } from '@/lib/seo'
 
@@ -183,6 +184,11 @@ export default async function ConsultoresPage() {
         </div>
       </section>
 
+      {/* O provedor envolve as três seções porque a lista (onde se escolhe) e o
+          formulário (onde se envia) leem o mesmo carrinho — e os diferenciais,
+          renderizados aqui no servidor, ficam entre os dois. Server Component
+          pode ser filho de provedor cliente. Ver `solicitacao-contexto.tsx`. */}
+      <ProvedorDaSolicitacao>
       <ListaDeConsultores perfis={perfis} locale={locale} />
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
@@ -214,7 +220,8 @@ export default async function ConsultoresPage() {
         </div>
       </section>
 
-      <SolicitarConsultores locale={locale} contato={contato} />
+      <SolicitarConsultores locale={locale} contato={contato} perfis={perfis} />
+      </ProvedorDaSolicitacao>
     </main>
   )
 }
