@@ -136,6 +136,19 @@ export function definirQuantidade(atual: Escolhidos, slug: string, quantidade: n
   return novo
 }
 
+/** Soma `delta` à quantidade **lida de `atual`** — nunca do render.
+ *
+ * ⚠️ É esta a função que o stepper tem de usar, e não `definirQuantidade` com
+ * `quantidade ± 1`. A primeira versão da 010 fazia
+ * `setEscolhidos((atual) => definirQuantidade(atual, slug, quantidade + 1))`:
+ * forma funcional **só de fachada**, porque `quantidade` vinha do render. Três
+ * cliques no mesmo tick davam 2 em vez de 4 — o mesmo bug da 009 (`9ddc069`),
+ * uma camada abaixo, e embaixo de um comentário que prometia a proteção. */
+export function ajustarQuantidade(atual: Escolhidos, slug: string, delta: number): Escolhidos {
+  const q = atual.get(slug)
+  return q === undefined ? atual : definirQuantidade(atual, slug, q + delta)
+}
+
 /** Os perfis escolhidos, na ordem em que entraram, já casados com o catálogo.
  *  Slug que não existe mais (perfil despublicado entre a escolha e o envio) é
  *  descartado aqui — melhor sumir da lista que quebrar o resumo. */
@@ -150,8 +163,12 @@ export function itensEscolhidos(
   })
 }
 
-export function totalDePessoas(escolhidos: Escolhidos): number {
-  let total = 0
-  for (const n of escolhidos.values()) total += n
-  return total
+/** Soma sobre os itens **já casados com o catálogo**, e não sobre o Map cru.
+ *
+ * ⚠️ Recebia o Map, e o painel calculava `itens` e `pessoas` de fontes
+ * diferentes: um slug que sumiu do catálogo saía da lista mas continuava na
+ * soma, e o cabeçalho dizia "1 perfil · 4 pessoas" sobre um item de quantidade
+ * 1. Contar a partir de `itensEscolhidos` torna a discordância impossível. */
+export function totalDePessoas(itens: readonly { quantidade: number }[]): number {
+  return itens.reduce((soma, i) => soma + i.quantidade, 0)
 }

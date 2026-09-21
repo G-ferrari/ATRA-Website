@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  ajustarQuantidade,
   alternarPerfil,
   definirQuantidade,
   emOrdem,
@@ -295,6 +296,38 @@ describe('carrinho de solicitação', () => {
     it('ignora slug que não está na lista', () => {
       expect(definirQuantidade(um, 'B', 4)).toBe(um)
     })
+
+    /* ⚠️ Mutar e devolver o mesmo Map passaria nos testes acima — e na ilha o
+       React descartaria a atualização, congelando o stepper. */
+    it('não muta o Map recebido', () => {
+      const antes = alternarPerfil(new Map(), 'A')
+      const depois = definirQuantidade(antes, 'A', 7)
+      expect(antes.get('A')).toBe(1)
+      expect(depois).not.toBe(antes)
+    })
+  })
+
+  describe('ajustarQuantidade', () => {
+    const um = alternarPerfil(new Map(), 'A')
+
+    /* ⚠️ O teste que teria pegado a primeira versão da 010. Aplicar a mesma
+       atualização três vezes em sequência é o que o React faz com três cliques
+       no mesmo tick: cada uma recebe o resultado da anterior como `atual`. Uma
+       função que lesse a quantidade do render daria 2 aqui, não 4. */
+    it('compõe: três +1 a partir de 1 dão 4', () => {
+      const tres = [1, 1, 1].reduce((m: Escolhidos, d) => ajustarQuantidade(m, 'A', d), um)
+      expect(tres.get('A')).toBe(4)
+    })
+
+    it('prende nos limites', () => {
+      expect(ajustarQuantidade(um, 'A', -5).get('A')).toBe(1)
+      const cheio = definirQuantidade(um, 'A', MAX_POR_PERFIL)
+      expect(ajustarQuantidade(cheio, 'A', 1).get('A')).toBe(MAX_POR_PERFIL)
+    })
+
+    it('ignora slug fora da lista', () => {
+      expect(ajustarQuantidade(um, 'B', 1)).toBe(um)
+    })
   })
 
   describe('itensEscolhidos', () => {
@@ -320,14 +353,24 @@ describe('carrinho de solicitação', () => {
   describe('totalDePessoas', () => {
     it('soma as quantidades, não os perfis', () => {
       let e: Escolhidos = new Map()
-      for (const s of ['A', 'B']) e = alternarPerfil(e, s)
-      e = definirQuantidade(e, 'A', 4)
-      expect(e.size).toBe(2)
-      expect(totalDePessoas(e)).toBe(5)
+      for (const s of ['Data Engineer', 'ML Engineer']) e = alternarPerfil(e, s)
+      e = definirQuantidade(e, 'Data Engineer', 4)
+      expect(totalDePessoas(itensEscolhidos(PERFIS, e))).toBe(5)
     })
 
     it('lista vazia soma zero', () => {
-      expect(totalDePessoas(new Map())).toBe(0)
+      expect(totalDePessoas([])).toBe(0)
+    })
+
+    /* ⚠️ Perfil que sumiu do catálogo não pode continuar na conta: o cabeçalho
+       diria "1 perfil · 4 pessoas" sobre um único item de quantidade 1. */
+    it('não conta perfil que saiu do catálogo', () => {
+      let e: Escolhidos = new Map()
+      for (const s of ['Data Engineer', 'Perfil Que Sumiu']) e = alternarPerfil(e, s)
+      e = definirQuantidade(e, 'Perfil Que Sumiu', 3)
+      const itens = itensEscolhidos(PERFIS, e)
+      expect(itens).toHaveLength(1)
+      expect(totalDePessoas(itens)).toBe(1)
     })
   })
 })

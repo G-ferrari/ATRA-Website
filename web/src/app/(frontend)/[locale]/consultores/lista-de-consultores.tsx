@@ -1,12 +1,12 @@
 'use client'
 
 import { Award, ArrowRight, Check, Filter, GraduationCap, HelpCircle, Minus, Plus, Search, UserCheck, Users, X } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { GlowCard } from '@/components/ui'
+import { GlowCard, StatusBadge } from '@/components/ui'
 import {
+  ajustarQuantidade,
   alternarPerfil,
-  definirQuantidade,
   exibicao,
   filtrarPerfis,
   itensEscolhidos,
@@ -61,6 +61,9 @@ const TEXTOS = {
     noTime: 'no time',
     solicitar: 'Solicitar',
     naLista: 'Na solicitação',
+    nomeSolicitar: (perfil: string) => `Solicitar: ${perfil}`,
+    nomeNaLista: (perfil: string) => `Na solicitação: ${perfil} — clique para remover`,
+    jaNaLista: 'Já está na sua solicitação',
     minhaSolicitacao: 'Minha solicitação',
     resumo: (perfis: number, pessoas: number) =>
       `${perfis} ${perfis === 1 ? 'perfil' : 'perfis'} · ${pessoas} ${pessoas === 1 ? 'pessoa' : 'pessoas'}`,
@@ -104,6 +107,9 @@ const TEXTOS = {
     noTime: 'on the team',
     solicitar: 'Request',
     naLista: 'In your request',
+    nomeSolicitar: (perfil: string) => `Request: ${perfil}`,
+    nomeNaLista: (perfil: string) => `In your request: ${perfil} — click to remove`,
+    jaNaLista: 'Already in your request',
     minhaSolicitacao: 'My request',
     resumo: (perfis: number, pessoas: number) =>
       `${perfis} ${perfis === 1 ? 'profile' : 'profiles'} · ${pessoas} ${pessoas === 1 ? 'person' : 'people'}`,
@@ -174,7 +180,10 @@ export function ListaDeConsultores({
   const [niveisMarcados, setNiveisMarcados] = useState<ReadonlySet<string>>(new Set())
   const [modo, setModo] = useState<'ou' | 'e'>('ou')
   /* ⚠️ Como os `Set` do filtro: `Map` não dispara render por mutação, e o
-   * `setState` é sempre **funcional**. Ver a nota em `lib/consultores.ts`. */
+   * `setState` é sempre **funcional** — e o valor novo sai de `atual`, **nunca
+   * do render**. `(atual) => definirQuantidade(atual, slug, quantidade + 1)`
+   * parece funcional e não é: `quantidade` é do render. Use `ajustarQuantidade`.
+   * Ver a nota em `lib/consultores.ts`. */
   const [escolhidos, setEscolhidos] = useState<Escolhidos>(new Map())
 
   /* A lista de especialidades **é** derivada dos perfis: no legado é uma
@@ -196,7 +205,24 @@ export function ListaDeConsultores({
    * com dois perfis que reúnem renderizados logo acima. */
   const vista = exibicao(resultado, modo)
   const itens = itensEscolhidos(perfis, escolhidos)
-  const pessoas = totalDePessoas(escolhidos)
+  const pessoas = totalDePessoas(itens)
+
+  /* ⚠️ Remover desmonta o item — e, se era o último, o painel inteiro. O foco
+   * ia para o `<body>` e quem navega por teclado voltava ao topo da página.
+   * Guardado em `ref`, e não em estado: aplicar foco é efeito colateral, e
+   * `setState` dentro de efeito dispara render em cascata que o lint recusa. */
+  const focoAposRemover = useRef<string | null>(null)
+  const tituloDoPainel = useRef<HTMLHeadingElement>(null)
+  useEffect(() => {
+    const slug = focoAposRemover.current
+    if (!slug) return
+    focoAposRemover.current = null
+    const alvo =
+      itens.length > 0
+        ? tituloDoPainel.current
+        : document.querySelector<HTMLElement>(`[data-solicitar="${CSS.escape(slug)}"]`)
+    alvo?.focus()
+  }, [itens.length])
 
   const limpar = () => {
     setTagsMarcadas(new Set())
@@ -307,7 +333,12 @@ export function ListaDeConsultores({
               visitante estava olhando, que é metade do que o feedback pediu. */}
           <button
             type="button"
-            aria-pressed={escolhidos.has(p.slug)}
+            /* ⚠️ Sem `aria-pressed`: o rótulo já muda com o estado, e os dois
+               juntos fazem o leitor anunciar o estado duas vezes (APG). O nome
+               acessível **contém** o texto visível (WCAG 2.5.3) e acrescenta o
+               perfil — eram oito "Solicitar" idênticos — e o que o clique faz. */
+            aria-label={escolhidos.has(p.slug) ? t.nomeNaLista(p.role) : t.nomeSolicitar(p.role)}
+            data-solicitar={p.slug}
             onClick={() => setEscolhidos((atual) => alternarPerfil(atual, p.slug))}
             className={cn(
               'py-2 px-4 rounded-[6px] text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-xs',
@@ -535,8 +566,15 @@ export function ListaDeConsultores({
         <section aria-label={t.minhaSolicitacao} className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
           <div className="bg-surface-2 rounded-[6px] p-4 sm:p-5 shadow-xs">
             <div className="flex items-center justify-between gap-3 mb-4">
-              <h2 className="text-xs sm:text-sm font-bold text-text-main">{t.minhaSolicitacao}</h2>
-              <span className="text-xs text-text-muted font-light">{t.resumo(itens.length, pessoas)}</span>
+              {/* `tabIndex={-1}`: recebe o foco quando um item é removido e ainda
+                  sobram outros — ver `focoAposRemover`. */}
+              <h2 ref={tituloDoPainel} tabIndex={-1} className="text-xs sm:text-sm font-bold text-text-main outline-none">
+                {t.minhaSolicitacao}
+              </h2>
+              {/* Anunciado: sem isto, apertar "+" não dizia nada ao leitor de tela. */}
+              <span aria-live="polite" className="text-xs text-text-muted font-light">
+                {t.resumo(itens.length, pessoas)}
+              </span>
             </div>
 
             <ul className="flex flex-col gap-2">
@@ -560,9 +598,14 @@ export function ListaDeConsultores({
                     <button
                       type="button"
                       aria-label={`${t.menos}: ${p.role}`}
-                      disabled={quantidade <= 1}
-                      onClick={() => setEscolhidos((atual) => definirQuantidade(atual, p.slug, quantidade - 1))}
-                      className="w-6 h-6 rounded-[4px] bg-surface-2 text-text-main flex items-center justify-center transition-colors hover:bg-surface-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface-2 cursor-pointer"
+                      /* ⚠️ `aria-disabled`, não `disabled`: botão desabilitado com
+                         o foco nele solta o foco para o `<body>`, e quem usa
+                         teclado volta ao topo. O limite é garantido pelo
+                         `ajustarQuantidade`, que prende em 1..20 — clique a mais
+                         não faz nada. */
+                      aria-disabled={quantidade <= 1}
+                      onClick={() => setEscolhidos((atual) => ajustarQuantidade(atual, p.slug, -1))}
+                      className="w-6 h-6 rounded-[4px] bg-surface-2 text-text-main flex items-center justify-center transition-colors hover:bg-surface-3 aria-disabled:opacity-40 aria-disabled:cursor-not-allowed aria-disabled:hover:bg-surface-2 cursor-pointer"
                     >
                       <Minus size={12} aria-hidden />
                     </button>
@@ -570,9 +613,9 @@ export function ListaDeConsultores({
                     <button
                       type="button"
                       aria-label={`${t.mais}: ${p.role}`}
-                      disabled={quantidade >= MAX_POR_PERFIL}
-                      onClick={() => setEscolhidos((atual) => definirQuantidade(atual, p.slug, quantidade + 1))}
-                      className="w-6 h-6 rounded-[4px] bg-surface-2 text-text-main flex items-center justify-center transition-colors hover:bg-surface-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface-2 cursor-pointer"
+                      aria-disabled={quantidade >= MAX_POR_PERFIL}
+                      onClick={() => setEscolhidos((atual) => ajustarQuantidade(atual, p.slug, 1))}
+                      className="w-6 h-6 rounded-[4px] bg-surface-2 text-text-main flex items-center justify-center transition-colors hover:bg-surface-3 aria-disabled:opacity-40 aria-disabled:cursor-not-allowed aria-disabled:hover:bg-surface-2 cursor-pointer"
                     >
                       <Plus size={12} aria-hidden />
                     </button>
@@ -581,7 +624,10 @@ export function ListaDeConsultores({
                   <button
                     type="button"
                     aria-label={`${t.remover}: ${p.role}`}
-                    onClick={() => setEscolhidos((atual) => alternarPerfil(atual, p.slug))}
+                    onClick={() => {
+                      focoAposRemover.current = p.slug
+                      setEscolhidos((atual) => alternarPerfil(atual, p.slug))
+                    }}
                     className="w-7 h-7 rounded-[4px] text-text-muted hover:text-text-main hover:bg-surface-2 flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   >
                     <X size={14} aria-hidden />
@@ -704,20 +750,29 @@ export function ListaDeConsultores({
                 {t.fechar}
               </button>
               {/* Aqui **adiciona**, nunca remove: quem abriu o detalhe e clicou
-                  no CTA quer pedir, e alternar faria o clique tirar da lista. */}
-              <button
-                type="button"
-                onClick={() => {
-                  setEscolhidos((atual) =>
-                    atual.has(aberto.slug) ? atual : alternarPerfil(atual, aberto.slug),
-                  )
-                  setAberto(null)
-                }}
-                className="px-6 py-2.5 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs font-bold shadow-lg shadow-primary/25 transition-all cursor-pointer flex items-center gap-2"
-              >
-                <span>{escolhidos.has(aberto.slug) ? t.naLista : t.solicitarPerfil}</span>
-                <ArrowRight size={14} aria-hidden />
-              </button>
+                  no CTA quer pedir, e alternar faria o clique tirar da lista.
+
+                  ⚠️ Com o perfil já escolhido, **selo e não botão**. A primeira
+                  versão mantinha um botão "Na solicitação" — o mesmo nome do
+                  botão do card, que remove, mas aqui só fechava o modal. Mesmo
+                  nome, efeitos opostos. O "Fechar" ao lado já fecha. */}
+              {escolhidos.has(aberto.slug) ? (
+                <StatusBadge label={t.jaNaLista} variant="online" icon={<Check size={14} aria-hidden />} />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEscolhidos((atual) =>
+                      atual.has(aberto.slug) ? atual : alternarPerfil(atual, aberto.slug),
+                    )
+                    setAberto(null)
+                  }}
+                  className="px-6 py-2.5 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs font-bold shadow-lg shadow-primary/25 transition-all cursor-pointer flex items-center gap-2"
+                >
+                  <span>{t.solicitarPerfil}</span>
+                  <ArrowRight size={14} aria-hidden />
+                </button>
+              )}
             </div>
           </div>
         </div>
