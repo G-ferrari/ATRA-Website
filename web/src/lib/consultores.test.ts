@@ -1,6 +1,18 @@
 import { describe, expect, it } from 'vitest'
 
-import { emOrdem, exibicao, filtrarPerfis, total } from './consultores'
+import {
+  ajustarQuantidade,
+  alternarPerfil,
+  definirQuantidade,
+  emOrdem,
+  exibicao,
+  filtrarPerfis,
+  itensEscolhidos,
+  MAX_POR_PERFIL,
+  total,
+  totalDePessoas,
+  type Escolhidos,
+} from './consultores'
 import type { ConsultantRole } from '@/types/content'
 
 /* Fixture com os 8 perfis semeados e suas tags reais
@@ -228,5 +240,137 @@ describe('exibicao (como o resultado é lido na tela)', () => {
         if (e.faixa === 'aviso') expect(e.principais).toHaveLength(0)
       }
     }
+  })
+})
+
+describe('carrinho de solicitação', () => {
+  const slugs = (e: Escolhidos) => [...e.keys()]
+
+  describe('alternarPerfil', () => {
+    it('adiciona com quantidade 1 e remove no segundo clique', () => {
+      const a = alternarPerfil(new Map(), 'Data Engineer')
+      expect([...a]).toEqual([['Data Engineer', 1]])
+      expect([...alternarPerfil(a, 'Data Engineer')]).toEqual([])
+    })
+
+    /* ⚠️ A ordem é a em que o visitante escolheu, não a do catálogo: é o
+       raciocínio dele, e reordenar apagaria. */
+    it('preserva a ordem de inserção', () => {
+      let e: Escolhidos = new Map()
+      for (const s of ['Cloud Architect', 'Data Engineer', 'ML Engineer']) e = alternarPerfil(e, s)
+      expect(slugs(e)).toEqual(['Cloud Architect', 'Data Engineer', 'ML Engineer'])
+    })
+
+    it('remover do meio não move os outros', () => {
+      let e: Escolhidos = new Map()
+      for (const s of ['A', 'B', 'C']) e = alternarPerfil(e, s)
+      expect(slugs(alternarPerfil(e, 'B'))).toEqual(['A', 'C'])
+    })
+
+    it('não muta o Map recebido', () => {
+      const antes = alternarPerfil(new Map(), 'A')
+      alternarPerfil(antes, 'B')
+      expect(slugs(antes)).toEqual(['A'])
+    })
+  })
+
+  describe('definirQuantidade', () => {
+    const um = alternarPerfil(new Map(), 'A')
+
+    it('grava a quantidade pedida', () => {
+      expect(definirQuantidade(um, 'A', 5).get('A')).toBe(5)
+    })
+
+    it('prende no mínimo 1 e no teto', () => {
+      expect(definirQuantidade(um, 'A', 0).get('A')).toBe(1)
+      expect(definirQuantidade(um, 'A', -3).get('A')).toBe(1)
+      expect(definirQuantidade(um, 'A', 999).get('A')).toBe(MAX_POR_PERFIL)
+    })
+
+    it('trunca fracionário e trata não-número como 1', () => {
+      expect(definirQuantidade(um, 'A', 3.7).get('A')).toBe(3)
+      expect(definirQuantidade(um, 'A', Number.NaN).get('A')).toBe(1)
+    })
+
+    /* Mexer no stepper de quem não está escolhido seria adicionar sem pedido. */
+    it('ignora slug que não está na lista', () => {
+      expect(definirQuantidade(um, 'B', 4)).toBe(um)
+    })
+
+    /* ⚠️ Mutar e devolver o mesmo Map passaria nos testes acima — e na ilha o
+       React descartaria a atualização, congelando o stepper. */
+    it('não muta o Map recebido', () => {
+      const antes = alternarPerfil(new Map(), 'A')
+      const depois = definirQuantidade(antes, 'A', 7)
+      expect(antes.get('A')).toBe(1)
+      expect(depois).not.toBe(antes)
+    })
+  })
+
+  describe('ajustarQuantidade', () => {
+    const um = alternarPerfil(new Map(), 'A')
+
+    /* ⚠️ O teste que teria pegado a primeira versão da 010. Aplicar a mesma
+       atualização três vezes em sequência é o que o React faz com três cliques
+       no mesmo tick: cada uma recebe o resultado da anterior como `atual`. Uma
+       função que lesse a quantidade do render daria 2 aqui, não 4. */
+    it('compõe: três +1 a partir de 1 dão 4', () => {
+      const tres = [1, 1, 1].reduce((m: Escolhidos, d) => ajustarQuantidade(m, 'A', d), um)
+      expect(tres.get('A')).toBe(4)
+    })
+
+    it('prende nos limites', () => {
+      expect(ajustarQuantidade(um, 'A', -5).get('A')).toBe(1)
+      const cheio = definirQuantidade(um, 'A', MAX_POR_PERFIL)
+      expect(ajustarQuantidade(cheio, 'A', 1).get('A')).toBe(MAX_POR_PERFIL)
+    })
+
+    it('ignora slug fora da lista', () => {
+      expect(ajustarQuantidade(um, 'B', 1)).toBe(um)
+    })
+  })
+
+  describe('itensEscolhidos', () => {
+    it('casa com o catálogo, na ordem de escolha', () => {
+      let e: Escolhidos = new Map()
+      for (const s of ['Cloud Architect', 'Data Engineer']) e = alternarPerfil(e, s)
+      e = definirQuantidade(e, 'Data Engineer', 3)
+      expect(itensEscolhidos(PERFIS, e).map((i) => [i.perfil.role, i.quantidade])).toEqual([
+        ['Cloud Architect', 1],
+        ['Data Engineer', 3],
+      ])
+    })
+
+    /* Perfil despublicado entre a escolha e o envio: sumir da lista é melhor
+       que quebrar o resumo. */
+    it('descarta slug que não existe mais no catálogo', () => {
+      let e: Escolhidos = new Map()
+      for (const s of ['Data Engineer', 'Perfil Que Sumiu']) e = alternarPerfil(e, s)
+      expect(itensEscolhidos(PERFIS, e).map((i) => i.perfil.role)).toEqual(['Data Engineer'])
+    })
+  })
+
+  describe('totalDePessoas', () => {
+    it('soma as quantidades, não os perfis', () => {
+      let e: Escolhidos = new Map()
+      for (const s of ['Data Engineer', 'ML Engineer']) e = alternarPerfil(e, s)
+      e = definirQuantidade(e, 'Data Engineer', 4)
+      expect(totalDePessoas(itensEscolhidos(PERFIS, e))).toBe(5)
+    })
+
+    it('lista vazia soma zero', () => {
+      expect(totalDePessoas([])).toBe(0)
+    })
+
+    /* ⚠️ Perfil que sumiu do catálogo não pode continuar na conta: o cabeçalho
+       diria "1 perfil · 4 pessoas" sobre um único item de quantidade 1. */
+    it('não conta perfil que saiu do catálogo', () => {
+      let e: Escolhidos = new Map()
+      for (const s of ['Data Engineer', 'Perfil Que Sumiu']) e = alternarPerfil(e, s)
+      e = definirQuantidade(e, 'Perfil Que Sumiu', 3)
+      const itens = itensEscolhidos(PERFIS, e)
+      expect(itens).toHaveLength(1)
+      expect(totalDePessoas(itens)).toBe(1)
+    })
   })
 })

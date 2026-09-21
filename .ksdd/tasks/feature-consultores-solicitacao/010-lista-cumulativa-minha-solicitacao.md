@@ -1,7 +1,7 @@
 ---
 id: 010
 title: Lista cumulativa "Minha solicitação" com quantidade por perfil
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: frontend
 priority: P0

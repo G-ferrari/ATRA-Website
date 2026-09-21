@@ -9,7 +9,6 @@ import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { toConsultantRole } from '@/lib/mappers/consultant'
 import { getPayload } from '@/lib/payload'
-import { hrefDe } from '@/lib/routes'
 
 import { ListaDeConsultores } from './lista-de-consultores'
 import { SolicitarConsultores } from './solicitar-consultores'
@@ -184,7 +183,7 @@ export default async function ConsultoresPage() {
         </div>
       </section>
 
-      <ListaDeConsultores perfis={perfis} contatoHref={hrefDe('contato', locale)} locale={locale} />
+      <ListaDeConsultores perfis={perfis} locale={locale} />
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
         <div className="bg-surface-2  rounded-[6px] p-5 sm:p-7 shadow-xs">

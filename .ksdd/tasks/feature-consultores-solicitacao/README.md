@@ -7,9 +7,9 @@
 
 | ID | Título | Área | Prioridade | Estimativa | Status | Depende de |
 |----|--------|------|------------|------------|--------|------------|
-| 009 | Filtro multi-seleção com alternador OU\|E e ordenação por cobertura | frontend | P0 | L | em revisão | — |
-| 010 | Lista cumulativa "Minha solicitação" com quantidade por perfil | frontend | P0 | L | para implementar | 009 |
-| 011 | kind consultant-request — enum, migração e classificação comercial no CRM | data-model | P0 | S | em revisão | — |
+| 009 | Filtro multi-seleção com alternador OU\|E e ordenação por cobertura | frontend | P0 | L | concluída | — |
+| 010 | Lista cumulativa "Minha solicitação" com quantidade por perfil | frontend | P0 | L | em revisão | 009 |
+| 011 | kind consultant-request — enum, migração e classificação comercial no CRM | data-model | P0 | S | concluída | — |
 | 012 | Server Action solicitarConsultores com revalidação no servidor e aviso por e-mail | backend | P0 | M | para implementar | 011 |
 | 013 | Seção de solicitação deixa de ser estática e envia com os perfis escolhidos | frontend | P0 | M | para implementar | 010, 012 |
 | 014 | CTA "Não encontrou um consultor nesta lista?" | frontend | P1 | S | para implementar | 013 |
@@ -26,6 +26,19 @@ outra é schema. Daí o caminho crítico é `009 → 010 → 013 → 014 → 015
 gabarito é a última task, depois de a UI estar fechada (015), porque regravar
 antes apagaria a evidência de regressão de tudo que veio no meio. Para iterar no
 caminho: `pnpm gate --rota consultores --viewport desktop`.
+
+## Integração (decisão de 21/09)
+
+As tasks **010, 012 e 013** só formam um fluxo coerente juntas: a 010 tira o "Solicitar" do caminho para `/contato`, e sem a 012 (Server Action) e a 013 (formulário vivo) o novo caminho termina num formulário desabilitado. Por isso elas **não** vão direto para `migracao`:
+
+- base dos PRs: **`feature/consultores-solicitacao/integracao`** (criada de `migracao` em `6f4ad71`);
+- push nessa branch **não roda CI nem deploya**; PRs para ela rodam lint, typecheck e build;
+- `concluída`, para estas três, significa **mergeada na integração**;
+- quando a 013 entrar, **um único PR** leva a integração para `migracao` — um deploy, feature inteira.
+
+⚠️ **Nunca deletar a branch de integração com PRs abertos apontando para ela.** Deletar a base de um PR o **fecha**, e PR fechado não aceita troca de base nem reabertura — foi o que aconteceu com o #16, substituído pelo #17.
+
+⚠️ Se `migracao` receber commits enquanto a integração estiver aberta, trazer `migracao` para a integração antes do PR final.
 
 ---
 **Próximo passo:** `/ksdd:build:feature consultores-solicitacao` para implementar task por task.
