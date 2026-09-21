@@ -1,9 +1,9 @@
 # Tasks — Feature: Solicitação de consultores em /consultores
 
 **Feature:** .ksdd/features/FEATURE-consultores-solicitacao.md
-**Total:** 8 tasks
-**Prioridade:** P0: 6 · P1: 2 · P2: 0
-**Estimativa total:** ~13 dias
+**Total:** 10 tasks
+**Prioridade:** P0: 6 · P1: 4 · P2: 0
+**Estimativa total:** ~17 dias
 
 | ID | Título | Área | Prioridade | Estimativa | Status | Depende de |
 |----|--------|------|------------|------------|--------|------------|
@@ -13,14 +13,21 @@
 | 012 | Server Action solicitarConsultores com revalidação no servidor e aviso por e-mail | backend | P0 | M | concluída | 011 |
 | 013 | Seção de solicitação deixa de ser estática e envia com os perfis escolhidos | frontend | P0 | M | concluída | 010, 012 |
 | 014 | CTA "Não encontrou um consultor nesta lista?" | frontend | P1 | S | em revisão | 013 |
-| 015 | Acabamento de UI da página guiado pelo Impeccable | design | P1 | M | para implementar | 013, 014 |
+| 017 | Chamada "Não encontrou um consultor?" junto dos diferenciais, em destaque | frontend | P1 | S | para implementar | 014 |
+| 018 | Aba de pedido — carrinho que abre, minimiza e envia | frontend | P1 | L | para implementar | 017 |
+| 015 | Acabamento de UI da página guiado pelo Impeccable | design | P1 | M | para implementar | 013, 014, 017, 018 |
 | 016 | e2e do filtro, do acúmulo e do envio + regravação do gabarito | qa | P0 | M | para implementar | 015 |
 
 ## Ordem sugerida
 
 **009 e 011 não dependem de nada** e podem correr em paralelo — uma é frontend, a
-outra é schema. Daí o caminho crítico é `009 → 010 → 013 → 014 → 015 → 016`, com
+outra é schema. Daí o caminho crítico é `009 → 010 → 013 → 014 → 017 → 018 → 015 → 016`, com
 `011 → 012` entrando antes de 013.
+
+**017 e 018 entraram em 21/09**, a pedido de G-ferrari, depois do plano original —
+por isso a numeração fora da ordem. Vêm antes do acabamento (015) porque mudam
+a estrutura da página, e a 015 lapida o que elas deixarem. No mesmo dia saiu,
+fora da numeração, a remoção das promessas de 48h (cards, modal e herói — PR #26).
 
 ⚠️ **O gate visual fica vermelho de 009 até 016.** É esperado: a regravação do
 gabarito é a última task, depois de a UI estar fechada (015), porque regravar
