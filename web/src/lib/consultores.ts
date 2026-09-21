@@ -102,3 +102,56 @@ export function filtrarPerfis({
     alvo,
   }
 }
+
+/* ── Carrinho de solicitação (task 010) ──────────────────────────────────────
+ *
+ * O visitante junta perfis e diz quantas pessoas de cada. Mora aqui pelo mesmo
+ * motivo de `exibicao`: foi decisão escrita na ilha, sem teste, que produziu os
+ * dois defeitos da 009. `ReadonlyMap` porque a ordem de inserção é a ordem em
+ * que ele escolheu — reordenar pelo catálogo apagaria o raciocínio dele.
+ *
+ * ⚠️ Quem chama usa a forma **funcional** do `setState`. Ler o Map do render e
+ * passar o resultado perde atualização: dois cliques no mesmo tick partem do
+ * mesmo Map antigo e o segundo sobrescreve o primeiro. */
+
+export type Escolhidos = ReadonlyMap<string, number>
+
+/** Teto por perfil. Pedir 20 pessoas de um mesmo arquétipo já é conversa de
+ *  squad, não de formulário — acima disso o campo livre serve melhor. */
+export const MAX_POR_PERFIL = 20
+
+export function alternarPerfil(atual: Escolhidos, slug: string): Escolhidos {
+  const novo = new Map(atual)
+  if (!novo.delete(slug)) novo.set(slug, 1)
+  return novo
+}
+
+export function definirQuantidade(atual: Escolhidos, slug: string, quantidade: number): Escolhidos {
+  /* Fora da lista não ganha quantidade: mexer no stepper de quem não está
+   * escolhido seria adicionar sem o visitante ter pedido. */
+  if (!atual.has(slug)) return atual
+  const n = Math.min(MAX_POR_PERFIL, Math.max(1, Math.trunc(quantidade) || 1))
+  const novo = new Map(atual)
+  novo.set(slug, n)
+  return novo
+}
+
+/** Os perfis escolhidos, na ordem em que entraram, já casados com o catálogo.
+ *  Slug que não existe mais (perfil despublicado entre a escolha e o envio) é
+ *  descartado aqui — melhor sumir da lista que quebrar o resumo. */
+export function itensEscolhidos(
+  perfis: readonly ConsultantRole[],
+  escolhidos: Escolhidos,
+): { perfil: ConsultantRole; quantidade: number }[] {
+  const porSlug = new Map(perfis.map((p) => [p.slug, p]))
+  return [...escolhidos].flatMap(([slug, quantidade]) => {
+    const perfil = porSlug.get(slug)
+    return perfil ? [{ perfil, quantidade }] : []
+  })
+}
+
+export function totalDePessoas(escolhidos: Escolhidos): number {
+  let total = 0
+  for (const n of escolhidos.values()) total += n
+  return total
+}
