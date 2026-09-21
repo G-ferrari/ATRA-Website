@@ -156,13 +156,12 @@ export function ajustarQuantidade(atual: Escolhidos, slug: string, delta: number
   return q === undefined ? atual : definirQuantidade(atual, slug, q + delta)
 }
 
+export type ItemEscolhido = { perfil: ConsultantRole; quantidade: number }
+
 /** Os perfis escolhidos, na ordem em que entraram, já casados com o catálogo.
  *  Slug que não existe mais (perfil despublicado entre a escolha e o envio) é
  *  descartado aqui — melhor sumir da lista que quebrar o resumo. */
-export function itensEscolhidos(
-  perfis: readonly ConsultantRole[],
-  escolhidos: Escolhidos,
-): { perfil: ConsultantRole; quantidade: number }[] {
+export function itensEscolhidos(perfis: readonly ConsultantRole[], escolhidos: Escolhidos): ItemEscolhido[] {
   const porSlug = new Map(perfis.map((p) => [p.slug, p]))
   return [...escolhidos].flatMap(([slug, quantidade]) => {
     const perfil = porSlug.get(slug)

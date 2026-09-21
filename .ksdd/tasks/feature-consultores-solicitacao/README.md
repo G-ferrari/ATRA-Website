@@ -14,7 +14,7 @@
 | 013 | Seção de solicitação deixa de ser estática e envia com os perfis escolhidos | frontend | P0 | M | concluída | 010, 012 |
 | 014 | CTA "Não encontrou um consultor nesta lista?" | frontend | P1 | S | em revisão | 013 |
 | 017 | Chamada "Não encontrou um consultor?" junto dos diferenciais, em destaque | frontend | P1 | S | em revisão | 014 |
-| 018 | Aba de pedido — carrinho que abre, minimiza e envia | frontend | P1 | L | para implementar | 017 |
+| 018 | Aba de pedido — carrinho que abre, minimiza e envia | frontend | P1 | L | em revisão | 017 |
 | 015 | Acabamento de UI da página guiado pelo Impeccable | design | P1 | M | para implementar | 013, 014, 017, 018 |
 | 016 | e2e do filtro, do acúmulo e do envio + regravação do gabarito | qa | P0 | M | para implementar | 015 |
 

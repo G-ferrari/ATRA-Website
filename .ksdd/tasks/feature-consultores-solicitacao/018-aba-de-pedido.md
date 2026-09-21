@@ -1,7 +1,7 @@
 ---
 id: 018
 title: Aba de pedido — carrinho que abre, minimiza e envia
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: frontend
 priority: P1
@@ -40,8 +40,10 @@ consultores e o formulário de envio.
 - **Seção final** ("Vamos acelerar sua equipe…"): título, subtítulo e painel de
   contatos ficam; o formulário sai e entra um **botão que abre a aba**. Um
   formulário só na página.
-- A chamada "Não encontrou…" (017) e o botão da seção final abrem a aba
-  expandida com o **campo livre focado**, mesmo com o carrinho vazio.
+- A chamada "Não encontrou…" (017) abre a aba expandida com o **campo livre
+  focado**, mesmo com o carrinho vazio. O botão da seção final abre com o foco
+  no **título** — revisto na implementação: quem chega por ali pode ter perfis
+  no carrinho, e pular para o campo livre passava por cima de nome e e-mail.
 - Depois do envio: confirmação dentro da aba e carrinho vazio. Minimizar com o
   carrinho vazio **oculta** a barra.
 - Remover o último perfil com a aba expandida **não** a fecha: a pessoa pode
@@ -76,8 +78,8 @@ consultores e o formulário de envio.
 - [ ] 1280px: desliza da direita.
 - [ ] Quantidade, remoção e envio funcionam de dentro da aba; o lead
       `consultant-request` chega com perfis e quantidades (conferido no Postgres).
-- [ ] A chamada "Não encontrou…" e o botão da seção final abrem a aba com o campo
-      livre focado.
+- [ ] A chamada "Não encontrou…" abre a aba com o campo livre focado; o botão da
+      seção final, com o título focado.
 - [ ] Teclado: `Tab` fica dentro da aba, `Esc` minimiza, o foco volta.
 - [ ] Sem JavaScript: envio com texto livre grava o lead.
 - [ ] Contraste nos **dois** temas.

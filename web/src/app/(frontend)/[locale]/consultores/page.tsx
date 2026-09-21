@@ -10,10 +10,12 @@ import { isLocale, LOCALES } from '@/lib/locales'
 import { toConsultantRole } from '@/lib/mappers/consultant'
 import { getPayload } from '@/lib/payload'
 
+import { AbaDePedido } from './aba-de-pedido'
 import { Diferenciais } from './diferenciais'
 import { ListaDeConsultores } from './lista-de-consultores'
 import { ProvedorDaSolicitacao } from './solicitacao-contexto'
 import { SolicitarConsultores } from './solicitar-consultores'
+import { hrefDe } from '@/lib/routes'
 import { metadataDe } from '@/lib/seo'
 
 /* /consultores — porte de `legacy/src/pages/Consultants.tsx`.
@@ -150,16 +152,22 @@ export default async function ConsultoresPage() {
         </div>
       </section>
 
-      {/* O provedor envolve as três seções porque a lista (onde se escolhe) e o
-          formulário (onde se envia) leem o mesmo carrinho — e os diferenciais,
-          renderizados aqui no servidor, ficam entre os dois. Server Component
-          pode ser filho de provedor cliente. Ver `solicitacao-contexto.tsx`. */}
+      {/* O provedor envolve as seções porque a lista (onde se escolhe), a
+          chamada "Não encontrou…" e a seção final abrem a mesma aba de pedido
+          (onde se envia) e leem o mesmo carrinho — e há seções do servidor no
+          meio. Server Component pode ser filho de provedor cliente. Ver
+          `solicitacao-contexto.tsx`. */}
       <ProvedorDaSolicitacao>
       <ListaDeConsultores perfis={perfis} locale={locale} />
 
       <Diferenciais locale={locale} />
 
-      <SolicitarConsultores locale={locale} contato={contato} perfis={perfis} />
+      <SolicitarConsultores locale={locale} contato={contato} />
+
+      {/* Fechada, a aba não ocupa lugar nenhum (`<dialog>` sem `open` é
+          `display: none`): o gabarito, que captura com o carrinho vazio, só vê a
+          seção final mudar. */}
+      <AbaDePedido perfis={perfis} locale={locale} privacidadeHref={hrefDe('politicas', locale)} />
       </ProvedorDaSolicitacao>
     </main>
   )
