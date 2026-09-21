@@ -9,6 +9,7 @@ import { ipDe } from '@/lib/ip'
 import { getPayload } from '@/lib/payload'
 import {
   lerDuracao,
+  PADRAO_EMAIL,
   lerModelo,
   lerPerfisPedidos,
   resumoDaSolicitacao,
@@ -41,13 +42,39 @@ import { MAX_POR_VALOR } from '@/lib/utm'
  * Destino do aviso: o `email` do global `contact`, como os demais formulários —
  * sem variável de ambiente nova. */
 
-export type ResultadoSolicitacao = { ok: true } | { ok: false; erro: string }
+/** ⚠️ `codigo` existe porque `/consultores` é bilíngue e esta action não sabe
+ *  o idioma da página: sem ele, quem errasse o e-mail em `/en/consultants` lia
+ *  "Confira o e-mail informado." O formulário traduz pelo código; `erro`, em
+ *  português, fica como reserva e para quem chamar a action de outro lugar. */
+export type CodigoDeErro = 'email' | 'vazio' | 'indisponiveis' | 'falha'
+
+/** O que o visitante mandou, devolvido quando o pedido é recusado.
+ *
+ * ⚠️ O React 19 **reseta o formulário** quando a action termina — com sucesso
+ * **ou** com erro, porque devolver `{ ok: false }` não é lançar. Sem isto, uma
+ * recusa apagava nome, e-mail, telefone e descrição, e o visitante redigitava
+ * tudo. O formulário usa estes valores como `defaultValue`, e o reset os
+ * restaura. Volta só para quem enviou, na mesma resposta; nada vai para log. */
+export type ValoresEnviados = {
+  name: string
+  email: string
+  phone: string
+  company: string
+  message: string
+  duracao: string
+  modelo: string
+}
+
+export type ResultadoSolicitacao =
+  | { ok: true }
+  | { ok: false; codigo: CodigoDeErro; erro: string; valores: ValoresEnviados }
 
 const ERRO = 'Não foi possível enviar agora. Tente pelo WhatsApp ou por negocios@atra.com.br.'
 const VAZIO = 'Escolha ao menos um perfil ou descreva o profissional que você procura.'
 const INDISPONIVEIS =
   'Os perfis escolhidos não estão mais disponíveis. Atualize a página e escolha de novo, ou descreva o profissional que você procura.'
 const MAX_CAMPO = 200
+const EMAIL_VALIDO = new RegExp(`^${PADRAO_EMAIL}$`)
 const MAX_MENSAGEM = 5000
 
 const texto = (dados: FormData, campo: string, max = MAX_CAMPO): string =>
@@ -80,10 +107,19 @@ const semDadoPessoal = (e: unknown): string => {
 }
 
 export async function solicitarConsultores(dados: FormData): Promise<ResultadoSolicitacao> {
-  const email = texto(dados, 'email')
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-    return { ok: false, erro: 'Confira o e-mail informado.' }
+  const valores: ValoresEnviados = {
+    name: texto(dados, 'name'),
+    email: texto(dados, 'email'),
+    phone: texto(dados, 'phone'),
+    company: texto(dados, 'company'),
+    message: texto(dados, 'message', MAX_MENSAGEM),
+    duracao: texto(dados, 'duracao'),
+    modelo: texto(dados, 'modelo'),
   }
+  const recusa = (codigo: CodigoDeErro, erro: string): ResultadoSolicitacao => ({ ok: false, codigo, erro, valores })
+
+  const email = valores.email
+  if (!EMAIL_VALIDO.test(email)) return recusa('email', 'Confira o e-mail informado.')
 
   /* Sem perfil e sem descrição não há pedido.
    *
@@ -95,7 +131,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
    * formulários. */
   const pedidos = lerPerfisPedidos(texto(dados, 'perfis', MAX_MENSAGEM))
   const descricao = texto(dados, 'message', MAX_MENSAGEM)
-  if (pedidos.length === 0 && !descricao) return { ok: false, erro: VAZIO }
+  if (pedidos.length === 0 && !descricao) return recusa('vazio', VAZIO)
 
   /* Robô barrado recebe sucesso: dizer "você foi barrado" entrega o critério.
    * O limite por IP vem antes de qualquer trabalho caro (a consulta ao banco). */
@@ -113,7 +149,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
     payload = await getPayload()
   } catch (e) {
     console.error('[consultores] sem conexão com o banco:', semDadoPessoal(e))
-    return { ok: false, erro: ERRO }
+    return recusa('falha', ERRO)
   }
 
   let perfis: PerfilConfirmado[] = []
@@ -139,7 +175,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
       })
     } catch (e) {
       console.error('[consultores] não conferiu os perfis:', semDadoPessoal(e))
-      return { ok: false, erro: ERRO }
+      return recusa('falha', ERRO)
     }
   }
   /* Todos os ids eram forjados ou de perfis que saíram do catálogo.
@@ -148,7 +184,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
    * enquanto o perfil era despublicado lia "escolha ao menos um perfil" — tendo
    * escolhido — e tentava de novo até a cota por IP virar sucesso falso, sem
    * nada gravado. */
-  if (perfis.length === 0 && !descricao) return { ok: false, erro: INDISPONIVEIS }
+  if (perfis.length === 0 && !descricao) return recusa('indisponiveis', INDISPONIVEIS)
 
   const mensagem = resumoDaSolicitacao({
     perfis,
@@ -187,7 +223,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
     id = doc.id
   } catch (e) {
     console.error('[consultores] não gravou:', semDadoPessoal(e))
-    return { ok: false, erro: ERRO }
+    return recusa('falha', ERRO)
   }
 
   /* Daqui em diante o lead está salvo: falha só vai para o log. */
@@ -219,4 +255,21 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
   }
 
   return { ok: true }
+}
+
+/** A assinatura que o `useActionState` exige — `(estadoAnterior, dados)` —, para
+ * o formulário receber **a própria Server Action**, e não um embrulho cliente.
+ *
+ * ⚠️ É isto que faz o envio funcionar **sem JavaScript**. Com um embrulho
+ * (`async (_, dados) => solicitarConsultores(dados)`), o React não tem uma
+ * referência de servidor para emitir, e o HTML sai com
+ * `action="javascript:throw new Error('React form unexpectedly submitted.')"`:
+ * sem JS, o clique em enviar não faz nada. O `Formulario` de contato e o
+ * diagnóstico RC18 têm esse defeito, apesar de o comentário deles e a SPEC §11
+ * afirmarem o contrário. */
+export async function solicitarConsultoresNoFormulario(
+  _anterior: ResultadoSolicitacao | null,
+  dados: FormData,
+): Promise<ResultadoSolicitacao> {
+  return solicitarConsultores(dados)
 }

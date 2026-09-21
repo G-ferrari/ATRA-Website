@@ -156,6 +156,42 @@ describe('solicitarConsultores — o servidor não confia no cliente', () => {
   })
 })
 
+describe('solicitarConsultores — a recusa devolve o que foi enviado', () => {
+  /* ⚠️ O React 19 reseta o formulário quando a action termina, com sucesso ou
+     com erro. Sem os valores de volta, uma recusa apagava tudo o que o
+     visitante tinha digitado. */
+  it('devolve os campos para o formulário repreencher', async () => {
+    const r = await solicitarConsultores(
+      valido({ duracao: '6', modelo: 'squad', message: '', perfis: perfis([{ slug: '999' }]) }),
+    )
+    expect(r).toMatchObject({
+      ok: false,
+      codigo: 'indisponiveis',
+      valores: {
+        name: 'Ana',
+        email: 'gestora@banco.com.br',
+        phone: '11 99999-0000',
+        company: 'Banco X',
+        duracao: '6',
+        modelo: 'squad',
+        message: '',
+      },
+    })
+  })
+
+  it('devolve até na recusa por e-mail, que é a primeira', async () => {
+    const r = await solicitarConsultores(form({ email: 'joao@empresa', name: 'João', message: 'contexto' }))
+    expect(r).toMatchObject({ ok: false, codigo: 'email', valores: { name: 'João', email: 'joao@empresa', message: 'contexto' } })
+  })
+
+  /* Sucesso não devolve nada: o formulário DEVE voltar vazio para o próximo
+     pedido. */
+  it('sucesso não traz valores', async () => {
+    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    expect(r).toEqual({ ok: true })
+  })
+})
+
 describe('solicitarConsultores — nada de dado pessoal no log', () => {
   /* ⚠️ A mensagem do erro do Drizzle traz `params:` com os valores da query. */
   it('falha ao gravar não leva e-mail, nome nem telefone para o console', async () => {
@@ -205,7 +241,7 @@ describe('solicitarConsultores — recusa sem gravar', () => {
      depois despublicado lia "escolha ao menos um perfil". */
   it('só perfis que sumiram do catálogo: mensagem que não engana', async () => {
     const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '999' }]) }))
-    expect(r).toEqual({ ok: false, erro: expect.stringMatching(/não estão mais disponíveis/) })
+    expect(r).toMatchObject({ ok: false, codigo: 'indisponiveis', erro: expect.stringMatching(/não estão mais disponíveis/) })
   })
 
   /* ⚠️ Id acima do `integer` do Postgres estourava a consulta e derrubava o
@@ -232,14 +268,14 @@ describe('solicitarConsultores — recusa sem gravar', () => {
 
   it('sem perfil e sem descrição: erro legível, e nem consulta o banco', async () => {
     const r = await solicitarConsultores(valido())
-    expect(r).toEqual({ ok: false, erro: expect.stringMatching(/perfil|descreva/i) })
+    expect(r).toMatchObject({ ok: false, codigo: 'vazio', erro: expect.stringMatching(/perfil|descreva/i) })
     expect(payload.find).not.toHaveBeenCalled()
     expect(payload.create).not.toHaveBeenCalled()
   })
 
   it('e-mail inválido', async () => {
     const r = await solicitarConsultores(form({ email: 'sem-arroba', message: 'x' }))
-    expect(r).toMatchObject({ ok: false })
+    expect(r).toMatchObject({ ok: false, codigo: 'email' })
     expect(payload.create).not.toHaveBeenCalled()
   })
 })
@@ -279,7 +315,7 @@ describe('solicitarConsultores — anti-spam devolve sucesso falso', () => {
      técnica sem nunca ser aceito. */
   it('envio vazio recebe o erro de vazio mesmo com a isca preenchida', async () => {
     const r = await solicitarConsultores(valido({ [CAMPO_ISCA]: 'http://spam' }))
-    expect(r).toEqual({ ok: false, erro: expect.stringMatching(/perfil|descreva/i) })
+    expect(r).toMatchObject({ ok: false, codigo: 'vazio', erro: expect.stringMatching(/perfil|descreva/i) })
     expect(excedeuPorIp).not.toHaveBeenCalled()
   })
 
@@ -318,7 +354,7 @@ describe('solicitarConsultores — depois de gravar, é sucesso', () => {
   it('falha ao GRAVAR: aí sim é erro — nada foi salvo', async () => {
     payload.create.mockRejectedValue(new Error('constraint'))
     const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
-    expect(r).toMatchObject({ ok: false })
+    expect(r).toMatchObject({ ok: false, codigo: 'falha' })
     expect(enviarAviso).not.toHaveBeenCalled()
   })
 

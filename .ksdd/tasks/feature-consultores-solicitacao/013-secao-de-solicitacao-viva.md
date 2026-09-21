@@ -1,7 +1,7 @@
 ---
 id: 013
 title: Seção de solicitação deixa de ser estática e envia com os perfis escolhidos
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: frontend
 priority: P0

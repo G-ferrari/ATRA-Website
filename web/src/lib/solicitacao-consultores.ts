@@ -8,17 +8,26 @@
  * ⚠️ Arquivo próprio, e não `lib/consultores.ts`: a task 010 também edita aquele,
  * e as duas vão para a mesma branch de integração. */
 
-/** Teto de pessoas por perfil.
- *
- * ⚠️ Mesmo valor de `MAX_POR_PERFIL` em `lib/consultores.ts` (task 010), que
- * ainda não está na base desta task. A 013 unifica quando as duas estiverem na
- * integração — até lá, o servidor prende no mesmo limite que o cliente mostra. */
+/** Teto de pessoas por perfil — **a fonte única**. `MAX_POR_PERFIL`, que o
+ *  stepper de `/consultores` usa, é esta constante reexportada por
+ *  `lib/consultores.ts`: o cliente não pode oferecer uma quantidade que o
+ *  servidor depois corta. */
 export const MAX_PESSOAS_POR_PERFIL = 20
 
 /** Quantos perfis distintos um envio pode carregar. O catálogo tem 8; o teto só
  *  existe para que um JSON forjado com milhares de entradas não vire uma consulta
  *  com milhares de ids. */
 export const MAX_PERFIS_POR_ENVIO = 50
+
+/** O que conta como e-mail — **fonte única** entre o `pattern` do campo e a
+ *  checagem da Server Action. Sem anchors: o atributo `pattern` do HTML já
+ *  casa a string inteira, e a action monta a regex com `^…$`.
+ *
+ *  ⚠️ Existe porque os dois divergiam: `joao@empresa` passava no
+ *  `type="email"` do navegador e a action recusava por falta de domínio. A
+ *  recusa só vinha depois do envio — gastando a cota por IP — e o React 19
+ *  apagava o formulário ao terminar a action. */
+export const PADRAO_EMAIL = '[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}'
 
 /** Maior valor de `integer` no Postgres — o tipo do `id` das collections. */
 const MAX_ID_POSTGRES = 2_147_483_647
