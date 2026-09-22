@@ -1,10 +1,9 @@
 import { PainelDeContatos } from '@/components/blocks/painel-de-contatos'
 import { TechCornerBraces } from '@/components/ui'
 import type { Locale } from '@/lib/locales'
-import { hrefDe } from '@/lib/routes'
-import type { ConsultantRole, Contato } from '@/types/content'
+import type { Contato } from '@/types/content'
 
-import { FormularioDeSolicitacao } from './formulario-de-solicitacao'
+import { AbrirPedido } from './abrir-pedido'
 
 /* Seção "solicitar consultores" — porte de `legacy/src/pages/Consultants.tsx:685`.
  *
@@ -14,11 +13,10 @@ import { FormularioDeSolicitacao } from './formulario-de-solicitacao'
  * em MIG-053 tem três campos e um cartão de gradiente escuro. Reusar o bloco
  * deixaria a seção ~200px mais curta que o gabarito.
  *
- * O formulário **envia** desde a task 013 (feature consultores-solicitacao). Foi
- * o último formulário morto do site: portado desabilitado como o de /contato,
- * ficou para trás quando os demais foram ligados em MIG-100/101/102. Agora é uma
- * ilha cliente — `formulario-de-solicitacao.tsx` —, porque precisa do carrinho
- * de perfis que o visitante montou na lista; esta casca continua no servidor.
+ * O formulário **envia** desde a task 013 (feature consultores-solicitacao) e,
+ * desde a 018, mora na **aba de pedido** (`aba-de-pedido.tsx`), junto do
+ * carrinho. Aqui ficou um botão que abre a aba: dois formulários para o mesmo
+ * pedido deixariam o visitante sem saber qual preencher.
  *
  * A foto é a do acervo da ATRA, não o hotlink do Unsplash do legado
  * (`Consultants.tsx:834`) — ver inventario-assets.md. */
@@ -27,11 +25,13 @@ const TEXTOS = {
   pt: {
     titulo: 'Vamos acelerar sua equipe com consultores ATRA?',
     subtitulo: 'Solicite perfis ou squads para o seu projeto!',
+    abrir: 'Solicitar consultores',
     fotoAlt: 'Equipe da ATRA reunida em evento',
   },
   en: {
     titulo: 'Shall we accelerate your team with ATRA consultants?',
     subtitulo: 'Request profiles or squads for your project.',
+    abrir: 'Request consultants',
     fotoAlt: 'ATRA team together at an event',
   },
 } as const
@@ -39,12 +39,9 @@ const TEXTOS = {
 export function SolicitarConsultores({
   locale,
   contato,
-  perfis,
 }: {
   locale: Locale
   contato: Contato
-  /** O catálogo, para o formulário resolver o carrinho em cargos e somar pessoas. */
-  perfis: ConsultantRole[]
 }) {
   const t = TEXTOS[locale]
 
@@ -57,7 +54,9 @@ export function SolicitarConsultores({
 
       <div className="container mx-auto max-w-7xl relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 items-stretch relative z-10">
-          <div className="flex flex-col text-left py-6 md:py-10 pr-0 lg:pr-12">
+          {/* Centralizada ao lado da foto: sem o formulário (task 018) a coluna ficou
+              curta, e colada no topo deixava um vazio embaixo do botão. */}
+          <div className="flex flex-col lg:justify-center text-left py-6 md:py-10 pr-0 lg:pr-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-light font-display text-text-main dark:text-white mb-4 leading-tight">
               {t.titulo}
             </h2>
@@ -66,11 +65,7 @@ export function SolicitarConsultores({
               {t.subtitulo}
             </h3>
 
-            <FormularioDeSolicitacao
-              perfis={perfis}
-              locale={locale}
-              privacidadeHref={hrefDe('politicas', locale)}
-            />
+            <AbrirPedido rotulo={t.abrir} />
           </div>
 
           {/* Painel de contatos compartilhado (fonte única) — antes era uma cópia

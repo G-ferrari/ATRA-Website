@@ -2,25 +2,26 @@
 
 import { ArrowRight } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { useActionState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
-import { solicitarConsultoresNoFormulario, type CodigoDeErro } from '@/actions/consultores'
+import type { CodigoDeErro, ResultadoSolicitacao } from '@/actions/consultores'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
-import { itensEscolhidos, totalDePessoas } from '@/lib/consultores'
+import type { ItemEscolhido } from '@/lib/consultores'
 import type { Locale } from '@/lib/locales'
 import { MAX_MESES, PADRAO_EMAIL, type Modelo } from '@/lib/solicitacao-consultores'
 import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 import { CHAVES_UTM, lerUtmGuardado, type ChaveUtm } from '@/lib/utm'
-import type { ConsultantRole } from '@/types/content'
 
 import { ID_DESCRICAO, useSolicitacao } from './solicitacao-contexto'
 
 /* Formulário de solicitação de consultores (task 013) — o último formulário
  * morto do site, ligado.
  *
- * Ilha cliente porque precisa do carrinho, que mora no provedor de
- * `solicitacao-contexto.tsx`. A casca da seção — título, foto, painel de
- * contatos — continua no servidor, em `solicitar-consultores.tsx`.
+ * Desde a task 018 mora **dentro da aba de pedido** (`aba-de-pedido.tsx`), logo
+ * abaixo da lista de perfis escolhidos. Mudou de lugar, não de comportamento:
+ * as notas abaixo valem inteiras. O `useActionState` subiu para a aba, que
+ * precisa do resultado para reabrir sozinha na resposta de um envio sem
+ * JavaScript — este componente recebe `envio` e `acao` prontos.
  *
  * ⚠️ `<form action>` com Server Action, e não `onSubmit` com `fetch`: sem
  * JavaScript o formulário ainda envia. O carrinho é estado de cliente, então
@@ -49,10 +50,6 @@ const TEXTOS = {
     enviar: 'Verificar Disponibilidade',
     enviando: 'Enviando...',
     sucesso: 'Recebemos sua solicitação. A gente responde em breve.',
-    suaSolicitacao: 'Sua solicitação',
-    resumo: (perfis: number, pessoas: number) =>
-      `${perfis} ${perfis === 1 ? 'perfil' : 'perfis'} · ${pessoas} ${pessoas === 1 ? 'pessoa' : 'pessoas'}`,
-    editar: 'Editar',
     privacidade: 'Seus dados são tratados conforme a nossa',
     politica: 'Política de Privacidade',
     erros: {
@@ -80,10 +77,6 @@ const TEXTOS = {
     enviar: 'Check availability',
     enviando: 'Sending...',
     sucesso: 'We got your request. We will get back to you soon.',
-    suaSolicitacao: 'Your request',
-    resumo: (perfis: number, pessoas: number) =>
-      `${perfis} ${perfis === 1 ? 'profile' : 'profiles'} · ${pessoas} ${pessoas === 1 ? 'person' : 'people'}`,
-    editar: 'Edit',
     privacidade: 'Your data is handled under our',
     politica: 'Privacy Policy',
     erros: {
@@ -102,22 +95,26 @@ const CAMPO =
   'w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main dark:text-white placeholder:text-text-muted dark:placeholder:text-white/40 font-light transition-colors'
 
 export function FormularioDeSolicitacao({
-  perfis,
+  itens,
   locale,
   privacidadeHref,
+  envio,
+  acao,
+  enviando,
 }: {
-  perfis: ConsultantRole[]
+  /** Já resolvidos por `itensEscolhidos` na aba: perfil que saiu do catálogo
+   *  não vai para o servidor. */
+  itens: ItemEscolhido[]
   locale: Locale
   /** Resolvido no servidor por `hrefDe` (regra 6): esta ilha não monta URL. */
   privacidadeHref: string
+  envio: ResultadoSolicitacao | null
+  acao: (dados: FormData) => void
+  enviando: boolean
 }) {
   const t = TEXTOS[locale]
   const caminho = usePathname()
-  const { escolhidos, setEscolhidos } = useSolicitacao()
-  /* Por `itensEscolhidos`: perfil que saiu do catálogo não vai para o servidor
-     nem aparece no resumo — e a soma de pessoas sai da mesma lista. */
-  const itens = itensEscolhidos(perfis, escolhidos)
-  const pessoas = totalDePessoas(itens)
+  const { setEscolhidos } = useSolicitacao()
 
   /* ⚠️ Carimbo e UTM escritos **depois da montagem**, por `ref`: `Date.now()` e
    * `sessionStorage` no render fariam o HTML do servidor divergir do cliente.
@@ -152,11 +149,6 @@ export function FormularioDeSolicitacao({
     const guardado = lerUtmGuardado()
     for (const campo of utm.current) campo.value = guardado[campo.name as ChaveUtm] ?? ''
   }, [])
-
-  /* ⚠️ A própria Server Action, e não um embrulho — ver
-   * `solicitarConsultoresNoFormulario`. Com embrulho o formulário não envia sem
-   * JavaScript. */
-  const [envio, acao, enviando] = useActionState(solicitarConsultoresNoFormulario, null)
 
   /* O carrinho esvazia depois que o servidor confirma. Efeito, e não o callback
    * da action, porque o callback teria de ser um embrulho cliente — o que
@@ -194,7 +186,7 @@ export function FormularioDeSolicitacao({
           {t.sucesso}
         </p>
       )}
-    <form action={acao} aria-busy={enviando} onFocus={carimbarNaPrimeiraInteracao} className="flex flex-col space-y-6">
+    <form action={acao} aria-busy={enviando} onFocus={carimbarNaPrimeiraInteracao} className="@container flex flex-col space-y-6">
       {/* ⚠️ Os escondidos vêm **antes** dos campos reais. O Tailwind 4 põe o
           `space-y-*` como `margin-bottom` em `> :not(:last-child)`: um escondido
           no fim tira do último campo real a condição de último filho e soma 24px
@@ -222,29 +214,7 @@ export function FormularioDeSolicitacao({
         <input id={`consultores-${CAMPO_ISCA}`} name={CAMPO_ISCA} type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      {/* O que vai junto, para o visitante conferir antes de enviar. Some quando
-          o carrinho está vazio: aí o pedido é o campo livre. */}
-      {itens.length > 0 && (
-        <div className="rounded-[6px] bg-surface-1 dark:bg-white/5 p-3">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-xs font-semibold text-text-main dark:text-white">
-              {t.suaSolicitacao}: {t.resumo(itens.length, pessoas)}
-            </span>
-            <a href="#minha-solicitacao" className="text-xs text-primary underline shrink-0">
-              {t.editar}
-            </a>
-          </div>
-          <ul className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
-            {itens.map(({ perfil: p, quantidade }) => (
-              <li key={p.slug} className="text-xs text-text-muted dark:text-white/70 font-light">
-                {quantidade}× {p.role}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-6">
         <input
           type="text"
           name="name"
@@ -266,7 +236,7 @@ export function FormularioDeSolicitacao({
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-6">
         <input
           type="email"
           name="email"
@@ -292,7 +262,7 @@ export function FormularioDeSolicitacao({
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-6">
         {/* ⚠️ Opção vazia primeiro. Sem ela, o `select` sempre enviava
             "full-time", e todo lead chegava ao comercial com "Modelo de alocação:
             Full-time" — inclusive de quem nunca abriu o campo. */}
@@ -359,7 +329,7 @@ export function FormularioDeSolicitacao({
         </p>
       )}
 
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 pt-3">
+      <div className="flex flex-col @lg:flex-row @lg:justify-between @lg:items-center gap-3 pt-3">
         <p className="text-xs text-text-muted dark:text-white/60 font-light max-w-sm">
           {t.privacidade}{' '}
           <a href={privacidadeHref} className="text-primary underline">

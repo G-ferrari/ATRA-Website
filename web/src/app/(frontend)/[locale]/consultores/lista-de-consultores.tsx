@@ -1,18 +1,14 @@
 'use client'
 
-import { Award, ArrowRight, Check, Filter, GraduationCap, HelpCircle, Minus, Plus, Search, UserCheck, Users, X } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Award, ArrowRight, Check, Filter, GraduationCap, HelpCircle, Search, UserCheck, Users, X } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
 import { GlowCard, StatusBadge } from '@/components/ui'
 import {
-  ajustarQuantidade,
   alternarPerfil,
   exibicao,
   filtrarPerfis,
-  itensEscolhidos,
-  MAX_POR_PERFIL,
   total,
-  totalDePessoas,
   type PerfilComCobertura,
 } from '@/lib/consultores'
 import type { Locale } from '@/lib/locales'
@@ -20,6 +16,7 @@ import { cn } from '@/lib/utils'
 import type { ConsultantRole } from '@/types/content'
 
 import { ChamadaSobMedida } from './chamada-sob-medida'
+import { gradienteDe } from './gradientes'
 import { useSolicitacao } from './solicitacao-contexto'
 
 /* Filtros e catálogo — porte de `legacy/src/pages/Consultants.tsx:438` e `:521`.
@@ -66,13 +63,6 @@ const TEXTOS = {
     nomeSolicitar: (perfil: string) => `Solicitar: ${perfil}`,
     nomeNaLista: (perfil: string) => `Na solicitação: ${perfil} — clique para remover`,
     jaNaLista: 'Já está na sua solicitação',
-    minhaSolicitacao: 'Minha solicitação',
-    resumo: (perfis: number, pessoas: number) =>
-      `${perfis} ${perfis === 1 ? 'perfil' : 'perfis'} · ${pessoas} ${pessoas === 1 ? 'pessoa' : 'pessoas'}`,
-    menos: 'Diminuir a quantidade',
-    mais: 'Aumentar a quantidade',
-    remover: 'Remover da solicitação',
-    enviarSolicitacao: 'Enviar solicitação',
     detalhes: 'Detalhes',
     nivel: 'Nível',
     certificacoes: 'Certificações do time ATRA neste Perfil',
@@ -110,13 +100,6 @@ const TEXTOS = {
     nomeSolicitar: (perfil: string) => `Request: ${perfil}`,
     nomeNaLista: (perfil: string) => `In your request: ${perfil} — click to remove`,
     jaNaLista: 'Already in your request',
-    minhaSolicitacao: 'My request',
-    resumo: (perfis: number, pessoas: number) =>
-      `${perfis} ${perfis === 1 ? 'profile' : 'profiles'} · ${pessoas} ${pessoas === 1 ? 'person' : 'people'}`,
-    menos: 'Decrease the amount',
-    mais: 'Increase the amount',
-    remover: 'Remove from the request',
-    enviarSolicitacao: 'Send request',
     detalhes: 'Details',
     nivel: 'Level',
     certificacoes: 'ATRA team certifications for this profile',
@@ -126,24 +109,13 @@ const TEXTOS = {
   },
 } as const
 
-const GRADIENTES: Record<string, string> = {
-  'blue-cyan': 'from-blue-600 to-cyan-500',
-  'cyan-teal': 'from-cyan-500 to-teal-400',
-  'indigo-blue': 'from-indigo-600 to-blue-500',
-  'sky-indigo': 'from-sky-500 to-indigo-500',
-  'purple-indigo': 'from-purple-600 to-indigo-500',
-  'emerald-teal': 'from-emerald-500 to-teal-600',
-  'amber-orange': 'from-amber-500 to-orange-600',
-  'blue-teal': 'from-blue-500 to-teal-500',
-}
-
 const TODOS = '__todos__'
 
 /* ⚠️ Ordem fixa, espelhando as opções do `level` em `collections/SpecialistRoles.ts`
  * — e **não** derivada dos perfis semeados. O legado lista as três sempre
  * (`Consultants.tsx:59`), e hoje nenhum perfil é "Pleno": derivar dos dados
  * fazia a pílula sumir, o que é uma melhoria, mas muda o pixel. Mesmo caso de
- * `GRADIENTES`, que também espelha um `select` do schema. */
+ * `GRADIENTES` (`gradientes.ts`), que também espelha um `select` do schema. */
 const SENIORIDADES = ['Senior', 'Pleno', 'Lead / Principal'] as const
 
 /* ⚠️ `Set` não dispara render por mutação — cada alternância devolve um conjunto
@@ -178,16 +150,16 @@ export function ListaDeConsultores({
   const [tagsMarcadas, setTagsMarcadas] = useState<ReadonlySet<string>>(new Set())
   const [niveisMarcados, setNiveisMarcados] = useState<ReadonlySet<string>>(new Set())
   const [modo, setModo] = useState<'ou' | 'e'>('ou')
-  /* O carrinho vem do provedor, e não de um `useState` daqui: o formulário da
-   * seção de solicitação, mais abaixo na página, precisa ler o mesmo carrinho
-   * (task 013 — ver `solicitacao-contexto.tsx`).
+  /* O carrinho vem do provedor, e não de um `useState` daqui: a aba de pedido,
+   * onde ele é revisto e enviado, precisa ler o mesmo carrinho (tasks 013 e
+   * 018 — ver `solicitacao-contexto.tsx`).
    *
    * ⚠️ Como os `Set` do filtro: `Map` não dispara render por mutação, e o
    * `setState` é sempre **funcional** — e o valor novo sai de `atual`, **nunca
    * do render**. `(atual) => definirQuantidade(atual, slug, quantidade + 1)`
    * parece funcional e não é: `quantidade` é do render. Use `ajustarQuantidade`.
    * Ver a nota em `lib/consultores.ts`. */
-  const { escolhidos, setEscolhidos } = useSolicitacao()
+  const { escolhidos, setEscolhidos, aoAdicionar } = useSolicitacao()
 
   /* A lista de especialidades **é** derivada dos perfis: no legado é uma
    * literal de 36 tags (`Consultants.tsx:50`) que sai de sincronia na primeira
@@ -207,25 +179,6 @@ export function ListaDeConsultores({
    * ela passou sem teste e produziu uma faixa dizendo "nenhum perfil reúne tudo"
    * com dois perfis que reúnem renderizados logo acima. */
   const vista = exibicao(resultado, modo)
-  const itens = itensEscolhidos(perfis, escolhidos)
-  const pessoas = totalDePessoas(itens)
-
-  /* ⚠️ Remover desmonta o item — e, se era o último, o painel inteiro. O foco
-   * ia para o `<body>` e quem navega por teclado voltava ao topo da página.
-   * Guardado em `ref`, e não em estado: aplicar foco é efeito colateral, e
-   * `setState` dentro de efeito dispara render em cascata que o lint recusa. */
-  const focoAposRemover = useRef<string | null>(null)
-  const tituloDoPainel = useRef<HTMLHeadingElement>(null)
-  useEffect(() => {
-    const slug = focoAposRemover.current
-    if (!slug) return
-    focoAposRemover.current = null
-    const alvo =
-      itens.length > 0
-        ? tituloDoPainel.current
-        : document.querySelector<HTMLElement>(`[data-solicitar="${CSS.escape(slug)}"]`)
-    alvo?.focus()
-  }, [itens.length])
 
   const limpar = () => {
     setTagsMarcadas(new Set())
@@ -251,7 +204,7 @@ export function ListaDeConsultores({
             <div
               className={cn(
                 'w-10 h-10 sm:w-11 sm:h-11 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-xs shadow-xs shrink-0',
-                GRADIENTES[p.gradient] ?? GRADIENTES['blue-cyan'],
+                gradienteDe(p.gradient),
               )}
             >
               {p.code}
@@ -338,7 +291,13 @@ export function ListaDeConsultores({
                perfil — eram oito "Solicitar" idênticos — e o que o clique faz. */
             aria-label={escolhidos.has(p.slug) ? t.nomeNaLista(p.role) : t.nomeSolicitar(p.role)}
             data-solicitar={p.slug}
-            onClick={() => setEscolhidos((atual) => alternarPerfil(atual, p.slug))}
+            onClick={() => {
+              /* Ler `escolhidos` do render aqui é só para decidir o efeito
+                 (abrir a aba); o carrinho novo continua saindo de `atual`. */
+              const adicionando = !escolhidos.has(p.slug)
+              setEscolhidos((atual) => alternarPerfil(atual, p.slug))
+              if (adicionando) aoAdicionar()
+            }}
             className={cn(
               'py-2 px-4 rounded-[6px] text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-xs',
               escolhidos.has(p.slug)
@@ -564,102 +523,6 @@ export function ListaDeConsultores({
       </section>
 
 
-      {/* Painel "Minha solicitação" — entre a grade e os diferenciais. Some
-          quando vazio: um carrinho vazio ocupando altura é ruído, e o gate
-          compara a página sem nenhum perfil escolhido. */}
-      {itens.length > 0 && (
-        <section
-          id="minha-solicitacao"
-          aria-label={t.minhaSolicitacao}
-          className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16"
-        >
-          <div className="bg-surface-2 rounded-[6px] p-4 sm:p-5 shadow-xs">
-            <div className="flex items-center justify-between gap-3 mb-4">
-              {/* `tabIndex={-1}`: recebe o foco quando um item é removido e ainda
-                  sobram outros — ver `focoAposRemover`. */}
-              <h2 ref={tituloDoPainel} tabIndex={-1} className="text-xs sm:text-sm font-bold text-text-main outline-none">
-                {t.minhaSolicitacao}
-              </h2>
-              {/* Anunciado: sem isto, apertar "+" não dizia nada ao leitor de tela. */}
-              <span aria-live="polite" className="text-xs text-text-muted font-light">
-                {t.resumo(itens.length, pessoas)}
-              </span>
-            </div>
-
-            <ul className="flex flex-col gap-2">
-              {itens.map(({ perfil: p, quantidade }) => (
-                <li key={p.slug} className="bg-surface-1 rounded-[6px] p-3 flex items-center gap-3">
-                  <div
-                    className={cn(
-                      'w-8 h-8 rounded-[4px] bg-linear-to-br flex items-center justify-center text-white font-bold text-[10px] shrink-0',
-                      GRADIENTES[p.gradient] ?? GRADIENTES['blue-cyan'],
-                    )}
-                  >
-                    {p.code}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs font-semibold text-text-main truncate">{p.role}</div>
-                    <div className="text-[11px] text-text-muted font-light">{p.level}</div>
-                  </div>
-
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      type="button"
-                      aria-label={`${t.menos}: ${p.role}`}
-                      /* ⚠️ `aria-disabled`, não `disabled`: botão desabilitado com
-                         o foco nele solta o foco para o `<body>`, e quem usa
-                         teclado volta ao topo. O limite é garantido pelo
-                         `ajustarQuantidade`, que prende em 1..20 — clique a mais
-                         não faz nada. */
-                      aria-disabled={quantidade <= 1}
-                      onClick={() => setEscolhidos((atual) => ajustarQuantidade(atual, p.slug, -1))}
-                      className="w-6 h-6 rounded-[4px] bg-surface-2 text-text-main flex items-center justify-center transition-colors hover:bg-surface-3 aria-disabled:opacity-40 aria-disabled:cursor-not-allowed aria-disabled:hover:bg-surface-2 cursor-pointer"
-                    >
-                      <Minus size={12} aria-hidden />
-                    </button>
-                    <span className="w-7 text-center text-xs font-semibold text-text-main">{quantidade}</span>
-                    <button
-                      type="button"
-                      aria-label={`${t.mais}: ${p.role}`}
-                      aria-disabled={quantidade >= MAX_POR_PERFIL}
-                      onClick={() => setEscolhidos((atual) => ajustarQuantidade(atual, p.slug, 1))}
-                      className="w-6 h-6 rounded-[4px] bg-surface-2 text-text-main flex items-center justify-center transition-colors hover:bg-surface-3 aria-disabled:opacity-40 aria-disabled:cursor-not-allowed aria-disabled:hover:bg-surface-2 cursor-pointer"
-                    >
-                      <Plus size={12} aria-hidden />
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    aria-label={`${t.remover}: ${p.role}`}
-                    onClick={() => {
-                      focoAposRemover.current = p.slug
-                      setEscolhidos((atual) => alternarPerfil(atual, p.slug))
-                    }}
-                    className="w-7 h-7 rounded-[4px] text-text-muted hover:text-text-main hover:bg-surface-2 flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                  >
-                    <X size={14} aria-hidden />
-                  </button>
-                </li>
-              ))}
-            </ul>
-
-            {/* Âncora, e não router: a seção está na mesma página, logo abaixo,
-                e o envio acontece lá (`formulario-de-solicitacao.tsx`). */}
-            <div className="mt-4 pt-3 border-t border-slate-200 dark:border-white/5 flex justify-end">
-              <a
-                href="#solicitar-consultores"
-                className="py-2 px-4 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-xs shadow-primary/20"
-              >
-                <span>{t.enviarSolicitacao}</span>
-                <ArrowRight size={14} aria-hidden />
-              </a>
-            </div>
-          </div>
-        </section>
-      )}
-
       {aberto && (
         <div
           role="dialog"
@@ -688,7 +551,7 @@ export function ListaDeConsultores({
               <div
                 className={cn(
                   'w-12 h-12 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-base shadow-md shrink-0',
-                  GRADIENTES[aberto.gradient] ?? GRADIENTES['blue-cyan'],
+                  gradienteDe(aberto.gradient),
                 )}
               >
                 {aberto.code}
@@ -770,10 +633,12 @@ export function ListaDeConsultores({
                 <button
                   type="button"
                   onClick={() => {
-                    setEscolhidos((atual) =>
-                      atual.has(aberto.slug) ? atual : alternarPerfil(atual, aberto.slug),
-                    )
+                    const slug = aberto.slug
+                    setEscolhidos((atual) => (atual.has(slug) ? atual : alternarPerfil(atual, slug)))
                     setAberto(null)
+                    aoAdicionar(() =>
+                      document.querySelector<HTMLElement>(`[data-solicitar="${CSS.escape(slug)}"]`),
+                    )
                   }}
                   className="px-6 py-2.5 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs font-bold shadow-lg shadow-primary/25 transition-all cursor-pointer flex items-center gap-2"
                 >
