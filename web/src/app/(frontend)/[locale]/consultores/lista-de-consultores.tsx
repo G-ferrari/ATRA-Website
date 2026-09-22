@@ -60,7 +60,6 @@ const TEXTOS = {
     /* Cópia do dono da ATRA, do feedback de 20/09, tal como veio (D-22). */
     naoEncontrou: 'Não encontrou um consultor nesta lista?',
     pedirSobMedida: 'Clique aqui e solicite que vamos encontrar um candidato ideal para você.',
-    pronto: 'Pronto em < 48h',
     ecossistema: 'no ecossistema',
     noTime: 'no time',
     solicitar: 'Solicitar',
@@ -77,7 +76,6 @@ const TEXTOS = {
     enviarSolicitacao: 'Enviar solicitação',
     detalhes: 'Detalhes',
     nivel: 'Nível',
-    disponivel: 'Disponível em < 48 horas',
     certificacoes: 'Certificações do time ATRA neste Perfil',
     tecnologias: 'Tecnologias de Domínio',
     fechar: 'Fechar',
@@ -108,7 +106,6 @@ const TEXTOS = {
     resetar: 'Reset filters',
     naoEncontrou: "Couldn't find a consultant on this list?",
     pedirSobMedida: 'Click here and request one — we will find the ideal candidate for you.',
-    pronto: 'Ready in < 48h',
     ecossistema: 'in the ecosystem',
     noTime: 'on the team',
     solicitar: 'Request',
@@ -125,7 +122,6 @@ const TEXTOS = {
     enviarSolicitacao: 'Send request',
     detalhes: 'Details',
     nivel: 'Level',
-    disponivel: 'Available in < 48 hours',
     certificacoes: 'ATRA team certifications for this profile',
     tecnologias: 'Core technologies',
     fechar: 'Close',
@@ -283,10 +279,6 @@ export function ListaDeConsultores({
                   </span>
                 )}
               </div>
-              <span className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1.5 mt-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                {t.pronto}
-              </span>
             </div>
           </div>
 
@@ -756,7 +748,6 @@ export function ListaDeConsultores({
                   <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-primary/10 text-primary border border-primary/20">
                     {t.nivel} {aberto.level}
                   </span>
-                  <span className="text-xs text-emerald-500 font-semibold">{t.disponivel}</span>
                 </div>
               </div>
             </div>
