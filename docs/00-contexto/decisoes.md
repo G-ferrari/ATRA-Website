@@ -640,3 +640,36 @@ As decisões ainda em aberto vivem em [pendencias.md](pendencias.md) — separad
 daqui porque decisão registrada é permanente e pendência existe para deixar de
 existir. O subconjunto que depende da ATRA está em
 [pendencias-atra.md](pendencias-atra.md).
+
+## D-32 — As vagas do formulário vêm do ATRAIR; a grade de `/carreiras` continua do CMS
+
+*Decidida em 22/09/2026 por Leonardo (dono do produto), ao pedir a integração
+nos dois sentidos.*
+
+**Contexto.** D-29 levou o currículo do Banco de Talentos para o ATRAIR
+(`lib/atrair.ts`), mas só na ida. O ATRAIR sabe distinguir "candidatura para a
+vaga X" de "currículo para o banco geral" — e o site não tinha como dizer qual
+era, porque não conhecia as vagas de lá. Toda candidatura caía no banco geral.
+
+**Opções.** (a) Substituir a grade de `/carreiras` pelas vagas do ATRAIR;
+(b) manter a grade do CMS e oferecer as vagas do ATRAIR **apenas no formulário**;
+(c) sincronizar as vagas do ATRAIR para dentro do CMS.
+
+**Escolha: (b).** A grade é conteúdo de marketing — tem página própria por vaga
+(MIG-051), texto trabalhado e SEO, e quem decide o que aparece nela é o
+marketing (D-22). O formulário é outra coisa: ali a pergunta é operacional,
+"para qual processo você quer entrar", e a resposta certa é a lista do sistema
+que conduz os processos. (c) duplicaria a fonte da verdade e criaria um
+sincronizador para manter.
+
+**Consequência.**
+
+- `/carreiras` resolve as vagas abertas no servidor (`buscarVagasAbertas`) e as
+  passa como prop até o formulário — nenhum componente busca dado (regra 4).
+- **Sem o ATRAIR, o formulário é o que era.** Lista vazia esconde o seletor; a
+  página continua de pé. A candidatura vai para o banco geral, como antes.
+- O select carrega `id::cargo` num campo só, porque o formulário funciona sem
+  JavaScript: o id vai para o ATRAIR e o cargo para o admin, onde quem lê
+  precisa do nome da vaga.
+- O ATRAIR não expõe valores nem o nome do cliente nessa rota — a decisão de o
+  que é público é de lá, e está registrada no item 172 do roadmap dele.

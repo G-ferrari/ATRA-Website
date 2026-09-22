@@ -5,6 +5,7 @@ import { BORDAS, ESPACOS } from '@/components/blocks/bordas'
 import { BancoDeTalentos } from './banco-de-talentos'
 import { cn } from '@/lib/utils'
 import { hrefDe } from '@/lib/routes'
+import type { VagaAberta } from '@/lib/atrair'
 import type { BlocoJobsList } from '@/types/content'
 import type { Locale } from '@/lib/locales'
 
@@ -18,7 +19,18 @@ import type { Locale } from '@/lib/locales'
  * entram: a linha extra sobe cada card em 16px, e com seis cards em duas
  * colunas eram 48px de diferença contra o gabarito. Informação a mais é
  * melhoria, e melhoria não entra junto com migração (D-15). */
-export function BlocoVagas({ bloco, locale }: { bloco: BlocoJobsList; locale: Locale }) {
+export function BlocoVagas({
+  bloco,
+  locale,
+  vagasAbertas,
+}: {
+  bloco: BlocoJobsList
+  locale: Locale
+  /* As vagas abertas no ATRAIR — só para o formulário do banco de talentos. A
+   * GRADE acima continua vindo do CMS: ela é conteúdo de marketing, com página
+   * própria por vaga (MIG-051), e trocá-la é decisão do marketing (D-22). */
+  vagasAbertas?: VagaAberta[]
+}) {
   return (
     <section
       id={bloco.anchor ?? undefined}
@@ -80,7 +92,7 @@ export function BlocoVagas({ bloco, locale }: { bloco: BlocoJobsList; locale: Lo
           </div>
         )}
 
-        {bloco.talentBank && <BancoDeTalentos banco={bloco.talentBank} locale={locale} />}
+        {bloco.talentBank && <BancoDeTalentos banco={bloco.talentBank} locale={locale} vagasAbertas={vagasAbertas} />}
       </div>
     </section>
   )
