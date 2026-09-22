@@ -1,7 +1,7 @@
 ---
 id: 014
 title: CTA "Não encontrou um consultor nesta lista?"
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: frontend
 priority: P1
@@ -41,8 +41,10 @@ terminar num beco sem saída — pedido textual do dono no feedback de 20/09.
 
 ## Critérios de aceitação
 - [ ] O CTA aparece no estado vazio e ao fim da grade.
-- [ ] Clicar leva à seção de solicitação com a lista de perfis vazia e o campo
-      livre focado.
+- [ ] Clicar leva à seção de solicitação com o campo livre focado. O CTA **não
+      mexe no carrinho** — revisto na implementação: o caso esperado é o carrinho
+      já vazio (nada serviu), e esvaziá-lo apagaria escolhas que o visitante não
+      pediu para apagar. Ver `.context/014-context.md`.
 - [ ] Enviar a partir daí grava um lead `consultant-request` só com o texto livre.
 - [ ] A cópia existe em `pt` e `en`.
 - [ ] Contraste do CTA passa nos **dois** temas (`e2e/contraste.spec.ts`).

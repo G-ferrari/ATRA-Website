@@ -13,7 +13,7 @@ import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 import { CHAVES_UTM, lerUtmGuardado, type ChaveUtm } from '@/lib/utm'
 import type { ConsultantRole } from '@/types/content'
 
-import { useSolicitacao } from './solicitacao-contexto'
+import { ID_DESCRICAO, useSolicitacao } from './solicitacao-contexto'
 
 /* Formulário de solicitação de consultores (task 013) — o último formulário
  * morto do site, ligado.
@@ -340,13 +340,16 @@ export function FormularioDeSolicitacao({
             por IP — e sem JavaScript o carrinho está sempre vazio, então vale
             também para esse caminho. */}
         <textarea
+          id={ID_DESCRICAO}
           name="message"
           required={itens.length === 0}
           defaultValue={antes?.message}
           rows={3}
           placeholder={t.mensagem}
           aria-label={t.mensagem}
-          className={`${CAMPO} resize-none`}
+          /* `scroll-mt-32`: sem JavaScript, a âncora do CTA "Não encontrou…" pousa
+             o campo sob a barra fixa do topo — 83% encoberto em 375px. */
+          className={`${CAMPO} resize-none scroll-mt-32`}
         />
       </div>
 

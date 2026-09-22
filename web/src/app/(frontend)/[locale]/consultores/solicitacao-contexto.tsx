@@ -28,6 +28,11 @@ type Solicitacao = {
 
 const Contexto = createContext<Solicitacao | null>(null)
 
+/** Id do campo de descrição do formulário. Constante compartilhada porque as
+ *  duas ilhas precisam dele: o formulário o declara, e o CTA "Não encontrou um
+ *  consultor nesta lista?", na lista, leva o foco até ele (task 014). */
+export const ID_DESCRICAO = 'descricao-da-solicitacao'
+
 export function ProvedorDaSolicitacao({ children }: { children: React.ReactNode }) {
   const [escolhidos, setEscolhidos] = useState<Escolhidos>(new Map())
   /* Memorizado: sem isto, todo render do provedor criaria um objeto novo e
