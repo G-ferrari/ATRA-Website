@@ -1,7 +1,7 @@
 ---
 id: 014
 title: CTA "Não encontrou um consultor nesta lista?"
-status: em revisão
+status: concluída
 feature: consultores-solicitacao
 area: frontend
 priority: P1
