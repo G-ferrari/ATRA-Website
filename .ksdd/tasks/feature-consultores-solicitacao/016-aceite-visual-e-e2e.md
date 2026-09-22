@@ -32,8 +32,10 @@ legítima de a rota voltar ao verde depois de mudar de layout.
     Cost Specialist no topo;
   - multi-seleção de senioridade devolve a união;
   - acúmulo: adicionar 2 perfis, mudar quantidade, remover 1, e a lista sobrevive
-    a trocar o filtro;
-  - envio: preenche, envia, vê a confirmação inline;
+    a trocar o filtro — tudo de dentro da aba de pedido (018);
+  - aba: o 1º "adicionar" abre expandida, o 2º não reabre; minimiza em barra e
+    expande de novo;
+  - envio: preenche, envia, vê a confirmação dentro da aba;
   - envio sem perfis e sem texto livre é recusado.
 - Conferir que `e2e/contraste.spec.ts` e `e2e/paridade-ds.spec.ts` seguem verdes.
 - Rodar `pnpm gate` completo; **regravar** com `pnpm gate --baseline` e **escrever
@@ -47,7 +49,7 @@ legítima de a rota voltar ao verde depois de mudar de layout.
   antes de produção é item do runbook de cutover, não desta feature.
 
 ## Critérios de aceitação
-- [ ] Os 7 cenários acima existem como testes e passam.
+- [ ] Os 8 cenários acima existem como testes e passam.
 - [ ] `pnpm test:e2e` verde dentro da imagem oficial do Playwright.
 - [ ] `pnpm gate` completo verde nos 3 viewports (375/768/1280) após a
       regravação.

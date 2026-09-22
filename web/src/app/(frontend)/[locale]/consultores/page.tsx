@@ -1,4 +1,4 @@
-import { Award, Cpu, ShieldCheck, Sparkles, Users, Zap } from 'lucide-react'
+import { Award, Sparkles, Users, Zap } from 'lucide-react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { locale as getLocale } from 'next/root-params'
@@ -10,6 +10,7 @@ import { isLocale, LOCALES } from '@/lib/locales'
 import { toConsultantRole } from '@/lib/mappers/consultant'
 import { getPayload } from '@/lib/payload'
 
+import { Diferenciais } from './diferenciais'
 import { ListaDeConsultores } from './lista-de-consultores'
 import { ProvedorDaSolicitacao } from './solicitacao-contexto'
 import { SolicitarConsultores } from './solicitar-consultores'
@@ -43,27 +44,6 @@ const TEXTOS = {
     descricao:
       'Engenheiros de dados, cientistas, arquitetos cloud, analytics engineers e especialistas em governança prontos para integrar sua equipe.',
     metricas: ['No Time', 'Projetos Ativos', 'Satisfação'],
-    diferenciaisTitulo: 'Por que os maiores players do mercado confiam nos consultores ATRA?',
-    diferenciaisTexto:
-      'Garantimos alto padrão técnico, governança de processos e alinhamento total com as metas do seu negócio.',
-    diferenciais: [
-      {
-        title: 'Curadoria & Retenção de Elite',
-        desc: 'Taxa de turnover inferior a 5%. Nossos profissionais passam por rigorosos processos de seleção e capacitação contínua.',
-      },
-      {
-        title: 'Supervisão Técnica Sem Custos',
-        desc: 'Mesmo na alocação individual, um Principal Architect da ATRA acompanha periodicamente as entregas e a qualidade.',
-      },
-      {
-        title: 'Substituição Rápida & Garantida',
-        desc: 'Se houver qualquer necessidade de ajuste de perfil, realizamos a substituição em até 5 dias úteis com handover conduzido pela ATRA.',
-      },
-      {
-        title: 'Conformidade, LGPD & Segurança',
-        desc: 'Todos os consultores trabalham sob estritos acordos de confidencialidade (NDA), treinados nas normas LGPD e ISO 27001.',
-      },
-    ],
   },
   en: {
     badge: 'Data, Cloud & AI specialists',
@@ -73,27 +53,6 @@ const TEXTOS = {
     descricao:
       'Data engineers, scientists, cloud architects, analytics engineers and governance specialists ready to join your team.',
     metricas: ['On the team', 'Active projects', 'Satisfaction'],
-    diferenciaisTitulo: 'Why the biggest players trust ATRA consultants',
-    diferenciaisTexto:
-      'We guarantee a high technical standard, process governance and full alignment with your business goals.',
-    diferenciais: [
-      {
-        title: 'Elite curation and retention',
-        desc: 'Turnover below 5%. Our professionals go through rigorous selection and continuous training.',
-      },
-      {
-        title: 'Technical supervision at no cost',
-        desc: 'Even for a single allocation, an ATRA Principal Architect reviews delivery and quality periodically.',
-      },
-      {
-        title: 'Fast, guaranteed replacement',
-        desc: 'If a profile needs adjusting we replace it within five working days, with handover run by ATRA.',
-      },
-      {
-        title: 'Compliance, LGPD and security',
-        desc: 'Every consultant works under strict NDAs and is trained on LGPD and ISO 27001.',
-      },
-    ],
   },
 } as const
 
@@ -118,8 +77,6 @@ const METRICAS = [
   { Icone: Zap, cor: 'text-secondary', marca: 'text-secondary/40', valor: 'emProjetos' },
   { Icone: Award, cor: 'text-amber-600 dark:text-amber-400', marca: 'text-amber-400/40', valor: 'satisfacao' },
 ] as const
-
-const ICONES_DIFERENCIAIS = [Award, Cpu, Zap, ShieldCheck] as const
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -200,34 +157,7 @@ export default async function ConsultoresPage() {
       <ProvedorDaSolicitacao>
       <ListaDeConsultores perfis={perfis} locale={locale} />
 
-      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
-        <div className="bg-surface-2  rounded-[6px] p-5 sm:p-7 shadow-xs">
-          <div className="max-w-2xl mb-6">
-            <h2 className="text-base md:text-lg font-bold font-display text-text-main mb-1">{t.diferenciaisTitulo}</h2>
-            <p className="text-xs text-text-muted font-light">{t.diferenciaisTexto}</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {t.diferenciais.map((d, i) => {
-              const Icone = ICONES_DIFERENCIAIS[i]
-              return (
-                <div
-                  key={d.title}
-                  className="bg-surface-1  rounded-[6px] p-4 flex items-start gap-3.5"
-                >
-                  <div className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
-                    <Icone size={16} aria-hidden />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-xs font-bold text-text-main mb-1">{d.title}</h3>
-                    <p className="text-xs text-text-muted font-light leading-relaxed">{d.desc}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
+      <Diferenciais locale={locale} />
 
       <SolicitarConsultores locale={locale} contato={contato} perfis={perfis} />
       </ProvedorDaSolicitacao>

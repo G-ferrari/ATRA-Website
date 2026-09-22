@@ -87,6 +87,14 @@ Conecta com o problema-raiz do projeto: o site é motor de **geração de leads 
 - **Testes:** e2e do filtro em OU e em E, do acúmulo na lista, do envio; `pnpm gate --baseline` regravado.
 - **PT-BR e EN** nos rótulos de UI (a página já é bilíngue — `TEXTOS` em ambos os arquivos).
 
+### Revisão de 21/09
+
+Pedidos de G-ferrari depois da primeira rodada, registrados como tasks 017 e 018:
+
+- **Chamada "Não encontrou…" junto dos diferenciais** (017): sai do fim da grade e entra num componente com a seção "Por que os maiores players…", em visual de destaque. Continua no estado vazio do filtro.
+- **Aba de pedido** (018): o painel "Minha solicitação" e o formulário da seção final viram **uma aba**, como carrinho — sobe de baixo no celular, desliza da direita no computador. Abre expandida no primeiro "adicionar", minimiza numa barra de resumo e expande de novo. A seção final fica com título, subtítulo e contatos, e um botão que abre a aba.
+- Fora das tasks: as promessas de **48h** saíram dos cards, do modal e do herói (PR #26).
+
 ### 2.2 O que fica pra depois
 
 - **Campo estruturado dos perfis pedidos** no admin (array `requestedProfiles` com perfil + quantidade). v1 grava resumo legível em `message`, como o `rc18-diagnostic` faz com os 11 pilares — zero coluna nova além do valor de enum. Vira campo próprio se o comercial pedir filtro/relatório por perfil.
@@ -98,7 +106,7 @@ Conecta com o problema-raiz do projeto: o site é motor de **geração de leads 
 
 - **Resposta automática com proposta** (*"o sistema responde individualmente"*, *"recebe um e-mail já com a proposta só pra ele assinar"*) — é o modelo self-service que o áudio recusa explicitamente. Não há motor de precificação, nem deve haver nesta v1.
 - **Perfis de pessoas reais, disponibilidade ou agenda** — `SpecialistRoles` é catálogo de **arquétipos** (SPEC §4.2), não de profissionais. Nada nesta feature sugere ao visitante que ele está reservando uma pessoa específica.
-- **Alterar a barra de números do herói, a seção de diferenciais ou o painel de contatos** — ficam como estão, sob gabarito.
+- **Alterar a barra de números do herói, a seção de diferenciais ou o painel de contatos** — ficam como estão, sob gabarito. *Revisto em 21/09: o herói perdeu o "< 48h" e a seção de diferenciais recebe a chamada "Não encontrou…" (017), ambos a pedido do dono via G-ferrari. O painel de contatos segue intocado.*
 - **Mexer em texto institucional da página** — rótulos de UI sim; cópia editorial é decisão do marketing (D-22). A cópia do CTA "Não encontrou…" veio do dono no próprio feedback, e por isso está autorizada.
 - **Tornar `/consultores` uma rota de conteúdo real fora do gate** — o catálogo continua com 8 arquétipos comparáveis ao gabarito; o caminho é regravar (D-31), não remover do gate.
 
@@ -243,6 +251,8 @@ Modelada em `web/src/actions/diagnostico-rc18.ts`: honeypot (`CAMPO_ISCA`) + car
 | Alternador `OU \| E` | dois segmentos exclusivos sobre a lista de tags | — | default, selecionado, hover, foco |
 | Stepper de quantidade | −/+ com número, por perfil na lista | — | default, mínimo (1), máximo (teto), disabled |
 | Painel "Minha solicitação" | lista de perfis escolhidos + quantidade + remover + enviar | fixo no fluxo; considerar barra fixa no mobile | vazio, com itens, enviando |
+| Aba de pedido (018, substitui o painel acima e o formulário em fluxo) | carrinho + formulário numa aba | de baixo (celular), lateral (computador) | oculta, expandida, minimizada, enviando, enviada |
+| Chamada sob medida (017) | "Não encontrou…" em destaque, dentro da seção de diferenciais | destaque (seção), discreta (estado vazio) | default, hover, foco |
 | Selo de cobertura | "cobre 2 de 3" no card, só em modo **E** com cobertura parcial | — | completo (some), parcial, nenhum (some) |
 
 ⚠️ Nenhum bloco de CMS novo (DESIGN.md §Do's and Don'ts: *bloco novo exige justificativa no PR*). Tudo vive na ilha cliente de `/consultores`.
