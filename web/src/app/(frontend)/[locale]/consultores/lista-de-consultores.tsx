@@ -17,6 +17,7 @@ import type { ConsultantRole } from '@/types/content'
 
 import { ChamadaSobMedida } from './chamada-sob-medida'
 import { gradienteDe } from './gradientes'
+import { TagsRecolhiveis, type Limite } from './tags-recolhiveis'
 import { useSolicitacao } from './solicitacao-contexto'
 
 /* Filtros e catálogo — porte de `legacy/src/pages/Consultants.tsx:438` e `:521`.
@@ -51,6 +52,9 @@ const TEXTOS = {
     titulo: 'Perfis Especializados Disponíveis',
     exibindo: (n: number) => `Exibindo ${n} ${n === 1 ? 'perfil especializado' : 'perfis especializados'}`,
     ativos: 'Filtros ativos:',
+    especialidadesAMais: 'especialidades a mais',
+    tecnologiasAMais: (perfil: string) => `tecnologias a mais em ${perfil}`,
+    menos: 'Mostrar menos',
     limpar: 'Limpar filtros',
     vazioTitulo: 'Nenhum perfil encontrado',
     vazioTexto: 'Não encontramos perfis com os filtros aplicados. Tente alterar os critérios de busca.',
@@ -89,6 +93,9 @@ const TEXTOS = {
     titulo: 'Available specialist profiles',
     exibindo: (n: number) => `Showing ${n} ${n === 1 ? 'profile' : 'profiles'}`,
     ativos: 'Active filters:',
+    especialidadesAMais: 'more specialties',
+    tecnologiasAMais: (perfil: string) => `more technologies in ${perfil}`,
+    menos: 'Show less',
     limpar: 'Clear filters',
     vazioTitulo: 'No profile found',
     vazioTexto: 'No profiles match the filters. Try changing the search criteria.',
@@ -110,6 +117,18 @@ const TEXTOS = {
 } as const
 
 const TODOS = '__todos__'
+
+/* Quantas especialidades o filtro mostra recolhido (task 019), por faixa de
+ * largura. Medido com as 35 tags de hoje e o "Todas" à frente: cabem 4 a 5 por
+ * linha a 375px, 8 a 640, 10 a 768, 14 a 1024 e 18 a 1280. Conferido depois:
+ * duas linhas a 375 e uma a 640, 768, 1024 e 1280, com o "+N ⌄" no fim.
+ * ⚠️ Tag de nome comprido entrando no começo da lista (a ordem é alfabética)
+ * pode empurrar o "+N" para a linha de baixo — reconferir se o catálogo mudar
+ * muito. */
+const LIMITE_DO_FILTRO: Limite = { base: 7, sm: 6, md: 7, lg: 11, xl: 15 }
+
+/* As 7 de sempre do card, que o legado já cortava (`Consultants.tsx:604`). */
+const LIMITE_DO_CARD = 7
 
 /* ⚠️ Ordem fixa, espelhando as opções do `level` em `collections/SpecialistRoles.ts`
  * — e **não** derivada dos perfis semeados. O legado lista as três sempre
@@ -244,8 +263,23 @@ export function ListaDeConsultores({
           {p.description}
         </p>
 
-        <div className="flex flex-wrap gap-2 mb-5">
-          {p.tags.slice(0, 7).map((tag) => (
+        {/* O "+N" deixou de ser só texto: abre as tecnologias deste card, e
+            "Mostrar menos" fecha (task 019). Tag marcada no filtro fica à mostra
+            mesmo recolhida. */}
+        <TagsRecolhiveis
+          className="flex flex-wrap gap-2 mb-5"
+          itens={p.tags}
+          limite={LIMITE_DO_CARD}
+          fixos={tagsMarcadas}
+          mais={t.tecnologiasAMais(p.role)}
+          menos={
+            <>
+              {t.menos}
+              <span className="sr-only">: {p.role}</span>
+            </>
+          }
+          classeDoControle="text-[11px] px-2 py-1 rounded-[4px] bg-surface-1 text-text-muted hover:text-text-main transition-colors cursor-pointer"
+          item={(tag, visivel) => (
             <span
               key={tag}
               className={cn(
@@ -253,17 +287,13 @@ export function ListaDeConsultores({
                 tagsMarcadas.has(tag)
                   ? PILULA_ATIVA
                   : 'bg-surface-1 text-text-muted  hover:text-text-main',
+                visivel,
               )}
             >
               {tag}
             </span>
-          ))}
-          {p.tags.length > 7 && (
-            <span className="text-[11px] px-2 py-1 rounded-[4px] bg-surface-1 text-text-muted ">
-              +{p.tags.length - 7}
-            </span>
           )}
-        </div>
+        />
       </div>
 
       <div className="pt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between gap-3">
@@ -396,27 +426,51 @@ export function ListaDeConsultores({
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1 custom-scrollbar">
-            {[TODOS, ...especialidades].map((e) => {
-              const ativo = e === TODOS ? tagsMarcadas.size === 0 : tagsMarcadas.has(e)
-              return (
-                <button
-                  key={e}
-                  type="button"
-                  aria-pressed={ativo}
-                  onClick={() =>
-                    setTagsMarcadas((atual) => (e === TODOS ? new Set() : alternarEm(atual, e)))
-                  }
-                  className={cn(
-                    'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
-                    ativo ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
-                  )}
-                >
-                  {e === TODOS ? t.todas : e}
-                </button>
-              )
-            })}
-          </div>
+          {/* ⚠️ Recolhe em vez de rolar (task 019). Era uma caixa de altura fixa
+              com rolagem interna (`max-h-28 overflow-y-auto`), herança do
+              protótipo: no celular, 36 tags em 8 linhas dentro de 112px, e a
+              roda do mouse ficava presa nela. */}
+          <TagsRecolhiveis
+            className="flex flex-wrap gap-1.5"
+            itens={especialidades}
+            limite={LIMITE_DO_FILTRO}
+            fixos={tagsMarcadas}
+            mais={t.especialidadesAMais}
+            menos={t.menos}
+            classeDoControle={cn(
+              'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
+              PILULA_INATIVA,
+              'hover:bg-surface-3',
+            )}
+            antes={
+              <button
+                type="button"
+                aria-pressed={tagsMarcadas.size === 0}
+                onClick={() => setTagsMarcadas(new Set())}
+                className={cn(
+                  'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
+                  tagsMarcadas.size === 0 ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
+                )}
+              >
+                {t.todas}
+              </button>
+            }
+            item={(e, visivel) => (
+              <button
+                key={e}
+                type="button"
+                aria-pressed={tagsMarcadas.has(e)}
+                onClick={() => setTagsMarcadas((atual) => alternarEm(atual, e))}
+                className={cn(
+                  'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
+                  tagsMarcadas.has(e) ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
+                  visivel,
+                )}
+              >
+                {e}
+              </button>
+            )}
+          />
 
           {temFiltro && (
             <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-white/5 flex items-center justify-between text-xs text-text-muted">
