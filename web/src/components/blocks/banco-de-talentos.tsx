@@ -109,6 +109,13 @@ export function BancoDeTalentos({
             <input type="tel" name="phone" placeholder={t.telefone} className={CAMPO} />
           </div>
 
+          {/* ⚠️ NÃO existe seletor de vaga aqui, e é decisão (D-33). Este
+              formulário é para quem NÃO encontrou vaga que sirva: quem
+              encontrou clica no card da grade acima e se candidata na página
+              da vaga, no ATRAIR, com a descrição à vista. O seletor chegou a
+              existir (item 172 do ATRAIR) e foi retirado: eram duas portas
+              para a mesma coisa, e a de baixo não mostrava a vaga. */}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <select name="area" aria-label={t.area} className={CAMPO}>
               <option value="">{t.area}</option>
