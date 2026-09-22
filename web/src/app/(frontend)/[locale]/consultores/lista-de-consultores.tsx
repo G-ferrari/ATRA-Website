@@ -173,11 +173,9 @@ export function ListaDeConsultores({
    * onde ele é revisto e enviado, precisa ler o mesmo carrinho (tasks 013 e
    * 018 — ver `solicitacao-contexto.tsx`).
    *
-   * ⚠️ Como os `Set` do filtro: `Map` não dispara render por mutação, e o
-   * `setState` é sempre **funcional** — e o valor novo sai de `atual`, **nunca
-   * do render**. `(atual) => definirQuantidade(atual, slug, quantidade + 1)`
-   * parece funcional e não é: `quantidade` é do render. Use `ajustarQuantidade`.
-   * Ver a nota em `lib/consultores.ts`. */
+   * ⚠️ Como os `Set` do filtro: conjunto não dispara render por mutação, e o
+   * `setState` é sempre **funcional** — o valor novo sai de `atual`, nunca do
+   * render. Ver a nota em `lib/consultores.ts`. */
   const { escolhidos, setEscolhidos, aoAdicionar } = useSolicitacao()
 
   /* A lista de especialidades **é** derivada dos perfis: no legado é uma

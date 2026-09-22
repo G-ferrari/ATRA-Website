@@ -31,11 +31,12 @@ legítima de a rota voltar ao verde depois de mudar de layout.
   - **E com cobertura total**: `AWS` + `GCP` põe Cloud Architect e FinOps & Cloud
     Cost Specialist no topo;
   - multi-seleção de senioridade devolve a união;
-  - acúmulo: adicionar 2 perfis, mudar quantidade, remover 1, e a lista sobrevive
-    a trocar o filtro — tudo de dentro da aba de pedido (018);
+  - acúmulo: adicionar 2 perfis, remover 1 pela lixeira, e a lista sobrevive a
+    trocar o filtro — tudo de dentro da aba de pedido (018 e 020);
   - aba: o 1º "adicionar" abre expandida, o 2º não reabre; minimiza em barra e
     expande de novo;
-  - envio: preenche, envia, vê a confirmação dentro da aba;
+  - envio: preenche, envia, vê a confirmação que ocupa a aba, fecha e o
+    carrinho está vazio;
   - envio sem perfis e sem texto livre é recusado.
 - Conferir que `e2e/contraste.spec.ts` e `e2e/paridade-ds.spec.ts` seguem verdes.
 - Rodar `pnpm gate` completo; **regravar** com `pnpm gate --baseline` e **escrever

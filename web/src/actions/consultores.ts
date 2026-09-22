@@ -8,9 +8,7 @@ import { enviarAviso } from '@/lib/email'
 import { ipDe } from '@/lib/ip'
 import { getPayload } from '@/lib/payload'
 import {
-  lerDuracao,
   PADRAO_EMAIL,
-  lerModelo,
   lerPerfisPedidos,
   resumoDaSolicitacao,
   type PerfilConfirmado,
@@ -26,8 +24,12 @@ import { MAX_POR_VALOR } from '@/lib/utm'
  * `consultant-request` entrou na lista comercial na task 011.
  *
  * ⚠️ **Os perfis são revalidados no servidor.** Server Action é endpoint público
- * (MIG-142): o cliente manda ids e quantidades, e cargo e nível saem do
- * `specialist-roles` — nunca do que veio no formulário. Id que não existe some.
+ * (MIG-142): o cliente manda ids, e cargo e nível saem do `specialist-roles` —
+ * nunca do que veio no formulário. Id que não existe some.
+ *
+ * ⚠️ A task 020 enxugou o formulário: saíram empresa, modelo de alocação,
+ * duração estimada e a quantidade por perfil. Ficaram nome, e-mail, telefone e
+ * a descrição.
  *
  * ⚠️ **Depois que o lead é gravado, a resposta é sucesso, aconteça o que
  * acontecer.** No modelo (`diagnostico-rc18.ts`), `lerContato` e o `update` do
@@ -59,10 +61,7 @@ export type ValoresEnviados = {
   name: string
   email: string
   phone: string
-  company: string
   message: string
-  duracao: string
-  modelo: string
 }
 
 export type ResultadoSolicitacao =
@@ -82,7 +81,7 @@ const texto = (dados: FormData, campo: string, max = MAX_CAMPO): string =>
     .trim()
     .slice(0, max)
 
-/** Campo de uma linha só — nome, empresa, telefone.
+/** Campo de uma linha só — nome, telefone.
  *
  * ⚠️ `texto()` só apara as pontas. Com quebra de linha no meio, o telefone
  * podia carregar um bloco forjado — "Perfis solicitados (40 pessoas): …" — para
@@ -97,7 +96,7 @@ const campanha = (dados: FormData, campo: string): string | undefined =>
 /** O que um erro pode deixar no log: o código do Postgres ou o nome.
  *
  * ⚠️ **Nunca `console.error(..., e)`.** A mensagem do erro do Drizzle leva
- * `params:` — e-mail, nome, telefone, empresa e a mensagem do visitante vão
+ * `params:` — e-mail, nome, telefone e a mensagem do visitante vão
  * inteiros para o log do servidor. Bastava mandar um caractere NUL no nome para
  * o `create` falhar e gravar o lead no log. O modelo (`diagnostico-rc18.ts`) e
  * `formularios.ts` têm o mesmo defeito. */
@@ -111,10 +110,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
     name: texto(dados, 'name'),
     email: texto(dados, 'email'),
     phone: texto(dados, 'phone'),
-    company: texto(dados, 'company'),
     message: texto(dados, 'message', MAX_MENSAGEM),
-    duracao: texto(dados, 'duracao'),
-    modelo: texto(dados, 'modelo'),
   }
   const recusa = (codigo: CodigoDeErro, erro: string): ResultadoSolicitacao => ({ ok: false, codigo, erro, valores })
 
@@ -161,7 +157,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
          `pt`: quem lê o resumo é o comercial da ATRA. */
       const { docs } = await payload.find({
         collection: 'specialist-roles',
-        where: { id: { in: pedidos.map((p) => p.id) } },
+        where: { id: { in: pedidos } },
         locale: 'pt',
         depth: 0,
         limit: pedidos.length,
@@ -169,9 +165,9 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
       })
       const porId = new Map(docs.map((d) => [Number(d.id), d]))
       /* Na ordem em que o visitante escolheu, e não na do banco. */
-      perfis = pedidos.flatMap((p) => {
-        const d = porId.get(p.id)
-        return d ? [{ cargo: d.role, nivel: d.level, quantidade: p.quantidade }] : []
+      perfis = pedidos.flatMap((id) => {
+        const d = porId.get(id)
+        return d ? [{ cargo: d.role, nivel: d.level }] : []
       })
     } catch (e) {
       console.error('[consultores] não conferiu os perfis:', semDadoPessoal(e))
@@ -186,16 +182,10 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
    * nada gravado. */
   if (perfis.length === 0 && !descricao) return recusa('indisponiveis', INDISPONIVEIS)
 
-  const mensagem = resumoDaSolicitacao({
-    perfis,
-    duracaoMeses: lerDuracao(texto(dados, 'duracao')),
-    modelo: lerModelo(texto(dados, 'modelo')),
-    descricao,
-  }).slice(0, MAX_MENSAGEM)
+  const mensagem = resumoDaSolicitacao({ perfis, descricao }).slice(0, MAX_MENSAGEM)
 
   const nome = linha(dados, 'name')
   const telefone = linha(dados, 'phone')
-  const empresa = linha(dados, 'company')
 
   let id: number | string
   try {
@@ -206,7 +196,6 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
         email,
         name: nome || undefined,
         phone: telefone || undefined,
-        company: empresa || undefined,
         message: mensagem,
         source: linha(dados, 'source') || undefined,
         utm: {
@@ -231,19 +220,13 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
     const contato = await lerContato()
     const enviou = await enviarAviso({
       para: contato.email,
-      assunto: `[site] solicitação de consultores${empresa ? ` — ${empresa}` : ''}`,
+      assunto: `[site] solicitação de consultores${nome ? ` — ${nome}` : ''}`,
       responderPara: email,
       /* `filter(Boolean)` só nas linhas de contato, que são opcionais: no corpo
          inteiro ele comeria as linhas em branco entre os blocos. */
       texto: [
         'Nova solicitação de consultores pelo site.',
-        [
-          'Contato',
-          nome && `Nome: ${nome}`,
-          empresa && `Empresa: ${empresa}`,
-          `E-mail: ${email}`,
-          telefone && `Telefone: ${telefone}`,
-        ]
+        ['Contato', nome && `Nome: ${nome}`, `E-mail: ${email}`, telefone && `Telefone: ${telefone}`]
           .filter(Boolean)
           .join('\n'),
         mensagem,

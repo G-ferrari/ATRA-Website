@@ -1,10 +1,10 @@
 'use client'
 
-import { ChevronDown, ChevronRight, ChevronUp, ClipboardList, Minus, Plus, X } from 'lucide-react'
-import { useActionState, useEffect, useRef, useSyncExternalStore } from 'react'
+import { CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Trash2 } from 'lucide-react'
+import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
-import { solicitarConsultoresNoFormulario } from '@/actions/consultores'
-import { ajustarQuantidade, alternarPerfil, itensEscolhidos, MAX_POR_PERFIL, totalDePessoas } from '@/lib/consultores'
+import { solicitarConsultoresNoFormulario, type ResultadoSolicitacao } from '@/actions/consultores'
+import { alternarPerfil, perfisEscolhidos } from '@/lib/consultores'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
 import type { ConsultantRole } from '@/types/content'
@@ -41,25 +41,25 @@ import { ID_ABA, ID_DESCRICAO, useSolicitacao } from './solicitacao-contexto'
 const TEXTOS = {
   pt: {
     titulo: 'Minha solicitação',
-    resumo: (perfis: number, pessoas: number) =>
-      `${perfis} ${perfis === 1 ? 'perfil' : 'perfis'} · ${pessoas} ${pessoas === 1 ? 'pessoa' : 'pessoas'}`,
+    resumo: (perfis: number) => `${perfis} ${perfis === 1 ? 'perfil' : 'perfis'}`,
     vazio: 'Nenhum perfil escolhido ainda. Escolha na lista ou descreva abaixo o profissional que você procura.',
     minimizar: 'Minimizar',
     expandir: 'Revisar e enviar',
-    menos: 'Diminuir a quantidade',
-    mais: 'Aumentar a quantidade',
     remover: 'Remover da solicitação',
+    enviada: 'Solicitação enviada',
+    sucesso: 'Recebemos sua solicitação. A gente responde em breve.',
+    fechar: 'Fechar',
   },
   en: {
     titulo: 'My request',
-    resumo: (perfis: number, pessoas: number) =>
-      `${perfis} ${perfis === 1 ? 'profile' : 'profiles'} · ${pessoas} ${pessoas === 1 ? 'person' : 'people'}`,
+    resumo: (perfis: number) => `${perfis} ${perfis === 1 ? 'profile' : 'profiles'}`,
     vazio: 'No profile picked yet. Pick from the list, or describe below the professional you are looking for.',
     minimizar: 'Minimize',
     expandir: 'Review and send',
-    menos: 'Decrease the amount',
-    mais: 'Increase the amount',
     remover: 'Remove from the request',
+    enviada: 'Request sent',
+    sucesso: 'We got your request. We will get back to you soon.',
+    fechar: 'Close',
   },
 } as const
 
@@ -67,9 +67,6 @@ const ID_TITULO = 'titulo-da-aba-de-pedido'
 
 /* Assinatura que nunca notifica: o valor só difere entre servidor e cliente. */
 const semAssinatura = () => () => {}
-
-const BOTAO_QUANTIDADE =
-  'w-6 h-6 rounded-[4px] bg-surface-2 text-text-main flex items-center justify-center transition-colors hover:bg-surface-3 aria-disabled:opacity-40 aria-disabled:cursor-not-allowed aria-disabled:hover:bg-surface-2 cursor-pointer'
 
 export function AbaDePedido({
   perfis,
@@ -83,10 +80,9 @@ export function AbaDePedido({
 }) {
   const t = TEXTOS[locale]
   const { escolhidos, setEscolhidos, aba, abrirAba, fecharAba, tomarRetorno } = useSolicitacao()
-  /* Por `itensEscolhidos`: perfil que saiu do catálogo não vai para o servidor
-     nem aparece no resumo — e a soma de pessoas sai da mesma lista. */
-  const itens = itensEscolhidos(perfis, escolhidos)
-  const pessoas = totalDePessoas(itens)
+  /* Por `perfisEscolhidos`: perfil que saiu do catálogo não vai para o servidor
+     nem aparece na lista. */
+  const escolhas = perfisEscolhidos(perfis, escolhidos)
 
   /* ⚠️ A própria Server Action, e não um embrulho — com embrulho o formulário
    * não envia sem JavaScript. Mora aqui, e não no formulário, porque o
@@ -101,6 +97,16 @@ export function AbaDePedido({
    * próxima renderização reabriria como não modal um diálogo que o visitante
    * acabou de fechar. */
   const noServidor = useSyncExternalStore(semAssinatura, () => false, () => true)
+
+  /* A confirmação ocupa a aba inteira depois de um envio aceito (task 020) —
+   * antes era uma faixa verde acima do formulário, que nascia fora da vista de
+   * quem tinha acabado de rolar até o botão.
+   *
+   * Fica até o visitante fechar a aba: guardar **qual** resultado foi dispensado
+   * (e não um booleano) faz a confirmação do envio seguinte aparecer sozinha,
+   * sem efeito nenhum sincronizando estado. */
+  const [dispensada, setDispensada] = useState<ResultadoSolicitacao | null>(null)
+  const confirmacao = Boolean(envio?.ok) && envio !== dispensada
 
   const dialogo = useRef<HTMLDialogElement>(null)
   const titulo = useRef<HTMLHeadingElement>(null)
@@ -133,6 +139,7 @@ export function AbaDePedido({
      clique fora —, porque todos são o `close` nativo. */
   const aoFechar = () => {
     fecharAba()
+    setDispensada(envio)
     const pedido = tomarRetorno()
     /* ⚠️ O navegador já devolve o foco a quem tinha antes do `showModal()` — mas
        quem adicionou pelo detalhe do perfil tinha o foco num botão que sumiu
@@ -167,12 +174,22 @@ export function AbaDePedido({
   }, [aba.aberta])
 
   /* Depois de enviar, o topo da aba — onde está a confirmação. O botão de envio
-     fica no fim, e a confirmação nasceria fora da vista. */
+     fica no fim, e a confirmação nasceria fora da vista.
+     
+     ⚠️ E o carrinho esvazia **aqui**, não no formulário. Lá era um efeito que
+     nunca rodava: com o envio aceito, o formulário sai da tela no mesmo render
+     em que a confirmação entra, e efeito de componente que desmonta não roda. A
+     limpeza só acontecia quando o visitante fechava a aba e o formulário
+     remontava — e até lá o cabeçalho da confirmação ainda dizia "2 perfis".
+     Efeito, e não o callback da action, porque o callback teria de ser um
+     embrulho cliente, o que quebra o envio sem JavaScript. */
   useEffect(() => {
-    if (envio?.ok) corpo.current?.scrollTo({ top: 0 })
-  }, [envio])
+    if (!envio?.ok) return
+    corpo.current?.scrollTo({ top: 0 })
+    setEscolhidos(new Set())
+  }, [envio, setEscolhidos])
 
-  const barraVisivel = !aba.aberta && itens.length > 0
+  const barraVisivel = !aba.aberta && escolhas.length > 0
 
   /* ⚠️ A barra é fixa e cobriria o fim da página — a última linha do rodapé
      ficava embaixo dela. Enquanto ela existe, o `body` ganha o espaço. */
@@ -231,9 +248,13 @@ export function AbaDePedido({
               {t.titulo}
             </h2>
             {/* Anunciado: sem isto, apertar "+" não dizia nada ao leitor de tela. */}
-            <p aria-live="polite" className="text-xs text-text-muted font-light mt-0.5">
-              {t.resumo(itens.length, pessoas)}
-            </p>
+            {/* Some na confirmação: ali o pedido já foi, e o carrinho vazio
+                ("0 perfis") só confundiria. */}
+            {!confirmacao && (
+              <p aria-live="polite" className="text-xs text-text-muted font-light mt-0.5">
+                {t.resumo(escolhas.length)}
+              </p>
+            )}
           </div>
 
           <form method="dialog" className="shrink-0">
@@ -250,81 +271,80 @@ export function AbaDePedido({
         </div>
 
         <div ref={corpo} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-5">
-          {itens.length > 0 ? (
-            <ul className="flex flex-col gap-2">
-              {itens.map(({ perfil: p, quantidade }) => (
-                <li key={p.slug} className="bg-surface-1 rounded-[6px] p-3 flex items-center gap-3">
-                  <div
-                    className={cn(
-                      'w-8 h-8 rounded-[4px] bg-linear-to-br flex items-center justify-center text-white font-bold text-[10px] shrink-0',
-                      gradienteDe(p.gradient),
-                    )}
-                  >
-                    {p.code}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs font-semibold text-text-main truncate">{p.role}</div>
-                    <div className="text-[11px] text-text-muted font-light">{p.level}</div>
-                  </div>
-
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      type="button"
-                      aria-label={`${t.menos}: ${p.role}`}
-                      /* ⚠️ `aria-disabled`, não `disabled`: botão desabilitado com
-                         o foco nele solta o foco para o `<body>`. O limite é
-                         garantido pelo `ajustarQuantidade`, que prende em 1..20 —
-                         clique a mais não faz nada. */
-                      aria-disabled={quantidade <= 1}
-                      onClick={() => setEscolhidos((atual) => ajustarQuantidade(atual, p.slug, -1))}
-                      className={BOTAO_QUANTIDADE}
-                    >
-                      <Minus size={12} aria-hidden />
-                    </button>
-                    <span className="w-7 text-center text-xs font-semibold text-text-main">{quantidade}</span>
-                    <button
-                      type="button"
-                      aria-label={`${t.mais}: ${p.role}`}
-                      aria-disabled={quantidade >= MAX_POR_PERFIL}
-                      onClick={() => setEscolhidos((atual) => ajustarQuantidade(atual, p.slug, 1))}
-                      className={BOTAO_QUANTIDADE}
-                    >
-                      <Plus size={12} aria-hidden />
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    aria-label={`${t.remover}: ${p.role}`}
-                    onClick={() => {
-                      /* ⚠️ Remover desmonta o item, e o foco iria para o `<body>`
-                         — que num diálogo modal volta ao primeiro controle, longe
-                         de onde a pessoa estava. O título fica. */
-                      titulo.current?.focus()
-                      setEscolhidos((atual) => alternarPerfil(atual, p.slug))
-                    }}
-                    className="w-7 h-7 rounded-[4px] text-text-muted hover:text-text-main hover:bg-surface-2 flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                  >
-                    <X size={14} aria-hidden />
-                  </button>
-                </li>
-              ))}
-            </ul>
+          {confirmacao ? (
+            /* Confirmação no lugar da lista e do formulário: a aba já é modal,
+               então isto **é** o aviso modal de que o pedido chegou. Sai quando
+               o visitante fecha a aba. */
+            <div role="status" className="flex flex-col items-center text-center gap-3 py-10">
+              <CheckCircle2 size={40} className="text-emerald-700 dark:text-emerald-400" aria-hidden />
+              <h3 className="text-lg font-light font-display text-text-main">{t.enviada}</h3>
+              <p className="text-xs text-text-muted font-light max-w-xs leading-relaxed">{t.sucesso}</p>
+              {/* `method="dialog"` fecha sem JavaScript — é assim que a página
+                  que responde a um envio sem JS sai da confirmação. */}
+              <form method="dialog" className="mt-2">
+                <button
+                  type="submit"
+                  className="py-2.5 px-5 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  {t.fechar}
+                </button>
+              </form>
+            </div>
           ) : (
-            <p className="text-xs text-text-muted font-light leading-relaxed">{t.vazio}</p>
-          )}
+            <>
+              {escolhas.length > 0 ? (
+                <ul className="flex flex-col gap-2">
+                  {escolhas.map((p) => (
+                    <li key={p.slug} className="bg-surface-1 rounded-[6px] p-3 flex items-center gap-3">
+                      <div
+                        className={cn(
+                          'w-8 h-8 rounded-[4px] bg-linear-to-br flex items-center justify-center text-white font-bold text-[10px] shrink-0',
+                          gradienteDe(p.gradient),
+                        )}
+                      >
+                        {p.code}
+                      </div>
 
-          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-white/5">
-            <FormularioDeSolicitacao
-              itens={itens}
-              locale={locale}
-              privacidadeHref={privacidadeHref}
-              envio={envio}
-              acao={acao}
-              enviando={enviando}
-            />
-          </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold text-text-main truncate">{p.role}</div>
+                        <div className="text-[11px] text-text-muted font-light">{p.level}</div>
+                      </div>
+
+                      <button
+                        type="button"
+                        aria-label={`${t.remover}: ${p.role}`}
+                        title={t.remover}
+                        onClick={() => {
+                          /* ⚠️ Remover desmonta o item, e o foco iria para o
+                             `<body>` — que num diálogo modal volta ao primeiro
+                             controle, longe de onde a pessoa estava. O título
+                             fica. */
+                          titulo.current?.focus()
+                          setEscolhidos((atual) => alternarPerfil(atual, p.slug))
+                        }}
+                        className="w-8 h-8 rounded-[4px] text-text-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-surface-2 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                      >
+                        <Trash2 size={15} aria-hidden />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-xs text-text-muted font-light leading-relaxed">{t.vazio}</p>
+              )}
+
+              <div className="mt-6 pt-6 border-t border-slate-200 dark:border-white/5">
+                <FormularioDeSolicitacao
+                  slugs={escolhas.map((p) => p.slug)}
+                  locale={locale}
+                  privacidadeHref={privacidadeHref}
+                  envio={envio}
+                  acao={acao}
+                  enviando={enviando}
+                />
+              </div>
+            </>
+          )}
         </div>
       </dialog>
 
@@ -348,7 +368,7 @@ export function AbaDePedido({
             <span className="min-w-0 flex-1">
               <span className="block text-xs font-semibold text-text-main">{t.titulo}</span>
               <span className="block text-xs text-text-muted font-light truncate">
-                {t.resumo(itens.length, pessoas)}
+                {t.resumo(escolhas.length)}
               </span>
             </span>
             <span className="shrink-0 inline-flex items-center gap-1 rounded-[6px] bg-primary text-white px-3 py-2 text-xs font-semibold">
@@ -362,7 +382,7 @@ export function AbaDePedido({
           texto não é anunciada. Com a aba recolhida, é ela que diz que o
           "Solicitar" do card funcionou. */}
       <p aria-live="polite" className="sr-only">
-        {barraVisivel ? t.resumo(itens.length, pessoas) : ''}
+        {barraVisivel ? t.resumo(escolhas.length) : ''}
       </p>
     </>
   )

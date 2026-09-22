@@ -6,13 +6,12 @@ import { useEffect, useRef } from 'react'
 
 import type { CodigoDeErro, ResultadoSolicitacao } from '@/actions/consultores'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
-import type { ItemEscolhido } from '@/lib/consultores'
 import type { Locale } from '@/lib/locales'
-import { MAX_MESES, PADRAO_EMAIL, type Modelo } from '@/lib/solicitacao-consultores'
+import { PADRAO_EMAIL } from '@/lib/solicitacao-consultores'
 import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 import { CHAVES_UTM, lerUtmGuardado, type ChaveUtm } from '@/lib/utm'
 
-import { ID_DESCRICAO, useSolicitacao } from './solicitacao-contexto'
+import { ID_DESCRICAO } from './solicitacao-contexto'
 
 /* Formulário de solicitação de consultores (task 013) — o último formulário
  * morto do site, ligado.
@@ -28,28 +27,17 @@ import { ID_DESCRICAO, useSolicitacao } from './solicitacao-contexto'
  * sem JS a lista de perfis vai vazia — mas o campo livre chega, e é o caminho
  * que sobra para quem não tem o catálogo interativo. */
 
-/* Mesma ordem dos rótulos em `TEXTOS.modelos`, e as chaves são as que a action
- * aceita (`lib/solicitacao-consultores.ts`). */
-const MODELOS: readonly Modelo[] = ['full-time', 'part-time', 'squad', 'staff-augmentation']
-
 const TEXTOS = {
   pt: {
     nome: 'Nome completo *',
-    empresa: 'Empresa',
     email: 'E-mail corporativo *',
     telefone: 'Telefone / WhatsApp',
-    modeloVazio: 'Modelo de alocação (opcional)',
-    modelos: [
-      'Modelo: Full-time (Dedicado)',
-      'Modelo: Part-time (Parcial)',
-      'Modelo: Squad Gerenciada ATRA',
-      'Modelo: Staff Augmentation',
-    ],
-    duracao: 'Duração estimada em meses (opcional)',
-    mensagem: 'Descreva brevemente o projeto, horizonte de tempo ou requisitos...',
-    enviar: 'Verificar Disponibilidade',
+    /* Com perfis escolhidos a descrição é um complemento; sem nenhum, ela é o
+       pedido inteiro — e aí o campo é obrigatório, então não diz "opcional". */
+    mensagem: 'Descreva brevemente o projeto (opcional)',
+    mensagemSozinha: 'Descreva o profissional que você procura',
+    enviar: 'Enviar solicitação',
     enviando: 'Enviando...',
-    sucesso: 'Recebemos sua solicitação. A gente responde em breve.',
     privacidade: 'Seus dados são tratados conforme a nossa',
     politica: 'Política de Privacidade',
     erros: {
@@ -62,21 +50,12 @@ const TEXTOS = {
   },
   en: {
     nome: 'Full name *',
-    empresa: 'Company',
     email: 'Work e-mail *',
     telefone: 'Phone / WhatsApp',
-    modeloVazio: 'Allocation model (optional)',
-    modelos: [
-      'Model: Full-time (dedicated)',
-      'Model: Part-time',
-      'Model: ATRA managed squad',
-      'Model: Staff augmentation',
-    ],
-    duracao: 'Estimated duration in months (optional)',
-    mensagem: 'Briefly describe the project, timeline or requirements...',
-    enviar: 'Check availability',
+    mensagem: 'Briefly describe the project (optional)',
+    mensagemSozinha: 'Describe the professional you are looking for',
+    enviar: 'Send request',
     enviando: 'Sending...',
-    sucesso: 'We got your request. We will get back to you soon.',
     privacidade: 'Your data is handled under our',
     politica: 'Privacy Policy',
     erros: {
@@ -95,16 +74,16 @@ const CAMPO =
   'w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main dark:text-white placeholder:text-text-muted dark:placeholder:text-white/40 font-light transition-colors'
 
 export function FormularioDeSolicitacao({
-  itens,
+  slugs,
   locale,
   privacidadeHref,
   envio,
   acao,
   enviando,
 }: {
-  /** Já resolvidos por `itensEscolhidos` na aba: perfil que saiu do catálogo
-   *  não vai para o servidor. */
-  itens: ItemEscolhido[]
+  /** Os perfis escolhidos, já conferidos contra o catálogo pela aba. Vão no
+   *  campo escondido, e decidem se a descrição é obrigatória. */
+  slugs: string[]
   locale: Locale
   /** Resolvido no servidor por `hrefDe` (regra 6): esta ilha não monta URL. */
   privacidadeHref: string
@@ -113,8 +92,8 @@ export function FormularioDeSolicitacao({
   enviando: boolean
 }) {
   const t = TEXTOS[locale]
+  const temPerfis = slugs.length > 0
   const caminho = usePathname()
-  const { setEscolhidos } = useSolicitacao()
 
   /* ⚠️ Carimbo e UTM escritos **depois da montagem**, por `ref`: `Date.now()` e
    * `sessionStorage` no render fariam o HTML do servidor divergir do cliente.
@@ -150,18 +129,6 @@ export function FormularioDeSolicitacao({
     for (const campo of utm.current) campo.value = guardado[campo.name as ChaveUtm] ?? ''
   }, [])
 
-  /* O carrinho esvazia depois que o servidor confirma. Efeito, e não o callback
-   * da action, porque o callback teria de ser um embrulho cliente — o que
-   * quebra o envio sem JavaScript. É sincronizar com um resultado que vem de
-   * fora (o servidor), não estado derivado: a render extra acontece uma vez,
-   * depois de um envio bem-sucedido. */
-  useEffect(() => {
-    if (!envio?.ok) return
-    setEscolhidos(new Map())
-    /* O próximo pedido começa uma sessão nova de preenchimento. */
-    interagiu.current = false
-  }, [envio, setEscolhidos])
-
   /* ⚠️ O que o visitante mandou, quando o servidor recusou. O React 19 reseta o
    * formulário ao fim da action — com sucesso ou com erro —, e o reset volta ao
    * `defaultValue`: sem isto, a recusa apagava tudo o que foi digitado. Em campo
@@ -172,20 +139,7 @@ export function FormularioDeSolicitacao({
   /* MIG-156: no-op sem GTM ou sem consentimento de estatística. */
   useRastrearEnvio(Boolean(envio?.ok), 'form_submit', { form_type: 'consultant-request' })
 
-  /* ⚠️ A confirmação **não substitui** o formulário, ao contrário dos demais do
-   * site. Aqui a lista continua interativa depois do envio: quem montava um
-   * segundo carrinho e clicava em "Enviar solicitação" caía numa confirmação
-   * sem formulário, e só recarregando a página. O formulário volta vazio (o
-   * reset do React, e sucesso não devolve `valores`) com a faixa acima. */
   return (
-    <>
-      {envio?.ok && (
-        /* Verde em par claro/escuro: `text-emerald-500` puro fica ilegível na
-           superfície clara. */
-        <p role="status" className="mb-6 text-sm font-light text-emerald-700 dark:text-emerald-400">
-          {t.sucesso}
-        </p>
-      )}
     <form action={acao} aria-busy={enviando} onFocus={carimbarNaPrimeiraInteracao} className="@container flex flex-col space-y-6">
       {/* ⚠️ Os escondidos vêm **antes** dos campos reais. O Tailwind 4 põe o
           `space-y-*` como `margin-bottom` em `> :not(:last-child)`: um escondido
@@ -194,11 +148,7 @@ export function FormularioDeSolicitacao({
           vira o único filho e o `space-y` some. */}
       <input type="hidden" name="source" value={caminho ?? ''} />
       <input ref={carimbo} type="hidden" name="carimbo" />
-      <input
-        type="hidden"
-        name="perfis"
-        value={JSON.stringify(itens.map((i) => ({ slug: i.perfil.slug, quantidade: i.quantidade })))}
-      />
+      <input type="hidden" name="perfis" value={JSON.stringify(slugs)} />
       {CHAVES_UTM.map((chave, i) => (
         <input
           key={chave}
@@ -214,27 +164,16 @@ export function FormularioDeSolicitacao({
         <input id={`consultores-${CAMPO_ISCA}`} name={CAMPO_ISCA} type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-6">
-        <input
-          type="text"
-          name="name"
-          defaultValue={antes?.name}
-          required
-          autoComplete="name"
-          placeholder={t.nome}
-          aria-label={t.nome}
-          className={CAMPO}
-        />
-        <input
-          type="text"
-          name="company"
-          defaultValue={antes?.company}
-          autoComplete="organization"
-          placeholder={t.empresa}
-          aria-label={t.empresa}
-          className={CAMPO}
-        />
-      </div>
+      <input
+        type="text"
+        name="name"
+        defaultValue={antes?.name}
+        required
+        autoComplete="name"
+        placeholder={t.nome}
+        aria-label={t.nome}
+        className={CAMPO}
+      />
 
       <div className="grid grid-cols-1 @lg:grid-cols-2 gap-6">
         <input
@@ -262,45 +201,6 @@ export function FormularioDeSolicitacao({
         />
       </div>
 
-      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-6">
-        {/* ⚠️ Opção vazia primeiro. Sem ela, o `select` sempre enviava
-            "full-time", e todo lead chegava ao comercial com "Modelo de alocação:
-            Full-time" — inclusive de quem nunca abriu o campo. */}
-        {/* ⚠️ `key` porque em `<select>` não controlado o React só aplica o
-            `defaultValue` na **montagem** — mudar depois é ignorado, e o reset
-            voltava à opção vazia. Medido: com os valores devolvidos, os campos de
-            texto voltavam e o modelo não. A `key` remonta o campo quando a recusa
-            traz outro modelo. */}
-        <select
-          key={antes?.modelo ?? ''}
-          name="modelo"
-          defaultValue={antes?.modelo ?? ''}
-          aria-label={t.modeloVazio}
-          className={`${CAMPO} cursor-pointer`}
-        >
-          <option value="" className="bg-surface-2 text-text-main">
-            {t.modeloVazio}
-          </option>
-          {MODELOS.map((chave, i) => (
-            <option key={chave} value={chave} className="bg-surface-2 text-text-main">
-              {t.modelos[i]}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          name="duracao"
-          defaultValue={antes?.duracao}
-          min={1}
-          max={MAX_MESES}
-          step={1}
-          inputMode="numeric"
-          placeholder={t.duracao}
-          aria-label={t.duracao}
-          className={CAMPO}
-        />
-      </div>
-
       {/* `textarea`, e não o `input` de uma linha esticado com `pb-12` que o
           legado usava: é o campo onde se descreve um perfil que não está no
           catálogo, e isso pede parágrafo. */}
@@ -308,15 +208,16 @@ export function FormularioDeSolicitacao({
         {/* `required` só com o carrinho vazio: aí a descrição é o pedido inteiro,
             e sem ela o servidor recusaria. Barrado no navegador não gasta a cota
             por IP — e sem JavaScript o carrinho está sempre vazio, então vale
-            também para esse caminho. */}
+            também para esse caminho. O rótulo acompanha: só diz "(opcional)"
+            quando há perfis escolhidos. */}
         <textarea
           id={ID_DESCRICAO}
           name="message"
-          required={itens.length === 0}
+          required={!temPerfis}
           defaultValue={antes?.message}
           rows={3}
-          placeholder={t.mensagem}
-          aria-label={t.mensagem}
+          placeholder={temPerfis ? t.mensagem : t.mensagemSozinha}
+          aria-label={temPerfis ? t.mensagem : t.mensagemSozinha}
           /* `scroll-mt-32`: sem JavaScript, a âncora do CTA "Não encontrou…" pousa
              o campo sob a barra fixa do topo — 83% encoberto em 375px. */
           className={`${CAMPO} resize-none scroll-mt-32`}
@@ -348,6 +249,5 @@ export function FormularioDeSolicitacao({
         </button>
       </div>
     </form>
-    </>
   )
 }

@@ -29,7 +29,7 @@ import type { Escolhidos } from '@/lib/consultores'
  *
  * ⚠️ O `setState` que sai daqui é o mesmo do `useState`, então vale a regra da
  * 009 e da 010: sempre na forma **funcional**, com o valor novo tirado de
- * `atual` — ver `ajustarQuantidade` em `lib/consultores.ts`. */
+ * `atual` — ver `alternarPerfil` em `lib/consultores.ts`. */
 
 /** Onde o foco pousa quando a aba abre: no título (quem veio escolher perfis) ou
  *  no campo livre (quem veio da chamada "Não encontrou…"). */
@@ -73,7 +73,7 @@ export const ID_ABA = 'aba-de-pedido'
 export const ABRE_A_ABA_SEM_JS: Record<string, string> = { commandfor: ID_ABA, command: 'show-modal' }
 
 export function ProvedorDaSolicitacao({ children }: { children: React.ReactNode }) {
-  const [escolhidos, setEscolhidos] = useState<Escolhidos>(new Map())
+  const [escolhidos, setEscolhidos] = useState<Escolhidos>(new Set())
   const [aba, setAba] = useState<{ aberta: boolean; foco: FocoDaAba }>({ aberta: false, foco: 'titulo' })
   /* Refs, e não estado: nenhum dos dois aparece na tela, e mudar qualquer um não
      deve re-renderizar as ilhas. */
