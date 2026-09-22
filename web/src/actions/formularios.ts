@@ -5,7 +5,7 @@ import { randomBytes } from 'node:crypto'
 import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
-import { enviarParaAtrair, lerVagaEscolhida } from '@/lib/atrair'
+import { enviarParaAtrair } from '@/lib/atrair'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
 import { enviarAviso } from '@/lib/email'
@@ -72,13 +72,11 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   /* MIG-102: o Banco de Talentos tem campos sem coluna própria em
    * form-submissions (LinkedIn, área, senioridade) — entram serializados na
    * mensagem, visíveis no admin e no e-mail de aviso, sem migração. */
-  const vaga = kind === 'talent-pool' ? lerVagaEscolhida(texto(dados, 'vaga', 300)) : {}
+  /* ⚠️ Sem vaga: este formulário é o banco de talentos geral (D-33). Quem se
+   * candidata A UMA VAGA o faz na página da vaga, no ATRAIR. */
   const extrasDeTalento =
     kind === 'talent-pool'
       ? [
-          /* A vaga vem primeiro: é a informação que decide o que o RH faz com
-           * esta candidatura. */
-          vaga.cargo && `Vaga: ${vaga.cargo}${vaga.id ? ` (#${vaga.id})` : ''}`,
           texto(dados, 'linkedin', 300) && `LinkedIn: ${texto(dados, 'linkedin', 300)}`,
           texto(dados, 'area') && `Área: ${texto(dados, 'area')}`,
           texto(dados, 'senioridade') && `Senioridade: ${texto(dados, 'senioridade')}`,
@@ -133,10 +131,6 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
       area: texto(dados, 'area') || undefined,
       senioridade: texto(dados, 'senioridade') || undefined,
       source: texto(dados, 'source') || undefined,
-      /* Com a vaga, o ATRAIR põe a pessoa na fila de triagem daquela vaga; sem
-       * ela, no banco de talentos. Vaga que não existe mais do lado de lá não
-       * derruba nada: o ATRAIR guarda o currículo do mesmo jeito. */
-      vagaId: vaga.id,
     })
   }
 

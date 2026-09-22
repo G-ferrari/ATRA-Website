@@ -3,7 +3,6 @@ import { Send, Upload } from 'lucide-react'
 import { Formulario } from '@/components/forms/formulario'
 import { TechCornerBraces } from '@/components/ui'
 import type { Locale } from '@/lib/locales'
-import type { VagaAberta } from '@/lib/atrair'
 import type { BlocoJobsList } from '@/types/content'
 
 import { TextoDestacado } from './texto-destacado'
@@ -35,9 +34,6 @@ const TEXTOS = {
     areas: ['Engenharia de Dados', 'Inteligência Artificial / ML', 'Analytics & BI', 'Arquitetura Cloud', 'Outros'],
     senioridade: 'Senioridade',
     senioridades: ['Júnior', 'Pleno', 'Sênior', 'Lead / Principal', 'Trainee'],
-    vaga: 'Vaga de interesse',
-    semVaga: 'Não tenho vaga específica — quero entrar no banco de talentos',
-    vagaAjuda: 'Escolha uma vaga e sua candidatura vai direto para ela. Sem escolher, seu currículo fica no banco de talentos para as próximas oportunidades.',
     enviar: 'Enviar Candidatura',
     sucesso: 'Candidatura recebida! Nossa equipe de recrutamento avaliará seu perfil e entrará em contato quando surgir uma oportunidade.',
   },
@@ -50,9 +46,6 @@ const TEXTOS = {
     areas: ['Data Engineering', 'Artificial Intelligence / ML', 'Analytics & BI', 'Cloud Architecture', 'Other'],
     senioridade: 'Seniority',
     senioridades: ['Junior', 'Mid-level', 'Senior', 'Lead / Principal', 'Trainee'],
-    vaga: 'Role you are applying for',
-    semVaga: 'No specific role — add me to the talent pool',
-    vagaAjuda: 'Pick a role and your application goes straight to it. Without one, your CV stays in the talent pool for future openings.',
     enviar: 'Send application',
     sucesso: 'Application received! Our recruiting team will review your profile and reach out when an opportunity comes up.',
   },
@@ -64,13 +57,9 @@ const CAMPO =
 export function BancoDeTalentos({
   banco,
   locale,
-  vagasAbertas = [],
 }: {
   banco: NonNullable<BlocoJobsList['talentBank']>
   locale: Locale
-  /* Vem do ATRAIR, resolvida na página. Vazia quando a integração está
-   * desligada ou fora do ar — e aí o formulário é exatamente o que era. */
-  vagasAbertas?: VagaAberta[]
 }) {
   const t = TEXTOS[locale]
 
@@ -120,28 +109,12 @@ export function BancoDeTalentos({
             <input type="tel" name="phone" placeholder={t.telefone} className={CAMPO} />
           </div>
 
-          {/* A vaga só aparece quando há vaga aberta. Um select vazio prometeria
-              uma escolha que não existe — e sem a integração o formulário
-              precisa continuar funcionando como sempre funcionou.
-
-              ⚠️ O valor carrega **id e cargo juntos**, separados por `::`. O
-              formulário funciona sem JavaScript (ver `formulario.tsx`), então
-              não dá para preencher um campo escondido com o título no clique: o
-              id vai para o ATRAIR, e o cargo vai junto para o admin do site,
-              onde quem lê precisa do nome da vaga, não de um número. */}
-          {vagasAbertas.length > 0 && (
-            <div>
-              <select name="vaga" aria-label={t.vaga} className={CAMPO} defaultValue="">
-                <option value="">{t.semVaga}</option>
-                {vagasAbertas.map((v) => (
-                  <option key={v.id} value={`${v.id}::${v.cargo}`}>
-                    {[v.cargo, v.senioridade, v.modeloDeTrabalho].filter(Boolean).join(' · ')}
-                  </option>
-                ))}
-              </select>
-              <p className="text-[11px] text-text-muted mt-1.5 font-light leading-relaxed">{t.vagaAjuda}</p>
-            </div>
-          )}
+          {/* ⚠️ NÃO existe seletor de vaga aqui, e é decisão (D-33). Este
+              formulário é para quem NÃO encontrou vaga que sirva: quem
+              encontrou clica no card da grade acima e se candidata na página
+              da vaga, no ATRAIR, com a descrição à vista. O seletor chegou a
+              existir (item 172 do ATRAIR) e foi retirado: eram duas portas
+              para a mesma coisa, e a de baixo não mostrava a vaga. */}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <select name="area" aria-label={t.area} className={CAMPO}>

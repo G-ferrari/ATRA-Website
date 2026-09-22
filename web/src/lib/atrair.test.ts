@@ -1,40 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { buscarVagasAbertas, lerVagaEscolhida } from './atrair'
+import { buscarVagasAbertas } from './atrair'
 
-/* A integração com o ATRAIR tem duas regras que não podem quebrar em silêncio:
- * a vaga escolhida no formulário tem que virar o id certo, e a lista de vagas
- * nunca pode derrubar a página de carreiras. As duas estão aqui. */
-
-describe('lerVagaEscolhida', () => {
-  it('separa o id do cargo', () => {
-    expect(lerVagaEscolhida('12::Pessoa Desenvolvedora Full Stack Sênior')).toEqual({
-      id: 12,
-      cargo: 'Pessoa Desenvolvedora Full Stack Sênior',
-    })
-  })
-
-  it('"não tenho vaga específica" manda valor vazio, e isso é um caso válido', () => {
-    expect(lerVagaEscolhida('')).toEqual({})
-  })
-
-  it('corta no primeiro `::` e leva o resto como cargo', () => {
-    expect(lerVagaEscolhida('7::Dev :: Full Stack')).toEqual({ id: 7, cargo: 'Dev :: Full Stack' })
-  })
-
-  it('id que não é inteiro positivo não vira vaga', () => {
-    /* ⚠️ Quem posta o formulário não é obrigado a ser o nosso HTML. Um id
-       inventado não pode chegar ao ATRAIR como se fosse escolha do candidato. */
-    for (const torto of ['abc::Dev', '0::Dev', '-3::Dev', '1.5::Dev', '::Dev']) {
-      expect(lerVagaEscolhida(torto).id, torto).toBeUndefined()
-    }
-    expect(lerVagaEscolhida('abc::Dev').cargo).toBe('Dev')
-  })
-
-  it('cargo vazio não vira string vazia', () => {
-    expect(lerVagaEscolhida('12::   ')).toEqual({ id: 12, cargo: undefined })
-  })
-})
+/* A regra que não pode quebrar em silêncio: a lista de vagas do ATRAIR nunca
+ * derruba a página de carreiras. Com o ATRAIR fora, a grade cai para a lista
+ * do CMS — e para isso `buscarVagasAbertas` precisa devolver `[]`, nunca
+ * lançar. */
 
 describe('buscarVagasAbertas', () => {
   const fetchMock = vi.fn()
@@ -57,6 +28,7 @@ describe('buscarVagasAbertas', () => {
   })
 
   const resposta = (vagas: unknown) => ({ ok: true, json: async () => ({ vagas }) })
+  const vaga = (id: number, cargo: string) => ({ id, cargo, url: `https://atrair.exemplo/vaga/${id}` })
 
   it('sem as envs, não chama ninguém e devolve lista vazia', async () => {
     delete process.env.ATRAIR_API_URL
@@ -79,16 +51,25 @@ describe('buscarVagasAbertas', () => {
     expect(String(fetchMock.mock.calls[0][0])).toBe('https://atrair.exemplo/api/public/vagas')
   })
 
-  it('descarta vaga sem id ou sem cargo — viraria opção em branco no formulário', async () => {
+  it('descarta vaga sem id, sem cargo ou sem endereço — viraria card vazio ou card que não leva a lugar nenhum', async () => {
     fetchMock.mockResolvedValue(
       resposta([
-        { id: 1, cargo: 'Dev' },
-        { id: 2, cargo: '   ' },
-        { cargo: 'Sem id' },
-        { id: 'x', cargo: 'Id torto' },
+        vaga(1, 'Dev'),
+        { ...vaga(2, '   ') },
+        { url: 'https://atrair.exemplo/vaga/3', cargo: 'Sem id' },
+        { id: 'x', cargo: 'Id torto', url: 'https://atrair.exemplo/vaga/x' },
+        { id: 5, cargo: 'Sem endereço' },
       ]),
     )
     expect((await buscarVagasAbertas()).map((v) => v.id)).toEqual([1])
+  })
+
+  it('a vaga que passa chega com o endereço que o card vai usar', async () => {
+    fetchMock.mockResolvedValue(resposta([vaga(12, 'Pessoa Desenvolvedora Full Stack Sênior')]))
+    const [primeira] = await buscarVagasAbertas()
+    /* ⚠️ O endereço vem PRONTO do ATRAIR. O site não monta URL do ATRAIR:
+       quem sabe em que domínio o sistema está é o próprio sistema. */
+    expect(primeira.url).toBe('https://atrair.exemplo/vaga/12')
   })
 
   /* ⚠️ Os três seguintes são a mesma promessa: a página de carreiras existe

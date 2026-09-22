@@ -42,9 +42,9 @@ export function RenderBlocks({
 }: {
   blocos: Bloco[]
   locale: Locale
-  /* Só a página de carreiras passa: são as vagas abertas no ATRAIR, para o
-   * formulário do banco de talentos oferecer ao candidato. Quem monta o bloco
-   * não busca — recebe (regra 4). */
+  /* Só a página de carreiras passa: são as vagas publicadas no ATRAIR, que
+   * viram a grade e levam o candidato para a página da vaga lá (D-33). Quem
+   * monta o bloco não busca — recebe (regra 4). */
   vagasAbertas?: VagaAberta[]
 }) {
   return (
