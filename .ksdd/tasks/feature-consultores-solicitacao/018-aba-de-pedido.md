@@ -1,7 +1,7 @@
 ---
 id: 018
 title: Aba de pedido — carrinho que abre, minimiza e envia
-status: em revisão
+status: concluída
 feature: consultores-solicitacao
 area: frontend
 priority: P1
