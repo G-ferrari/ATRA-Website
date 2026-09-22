@@ -6,7 +6,7 @@ feature: consultores-solicitacao
 area: design
 priority: P1
 estimate: M
-depends_on: [013, 014, 017, 018, 019]
+depends_on: [013, 014, 017, 018, 019, 020]
 feature_refs:
   - ".ksdd/features/FEATURE-consultores-solicitacao.md#8-impacto-no-design"
   - ".ksdd/features/FEATURE-consultores-solicitacao.md#21-o-que-entra-v1"
@@ -38,7 +38,7 @@ ajustezinhos pra ficar mais bacana"*.
   registrar o número no PR, antes e depois.
 
 ## Fora de escopo
-- Mudar comportamento ou copy (tasks 009–014, 017, 018 e 019).
+- Mudar comportamento ou copy (tasks 009–014 e 017–020).
 - Regravar o gabarito (task 016) — o acabamento vem **antes**, senão a regravação
   acontece duas vezes.
 - Mudar o conteúdo da barra de números do herói (revista em 21/09, PR #26), da

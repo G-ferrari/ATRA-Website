@@ -1,9 +1,9 @@
 # Tasks — Feature: Solicitação de consultores em /consultores
 
 **Feature:** .ksdd/features/FEATURE-consultores-solicitacao.md
-**Total:** 11 tasks
-**Prioridade:** P0: 6 · P1: 5 · P2: 0
-**Estimativa total:** ~18 dias
+**Total:** 12 tasks
+**Prioridade:** P0: 6 · P1: 6 · P2: 0
+**Estimativa total:** ~20 dias
 
 | ID | Título | Área | Prioridade | Estimativa | Status | Depende de |
 |----|--------|------|------------|------------|--------|------------|
@@ -15,17 +15,18 @@
 | 014 | CTA "Não encontrou um consultor nesta lista?" | frontend | P1 | S | concluída | 013 |
 | 017 | Chamada "Não encontrou um consultor?" junto dos diferenciais, em destaque | frontend | P1 | S | concluída | 014 |
 | 018 | Aba de pedido — carrinho que abre, minimiza e envia | frontend | P1 | L | concluída | 017 |
-| 019 | Tags recolhíveis no filtro de especialidades e nos cards | frontend | P1 | S | em revisão | 018 |
-| 015 | Acabamento de UI da página guiado pelo Impeccable | design | P1 | M | para implementar | 013, 014, 017, 018, 019 |
+| 019 | Tags recolhíveis no filtro de especialidades e nos cards | frontend | P1 | S | concluída | 018 |
+| 020 | Pedido enxuto — sem quantidade, menos campos, confirmação na aba | frontend | P1 | M | em revisão | 018 |
+| 015 | Acabamento de UI da página guiado pelo Impeccable | design | P1 | M | para implementar | 013, 014, 017, 018, 019, 020 |
 | 016 | e2e do filtro, do acúmulo e do envio + regravação do gabarito | qa | P0 | M | para implementar | 015 |
 
 ## Ordem sugerida
 
 **009 e 011 não dependem de nada** e podem correr em paralelo — uma é frontend, a
-outra é schema. Daí o caminho crítico é `009 → 010 → 013 → 014 → 017 → 018 → 019 → 015 → 016`, com
+outra é schema. Daí o caminho crítico é `009 → 010 → 013 → 014 → 017 → 018 → 019 → 020 → 015 → 016`, com
 `011 → 012` entrando antes de 013.
 
-**017 e 018 entraram em 21/09, e a 019 em 22/09**, a pedido de G-ferrari, depois do plano original —
+**017 e 018 entraram em 21/09, e a 019 e a 020 em 22/09**, a pedido de G-ferrari, depois do plano original —
 por isso a numeração fora da ordem. Vêm antes do acabamento (015) porque mudam
 a estrutura da página, e a 015 lapida o que elas deixarem. No mesmo dia saiu,
 fora da numeração, a remoção das promessas de 48h (cards, modal e herói — PR #26).
