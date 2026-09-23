@@ -16,7 +16,7 @@
 | 017 | Chamada "Não encontrou um consultor?" junto dos diferenciais, em destaque | frontend | P1 | S | concluída | 014 |
 | 018 | Aba de pedido — carrinho que abre, minimiza e envia | frontend | P1 | L | concluída | 017 |
 | 019 | Tags recolhíveis no filtro de especialidades e nos cards | frontend | P1 | S | concluída | 018 |
-| 020 | Pedido enxuto — sem quantidade, menos campos, confirmação na aba | frontend | P1 | M | em revisão | 018 |
+| 020 | Pedido enxuto — sem quantidade, menos campos, confirmação na aba | frontend | P1 | M | concluída | 018 |
 | 015 | Acabamento de UI da página guiado pelo Impeccable | design | P1 | M | para implementar | 013, 014, 017, 018, 019, 020 |
 | 016 | e2e do filtro, do acúmulo e do envio + regravação do gabarito | qa | P0 | M | para implementar | 015 |
 
