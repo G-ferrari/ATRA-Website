@@ -35,8 +35,9 @@ const form = (campos: Record<string, string>) => {
   return f
 }
 const valido = (extra: Record<string, string> = {}) =>
-  form({ email: 'gestora@banco.com.br', name: 'Ana', company: 'Banco X', phone: '11 99999-0000', ...extra })
-const perfis = (lista: { slug: string; quantidade?: number }[]) => JSON.stringify(lista)
+  form({ email: 'gestora@banco.com.br', name: 'Ana', phone: '11 99999-0000', ...extra })
+/** O que o formulário manda em `perfis` desde a task 020: só os slugs. */
+const perfis = (...slugs: string[]) => JSON.stringify(slugs)
 const gravado = () => payload.create.mock.calls[0]?.[0]?.data
 
 beforeEach(() => {
@@ -58,9 +59,7 @@ describe('solicitarConsultores — envio válido', () => {
   it('grava com o kind, o contato e o resumo montado a partir do banco', async () => {
     const r = await solicitarConsultores(
       valido({
-        perfis: perfis([{ slug: '12', quantidade: 2 }, { slug: '4', quantidade: 1 }]),
-        duracao: '6',
-        modelo: 'squad',
+        perfis: perfis('12', '4'),
         message: 'Migração para lakehouse',
         source: '/consultores',
         utm_source: 'linkedin',
@@ -72,22 +71,19 @@ describe('solicitarConsultores — envio válido', () => {
       kind: 'consultant-request',
       email: 'gestora@banco.com.br',
       name: 'Ana',
-      company: 'Banco X',
       phone: '11 99999-0000',
       source: '/consultores',
       status: 'new',
       notified: false,
       utm: { source: 'linkedin' },
     })
-    expect(d.message).toContain('- 2× Data Engineer (Senior)')
-    expect(d.message).toContain('- 1× Cloud Architect (Lead / Principal)')
-    expect(d.message).toContain('Duração estimada: 6 meses')
-    expect(d.message).toContain('Modelo de alocação: Squad gerenciada ATRA')
+    expect(d.message).toContain('- Data Engineer (Senior)')
+    expect(d.message).toContain('- Cloud Architect (Lead / Principal)')
     expect(d.message).toContain('Migração para lakehouse')
   })
 
   it('consulta o catálogo em pt, só com os ids pedidos, e com select', async () => {
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }, { slug: '4' }]) }))
+    await solicitarConsultores(valido({ perfis: perfis('12', '4') }))
     expect(payload.find).toHaveBeenCalledWith(
       expect.objectContaining({
         collection: 'specialist-roles',
@@ -99,15 +95,16 @@ describe('solicitarConsultores — envio válido', () => {
   })
 
   it('avisa o comercial e marca notified pelo id que o create devolveu', async () => {
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(enviarAviso).toHaveBeenCalledWith(
       expect.objectContaining({
         para: 'negocios@atra.com.br',
         responderPara: 'gestora@banco.com.br',
-        assunto: '[site] solicitação de consultores — Banco X',
+        /* Era a empresa até a task 020, quando o campo saiu do formulário. */
+        assunto: '[site] solicitação de consultores — Ana',
       }),
     )
-    expect(enviarAviso.mock.calls[0][0].texto).toContain('- 1× Data Engineer (Senior)')
+    expect(enviarAviso.mock.calls[0][0].texto).toContain('- Data Engineer (Senior)')
     expect(payload.update).toHaveBeenCalledWith({ collection: 'form-submissions', id: 501, data: { notified: true } })
   })
 
@@ -122,36 +119,39 @@ describe('solicitarConsultores — envio válido', () => {
   /* A sincronização com o CRM é o hook `afterChange` (task 011, testado em
      `lib/crm.test.ts`). A action não finge sincronizar. */
   it('não preenche o grupo crm — quem sincroniza é o hook', async () => {
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(gravado()).not.toHaveProperty('crm')
   })
 })
 
 describe('solicitarConsultores — o servidor não confia no cliente', () => {
   it('descarta id que não existe no catálogo', async () => {
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '999', quantidade: 5 }, { slug: '12' }]) }))
-    expect(gravado().message).toContain('Perfis solicitados (1 pessoa):')
-    expect(gravado().message).not.toContain('5×')
+    await solicitarConsultores(valido({ perfis: perfis('999', '12') }))
+    expect(gravado().message).toContain('Perfis solicitados:')
+    expect(gravado().message).toContain('- Data Engineer (Senior)')
+    expect(gravado().message.match(/^- /gm)).toHaveLength(1)
   })
 
   it('só ids forjados e sem descrição: recusa sem gravar', async () => {
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '999' }, { slug: '777' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('999', '777') }))
     expect(r).toMatchObject({ ok: false })
     expect(payload.create).not.toHaveBeenCalled()
   })
 
-  it('quantidade fora da faixa é presa, não aceita', async () => {
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12', quantidade: 9000 }]) }))
-    expect(gravado().message).toContain('- 20× Data Engineer')
-  })
-
-  it('duração e modelo inválidos somem do resumo em vez de gravar lixo', async () => {
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]), duracao: '999', modelo: 'toString' }))
-    expect(gravado().message).not.toMatch(/Duração|Modelo/)
+  /* ⚠️ Aba aberta desde antes do deploy da task 020: manda o formato antigo,
+     `[{ slug, quantidade }]`. Melhor o pedido chegar pela descrição do que o
+     envio estourar — e é por isso que este caso grava, em vez de recusar. */
+  it('formato antigo do cliente não vira perfil, e o pedido chega pela descrição', async () => {
+    const r = await solicitarConsultores(
+      valido({ perfis: JSON.stringify([{ slug: '12', quantidade: 2 }]), message: 'Dois engenheiros de dados' }),
+    )
+    expect(r).toEqual({ ok: true })
+    expect(gravado().message).toContain('Nenhum perfil do catálogo selecionado')
+    expect(gravado().message).toContain('Dois engenheiros de dados')
   })
 
   it('corta campos no teto do servidor', async () => {
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]), name: 'x'.repeat(5000) }))
+    await solicitarConsultores(valido({ perfis: perfis('12'), name: 'x'.repeat(5000) }))
     expect(gravado().name).toHaveLength(200)
   })
 })
@@ -161,21 +161,11 @@ describe('solicitarConsultores — a recusa devolve o que foi enviado', () => {
      com erro. Sem os valores de volta, uma recusa apagava tudo o que o
      visitante tinha digitado. */
   it('devolve os campos para o formulário repreencher', async () => {
-    const r = await solicitarConsultores(
-      valido({ duracao: '6', modelo: 'squad', message: '', perfis: perfis([{ slug: '999' }]) }),
-    )
+    const r = await solicitarConsultores(valido({ message: '', perfis: perfis('999') }))
     expect(r).toMatchObject({
       ok: false,
       codigo: 'indisponiveis',
-      valores: {
-        name: 'Ana',
-        email: 'gestora@banco.com.br',
-        phone: '11 99999-0000',
-        company: 'Banco X',
-        duracao: '6',
-        modelo: 'squad',
-        message: '',
-      },
+      valores: { name: 'Ana', email: 'gestora@banco.com.br', phone: '11 99999-0000', message: '' },
     })
   })
 
@@ -187,7 +177,7 @@ describe('solicitarConsultores — a recusa devolve o que foi enviado', () => {
   /* Sucesso não devolve nada: o formulário DEVE voltar vazio para o próximo
      pedido. */
   it('sucesso não traz valores', async () => {
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(r).toEqual({ ok: true })
   })
 })
@@ -200,7 +190,7 @@ describe('solicitarConsultores — nada de dado pessoal no log', () => {
       { cause: { code: '22021' } },
     )
     payload.create.mockRejectedValue(erro)
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    await solicitarConsultores(valido({ perfis: perfis('12') }))
     const registrado = vi.mocked(console.error).mock.calls.flat().map(String).join(' ')
     expect(registrado).toContain('22021')
     for (const pessoal of ['gestora@banco.com.br', 'Ana', '99999-0000']) expect(registrado).not.toContain(pessoal)
@@ -208,7 +198,7 @@ describe('solicitarConsultores — nada de dado pessoal no log', () => {
 
   it('o mesmo vale para a falha depois de gravar', async () => {
     payload.update.mockRejectedValue(new Error('params: gestora@banco.com.br'))
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    await solicitarConsultores(valido({ perfis: perfis('12') }))
     const registrado = vi.mocked(console.error).mock.calls.flat().map(String).join(' ')
     expect(registrado).toContain('501')
     expect(registrado).not.toContain('gestora@banco.com.br')
@@ -218,16 +208,15 @@ describe('solicitarConsultores — nada de dado pessoal no log', () => {
 describe('solicitarConsultores — campos de uma linha', () => {
   /* ⚠️ Com a quebra de linha, o telefone forjava um bloco "Perfis solicitados"
      acima do resumo real, dentro do e-mail do comercial. */
-  it('colapsa quebras de linha em nome, empresa e telefone', async () => {
+  it('colapsa quebras de linha em nome e telefone', async () => {
     await solicitarConsultores(
       valido({
-        perfis: perfis([{ slug: '12' }]),
-        name: 'Ana\nSilva',
-        company: 'Banco\r\nX',
-        phone: '11\n\nPerfis solicitados (40 pessoas):\n- 20× Cloud Architect',
+        perfis: perfis('12'),
+        name: 'Ana\r\nSilva',
+        phone: '11\n\nPerfis solicitados:\n- Cloud Architect (Lead / Principal)',
       }),
     )
-    expect(gravado()).toMatchObject({ name: 'Ana Silva', company: 'Banco X' })
+    expect(gravado()).toMatchObject({ name: 'Ana Silva' })
     expect(gravado().phone).not.toContain('\n')
     const aviso = enviarAviso.mock.calls[0][0]
     expect(aviso.assunto).not.toMatch(/[\r\n]/)
@@ -240,29 +229,27 @@ describe('solicitarConsultores — recusa sem gravar', () => {
   /* ⚠️ Mensagem própria: com a mesma do vazio, quem tinha escolhido um perfil
      depois despublicado lia "escolha ao menos um perfil". */
   it('só perfis que sumiram do catálogo: mensagem que não engana', async () => {
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '999' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('999') }))
     expect(r).toMatchObject({ ok: false, codigo: 'indisponiveis', erro: expect.stringMatching(/não estão mais disponíveis/) })
   })
 
   /* ⚠️ Id acima do `integer` do Postgres estourava a consulta e derrubava o
      pedido inteiro, inclusive o perfil válido. */
   it('id fora do integer nem chega à consulta, e o perfil válido segue', async () => {
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }, { slug: '2147483648' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12', '2147483648') }))
     expect(r).toEqual({ ok: true })
     expect(payload.find).toHaveBeenCalledWith(expect.objectContaining({ where: { id: { in: [12] } } }))
   })
 
   it('banco fora do ar: responde erro em vez de lançar', async () => {
     getPayload.mockRejectedValue(new Error('ECONNREFUSED'))
-    await expect(solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))).resolves.toMatchObject({
+    await expect(solicitarConsultores(valido({ perfis: perfis('12') }))).resolves.toMatchObject({
       ok: false,
     })
   })
 
   it('a mensagem gravada respeita o teto, mesmo com descrição longa e perfis', async () => {
-    await solicitarConsultores(
-      valido({ perfis: perfis([{ slug: '12' }, { slug: '4' }]), message: 'x'.repeat(5000), duracao: '12' }),
-    )
+    await solicitarConsultores(valido({ perfis: perfis('12', '4'), message: 'x'.repeat(5000) }))
     expect(gravado().message.length).toBeLessThanOrEqual(5000)
   })
 
@@ -283,7 +270,7 @@ describe('solicitarConsultores — recusa sem gravar', () => {
 /* ⚠️ Robô barrado recebe SUCESSO: dizer "você foi barrado" entrega o critério. */
 describe('solicitarConsultores — anti-spam devolve sucesso falso', () => {
   it('isca preenchida', async () => {
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]), [CAMPO_ISCA]: 'http://spam' }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12'), [CAMPO_ISCA]: 'http://spam' }))
     expect(r).toEqual({ ok: true })
     expect(payload.create).not.toHaveBeenCalled()
     expect(payload.find).not.toHaveBeenCalled()
@@ -291,14 +278,14 @@ describe('solicitarConsultores — anti-spam devolve sucesso falso', () => {
   })
 
   it('carimbo rápido demais', async () => {
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]), carimbo: String(Date.now()) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12'), carimbo: String(Date.now()) }))
     expect(r).toEqual({ ok: true })
     expect(payload.create).not.toHaveBeenCalled()
   })
 
   it('estouro do limite por IP — antes de qualquer consulta ao banco', async () => {
     excedeuPorIp.mockReturnValue(true)
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(r).toEqual({ ok: true })
     expect(payload.find).not.toHaveBeenCalled()
     expect(payload.create).not.toHaveBeenCalled()
@@ -306,7 +293,7 @@ describe('solicitarConsultores — anti-spam devolve sucesso falso', () => {
 
   /* O limite é por IP de verdade: `ipDe` lê `x-real-ip` primeiro (MIG-140). */
   it('confere o limite com o IP da requisição', async () => {
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(excedeuPorIp).toHaveBeenCalledWith('203.0.113.7')
   })
 
@@ -322,7 +309,7 @@ describe('solicitarConsultores — anti-spam devolve sucesso falso', () => {
   /* Carimbo ausente passa: pode ser JavaScript bloqueado, e recusar um envio
      honesto é pior que aceitar um automático. */
   it('carimbo ausente NÃO reprova', async () => {
-    await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(payload.create).toHaveBeenCalledTimes(1)
   })
 })
@@ -330,7 +317,7 @@ describe('solicitarConsultores — anti-spam devolve sucesso falso', () => {
 describe('solicitarConsultores — depois de gravar, é sucesso', () => {
   it('aviso recusado: grava e não marca notified', async () => {
     enviarAviso.mockResolvedValue(false)
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(r).toEqual({ ok: true })
     expect(payload.create).toHaveBeenCalledTimes(1)
     expect(payload.update).not.toHaveBeenCalled()
@@ -340,27 +327,27 @@ describe('solicitarConsultores — depois de gravar, é sucesso', () => {
      já salvo: o visitante tentaria de novo, e o comercial receberia duplicata. */
   it('falha ao ler o contato depois de gravar: continua sucesso', async () => {
     lerContato.mockRejectedValue(new Error('banco caiu'))
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(r).toEqual({ ok: true })
     expect(payload.create).toHaveBeenCalledTimes(1)
   })
 
   it('falha ao marcar notified: continua sucesso', async () => {
     payload.update.mockRejectedValue(new Error('timeout'))
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(r).toEqual({ ok: true })
   })
 
   it('falha ao GRAVAR: aí sim é erro — nada foi salvo', async () => {
     payload.create.mockRejectedValue(new Error('constraint'))
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(r).toMatchObject({ ok: false, codigo: 'falha' })
     expect(enviarAviso).not.toHaveBeenCalled()
   })
 
   it('falha ao conferir o catálogo: erro, sem gravar um resumo sem perfis', async () => {
     payload.find.mockRejectedValue(new Error('timeout'))
-    const r = await solicitarConsultores(valido({ perfis: perfis([{ slug: '12' }]) }))
+    const r = await solicitarConsultores(valido({ perfis: perfis('12') }))
     expect(r).toMatchObject({ ok: false })
     expect(payload.create).not.toHaveBeenCalled()
   })
