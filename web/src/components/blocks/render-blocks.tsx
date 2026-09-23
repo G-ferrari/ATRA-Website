@@ -1,3 +1,4 @@
+import type { VagaAberta } from '@/lib/atrair'
 import type { Locale } from '@/lib/locales'
 import type { Bloco } from '@/types/content'
 
@@ -34,7 +35,18 @@ import { BlocoValores } from './bloco-valores'
  * O `switch` é exaustivo: `Bloco` é união discriminada, então bloco novo sem
  * caso aqui não compila. É de propósito — é o que impede uma seção existir no
  * CMS e não aparecer no site. */
-export function RenderBlocks({ blocos, locale }: { blocos: Bloco[]; locale: Locale }) {
+export function RenderBlocks({
+  blocos,
+  locale,
+  vagasAbertas,
+}: {
+  blocos: Bloco[]
+  locale: Locale
+  /* Só a página de carreiras passa: são as vagas publicadas no ATRAIR, que
+   * viram a grade e levam o candidato para a página da vaga lá (D-33). Quem
+   * monta o bloco não busca — recebe (regra 4). */
+  vagasAbertas?: VagaAberta[]
+}) {
   return (
     <>
       {blocos.map((b) => {
@@ -56,7 +68,7 @@ export function RenderBlocks({ blocos, locale }: { blocos: Bloco[]; locale: Loca
           case 'ctaContact':
             return <BlocoContato key={b.id} bloco={b} locale={locale} />
           case 'jobsList':
-            return <BlocoVagas key={b.id} bloco={b} locale={locale} />
+            return <BlocoVagas key={b.id} bloco={b} locale={locale} vagasAbertas={vagasAbertas} />
           case 'partnerShowcase':
             return <BlocoParceiros key={b.id} bloco={b} />
           case 'valueCards':

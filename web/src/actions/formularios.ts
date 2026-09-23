@@ -45,6 +45,7 @@ const campanha = (dados: FormData, campo: string): string | undefined =>
 /** Aceita o que parece e-mail. Validação de verdade é o e-mail chegar. */
 const pareceEmail = (v: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
 
+
 export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   const kind = texto(dados, 'kind')
   if (kind !== 'contact' && kind !== 'newsletter' && kind !== 'talent-pool') {
@@ -71,6 +72,8 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   /* MIG-102: o Banco de Talentos tem campos sem coluna própria em
    * form-submissions (LinkedIn, área, senioridade) — entram serializados na
    * mensagem, visíveis no admin e no e-mail de aviso, sem migração. */
+  /* ⚠️ Sem vaga: este formulário é o banco de talentos geral (D-33). Quem se
+   * candidata A UMA VAGA o faz na página da vaga, no ATRAIR. */
   const extrasDeTalento =
     kind === 'talent-pool'
       ? [

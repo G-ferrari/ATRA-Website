@@ -640,3 +640,80 @@ As decisões ainda em aberto vivem em [pendencias.md](pendencias.md) — separad
 daqui porque decisão registrada é permanente e pendência existe para deixar de
 existir. O subconjunto que depende da ATRA está em
 [pendencias-atra.md](pendencias-atra.md).
+
+## D-32 — As vagas do formulário vêm do ATRAIR; a grade de `/carreiras` continua do CMS
+
+> ⚠️ **Substituída pela [D-33](#d-33--a-candidatura-a-uma-vaga-acontece-no-atrair-o-site-lista-e-leva-para-lá) em 22/09/2026**, no mesmo dia em que foi tomada: o desenho abaixo foi montado, visto e revisto. Fica registrada porque decisão registrada é permanente — e porque o motivo de ela não ter servido é o que justifica a D-33.
+
+*Decidida em 22/09/2026 por Leonardo (dono do produto), ao pedir a integração
+nos dois sentidos.*
+
+**Contexto.** D-29 levou o currículo do Banco de Talentos para o ATRAIR
+(`lib/atrair.ts`), mas só na ida. O ATRAIR sabe distinguir "candidatura para a
+vaga X" de "currículo para o banco geral" — e o site não tinha como dizer qual
+era, porque não conhecia as vagas de lá. Toda candidatura caía no banco geral.
+
+**Opções.** (a) Substituir a grade de `/carreiras` pelas vagas do ATRAIR;
+(b) manter a grade do CMS e oferecer as vagas do ATRAIR **apenas no formulário**;
+(c) sincronizar as vagas do ATRAIR para dentro do CMS.
+
+**Escolha: (b).** A grade é conteúdo de marketing — tem página própria por vaga
+(MIG-051), texto trabalhado e SEO, e quem decide o que aparece nela é o
+marketing (D-22). O formulário é outra coisa: ali a pergunta é operacional,
+"para qual processo você quer entrar", e a resposta certa é a lista do sistema
+que conduz os processos. (c) duplicaria a fonte da verdade e criaria um
+sincronizador para manter.
+
+**Consequência.**
+
+- `/carreiras` resolve as vagas abertas no servidor (`buscarVagasAbertas`) e as
+  passa como prop até o formulário — nenhum componente busca dado (regra 4).
+- **Sem o ATRAIR, o formulário é o que era.** Lista vazia esconde o seletor; a
+  página continua de pé. A candidatura vai para o banco geral, como antes.
+- O select carrega `id::cargo` num campo só, porque o formulário funciona sem
+  JavaScript: o id vai para o ATRAIR e o cargo para o admin, onde quem lê
+  precisa do nome da vaga.
+- O ATRAIR não expõe valores nem o nome do cliente nessa rota — a decisão de o
+  que é público é de lá, e está registrada no item 172 do roadmap dele.
+
+## D-33 — A candidatura a uma vaga acontece no ATRAIR; o site lista e leva para lá
+
+*Decidida em 22/09/2026 por Leonardo (dono do produto), ao ver o desenho da
+D-32 montado na página.* **Substitui a D-32** e revê a parte da D-22 que
+mantinha a grade de vagas como conteúdo exclusivo do CMS.
+
+**Contexto.** A D-32 pôs um seletor de vagas do ATRAIR dentro do formulário do
+Banco de Talentos. Montado, o desenho mostrou o problema: `/carreiras` passou a
+ter **duas listas de vagas na mesma página**, de fontes diferentes — a grade
+(CMS) e o seletor (ATRAIR) — e quem se candidatava pelo seletor escolhia um
+cargo numa lista suspensa, sem ler nada sobre a vaga.
+
+**Opções.** (a) Manter o seletor e sincronizar a grade com ele; (b) trazer a
+vaga do ATRAIR para uma página do site (`/carreiras/[slug]`) com o formulário;
+(c) a vaga ganha **página pública no próprio ATRAIR**, e o site apenas lista e
+aponta para lá.
+
+**Escolha: (c).** Quem abre a vaga é quem cuida do recrutamento, no ATRAIR;
+quem recebe a candidatura é o ATRAIR. Pôr a página no meio do site obrigaria a
+copiar a descrição da vaga para cá (b) ou a manter dois lugares em sincronia
+(a). Em (c) existe **um** lugar onde a vaga é escrita e **um** onde a
+candidatura chega; o site faz o que sabe fazer — ser encontrado e levar a
+pessoa até a vaga.
+
+**Consequência.**
+
+- **A grade de `/carreiras` lista as vagas do ATRAIR** quando elas existem, e
+  cada card leva para a página da vaga lá (`url`, que vem pronta da API — o
+  site não monta endereço do ATRAIR). Sem a integração, ou com o ATRAIR fora,
+  a grade **cai para a lista do CMS** e a página continua de pé.
+- **O seletor de vaga saiu do formulário.** O Banco de Talentos volta a ser o
+  que era, e agora com um papel claro: é para quem **não** encontrou vaga que
+  sirva. Saíram junto o `vagaId` enviado ao ATRAIR e o `lerVagaEscolhida`.
+- **Nem toda vaga aberta é divulgada.** Quem cadastra a vaga no ATRAIR marca
+  "tornar a vaga pública"; sem a marca, ela não vem na API e não tem página.
+  É decisão de lá (item 173 do roadmap do ATRAIR), e existe porque a ATRA tem
+  vagas que não devem ser divulgadas.
+- **A página é do ATRAIR e tem a cara do ATRAIR**, com o logo de quem está
+  contratando. Não é uma página do site da ATRA hospedada em outro domínio, e
+  não deve ser tratada como tal aqui: o site só lista e aponta.
+- O ATRAIR continua sem expor valores nem o nome do cliente.
