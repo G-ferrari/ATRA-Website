@@ -48,6 +48,27 @@ test('StatusBadge, MetricChip e SearchInput batem com o legado', async ({ page }
     input: await estiloDe(page, 'main input[type="text"]'),
   }
 
-  expect(novo.badge, 'StatusBadge diverge do legado').toEqual(legado.badge)
-  expect(novo.input, 'SearchInput diverge do legado').toEqual(legado.input)
+  /* ⚠️ Uma divergência **de propósito**, e fixada aqui: `d785a12` (13/09) tirou
+   * o contorno das caixas — badge, chip, campo — aplicando a regra sem-borda do
+   * DESIGN.md, e a profundidade passou a sair do tom e da sombra. O legado
+   * ainda tem 1px.
+   *
+   * Fixar, e não deixar de comparar: se o contorno voltar, se o legado mudar de
+   * valor, ou se qualquer outra propriedade divergir, este teste fala. Sem
+   * isto ele ficou **nove dias vermelho** por uma mudança deliberada — e teste
+   * que vive vermelho não avisa mais nada. */
+  const SEM_CONTORNO = { borderWidth: '0px' }
+  expect(novo.badge, 'StatusBadge diverge do legado').toEqual({ ...legado.badge, ...SEM_CONTORNO })
+
+  /* O campo perdeu a largura **e** a cor da borda no mesmo commit. Sem largura,
+   * a cor não pinta nada: cobrá-la seria cobrar um valor que ninguém vê. */
+  const semCor = (e: Estilo | null): Estilo => {
+    const resto: Estilo = { ...(e ?? {}) }
+    delete resto.borderColor
+    return resto
+  }
+  expect(semCor(novo.input), 'SearchInput diverge do legado').toEqual({
+    ...semCor(legado.input),
+    ...SEM_CONTORNO,
+  })
 })

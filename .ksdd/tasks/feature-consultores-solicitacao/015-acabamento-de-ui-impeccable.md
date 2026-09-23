@@ -1,7 +1,7 @@
 ---
 id: 015
 title: Acabamento de UI da página guiado pelo Impeccable
-status: em andamento
+status: em revisão
 feature: consultores-solicitacao
 area: design
 priority: P1

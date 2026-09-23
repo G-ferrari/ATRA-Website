@@ -119,13 +119,14 @@ const TEXTOS = {
 const TODOS = '__todos__'
 
 /* Quantas especialidades o filtro mostra recolhido (task 019), por faixa de
- * largura. Medido com as 35 tags de hoje e o "Todas" à frente: cabem 4 a 5 por
- * linha a 375px, 8 a 640, 10 a 768, 14 a 1024 e 18 a 1280. Conferido depois:
- * duas linhas a 375 e uma a 640, 768, 1024 e 1280, com o "+N ⌄" no fim.
+ * largura. Remedido em 22/09, depois de a pílula crescer para a métrica do
+ * design system: cabem 3 a 4 por linha a 375px, 7 a 640, 8 a 768, 12 a 1024 e
+ * 16 a 1280. Conferido: duas linhas a 375 e uma a 640, 768, 1024 e 1280, com o
+ * "+N ⌄" no fim.
  * ⚠️ Tag de nome comprido entrando no começo da lista (a ordem é alfabética)
  * pode empurrar o "+N" para a linha de baixo — reconferir se o catálogo mudar
  * muito. */
-const LIMITE_DO_FILTRO: Limite = { base: 7, sm: 6, md: 7, lg: 11, xl: 15 }
+const LIMITE_DO_FILTRO: Limite = { base: 5, sm: 6, md: 7, lg: 9, xl: 12 }
 
 /* As 7 de sempre do card, que o legado já cortava (`Consultants.tsx:604`). */
 const LIMITE_DO_CARD = 7
@@ -152,9 +153,31 @@ function alternarEm(atual: ReadonlySet<string>, valor: string): ReadonlySet<stri
   return novo
 }
 
+/* Uma métrica de pílula para o painel inteiro — a mesma do `ChipFilter` do
+ * design system (`px-3 py-1`, 12px), que as outras 5 listagens do site usam.
+ *
+ * ⚠️ Não é o `ChipFilter` em si: aquele é de **seleção única** (`activeId`) e
+ * carrega o próprio layout, e as 5 listagens são comparadas com o legado pelo
+ * `paridade-ds.spec.ts`. Aqui a seleção é múltipla e há o alternador OU|E — é
+ * variação documentada, não recomposição do componente.
+ *
+ * Antes eram três medidas dentro da mesma caixa: 11px nas de senioridade e
+ * modo, 10,5px nas de especialidade, rótulos de 10px. */
+/* Superfície recuada **dentro** de um cartão ou painel (que é `surface-2`).
+ *
+ * ⚠️ Par, e não um tom só. No escuro, `surface-1` é o grafite da página e fica
+ * mais escuro que o cartão — encaixado, que é o efeito certo. No claro,
+ * `surface-1` é #F8FAFC contra o branco do cartão: 2% de diferença, e como as
+ * caixas não têm borda (regra sem-borda do DESIGN.md), a pílula sumia. No claro
+ * o recuo é `surface-3`, o cinza afundado. */
+const RECUADA = 'bg-surface-3 dark:bg-surface-1'
+const RECUADA_HOVER = 'hover:bg-slate-200 dark:hover:bg-surface-3'
+
+const PILULA = 'px-3 py-1 rounded-[4px] text-xs transition-all duration-200 cursor-pointer whitespace-nowrap'
 const PILULA_ATIVA = 'bg-primary text-white font-semibold shadow-xs'
-const PILULA_INATIVA =
-  'bg-surface-1 text-text-muted hover:text-text-main '
+const PILULA_INATIVA = cn(RECUADA, RECUADA_HOVER, 'text-text-muted font-medium hover:text-text-main')
+/* Rótulo das linhas do filtro, na medida do rótulo do `ChipFilter`. */
+const ROTULO_DO_FILTRO = 'text-[11px] font-bold text-text-muted uppercase mr-1 shrink-0'
 
 export function ListaDeConsultores({
   perfis,
@@ -232,7 +255,9 @@ export function ListaDeConsultores({
                 <h3 className="text-base sm:text-lg font-bold text-text-main leading-snug group-hover:text-primary transition-colors truncate">
                   {p.role}
                 </h3>
-                <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-primary/10 text-primary border border-primary/20 shrink-0">
+                {/* Sem linha de borda nos três selos do cabeçalho: a hierarquia
+                    sai do tom, não do contorno (regra sem-borda do DESIGN.md). */}
+                <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-primary/10 text-primary shrink-0">
                   {p.level}
                 </span>
                 {/* ⚠️ Par claro/escuro, ao contrário da pílula de nível ao lado.
@@ -241,7 +266,7 @@ export function ListaDeConsultores({
                     página. Elemento novo não tem gabarito a honrar, então aqui
                     o par vale (mesmo caso do âmbar em `page.tsx`). */}
                 {selo && (
-                  <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-secondary/10 text-amber-700 dark:text-secondary border border-secondary/20 shrink-0">
+                  <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-secondary/10 text-amber-700 dark:text-secondary shrink-0">
                     {t.selo(cobertura, resultado.alvo)}
                   </span>
                 )}
@@ -249,7 +274,7 @@ export function ListaDeConsultores({
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-text-muted bg-surface-1 px-3 py-1 rounded-[4px]  font-semibold shrink-0">
+          <div className={cn('hidden sm:flex items-center gap-1.5 text-xs text-text-muted px-3 py-1 rounded-[4px] font-semibold shrink-0', RECUADA)}>
             <Users size={12} className="text-primary" aria-hidden />
             <span>
               {p.ecosystem} {t.ecossistema}
@@ -276,15 +301,16 @@ export function ListaDeConsultores({
               <span className="sr-only">: {p.role}</span>
             </>
           }
-          classeDoControle="text-[11px] px-2 py-1 rounded-[4px] bg-surface-1 text-text-muted hover:text-text-main transition-colors cursor-pointer"
+          classeDoControle={cn(
+            'text-[11px] px-2 py-1 rounded-[4px] text-text-muted hover:text-text-main transition-colors cursor-pointer',
+            RECUADA,
+          )}
           item={(tag, visivel) => (
             <span
               key={tag}
               className={cn(
                 'text-[11px] px-2.5 py-1 rounded-[4px] transition-colors font-medium',
-                tagsMarcadas.has(tag)
-                  ? PILULA_ATIVA
-                  : 'bg-surface-1 text-text-muted  hover:text-text-main',
+                tagsMarcadas.has(tag) ? PILULA_ATIVA : cn(RECUADA, 'text-text-muted hover:text-text-main'),
                 visivel,
               )}
             >
@@ -303,7 +329,11 @@ export function ListaDeConsultores({
           <button
             type="button"
             onClick={() => setAberto(p)}
-            className="py-2 px-3.5 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-main  text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+            className={cn(
+              'py-2 px-3.5 rounded-[6px] text-text-main text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer',
+              RECUADA,
+              RECUADA_HOVER,
+            )}
           >
             <HelpCircle size={14} className="text-primary" aria-hidden />
             <span>{t.detalhes}</span>
@@ -329,7 +359,7 @@ export function ListaDeConsultores({
             className={cn(
               'py-2 px-4 rounded-[6px] text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-xs',
               escolhidos.has(p.slug)
-                ? 'bg-surface-1 text-text-main'
+                ? cn(RECUADA, 'text-text-main')
                 : 'bg-primary hover:bg-primary-dark text-white shadow-primary/20',
             )}
           >
@@ -367,15 +397,20 @@ export function ListaDeConsultores({
                 aria-label={t.buscar}
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-surface-1  rounded-[6px] text-xs font-normal text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-all"
+                className={cn(
+                  'w-full pl-8 pr-3 py-1.5 rounded-[6px] text-xs font-normal text-text-main placeholder:text-text-muted focus:outline-none transition-all',
+                  RECUADA,
+                )}
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1 no-scrollbar">
-            <span className="text-[10px] font-bold text-text-muted uppercase mr-1 shrink-0">
-              {t.senioridade}
-            </span>
+          {/* ⚠️ Quebra linha, não rola. Era `overflow-x-auto no-scrollbar`: a
+              375px a linha rolava 54px **sem barra de rolagem à vista**, e
+              "Lead / Principal" — um valor inteiro do filtro — ficava fora da
+              tela, sem nada indicando que havia mais. */}
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className={ROTULO_DO_FILTRO}>{t.senioridade}</span>
             {[TODOS, ...senioridades].map((s) => {
               /* "Todos" não é um valor: é o conjunto vazio, e fica aceso quando
                  nenhum nível está marcado. */
@@ -388,10 +423,7 @@ export function ListaDeConsultores({
                   onClick={() =>
                     setNiveisMarcados((atual) => (s === TODOS ? new Set() : alternarEm(atual, s)))
                   }
-                  className={cn(
-                    'px-2.5 py-0.5 rounded-[4px] text-[11px] font-medium transition-all whitespace-nowrap cursor-pointer',
-                    ativo ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
-                  )}
+                  className={cn(PILULA, ativo ? PILULA_ATIVA : PILULA_INATIVA)}
                 >
                   {s === TODOS ? t.todos : s}
                 </button>
@@ -402,10 +434,8 @@ export function ListaDeConsultores({
           {/* ⚠️ O alternador muda a **leitura**, não o conjunto: ver a nota em
               `lib/consultores.ts`. Em `E` os que cobrem tudo sobem e os demais
               ficam sob a faixa de parciais, em vez de a lista esvaziar. */}
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-[10px] font-bold text-text-muted uppercase mr-1 shrink-0">
-              {t.modo}
-            </span>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className={ROTULO_DO_FILTRO}>{t.modo}</span>
             <div className="flex gap-1" role="group" aria-label={t.modo}>
               {(['ou', 'e'] as const).map((m) => (
                 <button
@@ -413,10 +443,7 @@ export function ListaDeConsultores({
                   type="button"
                   aria-pressed={modo === m}
                   onClick={() => setModo(m)}
-                  className={cn(
-                    'px-2.5 py-0.5 rounded-[4px] text-[11px] font-medium transition-all whitespace-nowrap cursor-pointer',
-                    modo === m ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
-                  )}
+                  className={cn(PILULA, modo === m ? PILULA_ATIVA : PILULA_INATIVA)}
                 >
                   {m === 'ou' ? t.modoOu : t.modoE}
                 </button>
@@ -435,20 +462,13 @@ export function ListaDeConsultores({
             fixos={tagsMarcadas}
             mais={t.especialidadesAMais}
             menos={t.menos}
-            classeDoControle={cn(
-              'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
-              PILULA_INATIVA,
-              'hover:bg-surface-3',
-            )}
+            classeDoControle={cn(PILULA, PILULA_INATIVA)}
             antes={
               <button
                 type="button"
                 aria-pressed={tagsMarcadas.size === 0}
                 onClick={() => setTagsMarcadas(new Set())}
-                className={cn(
-                  'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
-                  tagsMarcadas.size === 0 ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
-                )}
+                className={cn(PILULA, tagsMarcadas.size === 0 ? PILULA_ATIVA : PILULA_INATIVA)}
               >
                 {t.todas}
               </button>
@@ -459,11 +479,7 @@ export function ListaDeConsultores({
                 type="button"
                 aria-pressed={tagsMarcadas.has(e)}
                 onClick={() => setTagsMarcadas((atual) => alternarEm(atual, e))}
-                className={cn(
-                  'px-2 py-0.5 rounded-[4px] text-[10.5px] transition-all duration-200 cursor-pointer whitespace-nowrap',
-                  tagsMarcadas.has(e) ? PILULA_ATIVA : cn(PILULA_INATIVA, 'hover:bg-surface-3'),
-                  visivel,
-                )}
+                className={cn(PILULA, tagsMarcadas.has(e) ? PILULA_ATIVA : PILULA_INATIVA, visivel)}
               >
                 {e}
               </button>
@@ -474,17 +490,25 @@ export function ListaDeConsultores({
             <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-white/5 flex items-center justify-between text-xs text-text-muted">
               <span>
                 {t.ativos}{' '}
+                {/* ⚠️ Pares claro/escuro, valor escuro por último. Medido no
+                    tema claro em 22/09: a tag dava 2,97:1, a senioridade 2,35:1
+                    e o termo buscado **1,72:1** — o resumo do que o visitante
+                    acabou de escolher era a coisa menos legível do painel.
+                    `e2e/contraste.spec.ts` não pegava: esta linha só existe
+                    depois de filtrar, e o teste mede a página recém-carregada. */}
                 {[...tagsMarcadas].map((e) => (
-                  <strong key={e} className="text-primary font-semibold mr-2">
+                  <strong key={e} className="text-primary-dark dark:text-primary font-semibold mr-2">
                     {e}
                   </strong>
                 ))}
                 {[...niveisMarcados].map((s) => (
-                  <strong key={s} className="text-secondary font-semibold mr-2">
+                  <strong key={s} className="text-amber-700 dark:text-secondary font-semibold mr-2">
                     [{s}]
                   </strong>
                 ))}
-                {busca && <span className="text-amber-400 font-semibold">&quot;{busca}&quot;</span>}
+                {busca && (
+                  <span className="text-amber-700 dark:text-amber-400 font-semibold">&quot;{busca}&quot;</span>
+                )}
               </span>
               <button
                 type="button"
@@ -613,7 +637,7 @@ export function ListaDeConsultores({
                   {aberto.role}
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-primary/10 text-primary border border-primary/20">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-[6px] bg-primary/10 text-primary">
                     {t.nivel} {aberto.level}
                   </span>
                 </div>
