@@ -70,6 +70,26 @@ const ID_TITULO = 'titulo-da-aba-de-pedido'
    `lista-de-consultores.tsx`. */
 const RECUADA = 'bg-surface-3 dark:bg-surface-1'
 
+/* ── A voz da home (task 021) ────────────────────────────────────────────────
+ *
+ * Pedido de G-ferrari em 23/09: a aba adota o visual da home, que o DESIGN.md
+ * chama de lei ("a home é o gabarito; o resto deriva dela"). O que foi copiado,
+ * medida a medida, da seção de contato (`blocks/contato-com-foto.tsx`) e do
+ * painel de contatos (`blocks/painel-de-contatos.tsx`):
+ *
+ * - título em peso 300 e grande, com a linha de apoio leve logo abaixo;
+ * - ladrilho recuado `rounded-[6px] px-4 py-3` com rótulo micro em caixa-alta
+ *   espaçada e o valor em cima — é assim que a home mostra "CONVERSAR AGORA" e
+ *   o telefone;
+ * - quadrado de ícone `w-9 h-9 rounded-[6px]`;
+ * - botão da ação principal branco no escuro, azul no claro;
+ * - respiro no lugar de linha divisória (a home separa por espaço).
+ *
+ * O formulário em si já era o da home desde a 013 — `CAMPO` é a mesma string. */
+const ROTULO_MICRO = 'text-[10px] uppercase font-normal tracking-wider text-text-muted'
+const BOTAO_PRINCIPAL =
+  'bg-primary text-white dark:bg-white dark:text-[#12151c] py-3 px-6 rounded-[6px] text-sm font-medium transition-all inline-flex items-center gap-2 shadow-md cursor-pointer'
+
 /* Assinatura que nunca notifica: o valor só difere entre servidor e cliente. */
 const semAssinatura = () => () => {}
 
@@ -242,13 +262,15 @@ export function AbaDePedido({
           'backdrop:transition-[opacity,display,overlay] backdrop:transition-discrete backdrop:duration-300 motion-reduce:backdrop:transition-none',
         )}
       >
-        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-slate-200 dark:border-white/5 shrink-0">
+        {/* A linha sob o cabeçalho fica: ele é fixo enquanto o corpo rola, e é
+            ela que diz onde um termina e o outro começa. As demais saíram. */}
+        <div className="flex items-start justify-between gap-3 px-5 sm:px-6 py-5 border-b border-slate-200 dark:border-white/5 shrink-0">
           <div className="min-w-0">
             <h2
               id={ID_TITULO}
               ref={titulo}
               tabIndex={-1}
-              className="text-lg font-light font-display text-text-main leading-tight outline-none"
+              className="text-2xl font-light font-display text-text-main dark:text-white leading-tight outline-none"
             >
               {t.titulo}
             </h2>
@@ -256,7 +278,7 @@ export function AbaDePedido({
             {/* Some na confirmação: ali o pedido já foi, e o carrinho vazio
                 ("0 perfis") só confundiria. */}
             {!confirmacao && (
-              <p aria-live="polite" className="text-xs text-text-muted font-light mt-0.5">
+              <p aria-live="polite" className="text-sm text-text-muted font-light mt-1">
                 {t.resumo(escolhas.length)}
               </p>
             )}
@@ -278,22 +300,21 @@ export function AbaDePedido({
           </form>
         </div>
 
-        <div ref={corpo} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-5">
+        <div ref={corpo} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 sm:px-6 py-6">
           {confirmacao ? (
             /* Confirmação no lugar da lista e do formulário: a aba já é modal,
                então isto **é** o aviso modal de que o pedido chegou. Sai quando
                o visitante fecha a aba. */
-            <div role="status" className="flex flex-col items-center text-center gap-3 py-10">
-              <CheckCircle2 size={40} className="text-emerald-700 dark:text-emerald-400" aria-hidden />
-              <h3 className="text-lg font-light font-display text-text-main">{t.enviada}</h3>
-              <p className="text-xs text-text-muted font-light max-w-xs leading-relaxed">{t.sucesso}</p>
+            <div role="status" className="flex flex-col items-center text-center gap-4 py-12">
+              <CheckCircle2 size={44} className="text-emerald-700 dark:text-emerald-400" aria-hidden />
+              <h3 className="text-2xl font-light font-display text-text-main dark:text-white leading-tight">
+                {t.enviada}
+              </h3>
+              <p className="text-sm text-text-muted font-light max-w-xs leading-relaxed">{t.sucesso}</p>
               {/* `method="dialog"` fecha sem JavaScript — é assim que a página
                   que responde a um envio sem JS sai da confirmação. */}
               <form method="dialog" className="mt-2">
-                <button
-                  type="submit"
-                  className="py-2.5 px-5 rounded-[6px] bg-primary hover:bg-primary-dark text-white text-xs font-semibold transition-colors cursor-pointer"
-                >
+                <button type="submit" className={BOTAO_PRINCIPAL}>
                   {t.fechar}
                 </button>
               </form>
@@ -301,12 +322,15 @@ export function AbaDePedido({
           ) : (
             <>
               {escolhas.length > 0 ? (
-                <ul className="flex flex-col gap-2">
+                <ul className="flex flex-col gap-3">
                   {escolhas.map((p) => (
-                    <li key={p.slug} className={cn('rounded-[6px] p-3 flex items-center gap-3', RECUADA)}>
+                    <li
+                      key={p.slug}
+                      className={cn('rounded-[6px] px-4 py-3 flex items-center gap-3.5 shadow-xs', RECUADA)}
+                    >
                       <div
                         className={cn(
-                          'w-8 h-8 rounded-[4px] bg-linear-to-br flex items-center justify-center text-white font-bold text-[10px] shrink-0',
+                          'w-9 h-9 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-[10px] shrink-0',
                           gradienteDe(p.gradient),
                         )}
                       >
@@ -314,8 +338,8 @@ export function AbaDePedido({
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <div className="text-xs font-semibold text-text-main truncate">{p.role}</div>
-                        <div className="text-[11px] text-text-muted font-light">{p.level}</div>
+                        <div className={ROTULO_MICRO}>{p.level}</div>
+                        <div className="text-sm font-bold text-text-main dark:text-white truncate">{p.role}</div>
                       </div>
 
                       <button
@@ -330,7 +354,7 @@ export function AbaDePedido({
                           titulo.current?.focus()
                           setEscolhidos((atual) => alternarPerfil(atual, p.slug))
                         }}
-                        className="w-9 h-9 rounded-[4px] text-text-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-surface-2 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                        className="w-9 h-9 rounded-[6px] text-text-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-surface-2 flex items-center justify-center transition-colors cursor-pointer shrink-0"
                       >
                         <Trash2 size={15} aria-hidden />
                       </button>
@@ -338,10 +362,12 @@ export function AbaDePedido({
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-text-muted font-light leading-relaxed">{t.vazio}</p>
+                <p className="text-sm text-text-muted font-light leading-relaxed">{t.vazio}</p>
               )}
 
-              <div className="mt-6 pt-6 border-t border-slate-200 dark:border-white/5">
+              {/* Espaço no lugar da linha: é assim que a home separa o título do
+                  formulário. */}
+              <div className="mt-8">
                 <FormularioDeSolicitacao
                   slugs={escolhas.map((p) => p.slug)}
                   locale={locale}
@@ -374,12 +400,10 @@ export function AbaDePedido({
               <ClipboardList size={18} aria-hidden />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-xs font-semibold text-text-main">{t.titulo}</span>
-              <span className="block text-xs text-text-muted font-light truncate">
-                {t.resumo(escolhas.length)}
-              </span>
+              <span className={cn('block', ROTULO_MICRO)}>{t.resumo(escolhas.length)}</span>
+              <span className="block text-sm font-bold text-text-main dark:text-white truncate">{t.titulo}</span>
             </span>
-            <span className="shrink-0 inline-flex items-center gap-1 rounded-[6px] bg-primary text-white px-3 py-2 text-xs font-semibold">
+            <span className="shrink-0 inline-flex items-center gap-1.5 rounded-[6px] bg-primary text-white dark:bg-white dark:text-[#12151c] px-4 py-2.5 text-xs font-medium shadow-md">
               {t.expandir}
               <ChevronUp size={14} aria-hidden />
             </span>
