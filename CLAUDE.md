@@ -171,7 +171,17 @@ Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
 Fase 4b: o gabarito é uma captura do protótipo com 6 artigos e 6 vagas
 fictícios, e a página nova mostra os 207 e as 7 de verdade. Nenhuma captura do
 protótipo volta a bater, e regravar apagaria a evidência de regressão do resto
-da página. São 13 rotas sob o gate.
+da página.
+
+**Rota que diverge de propósito também sai (D-34).** `/consultores` saiu em
+24/09: seis mudanças pedidas pelo dono entre 21 e 23/09 não existem no
+protótipo, e um gabarito que mostra o desenho antigo reprova a decisão, não a
+regressão. Capturar o próprio app e chamar de gabarito foi recusado — é o
+espelho que `estrategia-de-testes.md` descreve. Quem cobre a rota agora é
+`e2e/consultores.spec.ts` e o smoke. ⚠️ O preço: mudança visual não intencional
+nessa rota não é mais pega por ninguém.
+
+São **12 rotas** sob o gate.
 
 - Imagens entram **mascaradas**: o legado serve o JPEG original e o app novo
   serve variante reencodada pelo `next/image`. Divergem por projeto, não por
@@ -238,7 +248,7 @@ da página. São 13 rotas sob o gate.
 ## Estado
 
 Fases 1, 2, 3 e 4a concluídas: fundação, fatia vertical de cases, casca do site,
-Live Preview, as 20 rotas do protótipo (15 sob o gate visual) e o conteúdo do
+Live Preview, as 20 rotas do protótipo (12 sob o gate visual) e o conteúdo do
 protótipo dentro do CMS.
 
 Desde a 4a **nada do site vem do repositório nem do WordPress**: clientes,
