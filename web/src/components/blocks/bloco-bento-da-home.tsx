@@ -61,7 +61,7 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                     </h3>
                   )}
                   {bloco.partnerCard.description && (
-                    <p className="text-xs text-text-muted leading-relaxed mb-5 font-light">
+                    <p className="text-sm text-text-muted leading-relaxed mb-5 font-light">
                       {bloco.partnerCard.description}
                     </p>
                   )}
