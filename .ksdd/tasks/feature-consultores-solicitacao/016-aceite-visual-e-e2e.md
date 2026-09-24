@@ -1,7 +1,7 @@
 ---
 id: 016
 title: e2e do filtro, do acúmulo e do envio + regravação do gabarito
-status: em revisão
+status: concluída
 feature: consultores-solicitacao
 area: qa
 priority: P0
