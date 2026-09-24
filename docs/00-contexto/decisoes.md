@@ -717,3 +717,43 @@ pessoa até a vaga.
   contratando. Não é uma página do site da ATRA hospedada em outro domínio, e
   não deve ser tratada como tal aqui: o site só lista e aponta.
 - O ATRAIR continua sem expor valores nem o nome do cliente.
+
+## D-34 — `/consultores` sai da regressão visual; comportamento e smoke assumem
+
+*Decidida em 24/09/2026 por G-ferrari, ao escolher entre gabarito próprio e
+saída do gate.*
+
+**Contexto.** Entre 21 e 23/09 a página recebeu seis mudanças pedidas pelo dono
+(feature `consultores-solicitacao`, tasks 014 e 017–021, mais a remoção das
+promessas de 48h): a chamada "Não encontrou um consultor?" foi para a seção de
+diferenciais, o pedido virou uma aba lateral, as tags recolhem, o formulário
+encolheu, e a aba adotou o visual da home. Nenhuma delas existe no protótipo.
+
+O gate compara cada rota com uma captura do **legado** (`baseline.spec.ts`).
+Para esta rota o gabarito passou a mostrar o desenho antigo: ele não reprova
+regressão, reprova a decisão. Regravar "a partir do legado" não resolve — a
+captura continuaria sendo a do protótipo.
+
+**Opções.** (a) Gabarito próprio da rota: capturar o app novo e congelar no
+estado aprovado; (b) tirar a rota do gate, como `/blog` e `/carreiras` em 4b;
+(c) desfazer as mudanças visuais para o gate voltar a fechar.
+
+**Escolha: (b).** (c) significaria reverter decisões de produto tomadas na
+semana. (a) foi recusada: é o espelho que `estrategia-de-testes.md` descreve —
+"capturar a própria saída e chamar de referência transforma o teste num espelho:
+ele passa a provar que o código não mudou, não que está certo".
+
+**Consequência.**
+
+- `ROTAS_COM_GABARITO` perde `/consultores`; os três PNGs saíram de
+  `e2e/gabarito/`. São **12 rotas** sob o gate.
+- `e2e/consultores.spec.ts` cobre o que a captura cobria e mais: filtro em OU e
+  em E (com e sem cobertura total), multi-seleção de senioridade, acúmulo no
+  carrinho, remoção, a regra do "primeiro adicionar abre a aba", minimizar e
+  expandir, envio com confirmação e o envio vazio recusado pelo navegador.
+- `smoke.spec.ts` continua conferindo que a rota responde e que o filtro filtra.
+- ⚠️ **O que se perde:** mudança visual não intencional nesta rota não é mais
+  pega por ninguém. É o preço da escolha, e está registrado aqui.
+- A decisão vale para **esta** rota. Outra que divergir de propósito repete a
+  discussão — não herda a saída.
+

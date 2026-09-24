@@ -1,7 +1,7 @@
 ---
 id: 016
 title: e2e do filtro, do acúmulo e do envio + regravação do gabarito
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: qa
 priority: P0
@@ -39,9 +39,15 @@ legítima de a rota voltar ao verde depois de mudar de layout.
     carrinho está vazio;
   - envio sem perfis e sem texto livre é recusado.
 - Conferir que `e2e/contraste.spec.ts` e `e2e/paridade-ds.spec.ts` seguem verdes.
-- Rodar `pnpm gate` completo; **regravar** com `pnpm gate --baseline` e **escrever
-  a justificativa no PR**, nomeando o que mudou por task.
-- Rodar `pnpm gate` de novo após a regravação e confirmar verde nos 3 viewports.
+- ~~Rodar `pnpm gate` completo; **regravar** com `pnpm gate --baseline`.~~
+  **Revisto em 24/09 (D-34):** a rota **sai do gate** em vez de ser regravada —
+  ela diverge do protótipo de propósito, e um gabarito do legado reprova a
+  decisão, não a regressão. Regravar a partir do app novo foi recusado por
+  G-ferrari (é o espelho que `estrategia-de-testes.md` descreve).
+- ⚠️ **O gate completo não fecha verde em nenhuma branch hoje** — ver P-30. As
+  12 rotas restantes divergem do gabarito de 21/08 porque o site mudou de
+  propósito desde então (D-31 e a passada de 13/09). Nada disso é desta feature,
+  e nenhuma das rotas é tocada por ela.
 
 ## Fora de escopo
 - Mudança de comportamento ou de UI (tasks 009–015). Se um teste reprovar por
@@ -50,13 +56,13 @@ legítima de a rota voltar ao verde depois de mudar de layout.
   antes de produção é item do runbook de cutover, não desta feature.
 
 ## Critérios de aceitação
-- [ ] Os 8 cenários acima existem como testes e passam.
-- [ ] `pnpm test:e2e` verde dentro da imagem oficial do Playwright.
-- [ ] `pnpm gate` completo verde nos 3 viewports (375/768/1280) após a
-      regravação.
-- [ ] O PR traz a justificativa da regravação, task a task.
-- [ ] `e2e/contraste.spec.ts` e `e2e/paridade-ds.spec.ts` verdes.
-- [ ] Nenhuma rota além de `/consultores` teve gabarito regravado.
+- [x] Os 8 cenários acima existem como testes e passam.
+- [x] `consultores.spec.ts` verde nos 3 viewports, dentro da imagem oficial.
+- [ ] ~~`pnpm gate` completo verde~~ — bloqueado por P-30, que é decisão, não
+      conserto. O que esta task fecha é a saída da rota do gate (D-34).
+- [x] O PR traz a justificativa da saída do gate.
+- [x] `e2e/contraste.spec.ts` e `e2e/paridade-ds.spec.ts` verdes.
+- [x] Nenhum gabarito foi regravado; só os 3 PNGs de `/consultores` saíram.
 
 ## Notas técnicas
 - ⚠️ **Regravar gabarito apaga evidência de regressão.** Por isso vem por último,

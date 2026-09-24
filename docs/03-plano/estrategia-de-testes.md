@@ -369,6 +369,14 @@ que as verifica:
 referência transforma o teste num espelho: ele passa a provar que o código não
 mudou, não que está certo.
 
+**Uma terceira categoria apareceu em 24/09 (D-34): a rota que diverge de
+propósito.** `/consultores` tinha gabarito e o perdeu — não porque o conteúdo
+mudou, como `/blog`, mas porque o **desenho** mudou por decisão do dono, e o
+protótipo continua mostrando o anterior. A escolha foi tirar a rota do gate, e
+não capturar o app novo: a regra acima valeu, mesmo com a rota já verificada.
+O que a cobre é `e2e/consultores.spec.ts`, que testa o comportamento que a
+captura nunca testou — filtro nos dois modos, carrinho, aba e envio.
+
 O layout dessas rotas é **composto do que já foi portado** — a abertura da
 página de case, o `RichText`, o `ContactCta` — e não desenhado do zero. Assim a
 rota nova herda a linguagem visual já aprovada pelo gate nas outras.
