@@ -6,7 +6,7 @@ feature: consultores-solicitacao
 area: qa
 priority: P0
 estimate: M
-depends_on: [015]
+depends_on: [015, 021]
 feature_refs:
   - ".ksdd/features/FEATURE-consultores-solicitacao.md#10-criterios-de-aceite"
   - ".ksdd/features/FEATURE-consultores-solicitacao.md#92-riscos"
