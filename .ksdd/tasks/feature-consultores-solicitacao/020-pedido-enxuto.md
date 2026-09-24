@@ -1,7 +1,7 @@
 ---
 id: 020
 title: Pedido enxuto — sem quantidade, menos campos, confirmação na aba
-status: em revisão
+status: concluída
 feature: consultores-solicitacao
 area: frontend
 priority: P1

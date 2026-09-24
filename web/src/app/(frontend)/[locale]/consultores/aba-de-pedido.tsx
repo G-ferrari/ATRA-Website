@@ -65,6 +65,11 @@ const TEXTOS = {
 
 const ID_TITULO = 'titulo-da-aba-de-pedido'
 
+/* Superfície recuada dentro da aba (que é `surface-2`) — o mesmo par da lista:
+   no claro o cinza afundado, no escuro o grafite da página. Ver `RECUADA` em
+   `lista-de-consultores.tsx`. */
+const RECUADA = 'bg-surface-3 dark:bg-surface-1'
+
 /* Assinatura que nunca notifica: o valor só difere entre servidor e cliente. */
 const semAssinatura = () => () => {}
 
@@ -262,7 +267,10 @@ export function AbaDePedido({
               type="submit"
               aria-label={t.minimizar}
               title={t.minimizar}
-              className="w-9 h-9 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-muted hover:text-text-main flex items-center justify-center transition-colors cursor-pointer"
+              className={cn(
+                'w-9 h-9 rounded-[6px] hover:bg-slate-200 dark:hover:bg-surface-3 text-text-muted hover:text-text-main flex items-center justify-center transition-colors cursor-pointer',
+                RECUADA,
+              )}
             >
               <ChevronDown size={18} className="md:hidden" aria-hidden />
               <ChevronRight size={18} className="hidden md:block" aria-hidden />
@@ -295,7 +303,7 @@ export function AbaDePedido({
               {escolhas.length > 0 ? (
                 <ul className="flex flex-col gap-2">
                   {escolhas.map((p) => (
-                    <li key={p.slug} className="bg-surface-1 rounded-[6px] p-3 flex items-center gap-3">
+                    <li key={p.slug} className={cn('rounded-[6px] p-3 flex items-center gap-3', RECUADA)}>
                       <div
                         className={cn(
                           'w-8 h-8 rounded-[4px] bg-linear-to-br flex items-center justify-center text-white font-bold text-[10px] shrink-0',
@@ -322,7 +330,7 @@ export function AbaDePedido({
                           titulo.current?.focus()
                           setEscolhidos((atual) => alternarPerfil(atual, p.slug))
                         }}
-                        className="w-8 h-8 rounded-[4px] text-text-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-surface-2 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                        className="w-9 h-9 rounded-[4px] text-text-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-surface-2 flex items-center justify-center transition-colors cursor-pointer shrink-0"
                       >
                         <Trash2 size={15} aria-hidden />
                       </button>
