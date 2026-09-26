@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 
 import { CAMPO_ISCA, conferir, excedeuPorIp } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
+import { destinoDoAviso } from '@/lib/destino-do-aviso'
 import { enviarAviso } from '@/lib/email'
 import { ipDe } from '@/lib/ip'
 import { getPayload } from '@/lib/payload'
@@ -105,7 +106,7 @@ export async function enviarCandidatura(dados: FormData): Promise<ResultadoCandi
 
   const contato = await lerContato()
   await enviarAviso({
-    para: contato.email,
+    para: destinoDoAviso(contato, 'carreiras'),
     assunto: `[site] candidatura${vaga ? ` — ${vaga}` : ''}`,
     responderPara: email,
     texto: [`Nome: ${nome}`, `E-mail: ${email}`, vaga && `Vaga: ${vaga}`, '', 'O currículo está no admin, em Arquivos privados.']

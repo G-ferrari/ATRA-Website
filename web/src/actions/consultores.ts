@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 
 import { CAMPO_ISCA, conferir, excedeuPorIp } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
+import { destinoDoAviso } from '@/lib/destino-do-aviso'
 import { enviarAviso } from '@/lib/email'
 import { ipDe } from '@/lib/ip'
 import { getPayload } from '@/lib/payload'
@@ -41,7 +42,7 @@ import { MAX_POR_VALOR } from '@/lib/utm'
  * lead por e-mail + kind + `-createdAt`, e dois envios simultâneos do mesmo
  * e-mail marcariam o errado.
  *
- * Destino do aviso: o `email` do global `contact`, como os demais formulários —
+ * Destino do aviso: o campo "Pedido de consultores" do global `contact`, ou o `email` dele, como os demais formulários —
  * sem variável de ambiente nova. */
 
 /** ⚠️ `codigo` existe porque `/consultores` é bilíngue e esta action não sabe
@@ -219,7 +220,7 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
   try {
     const contato = await lerContato()
     const enviou = await enviarAviso({
-      para: contato.email,
+      para: destinoDoAviso(contato, 'consultores'),
       assunto: `[site] solicitação de consultores${nome ? ` — ${nome}` : ''}`,
       responderPara: email,
       /* `filter(Boolean)` só nas linhas de contato, que são opcionais: no corpo

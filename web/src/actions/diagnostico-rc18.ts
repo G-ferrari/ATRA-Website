@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 
 import { CAMPO_ISCA, conferir, excedeuPorIp } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
+import { destinoDoAviso } from '@/lib/destino-do-aviso'
 import {
   questionarioEmTexto,
   resumoRespostas,
@@ -27,11 +28,12 @@ import { MAX_POR_VALOR } from '@/lib/utm'
  * do campo, e o questionário inteiro — pergunta e resposta — vai no e-mail que a
  * ATRA recebe. Sem índice na tela (decisão do dono).
  *
- * ⚠️ **Destino do e-mail: `RC18_LEAD_EMAIL`, com o `contact.email` do CMS como
- * padrão** (P-29). O dono pediu caixa própria para o diagnóstico e informa o
- * endereço depois; enquanto a variável não existir, o aviso continua indo para o
- * contato institucional — deixar o padrão vazio perderia o lead em silêncio até
- * alguém configurar. A gravação em `form-submissions` não depende disto.
+ * ⚠️ **Destino do e-mail: o campo "Diagnóstico" do global `contact`**, depois
+ * `RC18_LEAD_EMAIL`, depois o `contact.email` (P-29, `lib/destino-do-aviso.ts`).
+ * O dono pediu caixa própria para o diagnóstico e informa o endereço depois;
+ * desde 26/09 ela se preenche no admin, sem mexer na VPS. A variável fica de
+ * reserva para quem já a configurou. A gravação em `form-submissions` não
+ * depende disto.
  */
 
 export type ResultadoDiagnosticoLead = { ok: true } | { ok: false; erro: string }
@@ -105,7 +107,7 @@ export async function enviarDiagnosticoRc18(dados: FormData): Promise<ResultadoD
   const contato = await lerContato()
   const empresa = texto(dados, 'company')
   const enviou = await enviarAviso({
-    para: process.env.RC18_LEAD_EMAIL?.trim() || contato.email,
+    para: destinoDoAviso(contato, 'diagnostico', process.env.RC18_LEAD_EMAIL),
     assunto: `[site] diagnóstico RC 18${empresa ? ` — ${empresa}` : ''}`,
     responderPara: email,
     /* ⚠️ O `filter(Boolean)` vale só para as linhas de contato, que são

@@ -764,7 +764,13 @@ export type Contato = {
   email: string
   endereco: string
   redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
+  /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
+  destinos: Record<FormularioComAviso, string | null>
 }
+
+/** Os formulários que avisam a ATRA por e-mail. A newsletter não entra: quem
+ *  recebe e-mail ali é o visitante (MIG-103). */
+export type FormularioComAviso = 'contato' | 'consultores' | 'diagnostico' | 'carreiras' | 'chat'
 
 export type ColunaDoRodape = {
   titulo: string
