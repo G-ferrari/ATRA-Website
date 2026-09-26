@@ -16,7 +16,11 @@
 export type Aviso = {
   para: string
   assunto: string
+  /** Sempre enviado: é o que lê quem não abre HTML, e o que os avisos internos usam. */
   texto: string
+  /** Corpo HTML opcional (o resultado do diagnóstico, task 024). Sem ele, o
+   * e-mail sai só em texto, como todos os avisos anteriores. */
+  html?: string
   /** Para quem recebe poder responder direto ao visitante. */
   responderPara?: string
 }
@@ -36,6 +40,9 @@ export async function enviarAviso(aviso: Aviso): Promise<boolean> {
         to: [aviso.para],
         subject: aviso.assunto,
         text: aviso.texto,
+        /* Só com HTML de verdade. Com as duas partes, o cliente de e-mail mostra
+         * a HTML e esconde o texto: um `html: ''` faria o aviso chegar em branco. */
+        ...(aviso.html ? { html: aviso.html } : {}),
         ...(aviso.responderPara ? { reply_to: aviso.responderPara } : {}),
       }),
       signal: AbortSignal.timeout(8_000),
