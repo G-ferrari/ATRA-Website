@@ -34,6 +34,11 @@ export const SECOES = {
      ligada à página /solucoes/rc18. Diagnóstico é PT-only na v1; o alias EN existe
      só para a arquitetura de slug traduzido resolver sem 404. */
   diagnosticoRc18: { pt: 'diagnostico-rc18', en: 'rc18-diagnostic' },
+  /* Diagnóstico de Maturidade de Dados (feature diagnostico-maturidade-dados,
+     task 026), que substitui o de cima (D-35). Como ele, o alias EN existe para
+     o slug traduzido resolver: a rota em inglês serve o mesmo conteúdo em
+     português, por decisão da feature. */
+  diagnosticoMaturidade: { pt: 'diagnostico-maturidade', en: 'data-maturity-assessment' },
   /* MIG-094. O WordPress serve **uma** página para privacidade, termos e
      cookies (`/politicas-e-termos/`); os 3 links do rodapé apontam todos para
      ela, que é o que já acontece lá. */

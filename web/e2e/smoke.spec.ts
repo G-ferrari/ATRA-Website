@@ -23,6 +23,9 @@ const ROTAS_PORTADAS = {
     // Fase 4c: as duas nascem aqui, sem equivalente no protótipo (D-17).
     '/segmentos',
     '/politicas-e-termos',
+    // Task 026: sem equivalente no protótipo, fora do gate visual. A EN serve o
+    // conteúdo em português, mas o slug é traduzido e é ele que se testa.
+    '/diagnostico-maturidade',
   ],
   en: [
     '/en',
@@ -34,6 +37,7 @@ const ROTAS_PORTADAS = {
     '/en/solutions',
     '/en/segments',
     '/en/privacy-and-terms',
+    '/en/data-maturity-assessment',
   ],
 } as const
 
@@ -77,6 +81,21 @@ test.describe('app novo', () => {
   test('/pt redireciona para a raiz (sem conteúdo duplicado)', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/pt/`, { maxRedirects: 0 })
     expect(r.status()).toBe(308)
+  })
+
+  /* Task 026. O `?setor=` é lido no servidor, então o HTML já sai com o setor
+   * escolhido e a linha de impactos — o aceite se prova sem clicar em nada.
+   * `noindex` nos dois idiomas: é ferramenta de conversão, não conteúdo. */
+  test('o diagnóstico de maturidade sai com noindex e abre no setor da URL', async ({ request }) => {
+    for (const rota of ['/diagnostico-maturidade', '/en/data-maturity-assessment']) {
+      expect(await (await request.get(`${NEXT_URL}${rota}`)).text(), rota).toContain('noindex')
+    }
+    const comSetor = await (await request.get(`${NEXT_URL}/diagnostico-maturidade?setor=saude`)).text()
+    expect(comSetor).toContain('<option value="saude" selected=""')
+    expect(comSetor).toContain('Impactos avaliados:')
+    // Setor fora dos oito códigos é ignorado: o perfil abre sem seleção.
+    const invalido = await (await request.get(`${NEXT_URL}/diagnostico-maturidade?setor=xpto`)).text()
+    expect(invalido).not.toContain('Impactos avaliados:')
   })
 
   /* `/blog/[slug]` **não existe no legado** (os cards apontam para `#`), então
