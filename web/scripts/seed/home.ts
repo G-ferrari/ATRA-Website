@@ -153,7 +153,7 @@ const layout = [
     theme: 'surface-2' as const,
     eyebrow: 'Histórias de Impacto',
     title: 'Investindo no Sucesso dos Nossos Clientes',
-    description: 'Nosso portfólio reflete foco e excelência em arquitetura de dados, nuvem e inteligência artificial — transformando visão estratégica em valor de longo prazo.',
+    description: 'Nosso portfólio reflete foco e excelência em arquitetura de dados, nuvem e inteligência artificial, transformando visão estratégica em valor de longo prazo.',
     readLabel: 'Ler estudo de caso',
     cta: { label: 'Ver todos os cases', href: '/cases-de-sucesso' },
     items: cases,

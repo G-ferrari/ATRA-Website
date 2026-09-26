@@ -134,7 +134,7 @@ export function PromptDaIa({
                       {esteira.map((c, i) => (
                         <div
                           key={`${c.name}-${i}`}
-                          className="flex items-center justify-center bg-white dark:bg-white px-4 py-2.5 rounded-[6px] h-14 w-[156px] mx-3.5 shrink-0 shadow-xs hover:scale-105 transition-transform duration-200 cursor-default"
+                          className="flex items-center justify-center bg-[#f8f8f8] dark:bg-[#f8f8f8] px-4 py-2.5 rounded-[6px] h-14 w-[156px] mx-3.5 shrink-0 shadow-xs hover:scale-105 transition-transform duration-200 cursor-default"
                         >
                           {/* A caixa é fixa e a imagem se ajusta por `max-h`; o
                               next/image fixaria a caixa pelas dimensões do
