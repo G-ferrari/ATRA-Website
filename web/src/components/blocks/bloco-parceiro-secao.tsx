@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { BORDAS, ESPACOS } from '@/components/blocks/bordas'
+import { LogoComTema } from '@/components/ui'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
 import type { BlocoPartnerSplit } from '@/types/content'
@@ -142,8 +143,7 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
                       className="bg-surface-1  p-4 rounded-[6px] aspect-square flex flex-col items-center justify-center text-center shadow-xs hover:border-primary/40 transition-all"
                     >
                       {bloco.logo && (
-                        // eslint-disable-next-line @next/next/no-img-element -- altura fixa, largura pelo aspecto
-                        <img src={bloco.logo.url} alt={bloco.logo.alt} className="h-5 mb-2 object-contain" />
+                        <LogoComTema logo={bloco.logo} logoDark={bloco.logoDark} className="h-5 mb-2 object-contain" />
                       )}
                       {/* ⚠️ No legado este rótulo é literal em português
                           (`PartnerPageBase.tsx:299`), mesmo na versão inglesa da
@@ -174,10 +174,9 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
                 {bloco.imageLabel && (
                   <div className="absolute bottom-4 left-4 bg-surface-1/95 backdrop-blur-md p-3.5 rounded-[6px] shadow-xl flex items-center gap-3 ">
                     {bloco.logo && (
-                      // eslint-disable-next-line @next/next/no-img-element -- altura fixa, largura pelo aspecto
-                      <img
-                        src={bloco.logo.url}
-                        alt={bloco.logo.alt}
+                      <LogoComTema
+                        logo={bloco.logo}
+                        logoDark={bloco.logoDark}
                         className="h-7 w-auto object-contain max-w-[120px]"
                       />
                     )}

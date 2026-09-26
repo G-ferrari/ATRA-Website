@@ -45,20 +45,32 @@ export const Partners: CollectionConfig = {
       required: true,
       label: { pt: 'Logo', en: 'Logo' },
       admin: {
+        /* ⚠️ O texto antigo pedia SVG, e o Media recusa SVG desde MIG-140. */
         description: {
-          pt: 'Preferir SVG. O repositório já tem os SVGs íntegros dos parceiros.',
-          en: 'Prefer SVG. The repository already has intact partner SVGs.',
+          pt: 'PNG com fundo transparente, recortado rente ao logo (sem margem), com pelo menos 400px de largura. Margem no arquivo conta como logo e o deixa menor que os outros.',
+          en: 'Transparent PNG, cropped tight to the logo (no margin), at least 400px wide. Margin in the file counts as logo and makes it smaller than the others.',
         },
       },
     },
     {
-      /* Altura de exibição do logo, por marca.
+      name: 'logoDark',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Logo para o tema escuro', en: 'Logo for the dark theme' },
+      admin: {
+        description: {
+          pt: 'Opcional. Vazio, o logo acima vale nos dois temas. Mesmas regras de arquivo.',
+          en: 'Optional. When empty, the logo above is used in both themes. Same file rules.',
+        },
+      },
+    },
+    {
+      /* Ajuste fino do tamanho do logo, por marca.
        *
-       * O legado fixa uma classe por logo (`About.tsx:384`): Azure em h-12,
-       * Google Cloud em h-10, Databricks e Atlan em h-8. Não é capricho — os
-       * arquivos têm proporções muito diferentes e a mesma altura deixaria uns
-       * gigantes ao lado de outros. É atributo da marca, então vive aqui e vale
-       * onde quer que o logo apareça. */
+       * O legado fixava uma altura por logo (`About.tsx:384`) para compensar
+       * proporção e margem dos arquivos. Desde 26/09 o site iguala o peso
+       * visual sozinho, pela proporção do arquivo recortado (`lib/logo.ts`), e
+       * isto só corrige o que o olho ainda pedir. */
       name: 'logoScale',
       type: 'select',
       defaultValue: 'md',
@@ -68,7 +80,13 @@ export const Partners: CollectionConfig = {
         { value: 'lg', label: { pt: 'Grande', en: 'Large' } },
       ],
       label: { pt: 'Tamanho do logo', en: 'Logo size' },
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        description: {
+          pt: 'Ajuste fino. O site já equilibra os logos pela proporção; use só se um ainda parecer grande ou pequeno demais.',
+          en: 'Fine-tuning. The site already balances logos by their proportions; use only if one still looks too big or too small.',
+        },
+      },
     },
     {
       name: 'description',

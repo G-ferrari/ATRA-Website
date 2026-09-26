@@ -32,6 +32,7 @@ function toPartnerBadge(valor: number | Partner): PartnerBadge | null {
     name: valor.name,
     slug: valor.slug,
     logo: toImageOpcional(valor.logo, 'partners.logo'),
+    logoDark: toImageOpcional(valor.logoDark, 'partners.logoDark'),
     logoScale: valor.logoScale ?? 'md',
   }
 }

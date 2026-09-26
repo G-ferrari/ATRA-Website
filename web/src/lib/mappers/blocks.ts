@@ -34,7 +34,7 @@ const vazio = (v: string | null | undefined): string | null => {
 /* Parceiro não populado é descartado em silêncio, não derruba: aqui é uma
  * vitrine decorativa, e a página inteira fora do ar por um logo é troca ruim.
  * Difere de `cases.heroImage`, onde a imagem é o conteúdo. */
-type ParceiroPopulado = { name: string; slug: string; logo: unknown; logoScale?: unknown }
+type ParceiroPopulado = { name: string; slug: string; logo: unknown; logoDark?: unknown; logoScale?: unknown }
 
 function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
   if (!isPopulated<ParceiroPopulado>(valor)) return null
@@ -42,6 +42,7 @@ function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
     name: valor.name,
     slug: valor.slug,
     logo: toImageOpcional(valor.logo as never, 'partnerShowcase.partners.logo'),
+    logoDark: toImageOpcional(valor.logoDark as never, 'partnerShowcase.partners.logoDark'),
     logoScale: (valor.logoScale as 'sm' | 'md' | 'lg') ?? 'md',
   }
 }
@@ -184,6 +185,7 @@ export function toBlocos(
           highlight: vazio(b.highlight),
           description: vazio(b.description),
           logo: toImageOpcional(b.logo, 'partnerHero.logo'),
+          logoDark: toImageOpcional(b.logoDark, 'partnerHero.logoDark'),
           awards: (b.awards ?? []).map((a) => ({
             topText: vazio(a.topText),
             title: a.title,
@@ -204,6 +206,7 @@ export function toBlocos(
           image: toImageOpcional(b.image, 'partnerSplit.image'),
           imageLabel: vazio(b.imageLabel),
           logo: toImageOpcional(b.logo, 'partnerSplit.logo'),
+          logoDark: toImageOpcional(b.logoDark, 'partnerSplit.logoDark'),
           items: (b.items ?? []).map((i) => i.text),
           cta: toCta(b.cta),
           linkCta: toCta(b.linkCta),

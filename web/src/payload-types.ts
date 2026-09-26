@@ -423,9 +423,16 @@ export interface Partner {
    */
   slug: string;
   /**
-   * Prefer SVG. The repository already has intact partner SVGs.
+   * Transparent PNG, cropped tight to the logo (no margin), at least 400px wide. Margin in the file counts as logo and makes it smaller than the others.
    */
   logo: number | Media;
+  /**
+   * Optional. When empty, the logo above is used in both themes. Same file rules.
+   */
+  logoDark?: (number | null) | Media;
+  /**
+   * Fine-tuning. The site already balances logos by their proportions; use only if one still looks too big or too small.
+   */
   logoScale?: ('sm' | 'md' | 'lg') | null;
   /**
    * One sentence, used in the menu.
@@ -1374,6 +1381,10 @@ export interface Partner {
              * Shown on every award card in the strip.
              */
             logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
             awards?:
               | {
                   topText?: string | null;
@@ -1417,6 +1428,10 @@ export interface Partner {
              * Used in the image label and on every grid card.
              */
             logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
             /**
              * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
              */
@@ -2976,6 +2991,10 @@ export interface Page {
          * Shown on every award card in the strip.
          */
         logo?: (number | null) | Media;
+        /**
+         * Optional. When empty, the logo above is used in both themes.
+         */
+        logoDark?: (number | null) | Media;
         awards?:
           | {
               topText?: string | null;
@@ -3019,6 +3038,10 @@ export interface Page {
          * Used in the image label and on every grid card.
          */
         logo?: (number | null) | Media;
+        /**
+         * Optional. When empty, the logo above is used in both themes.
+         */
+        logoDark?: (number | null) | Media;
         /**
          * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
          */
@@ -4778,6 +4801,10 @@ export interface Segment {
              * Shown on every award card in the strip.
              */
             logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
             awards?:
               | {
                   topText?: string | null;
@@ -4821,6 +4848,10 @@ export interface Segment {
              * Used in the image label and on every grid card.
              */
             logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
             /**
              * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
              */
@@ -6348,6 +6379,10 @@ export interface Solution {
              * Shown on every award card in the strip.
              */
             logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
             awards?:
               | {
                   topText?: string | null;
@@ -6391,6 +6426,10 @@ export interface Solution {
              * Used in the image label and on every grid card.
              */
             logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
             /**
              * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
              */
@@ -7846,6 +7885,7 @@ export interface PagesSelect<T extends boolean = true> {
               highlight?: T;
               description?: T;
               logo?: T;
+              logoDark?: T;
               awards?:
                 | T
                 | {
@@ -7883,6 +7923,7 @@ export interface PagesSelect<T extends boolean = true> {
               image?: T;
               imageLabel?: T;
               logo?: T;
+              logoDark?: T;
               items?:
                 | T
                 | {
@@ -8311,6 +8352,7 @@ export interface PartnersSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   logo?: T;
+  logoDark?: T;
   logoScale?: T;
   description?: T;
   tier?: T;
@@ -8748,6 +8790,7 @@ export interface PartnersSelect<T extends boolean = true> {
               highlight?: T;
               description?: T;
               logo?: T;
+              logoDark?: T;
               awards?:
                 | T
                 | {
@@ -8785,6 +8828,7 @@ export interface PartnersSelect<T extends boolean = true> {
               image?: T;
               imageLabel?: T;
               logo?: T;
+              logoDark?: T;
               items?:
                 | T
                 | {
@@ -9541,6 +9585,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               highlight?: T;
               description?: T;
               logo?: T;
+              logoDark?: T;
               awards?:
                 | T
                 | {
@@ -9578,6 +9623,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               image?: T;
               imageLabel?: T;
               logo?: T;
+              logoDark?: T;
               items?:
                 | T
                 | {
@@ -10340,6 +10386,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               highlight?: T;
               description?: T;
               logo?: T;
+              logoDark?: T;
               awards?:
                 | T
                 | {
@@ -10377,6 +10424,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               image?: T;
               imageLabel?: T;
               logo?: T;
+              logoDark?: T;
               items?:
                 | T
                 | {

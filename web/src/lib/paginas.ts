@@ -83,7 +83,7 @@ export async function resolverPagina(
       depth: 1,
       limit: 100,
       sort: 'order',
-      select: { name: true, slug: true, logo: true, hasPage: true },
+      select: { name: true, slug: true, logo: true, logoDark: true, logoScale: true, hasPage: true },
     })
     comParceiros(
       blocos,

@@ -14,7 +14,7 @@ import { toImageOpcional } from './shared'
  * documento inteiro, para o `select` da consulta e o mapper não saírem de
  * sincronia — e porque `select` estreita o tipo de retorno do Payload. */
 type SolucaoDoMenu = Pick<Solution, 'title' | 'slug' | 'category' | 'icon' | 'shortDescription' | 'hasPage'>
-type ParceiroDoMenu = Pick<Partner, 'name' | 'slug' | 'logo' | 'logoScale' | 'description'>
+type ParceiroDoMenu = Pick<Partner, 'name' | 'slug' | 'logo' | 'logoDark' | 'logoScale' | 'description'>
 
 /* Global `navigation` + duas collections → o que o cabeçalho desenha (MIG-072a).
  *
@@ -103,6 +103,7 @@ export function toParceirosDoMenu(docs: ParceiroDoMenu[]): {
       /* Logo ausente é descartado em silêncio, como na vitrine de /sobre: o
        * menu inteiro fora do ar por um arquivo faltando é troca ruim. */
       logo: toImageOpcional(p.logo as never, 'navigation.partners.logo'),
+      logoDark: toImageOpcional(p.logoDark as never, 'navigation.partners.logoDark'),
       logoScale: (p.logoScale as 'sm' | 'md' | 'lg') ?? 'md',
     })
     if (p.description) descricoes[p.slug] = p.description

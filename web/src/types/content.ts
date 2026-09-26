@@ -23,7 +23,9 @@ export type PartnerBadge = {
   name: string
   slug: string
   logo: Image | null
-  /** Altura de exibição do logo; varia por marca. */
+  /** Versão para o tema escuro; nula, o `logo` vale nos dois. */
+  logoDark: Image | null
+  /** Ajuste fino do tamanho; o peso visual já sai igual pela proporção (`lib/logo.ts`). */
   logoScale: 'sm' | 'md' | 'lg'
 }
 
@@ -199,6 +201,7 @@ export type BlocoPartnerHero = Base & {
   highlight: string | null
   description: string | null
   logo: Image | null
+  logoDark: Image | null
   awards: { topText: string | null; title: string; highlight: string | null }[]
   cta: { label: string; href: string } | null
 }
@@ -213,6 +216,7 @@ export type BlocoPartnerSplit = Base & {
   image: Image | null
   imageLabel: string | null
   logo: Image | null
+  logoDark: Image | null
   items: string[]
   cta: { label: string; href: string } | null
   linkCta: { label: string; href: string } | null
@@ -237,7 +241,13 @@ export type BlocoHomeHero = Base & {
 }
 
 /** Ficha da faixa de parceiros da home. `href` nulo: parceiro sem página. */
-export type ParceiroDaFaixa = { name: string; logo: Image; href: string | null }
+export type ParceiroDaFaixa = {
+  name: string
+  logo: Image
+  logoDark: Image | null
+  logoScale: 'sm' | 'md' | 'lg'
+  href: string | null
+}
 
 export type BlocoLogoMarquee = Base & {
   tipo: 'logoMarquee'

@@ -956,6 +956,18 @@ export const PartnerHero: Block = {
       },
     },
     {
+      name: 'logoDark',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Logo do parceiro (tema escuro)', en: 'Partner logo (dark theme)' },
+      admin: {
+        description: {
+          pt: 'Opcional. Vazio, o logo acima vale nos dois temas.',
+          en: 'Optional. When empty, the logo above is used in both themes.',
+        },
+      },
+    },
+    {
       /* A faixa de prêmios (`PartnerPageBase.tsx:131`): cartões de largura fixa
        * que rolam na horizontal no mobile e centralizam a partir de `md`. O
        * título quebra linha por `whitespace-pre-line` — "Partner of the Year" e
@@ -1034,6 +1046,19 @@ export const PartnerSplit: Block = {
         description: {
           pt: 'Na etiqueta da imagem e em cada cartão da grade.',
           en: 'Used in the image label and on every grid card.',
+        },
+      },
+    },
+    {
+      name: 'logoDark',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Logo do parceiro (tema escuro)', en: 'Partner logo (dark theme)' },
+      admin: {
+        condition: (_, irmaos) => irmaos?.rightColumn !== 'checklist',
+        description: {
+          pt: 'Opcional. Vazio, o logo acima vale nos dois temas.',
+          en: 'Optional. When empty, the logo above is used in both themes.',
         },
       },
     },

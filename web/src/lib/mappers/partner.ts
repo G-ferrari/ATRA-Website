@@ -6,7 +6,7 @@ import type { ParceiroDaFaixa } from '@/types/content'
 import { toImageOpcional } from './shared'
 
 /** O que a faixa da home lê de cada parceiro — o `select` da consulta. */
-export type ParceiroDaFaixaDoc = Pick<Partner, 'name' | 'slug' | 'logo' | 'hasPage'>
+export type ParceiroDaFaixaDoc = Pick<Partner, 'name' | 'slug' | 'logo' | 'logoDark' | 'logoScale' | 'hasPage'>
 
 /* Parceiro → ficha da faixa "Parceiros de Confiança" da home.
  *
@@ -20,6 +20,8 @@ export function toParceiroDaFaixa(doc: ParceiroDaFaixaDoc, locale: Locale): Parc
   return {
     name: doc.name,
     logo,
+    logoDark: toImageOpcional(doc.logoDark, 'partners.logoDark'),
+    logoScale: doc.logoScale ?? 'md',
     href: doc.hasPage ? hrefDe('parceiros', locale, doc.slug) : null,
   }
 }

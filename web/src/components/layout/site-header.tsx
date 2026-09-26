@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { Icone } from '@/components/blocks/icones'
 import { PainelDoMenu } from '@/components/layout/mega-menu'
 import { TEXTOS_CASCA } from '@/lib/navegacao'
+import { larguraOticaCss } from '@/lib/logo'
 import { hrefDe } from '@/lib/routes'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
@@ -380,8 +381,19 @@ function ItensDaGaveta({
       <>
         {navegacao.parceiros.map((p) => (
           <Link key={p.slug} href={hrefDe('parceiros', locale, p.slug)} className={linha} onClick={aoNavegar}>
-            <div className="w-8 h-8 rounded-md bg-white dark:bg-white/10 flex items-center justify-center text-primary shrink-0 p-1 relative">
-              {p.logo && <Image src={p.logo.url} alt={p.logo.alt} fill sizes="32px" className="object-contain p-1" />}
+            <div className="w-8 h-8 rounded-md bg-white dark:bg-white/10 flex items-center justify-center text-primary shrink-0 p-1">
+              {/* Mesma regra do mega-menu (`lib/logo.ts`), numa caixa quadrada. */}
+              {p.logo && (
+                <div
+                  className="relative"
+                  style={{ width: larguraOticaCss(p.logo, p.logoScale, 1), aspectRatio: `${p.logo.width} / ${p.logo.height}` }}
+                >
+                  <Image src={p.logo.url} alt={p.logo.alt} fill sizes="32px" className={cn('object-contain', p.logoDark && 'dark:hidden')} />
+                  {p.logoDark && (
+                    <Image src={p.logoDark.url} alt={p.logoDark.alt} fill sizes="32px" className="object-contain hidden dark:block" />
+                  )}
+                </div>
+              )}
             </div>
             <span className="text-xs font-semibold capitalize tracking-wide leading-tight">{p.name}</span>
           </Link>
