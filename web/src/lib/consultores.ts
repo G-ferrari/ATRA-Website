@@ -1,5 +1,6 @@
 import type { ConsultantRole } from '@/types/content'
 
+
 /* Filtro do catálogo de /consultores (task 009).
  *
  * Separado da ilha pelo mesmo motivo de `lib/diagnostico-rc18.ts`: é a regra que
@@ -101,4 +102,40 @@ export function filtrarPerfis({
     parciais: comCobertura.filter((x) => x.cobertura < alvo),
     alvo,
   }
+}
+
+/* ── Carrinho de solicitação (tasks 010 e 020) ───────────────────────────────
+ *
+ * O visitante junta os perfis que quer. Mora aqui pelo mesmo motivo de
+ * `exibicao`: foi decisão escrita na ilha, sem teste, que produziu os dois
+ * defeitos da 009. `ReadonlySet` porque a ordem de inserção é a ordem em que
+ * ele escolheu — reordenar pelo catálogo apagaria o raciocínio dele.
+ *
+ * ⚠️ **Sem quantidade desde a task 020** (22/09, pedido do dono via G-ferrari).
+ * Era um `Map<slug, quantidade>` com stepper de 1 a 20 por perfil, e o resumo
+ * dizia "2× Data Engineer". Quantas pessoas de cada perfil passou a ser assunto
+ * da conversa comercial, e o carrinho virou o conjunto dos perfis.
+ *
+ * ⚠️ Quem chama usa a forma **funcional** do `setState`. Ler o conjunto do
+ * render e passar o resultado perde atualização: dois cliques no mesmo tick
+ * partem do mesmo conjunto antigo e o segundo sobrescreve o primeiro. */
+
+export type Escolhidos = ReadonlySet<string>
+
+export function alternarPerfil(atual: Escolhidos, slug: string): Escolhidos {
+  const novo = new Set(atual)
+  /* `delete` responde se removeu: serve de teste e de remoção. */
+  if (!novo.delete(slug)) novo.add(slug)
+  return novo
+}
+
+/** Os perfis escolhidos, na ordem em que entraram, já casados com o catálogo.
+ *  Slug que não existe mais (perfil despublicado entre a escolha e o envio) é
+ *  descartado aqui — melhor sumir da lista que quebrar o resumo. */
+export function perfisEscolhidos(perfis: readonly ConsultantRole[], escolhidos: Escolhidos): ConsultantRole[] {
+  const porSlug = new Map(perfis.map((p) => [p.slug, p]))
+  return [...escolhidos].flatMap((slug) => {
+    const perfil = porSlug.get(slug)
+    return perfil ? [perfil] : []
+  })
 }

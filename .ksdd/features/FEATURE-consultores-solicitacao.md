@@ -80,12 +80,25 @@ Conecta com o problema-raiz do projeto: o site é motor de **geração de leads 
 - **Filtro multi-seleção** de tags e de senioridade, com **alternador `OU | E`** visível e **contador de resultados** ao vivo. "Todos"/"Todas" continua limpando a dimensão.
 - **Modo "E" por ordenação de cobertura, não por corte seco.** Os perfis que cobrem **todas** as tags marcadas vão ao topo; os que cobrem parte aparecem logo abaixo, com selo **"cobre 2 de 3"** e a chamada de **combinar dois perfis**. ⚠️ **O modo "E" nunca esvazia a lista sozinho** — com 8 arquétipos, exigir três tags zeraria a maioria das combinações, e um beco sem saída no meio do funil é pior que um resultado parcial. É também o que empurra o visitante para o comportamento certo: quando nenhum perfil cobre tudo, a resposta é **pedir dois perfis**, que é exatamente o *"preciso de 1 de cada"* da Karen.
 - **Lista cumulativa "Minha solicitação"** — o botão "Solicitar" do card e o "Solicitar este Profissional" do modal passam a **adicionar o perfil à lista**, em vez de navegar para `/contato`. Painel com os perfis escolhidos, remoção individual e botão de enviar.
-- **Quantidade de pessoas por perfil** (stepper, padrão 1) dentro da lista.
+- ~~**Quantidade de pessoas por perfil** (stepper, padrão 1) dentro da lista.~~ *Removida na task 020 (22/09).*
 - **CTA "Não encontrou um consultor nesta lista?"** — no estado vazio do filtro e ao fim da lista de perfis; abre a solicitação **sem nenhum perfil marcado**, com campo livre "descreva o perfil que você procura".
-- **Envio vivo:** `solicitar-consultores.tsx` deixa de ser estático, recebe os perfis escolhidos e grava lead com **novo `kind: consultant-request`** → e-mail de aviso → RD Station CRM (kind comercial, D-29). Contato pedido: **nome, e-mail, telefone** (+ empresa opcional), mais **duração estimada em meses** como campo opcional único do formulário.
+- **Envio vivo:** `solicitar-consultores.tsx` deixa de ser estático, recebe os perfis escolhidos e grava lead com **novo `kind: consultant-request`** → e-mail de aviso → RD Station CRM (kind comercial, D-29). Contato pedido: **nome, e-mail, telefone** e descrição. *(A empresa e a duração estimada saíram na task 020 — 22/09.)*
 - **Ajustes de UI** guiados pelo Impeccable (D-31) para reduzir cliques, com **regravação de gabarito justificada no PR**.
 - **Testes:** e2e do filtro em OU e em E, do acúmulo na lista, do envio; `pnpm gate --baseline` regravado.
 - **PT-BR e EN** nos rótulos de UI (a página já é bilíngue — `TEXTOS` em ambos os arquivos).
+
+### Revisão de 21/09
+
+Pedidos de G-ferrari depois da primeira rodada, registrados como tasks 017 e 018:
+
+- **Chamada "Não encontrou…" junto dos diferenciais** (017): sai do fim da grade e entra num componente com a seção "Por que os maiores players…", em visual de destaque. Continua no estado vazio do filtro.
+- **Aba de pedido** (018): o painel "Minha solicitação" e o formulário da seção final viram **uma aba**, como carrinho — sobe de baixo no celular, desliza da direita no computador. Abre expandida no primeiro "adicionar", minimiza numa barra de resumo e expande de novo. A seção final fica com título, subtítulo e contatos, e um botão que abre a aba.
+- Fora das tasks: as promessas de **48h** saíram dos cards, do modal e do herói (PR #26).
+
+### Revisão de 22/09
+
+- **Tags recolhíveis** (019): o filtro de especialidades e as tecnologias dos cards recolhem numa tag "+N", que abre e fecha.
+- **Pedido enxuto** (020), olhando a aba pronta: sai a **quantidade de pessoas por perfil** — cada perfil entra uma vez, e quantas pessoas de cada vira conversa comercial —, o "X" vira lixeira, o formulário fica com **nome, e-mail, telefone e descrição (opcional)**, o botão passa a "Enviar solicitação" e a confirmação ocupa a aba. Saem, com os campos, o modelo de alocação e a duração estimada.
 
 ### 2.2 O que fica pra depois
 
@@ -98,7 +111,7 @@ Conecta com o problema-raiz do projeto: o site é motor de **geração de leads 
 
 - **Resposta automática com proposta** (*"o sistema responde individualmente"*, *"recebe um e-mail já com a proposta só pra ele assinar"*) — é o modelo self-service que o áudio recusa explicitamente. Não há motor de precificação, nem deve haver nesta v1.
 - **Perfis de pessoas reais, disponibilidade ou agenda** — `SpecialistRoles` é catálogo de **arquétipos** (SPEC §4.2), não de profissionais. Nada nesta feature sugere ao visitante que ele está reservando uma pessoa específica.
-- **Alterar a barra de números do herói, a seção de diferenciais ou o painel de contatos** — ficam como estão, sob gabarito.
+- **Alterar a barra de números do herói, a seção de diferenciais ou o painel de contatos** — ficam como estão, sob gabarito. *Revisto em 21/09: o herói perdeu o "< 48h" e a seção de diferenciais recebe a chamada "Não encontrou…" (017), ambos a pedido do dono via G-ferrari. O painel de contatos segue intocado.*
 - **Mexer em texto institucional da página** — rótulos de UI sim; cópia editorial é decisão do marketing (D-22). A cópia do CTA "Não encontrou…" veio do dono no próprio feedback, e por isso está autorizada.
 - **Tornar `/consultores` uma rota de conteúdo real fora do gate** — o catálogo continua com 8 arquétipos comparáveis ao gabarito; o caminho é regravar (D-31), não remover do gate.
 
@@ -243,6 +256,8 @@ Modelada em `web/src/actions/diagnostico-rc18.ts`: honeypot (`CAMPO_ISCA`) + car
 | Alternador `OU \| E` | dois segmentos exclusivos sobre a lista de tags | — | default, selecionado, hover, foco |
 | Stepper de quantidade | −/+ com número, por perfil na lista | — | default, mínimo (1), máximo (teto), disabled |
 | Painel "Minha solicitação" | lista de perfis escolhidos + quantidade + remover + enviar | fixo no fluxo; considerar barra fixa no mobile | vazio, com itens, enviando |
+| Aba de pedido (018, substitui o painel acima e o formulário em fluxo) | carrinho + formulário numa aba | de baixo (celular), lateral (computador) | oculta, expandida, minimizada, enviando, enviada |
+| Chamada sob medida (017) | "Não encontrou…" em destaque, dentro da seção de diferenciais | destaque (seção), discreta (estado vazio) | default, hover, foco |
 | Selo de cobertura | "cobre 2 de 3" no card, só em modo **E** com cobertura parcial | — | completo (some), parcial, nenhum (some) |
 
 ⚠️ Nenhum bloco de CMS novo (DESIGN.md §Do's and Don'ts: *bloco novo exige justificativa no PR*). Tudo vive na ilha cliente de `/consultores`.

@@ -19,9 +19,19 @@ export const ROTAS_COM_GABARITO = [
      por `smoke.spec.ts` — respondem 200, o artigo e a vaga levam a um detalhe
      que existe, e artigo com corpo é indexável. */
   { nome: 'sobre', caminho: '/sobre' },
-  /* Entrou tarde: MIG-052 fechou /consultores sem gabarito, e 57% da página
-     estava faltando sem ninguém ver. Ver a nota no topo de `consultores/page.tsx`. */
-  { nome: 'consultores', caminho: '/consultores' },
+  /* `/consultores` **saiu** em 24/09 (D-34), e por um motivo diferente do de
+     `/blog`: não é o conteúdo que mudou, é o desenho. De 21 a 23/09 a página
+     recebeu seis mudanças pedidas pelo dono — o prazo de 48h saiu, a chamada
+     "Não encontrou…" foi para os diferenciais, o pedido virou uma aba, as tags
+     recolhem — e nenhuma delas existe no protótipo. Um gabarito que mostra o
+     desenho antigo não reprova regressão: reprova a decisão.
+
+     A alternativa, capturar o próprio app e chamar de gabarito, foi recusada
+     por G-ferrari em 24/09 — é o espelho que a estratégia de testes descreve
+     ("prova que o código não mudou, não que está certo").
+
+     O que cobre a rota agora: `consultores.spec.ts` (filtro nos dois modos,
+     carrinho, aba e envio) e `smoke.spec.ts`. */
   /* `/solucoes` (o índice) fica **fora**: D-09 mudou o comportamento da rota e
      não há gabarito — o legado serve ali a página de IA. É esta que compara. */
   { nome: 'solucao-detalhe', caminho: '/solucoes/inteligencia-artificial' },

@@ -1,12 +1,12 @@
 ---
 id: 015
 title: Acabamento de UI da página guiado pelo Impeccable
-status: para implementar
+status: em revisão
 feature: consultores-solicitacao
 area: design
 priority: P1
 estimate: M
-depends_on: [013, 014]
+depends_on: [013, 014, 017, 018, 019, 020]
 feature_refs:
   - ".ksdd/features/FEATURE-consultores-solicitacao.md#8-impacto-no-design"
   - ".ksdd/features/FEATURE-consultores-solicitacao.md#21-o-que-entra-v1"
@@ -25,11 +25,12 @@ ajustezinhos pra ficar mais bacana"*.
 
 ## Escopo
 - Passar a página pelo Impeccable e aplicar o que ele apontar em: hierarquia
-  entre filtro / grade / painel "Minha solicitação" / formulário, densidade das
+  entre filtro / grade / aba de pedido / seção final, densidade das
   pílulas, legibilidade do selo de cobertura, e o caminho do primeiro clique até
   o envio.
-- **Mobile (375px)**: decidir e implementar o comportamento do painel "Minha
-  solicitação" — barra fixa ou seção no fluxo —, sem cobrir conteúdo.
+- **Mobile (375px)**: o comportamento do pedido foi decidido e implementado na
+  018 (aba que sobe de baixo e minimiza numa barra); aqui entra só o acabamento
+  dela, sem cobrir conteúdo.
 - **Tablet (768px)** e **desktop (1280px)**: conferir que a grade de 2 colunas e o
   separador de cobertura não quebram.
 - Revisar contraste dos elementos novos nos **dois** temas.
@@ -37,11 +38,11 @@ ajustezinhos pra ficar mais bacana"*.
   registrar o número no PR, antes e depois.
 
 ## Fora de escopo
-- Mudar comportamento ou copy (tasks 009–014).
+- Mudar comportamento ou copy (tasks 009–014 e 017–020).
 - Regravar o gabarito (task 016) — o acabamento vem **antes**, senão a regravação
   acontece duas vezes.
-- Tocar na barra de números do herói, na seção de diferenciais ou no
-  `PainelDeContatos`.
+- Mudar o conteúdo da barra de números do herói (revista em 21/09, PR #26), da
+  seção de diferenciais (017) ou do `PainelDeContatos`.
 
 ## Critérios de aceitação
 - [ ] Caminho principal com contagem de cliques registrada no PR, menor ou igual

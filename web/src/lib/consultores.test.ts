@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import { emOrdem, exibicao, filtrarPerfis, total } from './consultores'
+import {
+  alternarPerfil,
+  emOrdem,
+  exibicao,
+  filtrarPerfis,
+  perfisEscolhidos,
+  total,
+  type Escolhidos,
+} from './consultores'
 import type { ConsultantRole } from '@/types/content'
 
 /* Fixture com os 8 perfis semeados e suas tags reais
@@ -228,5 +236,56 @@ describe('exibicao (como o resultado é lido na tela)', () => {
         if (e.faixa === 'aviso') expect(e.principais).toHaveLength(0)
       }
     }
+  })
+})
+
+describe('carrinho de solicitação', () => {
+  const slugs = (e: Escolhidos) => [...e]
+  const escolher = (...s: string[]) => s.reduce<Escolhidos>((e, slug) => alternarPerfil(e, slug), new Set())
+
+  describe('alternarPerfil', () => {
+    it('adiciona e remove no segundo clique', () => {
+      const a = alternarPerfil(new Set(), 'Data Engineer')
+      expect(slugs(a)).toEqual(['Data Engineer'])
+      expect(slugs(alternarPerfil(a, 'Data Engineer'))).toEqual([])
+    })
+
+    /* ⚠️ A ordem é a em que o visitante escolheu, não a do catálogo: é o
+       raciocínio dele, e reordenar apagaria. */
+    it('preserva a ordem de inserção', () => {
+      expect(slugs(escolher('Cloud Architect', 'Data Engineer', 'ML Engineer'))).toEqual([
+        'Cloud Architect',
+        'Data Engineer',
+        'ML Engineer',
+      ])
+    })
+
+    it('remover do meio não move os outros', () => {
+      expect(slugs(alternarPerfil(escolher('A', 'B', 'C'), 'B'))).toEqual(['A', 'C'])
+    })
+
+    it('não muta o conjunto recebido', () => {
+      const antes = escolher('A')
+      alternarPerfil(antes, 'B')
+      expect(slugs(antes)).toEqual(['A'])
+    })
+  })
+
+  describe('perfisEscolhidos', () => {
+    it('casa os slugs com o catálogo, na ordem da escolha', () => {
+      const e = escolher('ML Engineer', 'Data Engineer')
+      expect(perfisEscolhidos(PERFIS, e).map((p) => p.role)).toEqual(['ML Engineer', 'Data Engineer'])
+    })
+
+    /* ⚠️ Perfil despublicado entre a escolha e o envio: some da lista em vez de
+       quebrar o resumo — e não vai para o servidor. */
+    it('descarta slug que não está mais no catálogo', () => {
+      const e = escolher('Data Engineer', 'Perfil Que Sumiu')
+      expect(perfisEscolhidos(PERFIS, e).map((p) => p.role)).toEqual(['Data Engineer'])
+    })
+
+    it('carrinho vazio devolve lista vazia', () => {
+      expect(perfisEscolhidos(PERFIS, new Set())).toEqual([])
+    })
   })
 })
