@@ -1,7 +1,7 @@
 ---
 id: 023
 title: Modelo de dados — kind data-maturity-diagnostic, grupo do diagnóstico e global de textos
-status: em revisão
+status: concluída
 feature: diagnostico-maturidade-dados
 area: data-model
 priority: P0
