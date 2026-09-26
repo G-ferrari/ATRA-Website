@@ -10,7 +10,7 @@
 | 022 | Portar o motor do diagnóstico do HTML v1.7 (base, pontuação, roadmap) com testes de paridade | backend | P0 | L | concluída | — |
 | 023 | Modelo de dados — kind `data-maturity-diagnostic`, grupo do diagnóstico e global de textos | data-model | P0 | M | concluída | — |
 | 024 | E-mail HTML do resultado ao lead e aviso à ATRA | backend | P0 | M | concluída | 022 |
-| 025 | Server Action de captura — recalcula no servidor, grava, envia o resultado e avisa a ATRA | backend | P0 | L | em revisão | 022, 023, 024 |
+| 025 | Server Action de captura — recalcula no servidor, grava, envia o resultado e avisa a ATRA | backend | P0 | L | concluída | 022, 023, 024 |
 | 026 | Rota `/diagnostico-maturidade` — perfil com setor pela URL e perguntas (ilha) | frontend | P0 | L | para implementar | 022, 023 |
 | 027 | Contato, conclusão e envio — liga a ilha à action, WhatsApp/Agendar e evento com consentimento | frontend | P0 | M | para implementar | 025, 026 |
 | 028 | Aposentar o diagnóstico RC18 — redirect para a rota nova e remoção do motor antigo | frontend | P0 | M | para implementar | 027 |

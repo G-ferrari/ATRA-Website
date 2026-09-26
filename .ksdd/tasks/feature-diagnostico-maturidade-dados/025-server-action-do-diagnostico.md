@@ -1,7 +1,7 @@
 ---
 id: 025
 title: Server Action de captura — recalcula no servidor, grava, envia o resultado e avisa a ATRA
-status: em revisão
+status: concluída
 feature: diagnostico-maturidade-dados
 area: backend
 priority: P0
