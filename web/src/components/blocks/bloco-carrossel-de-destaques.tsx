@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 
-import { BORDAS, ESPACOS } from '@/components/blocks/bordas'
+import { BORDAS } from '@/components/blocks/bordas'
 import { congelado } from '@/lib/e2e'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
@@ -84,6 +84,15 @@ export function BlocoCarrosselDeDestaques({ bloco, locale }: { bloco: BlocoHighl
 
   const fundoDoBanner = bloco.theme === 'surface-2' ? 'bg-surface-3' : 'bg-surface-2'
 
+  /* ⚠️ Sem respiro próprio no fundo da página. Pedido do designer em 26/09:
+     entre a seção de cima e a de baixo havia 192px de cada lado (96 da vizinha
+     + 96 daqui, o ritmo `py-16 md:py-24` de seção), e ele pediu metade — que é
+     exatamente o que as vizinhas já dão sozinhas. Em faixa de outra cor o
+     banner encostaria na borda dela, então ali volta o ritmo de faixa do
+     DESIGN.md (`py-10 md:py-14`). Por isso o campo "Espaçamento" comum aos
+     blocos não vale para este. */
+  const respiro = bloco.theme === 'surface-2' ? 'py-10 md:py-14' : 'py-0'
+
   return (
     <section
       id={bloco.anchor ?? undefined}
@@ -92,7 +101,7 @@ export function BlocoCarrosselDeDestaques({ bloco, locale }: { bloco: BlocoHighl
       className={cn(
         'overflow-hidden scroll-mt-32',
         bloco.theme === 'surface-2' ? 'bg-surface-2' : 'bg-surface-1',
-        ESPACOS[bloco.espaco],
+        respiro,
         BORDAS[bloco.borda],
       )}
     >
