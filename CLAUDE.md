@@ -181,7 +181,10 @@ espelho que `estrategia-de-testes.md` descreve. Quem cobre a rota agora é
 `e2e/consultores.spec.ts` e o smoke. ⚠️ O preço: mudança visual não intencional
 nessa rota não é mais pega por ninguém.
 
-São **12 rotas** sob o gate.
+**Rota fora do ar também sai (D-36).** `/glossario` responde 404 desde 26/09,
+com a página e os termos intactos no CMS; o smoke confere o 404.
+
+São **11 rotas** sob o gate.
 
 - Imagens entram **mascaradas**: o legado serve o JPEG original e o app novo
   serve variante reencodada pelo `next/image`. Divergem por projeto, não por

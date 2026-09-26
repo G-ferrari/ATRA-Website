@@ -78,7 +78,6 @@ const RODAPE = {
           { label: 'Parceiros', href: '/parceiros/google-cloud' },
           { label: 'Carreiras', href: '/carreiras' },
           { label: 'Sobre', href: '/sobre' },
-          { label: 'Glossário', href: '/glossario' },
         ],
       },
       { title: 'Fale Conosco', kind: 'contact' as const, links: [] },

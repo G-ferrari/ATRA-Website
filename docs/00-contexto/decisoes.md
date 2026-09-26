@@ -795,3 +795,31 @@ entregou.
   pergunta em aberto ao time.
 - O desenho — rota, setor escolhido pela URL, o que fica no CMS — é da feature
   `diagnostico-maturidade-dados`, não desta decisão.
+
+## D-36 — O glossário sai do ar até segunda ordem
+
+*Decidida na reunião de 24/09/2026 (ata provisória, sem diarização), registrada
+por G-ferrari em 26/09.* A ata não registra o motivo.
+
+**Contexto.** `/glossario` veio do protótipo (MIG-040): item de primeiro nível
+do menu, com painel próprio, link no rodapé, e uma das 12 rotas do gate visual.
+A reunião pediu que ele fosse escondido.
+
+**Opções.** (a) Apagar a página e os termos; (b) responder 404 e manter tudo
+no CMS; (c) deixar acessível pela URL, só sem link.
+
+**Escolha: (b).** É reversível sem reimportar nada. (c) deixaria a página
+indexável e alcançável por quem já tinha o link — não é esconder. E 404, não
+410: 404 é "agora não", e o robô volta a olhar; 410 tiraria a URL do índice
+como coisa que deixou de existir.
+
+**Consequência.**
+
+- A página responde 404 nos dois idiomas (`NO_AR` em `glossario/page.tsx`) e
+  sai do sitemap. A collection `glossary-terms` e o código da página ficam.
+- Os links saem do menu e do rodapé — no admin, que é onde eles vivem, e no
+  seed.
+- `ROTAS_COM_GABARITO` perde `/glossario`: são **11 rotas** sob o gate. O smoke
+  passa a conferir o 404.
+- Para voltar: `NO_AR = true`, repor a categoria no global Navegação e o link
+  no Rodapé, devolver a rota ao gate e ao sitemap.
