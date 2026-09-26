@@ -1133,20 +1133,20 @@ export const LogoMarquee: Block = {
   fields: [
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
     {
-      /* ⚠️ Lista própria, e **não** a collection `partners`, embora seja o que a
-       * regra de fonte única pediria.
+      /* ⚠️ Campo aposentado: os logos da faixa saem da collection `partners`
+       * (`resolverPagina`), a mesma do mega-menu, para uma troca de logo no
+       * admin valer nos dois lugares.
        *
-       * O legado mostra 9 logos e a collection tem 8: o nono está cadastrado lá
-       * só como "Partner", sem nome real (P-10), e `parceiros-catalogo.ts`
-       * decidiu não publicar um card genérico com esse nome. Ligar a faixa à
-       * collection forçaria responder P-10 para a home ficar igual ao gabarito.
+       * Antes era lista própria porque o legado mostra 9 logos e a collection
+       * tem 8 — o nono é um "Partner" sem nome real (P-10). O dono pediu a faixa
+       * ligada ao cadastro e cada logo levando à página do parceiro, e um logo
+       * sem parceiro não leva a lugar nenhum: o nono sai da home.
        *
-       * O custo é baixo porque esta faixa é decoração: os logos não levam a
-       * lugar nenhum, ao contrário dos do megamenu e da vitrine de /sobre. */
+       * O campo fica, escondido, só para não exigir migração que apaga a
+       * tabela e os dados antigos. Não é lido por ninguém. */
       name: 'partners',
       type: 'array',
-      required: true,
-      minRows: 1,
+      admin: { hidden: true },
       label: { pt: 'Logos', en: 'Logos' },
       fields: [
         { name: 'name', type: 'text', required: true, label: { pt: 'Nome', en: 'Name' } },

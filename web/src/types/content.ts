@@ -236,10 +236,14 @@ export type BlocoHomeHero = Base & {
   clientes: LogoDeCliente[]
 }
 
+/** Ficha da faixa de parceiros da home. `href` nulo: parceiro sem página. */
+export type ParceiroDaFaixa = { name: string; logo: Image; href: string | null }
+
 export type BlocoLogoMarquee = Base & {
   tipo: 'logoMarquee'
   title: string | null
-  partners: { name: string; logo: Image }[]
+  /** Resolvidos pela página, da collection `partners`. */
+  partners: ParceiroDaFaixa[]
 }
 
 export type BlocoFeatureTabs = Base & {

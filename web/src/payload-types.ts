@@ -1477,11 +1477,13 @@ export interface Partner {
           }
         | {
             title?: string | null;
-            partners: {
-              name: string;
-              logo: number | Media;
-              id?: string | null;
-            }[];
+            partners?:
+              | {
+                  name: string;
+                  logo: number | Media;
+                  id?: string | null;
+                }[]
+              | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -3077,11 +3079,13 @@ export interface Page {
       }
     | {
         title?: string | null;
-        partners: {
-          name: string;
-          logo: number | Media;
-          id?: string | null;
-        }[];
+        partners?:
+          | {
+              name: string;
+              logo: number | Media;
+              id?: string | null;
+            }[]
+          | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -4877,11 +4881,13 @@ export interface Segment {
           }
         | {
             title?: string | null;
-            partners: {
-              name: string;
-              logo: number | Media;
-              id?: string | null;
-            }[];
+            partners?:
+              | {
+                  name: string;
+                  logo: number | Media;
+                  id?: string | null;
+                }[]
+              | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -6445,11 +6451,13 @@ export interface Solution {
           }
         | {
             title?: string | null;
-            partners: {
-              name: string;
-              logo: number | Media;
-              id?: string | null;
-            }[];
+            partners?:
+              | {
+                  name: string;
+                  logo: number | Media;
+                  id?: string | null;
+                }[]
+              | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */

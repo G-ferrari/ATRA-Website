@@ -6,6 +6,7 @@ import type {
   Depoimento,
   LogoDeCliente,
   MetricaInstitucional,
+  ParceiroDaFaixa,
   PartnerBadge,
   Selo,
   TemaDoBloco,
@@ -235,9 +236,8 @@ export function toBlocos(
           ...base(b),
           tipo: 'logoMarquee',
           title: vazio(b.title),
-          partners: (b.partners ?? [])
-            .map((p) => ({ name: p.name, logo: toImageOpcional(p.logo, 'logoMarquee.partners.logo') }))
-            .filter((p): p is { name: string; logo: NonNullable<typeof p.logo> } => p.logo !== null),
+          // Preenchidos pela página, da collection `partners`.
+          partners: [],
         })
         break
 
@@ -651,6 +651,12 @@ export function comVagas(blocos: Bloco[], vagas: Vaga[]): Bloco[] {
 /** Injeta os logos de cliente no herói da home (bloco não busca dado). */
 export function comClientes(blocos: Bloco[], clientes: LogoDeCliente[]): Bloco[] {
   for (const b of blocos) if (b.tipo === 'homeHero') b.clientes = clientes
+  return blocos
+}
+
+/** Injeta os parceiros na faixa de logos da home. */
+export function comParceiros(blocos: Bloco[], parceiros: ParceiroDaFaixa[]): Bloco[] {
+  for (const b of blocos) if (b.tipo === 'logoMarquee') b.partners = parceiros
   return blocos
 }
 
