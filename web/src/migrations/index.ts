@@ -52,6 +52,7 @@ import * as migration_20260920_225540_add_consultant_request_kind from './202609
 import * as migration_20260926_134617_add_facebook_social from './20260926_134617_add_facebook_social';
 import * as migration_20260926_135527_add_partner_logo_dark from './20260926_135527_add_partner_logo_dark';
 import * as migration_20260926_162528_add_highlight_carousel from './20260926_162528_add_highlight_carousel';
+import * as migration_20260926_171500_alocacao_de_consultores from './20260926_171500_alocacao_de_consultores';
 
 export const migrations = [
   {
@@ -323,5 +324,10 @@ export const migrations = [
     up: migration_20260926_162528_add_highlight_carousel.up,
     down: migration_20260926_162528_add_highlight_carousel.down,
     name: '20260926_162528_add_highlight_carousel'
+  },
+  {
+    up: migration_20260926_171500_alocacao_de_consultores.up,
+    down: migration_20260926_171500_alocacao_de_consultores.down,
+    name: '20260926_171500_alocacao_de_consultores',
   },
 ];
