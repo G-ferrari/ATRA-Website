@@ -133,6 +133,22 @@ const layout = [
       { icon: 'target' as const, tag: 'Enterprise', value: '20+', label: 'Clientes Estratégicos', color: 'secondary' as const },
     ],
   },
+  /* Destaques (reunião de 24/09), logo abaixo dos números. Nasce só com a
+     RC18; os próximos entram pelo admin. O texto é o do herói da página da
+     RC18 (`solucoes-rc18.ts`) — a redação final é do marketing (D-22). */
+  {
+    blockType: 'highlightCarousel' as const,
+    autoplay: true,
+    items: [
+      {
+        tag: 'Resolução Conjunta nº 18/2025',
+        title: 'RC 18/2025: sua instituição está preparada para comprovar a qualidade dos dados?',
+        description:
+          'Prazo de adequação: 31 de dezembro de 2026. A exigência não termina na criação de uma política: é preciso processos, tecnologia e evidências capazes de demonstrar a qualidade das informações prestadas ao Banco Central.',
+        cta: { label: 'Conhecer a solução', href: '/solucoes/rc18' },
+      },
+    ],
+  },
   {
     blockType: 'featureTabs' as const,
     eyebrow: 'Nosso Processo de Valor',

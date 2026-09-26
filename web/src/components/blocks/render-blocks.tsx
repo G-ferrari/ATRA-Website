@@ -16,6 +16,7 @@ import { BlocoParaQuem } from './bloco-para-quem'
 import { BlocoAbasDeDestaque } from './bloco-abas-de-destaque'
 import { BlocoBentoDaHome } from './bloco-bento-da-home'
 import { BlocoCarrosselDeCases } from './bloco-carrossel-de-cases'
+import { BlocoCarrosselDeDestaques } from './bloco-carrossel-de-destaques'
 import { BlocoDepoimentos } from './bloco-depoimentos'
 import { BlocoFaixaDeLogos } from './bloco-faixa-de-logos'
 import { BlocoHomeHero } from './bloco-home-hero'
@@ -97,6 +98,8 @@ export function RenderBlocks({
             return <BlocoBentoDaHome key={b.id} bloco={b} />
           case 'caseCarousel':
             return <BlocoCarrosselDeCases key={b.id} bloco={b} />
+          case 'highlightCarousel':
+            return <BlocoCarrosselDeDestaques key={b.id} bloco={b} locale={locale} />
           case 'testimonialCarousel':
             return <BlocoDepoimentos key={b.id} bloco={b} />
           case 'contentTeaser':
