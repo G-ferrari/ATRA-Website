@@ -1,7 +1,8 @@
 /* API pública do Diagnóstico de Maturidade de Dados (questionário do Roger, v1.7).
  *
- * `dados.ts` é a base gerada do HTML; `motor.ts`, a lógica portada. Quem usa o
- * diagnóstico (rota, action, e-mail) importa daqui. `original.ts` fica de fora de
+ * `dados.ts` é a base gerada do HTML; `motor.ts`, a lógica portada; `email.ts`,
+ * o resultado ao lead e o aviso à ATRA. Quem usa o diagnóstico (rota, action,
+ * e-mail) importa daqui. `original.ts` fica de fora de
  * propósito: é só dos testes de paridade e depende de `node:vm` e do disco.
  */
 
@@ -62,3 +63,14 @@ export {
   type Respostas,
   type Roadmap,
 } from './motor'
+
+export {
+  corDoPilar,
+  escaparHtml,
+  montarAvisoParaAtra,
+  montarEmailDoResultado,
+  type AvisoParaAtra,
+  type EmailDoResultado,
+  type EntradaDoAvisoParaAtra,
+  type EntradaDoEmailDoResultado,
+} from './email'
