@@ -65,9 +65,9 @@ export function PainelDoMenu({
             onClick={aoNavegar}
             className={CELULA_DA_GRADE}
           >
-            <div className="w-14 h-10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-all duration-200 relative">
+            <div className="w-16 h-12 flex items-center justify-center shrink-0 group-hover:scale-105 transition-all duration-200 relative">
               {p.logo && (
-                <Image src={p.logo.url} alt={p.logo.alt} fill sizes="56px" className="object-contain" />
+                <Image src={p.logo.url} alt={p.logo.alt} fill sizes="64px" className="object-contain" />
               )}
             </div>
             <div>
