@@ -130,6 +130,15 @@ function roadmapComoNoPorte(o: RoadmapOriginal) {
   }
 }
 
+/* As três faixas em que o HTML v1.7 discorda de si mesmo — rótulo por limiar,
+ * cabeçalho por arredondamento — e em que o porte segue o rótulo (D-38). */
+const FAIXAS_DO_D38: readonly [number, number][] = [
+  [1.5, 1.8],
+  [2.5, 2.6],
+  [4.3, 4.5],
+]
+const naFaixaDoD38 = (media: number) => FAIXAS_DO_D38.some(([de, ate]) => media >= de && media < ate)
+
 const SEM_ROADMAP: RoadmapOriginal = { pilares: [], phases: [], regs: [] }
 const leituraDaMedia = (overall: number, porte: string) =>
   original.leitura({ overall } as ScoresOriginal, SEM_ROADMAP, porte)
@@ -270,10 +279,18 @@ describe.each(SETORES.map((s, n) => ({ setor: s.valor, n })))('setor $setor', ({
     expect(rm).toStrictEqual(roadmapComoNoPorte(rmOriginal))
     expect(roadmapEmTexto(rm)).toBe(original.roadmapEmTexto(rmOriginal))
 
+    /* D-38: número e nome do nível saem do rótulo, que é o que vai ao CRM. */
+    const numero = nivelNumerico(p.media)
+    expect(`${numero} · ${NIVEIS[numero].nome}`).toBe(p.nivel)
+
     for (const { valor: porte } of PORTES) {
       const leitura = original.leitura(o, rmOriginal, porte)
-      expect(nivelNumerico(p.media)).toBe(leitura.lvlNum)
-      expect(NIVEIS[nivelNumerico(p.media)]).toStrictEqual({ nome: leitura.L.n, descricao: leitura.L.d })
+      if (naFaixaDoD38(p.media)) {
+        expect(numero).not.toBe(leitura.lvlNum)
+      } else {
+        expect(numero).toBe(leitura.lvlNum)
+        expect(NIVEIS[numero]).toStrictEqual({ nome: leitura.L.n, descricao: leitura.L.d })
+      }
       expect(leituraPeloPorte(p.media, porte), porte).toBe(leitura.bench)
       expect(pilaresEmJogo(rm)).toStrictEqual(leitura.weak.map((x) => ({ pilar: x.p, nota: x.v, emJogo: x.stake })))
     }
@@ -294,27 +311,43 @@ describe('limiares, de 0 a 5 em passos de 0,01', () => {
     }
   })
 
-  it('número do nível e leitura pelo porte (renderResult), em todos os portes', () => {
+  it('leitura pelo porte (renderResult), em todos os portes', () => {
     for (const m of medias) {
       for (const { valor: porte } of PORTES) {
-        const leitura = leituraDaMedia(m, porte)
-        expect(nivelNumerico(m), String(m)).toBe(leitura.lvlNum)
-        expect(leituraPeloPorte(m, porte), `${m} ${porte}`).toBe(leitura.bench)
+        expect(leituraPeloPorte(m, porte), `${m} ${porte}`).toBe(leituraDaMedia(m, porte).bench)
       }
     }
   })
 
-  /* Defeito do original, portado de propósito (D-15): o rótulo usa limiares e o
-   * cabeçalho arredonda. O teste é a documentação de que é assim no HTML. */
+  it('número do nível sempre concorda com o rótulo (D-38)', () => {
+    for (const m of medias) {
+      expect(`${nivelNumerico(m)} · ${NIVEIS[nivelNumerico(m)].nome}`, String(m)).toBe(nivelDaMedia(m))
+    }
+  })
+
+  /* O original (`lvlNum`) arredonda a média e discorda do próprio rótulo. O porte
+   * segue o rótulo de propósito (D-38); este teste prova que o desvio é
+   * exatamente nas três faixas — nem uma média a mais, nem a menos. Quando o HTML
+   * unificar o critério, ele reprova: é a hora de voltar a exigir igualdade. */
+  it('número do nível difere do lvlNum do original só nas três faixas do D-38', () => {
+    for (const m of medias) {
+      const difere = nivelNumerico(m) !== leituraDaMedia(m, 'ate_50mi').lvlNum
+      expect(difere, String(m)).toBe(naFaixaDoD38(m))
+    }
+  })
+
   it.each([
     [1.5, '1 · Inicial', 2],
+    [1.79, '1 · Inicial', 2],
     [2.5, '2 · Repetível', 3],
+    [2.59, '2 · Repetível', 3],
     [4.3, '5 · Otimizado', 4],
-  ])('média %s: nivel "%s", mas o cabeçalho diz Nível %s — como no HTML', (media, nivel, numero) => {
+    [4.49, '5 · Otimizado', 4],
+  ])('média %s: rótulo "%s" e cabeçalho do mesmo nível; o original dizia Nível %s', (media, nivel, doOriginal) => {
     expect(nivelDaMedia(media)).toBe(nivel)
-    expect(nivelNumerico(media)).toBe(numero)
     expect(original.nivelDaMedia(media)).toBe(nivel)
-    expect(leituraDaMedia(media, 'ate_50mi').lvlNum).toBe(numero)
+    expect(nivelNumerico(media)).toBe(Number(nivel.charAt(0)))
+    expect(leituraDaMedia(media, 'ate_50mi').lvlNum).toBe(doOriginal)
   })
 })
 

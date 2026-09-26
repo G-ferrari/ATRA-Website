@@ -14,7 +14,8 @@
  * moram dentro da lógica do HTML (nível, fases do roadmap, leitura pelo porte)
  * estão copiados aqui caractere a caractere; `motor.test.ts` roda as funções
  * originais do HTML e compara com tolerância zero, então qualquer desvio reprova.
- * Antes de "corrigir" algo, ver as notas em `nivelNumerico` e `impactosDoSetor`.
+ * A única exceção é deliberada e registrada: o número do nível (D-38, ver
+ * `nivelNumerico`). Antes de "corrigir" algo, ver também `impactosDoSetor`.
  */
 
 import {
@@ -168,7 +169,10 @@ export function impactosDoSetor(setor: Setor): Impacto[] {
    Respostas
    --------------------------------------------------------------------- */
 
-function alternativaEscolhida(pergunta: Pergunta, respostas: Respostas): Alternativa | undefined {
+/** A alternativa que a resposta aponta, ou `undefined` se a pergunta ficou sem
+ * resposta ou o índice é inválido — a mesma regra de `calcular`, para o aviso à
+ * ATRA listar exatamente o que entrou na conta. */
+export function alternativaEscolhida(pergunta: Pergunta, respostas: Respostas): Alternativa | undefined {
   if (!Object.hasOwn(respostas, pergunta.id)) return undefined
   const indice = respostas[pergunta.id]
   return Number.isInteger(indice) && indice >= 0 ? pergunta.alternativas[indice] : undefined
@@ -319,16 +323,18 @@ export function roadmapEmTexto(roadmap: Roadmap): string {
    Leitura do resultado (trechos de `renderResult`)
    --------------------------------------------------------------------- */
 
-/** `lvlNum`: o número do cabeçalho "Nível N · Nome" (e a chave de `NIVEIS`) —
- * a média **arredondada**, entre 1 e 5.
+/** O número do cabeçalho "Nível N · Nome" (e a chave de `NIVEIS`): o dígito do
+ * rótulo de `nivelDaMedia`, entre 1 e 5.
  *
- * ⚠️ Não é o mesmo critério de `nivel` (limiares 1,8 / 2,6 / 3,5 / 4,3), e os
- * dois discordam em três faixas: média em [1,5; 1,8) sai "Nível 2 · Repetível"
- * na tela e '1 · Inicial' no `nivel`; em [2,5; 2,6), 3 contra 2; em [4,3; 4,5),
- * 4 contra 5. É assim no HTML v1.7 e foi portado assim (D-15); unificar é
- * decisão do Roger, não do porte. */
+ * ⚠️ **Desvio deliberado do original (D-38).** O HTML v1.7 arredonda a média
+ * (`lvlNum = Math.round(overall)`), que discorda do rótulo em três faixas: média
+ * em [1,5; 1,8) sairia "Nível 2 · Repetível" com rótulo '1 · Inicial'; em
+ * [2,5; 2,6), 3 contra 2; em [4,3; 4,5), 4 contra 5. O rótulo é o que vai ao CRM,
+ * e o lead não pode ler no e-mail um nível diferente do que o comercial vê —
+ * então o número sai do rótulo. `motor.test.ts` prova que o desvio fica só
+ * nessas três faixas; unificar no HTML fica com o Roger na próxima versão. */
 export function nivelNumerico(media: number): NivelNumerico {
-  return Math.max(1, Math.min(5, Math.round(media))) as NivelNumerico
+  return Number(nivelDaMedia(media).charAt(0)) as NivelNumerico
 }
 
 /* Os dois portes que o HTML trata como "grande empresa". */
