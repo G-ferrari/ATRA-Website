@@ -1,7 +1,7 @@
 import { Sparkles } from 'lucide-react'
 import Link from 'next/link'
 
-import { MetricChip, StatusBadge, TechCornerBraces } from '@/components/ui'
+import { LogoComTema, MetricChip, StatusBadge, TechCornerBraces } from '@/components/ui'
 import type { BlocoPartnerHero } from '@/types/content'
 
 import { TextoDestacado } from './texto-destacado'
@@ -64,13 +64,10 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
                   >
                     {bloco.logo && (
                       /* `h-6 w-auto`: a altura manda e a largura sai do aspecto
-                         do arquivo, como no gabarito. Por isso `<img>` e não
-                         `next/image`, que fixaria a caixa pelas dimensões
-                         declaradas. */
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={bloco.logo.url}
-                        alt={bloco.logo.alt}
+                         do arquivo, como no gabarito. */
+                      <LogoComTema
+                        logo={bloco.logo}
+                        logoDark={bloco.logoDark}
                         className="h-6 mb-2 pointer-events-none object-contain dark:brightness-110"
                       />
                     )}

@@ -94,7 +94,7 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
       depth: 1,
       limit: 100,
       sort: 'order',
-      select: { name: true, slug: true, logo: true, logoScale: true, description: true },
+      select: { name: true, slug: true, logo: true, logoDark: true, logoScale: true, description: true },
     }),
     payload.find({
       collection: 'segments',

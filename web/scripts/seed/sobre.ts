@@ -53,12 +53,14 @@ const METRICAS = [
   { value: 4, suffix: 'x', label: 'GPTW', pending: true },
 ]
 
-/* `logoScale` reproduz as classes por logo do legado (`About.tsx:384`). */
+/* `logoScale` em `md` para todos: o legado dava uma altura por logo
+ * (`About.tsx:384`) para compensar a margem dos arquivos, e desde 26/09 eles
+ * são recortados e o site iguala o peso pela proporção (`lib/logo.ts`). */
 const PARCEIROS_DA_VITRINE = [
-  { slug: 'microsoft-azure', name: 'Microsoft Azure', arquivo: 'scripts/seed/assets/parceiros/logo_azure.png', logoScale: 'lg' as const },
+  { slug: 'microsoft-azure', name: 'Microsoft Azure', arquivo: 'scripts/seed/assets/parceiros/logo_azure.png', logoScale: 'md' as const },
   { slug: 'google-cloud', name: 'Google Cloud', arquivo: 'scripts/seed/assets/parceiros/logo_google_cloud.png', logoScale: 'md' as const },
-  { slug: 'databricks', name: 'Databricks', arquivo: 'scripts/seed/assets/parceiros/logo_databricks.png', logoScale: 'sm' as const },
-  { slug: 'atlan', name: 'Atlan', arquivo: 'scripts/seed/assets/parceiros/logo_atlan.png', logoScale: 'sm' as const },
+  { slug: 'databricks', name: 'Databricks', arquivo: 'scripts/seed/assets/parceiros/logo_databricks.png', logoScale: 'md' as const },
+  { slug: 'atlan', name: 'Atlan', arquivo: 'scripts/seed/assets/parceiros/logo_atlan.png', logoScale: 'md' as const },
 ]
 
 const FOTOS = [

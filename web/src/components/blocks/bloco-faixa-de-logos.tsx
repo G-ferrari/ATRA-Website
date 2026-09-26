@@ -1,7 +1,8 @@
 import Link from 'next/link'
 
 import { BORDAS } from '@/components/blocks/bordas'
-import { TechHorizontalLine, TechVerticalLine } from '@/components/ui'
+import { LogoComTema, TechHorizontalLine, TechVerticalLine } from '@/components/ui'
+import { larguraOticaCss } from '@/lib/logo'
 import { cn } from '@/lib/utils'
 import type { BlocoLogoMarquee } from '@/types/content'
 
@@ -27,15 +28,14 @@ export function BlocoFaixaDeLogos({ bloco }: { bloco: BlocoLogoMarquee }) {
     const conteudo = (
       <>
         <span className="flex h-12 w-24 items-center justify-center sm:h-14 sm:w-30">
-          {/* Caixa fixa, imagem por `object-contain`: os logos têm proporções
-              diferentes e o next/image fixaria a caixa pelo arquivo. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={p.logo.url}
-            alt={p.logo.alt}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-full object-contain pointer-events-none opacity-90 transition-all duration-200 group-hover:opacity-100 group-hover:scale-105"
+          {/* Caixa fixa; dentro dela a largura sai da proporção do logo, para
+              todos pesarem o mesmo (`lib/logo.ts`). 0,47 é a altura sobre a
+              largura da caixa no `sm:`, a mais baixa das duas. */}
+          <LogoComTema
+            logo={p.logo}
+            logoDark={p.logoDark}
+            style={{ width: larguraOticaCss(p.logo, p.logoScale, 0.47) }}
+            className="h-auto max-h-full object-contain pointer-events-none opacity-90 transition-all duration-200 group-hover:opacity-100 group-hover:scale-105"
           />
         </span>
         <span className="select-none whitespace-nowrap text-[11px] font-medium tracking-wide text-text-muted transition-colors group-hover:text-primary sm:text-xs">
