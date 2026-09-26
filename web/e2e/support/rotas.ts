@@ -3,7 +3,8 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'home', caminho: '/' },
   { nome: 'cases-listagem', caminho: '/cases-de-sucesso' },
   { nome: 'cases-detalhe', caminho: '/cases-de-sucesso/eficiencia-processos-risco' },
-  { nome: 'glossario', caminho: '/glossario' },
+  /* `/glossario` **saiu** em 26/09 (D-36): a rota responde 404 enquanto o
+     glossário estiver escondido. `smoke.spec.ts` confere o 404. */
   { nome: 'relatorios', caminho: '/relatorios' },
   { nome: 'ebooks', caminho: '/ebooks' },
   { nome: 'webinars', caminho: '/webinars' },

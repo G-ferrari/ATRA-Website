@@ -13,6 +13,14 @@ import { metadataDe } from '@/lib/seo'
 /* /glossario (MIG-040). Segue o padrão de cases: a página resolve o dado, a
  * ilha cuida de busca e filtro. */
 
+/* ⚠️ Fora do ar desde 26/09/2026 (D-36): a reunião de 24/09 pediu o glossário
+ * escondido. Página e termos continuam no CMS — voltar é trocar para `true`,
+ * repor os links no admin e devolver a rota a `ROTAS_COM_GABARITO`.
+ *
+ * 404, e não 410: 404 é "agora não", e o robô volta a olhar; 410 tiraria a URL
+ * do índice como coisa que deixou de existir. */
+const NO_AR = false
+
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
 }
@@ -42,6 +50,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function GlossarioPage() {
+  if (!NO_AR) notFound()
+
   const locale = await getLocale()
   if (!isLocale(locale)) notFound()
 

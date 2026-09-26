@@ -15,7 +15,6 @@ const ROTAS_PORTADAS = {
   pt: [
     '/',
     '/cases-de-sucesso',
-    '/glossario',
     '/relatorios',
     '/ebooks',
     '/webinars',
@@ -28,7 +27,6 @@ const ROTAS_PORTADAS = {
   en: [
     '/en',
     '/en/success-stories',
-    '/en/glossary',
     '/en/reports',
     '/en/ebooks',
     '/en/webinars',
@@ -40,6 +38,13 @@ const ROTAS_PORTADAS = {
 } as const
 
 test.describe('app novo', () => {
+  /* D-36: o glossário saiu do ar com 404, nos dois idiomas. */
+  test('o glossário responde 404', async ({ request }) => {
+    for (const rota of ['/glossario', '/en/glossary']) {
+      expect((await request.get(`${NEXT_URL}${rota}`)).status(), rota).toBe(404)
+    }
+  })
+
   for (const [idioma, rotas] of Object.entries(ROTAS_PORTADAS)) {
     for (const rota of rotas) {
       test(`${idioma} ${rota} responde 200`, async ({ request }) => {
@@ -506,10 +511,9 @@ test.describe('app novo', () => {
   /* Megamenu (MIG-072a). Os painéis só existem com o menu aberto, então a
      regressão visual — que captura o estado fechado — não os cobre. É aqui. */
   test.describe('megamenu', () => {
-    /* 8 desde que `/segmentos` entrou no menu: as 7 do protótipo mais Segmentos,
-       ao lado de Soluções. O protótipo recebeu a mesma categoria, senão o
-       gabarito passaria a medir a diferença em vez da regressão. */
-    const CATEGORIAS = ['Soluções', 'Segmentos', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre', 'Glossário']
+    /* As 7 do protótipo mais Segmentos, ao lado de Soluções, e menos o
+       Glossário, que saiu do ar em 26/09 (D-36). */
+    const CATEGORIAS = ['Soluções', 'Segmentos', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre']
 
     /* As categorias e o rótulo do rodapé têm o mesmo texto, então todo locator
        aqui é escopado no `<nav>`. A fileira é `hidden md:flex`: no celular a
@@ -524,7 +528,7 @@ test.describe('app novo', () => {
        texto vira violação de strict mode. Por isso cada teste entra pela região
        que lhe interessa. */
     const abrirMenu = async (page: import('@playwright/test').Page) => {
-      await page.goto(`${NEXT_URL}/glossario`)
+      await page.goto(`${NEXT_URL}/relatorios`)
       await page.getByRole('button', { name: 'Abrir menu' }).click()
       return page.getByTestId('menu-categorias')
     }
@@ -640,7 +644,7 @@ test.describe('app novo', () => {
 
     test('no celular vira gaveta, e só as categorias com lista expandem', async ({ page }) => {
       test.skip(!noCelular(page), 'a gaveta é `md:hidden`')
-      await page.goto(`${NEXT_URL}/glossario`)
+      await page.goto(`${NEXT_URL}/relatorios`)
       await page.getByRole('button', { name: 'Abrir menu' }).click()
 
       const gaveta = page.getByTestId('menu-gaveta')
