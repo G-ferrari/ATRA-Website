@@ -1743,6 +1743,47 @@ export interface Partner {
             blockType: 'caseCarousel';
           }
         | {
+            /**
+             * Optional. When empty, the banners show without a heading.
+             */
+            title?: string | null;
+            /**
+             * The order here is the carousel order.
+             */
+            items: {
+              tag?: string | null;
+              title: string;
+              description?: string | null;
+              /**
+               * Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.
+               */
+              image?: (number | null) | Media;
+              cta?: {
+                label?: string | null;
+                href?: string | null;
+              };
+              id?: string | null;
+            }[];
+            /**
+             * Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.
+             */
+            autoplay?: boolean | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'highlightCarousel';
+          }
+        | {
             title: string;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
@@ -3351,6 +3392,47 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'caseCarousel';
+      }
+    | {
+        /**
+         * Optional. When empty, the banners show without a heading.
+         */
+        title?: string | null;
+        /**
+         * The order here is the carousel order.
+         */
+        items: {
+          tag?: string | null;
+          title: string;
+          description?: string | null;
+          /**
+           * Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.
+           */
+          image?: (number | null) | Media;
+          cta?: {
+            label?: string | null;
+            href?: string | null;
+          };
+          id?: string | null;
+        }[];
+        /**
+         * Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.
+         */
+        autoplay?: boolean | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'highlightCarousel';
       }
     | {
         title: string;
@@ -5163,6 +5245,47 @@ export interface Segment {
             blockType: 'caseCarousel';
           }
         | {
+            /**
+             * Optional. When empty, the banners show without a heading.
+             */
+            title?: string | null;
+            /**
+             * The order here is the carousel order.
+             */
+            items: {
+              tag?: string | null;
+              title: string;
+              description?: string | null;
+              /**
+               * Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.
+               */
+              image?: (number | null) | Media;
+              cta?: {
+                label?: string | null;
+                href?: string | null;
+              };
+              id?: string | null;
+            }[];
+            /**
+             * Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.
+             */
+            autoplay?: boolean | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'highlightCarousel';
+          }
+        | {
             title: string;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
@@ -6741,6 +6864,47 @@ export interface Solution {
             blockType: 'caseCarousel';
           }
         | {
+            /**
+             * Optional. When empty, the banners show without a heading.
+             */
+            title?: string | null;
+            /**
+             * The order here is the carousel order.
+             */
+            items: {
+              tag?: string | null;
+              title: string;
+              description?: string | null;
+              /**
+               * Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.
+               */
+              image?: (number | null) | Media;
+              cta?: {
+                label?: string | null;
+                href?: string | null;
+              };
+              id?: string | null;
+            }[];
+            /**
+             * Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.
+             */
+            autoplay?: boolean | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'highlightCarousel';
+          }
+        | {
             title: string;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
@@ -8103,6 +8267,34 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        highlightCarousel?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    tag?: T;
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    cta?:
+                      | T
+                      | {
+                          label?: T;
+                          href?: T;
+                        };
+                    id?: T;
+                  };
+              autoplay?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         testimonialCarousel?:
           | T
           | {
@@ -9008,6 +9200,34 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        highlightCarousel?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    tag?: T;
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    cta?:
+                      | T
+                      | {
+                          label?: T;
+                          href?: T;
+                        };
+                    id?: T;
+                  };
+              autoplay?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         testimonialCarousel?:
           | T
           | {
@@ -9795,6 +10015,34 @@ export interface SegmentsSelect<T extends boolean = true> {
                     color?: T;
                     id?: T;
                   };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        highlightCarousel?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    tag?: T;
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    cta?:
+                      | T
+                      | {
+                          label?: T;
+                          href?: T;
+                        };
+                    id?: T;
+                  };
+              autoplay?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10596,6 +10844,34 @@ export interface SolutionsSelect<T extends boolean = true> {
                     color?: T;
                     id?: T;
                   };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        highlightCarousel?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    tag?: T;
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    cta?:
+                      | T
+                      | {
+                          label?: T;
+                          href?: T;
+                        };
+                    id?: T;
+                  };
+              autoplay?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
