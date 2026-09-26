@@ -823,3 +823,28 @@ como coisa que deixou de existir.
   passa a conferir o 404.
 - Para voltar: `NO_AR = true`, repor a categoria no global Navegação e o link
   no Rodapé, devolver a rota ao gate e ao sitemap.
+
+## D-37 — A RC18 sai de Soluções e vira link na página de Bancos
+
+*Decidida em 26/09/2026 por G-ferrari, a partir da reunião de 24/09.* Revê a aba
+"RC18" que a feature `rc18` (13/09) pôs no mega-menu de Soluções.
+
+**Contexto.** A RC 18/2025 é norma do setor financeiro. A feature `rc18` a pôs
+como quarta categoria de Soluções, ao lado de Inovação & IA, Dados e Governança.
+A reunião pediu que ela fosse para dentro do segmento financeiro.
+
+**Opções.** (a) Manter nos dois lugares; (b) mover a página para dentro de
+`/segmentos`; (c) tirar de Soluções e chegar a ela pela página de Bancos,
+mantendo a URL.
+
+**Escolha: (c).** `/solucoes/rc18` fica: é o endereço que a campanha vai
+linkar, e mudá-lo obrigaria a trocar o documento de collection. Muda por onde se
+chega, não onde a página mora.
+
+**Consequência.**
+
+- O mega-menu de Soluções e o índice `/solucoes` perdem a categoria RC18. O
+  documento segue com `category: 'rc18'` — só deixa de ser agrupado; o valor do
+  enum fica.
+- A página de Bancos ganha uma chamada para `/solucoes/rc18`, pelo admin.
+- O banner da RC18 no carrossel de destaques da home também leva a ela.

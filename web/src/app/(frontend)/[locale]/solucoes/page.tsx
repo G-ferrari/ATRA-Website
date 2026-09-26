@@ -55,12 +55,12 @@ const TEXTOS = {
 } as const
 
 /* Ordem e rótulo das 3 categorias do mega-menu (`App.tsx:45`). A ordem é a do
- * legado e não alfabética: começa em Inovação & IA, que é a ponta comercial. */
+ * legado e não alfabética: começa em Inovação & IA, que é a ponta comercial.
+ * A RC18 não entra desde a D-37 — ver `GRUPOS` em `mappers/navigation.ts`. */
 const CATEGORIAS: { id: SolutionCategory; label: Record<Locale, string> }[] = [
   { id: 'innovation-ai', label: { pt: 'Inovação & IA', en: 'Innovation & AI' } },
   { id: 'data-bi', label: { pt: 'Dados, BI & Advanced Analytics', en: 'Data, BI & Advanced Analytics' } },
   { id: 'governance-culture', label: { pt: 'Governança & Cultura', en: 'Governance & Culture' } },
-  { id: 'rc18', label: { pt: 'RC18', en: 'RC18' } },
 ]
 
 export async function generateMetadata(): Promise<Metadata> {
