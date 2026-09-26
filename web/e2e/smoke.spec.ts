@@ -423,16 +423,17 @@ test.describe('app novo', () => {
      ela serve a página de IA, aqui vira índice. Não há gabarito visual, então o
      aceite é este. */
   test.describe('/solucoes — índice novo (D-09)', () => {
-    /* ⚠️ **19, e não 6.** P-16 (21/08/2026): as 6 do protótipo convivem com as 12
-       do WordPress (MIG-093); a 19ª é a RC18 (feature rc18), a 4ª categoria do
-       menu. O número é asserção de verdade e não contagem frouxa — se cair, alguém
-       despublicou; se subir, rascunho está vazando. */
-    test('lista as 19 soluções agrupadas nas 4 categorias', async ({ page }) => {
+    /* ⚠️ **18, e não 6.** P-16 (21/08/2026): as 6 do protótipo convivem com as 12
+       do WordPress (MIG-093). A RC18 existe e está publicada, mas saiu do índice
+       e do menu em 26/09 (D-37). O número é asserção de verdade e não contagem
+       frouxa — se cair, alguém despublicou; se subir, rascunho está vazando. */
+    test('lista as 18 soluções agrupadas nas 3 categorias, sem a RC18', async ({ page }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
-      for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura', 'RC18']) {
+      for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
         await expect(page.getByRole('heading', { name: categoria, level: 2 })).toBeVisible()
       }
-      await expect(page.getByRole('heading', { level: 3 })).toHaveCount(19)
+      await expect(page.getByRole('heading', { name: 'RC18', level: 2 })).toHaveCount(0)
+      await expect(page.getByRole('heading', { level: 3 })).toHaveCount(18)
     })
 
     /* Só quem tem `hasPage` vira link: a de IA, portada em MIG-056, mais as 12
@@ -442,11 +443,11 @@ test.describe('app novo', () => {
     test('só as soluções com página viram link, e elas respondem', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
       const links = page.locator('a[href*="/solucoes/"]')
-      await expect(links).toHaveCount(14)
+      await expect(links).toHaveCount(13)
 
       const hrefs = await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')))
       expect(hrefs).toContain('/solucoes/inteligencia-artificial')
-      expect(hrefs).toContain('/solucoes/rc18')
+      expect(hrefs).not.toContain('/solucoes/rc18')
       for (const href of hrefs) {
         expect((await request.get(`${NEXT_URL}${href}`)).status(), href!).toBe(200)
       }
