@@ -1,7 +1,7 @@
 ---
 id: 024
 title: E-mail HTML do resultado ao lead e aviso à ATRA
-status: para implementar
+status: em revisão
 feature: diagnostico-maturidade-dados
 area: backend
 priority: P0
