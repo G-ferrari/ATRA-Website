@@ -401,6 +401,19 @@ test.describe('app novo', () => {
     expect((await request.get(`${NEXT_URL}/parceiros/salesforce-informatica`)).status()).toBe(404)
   })
 
+  test('a faixa de parceiros da home vem da collection e só linka quem tem página', async ({ page, request }) => {
+    await page.goto(`${NEXT_URL}/`)
+    const faixa = page.locator('section', { has: page.getByRole('heading', { name: 'Parceiros de Confiança' }) }).last()
+    // O nome da collection, e não o da lista antiga do bloco ("Azure").
+    await expect(faixa.getByText('Microsoft Azure').first()).toBeVisible()
+
+    const links = faixa.locator('a[href^="/parceiros/"]')
+    const hrefs = [...new Set(await links.evaluateAll((as) => as.map((a) => a.getAttribute('href'))))]
+    expect(hrefs).toContain('/parceiros/google-cloud')
+    expect(hrefs).not.toContain('/parceiros/salesforce-informatica')
+    for (const href of hrefs) expect((await request.get(`${NEXT_URL}${href}`)).status(), href!).toBe(200)
+  })
+
   /* `/solucoes` é a única rota que **muda de comportamento** (D-09): no legado
      ela serve a página de IA, aqui vira índice. Não há gabarito visual, então o
      aceite é este. */

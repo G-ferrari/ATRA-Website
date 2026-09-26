@@ -62,12 +62,14 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                 )}
               </div>
 
-              <div className="shrink-0 flex flex-col items-center md:items-end gap-3 w-full md:w-auto">
+              {/* `items-stretch`: a coluna fica com a largura do botão mais largo e os
+                  dois a preenchem — no desktop os botões tinham larguras diferentes. */}
+              <div className="shrink-0 flex flex-col items-stretch gap-3 w-full md:w-auto">
                 {bloco.cta && (
                   <Link
                     href={bloco.cta.href}
                     {...propsExternas(bloco.cta.href)}
-                    className="inline-flex w-full md:w-auto items-center justify-center bg-secondary hover:bg-orange-600 text-white px-8 py-3 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer"
+                    className="inline-flex w-full items-center justify-center bg-secondary hover:bg-orange-600 text-white px-8 py-3 rounded-[6px] text-xs sm:text-sm font-semibold transition-all shadow-lg hover:-translate-y-0.5 whitespace-nowrap cursor-pointer"
                   >
                     {bloco.cta.label}
                   </Link>
@@ -77,7 +79,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                     <Link
                       href={bloco.secondaryCta.href}
                       {...propsExternas(bloco.secondaryCta.href)}
-                      className="inline-flex w-full md:w-auto items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white px-8 py-2.5 rounded-[6px] text-xs font-medium transition-all whitespace-nowrap "
+                      className="inline-flex w-full items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white px-8 py-2.5 rounded-[6px] text-xs font-medium transition-all whitespace-nowrap "
                     >
                       {bloco.secondaryCta.label}
                     </Link>
