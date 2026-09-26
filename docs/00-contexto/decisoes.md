@@ -1,6 +1,6 @@
 ---
 status: revisado
-atualizado_em: 2026-08-21
+atualizado_em: 2026-09-26
 depende_de: [../01-descoberta/inventario-rotas.md, ../01-descoberta/inventario-conteudo.md, ../01-descoberta/inventario-assets.md, ../01-descoberta/debito-tecnico.md]
 ---
 
@@ -757,3 +757,41 @@ ele passa a provar que o código não mudou, não que está certo".
 - A decisão vale para **esta** rota. Outra que divergir de propósito repete a
   discussão — não herda a saída.
 
+## D-35 — Sai o diagnóstico RC18, entra o diagnóstico de maturidade de dados
+
+*Decidida em 26/09/2026 por G-ferrari, a partir do questionário do Roger (quiz
+v1.7), repassado pela Taci depois da reunião de 24/09.* Substitui as tasks
+005–007 da feature `rc18`.
+
+**Contexto.** A feature RC18 (PR #11, 13/09) criou `/diagnostico-rc18`: uma
+autoavaliação pelas 12 dimensões da RC 18/2025, que grava o lead como
+`rc18-diagnostic`. Depois dela chegou o questionário de maturidade do Roger —
+DAMA/DMBOK, 32 perguntas em 8 setores, das quais cada pessoa responde de 14 a
+17 —, feito para colar no Elementor e enviar ao RD Station. O material está em
+[`../02-especificacao/diagnostico-maturidade/`](../02-especificacao/diagnostico-maturidade/).
+
+**Opções.** (a) Manter os dois diagnósticos; (b) estender o RC18 para outros
+setores; (c) o questionário do Roger substitui o RC18.
+
+**Escolha: (c).** O RC18 atende um setor e uma norma. O de maturidade atende os
+vários clientes da ATRA e dá uma visão melhor de cada um. Dois diagnósticos no
+site disputariam o mesmo visitante, e (b) reescreveria do zero o que o Roger já
+entregou.
+
+**Consequência.**
+
+- O diagnóstico RC18 sai: rota, motor de pontuação e formulário. O valor
+  `rc18-diagnostic` **fica** no enum de `form-submissions`, escondido — apagar
+  valor de enum é migração destrutiva, e há leads de teste gravados com ele.
+- O novo grava num kind próprio, `data-maturity-diagnostic`: não é específico
+  de nenhuma norma, e reaproveitar o nome faria um lead de seguradora chegar ao
+  CRM rotulado como RC18.
+- É um formulário **transversal**, usado em várias áreas do site, e não um
+  anexo da página RC18.
+- O lead segue a D-26 (`form-submissions` → e-mail → RD Station **CRM**), e não
+  o RD Station Marketing que o material original previa.
+- `/solucoes/rc18` continua como solução, e o convite ao diagnóstico dela passa
+  a levar ao novo. Se o formulário de contato da página fica ao lado dele é
+  pergunta em aberto ao time.
+- O desenho — rota, setor escolhido pela URL, o que fica no CMS — é da feature
+  `diagnostico-maturidade-dados`, não desta decisão.
