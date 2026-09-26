@@ -1,7 +1,7 @@
 ---
 id: 026
 title: Rota /diagnostico-maturidade — perfil com setor pela URL e perguntas (ilha)
-status: em revisão
+status: concluída
 feature: diagnostico-maturidade-dados
 area: frontend
 priority: P0
