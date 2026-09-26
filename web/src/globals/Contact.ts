@@ -66,6 +66,7 @@ export const Contact: GlobalConfig = {
       fields: [
         { name: 'linkedin', type: 'text', label: { pt: 'LinkedIn', en: 'LinkedIn' } },
         { name: 'instagram', type: 'text', label: { pt: 'Instagram', en: 'Instagram' } },
+        { name: 'facebook', type: 'text', label: { pt: 'Facebook', en: 'Facebook' } },
         { name: 'youtube', type: 'text', label: { pt: 'YouTube', en: 'YouTube' } },
       ],
     },

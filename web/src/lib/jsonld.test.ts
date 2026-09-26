@@ -9,7 +9,7 @@ const contato: Contato = {
   whatsapp: 'https://wa.me/5511963052391',
   email: 'negocios@atra.com.br',
   endereco: 'Av. Queiroz Filho, 1700 – SP',
-  redes: { linkedin: 'https://linkedin.com/company/atra', instagram: null, youtube: 'https://youtube.com/@atra' },
+  redes: { linkedin: 'https://linkedin.com/company/atra', instagram: null, facebook: 'https://facebook.com/atra', youtube: 'https://youtube.com/@atra' },
 }
 const seo: Seo = { title: 'Título', description: 'Resumo', image: { url: '/capa.webp', alt: 'a', width: 1200, height: 630 }, noIndex: false }
 
@@ -25,7 +25,7 @@ describe('organizacao', () => {
 
   /* `null` viraria a string "null" no JSON e o Google trataria como perfil. */
   it('só lista as redes que existem', () => {
-    expect(o.sameAs).toEqual(['https://linkedin.com/company/atra', 'https://youtube.com/@atra'])
+    expect(o.sameAs).toEqual(['https://linkedin.com/company/atra', 'https://facebook.com/atra', 'https://youtube.com/@atra'])
   })
 
   it('omite logo e fundação quando não há', () => {

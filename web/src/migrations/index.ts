@@ -49,6 +49,7 @@ import * as migration_20260903_131920_add_cookie_consent from './20260903_131920
 import * as migration_20260913_195223_add_rc18_category from './20260913_195223_add_rc18_category';
 import * as migration_20260913_211713_add_rc18_diagnostic_kind from './20260913_211713_add_rc18_diagnostic_kind';
 import * as migration_20260920_225540_add_consultant_request_kind from './20260920_225540_add_consultant_request_kind';
+import * as migration_20260926_134617_add_facebook_social from './20260926_134617_add_facebook_social';
 
 export const migrations = [
   {
@@ -304,6 +305,11 @@ export const migrations = [
   {
     up: migration_20260920_225540_add_consultant_request_kind.up,
     down: migration_20260920_225540_add_consultant_request_kind.down,
-    name: '20260920_225540_add_consultant_request_kind'
+    name: '20260920_225540_add_consultant_request_kind',
+  },
+  {
+    up: migration_20260926_134617_add_facebook_social.up,
+    down: migration_20260926_134617_add_facebook_social.down,
+    name: '20260926_134617_add_facebook_social'
   },
 ];

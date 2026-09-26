@@ -10894,6 +10894,7 @@ export interface Contact {
   social?: {
     linkedin?: string | null;
     instagram?: string | null;
+    facebook?: string | null;
     youtube?: string | null;
   };
   updatedAt?: string | null;
@@ -11250,6 +11251,7 @@ export interface ContactSelect<T extends boolean = true> {
     | {
         linkedin?: T;
         instagram?: T;
+        facebook?: T;
         youtube?: T;
       };
   updatedAt?: T;

@@ -739,7 +739,7 @@ export type Contato = {
   whatsapp: string
   email: string
   endereco: string
-  redes: { linkedin: string | null; instagram: string | null; youtube: string | null }
+  redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
 }
 
 export type ColunaDoRodape = {

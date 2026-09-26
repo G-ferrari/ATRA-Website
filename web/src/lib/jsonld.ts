@@ -26,7 +26,7 @@ export function organizacao(args: { contato: Contato; logo: Image | null; fundad
 
   /* `sameAs` é o que liga esta organização aos perfis dela. Só entram os que
    * existem: um `null` viraria a string "null" no JSON. */
-  const redes = [contato.redes.linkedin, contato.redes.instagram, contato.redes.youtube].filter(
+  const redes = [contato.redes.linkedin, contato.redes.instagram, contato.redes.facebook, contato.redes.youtube].filter(
     (u): u is string => Boolean(u),
   )
 
