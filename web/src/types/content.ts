@@ -286,6 +286,19 @@ export type BlocoHomeBento = Base & {
   metrics: { icon: string; tag: string; value: string; label: string; color: 'primary' | 'secondary' }[]
 }
 
+export type BlocoHighlightCarousel = Base & {
+  tipo: 'highlightCarousel'
+  title: string | null
+  autoplay: boolean
+  items: {
+    tag: string | null
+    title: string
+    description: string | null
+    image: Image | null
+    cta: { label: string; href: string } | null
+  }[]
+}
+
 export type BlocoCaseCarousel = Base & {
   tipo: 'caseCarousel'
   eyebrow: string | null
@@ -601,6 +614,7 @@ export type Bloco =
   | BlocoFeatureTabs
   | BlocoHomeBento
   | BlocoCaseCarousel
+  | BlocoHighlightCarousel
   | BlocoTestimonialCarousel
   | BlocoContentTeaser
   | BlocoInsightsHub

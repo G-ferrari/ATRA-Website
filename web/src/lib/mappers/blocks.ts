@@ -323,6 +323,22 @@ export function toBlocos(
         })
         break
 
+      case 'highlightCarousel':
+        blocos.push({
+          ...base(b),
+          tipo: 'highlightCarousel',
+          title: vazio(b.title),
+          autoplay: b.autoplay ?? true,
+          items: (b.items ?? []).map((i) => ({
+            tag: vazio(i.tag),
+            title: i.title,
+            description: vazio(i.description),
+            image: toImageOpcional(i.image, 'highlightCarousel.items.image'),
+            cta: toCta(i.cta),
+          })),
+        })
+        break
+
       case 'testimonialCarousel':
         blocos.push({
           ...base(b),

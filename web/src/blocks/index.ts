@@ -1519,6 +1519,75 @@ export const InsightsHub: Block = {
   ],
 }
 
+export const HighlightCarousel: Block = {
+  slug: 'highlightCarousel',
+  labels: {
+    singular: { pt: 'Carrossel de destaques', en: 'Highlight carousel' },
+    plural: { pt: 'Carrosséis de destaques', en: 'Highlight carousels' },
+  },
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Título da seção', en: 'Section title' },
+      admin: { description: { pt: 'Opcional. Vazio, os banners aparecem sem cabeçalho.', en: 'Optional. When empty, the banners show without a heading.' } },
+    },
+    {
+      /* Banners editáveis pelo marketing, um por destaque (reunião de 24/09):
+       * nasceu com a RC18 e recebe Atra Analytics e PDD Febraban quando as
+       * páginas existirem. O teto de 6 é de leitura, não técnico — com mais
+       * que isso ninguém vê o último antes de rolar a página. */
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 6,
+      label: { pt: 'Banners', en: 'Banners' },
+      admin: { description: { pt: 'A ordem aqui é a ordem no carrossel.', en: 'The order here is the carousel order.' } },
+      fields: [
+        { name: 'tag', type: 'text', localized: true, label: { pt: 'Etiqueta', en: 'Tag' } },
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto', en: 'Text' } },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          label: { pt: 'Imagem', en: 'Image' },
+          admin: {
+            description: {
+              pt: 'Opcional. Sem imagem, o banner usa o gradiente da marca. Horizontal, com pelo menos 1200px de largura: no celular ela é cortada em 16:9, no computador em 4:3.',
+              en: 'Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.',
+            },
+          },
+        },
+        {
+          name: 'cta',
+          type: 'group',
+          label: { pt: 'Botão', en: 'Button' },
+          fields: [
+            { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+            { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'autoplay',
+      type: 'checkbox',
+      defaultValue: true,
+      label: { pt: 'Avançar sozinho', en: 'Autoplay' },
+      admin: {
+        description: {
+          pt: 'A cada 7 segundos, pausando com o mouse em cima ou o foco dentro. Nunca avança para quem pediu menos movimento no sistema.',
+          en: 'Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.',
+        },
+      },
+    },
+    ...camposComuns,
+  ],
+}
+
 export const BLOCOS = [
   PageHero,
   StickyPageNav,
@@ -1543,6 +1612,7 @@ export const BLOCOS = [
   FeatureTabs,
   HomeBento,
   CaseCarousel,
+  HighlightCarousel,
   TestimonialCarousel,
   ContentTeaser,
   InsightsHub,
