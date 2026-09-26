@@ -20,6 +20,7 @@ export function toContato(doc: Contact): Contato {
     redes: {
       linkedin: doc.social?.linkedin ?? null,
       instagram: doc.social?.instagram ?? null,
+      facebook: doc.social?.facebook ?? null,
       youtube: doc.social?.youtube ?? null,
     },
   }

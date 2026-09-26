@@ -1,4 +1,4 @@
-import { Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from 'lucide-react'
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from 'lucide-react'
 import Link from 'next/link'
 
 import type { Locale } from '@/lib/locales'
@@ -29,11 +29,13 @@ export function SiteFooter({
 }) {
   const t = TEXTOS_CASCA[locale]
   const prefixo = locale === 'pt' ? '' : `/${locale}`
+  /* Rede sem URL no admin não aparece: o ícone levaria a `#` numa aba nova. */
   const redes = [
     { Icone: Linkedin, nome: 'LinkedIn', url: contato.redes.linkedin },
     { Icone: Instagram, nome: 'Instagram', url: contato.redes.instagram },
+    { Icone: Facebook, nome: 'Facebook', url: contato.redes.facebook },
     { Icone: Youtube, nome: 'YouTube', url: contato.redes.youtube },
-  ]
+  ].filter((r): r is typeof r & { url: string } => Boolean(r.url))
 
   return (
     <footer className="bg-slate-100 text-slate-600 dark:bg-[#0e1015] dark:text-white/70 pt-16 pb-10 rounded-t-[6px] relative overflow-hidden">
@@ -57,7 +59,7 @@ export function SiteFooter({
               {redes.map(({ Icone, nome, url }) => (
                 <a
                   key={nome}
-                  href={url ?? '#'}
+                  href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={nome}

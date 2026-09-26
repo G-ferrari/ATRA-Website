@@ -1,4 +1,4 @@
-import { Instagram, Linkedin, MessageCircle, Youtube } from 'lucide-react'
+import { Facebook, Instagram, Linkedin, MessageCircle, Youtube } from 'lucide-react'
 import Image from 'next/image'
 
 import type { Locale } from '@/lib/locales'
@@ -118,11 +118,13 @@ export function PainelDeContatos({
               {[
                 { Icone: Linkedin, nome: 'LinkedIn', url: contato.redes.linkedin, cor: 'bg-[#0A66C2]/15 text-[#0A66C2] dark:bg-[#0A66C2]/20 dark:text-[#388DFF]' },
                 { Icone: Instagram, nome: 'Instagram', url: contato.redes.instagram, cor: 'bg-[#E4405F]/15 text-[#E4405F] dark:bg-[#E4405F]/20 dark:text-[#FA7298]' },
+                { Icone: Facebook, nome: 'Facebook', url: contato.redes.facebook, cor: 'bg-[#1877F2]/15 text-[#1877F2] dark:bg-[#1877F2]/20 dark:text-[#5A9DFF]' },
                 { Icone: Youtube, nome: 'YouTube', url: contato.redes.youtube, cor: 'bg-[#FF0000]/15 text-[#FF0000] dark:bg-[#FF0000]/20 dark:text-[#FF4E4E]' },
-              ].map(({ Icone, nome, url, cor }) => (
+                // Rede sem URL no admin não aparece: o ícone levaria a `#` numa aba nova.
+              ].filter((r): r is typeof r & { url: string } => Boolean(r.url)).map(({ Icone, nome, url, cor }) => (
                 <a
                   key={nome}
-                  href={url ?? '#'}
+                  href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${nome} da ATRA`}

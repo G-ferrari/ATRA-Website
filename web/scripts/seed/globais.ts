@@ -32,12 +32,14 @@ const CONTATO = {
   whatsapp: 'https://wa.me/5511963052391',
   email: 'negocios@atra.com.br',
   address: 'Av. Queiroz Filho, 1700 – Torre D Sala 802 Vila Hamburguesa – SP',
-  /* P-26: no rodapé do protótipo as redes apontam para `#`; as URLs reais
-   * estavam no CTA de contato (`App.tsx:2412`). São elas que valem. */
+  /* P-26: no rodapé do protótipo as redes apontam para `#`, e as do CTA de
+   * contato (`App.tsx:2412`) eram perfis antigos (`atra-tecnologia`,
+   * `atratecnologia`). Estas são as que a ATRA confirmou em 26/09/2026. */
   social: {
-    linkedin: 'https://www.linkedin.com/company/atra-tecnologia/',
-    instagram: 'https://www.instagram.com/atratecnologia/',
-    youtube: 'https://www.youtube.com/@atratecnologia',
+    linkedin: 'https://www.linkedin.com/company/atraoficial/',
+    instagram: 'https://www.instagram.com/atra.oficial/',
+    facebook: 'https://www.facebook.com/Atra.oficial/',
+    youtube: 'https://www.youtube.com/@ATRA.oficial',
   },
 }
 
