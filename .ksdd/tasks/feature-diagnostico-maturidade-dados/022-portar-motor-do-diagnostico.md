@@ -1,7 +1,7 @@
 ---
 id: 022
 title: Portar o motor do diagnóstico do HTML v1.7 (base, pontuação, roadmap) com testes de paridade
-status: em revisão
+status: concluída
 feature: diagnostico-maturidade-dados
 area: backend
 priority: P0
