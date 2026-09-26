@@ -7,7 +7,7 @@
 
 | ID | Título | Área | Prioridade | Estimativa | Status | Depende de |
 |----|--------|------|------------|------------|--------|------------|
-| 022 | Portar o motor do diagnóstico do HTML v1.7 (base, pontuação, roadmap) com testes de paridade | backend | P0 | L | para implementar | — |
+| 022 | Portar o motor do diagnóstico do HTML v1.7 (base, pontuação, roadmap) com testes de paridade | backend | P0 | L | em revisão | — |
 | 023 | Modelo de dados — kind `data-maturity-diagnostic`, grupo do diagnóstico e global de textos | data-model | P0 | M | para implementar | — |
 | 024 | E-mail HTML do resultado ao lead e aviso à ATRA | backend | P0 | M | para implementar | 022 |
 | 025 | Server Action de captura — recalcula no servidor, grava, envia o resultado e avisa a ATRA | backend | P0 | L | para implementar | 022, 023, 024 |
