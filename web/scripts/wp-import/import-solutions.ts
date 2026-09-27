@@ -27,7 +27,7 @@ import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
 import { up as montarAlocacao } from '../../src/migrations/20260926_171500_alocacao_de_consultores'
-import { up as montarSolucoesDoWordpress } from '../../src/migrations/20260927_220000_solucoes_do_wordpress'
+import { up as montarSolucoesDoWordpress } from '../../src/migrations/20260927_235900_solucoes_do_wordpress'
 import { slugify } from '../../src/fields/slug'
 import { casarIds } from '../seed/ids'
 import { createWpClient } from './client'
@@ -149,7 +149,7 @@ for (const [ordem, solucao] of SOLUCOES.entries()) {
 
     /* ⚠️ Só reescreve página que ainda seja a desta importação. Desde 26/09 as
      * páginas vindas daqui são remontadas por migração (Alocação no PR #50, as
-     * outras 11 em `20260927_220000_solucoes_do_wordpress`) e depois editadas
+     * outras 11 em `20260927_235900_solucoes_do_wordpress`) e depois editadas
      * no admin; rodar isto de novo apagaria as duas coisas sem aviso. Foi o que
      * aconteceu num banco local em 27/09, com a Alocação. */
     const formato = (docs[0]?.layout ?? []).map((b) => b.blockType).join(',')

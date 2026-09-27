@@ -294,7 +294,7 @@ exemplo" nelas, e foi isso — não rascunho vazando — que a crítica do Impec
 de 10/09 viu no mega-menu. Desde 27/09 as 12 do WordPress saem do importador
 **remontadas** no padrão das soluções desenhadas (cartões, imagem no herói,
 parceiros, formulário): a Alocação pela migração de 26/09 e as outras 11 por
-`20260927_220000_solucoes_do_wordpress`, com o texto literal em
+`20260927_235900_solucoes_do_wordpress`, com o texto literal em
 `src/migrations/arquivos/solucoes-wp/`.
 
 ⚠️ **Conteúdo de verdade não vem do `pnpm seed`.** Os artigos e as vagas entram
