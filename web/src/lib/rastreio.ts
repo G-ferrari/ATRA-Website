@@ -18,6 +18,10 @@ export type EventoDeRastreio =
   | 'chat_message_sent'
   | 'outbound_click'
   | 'video_play'
+  /* Diagnóstico de Maturidade de Dados (task 027). O nome não vem de
+     `formularios-e-integracoes.md`: é o do HTML do Roger, que o guia de
+     implantação dele manda o GTM ouvir (`README-implantacao-rd-station.md`). */
+  | 'quiz_maturidade_lead'
 
 declare global {
   interface Window {
