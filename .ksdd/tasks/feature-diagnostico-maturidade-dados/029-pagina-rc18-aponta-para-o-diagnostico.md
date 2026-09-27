@@ -1,7 +1,7 @@
 ---
 id: 029
 title: Página RC18 aponta para o diagnóstico e perde o formulário de contato
-status: para implementar
+status: em revisão
 feature: diagnostico-maturidade-dados
 area: frontend
 priority: P1
