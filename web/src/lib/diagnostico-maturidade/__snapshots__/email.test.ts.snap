@@ -1,0 +1,105 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`perfil alto — todas as últimas alternativas > texto 1`] = `
+"Olá, Ana Souza,
+
+Obrigado por responder ao diagnóstico.
+
+Abaixo está a leitura das suas respostas.
+
+Resultado do diagnóstico
+5,0 · Nível 5 · Otimizado
+Dados tratados como produto, com monitoração contínua. O foco passa a ser valor: IA, novos produtos e eficiência. Nível acima da média do mercado brasileiro.
+
+Impactos avaliados para o seu setor
+LGPD, ANPD, Marco Legal da IA, Resolução Conjunta CMN/BCB 18/2025, Banco Central, Resolução CMN 5.274/2025, BCBS 239, Open Finance, IFRS 9, PLD/FT, entre outros
+
+Maturidade por pilar
+Governança: 5,0
+Qualidade: 5,0
+Segurança: 5,0
+Conformidade: 5,0
+
+Roadmap recomendado · consultoria e implementação ATRA
+Fase 1 · 0 a 3 meses
+- Diagnóstico executivo de dados
+  Leitura detalhada deste resultado com um especialista da ATRA, priorização dos gaps por risco e prazo regulatório, e roadmap aprovado pela diretoria.
+- Dados como produto · Governança
+  Produtos de dados por domínio, contratos de dados e governança federada com self-service monitorado.
+
+Fase 2 · 3 a 6 meses
+- Observabilidade de dados · Qualidade
+  Alertas, SLAs e detecção de anomalias nos pipelines, com qualidade medida na origem.
+
+Fase 3 · 6 a 12 meses
+- Segurança contínua · Segurança
+  Detecção e resposta automatizadas, revisão de acessos automatizada e métricas reportadas ao Conselho.
+- Conformidade contínua · Conformidade
+  Controles automatizados, painéis para auditoria e governança de IA integrada à de dados.
+- IA sobre dados confiáveis
+  Casos de uso de IA e analytics avançado sobre a base governada, com governança de modelos e dados de treinamento.
+
+Resultado gerado a partir das suas respostas, na escala de maturidade DAMA-DMBOK (1 Inicial a 5 Otimizado). O gap de cada regulação é a distância até o nível 5 somada nas respostas relacionadas. As recomendações são um ponto de partida: a leitura completa acontece na sessão com o especialista.
+
+Falar com um especialista: https://api.whatsapp.com/send/?phone=5511963060267&text=Oi
+Agendar leitura do diagnóstico: https://agenda.exemplo.com.br/atra"
+`;
+
+exports[`perfil baixo — todas as primeiras alternativas > texto 1`] = `
+"Olá, Ana Souza,
+
+Obrigado por responder ao diagnóstico.
+
+Abaixo está a leitura das suas respostas.
+
+Resultado do diagnóstico
+1,0 · Nível 1 · Inicial
+Os dados dependem de pessoas, planilhas e esforço heroico. Decisões são tomadas com números que ninguém consegue reproduzir. Para o seu porte, esse nível está abaixo do esperado pelos pares e pelos reguladores.
+
+Impactos avaliados para o seu setor
+LGPD, ANPD, Marco Legal da IA, Resolução Conjunta CMN/BCB 18/2025, Banco Central, Resolução CMN 5.274/2025, BCBS 239, Open Finance, IFRS 9, PLD/FT, entre outros
+
+Maturidade por pilar
+Governança: 1,0
+Qualidade: 1,0
+Segurança: 1,0
+Conformidade: 1,0
+
+O que está em jogo
+Governança: Sem donos, definições comuns e uma fonte única, cada área produz a sua versão do número. Decisões e reportes regulatórios ficam expostos a contestação, e cada resposta nova à diretoria vira um projeto.
+Qualidade: Dados inconsistentes viram retrabalho no fechamento, reportes devolvidos pelo regulador e modelos de IA que não podem ir para produção. O custo aparece em horas de conciliação e em decisões adiadas.
+Segurança: Acessos amplos e resposta improvisada a incidentes elevam a chance de vazamento. A LGPD prevê sanções de até 2% do faturamento, limitadas a R$ 50 milhões por infração, além do dano de reputação.
+
+Regulações com maior gap
+LGPD, Banco Central, IFRS 9, ANPD
+
+Roadmap recomendado · consultoria e implementação ATRA
+Fase 1 · 0 a 3 meses
+- Diagnóstico executivo de dados
+  Leitura detalhada deste resultado com um especialista da ATRA, priorização dos gaps por risco e prazo regulatório, e roadmap aprovado pela diretoria.
+- Estrutura de governança de dados · Governança
+  Diagnóstico executivo, definição de data owners e stewards, comitê de dados, política e glossário de negócio para os domínios críticos.
+
+Fase 2 · 3 a 6 meses
+- Fonte única e regras de qualidade · Qualidade
+  Plataforma de dados com fonte única para os indicadores principais, regras de completude, consistência e atualidade nos dados críticos.
+- Frente regulatória prioritária
+  LGPD: Inventário de dados pessoais (ROPA), RIPD, DPO ativo, retenção e descarte, e fluxo de atendimento ao titular com prazo monitorado.
+
+Fase 3 · 6 a 12 meses
+- Acesso e resposta a incidentes · Segurança
+  Classificação de dados, controle de acesso por papéis, revisão periódica e plano de resposta a incidentes com comunicação à ANPD.
+- Mapa regulatório e evidências · Conformidade
+  Inventário de dados pessoais e regulatórios, RIPD, responsáveis por norma e trilha de evidências para o regulador do setor.
+
+Ações por regulação
+LGPD: Inventário de dados pessoais (ROPA), RIPD, DPO ativo, retenção e descarte, e fluxo de atendimento ao titular com prazo monitorado.
+Banco Central: Rastreabilidade ponta a ponta das informações enviadas ao Banco Central, com linhagem e reconciliação.
+IFRS 9: Linhagem e reconciliação diária entre risco e contabilidade para os modelos de perda esperada (IFRS 9 / CMN 4.966).
+ANPD: Playbook de comunicação de incidentes à ANPD e evidências para os temas prioritários de fiscalização 2026-2027.
+
+Resultado gerado a partir das suas respostas, na escala de maturidade DAMA-DMBOK (1 Inicial a 5 Otimizado). O gap de cada regulação é a distância até o nível 5 somada nas respostas relacionadas. As recomendações são um ponto de partida: a leitura completa acontece na sessão com o especialista.
+
+Falar com um especialista: https://api.whatsapp.com/send/?phone=5511963060267&text=Oi
+Agendar leitura do diagnóstico: https://agenda.exemplo.com.br/atra"
+`;

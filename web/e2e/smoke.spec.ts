@@ -23,6 +23,9 @@ const ROTAS_PORTADAS = {
     // Fase 4c: as duas nascem aqui, sem equivalente no protótipo (D-17).
     '/segmentos',
     '/politicas-e-termos',
+    // Task 026: sem equivalente no protótipo, fora do gate visual. A EN serve o
+    // conteúdo em português, mas o slug é traduzido e é ele que se testa.
+    '/diagnostico-maturidade',
   ],
   en: [
     '/en',
@@ -34,6 +37,7 @@ const ROTAS_PORTADAS = {
     '/en/solutions',
     '/en/segments',
     '/en/privacy-and-terms',
+    '/en/data-maturity-assessment',
   ],
 } as const
 
@@ -77,6 +81,50 @@ test.describe('app novo', () => {
   test('/pt redireciona para a raiz (sem conteúdo duplicado)', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/pt/`, { maxRedirects: 0 })
     expect(r.status()).toBe(308)
+  })
+
+  /* Task 026. O `?setor=` é lido no servidor, então o HTML já sai com o setor
+   * escolhido e a linha de impactos — o aceite se prova sem clicar em nada.
+   * `noindex` nos dois idiomas: é ferramenta de conversão, não conteúdo. */
+  test('o diagnóstico de maturidade sai com noindex e abre no setor da URL', async ({ request }) => {
+    /* ⚠️ Status conferido junto com o corpo (task 030). Uma página de erro
+     * também não tem a linha de impactos — a negativa do setor inválido
+     * passava sobre um 500 —, e pode sair com `noindex`. Foi visto no servidor
+     * de dev, que às vezes responde 500 a esta rota (ver o fim do topo de
+     * `diagnostico-maturidade.spec.ts`). */
+    const html = async (rota: string) => {
+      const r = await request.get(`${NEXT_URL}${rota}`)
+      expect(r.status(), rota).toBe(200)
+      return r.text()
+    }
+    for (const rota of ['/diagnostico-maturidade', '/en/data-maturity-assessment']) {
+      expect(await html(rota), rota).toContain('noindex')
+    }
+    const comSetor = await html('/diagnostico-maturidade?setor=saude')
+    expect(comSetor).toContain('<option value="saude" selected=""')
+    expect(comSetor).toContain('Impactos avaliados:')
+    // Setor fora dos oito códigos é ignorado: o perfil abre sem seleção.
+    const invalido = await html('/diagnostico-maturidade?setor=xpto')
+    // Nenhuma opção com valor escolhida: porte e cargo também nascem vazios.
+    expect(invalido).not.toMatch(/<option value="[^"]+" selected=""/)
+    expect(invalido).not.toContain('Impactos avaliados:')
+  })
+
+  /* Task 030. Sitemap e `robots` não podem se contradizer: anunciar ao robô uma
+   * URL que a própria página manda não indexar. O diagnóstico não está em
+   * `app/sitemap.ts`; isto impede que entre por engano — numa lista de índices,
+   * por exemplo —, e o endereço aposentado do RC18 junto, que é redirect.
+   *
+   * ⚠️ A primeira asserção é a de controle: um sitemap vazio ou quebrado
+   * passaria pelas negativas sem provar nada. */
+  test('o sitemap não anuncia o diagnóstico de maturidade', async ({ request }) => {
+    const r = await request.get(`${NEXT_URL}/sitemap.xml`)
+    expect(r.status()).toBe(200)
+    const xml = await r.text()
+    expect(xml).toContain('/cases-de-sucesso</loc>')
+    for (const caminho of ['/diagnostico-maturidade', '/data-maturity-assessment', '/diagnostico-rc18', '/rc18-diagnostic']) {
+      expect(xml, caminho).not.toContain(caminho)
+    }
   })
 
   /* `/blog/[slug]` **não existe no legado** (os cards apontam para `#`), então
@@ -468,8 +516,8 @@ test.describe('app novo', () => {
   })
 
   /* Feature rc18 — a landing da RC 18/2025 (`/solucoes/rc18`, documento da coleção
-     Solutions) e o diagnóstico de prontidão (`/diagnostico-rc18`, rota própria).
-     Rotas novas sem gabarito: aqui é a rede. */
+     Solutions) e o endereço do diagnóstico de prontidão, que a D-35 aposentou:
+     virou redirect para o diagnóstico de maturidade. Sem gabarito: aqui é a rede. */
   test.describe('RC 18/2025 — página e diagnóstico', () => {
     test('a página de solução responde nos dois idiomas', async ({ request }) => {
       for (const url of [`${NEXT_URL}/solucoes/rc18`, `${NEXT_URL}/en/solutions/rc18`]) {
@@ -477,8 +525,7 @@ test.describe('app novo', () => {
       }
     })
 
-    /* A landing é conteúdo de SEO: indexável e com `Service` (o diagnóstico, não —
-       ver abaixo). */
+    /* A landing é conteúdo de SEO: indexável e com `Service`. */
     test('a página é indexável e declara Service', async ({ page, request }) => {
       expect(await (await request.get(`${NEXT_URL}/solucoes/rc18`)).text()).not.toContain('noindex')
       await page.goto(`${NEXT_URL}/solucoes/rc18`)
@@ -488,24 +535,50 @@ test.describe('app novo', () => {
       expect(servico, 'nenhum nó Service em /solucoes/rc18').toBeTruthy()
     })
 
-    /* O diagnóstico é ferramenta de conversão, não conteúdo: `noindex`, como `/chat`. */
-    test('o diagnóstico responde nos dois idiomas e é noindex', async ({ request }) => {
-      for (const url of [`${NEXT_URL}/diagnostico-rc18`, `${NEXT_URL}/en/rc18-diagnostic`]) {
-        expect((await request.get(url)).status(), url).toBe(200)
+    /* Task 029 (ata de 24/09, D-35): quem chega à RC18 vai para o diagnóstico,
+       não para um formulário genérico. O `ctaContact` saiu, e com ele a âncora
+       `#contato` e o item "Contato" do submenu, que se monta das âncoras. O CTA
+       do herói vai direto à rota nova, já no setor financeiro — não pelo
+       redirect do endereço antigo, que fica só para link de fora do site. */
+    test('leva ao diagnóstico de maturidade no setor financeiro, sem formulário de contato', async ({ page, request }) => {
+      for (const url of [`${NEXT_URL}/solucoes/rc18`, `${NEXT_URL}/en/solutions/rc18`]) {
+        const html = await (await request.get(url)).text()
+        expect(html, url).not.toContain('id="contato"')
+        expect(html, url).not.toContain('href="/diagnostico-rc18"')
+        expect(html, url).toContain('href="/diagnostico-maturidade?setor=financeiro"')
       }
-      expect(await (await request.get(`${NEXT_URL}/diagnostico-rc18`)).text()).toContain('noindex')
+
+      await page.goto(`${NEXT_URL}/solucoes/rc18`)
+      await expect(page.locator('#contato')).toHaveCount(0)
+      await expect(page.locator('a[href="#contato"]')).toHaveCount(0)
+      await expect(page.getByRole('link', { name: 'Verificar diagnóstico' })).toHaveAttribute(
+        'href',
+        '/diagnostico-maturidade?setor=financeiro',
+      )
     })
 
-    /* A autoavaliação calcula na hora: 12 dimensões no maior nível → 100% / Avançado.
-       O score em si é unitário (`lib/diagnostico-rc18.test.ts`); aqui é a fiação. */
-    test('a autoavaliação calcula o índice a partir das respostas', async ({ page }) => {
-      await page.goto(`${NEXT_URL}/diagnostico-rc18`)
-      const maximo = page.getByRole('button', { name: 'Regra, medição e evidência — o piso da norma.' })
-      await expect(maximo).toHaveCount(12)
-      const total = await maximo.count()
-      for (let i = 0; i < total; i++) await maximo.nth(i).click()
-      await page.getByRole('button', { name: 'Ver minha prontidão' }).click()
-      await expect(page.getByText('Avançado')).toBeVisible()
+    /* D-35: o link antigo circula em e-mail de campanha e favorito, e tem de cair
+       no diagnóstico novo já no setor financeiro. Com e sem barra final: a
+       barra sai num 308 do próprio Next antes da regra, e a regra não pode
+       virar laço. O destino é conferido pelo `Location`, não só o status. */
+    test('o diagnóstico antigo redireciona para o de maturidade, no setor financeiro', async ({ request }) => {
+      /* O `Location` pode vir absoluto ou relativo; o que se compara é o caminho com a query. */
+      const caminho = (url: string) => {
+        const u = new URL(url, NEXT_URL)
+        return u.pathname + u.search
+      }
+      for (const [antigo, novo] of [
+        ['/diagnostico-rc18', '/diagnostico-maturidade?setor=financeiro'],
+        ['/en/rc18-diagnostic', '/en/data-maturity-assessment?setor=financeiro'],
+      ] as const) {
+        const r = await request.get(`${NEXT_URL}${antigo}`, { maxRedirects: 0 })
+        expect(r.status(), antigo).toBe(308)
+        expect(caminho(r.headers()['location'] ?? ''), antigo).toBe(novo)
+
+        const comBarra = await request.get(`${NEXT_URL}${antigo}/`)
+        expect(comBarra.status(), `${antigo}/`).toBe(200)
+        expect(caminho(comBarra.url()), `${antigo}/`).toBe(novo)
+      }
     })
   })
 

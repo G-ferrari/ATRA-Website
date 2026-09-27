@@ -1,5 +1,5 @@
 /* Seed da página de solução RC18 (feature rc18, task 003; revisto para espelhar a
- * landing oficial).
+ * landing oficial; a partir da task 029, aponta para o diagnóstico de maturidade).
  *
  * Fonte de conteúdo:
  * - **Landing oficial `rc18-25` (RD Station), em www-atrainformatica-com-br.rds.land** —
@@ -10,24 +10,27 @@
  *   dimensões (Art. 2º) e do prazo de adequação 31/12/2026 (Art. 12).
  *
  * Diferenças em relação à landing (decididas com o dono):
- * - **Sem o questionário de autoavaliação** (o quick-check foi removido do site):
- *   a landing aponta para uma conversa direta com o diretor. Por isso os CTAs
- *   levam ao **formulário de contato** (nosso `ctaContact`, no fim) e ao **WhatsApp
- *   do diretor**, e não a um diagnóstico interativo.
+ * - **Sem formulário na página.** A landing tem o formulário RD; aqui ele não
+ *   entra. Até a task 029 havia o nosso `ctaContact` no fim, e ele saiu pela ata
+ *   de 24/09 ("substituir dentro dessa página da RC18"): quem chega à RC18 vai
+ *   para o **diagnóstico de maturidade** (D-35), não para um formulário genérico.
+ *   Com ele saiu o item "Contato" (`#contato`) do submenu, que se monta das
+ *   âncoras dos blocos.
  * - **Sem os blocos "Capacidades" e "Experiência"** da versão anterior: a landing
  *   não os tem, e o dono pediu para igualar a ela.
- * - Mantido o nosso **formulário de contato** (`ctaContact`, forma "panel": os
- *   campos Nome/E-mail/Telefone/Mensagem + o painel de contatos compartilhado),
- *   no lugar do formulário RD da landing.
  * - Mantida a **linha do tempo do prazo** (`processSteps`), que enriquece a seção
  *   do prazo sem sair do conteúdo da landing.
  *
- * CTAs (espelhando a landing):
+ * CTAs:
  * - Herói: "Falar com especialista" → WhatsApp do diretor e "Verificar
- *   diagnóstico" → quick check (`/diagnostico-rc18`).
+ *   diagnóstico" → diagnóstico de maturidade já no setor financeiro
+ *   (`/diagnostico-maturidade?setor=financeiro`).
  * - Faixa final (`ctaBanner`): "Falar com especialista" → WhatsApp do diretor.
- * - O formulário (`ctaContact`) segue na página e é o item "Contato" do submenu
- *   (`#contato`).
+ *
+ * ⚠️ Este seed é para ambientes novos. Banco que já tinha a página na versão
+ * anterior (com o `ctaContact` e o link para `/diagnostico-rc18`) é atualizado
+ * pela migração `20260926_220000_rc18_aponta_para_o_diagnostico`, que roda no
+ * deploy e só age se a página ainda estiver como este seed a deixava.
  *
  * Diferente de `solucao-ia.ts`, este seed **cria** o documento (RC18 não está
  * entre as 6 soluções-base de `solucoes.ts`) e depois grava o layout. Idempotente
@@ -169,37 +172,33 @@ const PT = {
     highlight: 'RC 18/2025',
     desc: 'Comece avaliando o cenário atual e identificando os principais gaps de governança, qualidade, processos e tecnologia.',
   },
-  /* BLOCO 09 | FORMULÁRIO DE CONTATO (nosso ctaContact) */
-  contato: {
-    title: 'Agende seu diagnóstico gratuito',
-    subtitle: 'Preencha os dados e nossa equipe entra em contato para avaliar o cenário da sua instituição.',
-  },
   nav: {
     contexto: 'O novo cenário',
     dimensoes: 'Dimensões',
     desafio: 'O desafio',
     jornada: 'Como ajudamos',
-    contato: 'Contato',
   },
 }
 
 /* EN é stub em PT (decisão PT-only da v1) — ver cabeçalho. */
 const EN = PT
 
-/* WhatsApp do diretor (Fábio) — link externo, aberto em nova aba pelo componente.
- * Mesmo formato do /diagnostico-rc18 (api.whatsapp.com). `href` não é `localized`:
- * gravado uma vez, vale nos dois locales. */
+/* WhatsApp do diretor (Fábio) — link externo, aberto em nova aba pelo componente
+ * (formato api.whatsapp.com). `href` não é `localized`: gravado uma vez, vale nos
+ * dois locales. */
 const HREF_WHATSAPP =
   'https://api.whatsapp.com/send/?phone=5511963060267&text=Oi+Fabio+vamos+agendar+um+papo&type=phone_number&app_absent=0'
 
-/* Quick check de prontidão (rota /diagnostico-rc18). Link interno literal, como o
- * resto dos seeds; PT-only, vale nos dois locales (EN é stub). */
-const HREF_DIAGNOSTICO = '/diagnostico-rc18'
+/* Diagnóstico de maturidade de dados, aberto no setor financeiro (D-35: substituiu
+ * o quick check da RC18, cujo endereço antigo virou redirect para cá). Direto na
+ * rota nova, sem passar pelo redirect. Link interno literal, como o resto dos
+ * seeds; `href` não é `localized`, vale nos dois locales (EN é stub). */
+const HREF_DIAGNOSTICO = '/diagnostico-maturidade?setor=financeiro'
 
 function layout(t: typeof PT) {
   return [
     /* BLOCO 01 | HERO. `pageHero` não embute formulário. Botão primário (laranja)
-       abre o WhatsApp do diretor; o secundário leva ao quick check. */
+       abre o WhatsApp do diretor; o secundário leva ao diagnóstico de maturidade. */
     {
       blockType: 'pageHero' as const,
       badge: t.heroBadge,
@@ -296,8 +295,8 @@ function layout(t: typeof PT) {
       steps: t.jornada.steps.map((s) => ({ title: s.title, description: s.desc })),
     },
     /* BLOCO 08 | CTA FINAL. Botão único "Falar com especialista" → WhatsApp do
-       diretor (mesmo do herói). Sem âncora própria; o formulário fica logo abaixo
-       e é alcançável pelo item "Contato" do submenu. */
+       diretor (mesmo do herói). Sem âncora própria, e é o último bloco da página:
+       o formulário de contato que vinha abaixo saiu na task 029 (ver cabeçalho). */
     {
       blockType: 'ctaBanner' as const,
       variant: 'dark' as const,
@@ -305,18 +304,6 @@ function layout(t: typeof PT) {
       highlight: t.ctaBanner.highlight,
       description: t.ctaBanner.desc,
       cta: { label: t.ctaEspecialista, href: HREF_WHATSAPP },
-    },
-    /* BLOCO 09 | FORMULÁRIO DE CONTATO (nosso ctaContact, forma "panel"). Carrega
-       `id="contato"` e entra no submenu como "Contato". O contato (telefone,
-       e-mail, endereço, redes) é injetado pela página (comContato). */
-    {
-      blockType: 'ctaContact' as const,
-      anchor: 'contato' as const,
-      navLabel: t.nav.contato,
-      variant: 'panel' as const,
-      title: t.contato.title,
-      subtitle: t.contato.subtitle,
-      showContactCard: true,
     },
   ]
 }
@@ -348,5 +335,5 @@ await payload.update({
   locale: 'en',
 })
 
-console.log('  1 página, 9 blocos, 2 idiomas (EN stub)')
+console.log('  1 página, 9 blocos (8 seções + submenu), 2 idiomas (EN stub)')
 process.exit(0)

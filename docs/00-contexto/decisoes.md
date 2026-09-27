@@ -848,3 +848,50 @@ chega, não onde a página mora.
   enum fica.
 - A página de Bancos ganha uma chamada para `/solucoes/rc18`, pelo admin.
 - O banner da RC18 no carrossel de destaques da home também leva a ela.
+
+## D-38 — O nível do diagnóstico é o do rótulo, em todo lugar
+
+*Decidida em 26/09/2026 por G-ferrari, na task 024 da feature
+`diagnostico-maturidade-dados` — o e-mail do resultado é o primeiro lugar em que
+o número e o nome do nível aparecem ao lado do que vai ao CRM.* Desvia, de
+propósito, do questionário do Roger (v1.7) que a D-35 adotou.
+
+**Contexto.** O HTML v1.7 dá o nível por dois critérios que não concordam. O
+**rótulo** (`computeScores`) usa limiares — 1,8 / 2,6 / 3,5 / 4,3 — e é o que
+segue para o CRM (`cf_quiz_nivel_dmbok` no original; `diagnostic.level` em
+`form-submissions`, e dali para o RD Station). O **título** da tela de resultado
+(`renderResult`) arredonda a média (`lvlNum = Math.round(overall)`), e é esse
+número que escolhe o nome e a descrição do nível em `LEVELS`. Nas três faixas em
+que os critérios se separam, o lead leria um nível no e-mail e o comercial
+outro no CRM:
+
+| Média | Rótulo (vai ao CRM) | Título da tela |
+|---|---|---|
+| 1,5 a < 1,8 | 1 · Inicial | Nível 2 · Repetível |
+| 2,5 a < 2,6 | 2 · Repetível | Nível 3 · Definido |
+| 4,3 a < 4,5 | 5 · Otimizado | Nível 4 · Gerenciado |
+
+A task 022 portou os dois como estão (D-15), com um teste que fixava a
+divergência.
+
+**Opções.** (a) Manter os dois critérios, fiel ao HTML; (b) o título em todo
+lugar, trocando o que vai ao CRM; (c) o rótulo em todo lugar.
+
+**Escolha: (c).** O rótulo é o que vai ao CRM, e o número e o nome do nível não
+podem discordar entre o e-mail que o lead recebe e o registro com que o
+comercial o aborda. (b) mexeria no dado que o Roger desenhou para a automação —
+os limiares são o critério explícito, o arredondamento é conta de tela. (a) era
+fidelidade ao defeito numa tela que nem existe mais: o resultado agora só sai
+por e-mail.
+
+**Consequência.**
+
+- `nivelNumerico` (motor) passa a sair do dígito do rótulo (`nivelDaMedia`). O
+  título "Nível N · Nome", a chave de `NIVEIS` (nome e descrição) e o e-mail do
+  resultado seguem o rótulo.
+- É desvio deliberado do original. `motor.test.ts` continua rodando o HTML ao
+  lado e prova que o número difere do `lvlNum` **exatamente** nas três faixas —
+  nem uma média a mais. Quando o HTML unificar o critério, esse teste reprova, e
+  é a hora de voltar a exigir igualdade.
+- Avisar o Roger para unificar na próxima versão do questionário (v1.8), pelo
+  rótulo.

@@ -61,9 +61,8 @@ services:
       # D-29: chave de engenharia do convite de lead no chat. As outras duas
       # moram no CMS (leadCapture.enabled + consentNotice por idioma).
       ENABLE_CHAT_LEAD: ${ENABLE_CHAT_LEAD:-}
-      # P-29: caixa que recebe o questionário do /diagnostico-rc18. Vazia = vai
-      # para o `email` do global `contact`, como os outros formulários.
-      RC18_LEAD_EMAIL: ${RC18_LEAD_EMAIL:-}
+      # `RC18_LEAD_EMAIL` saiu com o diagnóstico RC18 (D-35): nada mais a lê. O
+      # diagnóstico novo avisa no `email` do global `contact` (P-29 segue aberta).
       NEXT_TELEMETRY_DISABLED: "1"
     depends_on:
       postgres:

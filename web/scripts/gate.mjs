@@ -141,6 +141,15 @@ if (!(await passo(`subindo o build em :${PORTA}`, esperarNoAr))) {
   encerrar(1)
 }
 
+/* O banco do servidor sob teste, para `diagnostico-maturidade.spec.ts` conferir
+ * o lead gravado e apagá-lo depois. Visto **de dentro** do container: o
+ * `localhost` do `DATABASE_URI` ali é o próprio container, não o Postgres.
+ *
+ * Só quando o ambiente tem `DATABASE_URI` (o CI tem; localmente ele mora no
+ * `.env.local`, que só o Next lê). Sem ela o teste de envio é pulado — e não
+ * grava lead nenhum que não possa apagar. */
+const bancoDoTeste = process.env.DATABASE_URI?.replace(/@(localhost|127\.0\.0\.1)([:/])/, '@host.docker.internal$2')
+
 const comando = gravarGabarito
   ? ['sh', '-c', `GRAVAR_GABARITO=1 npx playwright test e2e/baseline.spec.ts --update-snapshots ${filtro.map((a) => `'${a}'`).join(' ')}`]
   : ['npx', 'playwright', 'test', ...(rota ? ['e2e/visual.spec.ts'] : []), ...filtro]
@@ -161,6 +170,7 @@ const r = passo(gravarGabarito ? 'gravando o gabarito (legado)' : 'comparando', 
       '-e', `NEXT_URL=http://host.docker.internal:${PORTA}`,
       '-e', `LEGACY_URL=${LEGADO}`,
       '-e', 'CI=1',
+      ...(bancoDoTeste ? ['-e', `E2E_DATABASE_URI=${bancoDoTeste}`] : []),
       '-v', `${process.cwd()}:/work`,
       /* ⚠️ `docs/` entra montado também, e não por conveniência: o
        * `redirects.spec.ts` lê `docs/02-especificacao/dados/redirects.csv`, que

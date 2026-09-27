@@ -755,6 +755,23 @@ export type AvisoDeCookies = {
   }
 }
 
+/** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global
+ * `data-maturity-diagnostic`. Servem à página, à conclusão e ao e-mail do
+ * resultado.
+ *
+ * `null` é o editor dizendo "sem isto": parágrafo que não se desenha, botão que
+ * não aparece. Título, assunto e WhatsApp nunca chegam vazios — sem eles a
+ * página fica sem cabeçalho, o e-mail sem assunto e o lead sem saída. */
+export type DiagnosticoDeMaturidade = {
+  titulo: string
+  abertura: string | null
+  conclusao: string | null
+  email: { assunto: string; abertura: string | null }
+  /** Vazio no CMS = sem botão "Agendar conversa" na conclusão e no e-mail. */
+  agendaUrl: string | null
+  whatsappUrl: string
+}
+
 /** Dados de contato da ATRA, do global `contact` (MIG-072). */
 export type Contato = {
   telefone: string

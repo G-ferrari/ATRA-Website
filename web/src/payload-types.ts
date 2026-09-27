@@ -125,6 +125,7 @@ export interface Config {
     'atra-ai': AtraAi;
     contact: Contact;
     'cookie-consent': CookieConsent;
+    'data-maturity-diagnostic': DataMaturityDiagnostic;
     footer: Footer;
     navigation: Navigation;
     'site-settings': SiteSetting;
@@ -133,6 +134,7 @@ export interface Config {
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     'cookie-consent': CookieConsentSelect<false> | CookieConsentSelect<true>;
+    'data-maturity-diagnostic': DataMaturityDiagnosticSelect<false> | DataMaturityDiagnosticSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
@@ -7238,7 +7240,8 @@ export interface FormSubmission {
     | 'job-application'
     | 'material-download'
     | 'rc18-diagnostic'
-    | 'consultant-request';
+    | 'consultant-request'
+    | 'data-maturity-diagnostic';
   status: 'new' | 'read' | 'archived';
   email: string;
   confirmationToken?: string | null;
@@ -7254,6 +7257,60 @@ export interface FormSubmission {
   company?: string | null;
   message?: string | null;
   chatContext?: string | null;
+  diagnostic?: {
+    sector?: string | null;
+    size?: string | null;
+    role?: string | null;
+    average?: number | null;
+    level?: string | null;
+    pillars?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    dama?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    /**
+     * Sum of (5 − score) over the answers tied to each regulation: the higher, the further from optimized.
+     */
+    gaps?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    topGaps?: string | null;
+    answers?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    roadmap?: string | null;
+    version?: string | null;
+    durationSeconds?: number | null;
+  };
+  /**
+   * Empty = the lead did not receive the result.
+   */
+  resultSentAt?: string | null;
   source?: string | null;
   utm?: {
     source?: string | null;
@@ -11075,6 +11132,24 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   company?: T;
   message?: T;
   chatContext?: T;
+  diagnostic?:
+    | T
+    | {
+        sector?: T;
+        size?: T;
+        role?: T;
+        average?: T;
+        level?: T;
+        pillars?: T;
+        dama?: T;
+        gaps?: T;
+        topGaps?: T;
+        answers?: T;
+        roadmap?: T;
+        version?: T;
+        durationSeconds?: T;
+      };
+  resultSentAt?: T;
   source?: T;
   utm?:
     | T
@@ -11263,6 +11338,37 @@ export interface CookieConsent {
     name?: string | null;
     description?: string | null;
   };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "data-maturity-diagnostic".
+ */
+export interface DataMaturityDiagnostic {
+  id: number;
+  title?: string | null;
+  /**
+   * Right below the title, on the profile screen. Empty = no paragraph.
+   */
+  intro?: string | null;
+  /**
+   * Shown after submitting, next to the destination e-mail confirmation. Empty = no paragraph.
+   */
+  doneMessage?: string | null;
+  emailSubject?: string | null;
+  /**
+   * First paragraph of the e-mail, before the result. Empty = the e-mail starts with the result.
+   */
+  emailIntro?: string | null;
+  /**
+   * Optional. With a link, the completion screen and the e-mail get a "Schedule a call" button; empty = no button.
+   */
+  agendaUrl?: string | null;
+  /**
+   * The "Chat on WhatsApp" button on the page, the completion screen and the e-mail. Empty falls back to the default link: it is the way out when the e-mail does not arrive.
+   */
+  whatsappUrl?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -11632,6 +11738,22 @@ export interface CookieConsentSelect<T extends boolean = true> {
         name?: T;
         description?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "data-maturity-diagnostic_select".
+ */
+export interface DataMaturityDiagnosticSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  doneMessage?: T;
+  emailSubject?: T;
+  emailIntro?: T;
+  agendaUrl?: T;
+  whatsappUrl?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
