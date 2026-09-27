@@ -1,5 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 
+import { hrefDe } from './routes'
+
 /* Leitura do `redirects.csv` para o `next.config.ts` (MIG-108).
  *
  * O arquivo é gerado por `scripts/wp-import/gerar-redirects.ts` e versionado em
@@ -61,6 +63,41 @@ export function redirectsDoNext(linhas: LinhaDeRedirect[]) {
      * nas sete páginas institucionais. Medido: 50 saltos até o curl desistir. */
     .filter((r) => r.source !== r.destination)
 }
+
+/**
+ * Rotas **do próprio site** que saíram e ganharam sucessora — não vêm do CSV,
+ * que é o mapa do WordPress e é regravado pelo gerador.
+ *
+ * D-35 (26/09/2026): o diagnóstico RC18 deu lugar ao de maturidade de dados. O
+ * link antigo continua circulando — no e-mail da campanha, em favoritos, nos
+ * CTAs de `/solucoes/rc18` gravados no CMS —, então ele leva à rota nova já no
+ * setor financeiro, que é o público da RC 18/2025. Permanente (308): a rota
+ * antiga não volta.
+ *
+ * ⚠️ A origem é escrita à mão, e é a exceção à regra 6: a seção saiu de
+ * `routes.ts` junto com a rota, e o endereço antigo é fato histórico, não
+ * caminho do site. O destino sai de `hrefDe`, como todo link.
+ *
+ * ⚠️ Origem sem barra final, pelo mesmo motivo de `redirectsDoNext`: com
+ * `trailingSlash: false` o Next responde 308 tirando a barra **antes** de
+ * consultar esta lista. `/diagnostico-rc18/` leva dois saltos (barra, depois
+ * esta regra) e chega; origem escrita com barra nunca casaria.
+ *
+ * A query da requisição segue junto (o Next a repassa ao destino), então a UTM
+ * do e-mail da campanha chega inteira ao formulário novo.
+ */
+export const ROTAS_APOSENTADAS = [
+  {
+    source: '/diagnostico-rc18',
+    destination: `${hrefDe('diagnosticoMaturidade', 'pt')}?setor=financeiro`,
+    permanent: true,
+  },
+  {
+    source: '/en/rc18-diagnostic',
+    destination: `${hrefDe('diagnosticoMaturidade', 'en')}?setor=financeiro`,
+    permanent: true,
+  },
+] as const
 
 /** As URLs que saem de propósito, para o `proxy.ts` responder 410. */
 export function caminhosGone(linhas: LinhaDeRedirect[]): string[] {

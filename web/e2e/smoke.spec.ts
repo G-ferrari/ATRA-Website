@@ -487,8 +487,8 @@ test.describe('app novo', () => {
   })
 
   /* Feature rc18 — a landing da RC 18/2025 (`/solucoes/rc18`, documento da coleção
-     Solutions) e o diagnóstico de prontidão (`/diagnostico-rc18`, rota própria).
-     Rotas novas sem gabarito: aqui é a rede. */
+     Solutions) e o endereço do diagnóstico de prontidão, que a D-35 aposentou:
+     virou redirect para o diagnóstico de maturidade. Sem gabarito: aqui é a rede. */
   test.describe('RC 18/2025 — página e diagnóstico', () => {
     test('a página de solução responde nos dois idiomas', async ({ request }) => {
       for (const url of [`${NEXT_URL}/solucoes/rc18`, `${NEXT_URL}/en/solutions/rc18`]) {
@@ -496,8 +496,7 @@ test.describe('app novo', () => {
       }
     })
 
-    /* A landing é conteúdo de SEO: indexável e com `Service` (o diagnóstico, não —
-       ver abaixo). */
+    /* A landing é conteúdo de SEO: indexável e com `Service`. */
     test('a página é indexável e declara Service', async ({ page, request }) => {
       expect(await (await request.get(`${NEXT_URL}/solucoes/rc18`)).text()).not.toContain('noindex')
       await page.goto(`${NEXT_URL}/solucoes/rc18`)
@@ -507,24 +506,28 @@ test.describe('app novo', () => {
       expect(servico, 'nenhum nó Service em /solucoes/rc18').toBeTruthy()
     })
 
-    /* O diagnóstico é ferramenta de conversão, não conteúdo: `noindex`, como `/chat`. */
-    test('o diagnóstico responde nos dois idiomas e é noindex', async ({ request }) => {
-      for (const url of [`${NEXT_URL}/diagnostico-rc18`, `${NEXT_URL}/en/rc18-diagnostic`]) {
-        expect((await request.get(url)).status(), url).toBe(200)
+    /* D-35: o link antigo circula em e-mail de campanha e favorito, e tem de cair
+       no diagnóstico novo já no setor financeiro. Com e sem barra final: a
+       barra sai num 308 do próprio Next antes da regra, e a regra não pode
+       virar laço. O destino é conferido pelo `Location`, não só o status. */
+    test('o diagnóstico antigo redireciona para o de maturidade, no setor financeiro', async ({ request }) => {
+      /* O `Location` pode vir absoluto ou relativo; o que se compara é o caminho com a query. */
+      const caminho = (url: string) => {
+        const u = new URL(url, NEXT_URL)
+        return u.pathname + u.search
       }
-      expect(await (await request.get(`${NEXT_URL}/diagnostico-rc18`)).text()).toContain('noindex')
-    })
+      for (const [antigo, novo] of [
+        ['/diagnostico-rc18', '/diagnostico-maturidade?setor=financeiro'],
+        ['/en/rc18-diagnostic', '/en/data-maturity-assessment?setor=financeiro'],
+      ] as const) {
+        const r = await request.get(`${NEXT_URL}${antigo}`, { maxRedirects: 0 })
+        expect(r.status(), antigo).toBe(308)
+        expect(caminho(r.headers()['location'] ?? ''), antigo).toBe(novo)
 
-    /* A autoavaliação calcula na hora: 12 dimensões no maior nível → 100% / Avançado.
-       O score em si é unitário (`lib/diagnostico-rc18.test.ts`); aqui é a fiação. */
-    test('a autoavaliação calcula o índice a partir das respostas', async ({ page }) => {
-      await page.goto(`${NEXT_URL}/diagnostico-rc18`)
-      const maximo = page.getByRole('button', { name: 'Regra, medição e evidência — o piso da norma.' })
-      await expect(maximo).toHaveCount(12)
-      const total = await maximo.count()
-      for (let i = 0; i < total; i++) await maximo.nth(i).click()
-      await page.getByRole('button', { name: 'Ver minha prontidão' }).click()
-      await expect(page.getByText('Avançado')).toBeVisible()
+        const comBarra = await request.get(`${NEXT_URL}${antigo}/`)
+        expect(comBarra.status(), `${antigo}/`).toBe(200)
+        expect(caminho(comBarra.url()), `${antigo}/`).toBe(novo)
+      }
     })
   })
 
