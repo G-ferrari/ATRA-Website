@@ -70,5 +70,28 @@ export const Contact: GlobalConfig = {
         { name: 'youtube', type: 'text', label: { pt: 'YouTube', en: 'YouTube' } },
       ],
     },
+    {
+      /* Para onde vai o aviso de cada formulário (resposta do G-ferrari em
+       * 26/09: "um campo no painel para editar isso"). Até aqui todos iam para
+       * o `email` acima, e o diagnóstico dependia de `RC18_LEAD_EMAIL` na VPS
+       * (P-29) — que ninguém do conteúdo consegue mudar. Vazio, vale o `email`
+       * acima: nada muda até alguém preencher, e nenhum lead cai no vazio. */
+      name: 'formRecipients',
+      type: 'group',
+      label: { pt: 'Destino dos formulários', en: 'Form recipients' },
+      admin: {
+        description: {
+          pt: 'Para qual e-mail vai o aviso de cada formulário. Vazio, vai para o e-mail acima.',
+          en: 'Which inbox receives each form. When empty, the email above is used.',
+        },
+      },
+      fields: [
+        { name: 'contact', type: 'email', label: { pt: 'Fale Conosco (home, /contato, páginas de solução)', en: 'Contact (home, /contato, solution pages)' } },
+        { name: 'consultants', type: 'email', label: { pt: 'Pedido de consultores', en: 'Consultant requests' } },
+        { name: 'diagnostic', type: 'email', label: { pt: 'Diagnóstico', en: 'Diagnostic' } },
+        { name: 'careers', type: 'email', label: { pt: 'Carreiras (banco de talentos e candidaturas)', en: 'Careers (talent pool and applications)' } },
+        { name: 'chat', type: 'email', label: { pt: 'Lead do chat', en: 'Chat lead' } },
+      ],
+    },
   ],
 }

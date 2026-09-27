@@ -5,6 +5,7 @@ import { headers } from 'next/headers'
 import { CAMPO_ISCA, conferir, excedeuPorIp } from '@/lib/anti-spam'
 import { MAX_CHARS_POR_CONTEXTO, MAX_MENSAGENS_DO_CONTEXTO } from '@/lib/chat'
 import { lerContato } from '@/lib/contato'
+import { destinoDoAviso } from '@/lib/destino-do-aviso'
 import { enviarAviso } from '@/lib/email'
 import { ipDe } from '@/lib/ip'
 import { getPayload } from '@/lib/payload'
@@ -94,7 +95,7 @@ export async function enviarLeadDoChat(dados: FormData): Promise<ResultadoLeadDo
   const contato = await lerContato()
   const empresa = texto(dados, 'company')
   const enviou = await enviarAviso({
-    para: contato.email,
+    para: destinoDoAviso(contato, 'chat'),
     assunto: `[site] novo lead do chat${empresa ? ` — ${empresa}` : ''}`,
     responderPara: email,
     texto: [

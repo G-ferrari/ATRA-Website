@@ -10,6 +10,7 @@ const contato: Contato = {
   email: 'negocios@atra.com.br',
   endereco: 'Av. Queiroz Filho, 1700 – SP',
   redes: { linkedin: 'https://linkedin.com/company/atra', instagram: null, facebook: 'https://facebook.com/atra', youtube: 'https://youtube.com/@atra' },
+  destinos: { contato: null, consultores: null, diagnostico: null, carreiras: null, chat: null },
 }
 const seo: Seo = { title: 'Título', description: 'Resumo', image: { url: '/capa.webp', alt: 'a', width: 1200, height: 630 }, noIndex: false }
 

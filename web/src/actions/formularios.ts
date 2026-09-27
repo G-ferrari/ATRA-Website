@@ -8,6 +8,7 @@ import { ipDe } from '@/lib/ip'
 import { enviarParaAtrair } from '@/lib/atrair'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
+import { destinoDoAviso } from '@/lib/destino-do-aviso'
 import { enviarAviso } from '@/lib/email'
 import { getPayload } from '@/lib/payload'
 import { MAX_POR_VALOR } from '@/lib/utm'
@@ -146,7 +147,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   } else {
     const contato = await lerContato()
     enviou = await enviarAviso({
-      para: contato.email,
+      para: destinoDoAviso(contato, kind === 'talent-pool' ? 'carreiras' : 'contato'),
       assunto: `[site] ${ASSUNTO[kind]}${texto(dados, 'company') ? ` — ${texto(dados, 'company')}` : ''}`,
       responderPara: email,
       texto: resumo(dados, email),
