@@ -153,7 +153,9 @@ for (const [ordem, solucao] of SOLUCOES.entries()) {
      * no admin; rodar isto de novo apagaria as duas coisas sem aviso. Foi o que
      * aconteceu num banco local em 27/09, com a Alocação. */
     const formato = (docs[0]?.layout ?? []).map((b) => b.blockType).join(',')
-    if (docs[0] && formato !== 'pageHero,richTextSection,ctaBanner') {
+    /* O seed de teste deixa só o herói, com "Texto de exemplo": esse também
+     * pode ser substituído — é para isso que a importação existe num banco local. */
+    if (docs[0] && formato !== 'pageHero,richTextSection,ctaBanner' && formato !== 'pageHero') {
       mantidas++
       console.log(`  ${titulo.padEnd(38)} mantida (já remontada ou editada: ${formato || 'vazio'})`)
       continue
