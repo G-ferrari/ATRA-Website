@@ -17,6 +17,7 @@
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { up as montarSegmentosDoWordpress } from '../../src/migrations/20260927_235930_segmentos_do_wordpress'
 import { slugify } from '../../src/fields/slug'
 import { casarIds } from '../seed/ids'
 import { createWpClient } from './client'
@@ -45,6 +46,7 @@ const paginas = await cliente.pages({ _fields: 'id,slug,date,title,content,link'
 
 let criados = 0
 let atualizados = 0
+let mantidos = 0
 const falhas: string[] = []
 
 for (const [ordem, vertical] of VERTICAIS.entries()) {
@@ -114,6 +116,19 @@ for (const [ordem, vertical] of VERTICAIS.entries()) {
       depth: 0,
     })
 
+    /* ⚠️ Só reescreve segmento que ainda seja o desta importação. Desde 27/09
+     * os 8 são remontados por `20260927_235930_segmentos_do_wordpress` e depois
+     * editados no admin; rodar isto de novo apagaria as duas coisas sem aviso
+     * — foi o que o importador de soluções fez com a Alocação num banco local. */
+    const formato = (docs[0]?.layout ?? []).map((b) => b.blockType).join(',')
+    /* O seed de teste deixa só o herói, com "Texto de exemplo": esse também
+     * pode ser substituído — é para isso que a importação existe num banco local. */
+    if (docs[0] && formato !== 'pageHero,iconCardGrid,ctaBanner' && formato !== 'pageHero') {
+      mantidos++
+      console.log(`  ${nome.padEnd(46)} mantido (já remontado ou editado)`)
+      continue
+    }
+
     const doc = docs[0]
       ? await payload.update({ collection: 'segments', id: docs[0].id, data: dados, locale: 'pt' })
       : await payload.create({ collection: 'segments', data: dados, locale: 'pt' })
@@ -156,7 +171,14 @@ for (const [ordem, vertical] of VERTICAIS.entries()) {
   }
 }
 
-console.log(`\n  ${criados} criados · ${atualizados} atualizados · ${falhas.length} falhas`)
+console.log(`\n  ${criados} criados · ${atualizados} atualizados · ${mantidos} mantidos · ${falhas.length} falhas`)
+
+/* ⚠️ Banco novo: a migração de dados roda no `migrate`, antes de existir
+ * segmento, e pula — a trava só age em página no formato desta importação, e
+ * aí a migração já está marcada como feita. Chamá-la aqui fecha o ciclo. Onde
+ * o segmento já foi remontado ou editado, a trava o deixa como está. */
+console.log('\n→ remontando no padrão das páginas de solução')
+await montarSegmentosDoWordpress({ payload } as never)
 for (const f of falhas) console.log(`  ✗ ${f}`)
 console.log(falhas.length ? '\n✗ importação com falhas' : '\n✓ importação completa')
 process.exit(falhas.length ? 1 : 0)

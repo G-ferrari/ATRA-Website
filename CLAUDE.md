@@ -264,7 +264,7 @@ comparam; na suíte padrão, a mesma lista alimenta o contraste e o axe.
 | Teste de restore passa com banco vazio | `pg_restore --jobs` por stdin **aborta sem restaurar nada** (paralelismo exige arquivo posicionável) e o veredito morria mudo: `docker compose exec -T` dentro de `while read` come o stdin do laço, e `[ -z ] && continue` devolve 1 sob `set -e`. Três armadilhas no mesmo script |
 | Seed sobe as mesmas imagens de novo a cada corrida | A collection `Media` converte todo upload para **WebP** (`formatOptions`), então o `.jpg` que subiu vira `.webp` no `filename` e um `where: { filename: { equals: nome } }` nunca casa. Deduplicar pelo nome **sem extensão**, com `contains` |
 | CI morre em "pull access denied for minio/minio" antes de rodar um teste | O MinIO tirou as imagens públicas do Docker Hub e do quay.io (set/2026). Dev e CI usam o fork `pgsty/minio`, preso por digest, que já traz o `mc`. Produção ainda depende do cache da VPS — P-32 |
-| Migração de dados roda verde e a página continua como antes | Em **banco novo** o `migrate` roda antes de existir o conteúdo, a trava da migração não acha a página e pula — e a migração fica marcada como feita. `import-solutions.ts` chama as duas montagens (Alocação e as 11) no fim por isso. E o importador só reescreve página ainda no formato dele: rodado de novo num banco local em 27/09, ele tinha apagado a Alocação remontada |
+| Migração de dados roda verde e a página continua como antes | Em **banco novo** o `migrate` roda antes de existir o conteúdo, a trava da migração não acha a página e pula — e a migração fica marcada como feita. `import-solutions.ts` chama as duas montagens (Alocação e as 11) no fim por isso, e `import-segments.ts` a dos 8 segmentos. E os importadores só reescrevem página ainda no formato deles (ou no do seed de teste, só o herói): rodado de novo num banco local em 27/09, ele tinha apagado a Alocação remontada |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
 ## Estado
@@ -280,7 +280,9 @@ de `lib/` ou de um bloco, é resíduo — o lugar dela é o CMS.
 
 A 4b importou o WordPress: **207 artigos** com corpo, imagem e links internos
 reescritos, **287 imagens** e as **7 vagas** (não 6 — uma abriu depois do
-levantamento). A 4c trouxe as **8 verticais** para `/segmentos` e a página legal
+levantamento). A 4c trouxe as **8 verticais** para `/segmentos` (remontadas em
+27/09 no padrão das soluções por `20260927_235930_segmentos_do_wordpress`, com
+o texto literal em `src/migrations/arquivos/segmentos-wp/`) e a página legal
 para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas**, com a
 geração reprovando se alguma URL do WordPress ficar sem destino.
 

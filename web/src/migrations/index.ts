@@ -60,6 +60,7 @@ import * as migration_20260927_105730_reconcilia_snapshot_destino_e_diagnostico 
 import * as migration_20260927_163411_add_tracking from './20260927_163411_add_tracking';
 import * as migration_20260927_215331_add_image_grid from './20260927_215331_add_image_grid';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
+import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 
 export const migrations = [
   {
@@ -370,6 +371,11 @@ export const migrations = [
   {
     up: migration_20260927_235900_solucoes_do_wordpress.up,
     down: migration_20260927_235900_solucoes_do_wordpress.down,
-    name: '20260927_235900_solucoes_do_wordpress'
+    name: '20260927_235900_solucoes_do_wordpress',
+  },
+  {
+    up: migration_20260927_235930_segmentos_do_wordpress.up,
+    down: migration_20260927_235930_segmentos_do_wordpress.down,
+    name: '20260927_235930_segmentos_do_wordpress',
   },
 ];
