@@ -477,6 +477,21 @@ export function toBlocos(
         })
         break
 
+      case 'imageGrid':
+        blocos.push({
+          ...base(b),
+          tipo: 'imageGrid',
+          eyebrow: vazio(b.eyebrow),
+          title: vazio(b.title),
+          description: vazio(b.description),
+          images: (b.images ?? []).map((i) => ({
+            image: toImage(i.image, 'imageGrid.images.image'),
+            caption: vazio(i.caption),
+          })),
+          boxed: b.boxed ?? true,
+        })
+        break
+
       case 'processSteps':
         blocos.push({
           ...base(b),

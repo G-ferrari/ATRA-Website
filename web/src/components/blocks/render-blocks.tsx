@@ -19,6 +19,7 @@ import { BlocoCarrosselDeCases } from './bloco-carrossel-de-cases'
 import { BlocoCarrosselDeDestaques } from './bloco-carrossel-de-destaques'
 import { BlocoDepoimentos } from './bloco-depoimentos'
 import { BlocoFaixaDeLogos } from './bloco-faixa-de-logos'
+import { BlocoGradeDeImagens } from './bloco-grade-de-imagens'
 import { BlocoHomeHero } from './bloco-home-hero'
 import { BlocoHubDeInsights } from './bloco-hub-de-insights'
 import { BlocoParceiroHero } from './bloco-parceiro-hero'
@@ -64,6 +65,8 @@ export function RenderBlocks({
             return <BlocoNumeros key={b.id} bloco={b} />
           case 'sealsBanner':
             return <BlocoSelos key={b.id} bloco={b} />
+          case 'imageGrid':
+            return <BlocoGradeDeImagens key={b.id} bloco={b} />
           case 'processSteps':
             return <BlocoEtapas key={b.id} bloco={b} />
           case 'ctaContact':

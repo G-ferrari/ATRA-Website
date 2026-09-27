@@ -438,6 +438,16 @@ export type BlocoSealsBanner = Base & {
   seals: Selo[]
 }
 
+/** Grade de imagens do próprio bloco — selos, certificações, prêmios. */
+export type BlocoImageGrid = Base & {
+  tipo: 'imageGrid'
+  eyebrow: string | null
+  title: string | null
+  description: string | null
+  images: { image: Image; caption: string | null }[]
+  boxed: boolean
+}
+
 export type BlocoProcessSteps = Base & {
   tipo: 'processSteps'
   eyebrow: string | null
@@ -621,6 +631,7 @@ export type Bloco =
   | BlocoValueCards
   | BlocoStickyPageNav
   | BlocoSealsBanner
+  | BlocoImageGrid
   | BlocoProcessSteps
   | BlocoCtaContact
   | BlocoJobsList
