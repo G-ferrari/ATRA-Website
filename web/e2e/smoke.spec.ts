@@ -506,6 +506,28 @@ test.describe('app novo', () => {
       expect(servico, 'nenhum nó Service em /solucoes/rc18').toBeTruthy()
     })
 
+    /* Task 029 (ata de 24/09, D-35): quem chega à RC18 vai para o diagnóstico,
+       não para um formulário genérico. O `ctaContact` saiu, e com ele a âncora
+       `#contato` e o item "Contato" do submenu, que se monta das âncoras. O CTA
+       do herói vai direto à rota nova, já no setor financeiro — não pelo
+       redirect do endereço antigo, que fica só para link de fora do site. */
+    test('leva ao diagnóstico de maturidade no setor financeiro, sem formulário de contato', async ({ page, request }) => {
+      for (const url of [`${NEXT_URL}/solucoes/rc18`, `${NEXT_URL}/en/solutions/rc18`]) {
+        const html = await (await request.get(url)).text()
+        expect(html, url).not.toContain('id="contato"')
+        expect(html, url).not.toContain('href="/diagnostico-rc18"')
+        expect(html, url).toContain('href="/diagnostico-maturidade?setor=financeiro"')
+      }
+
+      await page.goto(`${NEXT_URL}/solucoes/rc18`)
+      await expect(page.locator('#contato')).toHaveCount(0)
+      await expect(page.locator('a[href="#contato"]')).toHaveCount(0)
+      await expect(page.getByRole('link', { name: 'Verificar diagnóstico' })).toHaveAttribute(
+        'href',
+        '/diagnostico-maturidade?setor=financeiro',
+      )
+    })
+
     /* D-35: o link antigo circula em e-mail de campanha e favorito, e tem de cair
        no diagnóstico novo já no setor financeiro. Com e sem barra final: a
        barra sai num 308 do próprio Next antes da regra, e a regra não pode
