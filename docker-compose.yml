@@ -80,8 +80,14 @@ services:
 
   # Storage S3-compatível. Mesma API do S3/R2, sem credencial de nuvem na
   # máquina de ninguém e funcionando offline.
+  #
+  # ⚠️ Não voltar para `minio/minio`. Em set/2026 o MinIO tirou as imagens
+  # públicas do Docker Hub e do quay.io, e o CI morreu em "pull access denied"
+  # antes de rodar um teste. `pgsty/minio` é o fork comunitário do mesmo código:
+  # mesmo entrypoint, mesmo `server /data`, e já traz o `mc` — por isso o
+  # `createbucket` usa a mesma imagem. Presa por digest porque é de terceiro.
   minio:
-    image: minio/minio
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z@sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
@@ -100,7 +106,7 @@ services:
 
   # Cria o bucket na primeira subida e sai. Sem isso, o primeiro upload falha.
   createbucket:
-    image: minio/mc
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z@sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372
     depends_on:
       minio:
         condition: service_healthy
