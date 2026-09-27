@@ -197,6 +197,37 @@ describe('as oito rotas do questionário', () => {
   })
 })
 
+describe('conclusão', () => {
+  /** Todas as perguntas respondidas: a pessoa no contato. */
+  function noContato(setor: Setor = 'saude'): EstadoDoQuestionario {
+    let estado = comecado(setor)
+    while (etapaAtual(estado).tipo === 'pergunta') estado = responderEAvancar(estado, 1)
+    return estado
+  }
+
+  it('o contato ainda não é 100%: a barra só enche com o envio aceito', () => {
+    for (const { valor: setor } of SETORES) {
+      const estado = noContato(setor)
+      expect(etapaAtual(estado)).toEqual({ tipo: 'contato' })
+      expect(progresso(estado), setor).toBeLessThan(100)
+    }
+  })
+
+  it('com o envio aceito, é a conclusão: "Concluído" e a barra cheia', () => {
+    const estado = noContato()
+    expect(etapaAtual(estado, true)).toEqual({ tipo: 'conclusao' })
+    expect(rotuloDaEtapa(etapaAtual(estado, true))).toBe('Concluído')
+    expect(progresso(estado, true)).toBe(100)
+  })
+
+  it('a resposta da action manda sobre o passo — inclusive o perfil do envio sem JavaScript', () => {
+    // Sem JS a página volta do servidor com o reducer no estado inicial.
+    const inicial = estadoInicial(null)
+    expect(etapaAtual(inicial, true)).toEqual({ tipo: 'conclusao' })
+    expect(progresso(inicial, true)).toBe(100)
+  })
+})
+
 describe('atalhos de teclado', () => {
   it('A–E e 1–5, maiúscula ou minúscula', () => {
     expect(['a', 'B', 'c', 'D', 'e'].map(indiceDaTecla)).toEqual([0, 1, 2, 3, 4])

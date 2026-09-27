@@ -5,13 +5,14 @@ import { locale as getLocale } from 'next/root-params'
 import { lerDiagnosticoDeMaturidade } from '@/lib/diagnostico'
 import { ehSetor } from '@/lib/diagnostico-maturidade'
 import { DEFAULT_LOCALE, isLocale, LOCALES } from '@/lib/locales'
+import { hrefDe } from '@/lib/routes'
 
 import { Questionario } from './questionario'
 
-/* /diagnostico-maturidade (feature diagnostico-maturidade-dados, task 026) —
- * o questionário de maturidade de dados do Roger, que substitui o RC18 Quick
- * Check (D-35). Esta task põe no ar perfil e perguntas; contato, envio e
- * conclusão são a 027.
+/* /diagnostico-maturidade (feature diagnostico-maturidade-dados, tasks 026 e
+ * 027) — o questionário de maturidade de dados do Roger, que substitui o RC18
+ * Quick Check (D-35): perfil, perguntas, contato e conclusão. O resultado não
+ * aparece aqui; vai por e-mail.
  *
  * ⚠️ `noindex`, como `/chat` e `/diagnostico-rc18`: é ferramenta de conversão,
  * não conteúdo. Quem chega vem de um CTA — das páginas de segmento, de normativa
@@ -62,7 +63,7 @@ export default async function Pagina({ searchParams }: PageProps<'/[locale]/diag
   const { setor } = await searchParams
   const setorInicial = ehSetor(setor) ? setor : null
 
-  const { titulo, abertura, whatsappUrl } = await lerDiagnosticoDeMaturidade(DEFAULT_LOCALE)
+  const { titulo, abertura, conclusao, whatsappUrl, agendaUrl } = await lerDiagnosticoDeMaturidade(DEFAULT_LOCALE)
 
   return (
     <main
@@ -81,7 +82,12 @@ export default async function Pagina({ searchParams }: PageProps<'/[locale]/diag
           aria-hidden
           className="pointer-events-none absolute -bottom-10 -right-20 h-64 w-64 rounded-full bg-secondary/10 blur-3xl dark:bg-secondary/15"
         />
-        <Questionario textos={{ titulo, abertura, whatsappUrl }} setorInicial={setorInicial} />
+        {/* A política no idioma da rota: é página do site, e existe nos dois. */}
+        <Questionario
+          textos={{ titulo, abertura, conclusao, whatsappUrl, agendaUrl }}
+          setorInicial={setorInicial}
+          privacidadeHref={hrefDe('politicas', locale)}
+        />
       </div>
     </main>
   )

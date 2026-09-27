@@ -6,8 +6,15 @@
  * que sai daqui.
  *
  * O `passo` é o `state.step` do HTML: 0 é o perfil, 1…N são as perguntas do
- * setor e N + 1 é o contato. O contato e a conclusão são da task 027 — aqui o
- * contato é o fim da linha, e "avançar" nele não faz nada.
+ * setor e N + 1 é o contato. No reducer o contato é o fim da linha, e "avançar"
+ * nele não faz nada: quem sai dele é o envio do formulário (task 027).
+ *
+ * ⚠️ A conclusão **não** é um passo. Quem decide que o diagnóstico foi enviado
+ * é a resposta da Server Action (`{ ok: true }`), que mora no `useActionState`
+ * da ilha — e é ela que as funções abaixo recebem como `concluido`. Copiá-la
+ * para o reducer exigiria um efeito sincronizando os dois estados, e uma
+ * resposta chegando com o reducer ainda no passo 0 (o envio sem JavaScript,
+ * renderizado pelo servidor) mostraria o perfil em vez da confirmação.
  *
  * Fica fora do `index.ts` de propósito: aquele é o que rota, action e e-mail
  * compartilham; isto só a ilha usa.
@@ -128,7 +135,7 @@ export function questionario(estado: EstadoDoQuestionario, acao: AcaoDoQuestiona
       }
 
       const pergunta = perguntaDoPasso(estado)
-      // Sem pergunta é o contato: o envio é da task 027.
+      // Sem pergunta é o contato: dali só se sai pelo envio do formulário.
       if (!pergunta || respostaDe(estado, pergunta.id) === undefined) return estado
       return { ...estado, passo: estado.passo + 1 }
     }
@@ -150,8 +157,12 @@ export type Etapa =
       resposta: number | undefined
     }
   | { tipo: 'contato' }
+  | { tipo: 'conclusao' }
 
-export function etapaAtual(estado: EstadoDoQuestionario): Etapa {
+/** `concluido`: a action aceitou o envio (ver o topo do arquivo). Ele manda
+ * sobre o passo — a conclusão não tem volta, como no HTML. */
+export function etapaAtual(estado: EstadoDoQuestionario, concluido = false): Etapa {
+  if (concluido) return { tipo: 'conclusao' }
   if (estado.passo === 0 || !estado.setorDasRespostas) return { tipo: 'perfil' }
   const perguntas = perguntasAtivas(estado)
   const pergunta = perguntas[estado.passo - 1]
@@ -170,13 +181,15 @@ export function etapaAtual(estado: EstadoDoQuestionario): Etapa {
 export function rotuloDaEtapa(etapa: Etapa): string {
   if (etapa.tipo === 'perfil') return 'Perfil'
   if (etapa.tipo === 'pergunta') return `Pergunta ${etapa.numero} de ${etapa.total}`
-  return 'Contato'
+  if (etapa.tipo === 'contato') return 'Contato'
+  return 'Concluído'
 }
 
 /** Percentual da barra, pela conta do `render()` do HTML: `step / (total − 1)`,
- * com `total` = perguntas + 3 (perfil, contato e concluído). A conclusão, que
- * chega na task 027, é a única tela em 100%. */
-export function progresso(estado: EstadoDoQuestionario): number {
+ * com `total` = perguntas + 3 (perfil, contato e concluído). A conclusão é a
+ * única tela em 100% — o `kind === 'done'` do HTML, que não passa pela conta. */
+export function progresso(estado: EstadoDoQuestionario, concluido = false): number {
+  if (concluido) return 100
   const total = perguntasAtivas(estado).length + 3
   return Math.round((estado.passo / (total - 1)) * 100)
 }
