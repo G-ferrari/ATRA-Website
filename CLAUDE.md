@@ -264,6 +264,7 @@ comparam; na suíte padrão, a mesma lista alimenta o contraste e o axe.
 | Teste de restore passa com banco vazio | `pg_restore --jobs` por stdin **aborta sem restaurar nada** (paralelismo exige arquivo posicionável) e o veredito morria mudo: `docker compose exec -T` dentro de `while read` come o stdin do laço, e `[ -z ] && continue` devolve 1 sob `set -e`. Três armadilhas no mesmo script |
 | Seed sobe as mesmas imagens de novo a cada corrida | A collection `Media` converte todo upload para **WebP** (`formatOptions`), então o `.jpg` que subiu vira `.webp` no `filename` e um `where: { filename: { equals: nome } }` nunca casa. Deduplicar pelo nome **sem extensão**, com `contains` |
 | CI morre em "pull access denied for minio/minio" antes de rodar um teste | O MinIO tirou as imagens públicas do Docker Hub e do quay.io (set/2026). Dev e CI usam o fork `pgsty/minio`, preso por digest, que já traz o `mc`. Produção ainda depende do cache da VPS — P-32 |
+| Migração de dados roda verde e a página continua como antes | Em **banco novo** o `migrate` roda antes de existir o conteúdo, a trava da migração não acha a página e pula — e a migração fica marcada como feita. `import-solutions.ts` chama as duas montagens (Alocação e as 11) no fim por isso. E o importador só reescreve página ainda no formato dele: rodado de novo num banco local em 27/09, ele tinha apagado a Alocação remontada |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
 ## Estado
@@ -290,7 +291,11 @@ publicadas e o site tem **18 ofertas** no menu e em `/solucoes`. ⚠️ Num banc
 local elas só ganham conteúdo real com
 `scripts/wp-import/import-solutions.ts`: a fixture do seed escreve "Texto de
 exemplo" nelas, e foi isso — não rascunho vazando — que a crítica do Impeccable
-de 10/09 viu no mega-menu.
+de 10/09 viu no mega-menu. Desde 27/09 as 12 do WordPress saem do importador
+**remontadas** no padrão das soluções desenhadas (cartões, imagem no herói,
+parceiros, formulário): a Alocação pela migração de 26/09 e as outras 11 por
+`20260927_220000_solucoes_do_wordpress`, com o texto literal em
+`src/migrations/arquivos/solucoes-wp/`.
 
 ⚠️ **Conteúdo de verdade não vem do `pnpm seed`.** Os artigos e as vagas entram
 por `scripts/wp-import/`; o seed só cria fixtures de teste, e agora **exige

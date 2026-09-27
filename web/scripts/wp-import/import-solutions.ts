@@ -26,6 +26,8 @@
 import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
+import { up as montarAlocacao } from '../../src/migrations/20260926_171500_alocacao_de_consultores'
+import { up as montarSolucoesDoWordpress } from '../../src/migrations/20260927_220000_solucoes_do_wordpress'
 import { slugify } from '../../src/fields/slug'
 import { casarIds } from '../seed/ids'
 import { createWpClient } from './client'
@@ -83,6 +85,7 @@ const converter = await criarConversor()
 
 let criadas = 0
 let atualizadas = 0
+let mantidas = 0
 const falhas: string[] = []
 
 for (const [ordem, solucao] of SOLUCOES.entries()) {
@@ -144,6 +147,17 @@ for (const [ordem, solucao] of SOLUCOES.entries()) {
       depth: 0,
     })
 
+    /* ⚠️ Só reescreve página que ainda seja a desta importação. Desde 26/09 as
+     * páginas vindas daqui são remontadas por migração (Alocação no PR #50, as
+     * outras 11 em `20260927_220000_solucoes_do_wordpress`) e depois editadas
+     * no admin; rodar isto de novo apagaria as duas coisas sem aviso. Foi o que
+     * aconteceu num banco local em 27/09, com a Alocação. */
+    const formato = (docs[0]?.layout ?? []).map((b) => b.blockType).join(',')
+    if (docs[0] && formato !== 'pageHero,richTextSection,ctaBanner') {
+      mantidas++
+      console.log(`  ${titulo.padEnd(38)} mantida (já remontada ou editada: ${formato || 'vazio'})`)
+      continue
+    }
 
     const doc = docs[0]
       ? await payload.update({ collection: 'solutions', id: docs[0].id, data: dados, locale: 'pt' })
@@ -174,8 +188,17 @@ for (const [ordem, solucao] of SOLUCOES.entries()) {
   }
 }
 
-console.log(`\n  ${criadas} criadas · ${atualizadas} atualizadas · ${falhas.length} falhas`)
+console.log(`\n  ${criadas} criadas · ${atualizadas} atualizadas · ${mantidas} mantidas · ${falhas.length} falhas`)
 for (const f of falhas) console.log(`  ✗ ${f}`)
+
+/* ⚠️ Banco novo (dev local, restore limpo): as migrações de dados da Alocação
+ * e das outras 11 rodam no `migrate`, antes de existir solução, e pulam — a
+ * trava delas só age em página no formato desta importação, e aí a migração já
+ * está marcada como feita. Chamá-las aqui fecha o ciclo: a página sai daqui já
+ * remontada. Onde já foram montadas ou editadas, a trava as deixa como estão. */
+console.log('\n→ remontando no padrão das páginas de solução')
+await montarAlocacao({ payload } as never)
+await montarSolucoesDoWordpress({ payload } as never)
 
 const { totalDocs: publicadas } = await payload.find({
   collection: 'solutions',
