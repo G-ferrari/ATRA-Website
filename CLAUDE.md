@@ -3,7 +3,8 @@
 Migração do site institucional da ATRA para **Next.js 16 + Payload CMS 3 +
 PostgreSQL**, substituindo o WordPress em `atra.com.br`.
 
-- `legacy/` — protótipo React + Vite, no ar em análise interna. É o **gabarito**.
+- `legacy/` — protótipo React + Vite, no ar em análise interna. Foi o
+  **gabarito** do porte; desde D-39 a suíte padrão não compara mais com ele.
 - `web/` — o site novo.
 - `docs/` — a especificação. Toda decisão vive em
   [`docs/00-contexto/decisoes.md`](docs/00-contexto/decisoes.md) como `D-xx`;
@@ -42,9 +43,10 @@ movia a rasterização de todo glifo do site.
 
 > ⚠️ **Relaxada em 02/09/2026 (D-31), por decisão do dono da ATRA via
 > G-ferrari:** melhoria de UI guiada pelo Impeccable é permitida. O que
-> permanece: cada mudança de UI regrava o gabarito (`pnpm gate --baseline`) com
-> justificativa no PR, e D-22 segue valendo — melhorar UI não autoriza mexer em
-> conteúdo nem preencher pendência `P-xx`.
+> permanece: D-22 segue valendo — melhorar UI não autoriza mexer em conteúdo
+> nem preencher pendência `P-xx`. Regravar o gabarito a cada mudança de UI
+> também era limite da D-31, e **caiu com a D-39** (27/09): sem gabarito no
+> aceite, não há o que regravar.
 
 ### 2. Decisão de conteúdo é do marketing (D-22)
 
@@ -122,24 +124,25 @@ divergência relatada por `getComputedStyle` que a imagem desmentia.
 
 ```bash
 docker compose up -d                     # postgres + minio + web (:3000)
-cd legacy && docker compose up -d        # gabarito (:3001)
+cd legacy && docker compose up -d        # gabarito (:3001) — só para a paridade (D-39)
 pnpm dev · pnpm lint · pnpm typecheck · pnpm test
 pnpm typegen                             # PageProps/LayoutProps antes do tsc em árvore limpa
 pnpm seed                                # idempotente (fixtures do e2e só com SEED_FIXTURES=1)
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/import-posts.ts   # 207 artigos
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/import-jobs.ts    # 7 vagas
-pnpm gate                                # build de produção + comparação visual
-pnpm gate --baseline                     # regrava o gabarito a partir do legado
+pnpm gate                                # build de produção + suíte e2e, sem o protótipo (D-39)
+pnpm gate --baseline                     # regrava o gabarito a partir do legado (liga a paridade)
 pnpm gate --sem-build                    # reaproveita o .next existente
-pnpm gate --rota home --viewport desktop # 1 teste em vez de 207, para iterar
+pnpm gate --rota home --viewport desktop # paridade de 1 rota em 1 viewport, para iterar
+PARIDADE_COM_PROTOTIPO=1 pnpm gate       # a suíte padrão mais a paridade inteira
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 261 linhas
 git push origin migracao                 # deploy: CI valida e a VPS troca sozinha, com rollback
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
 ```
 
 `pnpm gate` é o único caminho: build de produção em :3100, suíte dentro da imagem
-oficial do Playwright — a mesma no macOS e no CI, para um gabarito só valer nos
-dois. `pnpm test:e2e` é o executor cru, usado por dentro do container.
+oficial do Playwright — a mesma no macOS e no CI, para uma falha valer nos dois.
+`pnpm test:e2e` é o executor cru, usado por dentro do container.
 
 Regravar gabarito exige justificativa no PR: apaga a evidência de regressão.
 
@@ -149,6 +152,19 @@ arquivo de tablet fica como estava, enquanto desktop e mobile são regravados.
 Ver um subconjunto dos gabaritos mudar é o esperado, não sinal de captura velha.
 
 ## Regressão visual
+
+⚠️ **A paridade com o protótipo saiu do CI em 27/09 (D-39).** O gabarito é de
+21/08, e o site mudou de propósito desde então (D-31, passada de 13/09): ele
+reprovava as 11 rotas por decisão de design, não por regressão (P-30). O que o
+CI roda agora é o `pnpm gate` padrão — smoke, comportamento
+(`consultores`, `diagnostico-maturidade`, `chat-lead`, `cookies`), contraste nos
+dois temas, o CSV inteiro de redirects e o axe —, e o deploy espera por ele.
+`visual.spec.ts`, `baseline.spec.ts`, `paridade-ds.spec.ts` e o teste do legado
+no smoke **ficam no repositório**, fora pelo `testIgnore` do
+`playwright.config.ts`; `PARIDADE_COM_PROTOTIPO=1` os religa, e `--baseline` e
+`--rota` ligam sozinhos. ⚠️ O preço: mudança visual não intencional não é mais
+pega por pixel em rota nenhuma. O resto desta seção descreve a paridade para
+quem a ligar.
 
 ⚠️ **O gabarito é capturado só no tema escuro.** O legado inicia em `dark`
 (`App.tsx:2575`), o porte também, e a captura nunca clica no alternador. O tema
@@ -184,7 +200,8 @@ nessa rota não é mais pega por ninguém.
 **Rota fora do ar também sai (D-36).** `/glossario` responde 404 desde 26/09,
 com a página e os termos intactos no CMS; o smoke confere o 404.
 
-São **11 rotas** sob o gate.
+São **11 rotas** em `ROTAS_COM_GABARITO`. Com a paridade ligada, são elas que
+comparam; na suíte padrão, a mesma lista alimenta o contraste e o axe.
 
 - Imagens entram **mascaradas**: o legado serve o JPEG original e o app novo
   serve variante reencodada pelo `next/image`. Divergem por projeto, não por
@@ -251,8 +268,8 @@ São **11 rotas** sob o gate.
 ## Estado
 
 Fases 1, 2, 3 e 4a concluídas: fundação, fatia vertical de cases, casca do site,
-Live Preview, as 20 rotas do protótipo (12 sob o gate visual) e o conteúdo do
-protótipo dentro do CMS.
+Live Preview, as 20 rotas do protótipo (12 sob o gate visual ao fechar a Fase
+3) e o conteúdo do protótipo dentro do CMS.
 
 Desde a 4a **nada do site vem do repositório nem do WordPress**: clientes,
 depoimentos, contato, rodapé e o logo saíram de arrays e módulos escritos à mão
@@ -298,10 +315,11 @@ contagem** (`infra/backup/`). E **publicar no CMS atualiza o site sem deploy**
 a nota antiga de "estático não muda depois do seed" segue valendo só para o
 `gate --sem-build`.
 
-⚠️ **O gate do CI está temporariamente desligado (26/08)** — o pipeline roda só
-build + deploy durante a validação em homologação, por decisão do Leonardo.
-`pnpm gate` local segue sendo o aceite visual, e religar antes de produção é
-pré-requisito do runbook de cutover.
+O **e2e do CI foi religado em 27/09 (D-39)**, depois de desligado desde 26/08
+por decisão do Leonardo, para iterar em homologação. Voltou **sem** a paridade
+com o protótipo, e o deploy voltou a esperar por ele (`needs: [verify, e2e]`).
+A primeira execução verde na `migracao` é o que fecha o pré-requisito do
+runbook de cutover.
 
 **D-29 (03/09, MIG-148–150)** ligou os leads ao **RD Station CRM**: hook
 `afterChange` em `form-submissions` (`hooks/sincronizar-crm.ts` + `lib/crm.ts`)

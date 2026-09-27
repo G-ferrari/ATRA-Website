@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-17
+atualizado_em: 2026-09-27
 depende_de: [roadmap.md, ../00-contexto/decisoes.md]
 ---
 
@@ -15,6 +15,14 @@ Isso inverte a pirâmide de testes usual — e é deliberado.
 ## Prioridades
 
 ### 1. Regressão visual (Playwright) — prioridade máxima
+
+> ⚠️ **Fora do CI desde 27/09/2026 (D-39).** Esta prioridade valia enquanto o
+> critério de aceite era o porte fiel. Com a D-31 o site passou a mudar de
+> propósito, e o gabarito de 21/08 reprovava a decisão de design, não a
+> regressão (P-30). A paridade continua no repositório, ligada por
+> `PARIDADE_COM_PROTOTIPO=1`; o que roda no CI é o smoke, o comportamento, o
+> contraste, os redirects e o axe. O texto abaixo descreve a paridade como foi
+> montada.
 
 Compara cada rota do site novo com a mesma rota do legado.
 
