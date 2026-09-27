@@ -58,6 +58,7 @@ import * as migration_20260926_193658_add_data_maturity_diagnostic from './20260
 import * as migration_20260926_220000_rc18_aponta_para_o_diagnostico from './20260926_220000_rc18_aponta_para_o_diagnostico';
 import * as migration_20260927_105730_reconcilia_snapshot_destino_e_diagnostico from './20260927_105730_reconcilia_snapshot_destino_e_diagnostico';
 import * as migration_20260927_163411_add_tracking from './20260927_163411_add_tracking';
+import * as migration_20260927_220000_solucoes_do_wordpress from './20260927_220000_solucoes_do_wordpress';
 
 export const migrations = [
   {
@@ -358,6 +359,11 @@ export const migrations = [
   {
     up: migration_20260927_163411_add_tracking.up,
     down: migration_20260927_163411_add_tracking.down,
-    name: '20260927_163411_add_tracking'
+    name: '20260927_163411_add_tracking',
+  },
+  {
+    up: migration_20260927_220000_solucoes_do_wordpress.up,
+    down: migration_20260927_220000_solucoes_do_wordpress.down,
+    name: '20260927_220000_solucoes_do_wordpress',
   },
 ];
