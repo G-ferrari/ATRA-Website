@@ -87,15 +87,44 @@ test.describe('app novo', () => {
    * escolhido e a linha de impactos — o aceite se prova sem clicar em nada.
    * `noindex` nos dois idiomas: é ferramenta de conversão, não conteúdo. */
   test('o diagnóstico de maturidade sai com noindex e abre no setor da URL', async ({ request }) => {
-    for (const rota of ['/diagnostico-maturidade', '/en/data-maturity-assessment']) {
-      expect(await (await request.get(`${NEXT_URL}${rota}`)).text(), rota).toContain('noindex')
+    /* ⚠️ Status conferido junto com o corpo (task 030). Uma página de erro
+     * também não tem a linha de impactos — a negativa do setor inválido
+     * passava sobre um 500 —, e pode sair com `noindex`. Foi visto no servidor
+     * de dev, que às vezes responde 500 a esta rota (ver o fim do topo de
+     * `diagnostico-maturidade.spec.ts`). */
+    const html = async (rota: string) => {
+      const r = await request.get(`${NEXT_URL}${rota}`)
+      expect(r.status(), rota).toBe(200)
+      return r.text()
     }
-    const comSetor = await (await request.get(`${NEXT_URL}/diagnostico-maturidade?setor=saude`)).text()
+    for (const rota of ['/diagnostico-maturidade', '/en/data-maturity-assessment']) {
+      expect(await html(rota), rota).toContain('noindex')
+    }
+    const comSetor = await html('/diagnostico-maturidade?setor=saude')
     expect(comSetor).toContain('<option value="saude" selected=""')
     expect(comSetor).toContain('Impactos avaliados:')
     // Setor fora dos oito códigos é ignorado: o perfil abre sem seleção.
-    const invalido = await (await request.get(`${NEXT_URL}/diagnostico-maturidade?setor=xpto`)).text()
+    const invalido = await html('/diagnostico-maturidade?setor=xpto')
+    // Nenhuma opção com valor escolhida: porte e cargo também nascem vazios.
+    expect(invalido).not.toMatch(/<option value="[^"]+" selected=""/)
     expect(invalido).not.toContain('Impactos avaliados:')
+  })
+
+  /* Task 030. Sitemap e `robots` não podem se contradizer: anunciar ao robô uma
+   * URL que a própria página manda não indexar. O diagnóstico não está em
+   * `app/sitemap.ts`; isto impede que entre por engano — numa lista de índices,
+   * por exemplo —, e o endereço aposentado do RC18 junto, que é redirect.
+   *
+   * ⚠️ A primeira asserção é a de controle: um sitemap vazio ou quebrado
+   * passaria pelas negativas sem provar nada. */
+  test('o sitemap não anuncia o diagnóstico de maturidade', async ({ request }) => {
+    const r = await request.get(`${NEXT_URL}/sitemap.xml`)
+    expect(r.status()).toBe(200)
+    const xml = await r.text()
+    expect(xml).toContain('/cases-de-sucesso</loc>')
+    for (const caminho of ['/diagnostico-maturidade', '/data-maturity-assessment', '/diagnostico-rc18', '/rc18-diagnostic']) {
+      expect(xml, caminho).not.toContain(caminho)
+    }
   })
 
   /* `/blog/[slug]` **não existe no legado** (os cards apontam para `#`), então

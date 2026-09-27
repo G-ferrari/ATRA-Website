@@ -53,6 +53,9 @@ export default async function aquecer() {
     `${NEXT_URL}/en`,
     `${NEXT_URL}/en/success-stories`,
     `${NEXT_URL}/en/about`,
+    /* Rota sem gabarito, mas o smoke e `diagnostico-maturidade.spec.ts` a
+       visitam nos três viewports em paralelo. */
+    `${NEXT_URL}/diagnostico-maturidade`,
     `${NEXT_URL}/admin`,
     `${NEXT_URL}/rota-que-nao-existe`,
     `${LEGACY_URL}/`,
