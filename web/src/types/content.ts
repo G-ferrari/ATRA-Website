@@ -755,6 +755,16 @@ export type AvisoDeCookies = {
   }
 }
 
+/** Os ids dos scripts de rastreamento (D-40), do global `tracking`. `null` é
+ * "não configurado": o componente correspondente não faz nada. Mesmo com id,
+ * cada script espera o aceite da sua categoria no aviso de cookies. */
+export type Rastreamento = {
+  /** Google Tag Manager — categoria estatística. */
+  gtmId: string | null
+  /** Lusha Website Visitors — categoria marketing. */
+  lushaSiteId: string | null
+}
+
 /** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global
  * `data-maturity-diagnostic`. Servem à página, à conclusão e ao e-mail do
  * resultado.

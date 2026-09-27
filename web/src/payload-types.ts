@@ -129,6 +129,7 @@ export interface Config {
     footer: Footer;
     navigation: Navigation;
     'site-settings': SiteSetting;
+    tracking: Tracking;
   };
   globalsSelect: {
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
@@ -138,6 +139,7 @@ export interface Config {
     footer: FooterSelect<false> | FooterSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    tracking: TrackingSelect<false> | TrackingSelect<true>;
   };
   locale: 'pt' | 'en';
   widgets: {
@@ -11334,6 +11336,9 @@ export interface CookieConsent {
     name?: string | null;
     description?: string | null;
   };
+  /**
+   * This category enables UTM capture and Lusha, which identifies the company a visit comes from (System → Tracking). The description should mention both.
+   */
   marketing?: {
     name?: string | null;
     description?: string | null;
@@ -11653,6 +11658,25 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * Google Tag Manager and Lusha ids. Admins only. Nothing loads until the visitor accepts in the cookie notice.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tracking".
+ */
+export interface Tracking {
+  id: number;
+  /**
+   * The Tag Manager container, as GTM-XXXXXXX. Loads only for visitors who accept "analytics". Empty: no Google script on the site.
+   */
+  gtmId?: string | null;
+  /**
+   * The siteId from Lusha’s Website Visitors dashboard. Loads only for visitors who accept "marketing". Empty: Lusha stays off the site.
+   */
+  lushaSiteId?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "atra-ai_select".
  */
@@ -11857,6 +11881,17 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         id?: T;
       };
   foundedYear?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tracking_select".
+ */
+export interface TrackingSelect<T extends boolean = true> {
+  gtmId?: T;
+  lushaSiteId?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
