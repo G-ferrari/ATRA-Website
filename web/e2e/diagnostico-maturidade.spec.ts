@@ -7,11 +7,11 @@ import { NEXT_URL } from '../playwright.config'
 /* /diagnostico-maturidade — comportamento (feature diagnostico-maturidade-dados,
  * task 030).
  *
- * ⚠️ **Esta rota não tem gabarito visual**: nasceu depois do protótipo (D-35), e
- * o pixel dela é P-30 / D-38. O que a cobre é este arquivo — perfil, perguntas,
- * avanço, contato e envio — mais o `smoke.spec.ts` (200, `noindex`, setor no
- * HTML do servidor, fora do sitemap, redirect do RC18). É o molde de
- * `consultores.spec.ts` (D-34).
+ * ⚠️ **Esta rota não tem gabarito visual**: nasceu depois do protótipo (D-35),
+ * e desde a D-39 nenhuma rota compara pixel no CI. O que a cobre é este
+ * arquivo — perfil, perguntas, avanço, contato e envio — mais o
+ * `smoke.spec.ts` (200, `noindex`, setor no HTML do servidor, fora do sitemap,
+ * redirect do RC18). É o molde de `consultores.spec.ts` (D-34).
  *
  * O que o unitário já prova não se repete aqui: a navegação é o reducer de
  * `lib/diagnostico-maturidade/questionario.ts` e a validação do contato é

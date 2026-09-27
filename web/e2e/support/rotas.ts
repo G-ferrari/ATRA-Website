@@ -1,4 +1,9 @@
-/** Rotas portadas com gabarito no legado. Cresce a cada rota da Fase 3. */
+/** Rotas portadas com gabarito no legado. Cresceu a cada rota da Fase 3.
+ *
+ * ⚠️ Desde 27/09 (D-39) a comparação com o gabarito só roda com
+ * `PARIDADE_COM_PROTOTIPO=1` — ver `playwright.config.ts`. A lista continua
+ * valendo na suíte padrão: é dela que `contraste.spec.ts` e o axe tiram as
+ * rotas que medem, e o nome ficou do tempo em que era só do gate. */
 export const ROTAS_COM_GABARITO = [
   { nome: 'home', caminho: '/' },
   { nome: 'cases-listagem', caminho: '/cases-de-sucesso' },

@@ -1,6 +1,6 @@
 ---
 status: revisado
-atualizado_em: 2026-09-26
+atualizado_em: 2026-09-27
 depende_de: [../01-descoberta/inventario-rotas.md, ../01-descoberta/inventario-conteudo.md, ../01-descoberta/inventario-assets.md, ../01-descoberta/debito-tecnico.md]
 ---
 
@@ -895,3 +895,64 @@ por e-mail.
   é a hora de voltar a exigir igualdade.
 - Avisar o Roger para unificar na próxima versão do questionário (v1.8), pelo
   rótulo.
+
+## D-39 — A paridade com o protótipo sai do CI; os testes e2e voltam por comportamento
+
+*Decidida em 26/09/2026 por G-ferrari, como designer do site, respondendo a
+P-30. Aplicada em 27/09, quando o job `e2e` do CI foi religado.* Estende ao site
+inteiro o que a D-34 fez com `/consultores`.
+
+**Contexto.** O gate compara cada rota com uma captura do **legado**, gravada em
+21/08. A D-31 (02/09) liberou melhoria de UI, e a passada de 13/09 (`d785a12`)
+padronizou raios, tirou bordas de caixa e unificou o ritmo das seções **no app
+novo** — o protótipo continua como estava. Medido em 24/09, as rotas sob o gate
+divergiam de 2% (relatórios) a 21% (home) dos pixels, com alturas até 316px
+diferentes. Ninguém viu antes porque o job `e2e` estava desligado desde 26/08
+(decisão do Leonardo, para iterar em homologação). Religá-lo é pré-requisito do
+cutover, e com aquele gabarito ele reprovaria as 11 rotas — por decisão de
+design, não por regressão.
+
+**Opções.** (a) Regravar o gabarito a partir do app novo; (b) aposentar a
+paridade com o protótipo e cobrir as rotas por comportamento, como a D-34 fez;
+(c) desfazer as melhorias de UI para o gate voltar a fechar.
+
+**Escolha: (b).** (a) é o espelho que `estrategia-de-testes.md` descreve e que a
+D-34 já recusou para `/consultores`: capturar a própria saída prova que o código
+não mudou, não que está certo — e aqui ainda congelaria, sem revisão, o estado
+de um site em plena passada de design. (c) contraria a D-31 e reverte decisões
+de produto. A referência passa a ser **o site como está**, e a cobertura, o que
+ele faz.
+
+**Consequência.**
+
+- **Sai do CI e da suíte padrão**, sem ser apagado: `e2e/visual.spec.ts`,
+  `e2e/baseline.spec.ts`, `e2e/paridade-ds.spec.ts` e o teste do smoke que
+  confere o legado em :3001. O mecanismo é o `testIgnore` de
+  `playwright.config.ts`; religa com `PARIDADE_COM_PROTOTIPO=1`, e
+  `pnpm gate --baseline` e `--rota` ligam sozinhos. Os PNGs de `e2e/gabarito/`
+  ficam como registro de 21/08, não como contrato.
+- **O CI não sobe mais o app legado.** O `gate.mjs` só exige o :3001 nos modos
+  que capturam dele. A pasta `legacy/` continua lida pelo seed (as fotos de
+  `SEED_FIXTURES`, D-27) até a Fase 8.
+- **O que roda** — o job `e2e`, agora "smoke · comportamento", e o `deploy`
+  volta a esperar por ele (`needs: [verify, e2e]`). É o `pnpm gate` padrão:
+  build de produção e, contra ele, o smoke (status PT/EN, 404, redirects da
+  D-35, sitemap, dados estruturados, formulários, megamenu, herói),
+  `consultores.spec.ts`, `diagnostico-maturidade.spec.ts`, `chat-lead.spec.ts`,
+  `cookies.spec.ts`, o contraste nos dois temas (`contraste.spec.ts`), o CSV
+  inteiro de redirects (`redirects.spec.ts`) e o axe, que mede sem reprovar
+  (D-13).
+- `ROTAS_COM_GABARITO` continua sendo a lista de rotas do contraste e do axe; o
+  nome ficou histórico.
+- **O limite 1 da D-31 cai junto.** "Toda mudança de UI regrava o gabarito" era
+  consequência mecânica do aceite visual; sem gabarito no aceite, não há o que
+  regravar. Os limites 2 e 3 — D-22 e os `P-xx` em aberto — seguem.
+- ⚠️ **O preço:** mudança visual **não intencional** — um espaçamento que
+  escorrega, uma seção que encolhe, um bloco que some sem que nenhum teste
+  interaja com ele — não é mais pega por pixel em rota nenhuma. O contraste
+  continua pegando texto que o tema claro apaga, e o comportamento pega o que se
+  clica; o resto depende de olho. É o preço da escolha, e está registrado aqui.
+- **Depois do cutover**, um teste visual pode voltar contra o site **aprovado**:
+  capturas de um estado que o designer der por certo, gravadas como decisão
+  registrada, e não como reflexo do último build. Não é desta decisão — se vier,
+  é D nova.
