@@ -708,8 +708,9 @@ export function comDepoimentos(blocos: Bloco[], depoimentos: Depoimento[]): Bloc
 export function ancorasDe(blocos: Bloco[]): { anchor: string; label: string }[] {
   /* `ctaBanner` fica fora do submenu por padrão — seu `anchor` costuma ser só
      alvo de link (ex.: `#contato`), não uma seção navegável. Exceção opt-in:
-     quando o bloco define `navLabel` explícito, ele entra (a RC18 usa o CTA final
-     como "Contato" do submenu, com o formulário logo abaixo). */
+     quando o bloco define `navLabel` explícito, ele entra. Nenhum seed usa hoje:
+     a RC18 era o caso previsto, e o formulário que ficava abaixo do CTA final
+     dela saiu na task 029. */
   return blocos
     .filter((b) => b.anchor && (b.tipo !== 'ctaBanner' || Boolean(b.navLabel)))
     .map((b) => ({
