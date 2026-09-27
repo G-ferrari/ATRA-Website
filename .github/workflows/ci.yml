@@ -121,13 +121,14 @@ jobs:
       - run: pnpm build
 
   e2e:
-    name: smoke · regressão visual
-    # ⚠️ TEMPORARIAMENTE DESLIGADO (26/08/2026, decisão do Leonardo): durante a
-    # validação em homologação, o pipeline roda só build + deploy para iterar
-    # mais rápido. RELIGAR ANTES DE PRODUÇÃO é pré-requisito do runbook de
-    # cutover — remover este `if` e devolver `e2e` ao `needs` do deploy.
-    # Enquanto isso, `pnpm gate` local continua sendo o aceite visual.
-    if: false
+    name: smoke · comportamento
+    # Religado em 27/09/2026 (D-39), **sem** a comparação com o protótipo. Ficou
+    # desligado desde 26/08 (decisão do Leonardo, para iterar em homologação), e
+    # nesse meio-tempo o site mudou de propósito (D-31, passada de 13/09): o
+    # gabarito de 21/08 reprovaria todas as rotas por decisão de design, não por
+    # regressão (P-30). O que roda aqui é a suíte padrão do `pnpm gate` — smoke,
+    # comportamento das ilhas, contraste nos dois temas, redirects e axe —, e a
+    # paridade fica só para quem a liga à mão (`PARIDADE_COM_PROTOTIPO=1`).
     runs-on: ubuntu-latest
     needs: verify
 
@@ -152,7 +153,6 @@ jobs:
       S3_ACCESS_KEY: atra
       S3_SECRET_KEY: atra12345
       NEXT_URL: http://localhost:3000
-      LEGACY_URL: http://localhost:3001
       NEXT_TELEMETRY_DISABLED: '1'
 
     steps:
@@ -170,11 +170,11 @@ jobs:
           cache: pnpm
           cache-dependency-path: web/pnpm-lock.yaml
 
-      # O legado é o gabarito da regressão visual: precisa estar no ar junto.
-      # Sai daqui na Fase 8, junto com a pasta legacy/.
-      - name: Sobe o app legado (:3001)
-        run: docker compose up -d --wait
-        working-directory: legacy
+      # ⚠️ O app legado **não sobe mais** aqui (D-39): a suíte padrão não visita
+      # o :3001, e o `gate.mjs` só o exige nos modos de paridade. A *pasta*
+      # `legacy/` continua sendo lida — o seed tira dela as fotos do protótipo
+      # que `SEED_FIXTURES` põe no lugar dos marcadores (D-27) —, mas isso é
+      # arquivo do checkout, não servidor.
 
       # O seed sobe imagem para o storage; sem isto o job morria em
       # `ECONNREFUSED :9000` no primeiro upload, porque `S3_ENDPOINT` apontava
@@ -199,8 +199,9 @@ jobs:
       - run: pnpm payload migrate
         working-directory: web
 
-      # A comparação confere o conteúdo, não só o layout: sem seed o app novo
-      # sobe vazio e nada bate com o legado.
+      # Sem seed o app sobe vazio, e a suíte confere conteúdo: os 8 perfis de
+      # `/consultores`, as soluções do índice, o rascunho que não pode vazar, o
+      # material e o webinar com slug fixo.
       # `SEED_FIXTURES` liga os 6 posts e as 6 vagas fictícias do protótipo, que
       # a suíte precisa para exercitar /blog e /carreiras sem ir à rede. Num
       # banco de verdade eles não entram: o conteúdo real vem de
@@ -212,8 +213,9 @@ jobs:
         working-directory: web
 
       # `pnpm gate` faz tudo: build de produção, sobe em :3100 e roda a suíte
-      # dentro da imagem oficial do Playwright — a mesma que gravou o gabarito
-      # no macOS. É o que torna um gabarito só válido nos dois lugares (MIG-035).
+      # dentro da imagem oficial do Playwright — a mesma do macOS, para uma
+      # falha aqui se reproduzir lá (MIG-035). Sem `PARIDADE_COM_PROTOTIPO` no
+      # ambiente, é o modo padrão: nada compara com o protótipo (D-39).
       - run: pnpm gate
         working-directory: web
 
@@ -224,7 +226,7 @@ jobs:
           path: web/playwright-report
           retention-days: 7
 
-      # Capturas de falha e diffs: é o que permite julgar uma regressão visual
+      # Capturas e traces de cada falha: é o que permite julgar uma reprovação
       # sem reproduzir localmente.
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -237,10 +239,11 @@ jobs:
     name: deploy na VPS
     # Só em push para migracao. PR não faz deploy: o código de fora do
     # repositório nunca deve chegar ao servidor.
-    # ⚠️ `needs` sem o e2e ENQUANTO o gate está desligado (ver o job acima).
-    # Ao religar: needs: [verify, e2e].
+    # O e2e voltou ao `needs` em 27/09 (D-39): de 26/08 até ali o deploy saía
+    # só com o `verify`. Religar era pré-requisito do cutover — um deploy que
+    # não espera a suíte leva ao ar o formulário que parou de gravar.
     if: github.event_name == 'push' && github.ref == 'refs/heads/migracao'
-    needs: [verify]
+    needs: [verify, e2e]
     runs-on: ubuntu-latest
     # Um deploy de cada vez, sem cancelar o que está no meio: interromper entre
     # a migração e a troca de imagem deixa o banco à frente do site.
