@@ -1,7 +1,7 @@
 ---
 id: 027
 title: Contato, conclusão e envio — liga a ilha à action, WhatsApp/Agendar e evento com consentimento
-status: em revisão
+status: concluída
 feature: diagnostico-maturidade-dados
 area: frontend
 priority: P0
