@@ -27,7 +27,8 @@ const RESERVA = {
     },
     marketing: {
       nome: 'Marketing',
-      descricao: 'Guarda de qual campanha você chegou (parâmetros UTM), enviada ao nosso CRM se você entrar em contato.',
+      descricao:
+        'Guarda de qual campanha você chegou (parâmetros UTM), enviada ao nosso CRM se você entrar em contato, e deixa a Lusha identificar a empresa de onde vem a visita, pelo endereço IP.',
     },
   },
   en: {
@@ -48,7 +49,8 @@ const RESERVA = {
     },
     marketing: {
       nome: 'Marketing',
-      descricao: 'Remembers which campaign brought you here (UTM parameters), sent to our CRM if you get in touch.',
+      descricao:
+        'Remembers which campaign brought you here (UTM parameters), sent to our CRM if you get in touch, and lets Lusha identify the company the visit comes from, by IP address.',
     },
   },
 } as const

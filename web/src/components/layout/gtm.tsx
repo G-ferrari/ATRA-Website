@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 
 import { aoMudarConsentimento, lerConsentimento, type Consentimento } from '@/lib/consentimento'
 import { congelado } from '@/lib/e2e'
+import { definirContainer } from '@/lib/rastreio'
 
 /* MIG-153 (D-30) — GTM com Consent Mode v2, atrás da dupla chave.
  *
@@ -18,13 +19,14 @@ import { congelado } from '@/lib/e2e'
  * script já carregado obedece; não dá para descarregá-lo, e é por isso que a
  * primeira camada (não injetar) é a que vale antes do aceite.
  *
- * Sem `NEXT_PUBLIC_GTM_ID` (P-19 aberta) o componente é um nulo inerte. */
+ * Sem id o componente é um nulo inerte. Desde a D-40 o id vem do admin
+ * (global `tracking`), resolvido pelo layout — `NEXT_PUBLIC_GTM_ID` ficou só de
+ * reserva, lida no servidor pelo mapper. */
 
-const ID = process.env.NEXT_PUBLIC_GTM_ID
-
-export function Gtm() {
+export function Gtm({ id }: { id: string | null }) {
   useEffect(() => {
-    if (!ID || congelado()) return
+    if (!id || congelado()) return
+    definirContainer(true)
 
     window.dataLayer = window.dataLayer ?? []
     /* O Consent Mode lê `arguments`, não um objeto nem um array — é o formato
@@ -58,7 +60,7 @@ export function Gtm() {
       const s = document.createElement('script')
       s.id = 'gtm'
       s.async = true
-      s.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(ID!)}`
+      s.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(id)}`
       document.head.appendChild(s)
     }
 
@@ -72,7 +74,7 @@ export function Gtm() {
       atualizar(c)
       if (c.analytics) injetar()
     })
-  }, [])
+  }, [id])
 
   return null
 }

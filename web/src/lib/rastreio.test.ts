@@ -4,11 +4,11 @@ import {
   COOKIE_DE_CONSENTIMENTO,
   VERSAO_DE_CONSENTIMENTO,
 } from './consentimento'
-import { rastrear } from './rastreio'
+import { definirContainer, rastrear } from './rastreio'
 
-/* `rastrear` decide por duas chaves: o id do GTM (env) e o consentimento de
- * estatística (cookie). A matriz aqui é a política inteira — os pontos de
- * instrumentação não conferem nada. */
+/* `rastrear` decide por duas chaves: o container do GTM (que o `Gtm` define,
+ * D-40) e o consentimento de estatística (cookie). A matriz aqui é a política
+ * inteira — os pontos de instrumentação não conferem nada. */
 
 const consentimento = (analytics: boolean) =>
   `${COOKIE_DE_CONSENTIMENTO}=${encodeURIComponent(
@@ -24,11 +24,11 @@ describe('rastrear', () => {
     documento.cookie = ''
     vi.stubGlobal('window', janela)
     vi.stubGlobal('document', documento)
-    vi.stubEnv('NEXT_PUBLIC_GTM_ID', 'GTM-TESTE')
+    definirContainer(true)
   })
   afterEach(() => {
     vi.unstubAllGlobals()
-    vi.unstubAllEnvs()
+    definirContainer(false)
   })
 
   it('com id e consentimento, empurra o evento no dataLayer', () => {
@@ -48,8 +48,8 @@ describe('rastrear', () => {
     expect(janela.dataLayer).toBeUndefined()
   })
 
-  it('sem NEXT_PUBLIC_GTM_ID, é no-op mesmo com consentimento', () => {
-    vi.stubEnv('NEXT_PUBLIC_GTM_ID', '')
+  it('sem container de GTM, é no-op mesmo com consentimento', () => {
+    definirContainer(false)
     documento.cookie = consentimento(true)
     rastrear('outbound_click', { url: 'https://wa.me/x' })
     expect(janela.dataLayer).toBeUndefined()

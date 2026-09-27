@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import { AvisoDeCookies } from '@/components/layout/aviso-de-cookies'
 import { Casca } from '@/components/layout/casca'
 import { Gtm } from '@/components/layout/gtm'
+import { Lusha } from '@/components/layout/lusha'
 import { RastreioDeSaida } from '@/components/layout/rastreio-de-saida'
 import { CapturaDeUtm } from '@/components/layout/captura-de-utm'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
@@ -20,6 +21,7 @@ import { toNavegacao } from '@/lib/mappers/navigation'
 import { toImageOpcional } from '@/lib/mappers/shared'
 import { toRodape } from '@/lib/mappers/site'
 import { getPayload } from '@/lib/payload'
+import { lerRastreamento } from '@/lib/rastreamento'
 import { hrefDe } from '@/lib/routes'
 import '../globals.css'
 
@@ -112,6 +114,8 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   /* D-30: `null` enquanto `bannerMessage` estiver vazio no idioma (P-14) — e
      aí o DOM fica idêntico ao de antes da feature, que é o que o gate compara. */
   const avisoDeCookies = await lerAvisoDeCookies(locale)
+  /* D-40: os ids do GTM e da Lusha, do admin. */
+  const rastreamento = await lerRastreamento()
 
   const navegacao = toNavegacao({
     global: navGlobal,
@@ -151,10 +155,12 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
             do `_store.validated` logo abaixo vale para qualquer elemento que
             atravesse a fronteira do RSC como prop. */}
         {avisoDeCookies && <AvisoDeCookies textos={avisoDeCookies} locale={locale} />}
-        {/* MIG-153: nulo inerte sem NEXT_PUBLIC_GTM_ID; com id, só põe o
-            `consent default denied` no dataLayer — o script em si espera o
-            aceite de estatística. */}
-        <Gtm />
+        {/* MIG-153: nulo inerte sem id; com id, só põe o `consent default
+            denied` no dataLayer — o script em si espera o aceite de
+            estatística. O id vem do admin desde a D-40. */}
+        <Gtm id={rastreamento.gtmId} />
+        {/* D-40: a Lusha espera o aceite de marketing, não de estatística. */}
+        <Lusha siteId={rastreamento.lushaSiteId} />
         {/* MIG-156: outbound_click por listener delegado — inerte sem GTM ou
             sem consentimento, e não desenha nada. */}
         <RastreioDeSaida />
