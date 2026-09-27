@@ -1,6 +1,6 @@
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
-import { LEGACY_URL, NEXT_URL } from '../playwright.config'
+import { LEGACY_URL, NEXT_URL, PARIDADE_COM_PROTOTIPO } from '../playwright.config'
 import { visit } from './support/stability'
 
 /* Smoke: barato, roda em toda PR, pega o modo de falha mais provável de uma
@@ -267,7 +267,26 @@ test.describe('app novo', () => {
       return form
     }
 
-    test('envia de /contato e confirma na própria página', async ({ page }) => {
+    /* ⚠️ Os dois envios rodam **só no desktop** desde 27/09, quando o e2e
+       voltou ao CI (D-39). O teto de 5 envios por IP por hora
+       (`lib/anti-spam.ts`) é um só para todos os formulários, e na suíte todo
+       envio sai do mesmo IP — o do container do Playwright. Nos três viewports
+       estes dois somavam 6, e com o de `consultores.spec.ts` e o de
+       `diagnostico-maturidade.spec.ts`, 8. O diagnóstico roda depois dos
+       outros e confere a linha no banco: no build de produção, com um contador
+       só no processo, ele receberia o **sucesso falso** do teto e reprovaria.
+       (No servidor de dev a conta não fechou assim — os 8 gravaram numa corrida
+       de 27/09 —, mas é o build de produção que o CI mede.) No desktop são 4,
+       dentro do teto mesmo com um retry.
+
+       O formulário é o mesmo markup em toda largura: é o mesmo motivo que já
+       deixava os outros dois envios só no desktop. A isca, que não envia nada,
+       continua nos três. */
+    const soNoDesktop = (info: import('@playwright/test').TestInfo) =>
+      test.skip(info.project.name !== 'desktop', 'o envio roda uma vez; ver a nota acima')
+
+    test('envia de /contato e confirma na própria página', async ({ page }, info) => {
+      soNoDesktop(info)
       await page.goto(`${NEXT_URL}/contato`)
       const form = await preencher(page)
       /* A armadilha de tempo exige 3s entre a página montar e o envio — o
@@ -277,7 +296,8 @@ test.describe('app novo', () => {
       await expect(page.getByRole('status')).toBeVisible({ timeout: 20000 })
     })
 
-    test('envia da home, onde o bloco é a outra variante', async ({ page }) => {
+    test('envia da home, onde o bloco é a outra variante', async ({ page }, info) => {
+      soNoDesktop(info)
       await page.goto(`${NEXT_URL}/`)
       const form = await preencher(page)
       await page.waitForTimeout(3500)
@@ -333,7 +353,9 @@ test.describe('app novo', () => {
       expect(org, 'nenhum nó Organization na página').toBeTruthy()
       expect(org!.name).toBe('ATRA')
       expect(org!.email).toBe('negocios@atra.com.br')
-      expect(org!.sameAs).toContain('https://www.linkedin.com/company/atra-tecnologia/')
+      /* Os perfis que a ATRA confirmou em 26/09 (`ef139e2`, P-26). O antigo
+         (`atra-tecnologia`) vinha do CTA do protótipo e saiu do seed. */
+      expect(org!.sameAs).toContain('https://www.linkedin.com/company/atraoficial/')
     })
 
     test('o artigo declara Article ligado à mesma organização', async ({ page }) => {
@@ -412,8 +434,8 @@ test.describe('app novo', () => {
     })
   })
 
-  /* `/consultores` agora tem gabarito (ver `support/rotas.ts`). O que fica aqui
-     é o comportamento, que a captura não pega: o filtro. */
+  /* `/consultores` saiu do gabarito em 24/09 (D-34); o comportamento completo
+     está em `consultores.spec.ts`. O que fica aqui é o filtro, barato. */
   test('o catálogo de consultores filtra pela pílula de senioridade', async ({ page }) => {
     await page.goto(`${NEXT_URL}/consultores`)
     /* 8 perfis, cada um com um botão Solicitar. ⚠️ `button` e não `link`
@@ -458,7 +480,11 @@ test.describe('app novo', () => {
     await page.goto(`${NEXT_URL}/`)
     const faixa = page.locator('section', { has: page.getByRole('heading', { name: 'Parceiros de Confiança' }) }).last()
     // O nome da collection, e não o da lista antiga do bloco ("Azure").
-    await expect(faixa.getByText('Microsoft Azure').first()).toBeVisible()
+    /* ⚠️ `visible: true` antes do `first()`. A faixa monta as fichas duas vezes
+       — a fileira `sm:flex` e a grade `sm:hidden` do celular —, e o primeiro
+       "Microsoft Azure" do DOM é o da fileira, escondida abaixo de 640px: no
+       mobile o teste esperava 20s por um texto que nunca aparece. */
+    await expect(faixa.getByText('Microsoft Azure').filter({ visible: true }).first()).toBeVisible()
 
     const links = faixa.locator('a[href^="/parceiros/"]')
     const hrefs = [...new Set(await links.evaluateAll((as) => as.map((a) => a.getAttribute('href'))))]
@@ -637,7 +663,7 @@ test.describe('app novo', () => {
       }).toPass({ timeout: 20000 })
     }
 
-    test('abre com as 8 categorias e o painel de soluções', async ({ page }) => {
+    test('abre com as 7 categorias e o painel de soluções', async ({ page }) => {
       test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
       const fileira = await abrirMenu(page)
 
@@ -781,12 +807,18 @@ test.describe('app novo', () => {
   })
 })
 
-test.describe('legado (gabarito da regressão visual)', () => {
-  test('está no ar em :3001', async ({ request }) => {
-    const r = await request.get(LEGACY_URL)
-    expect(
-      r.status(),
-      `O legado precisa estar rodando: cd legacy && docker compose up -d`,
-    ).toBe(200)
+/* ⚠️ Só com `PARIDADE_COM_PROTOTIPO=1` (D-39). O legado deixou de ser gabarito
+ * da suíte padrão, e o CI não o sobe mais: sem esta condição, o primeiro teste a
+ * reprovar seria o que confere se ele está no ar. Quem liga a paridade precisa
+ * dele de pé, e é para isso que este teste continua existindo. */
+if (PARIDADE_COM_PROTOTIPO) {
+  test.describe('legado (gabarito da regressão visual)', () => {
+    test('está no ar em :3001', async ({ request }) => {
+      const r = await request.get(LEGACY_URL)
+      expect(
+        r.status(),
+        `O legado precisa estar rodando: cd legacy && docker compose up -d`,
+      ).toBe(200)
+    })
   })
-})
+}

@@ -1,15 +1,32 @@
 import { defineConfig, devices } from '@playwright/test'
 
-/* Regressão visual como teste principal do projeto — a pergunta que ele
- * responde é "esta página continua igual à que está no ar?".
+/* A suíte e2e do site: comportamento, status, contraste, redirects e axe.
  * Ver docs/03-plano/estrategia-de-testes.md.
  *
- * Dois alvos ao mesmo tempo:
- *   NEXT_URL   :3000  app novo
- *   LEGACY_URL :3001  app legado, o gabarito (sai do repo só na Fase 8)
+ * Dois alvos possíveis:
+ *   NEXT_URL   :3000  app novo — o único que a suíte padrão visita
+ *   LEGACY_URL :3001  app legado, só com PARIDADE_COM_PROTOTIPO=1 (ver abaixo)
  */
 export const NEXT_URL = process.env.NEXT_URL ?? 'http://localhost:3000'
 export const LEGACY_URL = process.env.LEGACY_URL ?? 'http://localhost:3001'
+
+/* ⚠️ A paridade com o protótipo está **fora da suíte padrão** desde 27/09 (D-39).
+ *
+ * O gabarito foi capturado do legado em 21/08, e o site mudou de propósito
+ * depois disso — D-31 liberou melhoria de UI, e a passada de 13/09 padronizou
+ * raios, tirou bordas de caixa e unificou o ritmo das seções. Medido em 24/09,
+ * as rotas sob o gate divergiam de 2% a 21% dos pixels (P-30): o teste
+ * reprovava a decisão, não a regressão, e teste que vive vermelho não avisa
+ * mais nada.
+ * Regravar a partir do app novo seria o espelho que a estratégia de testes
+ * recusa (D-34). A referência passou a ser o comportamento.
+ *
+ * Os arquivos **ficam** — o legado sai do repositório só na Fase 8, e a
+ * comparação ainda serve para investigar uma rota à mão. Religar é explícito:
+ * `PARIDADE_COM_PROTOTIPO=1`. O `pnpm gate --baseline` e o `--rota` ligam
+ * sozinhos, porque não fazem outra coisa. */
+export const PARIDADE_COM_PROTOTIPO = process.env.PARIDADE_COM_PROTOTIPO === '1'
+const SO_COM_PARIDADE = ['**/visual.spec.ts', '**/baseline.spec.ts', '**/paridade-ds.spec.ts']
 
 const VIEWPORTS = {
   mobile: { width: 375, height: 812 },
@@ -19,6 +36,10 @@ const VIEWPORTS = {
 
 export default defineConfig({
   testDir: './e2e',
+  /* D-39 — ver a nota de `PARIDADE_COM_PROTOTIPO` acima. `testIgnore` e não
+   * `test.skip` dentro dos arquivos: o que está fora não aparece no relatório
+   * como dezenas de testes pulados a cada corrida, que é ruído que ninguém lê. */
+  testIgnore: PARIDADE_COM_PROTOTIPO ? [] : SO_COM_PARIDADE,
   /* Compila as rotas antes de qualquer teste — ver support/aquecimento.ts. */
   globalSetup: './e2e/support/aquecimento.ts',
   /* Gabarito e comparação usam o MESMO diretório de snapshots: um é gravado a

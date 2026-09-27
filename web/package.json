@@ -23,7 +23,7 @@
     "migrate": "payload migrate",
     "migrate:create": "payload migrate:create",
     "migrate:status": "payload migrate:status",
-    "baseline": "GRAVAR_GABARITO=1 playwright test e2e/baseline.spec.ts --update-snapshots",
+    "baseline": "PARIDADE_COM_PROTOTIPO=1 GRAVAR_GABARITO=1 playwright test e2e/baseline.spec.ts --update-snapshots",
     "typegen": "next typegen",
     "gate": "node scripts/gate.mjs",
     "gate:baseline": "node scripts/gate.mjs --baseline"
