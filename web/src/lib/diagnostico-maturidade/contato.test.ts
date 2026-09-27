@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { COOKIE_DE_CONSENTIMENTO, VERSAO_DE_CONSENTIMENTO } from '@/lib/consentimento'
-import { rastrear } from '@/lib/rastreio'
+import { definirContainer, rastrear } from '@/lib/rastreio'
 
 import { perguntasDoSetor } from '.'
 import { ERROS_DO_CONTATO, parametrosDoLead, validarContato, type ContatoDigitado } from './contato'
@@ -97,8 +97,9 @@ describe('paridade com a action', () => {
   }
 })
 
-/* `rastrear` de verdade, com `window`, `document` e o id do GTM simulados — a
- * matriz de `rastreio.test.ts` aplicada ao evento do diagnóstico. */
+/* `rastrear` de verdade, com `window`, `document` e o container do GTM
+ * simulados — a matriz de `rastreio.test.ts` aplicada ao evento do
+ * diagnóstico. */
 describe('quiz_maturidade_lead', () => {
   const janela: { dataLayer?: Record<string, unknown>[] } = {}
   const documento = { cookie: '' }
@@ -113,11 +114,11 @@ describe('quiz_maturidade_lead', () => {
     documento.cookie = ''
     vi.stubGlobal('window', janela)
     vi.stubGlobal('document', documento)
-    vi.stubEnv('NEXT_PUBLIC_GTM_ID', 'GTM-TESTE')
+    definirContainer(true)
   })
   afterEach(() => {
     vi.unstubAllGlobals()
-    vi.unstubAllEnvs()
+    definirContainer(false)
   })
 
   it('com consentimento de estatística, vai ao dataLayer com o setor e sem nível', () => {

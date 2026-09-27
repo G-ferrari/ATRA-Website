@@ -102,6 +102,14 @@ desmarcar.
   provavelmente sua primeira tarefa real neste painel.
 - **Leads** — os envios do formulário de contato ficam em "Form submissions",
   com a campanha de origem de cada um. Eles também vão para o RD Station CRM.
+- **Google Tag Manager e Lusha** — Sistema → Rastreamento (papel de
+  administrador). O campo aceita só o formato certo: `GTM-XXXXXXX` para o
+  Tag Manager e o `siteId` do painel Website Visitors para a Lusha. Salvar
+  atualiza o site sem deploy. ⚠️ Preencher **não liga nada sozinho**: o GTM só
+  carrega para quem aceitar "estatística" no aviso de cookies, e a Lusha para
+  quem aceitar "marketing". Sem o texto do aviso preenchido, ninguém aceita.
+  Se a Lusha estiver ligada, a descrição da categoria marketing (Configuração →
+  Aviso de cookies) precisa dizer que ela identifica a empresa da visita.
 
 ## O que NÃO fazer
 
