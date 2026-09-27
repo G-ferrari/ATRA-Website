@@ -1003,8 +1003,11 @@ marketing quando ele era só a UTM é perguntado de novo.
 - **Conteúdo segue da ATRA (D-22).** O parágrafo da Lusha na política de
   privacidade (P-14) e a descrição da categoria marketing no aviso são texto do
   marketing, editado no admin. A reserva em código da descrição de marketing
-  (`lib/mappers/cookie-consent.ts`) passou a citar a Lusha porque é descrição
-  técnica do que a categoria libera, e ficaria falsa sem ela.
+  (`lib/mappers/cookie-consent.ts`) leva, depois da frase da UTM, o texto da
+  Karen **literal** — "sem tirar nem pôr", por decisão de G-ferrari em 27/09 —,
+  porque sem ele a descrição omitiria a Lusha. Em inglês é tradução, marcada
+  para revisão. O texto completo dos cookies (aviso, categorias, política) vai
+  para revisão da ATRA, na P-14.
 - O container do site atual é o `GTM-KR2VWNK`, com o GA4 `G-619E22CJKE` dentro
   (lido no HTML público do atra.com.br em 27/09). Reaproveitá-lo mantém a série
   do Analytics — o que responde, na prática, a P-19. Falta a Karen confirmar
