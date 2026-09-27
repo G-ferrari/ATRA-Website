@@ -30,14 +30,12 @@ export const SECOES = {
   // home já aponta para ela, e link escrito à mão é o que a regra 6 proíbe.
   chat: { pt: 'chat', en: 'chat' },
   insights: { pt: 'insights', en: 'insights' },
-  /* Diagnóstico de prontidão da RC 18/2025 (feature rc18). Rota de conversão
-     ligada à página /solucoes/rc18. Diagnóstico é PT-only na v1; o alias EN existe
-     só para a arquitetura de slug traduzido resolver sem 404. */
-  diagnosticoRc18: { pt: 'diagnostico-rc18', en: 'rc18-diagnostic' },
   /* Diagnóstico de Maturidade de Dados (feature diagnostico-maturidade-dados,
-     task 026), que substitui o de cima (D-35). Como ele, o alias EN existe para
+     task 026), que substituiu o diagnóstico RC18 (D-35). O alias EN existe para
      o slug traduzido resolver: a rota em inglês serve o mesmo conteúdo em
-     português, por decisão da feature. */
+     português, por decisão da feature. Os endereços do RC18 não voltam para
+     cá — viraram redirect para esta seção (`ROTAS_APOSENTADAS`, em
+     `lib/redirects.ts`). */
   diagnosticoMaturidade: { pt: 'diagnostico-maturidade', en: 'data-maturity-assessment' },
   /* MIG-094. O WordPress serve **uma** página para privacidade, termos e
      cookies (`/politicas-e-termos/`); os 3 links do rodapé apontam todos para

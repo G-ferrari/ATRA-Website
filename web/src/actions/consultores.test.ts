@@ -323,8 +323,10 @@ describe('solicitarConsultores — depois de gravar, é sucesso', () => {
     expect(payload.update).not.toHaveBeenCalled()
   })
 
-  /* ⚠️ No modelo (`diagnostico-rc18.ts`) isto derrubaria a resposta com o lead
-     já salvo: o visitante tentaria de novo, e o comercial receberia duplicata. */
+  /* ⚠️ No modelo desta action (o diagnóstico RC18, removido na D-35) isto
+     derrubava a resposta com o lead já salvo: o visitante tentava de novo, e o
+     comercial recebia duplicata. `actions/diagnostico-maturidade.ts` segue a
+     regra daqui. */
   it('falha ao ler o contato depois de gravar: continua sucesso', async () => {
     lerContato.mockRejectedValue(new Error('banco caiu'))
     const r = await solicitarConsultores(valido({ perfis: perfis('12') }))

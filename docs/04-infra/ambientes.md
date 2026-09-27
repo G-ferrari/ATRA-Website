@@ -73,7 +73,7 @@ Levantado em 17/08/2026, por DNS e headers públicos:
 | `ATRAIR_API_URL` | `http://localhost:3000` do ATRAIR local (vazio = sincronização inerte) | URL do ATRAIR (Cloud Run) | não |
 | `ATRAIR_API_KEY` | vazio (candidatura fica só no admin, falta aparece no log) | gerenciador do host — mesma `TALENT_POOL_API_KEY` configurada no ATRAIR (MIG-102) | **sim** |
 | `ENABLE_CHAT_LEAD` | ausente | `1` liga o convite de lead no chat (D-29) — as outras duas chaves são o toggle e o `consentNotice` no CMS; **produção só depois de P-14** | não |
-| `RC18_LEAD_EMAIL` | ausente (vai para o `email` do global `contact`) | caixa que recebe o questionário do `/diagnostico-rc18` — **endereço pendente** (P-29) | não — endereço de destino, não credencial |
+| ~~`RC18_LEAD_EMAIL`~~ | — | — | ✅ **Removida (D-35, task 028 de `diagnostico-maturidade-dados`).** Saiu com o diagnóstico RC18, que era quem a lia; `/diagnostico-rc18` redireciona para `/diagnostico-maturidade?setor=financeiro`, cujo aviso vai para o `email` do global `contact`. A caixa própria (P-29) segue pendente para o diagnóstico novo |
 | `S3_PRIVATE_BUCKET` | `atra-privado` | idem | não — nome de bucket; o segredo é a credencial |
 | `ENABLE_JOB_APPLICATIONS` | ausente | `1` **só depois de P-17** — liga o formulário de candidatura; exige rebuild, de propósito | não |
 | ~~`REVALIDATE_SECRET`~~ | — | — | ✅ **Removida (MIG-143).** A revalidação virou hook em processo (`hooks/revalidar.ts`): o Payload roda dentro do Next e chama `revalidatePath` direto — não há endpoint HTTP, logo não há segredo |

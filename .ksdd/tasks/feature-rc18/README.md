@@ -10,10 +10,12 @@
 | 002 | Adicionar categoria/aba "RC18" ao mega-menu de Soluções | data-model | P0 | M | em revisão | — |
 | 003 | Criar a página de solução RC18 (blocos CMS + seed idempotente) | frontend | P0 | L | em revisão | 002 |
 | 004 | Formulário de contato na página RC18 no padrão da home | frontend | P0 | S | em revisão | 003 |
-| 005 | Motor de pontuação do diagnóstico RC18 (lib + testes) | backend | P0 | M | em revisão | — |
-| 006 | Rota e ilha do diagnóstico RC18 (autoavaliação com nota na hora) | frontend | P0 | L | em revisão | 005 |
-| 007 | Captura de lead do diagnóstico (kind + Server Action + CRM) | backend | P0 | M | em revisão | 006 |
+| 005 | Motor de pontuação do diagnóstico RC18 (lib + testes) | backend | P0 | M | cancelada (D-35) | — |
+| 006 | Rota e ilha do diagnóstico RC18 (autoavaliação com nota na hora) | frontend | P0 | L | cancelada (D-35) | 005 |
+| 007 | Captura de lead do diagnóstico (kind + Server Action + CRM) | backend | P0 | M | cancelada (D-35) | 006 |
 | 008 | SEO, JSON-LD, smoke e EN stub das rotas RC18 | qa | P1 | M | em revisão | 003, 006 |
+
+> **005–007 canceladas em 26/09/2026:** substituídas pela feature `diagnostico-maturidade-dados` (D-35). A rota do diagnóstico virou redirect permanente para `/diagnostico-maturidade?setor=financeiro` (task 028 daquela feature); o valor `rc18-diagnostic` fica no enum de `form-submissions`, escondido.
 
 ## Ordem sugerida (por dependência)
 

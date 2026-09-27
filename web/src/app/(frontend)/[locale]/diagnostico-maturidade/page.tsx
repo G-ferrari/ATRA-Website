@@ -14,9 +14,11 @@ import { Questionario } from './questionario'
  * Quick Check (D-35): perfil, perguntas, contato e conclusão. O resultado não
  * aparece aqui; vai por e-mail.
  *
- * ⚠️ `noindex`, como `/chat` e `/diagnostico-rc18`: é ferramenta de conversão,
- * não conteúdo. Quem chega vem de um CTA — das páginas de segmento, de normativa
- * ou da RC18 —, quase sempre com `?setor=` no link.
+ * ⚠️ `noindex`, como `/chat`: é ferramenta de conversão, não conteúdo. Quem
+ * chega vem de um CTA — das páginas de segmento, de normativa ou da RC18 —,
+ * quase sempre com `?setor=` no link. O endereço do diagnóstico antigo também
+ * cai aqui, já com `?setor=financeiro` (`ROTAS_APOSENTADAS`, em
+ * `lib/redirects.ts`).
  *
  * A rota EN (`/en/data-maturity-assessment`) serve o mesmo conteúdo em
  * português, por decisão da feature: o global é lido em `pt` nos dois idiomas —

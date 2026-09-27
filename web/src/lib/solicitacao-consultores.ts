@@ -1,7 +1,7 @@
 /* Solicitação de consultores — leitura do que o formulário manda e montagem do
  * resumo que o comercial lê (task 012).
  *
- * Puro de propósito, como `lib/diagnostico-rc18.ts`: a Server Action é endpoint
+ * Puro de propósito, como `lib/diagnostico-maturidade/`: a Server Action é endpoint
  * público (MIG-142), e o que ela aceita do cliente é exatamente o que precisa de
  * teste. Nada aqui consulta o banco — a action entrega os perfis já conferidos.
  *
