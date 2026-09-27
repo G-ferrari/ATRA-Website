@@ -336,8 +336,11 @@ estado vazio de `/chat` não muda: o gabarito do gate segue válido.
 
 **D-30 (03/09, MIG-151–156)** é o consentimento de cookies: 3 categorias
 (essencial isenta; **estatística** = GA4/GTM com Consent Mode v2, dupla chave
-`NEXT_PUBLIC_GTM_ID` + aceite; **marketing** = a captura de UTM, reclassificada
-para opt-in — a UTM da chegada espera em memória e só persiste com aceite).
+id do container + aceite; **marketing** = a captura de UTM, reclassificada
+para opt-in — a UTM da chegada espera em memória e só persiste com aceite —,
+e a Lusha desde a D-40). **D-40 (27/09)** tirou os ids do ambiente: GTM e
+Lusha moram no global `tracking` (Sistema → Rastreamento), só admin edita,
+formato fechado, e o consentimento subiu para a versão 2.
 Cookie `atra-consent` versionado guarda a escolha; ilhas conversam por
 CustomEvent (`atra:consentimento`). Vídeo de webinar é click-to-load, fora do
 banner. Mesmo gate de código de D-29: `bannerMessage` (global `cookie-consent`)

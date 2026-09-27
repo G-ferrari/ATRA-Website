@@ -956,3 +956,59 @@ ele faz.
   capturas de um estado que o designer der por certo, gravadas como decisão
   registrada, e não como reflexo do último build. Não é desta decisão — se vier,
   é D nova.
+
+## D-40 — Os ids de GTM e Lusha moram no admin; a Lusha entra sob marketing
+
+*Decidida em 27/09/2026 por G-ferrari (opção B do Passo 3), a partir do pedido da
+Karen de 22/09 para instalar o Lusha Website Visitors no site novo.* Estende a
+D-30.
+
+**Contexto.** Até aqui o GTM lia o id do container de `NEXT_PUBLIC_GTM_ID`:
+trocar exigia acesso à VPS e um deploy, e a variável seguia vazia (P-19). A Lusha
+identifica a **empresa** de onde vem a visita, pelo IP, e precisa de um `siteId`
+que é da conta da ATRA. Os dois ids decidem que código de terceiro roda em toda
+página.
+
+**Opções.** (A) Os dois no ambiente do servidor: só quem tem a VPS troca, com
+deploy. (B) Os dois num global do admin: troca sem deploy, pela revalidação que
+todo global já dispara.
+
+**Escolha: (B)**, com três travas.
+
+- **Só admin edita** o global `tracking` (Sistema → Rastreamento). Editor vê os
+  valores e não muda: trocar o container é trocar o código que roda no site.
+- **Formato fechado**, testado duas vezes (`lib/formatos-de-rastreamento.ts`):
+  no admin, ao salvar, e no mapper, antes da página. `GTM-` com maiúsculas e
+  dígitos; o `siteId` da Lusha, um UUID. Nada fora disso chega à URL de um
+  script.
+- `NEXT_PUBLIC_GTM_ID` fica **de reserva** para o GTM, lida no servidor. O
+  admin vence. A Lusha nasceu no admin e não tem reserva.
+
+**A Lusha entra sob marketing**, não sob estatística: é identificação de conta
+para prospecção, não medição anônima de uso. O componente
+(`components/layout/lusha.tsx`) espelha o `Gtm`: o script **nem existe no DOM**
+antes do aceite, e revogar depois não o descarrega. Como marketing passou a
+significar outra coisa, `VERSAO_DE_CONSENTIMENTO` foi de 1 para 2 — quem aceitou
+marketing quando ele era só a UTM é perguntado de novo.
+
+**Consequência.**
+
+- **Preencher o id não carrega nada sozinho.** Cada script espera o aceite da
+  sua categoria, e sem `bannerMessage` no `cookie-consent` (P-14) não há aviso,
+  logo não há aceite. ⚠️ Onde o texto provisório do aviso foi semeado à mão
+  (`scripts/seed/cookie-consent.ts`, em dev e homologação), o aviso existe: um
+  id preenchido ali **carrega de verdade** para quem aceitar.
+- **Os eventos** (`rastrear`, `lib/rastreio.ts`) deixaram de ler a variável: o
+  `Gtm` avisa o módulo quando tem container (`definirContainer`).
+- **Conteúdo segue da ATRA (D-22).** O parágrafo da Lusha na política de
+  privacidade (P-14) e a descrição da categoria marketing no aviso são texto do
+  marketing, editado no admin. A reserva em código da descrição de marketing
+  (`lib/mappers/cookie-consent.ts`) passou a citar a Lusha porque é descrição
+  técnica do que a categoria libera, e ficaria falsa sem ela.
+- O container do site atual é o `GTM-KR2VWNK`, com o GA4 `G-619E22CJKE` dentro
+  (lido no HTML público do atra.com.br em 27/09). Reaproveitá-lo mantém a série
+  do Analytics — o que responde, na prática, a P-19. Falta a Karen confirmar
+  quem administra o container e que ele vale para o site novo.
+- Coberto por `e2e/rastreamento.spec.ts` (sem aceite, só estatística, só
+  marketing, aceite da versão 1, aceite dado depois), com ids de teste que o
+  seed só grava com `SEED_FIXTURES=1`, e por `lib/mappers/tracking.test.ts`.

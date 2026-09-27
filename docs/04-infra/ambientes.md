@@ -67,7 +67,7 @@ Levantado em 17/08/2026, por DNS e headers públicos:
 | `GEMINI_API_KEY` | `.env.local` | gerenciador do host | **sim** |
 | `RESEND_API_KEY` | vazio (loga no console) | gerenciador do host | **sim** |
 | `SENTRY_DSN` | vazio | gerenciador do host | não |
-| `NEXT_PUBLIC_GTM_ID` | vazio | id do container (P-19) — com D-30 o script só entra no DOM após o aceite de estatística no banner | não — id público, aparece no HTML de qualquer site que use GTM |
+| `NEXT_PUBLIC_GTM_ID` | vazio | **reserva** desde a D-40: o id do container mora no admin (Sistema → Rastreamento), que vence. Só vale se o admin estiver vazio; o script continua esperando o aceite de estatística (D-30) | não — id público, aparece no HTML de qualquer site que use GTM |
 | `RDSTATION_CRM_TOKEN` | vazio (sincronização inerte, `crm.syncedAt` vazio no admin) | gerenciador do host — **produção só depois de P-14** (D-26/D-29) | **sim** |
 | `RDSTATION_CRM_DEAL_STAGE_ID` | vazio (a conta usa a etapa padrão) | id da etapa do funil onde a negociação nasce | não |
 | `ATRAIR_API_URL` | `http://localhost:3000` do ATRAIR local (vazio = sincronização inerte) | URL do ATRAIR (Cloud Run) | não |
