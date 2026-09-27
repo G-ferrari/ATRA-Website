@@ -86,12 +86,14 @@ beforeEach(() => {
   vi.spyOn(console, 'error').mockImplementation(() => {})
   excedeuPorIp.mockReturnValue(false)
   getPayload.mockResolvedValue(payload)
-  lerContato.mockResolvedValue({ email: CAIXA })
+  lerContato.mockResolvedValue({ email: CAIXA, destinos: SEM_DESTINOS })
   lerDiagnosticoDeMaturidade.mockResolvedValue(TEXTOS)
   enviarAviso.mockResolvedValue(true)
   payload.create.mockResolvedValue({ id: 701 })
   payload.update.mockResolvedValue({})
 })
+
+const SEM_DESTINOS = { contato: null, consultores: null, diagnostico: null, carreiras: null, chat: null }
 
 describe('enviarDiagnosticoDeMaturidade — envio válido', () => {
   it('grava com o kind, o contato e o grupo diagnostic refeito pelo motor', async () => {
@@ -181,6 +183,17 @@ describe('enviarDiagnosticoDeMaturidade — envio válido', () => {
     expect(a.html).toBeUndefined()
     expect(a.texto).toContain('Nome: Ana Souza')
     expect(a.texto).toContain(`Respostas (${perguntasDoSetor(SETOR).length} de ${perguntasDoSetor(SETOR).length} perguntas)`)
+  })
+
+  /* Contato → Destino dos formulários → Diagnóstico (P-29): preenchido, vence o
+     e-mail geral — no aviso à ATRA e no reply_to do resultado. */
+  it('usa a caixa de "Diagnóstico" do admin quando ela está preenchida', async () => {
+    lerContato.mockResolvedValue({ email: CAIXA, destinos: { ...SEM_DESTINOS, diagnostico: 'dados@atra.com.br' } })
+    await enviar(valido())
+    expect(avisoAAtra()).toMatchObject({ para: 'dados@atra.com.br' })
+    expect(enviarAviso.mock.calls.find(([m]) => m.para === 'ana.souza@banco.com.br')?.[0]).toMatchObject({
+      responderPara: 'dados@atra.com.br',
+    })
   })
 
   it('marca resultSentAt e notified numa escrita só, pelo id que o create devolveu', async () => {
@@ -471,7 +484,7 @@ describe('enviarDiagnosticoDeMaturidade — LGPD', () => {
     lerContato.mockRejectedValue(new Error('params: ana.souza@banco.com.br'))
     await enviar(valido())
     payload.update.mockRejectedValue(new Error('params: Ana Souza (11) 99999-0000'))
-    lerContato.mockResolvedValue({ email: CAIXA })
+    lerContato.mockResolvedValue({ email: CAIXA, destinos: SEM_DESTINOS })
     await enviar(valido())
     expect(registrado()).toContain('701')
     for (const pessoal of ['ana.souza@banco.com.br', 'Ana Souza', '99999-0000']) {

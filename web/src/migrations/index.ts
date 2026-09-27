@@ -53,8 +53,10 @@ import * as migration_20260926_134617_add_facebook_social from './20260926_13461
 import * as migration_20260926_135527_add_partner_logo_dark from './20260926_135527_add_partner_logo_dark';
 import * as migration_20260926_162528_add_highlight_carousel from './20260926_162528_add_highlight_carousel';
 import * as migration_20260926_171500_alocacao_de_consultores from './20260926_171500_alocacao_de_consultores';
+import * as migration_20260926_184353_add_form_recipients from './20260926_184353_add_form_recipients';
 import * as migration_20260926_193658_add_data_maturity_diagnostic from './20260926_193658_add_data_maturity_diagnostic';
 import * as migration_20260926_220000_rc18_aponta_para_o_diagnostico from './20260926_220000_rc18_aponta_para_o_diagnostico';
+import * as migration_20260927_105730_reconcilia_snapshot_destino_e_diagnostico from './20260927_105730_reconcilia_snapshot_destino_e_diagnostico';
 
 export const migrations = [
   {
@@ -333,6 +335,11 @@ export const migrations = [
     name: '20260926_171500_alocacao_de_consultores',
   },
   {
+    up: migration_20260926_184353_add_form_recipients.up,
+    down: migration_20260926_184353_add_form_recipients.down,
+    name: '20260926_184353_add_form_recipients',
+  },
+  {
     up: migration_20260926_193658_add_data_maturity_diagnostic.up,
     down: migration_20260926_193658_add_data_maturity_diagnostic.down,
     name: '20260926_193658_add_data_maturity_diagnostic',
@@ -341,5 +348,10 @@ export const migrations = [
     up: migration_20260926_220000_rc18_aponta_para_o_diagnostico.up,
     down: migration_20260926_220000_rc18_aponta_para_o_diagnostico.down,
     name: '20260926_220000_rc18_aponta_para_o_diagnostico',
+  },
+  {
+    up: migration_20260927_105730_reconcilia_snapshot_destino_e_diagnostico.up,
+    down: migration_20260927_105730_reconcilia_snapshot_destino_e_diagnostico.down,
+    name: '20260927_105730_reconcilia_snapshot_destino_e_diagnostico'
   },
 ];

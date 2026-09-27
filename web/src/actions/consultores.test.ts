@@ -46,7 +46,10 @@ beforeEach(() => {
   vi.spyOn(console, 'error').mockImplementation(() => {})
   excedeuPorIp.mockReturnValue(false)
   getPayload.mockResolvedValue(payload)
-  lerContato.mockResolvedValue({ email: 'negocios@atra.com.br' })
+  lerContato.mockResolvedValue({
+    email: 'negocios@atra.com.br',
+    destinos: { contato: null, consultores: null, diagnostico: null, carreiras: null, chat: null },
+  })
   enviarAviso.mockResolvedValue(true)
   payload.find.mockImplementation(async ({ where }: { where: { id: { in: number[] } } }) => ({
     docs: CATALOGO.filter((p) => where.id.in.includes(p.id)),
@@ -106,6 +109,16 @@ describe('solicitarConsultores — envio válido', () => {
     )
     expect(enviarAviso.mock.calls[0][0].texto).toContain('- Data Engineer (Senior)')
     expect(payload.update).toHaveBeenCalledWith({ collection: 'form-submissions', id: 501, data: { notified: true } })
+  })
+
+  /* Contato → Destino dos formulários: preenchido, vence o e-mail geral. */
+  it('avisa o e-mail de "Pedido de consultores" quando o admin o preenche', async () => {
+    lerContato.mockResolvedValue({
+      email: 'negocios@atra.com.br',
+      destinos: { contato: null, consultores: 'alocacao@atra.com.br', diagnostico: null, carreiras: null, chat: null },
+    })
+    await solicitarConsultores(valido({ perfis: perfis('12') }))
+    expect(enviarAviso).toHaveBeenCalledWith(expect.objectContaining({ para: 'alocacao@atra.com.br' }))
   })
 
   /* Veio pelo "Não encontrou um consultor nesta lista?" (task 014). */

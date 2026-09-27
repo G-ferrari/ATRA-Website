@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 
 import { CAMPO_ISCA, conferir, excedeuPorIp } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
+import { destinoDoAviso } from '@/lib/destino-do-aviso'
 import { lerDiagnosticoDeMaturidade } from '@/lib/diagnostico'
 import {
   CARGOS,
@@ -173,14 +174,12 @@ function duracaoEmSegundos(inicio: string, agora = Date.now()): number | undefin
 
 /** Para onde vai o aviso do diagnóstico, e o `reply_to` do resultado — quando o
  * lead responde ao e-mail, a resposta cai na mesma caixa que recebeu o aviso.
- *
- * ⚠️ Provisório: o campo por formulário do global Contato (PR #51,
- * `lib/destino-do-aviso.ts`) ainda não está nesta base. Enquanto não estiver,
- * é o e-mail geral, como os demais formulários. Quando entrar, esta função vira
- * `destinoDoAviso(contato, 'diagnostico')` — uma linha, e os dois e-mails
- * mudam juntos. */
+ * É o campo "Diagnóstico" de Contato → Destino dos formulários, com o e-mail
+ * geral quando vazio (`lib/destino-do-aviso.ts`, P-29). A variável
+ * `RC18_LEAD_EMAIL` saiu com o diagnóstico RC18 (D-35): o destino agora se
+ * troca no admin. */
 function caixaDoDiagnostico(contato: Contato): string {
-  return contato.email
+  return destinoDoAviso(contato, 'diagnostico')
 }
 
 const rotuloDe = <V extends string>(lista: readonly { valor: V; rotulo: string }[], valor: V) =>

@@ -23,6 +23,13 @@ export function toContato(doc: Contact): Contato {
       facebook: doc.social?.facebook ?? null,
       youtube: doc.social?.youtube ?? null,
     },
+    destinos: {
+      contato: doc.formRecipients?.contact || null,
+      consultores: doc.formRecipients?.consultants || null,
+      diagnostico: doc.formRecipients?.diagnostic || null,
+      carreiras: doc.formRecipients?.careers || null,
+      chat: doc.formRecipients?.chat || null,
+    },
   }
 }
 

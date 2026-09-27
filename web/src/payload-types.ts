@@ -11296,6 +11296,16 @@ export interface Contact {
     facebook?: string | null;
     youtube?: string | null;
   };
+  /**
+   * Which inbox receives each form. When empty, the email above is used.
+   */
+  formRecipients?: {
+    contact?: string | null;
+    consultants?: string | null;
+    diagnostic?: string | null;
+    careers?: string | null;
+    chat?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -11683,6 +11693,15 @@ export interface ContactSelect<T extends boolean = true> {
         instagram?: T;
         facebook?: T;
         youtube?: T;
+      };
+  formRecipients?:
+    | T
+    | {
+        contact?: T;
+        consultants?: T;
+        diagnostic?: T;
+        careers?: T;
+        chat?: T;
       };
   updatedAt?: T;
   createdAt?: T;
