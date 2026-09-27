@@ -23,8 +23,16 @@ describe('páginas de solução do WordPress', () => {
     expect(slugs).not.toContain('inteligencia-artificial')
   })
 
-  it('toda imagem do herói está versionada ao lado', () => {
-    for (const p of PAGINAS_DO_WORDPRESS) expect(existsSync(path.join(pasta, p.imagem)), p.imagem).toBe(true)
+  it('toda imagem — do herói e das grades — está versionada ao lado, com alt', () => {
+    for (const p of PAGINAS_DO_WORDPRESS) {
+      expect(existsSync(path.join(pasta, p.imagem)), p.imagem).toBe(true)
+      for (const s of p.secoes)
+        if (s.tipo === 'imagens')
+          for (const i of s.imagens) {
+            expect(existsSync(path.join(pasta, i.arquivo)), i.arquivo).toBe(true)
+            expect(i.alt.trim(), i.arquivo).not.toBe('')
+          }
+    }
   })
 
   it('todo cartão usa um ícone que o bloco aceita', () => {

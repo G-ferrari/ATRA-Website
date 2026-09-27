@@ -62,7 +62,17 @@ function trechoParaNo(trecho: Trecho) {
 const ancora = (s: { ancora?: string; rotulo?: string }) =>
   s.ancora ? { anchor: s.ancora, navLabel: s.rotulo } : {}
 
-function secaoParaBloco(secao: Secao) {
+function secaoParaBloco(secao: Secao, imagens: Map<string, number>) {
+  if (secao.tipo === 'imagens') {
+    return {
+      blockType: 'imageGrid' as const,
+      ...ancora(secao),
+      title: secao.titulo,
+      description: secao.descricao,
+      images: secao.imagens.map((i) => ({ image: imagens.get(i.arquivo)! })),
+      boxed: true,
+    }
+  }
   if (secao.tipo === 'texto') {
     return {
       blockType: 'richTextSection' as const,
@@ -87,7 +97,7 @@ function secaoParaBloco(secao: Secao) {
  * ("Alocação de **Consultores**"). Título de uma palavra só realça ela inteira. */
 const ultimaPalavra = (titulo: string) => titulo.trim().split(/\s+/).at(-1)!
 
-const layout = (pagina: PaginaDoWordpress, imagem: number, parceiros: number[]) => [
+const layout = (pagina: PaginaDoWordpress, imagens: Map<string, number>, parceiros: number[]) => [
   {
     blockType: 'pageHero' as const,
     badge: 'Solução',
@@ -97,13 +107,13 @@ const layout = (pagina: PaginaDoWordpress, imagem: number, parceiros: number[]) 
     descriptionWidth: 'wide' as const,
     align: 'left' as const,
     mediaMode: 'image' as const,
-    images: [imagem],
+    images: [imagens.get(pagina.imagem)!],
     ctaVariant: 'secondary' as const,
     ctas: [{ label: 'Quero saber mais', href: '#contato' }],
     metrics: [],
   },
   { blockType: 'stickyPageNav' as const, variant: 'solution' as const },
-  ...pagina.secoes.map(secaoParaBloco),
+  ...pagina.secoes.map((s) => secaoParaBloco(s, imagens)),
   {
     blockType: 'partnerShowcase' as const,
     anchor: 'parceiros',
@@ -128,15 +138,19 @@ const layout = (pagina: PaginaDoWordpress, imagem: number, parceiros: number[]) 
   },
 ]
 
+const MIMES: Record<string, string> = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png' }
+
 /* ⚠️ A busca é pelo nome do arquivo sem extensão, com `contains`: a `Media`
  * converte todo upload para WebP, e o `.jpg` vira `.webp` no `filename` (a
- * armadilha do `scripts/seed/midia.ts`). Por isso o prefixo `solucao-wp-` —
- * "cloud" sozinho casaria com o logo do Google Cloud. */
-async function imagemDaSolucao(
+ * armadilha do `scripts/seed/midia.ts`). Por isso os prefixos `solucao-wp-` e
+ * `selo-google-cloud-` — "cloud" sozinho casaria com o logo do Google Cloud. */
+async function imagem(
   { payload, req }: Pick<MigrateUpArgs, 'payload' | 'req'>,
-  pagina: PaginaDoWordpress,
+  arquivo: string,
+  alt: string,
+  origem: string,
 ): Promise<number> {
-  const chave = pagina.imagem.replace(/\.[^.]+$/, '')
+  const chave = arquivo.replace(/\.[^.]+$/, '')
   const { docs } = await payload.find({
     collection: 'media',
     where: { filename: { contains: chave } },
@@ -146,11 +160,11 @@ async function imagemDaSolucao(
   })
   if (docs[0]) return docs[0].id
 
-  const data = readFileSync(path.join(PASTA, pagina.imagem))
+  const data = readFileSync(path.join(PASTA, arquivo))
   const doc = await payload.create({
     collection: 'media',
-    data: { alt: `Ilustração da solução ${pagina.titulo}`, credit: pagina.origem },
-    file: { data, mimetype: 'image/jpeg', name: pagina.imagem, size: data.length },
+    data: { alt, credit: origem },
+    file: { data, mimetype: MIMES[path.extname(arquivo).toLowerCase()] ?? 'image/png', name: arquivo, size: data.length },
     locale: 'pt',
     req,
   })
@@ -182,12 +196,20 @@ export async function up({ payload, req }: MigrateUpArgs): Promise<void> {
       continue
     }
 
-    const imagem = await imagemDaSolucao({ payload, req }, pagina)
+    const imagens = new Map<string, number>()
+    imagens.set(
+      pagina.imagem,
+      await imagem({ payload, req }, pagina.imagem, `Ilustração da solução ${pagina.titulo}`, pagina.origem),
+    )
+    for (const secao of pagina.secoes)
+      if (secao.tipo === 'imagens')
+        for (const i of secao.imagens) imagens.set(i.arquivo, await imagem({ payload, req }, i.arquivo, i.alt, i.origem))
+
     await payload.update({
       collection: 'solutions',
       id: solucao.id,
       locale: 'pt',
-      data: { layout: layout(pagina, imagem, idsDosParceiros) as never },
+      data: { layout: layout(pagina, imagens, idsDosParceiros) as never },
       req,
     })
     payload.logger.info(`[solucoes-wp] "${pagina.slug}" montada`)

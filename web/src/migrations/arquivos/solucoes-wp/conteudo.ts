@@ -12,8 +12,9 @@
  * WordPress vira cartões, e a imagem de cada solução vai para o herói — as duas
  * no padrão da Alocação de Consultores (PR #50). O vídeo do MDM, que o
  * WordPress embute, vira um botão para o YouTube: o site não tem bloco de
- * vídeo. Os 10 selos de certificação do Google Cloud em Data Analytics ficam de
- * fora pelo mesmo motivo — não há bloco de grade de imagens.
+ * vídeo. Os 10 selos de certificação do Google Cloud em Data Analytics entram
+ * pela grade de imagens (`imageGrid`), criada para eles em 27/09; o texto
+ * alternativo de cada um transcreve o que está escrito no selo.
  *
  * Os textos fixos de todas as páginas (a chamada "Entre em contato…", o botão
  * "Quero saber mais", "Somos parceiros…") ficam na migração, não aqui.
@@ -33,6 +34,14 @@ export type Secao =
       titulo: string
       corpo: Trecho[]
       cta?: { label: string; href: string }
+    }
+  | {
+      tipo: 'imagens'
+      ancora?: string
+      rotulo?: string
+      titulo: string
+      descricao: string
+      imagens: { arquivo: string; alt: string; origem: string }[]
     }
   | {
       tipo: 'cards'
@@ -175,13 +184,61 @@ export const PAGINAS_DO_WORDPRESS: PaginaDoWordpress[] = [
         ],
       },
       {
-        tipo: 'texto',
+        tipo: 'imagens',
         ancora: 'certificacoes',
         rotulo: 'Certificações',
         titulo: 'Somos Certificados nas Soluções Google Cloud',
-        corpo: [
+        descricao: 'Temos profissionais experientes e reconhecidos no mercado, preparados para compreender necessidades e definir as melhores soluções para empresas dos mais diversos portes e segmentos.',
+        imagens: [
           {
-            p: 'Temos profissionais experientes e reconhecidos no mercado, preparados para compreender necessidades e definir as melhores soluções para empresas dos mais diversos portes e segmentos.',
+            arquivo: 'selo-google-cloud-01.png',
+            alt: 'Google Cloud Partner',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/03/9.png',
+          },
+          {
+            arquivo: 'selo-google-cloud-02.png',
+            alt: 'Specialization Data Analytics, Google Cloud',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/07/GC-specialization-Data_Analytics-outline.png',
+          },
+          {
+            arquivo: 'selo-google-cloud-03.jpg',
+            alt: 'Expertise Google Cloud Analytics',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/05/10.jpg',
+          },
+          {
+            arquivo: 'selo-google-cloud-04.jpg',
+            alt: 'Expertise Data Integration',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/05/9.jpg',
+          },
+          {
+            arquivo: 'selo-google-cloud-05.jpg',
+            alt: 'Expertise Data Lake Modernization',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/05/8.jpg',
+          },
+          {
+            arquivo: 'selo-google-cloud-06.jpg',
+            alt: 'Google Cloud Certified Professional Cloud Database Engineer',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/05/7.jpg',
+          },
+          {
+            arquivo: 'selo-google-cloud-07.png',
+            alt: 'Google Cloud Certified Professional Machine Learning Engineer',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/03/2.png',
+          },
+          {
+            arquivo: 'selo-google-cloud-08.png',
+            alt: 'Google Cloud Certified Professional Data Engineer',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/03/1.png',
+          },
+          {
+            arquivo: 'selo-google-cloud-09.png',
+            alt: 'Google Cloud Certified Associate Cloud Engineer',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/03/4.png',
+          },
+          {
+            arquivo: 'selo-google-cloud-10.png',
+            alt: 'Google Cloud Certified Cloud Digital Leader',
+            origem: 'https://www.atra.com.br/wp-content/uploads/2024/03/5.png',
           },
         ],
       },
