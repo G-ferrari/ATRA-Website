@@ -32,14 +32,15 @@ import { MAX_POR_VALOR } from '@/lib/utm'
  * a descrição.
  *
  * ⚠️ **Depois que o lead é gravado, a resposta é sucesso, aconteça o que
- * acontecer.** No modelo (`diagnostico-rc18.ts`), `lerContato` e o `update` do
- * `notified` rodam sem proteção depois do `create`: se um deles falhar, o
- * visitante vê erro com o lead já salvo, tenta de novo, e o comercial recebe
- * duplicata. Aqui o bloco pós-gravação só registra no log.
+ * acontecer.** O modelo desta action — o diagnóstico RC18, removido na D-35 —
+ * rodava `lerContato` e o `update` do `notified` sem proteção depois do
+ * `create`: se um deles falhasse, o visitante via erro com o lead já salvo,
+ * tentava de novo, e o comercial recebia duplicata. Aqui o bloco pós-gravação
+ * só registra no log, e `actions/diagnostico-maturidade.ts` herdou a regra.
  *
- * ⚠️ `notified` é marcado pelo **id que o `create` devolveu**. O modelo busca o
- * lead por e-mail + kind + `-createdAt`, e dois envios simultâneos do mesmo
- * e-mail marcariam o errado.
+ * ⚠️ `notified` é marcado pelo **id que o `create` devolveu**. O modelo buscava
+ * o lead por e-mail + kind + `-createdAt`, e dois envios simultâneos do mesmo
+ * e-mail marcariam o errado. `actions/diagnostico-maturidade.ts` faz como aqui.
  *
  * Destino do aviso: o `email` do global `contact`, como os demais formulários —
  * sem variável de ambiente nova. */
@@ -98,8 +99,9 @@ const campanha = (dados: FormData, campo: string): string | undefined =>
  * ⚠️ **Nunca `console.error(..., e)`.** A mensagem do erro do Drizzle leva
  * `params:` — e-mail, nome, telefone e a mensagem do visitante vão
  * inteiros para o log do servidor. Bastava mandar um caractere NUL no nome para
- * o `create` falhar e gravar o lead no log. O modelo (`diagnostico-rc18.ts`) e
- * `formularios.ts` têm o mesmo defeito. */
+ * o `create` falhar e gravar o lead no log. `formularios.ts` tem o mesmo
+ * defeito (o modelo, o diagnóstico RC18, também tinha, e saiu na D-35);
+ * `actions/diagnostico-maturidade.ts` já nasceu com esta função. */
 const semDadoPessoal = (e: unknown): string => {
   const erro = e as { cause?: { code?: unknown }; code?: unknown; name?: unknown } | null
   return String(erro?.cause?.code ?? erro?.code ?? erro?.name ?? 'erro desconhecido')
@@ -247,9 +249,10 @@ export async function solicitarConsultores(dados: FormData): Promise<ResultadoSo
  * (`async (_, dados) => solicitarConsultores(dados)`), o React não tem uma
  * referência de servidor para emitir, e o HTML sai com
  * `action="javascript:throw new Error('React form unexpectedly submitted.')"`:
- * sem JS, o clique em enviar não faz nada. O `Formulario` de contato e o
- * diagnóstico RC18 têm esse defeito, apesar de o comentário deles e a SPEC §11
- * afirmarem o contrário. */
+ * sem JS, o clique em enviar não faz nada. O `Formulario` de contato tem esse
+ * defeito (o diagnóstico RC18 também tinha, e saiu na D-35), apesar de o
+ * comentário dele e a SPEC §11 afirmarem o contrário.
+ * `actions/diagnostico-maturidade.ts` exporta direto nesta assinatura. */
 export async function solicitarConsultoresNoFormulario(
   _anterior: ResultadoSolicitacao | null,
   dados: FormData,

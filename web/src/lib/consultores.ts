@@ -3,7 +3,7 @@ import type { ConsultantRole } from '@/types/content'
 
 /* Filtro do catálogo de /consultores (task 009).
  *
- * Separado da ilha pelo mesmo motivo de `lib/diagnostico-rc18.ts`: é a regra que
+ * Separado da ilha pelo mesmo motivo de `lib/diagnostico-maturidade/`: é a regra que
  * os critérios de aceitação descrevem, e teste unitário sobre os 8 perfis reais
  * custa milissegundos enquanto o mesmo caso por e2e custa minutos.
  *
