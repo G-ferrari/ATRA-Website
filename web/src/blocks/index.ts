@@ -534,6 +534,44 @@ export const SealsBanner: Block = {
   ],
 }
 
+/* Grade de imagens soltas — selos, certificações, prêmios. Nasceu para os 10
+ * selos do Google Cloud da página Data Analytics do WordPress (27/09), que
+ * nenhum bloco comportava: a faixa de selos lê os de `site-settings`, e a de
+ * parceiros, a collection `partners`. Aqui as imagens são do próprio bloco.
+ *
+ * O texto alternativo vem de cada imagem, na Biblioteca: é ali que o editor já
+ * descreve a mídia, e repetir o campo aqui daria dois lugares para divergir. */
+export const ImageGrid: Block = {
+  slug: 'imageGrid',
+  labels: { singular: { pt: 'Grade de imagens', en: 'Image grid' }, plural: { pt: 'Grades de imagens', en: 'Image grids' } },
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    {
+      name: 'images',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Imagens', en: 'Images' },
+      fields: [
+        { name: 'image', type: 'upload', relationTo: 'media', required: true, label: { pt: 'Imagem', en: 'Image' } },
+        { name: 'caption', type: 'text', localized: true, label: { pt: 'Legenda', en: 'Caption' } },
+      ],
+    },
+    {
+      /* Ligado por padrão: selo e certificado costumam vir em JPEG de fundo
+       * branco, que no tema escuro vira um quadrado solto. A caixa branca é a
+       * mesma solução da faixa de selos. */
+      name: 'boxed',
+      type: 'checkbox',
+      defaultValue: true,
+      label: { pt: 'Caixa branca atrás de cada imagem', en: 'White box behind each image' },
+    },
+    ...camposComuns,
+  ],
+}
+
 export const ProcessSteps: Block = {
   slug: 'processSteps',
   labels: { singular: { pt: 'Etapas de processo', en: 'Process steps' }, plural: { pt: 'Etapas', en: 'Process steps' } },
@@ -1597,6 +1635,7 @@ export const BLOCOS = [
   ValueCards,
   PartnerShowcase,
   SealsBanner,
+  ImageGrid,
   ProcessSteps,
   MethodCards,
   BentoGrid,

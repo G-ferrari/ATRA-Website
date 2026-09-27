@@ -771,6 +771,31 @@ export interface Partner {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
+            images: {
+              image: number | Media;
+              caption?: string | null;
+              id?: string | null;
+            }[];
+            boxed?: boolean | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'imageGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
             /**
              * Numbering follows the order. Drag to reorder.
              */
@@ -2417,6 +2442,31 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'sealsBanner';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        description?: string | null;
+        images: {
+          image: number | Media;
+          caption?: string | null;
+          id?: string | null;
+        }[];
+        boxed?: boolean | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'imageGrid';
       }
     | {
         eyebrow?: string | null;
@@ -4273,6 +4323,31 @@ export interface Segment {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
+            images: {
+              image: number | Media;
+              caption?: string | null;
+              id?: string | null;
+            }[];
+            boxed?: boolean | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'imageGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
             /**
              * Numbering follows the order. Drag to reorder.
              */
@@ -5887,6 +5962,31 @@ export interface Solution {
             id?: string | null;
             blockName?: string | null;
             blockType: 'sealsBanner';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
+            images: {
+              image: number | Media;
+              caption?: string | null;
+              id?: string | null;
+            }[];
+            boxed?: boolean | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'imageGrid';
           }
         | {
             eyebrow?: string | null;
@@ -7863,6 +7963,28 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        imageGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              images?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         processSteps?:
           | T
           | {
@@ -8796,6 +8918,28 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        imageGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              images?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         processSteps?:
           | T
           | {
@@ -9611,6 +9755,28 @@ export interface SegmentsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              images?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              boxed?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10440,6 +10606,28 @@ export interface SolutionsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              images?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              boxed?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
