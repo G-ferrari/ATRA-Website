@@ -1,7 +1,7 @@
 ---
 id: 028
 title: Aposentar o diagnóstico RC18 — redirect para a rota nova e remoção do motor antigo
-status: em revisão
+status: concluída
 feature: diagnostico-maturidade-dados
 area: frontend
 priority: P0
