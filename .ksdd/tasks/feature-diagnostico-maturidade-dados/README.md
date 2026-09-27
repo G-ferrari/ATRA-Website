@@ -15,7 +15,7 @@
 | 027 | Contato, conclusão e envio — liga a ilha à action, WhatsApp/Agendar e evento com consentimento | frontend | P0 | M | concluída | 025, 026 |
 | 028 | Aposentar o diagnóstico RC18 — redirect para a rota nova e remoção do motor antigo | frontend | P0 | M | concluída | 027 |
 | 029 | Página RC18 aponta para o diagnóstico e perde o formulário de contato | frontend | P1 | S | concluída | 028 |
-| 030 | SEO, smoke e e2e de comportamento do diagnóstico | qa | P1 | M | em revisão | 027, 028 |
+| 030 | SEO, smoke e e2e de comportamento do diagnóstico | qa | P1 | M | concluída | 027, 028 |
 
 ## Ordem sugerida (por dependência)
 

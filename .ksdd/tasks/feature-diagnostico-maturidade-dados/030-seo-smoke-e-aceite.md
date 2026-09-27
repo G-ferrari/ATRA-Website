@@ -1,7 +1,7 @@
 ---
 id: 030
 title: SEO, smoke e e2e de comportamento do diagnóstico
-status: em revisão
+status: concluída
 feature: diagnostico-maturidade-dados
 area: qa
 priority: P1
