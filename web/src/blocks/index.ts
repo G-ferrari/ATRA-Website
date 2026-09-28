@@ -1721,9 +1721,25 @@ export const rotuloPt = (bloco: Block): string => {
   return typeof singular === 'string' ? singular : ((singular as Record<string, string> | undefined)?.pt ?? bloco.slug)
 }
 
+/* A miniatura de cada card do seletor (task 033): a seção como aparece no
+ * site, gerada por `e2e/miniaturas.spec.ts` em `public/miniaturas-de-blocos/`.
+ * Fora de `public/admin/` de propósito: o caminho colidiria com a rota do
+ * admin do Payload. */
+export const miniaturaDe = (bloco: Block) => ({
+  url: `/miniaturas-de-blocos/${bloco.slug}.webp`,
+  alt: `Como fica a seção "${rotuloPt(bloco)}" no site`,
+})
+
 export const BLOCOS: Block[] = TODOS.map((b) => {
   const grupo = grupoDe(b)
-  return grupo ? { ...b, admin: { ...b.admin, group: GRUPOS[grupo] } } : b
+  return {
+    ...b,
+    admin: {
+      ...b.admin,
+      ...(grupo ? { group: GRUPOS[grupo] } : {}),
+      images: { thumbnail: miniaturaDe(b) },
+    },
+  }
 }).sort(
   (a, b) =>
     ORDEM_DOS_GRUPOS.indexOf(grupoDe(a)!) - ORDEM_DOS_GRUPOS.indexOf(grupoDe(b)!) ||
