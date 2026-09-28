@@ -106,7 +106,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY web/ ./
 COPY docs/ /docs/
 ENV NEXT_TELEMETRY_DISABLED=1
-CMD ["pnpm", "payload", "migrate"]
+CMD ["pnpm", "migrate"]
 
 # ── runtime ───────────────────────────────────────────────────────────────────
 FROM base AS runner

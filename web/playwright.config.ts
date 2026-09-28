@@ -27,6 +27,9 @@ export const LEGACY_URL = process.env.LEGACY_URL ?? 'http://localhost:3001'
  * sozinhos, porque não fazem outra coisa. */
 export const PARIDADE_COM_PROTOTIPO = process.env.PARIDADE_COM_PROTOTIPO === '1'
 const SO_COM_PARIDADE = ['**/visual.spec.ts', '**/baseline.spec.ts', '**/paridade-ds.spec.ts']
+/* As miniaturas do seletor de seções regravam arquivos em `public/` — como o
+ * gabarito, só rodam quando alguém pede (`GERAR_MINIATURAS=1`). */
+const SO_AO_GERAR_MINIATURAS = process.env.GERAR_MINIATURAS === '1' ? [] : ['**/miniaturas.spec.ts']
 
 const VIEWPORTS = {
   mobile: { width: 375, height: 812 },
@@ -39,7 +42,7 @@ export default defineConfig({
   /* D-39 — ver a nota de `PARIDADE_COM_PROTOTIPO` acima. `testIgnore` e não
    * `test.skip` dentro dos arquivos: o que está fora não aparece no relatório
    * como dezenas de testes pulados a cada corrida, que é ruído que ninguém lê. */
-  testIgnore: PARIDADE_COM_PROTOTIPO ? [] : SO_COM_PARIDADE,
+  testIgnore: [...(PARIDADE_COM_PROTOTIPO ? [] : SO_COM_PARIDADE), ...SO_AO_GERAR_MINIATURAS],
   /* Compila as rotas antes de qualquer teste — ver support/aquecimento.ts. */
   globalSetup: './e2e/support/aquecimento.ts',
   /* Gabarito e comparação usam o MESMO diretório de snapshots: um é gravado a

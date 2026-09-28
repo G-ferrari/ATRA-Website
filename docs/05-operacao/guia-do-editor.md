@@ -91,6 +91,21 @@ Alguns números estão marcados como **pendentes de confirmação** (P-01): est�
 esperando o valor oficial. Quem tiver o número certo, é só preencher e
 desmarcar.
 
+## Adicionar uma seção a uma página
+
+Em qualquer página, solução, segmento ou parceiro, o campo **"Seções"** é a
+lista de blocos da página, na ordem em que aparecem no site. **"Adicionar
+Seção"** abre o seletor:
+
+- os blocos vêm **em grupos** (Abertura e navegação · Texto e cards · Etapas ·
+  Prova: números, selos e parceiros · Carrosséis e vitrines · Chamadas e
+  contato), em ordem alfabética dentro de cada um;
+- cada card mostra **uma miniatura de como a seção fica no site**;
+- o campo **"Procurar bloco"**, no topo, filtra pelo nome.
+
+Depois de inserir, arraste a seção para o lugar certo e confira no
+pré-visualizar.
+
 ## O que mais é editável
 
 - **Depoimentos e clientes** — Catálogos. Depoimento sem foto mostra

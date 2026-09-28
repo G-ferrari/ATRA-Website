@@ -1,3 +1,7 @@
+import { existsSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { describe, expect, it } from 'vitest'
 
 import { BLOCOS, grupoDe, rotuloPt } from './index'
@@ -31,5 +35,17 @@ describe('seletor de seções', () => {
     expect(new Set(slugs).size).toBe(slugs.length)
     expect(slugs).toContain('highlightCarousel')
     expect(slugs).toHaveLength(28)
+  })
+
+  /* Task 033: sem miniatura o card volta para a montanha cinza do Payload, e o
+     arquivo tem que existir — a URL sozinha não mostra nada. */
+  it('todo bloco tem miniatura, e o arquivo existe em public/', () => {
+    const publico = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public')
+    for (const b of BLOCOS) {
+      const miniatura = b.admin?.images?.thumbnail
+      const url = typeof miniatura === 'string' ? miniatura : miniatura?.url
+      expect(url, b.slug).toBeTruthy()
+      expect(existsSync(path.join(publico, url!)), `${b.slug}: ${url}`).toBe(true)
+    }
   })
 })

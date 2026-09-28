@@ -142,17 +142,22 @@ export function RenderBlocks({
     }
   }
 
+  /* Todo bloco vai num invólucro `display: contents`, que não gera caixa e não
+     mexe no layout. Ele carrega o `data-bloco` — o alvo das miniaturas do
+     seletor "Adicionar Seção" (`e2e/miniaturas.spec.ts`) e um jeito de achar o
+     bloco no DevTools — e, quando é o caso, o `data-emenda` acima. */
   return (
     <>
-      {blocos.map((b, i) =>
-        emendaNaAnterior(blocos[i - 1], b) ? (
-          <div key={b.id} className="contents" data-emenda="">
-            {renderizar(b)}
-          </div>
-        ) : (
-          renderizar(b)
-        ),
-      )}
+      {blocos.map((b, i) => (
+        <div
+          key={b.id}
+          className="contents"
+          data-bloco={b.tipo}
+          data-emenda={emendaNaAnterior(blocos[i - 1], b) ? '' : undefined}
+        >
+          {renderizar(b)}
+        </div>
+      ))}
     </>
   )
 }

@@ -1,7 +1,7 @@
 ---
 id: 033
 title: Miniaturas dos blocos — script de captura, admin.images.thumbnail e guia do editor
-status: para implementar
+status: em revisão
 feature: seletor-de-secoes
 area: frontend
 priority: P0
