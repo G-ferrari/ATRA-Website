@@ -1,7 +1,7 @@
 ---
 id: 031
 title: Agrupar os blocos no seletor e ordenar alfabeticamente dentro de cada grupo
-status: para implementar
+status: em revisão
 feature: seletor-de-secoes
 area: frontend
 priority: P0

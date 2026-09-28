@@ -7,7 +7,7 @@
 
 | ID | Título | Área | Prioridade | Estimativa | Status | Depende de |
 |----|--------|------|------------|------------|--------|------------|
-| 031 | Agrupar os blocos no seletor e ordenar alfabeticamente dentro de cada grupo | frontend | P0 | S | para implementar | — |
+| 031 | Agrupar os blocos no seletor e ordenar alfabeticamente dentro de cada grupo | frontend | P0 | S | em revisão | — |
 | 032 | Catálogo interno com os 28 blocos e dados de exemplo, fora da produção | frontend | P0 | M | para implementar | — |
 | 033 | Miniaturas dos blocos — script de captura, `admin.images.thumbnail` e guia do editor | frontend | P0 | M | para implementar | 031, 032 |
 
