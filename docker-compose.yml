@@ -42,6 +42,17 @@ services:
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:-dev-secret-trocar-em-producao}
       NEXT_TELEMETRY_DISABLED: "1"
       WATCHPACK_POLLING: "true"
+      # Integração com o ATRAIR (D-33): a grade de /carreiras lista as vagas
+      # que o ATRAIR publica, e cada card leva para a página da vaga lá.
+      #
+      # ⚠️ `host.docker.internal`, não `localhost`: dentro do contêiner,
+      # localhost é o PRÓPRIO contêiner. O ATRAIR roda fora deste compose —
+      # nativo ou no compose dele — então o endereço é o da máquina.
+      #
+      # Sem estas duas, nada quebra: a grade cai para a lista do CMS, que é o
+      # comportamento projetado para quando o ATRAIR está fora.
+      ATRAIR_API_URL: ${ATRAIR_API_URL:-http://host.docker.internal:3300}
+      ATRAIR_API_KEY: ${ATRAIR_API_KEY:-}
     volumes:
       - ./web:/app
       # ⚠️ `docs/` entra porque o `next.config.ts` lê
