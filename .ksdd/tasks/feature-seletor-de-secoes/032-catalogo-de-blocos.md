@@ -1,7 +1,7 @@
 ---
 id: 032
 title: Catálogo interno com os 28 blocos e dados de exemplo, fora da produção
-status: para implementar
+status: cancelada
 feature: seletor-de-secoes
 area: frontend
 priority: P0
@@ -17,6 +17,8 @@ arch_refs:
 ---
 
 # 032 — Catálogo interno com os 28 blocos e dados de exemplo, fora da produção
+
+> **Cancelada em 28/09.** Os 28 blocos já aparecem em páginas reais do site, então a miniatura (033) é capturada da própria página — mais fiel e sem rota extra a esconder da produção. Ver `.context/033-context.md` §2.
 
 ## Objetivo
 Uma página que renderiza cada bloco com o componente de verdade e dados de exemplo, um abaixo do outro, identificável pelo slug — a fonte das miniaturas (033), inclusive dos blocos que hoje não aparecem em nenhuma página.
