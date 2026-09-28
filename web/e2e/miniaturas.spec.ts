@@ -27,7 +27,13 @@ import { settle } from './support/stability'
  *
  * A página de cada bloco é uma em que ele aparece hoje, escolhida pelo melhor
  * exemplo. Se o bloco sair dela, o teste falha dizendo qual — é a hora de
- * apontar outra página. */
+ * apontar outra página.
+ *
+ * ⚠️ **Gerar contra um banco sem `SEED_FIXTURES`.** Com a chave, o seed põe as
+ * fotos de banco de imagens do protótipo (Unsplash, picsum) nas capas e nos
+ * retratos, e `public/` vai para a produção: seria foto de banco no ar, o que a
+ * D-27 e a D-14 recusam. O teste reprova a miniatura que tiver uma — o nome do
+ * arquivo sobrevive na URL da mídia. */
 
 const PAGINA_DO_BLOCO: Record<string, string> = {
   pageHero: '/solucoes/cloud',
@@ -78,8 +84,18 @@ test.describe('miniaturas do seletor de seções', () => {
       await page.evaluate(() => document.documentElement.classList.add('dark'))
       await settle(page)
 
-      const alvo = page.locator(`[data-bloco="${bloco}"] > *`).first()
-      await expect(alvo, `"${bloco}" não está mais em ${caminho} — aponte outra página`).toBeAttached()
+      /* `:has(> *)`: bloco sem conteúdo (faixa de selos vazia, por exemplo)
+         devolve `null` e deixa o invólucro vazio — não serve de alvo. */
+      const seletor = `[data-bloco="${bloco}"]:has(> *)`
+      const alvo = page.locator(`${seletor} > *`).first()
+      await expect(alvo, `"${bloco}" não está mais em ${caminho}, ou está vazio — aponte outra página`).toBeAttached()
+
+      const fotosDeBanco = await page
+        .locator(`${seletor} img`)
+        .evaluateAll((imgs) =>
+          (imgs as HTMLImageElement[]).map((i) => i.currentSrc || i.src).filter((s) => /unsplash-|picsum-/.test(s)),
+        )
+      expect(fotosDeBanco, 'foto de banco do protótipo (SEED_FIXTURES) na seção — gere contra um banco sem fixtures').toEqual([])
       await alvo.scrollIntoViewIfNeeded()
       /* Entrada animada por `whileInView` e imagem carregando. */
       await page.waitForTimeout(1200)
@@ -95,7 +111,7 @@ test.describe('miniaturas do seletor de seções', () => {
           if ((posicao === 'fixed' || posicao === 'sticky') && !dentro?.contains(el) && !el.contains(dentro))
             el.style.visibility = 'hidden'
         }
-      }, `[data-bloco="${bloco}"]`)
+      }, seletor)
 
       const png = (await alvo.screenshot({ animations: 'disabled' })).toString('base64')
 
@@ -115,12 +131,14 @@ test.describe('miniaturas do seletor de seções', () => {
           ctx.fillRect(0, 0, largura, altura)
           ctx.imageSmoothingQuality = 'high'
           ctx.drawImage(img, 0, 0, largura, (img.naturalHeight * largura) / img.naturalWidth)
-          return canvas.toDataURL('image/webp', 0.86).split(',')[1]
+          return canvas.toDataURL('image/webp', 0.86)
         },
         { png, largura: LARGURA, altura: ALTURA },
       )
 
-      writeFileSync(path.join(PASTA, `${bloco}.webp`), Buffer.from(webp, 'base64'))
+      /* Encoder sem WebP cai em PNG sem erro, e o `.webp` sairia com PNG dentro. */
+      expect(webp.startsWith('data:image/webp'), 'o Chromium não gerou WebP').toBe(true)
+      writeFileSync(path.join(PASTA, `${bloco}.webp`), Buffer.from(webp.split(',')[1], 'base64'))
     })
   }
 })

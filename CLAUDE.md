@@ -135,7 +135,10 @@ pnpm gate --baseline                     # regrava o gabarito a partir do legado
 pnpm gate --sem-build                    # reaproveita o .next existente
 pnpm gate --rota home --viewport desktop # paridade de 1 rota em 1 viewport, para iterar
 PARIDADE_COM_PROTOTIPO=1 pnpm gate       # a suíte padrão mais a paridade inteira
-# miniaturas do seletor "Adicionar Seção" (public/miniaturas-de-blocos/), contra o dev em :3000:
+# miniaturas do seletor "Adicionar Seção" (public/miniaturas-de-blocos/), dentro de web/, contra o dev
+# em :3000 num banco SEM SEED_FIXTURES (foto de banco reprova). `--network host` e não host.docker.internal:
+# o dev do Next recusa recurso pedido por outra origem e a página não hidrata — no Docker Desktop, ligar
+# "Enable host networking" em Settings → Resources → Network.
 docker run --rm --network host -e NEXT_URL=http://localhost:3000 -e GERAR_MINIATURAS=1 -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.62.1-noble npx playwright test e2e/miniaturas.spec.ts --project=desktop
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 261 linhas
 git push origin migracao                 # deploy: CI valida e a VPS troca sozinha, com rollback
