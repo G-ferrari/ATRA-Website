@@ -20,7 +20,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "node scripts/seed/run.mjs",
-    "migrate": "payload migrate",
+    "migrate": "node scripts/migrar.mjs",
     "migrate:create": "payload migrate:create",
     "migrate:status": "payload migrate:status",
     "baseline": "PARIDADE_COM_PROTOTIPO=1 GRAVAR_GABARITO=1 playwright test e2e/baseline.spec.ts --update-snapshots",

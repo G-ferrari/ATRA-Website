@@ -112,7 +112,9 @@ jobs:
       # durante o build, então o schema precisa existir antes — as migrações
       # versionadas (D-21) são a única fonte dele, já que `push` está
       # desligado. Terceiro motivo de reprovação na estreia do CI.
-      - run: pnpm payload migrate
+      # `pnpm migrate` e não `pnpm payload migrate`: o invólucro recusa a saída
+      # calada do CLI — ver `web/scripts/migrar.mjs` (28/09).
+      - run: pnpm migrate
 
       # Unitário cobre onde há lógica: mappers, conversor do WP, redirects,
       # rate limit. Componente de marketing fica com a regressão visual.
@@ -196,7 +198,9 @@ jobs:
         working-directory: web
       # Mesmo motivo do job `verify`: o build lê o banco em
       # `generateStaticParams`, e o Postgres do CI sobe vazio.
-      - run: pnpm payload migrate
+      # `pnpm migrate` e não `pnpm payload migrate`: o invólucro recusa a saída
+      # calada do CLI — ver `web/scripts/migrar.mjs` (28/09).
+      - run: pnpm migrate
         working-directory: web
 
       # Sem seed o app sobe vazio, e a suíte confere conteúdo: os 8 perfis de

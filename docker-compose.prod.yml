@@ -90,7 +90,8 @@ services:
       S3_PRIVATE_BUCKET: atra-privado
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
-    command: ["pnpm", "payload", "migrate"]
+    # `migrate` recusa a saída calada do CLI do Payload — ver web/scripts/migrar.mjs.
+    command: ["pnpm", "migrate"]
     depends_on:
       postgres:
         condition: service_healthy

@@ -135,6 +135,11 @@ pnpm gate --baseline                     # regrava o gabarito a partir do legado
 pnpm gate --sem-build                    # reaproveita o .next existente
 pnpm gate --rota home --viewport desktop # paridade de 1 rota em 1 viewport, para iterar
 PARIDADE_COM_PROTOTIPO=1 pnpm gate       # a suíte padrão mais a paridade inteira
+# miniaturas do seletor "Adicionar Seção" (public/miniaturas-de-blocos/), dentro de web/, contra o dev
+# em :3000 num banco SEM SEED_FIXTURES (foto de banco reprova). `--network host` e não host.docker.internal:
+# o dev do Next recusa recurso pedido por outra origem e a página não hidrata — no Docker Desktop, ligar
+# "Enable host networking" em Settings → Resources → Network.
+docker run --rm --network host -e NEXT_URL=http://localhost:3000 -e GERAR_MINIATURAS=1 -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.62.1-noble npx playwright test e2e/miniaturas.spec.ts --project=desktop
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 261 linhas
 git push origin migracao                 # deploy: CI valida e a VPS troca sozinha, com rollback
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
@@ -265,6 +270,7 @@ comparam; na suíte padrão, a mesma lista alimenta o contraste e o axe.
 | Seed sobe as mesmas imagens de novo a cada corrida | A collection `Media` converte todo upload para **WebP** (`formatOptions`), então o `.jpg` que subiu vira `.webp` no `filename` e um `where: { filename: { equals: nome } }` nunca casa. Deduplicar pelo nome **sem extensão**, com `contains` |
 | CI morre em "pull access denied for minio/minio" antes de rodar um teste | O MinIO tirou as imagens públicas do Docker Hub e do quay.io (set/2026). Dev e CI usam o fork `pgsty/minio`, preso por digest, que já traz o `mc`. Produção ainda depende do cache da VPS — P-32 |
 | Migração de dados roda verde e a página continua como antes | Em **banco novo** o `migrate` roda antes de existir o conteúdo, a trava da migração não acha a página e pula — e a migração fica marcada como feita. `import-solutions.ts` chama as duas montagens (Alocação e as 11) no fim por isso, e `import-segments.ts` a dos 8 segmentos. E os importadores só reescrevem página ainda no formato deles (ou no do seed de teste, só o herói): rodado de novo num banco local em 27/09, ele tinha apagado a Alocação remontada |
+| Seed ou build do CI quebra em `relation "..." does not exist` com o passo de migração verde | O CLI do Payload carrega o `tsx` num worker e dispara com `void start()`: quando o carregamento empaca, o Node sai com **0 e sem imprimir nada**. Aconteceu duas vezes em 28/09. `pnpm migrate` (`web/scripts/migrar.mjs`) só aceita sucesso se o Payload disser "Done." ou "No migrations to run.", e tenta até 3 vezes; CI, imagem `migrator` e compose de produção usam ele. `pnpm payload migrate` direto continua valendo no dev, mas não prova nada |
 | Página funciona no dev e dá 404 na homologação | O conteúdo dela nasce de **seed**, e o deploy roda migração, não seed. Foi o caso do carrossel da home e da página do RC18 (28/09): o banner e o botão de Bancos levavam a 404. Conteúdo novo que precisa chegar a um ambiente que já existe vem por **migração de dados com trava** (cria só se não existir, não toca no que foi editado no admin), com o texto num módulo que o seed também importa — ver `scripts/seed/rc18-conteudo.ts` |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
