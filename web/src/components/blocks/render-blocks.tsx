@@ -31,6 +31,38 @@ import { BlocoSelos } from './bloco-selos'
 import { BlocoTexto } from './bloco-texto'
 import { BlocoValores } from './bloco-valores'
 
+/* Seções vizinhas com o mesmo fundo emendam (27/09, G-ferrari).
+ *
+ * Cada bloco traz o próprio respiro, 96px em cima e embaixo no desktop. Quando
+ * o fundo alterna, como nas páginas desenhadas do protótipo, a troca de cor
+ * separa as seções e o respiro duplo lê como intenção. Com o mesmo fundo ele
+ * vira um buraco de até 192px: foi o que apareceu nas 11 soluções e nos 8
+ * segmentos vindos do WordPress, que têm todas as seções no fundo padrão.
+ *
+ * A regra mora aqui, e não em cada um dos componentes: o bloco que emenda na
+ * anterior perde o respiro de cima (`[data-emenda]` em `globals.css`), e o
+ * espaço entre as duas fica sendo o de uma seção só. Linha divisória no topo
+ * mantém o respiro — sem ele o conteúdo encostaria na linha.
+ *
+ * Ficam de fora o herói e o submenu, cujo respiro é o de abertura da página, e
+ * as duas faixas compactas da home (carrossel de destaques e faixa de logos),
+ * que já têm respiro menor que o padrão: emendar nelas deixava 56px entre a
+ * faixa e a seção seguinte, menos que os 96px que a regra quer garantir. */
+const FORA_DA_EMENDA = new Set<Bloco['tipo']>([
+  'pageHero',
+  'homeHero',
+  'partnerHero',
+  'stickyPageNav',
+  'insightsHub',
+  'highlightCarousel',
+  'logoMarquee',
+])
+
+function emendaNaAnterior(anterior: Bloco | undefined, bloco: Bloco): boolean {
+  if (!anterior || FORA_DA_EMENDA.has(anterior.tipo) || FORA_DA_EMENDA.has(bloco.tipo)) return false
+  return anterior.theme === bloco.theme && bloco.borda === 'nenhuma'
+}
+
 /* Despacha os blocos de uma página (blocos.md, regra 1: bloco não busca dado —
  * recebe tudo por props, resolvidas na page).
  *
@@ -49,68 +81,78 @@ export function RenderBlocks({
    * monta o bloco não busca — recebe (regra 4). */
   vagasAbertas?: VagaAberta[]
 }) {
+  const renderizar = (b: Bloco) => {
+    switch (b.tipo) {
+      case 'pageHero':
+        return <BlocoHero key={b.id} bloco={b} />
+      case 'richTextSection':
+        return <BlocoTexto key={b.id} bloco={b} />
+      case 'iconCardGrid':
+        return <BlocoGradeDeCards key={b.id} bloco={b} />
+      case 'ctaBanner':
+        return <BlocoCta key={b.id} bloco={b} />
+      case 'statsGrid':
+        return <BlocoNumeros key={b.id} bloco={b} />
+      case 'sealsBanner':
+        return <BlocoSelos key={b.id} bloco={b} />
+      case 'imageGrid':
+        return <BlocoGradeDeImagens key={b.id} bloco={b} />
+      case 'processSteps':
+        return <BlocoEtapas key={b.id} bloco={b} />
+      case 'ctaContact':
+        return <BlocoContato key={b.id} bloco={b} locale={locale} />
+      case 'jobsList':
+        return <BlocoVagas key={b.id} bloco={b} locale={locale} vagasAbertas={vagasAbertas} />
+      case 'partnerShowcase':
+        return <BlocoParceiros key={b.id} bloco={b} />
+      case 'valueCards':
+        return <BlocoValores key={b.id} bloco={b} />
+      case 'stickyPageNav':
+        return <BlocoMenuDaPagina key={b.id} bloco={b} />
+      case 'methodCards':
+        return <BlocoCardsDeMetodo key={b.id} bloco={b} />
+      case 'bentoGrid':
+        return <BlocoBento key={b.id} bloco={b} />
+      case 'audienceSplit':
+        return <BlocoParaQuem key={b.id} bloco={b} />
+      case 'accordionSteps':
+        return <BlocoAcordeao key={b.id} bloco={b} />
+      case 'partnerHero':
+        return <BlocoParceiroHero key={b.id} bloco={b} />
+      case 'partnerSplit':
+        return <BlocoParceiroSecao key={b.id} bloco={b} locale={locale} />
+      case 'homeHero':
+        return <BlocoHomeHero key={b.id} bloco={b} locale={locale} />
+      case 'logoMarquee':
+        return <BlocoFaixaDeLogos key={b.id} bloco={b} />
+      case 'featureTabs':
+        return <BlocoAbasDeDestaque key={b.id} bloco={b} />
+      case 'homeBento':
+        return <BlocoBentoDaHome key={b.id} bloco={b} />
+      case 'caseCarousel':
+        return <BlocoCarrosselDeCases key={b.id} bloco={b} />
+      case 'highlightCarousel':
+        return <BlocoCarrosselDeDestaques key={b.id} bloco={b} locale={locale} />
+      case 'testimonialCarousel':
+        return <BlocoDepoimentos key={b.id} bloco={b} />
+      case 'contentTeaser':
+        return <BlocoVitrineDeConteudo key={b.id} bloco={b} />
+      case 'insightsHub':
+        return <BlocoHubDeInsights key={b.id} bloco={b} />
+    }
+  }
+
   return (
     <>
-      {blocos.map((b) => {
-        switch (b.tipo) {
-          case 'pageHero':
-            return <BlocoHero key={b.id} bloco={b} />
-          case 'richTextSection':
-            return <BlocoTexto key={b.id} bloco={b} />
-          case 'iconCardGrid':
-            return <BlocoGradeDeCards key={b.id} bloco={b} />
-          case 'ctaBanner':
-            return <BlocoCta key={b.id} bloco={b} />
-          case 'statsGrid':
-            return <BlocoNumeros key={b.id} bloco={b} />
-          case 'sealsBanner':
-            return <BlocoSelos key={b.id} bloco={b} />
-          case 'imageGrid':
-            return <BlocoGradeDeImagens key={b.id} bloco={b} />
-          case 'processSteps':
-            return <BlocoEtapas key={b.id} bloco={b} />
-          case 'ctaContact':
-            return <BlocoContato key={b.id} bloco={b} locale={locale} />
-          case 'jobsList':
-            return <BlocoVagas key={b.id} bloco={b} locale={locale} vagasAbertas={vagasAbertas} />
-          case 'partnerShowcase':
-            return <BlocoParceiros key={b.id} bloco={b} />
-          case 'valueCards':
-            return <BlocoValores key={b.id} bloco={b} />
-          case 'stickyPageNav':
-            return <BlocoMenuDaPagina key={b.id} bloco={b} />
-          case 'methodCards':
-            return <BlocoCardsDeMetodo key={b.id} bloco={b} />
-          case 'bentoGrid':
-            return <BlocoBento key={b.id} bloco={b} />
-          case 'audienceSplit':
-            return <BlocoParaQuem key={b.id} bloco={b} />
-          case 'accordionSteps':
-            return <BlocoAcordeao key={b.id} bloco={b} />
-          case 'partnerHero':
-            return <BlocoParceiroHero key={b.id} bloco={b} />
-          case 'partnerSplit':
-            return <BlocoParceiroSecao key={b.id} bloco={b} locale={locale} />
-          case 'homeHero':
-            return <BlocoHomeHero key={b.id} bloco={b} locale={locale} />
-          case 'logoMarquee':
-            return <BlocoFaixaDeLogos key={b.id} bloco={b} />
-          case 'featureTabs':
-            return <BlocoAbasDeDestaque key={b.id} bloco={b} />
-          case 'homeBento':
-            return <BlocoBentoDaHome key={b.id} bloco={b} />
-          case 'caseCarousel':
-            return <BlocoCarrosselDeCases key={b.id} bloco={b} />
-          case 'highlightCarousel':
-            return <BlocoCarrosselDeDestaques key={b.id} bloco={b} locale={locale} />
-          case 'testimonialCarousel':
-            return <BlocoDepoimentos key={b.id} bloco={b} />
-          case 'contentTeaser':
-            return <BlocoVitrineDeConteudo key={b.id} bloco={b} />
-          case 'insightsHub':
-            return <BlocoHubDeInsights key={b.id} bloco={b} />
-        }
-      })}
+      {blocos.map((b, i) =>
+        emendaNaAnterior(blocos[i - 1], b) ? (
+          <div key={b.id} className="contents" data-emenda="">
+            {renderizar(b)}
+          </div>
+        ) : (
+          renderizar(b)
+        ),
+      )}
     </>
   )
 }

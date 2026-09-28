@@ -254,3 +254,11 @@ html.dark {
   inset: -10px;
   border-width: 10px;
 }
+
+/* Seção que emenda na anterior de mesmo fundo perde o respiro de cima — a
+ * regra e o porquê estão em `components/blocks/render-blocks.tsx`. Fora de
+ * `@layer` de propósito: CSS sem camada vence as utilidades do Tailwind, e
+ * assim nenhum dos 27 blocos precisa saber que foi emendado. */
+[data-emenda] > :first-child {
+  padding-top: 0;
+}
