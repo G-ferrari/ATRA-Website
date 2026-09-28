@@ -1626,7 +1626,61 @@ export const HighlightCarousel: Block = {
   ],
 }
 
-export const BLOCOS = [
+/* O seletor "Adicionar Seção" do admin (feature seletor-de-secoes, task 031).
+ *
+ * ⚠️ O Payload agrupa pelo `admin.group` mas **não ordena**: o drawer mostra os
+ * blocos na ordem deste array. Com 28 blocos numa lista só, a editora não achava
+ * nem o carrossel da home (27/09). A ordem é montada aqui — grupo na sequência
+ * de `GRUPOS`, e alfabética pelo rótulo em português dentro dele —, para bloco
+ * novo cair no lugar certo sem ninguém reordenar à mão.
+ *
+ * A ordem não entra no schema: as tabelas de bloco são por slug, e reordenar
+ * não gera migração (conferido com `migrate:create --skip-empty`). */
+const GRUPOS = {
+  abertura: { pt: 'Abertura e navegação', en: 'Opening and navigation' },
+  texto: { pt: 'Texto e cards', en: 'Text and cards' },
+  etapas: { pt: 'Etapas', en: 'Steps' },
+  prova: { pt: 'Prova: números, selos e parceiros', en: 'Proof: figures, seals and partners' },
+  vitrines: { pt: 'Carrosséis e vitrines', en: 'Carousels and showcases' },
+  chamadas: { pt: 'Chamadas e contato', en: 'Calls to action and contact' },
+}
+
+type Grupo = keyof typeof GRUPOS
+
+/* Bloco novo sem linha aqui cai sem grupo, no fim do seletor — e reprova
+ * `index.test.ts`. O TypeScript não pega: o Payload tipa `slug` como `string`. */
+const GRUPO_DO_BLOCO = {
+  pageHero: 'abertura',
+  partnerHero: 'abertura',
+  homeHero: 'abertura',
+  stickyPageNav: 'abertura',
+  richTextSection: 'texto',
+  iconCardGrid: 'texto',
+  valueCards: 'texto',
+  methodCards: 'texto',
+  bentoGrid: 'texto',
+  audienceSplit: 'texto',
+  featureTabs: 'texto',
+  processSteps: 'etapas',
+  accordionSteps: 'etapas',
+  statsGrid: 'prova',
+  sealsBanner: 'prova',
+  imageGrid: 'prova',
+  partnerShowcase: 'prova',
+  logoMarquee: 'prova',
+  partnerSplit: 'prova',
+  highlightCarousel: 'vitrines',
+  caseCarousel: 'vitrines',
+  testimonialCarousel: 'vitrines',
+  contentTeaser: 'vitrines',
+  insightsHub: 'vitrines',
+  homeBento: 'vitrines',
+  ctaBanner: 'chamadas',
+  ctaContact: 'chamadas',
+  jobsList: 'chamadas',
+} satisfies Record<string, Grupo>
+
+const TODOS = [
   PageHero,
   StickyPageNav,
   StatsGrid,
@@ -1656,3 +1710,22 @@ export const BLOCOS = [
   ContentTeaser,
   InsightsHub,
 ]
+
+const ORDEM_DOS_GRUPOS = Object.keys(GRUPOS) as Grupo[]
+
+export const grupoDe = (bloco: Block): Grupo | undefined =>
+  (GRUPO_DO_BLOCO as Record<string, Grupo | undefined>)[bloco.slug]
+
+export const rotuloPt = (bloco: Block): string => {
+  const singular = bloco.labels?.singular
+  return typeof singular === 'string' ? singular : ((singular as Record<string, string> | undefined)?.pt ?? bloco.slug)
+}
+
+export const BLOCOS: Block[] = TODOS.map((b) => {
+  const grupo = grupoDe(b)
+  return grupo ? { ...b, admin: { ...b.admin, group: GRUPOS[grupo] } } : b
+}).sort(
+  (a, b) =>
+    ORDEM_DOS_GRUPOS.indexOf(grupoDe(a)!) - ORDEM_DOS_GRUPOS.indexOf(grupoDe(b)!) ||
+    rotuloPt(a).localeCompare(rotuloPt(b), 'pt'),
+)
