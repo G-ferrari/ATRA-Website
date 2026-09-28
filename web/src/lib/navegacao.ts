@@ -13,6 +13,7 @@ export const TEXTOS_CASCA = {
   pt: {
     menu: 'Menu',
     faleConosco: 'Fale Conosco',
+    whatsapp: 'Falar no WhatsApp',
     fecharMenu: 'Fechar menu',
     abrirMenu: 'Abrir menu',
     logo: 'ATRA Logo',
@@ -22,6 +23,7 @@ export const TEXTOS_CASCA = {
   en: {
     menu: 'Menu',
     faleConosco: 'Contact Us',
+    whatsapp: 'Chat on WhatsApp',
     fecharMenu: 'Close menu',
     abrirMenu: 'Open menu',
     logo: 'ATRA Logo',

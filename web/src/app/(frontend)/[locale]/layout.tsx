@@ -184,7 +184,15 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
             vermelho treina quem revisa a ignorar erro de verdade. Chave
             constante em posição fixa não muda reconciliação nenhuma. */}
         <Casca
-          cabecalho={<SiteHeader key="cabecalho" locale={locale} navegacao={navegacao} logo={logo} />}
+          cabecalho={
+            <SiteHeader
+              key="cabecalho"
+              locale={locale}
+              navegacao={navegacao}
+              logo={logo}
+              whatsapp={contato.whatsapp || null}
+            />
+          }
           rodape={<SiteFooter key="rodape" locale={locale} rodape={rodape} contato={contato} logo={logo} />}
           alternadorDeTema={<ThemeToggle key="tema" locale={locale} />}
         >
