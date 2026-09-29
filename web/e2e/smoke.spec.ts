@@ -455,9 +455,28 @@ test.describe('app novo', () => {
 
   /* O modal do perfil não entra na regressão visual porque nasce fechado. */
   test('o botão Detalhes abre o modal do perfil', async ({ page }) => {
-    await page.goto(`${NEXT_URL}/consultores`)
+    /* ⚠️ `?e2e=1` aqui é o **aviso de cookies**, não o carrossel. Num banco que
+       tenha `bannerMessage` preenchido — o que o seed manual de
+       `scripts/seed/cookie-consent.ts` faz em dev e em homologação — o aviso
+       renderiza `fixed bottom-3 left-3 right-3 z-[110]`: no mobile é uma faixa
+       de largura inteira no rodapé, **acima** do modal (z-50), e ela intercepta
+       o clique no "Fechar" do rodapé do modal. O teste estourava por timeout só
+       no mobile; no desktop o aviso é `md:max-w-md` à esquerda e não encosta no
+       botão. `congelado()` é o "cinto e suspensório" que `aviso-de-cookies.tsx`
+       documenta para exatamente este caso: sob `?e2e=1` o aviso não aparece.
+       É o único teste do smoke que precisa disso, porque é o único que clica
+       num controle no rodapé da janela. */
+    await page.goto(`${NEXT_URL}/consultores?e2e=1`)
     await page.getByRole('button', { name: 'Detalhes' }).first().click()
-    const modal = page.getByRole('dialog')
+    /* ⚠️ Escopo por `aria-modal`, não `getByRole('dialog')` solto: o aviso de
+       cookies também é um `dialog` (e é correto que seja), e com os dois na
+       tela o strict mode reprova com "resolved to 2 elements". O `?e2e=1` acima
+       já tira o aviso; isto é a segunda tranca, para o dia em que outro
+       `dialog` aparecer na página. `aria-modal="true"` é o discriminador certo
+       e não um remendo — o modal do perfil prende o foco, o aviso não, que é a
+       diferença que a propriedade existe para declarar. Não trocar por
+       `.first()`, que casaria com quem chegasse primeiro no DOM. */
+    const modal = page.locator('[role="dialog"][aria-modal="true"]')
     await expect(modal).toBeVisible()
     await expect(modal.getByText('Tecnologias de Domínio')).toBeVisible()
     /* `.last()`: há três formas de fechar — o fundo, o X e o botão do rodapé —
