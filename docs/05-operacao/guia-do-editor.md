@@ -106,11 +106,26 @@ Seção"** abre o seletor:
 Depois de inserir, arraste a seção para o lugar certo e confira no
 pré-visualizar.
 
+Três seções que mudaram de comportamento em 29/09:
+
+- **Vitrine de parceiros** — em **"Quais parceiros: Todos os cadastrados"**
+  (o padrão), ela mostra o catálogo **Parceiros** inteiro, na ordem de lá:
+  parceiro novo, removido ou reordenado muda em todas as páginas de uma vez.
+  "Escolher os parceiros" libera a lista para uma seleção só daquela página.
+- **Faixa de chamada no fim da página** — o padrão de toda página interna é
+  "Entre em contato", com "Fale conosco" (para /contato) e o botão da IA. Nas
+  soluções e segmentos não há mais formulário no fim; quem quer falar vai para
+  /contato.
+- **Grade de imagens** — é a dos selos (Google Cloud, na página do parceiro e
+  em Data Analytics). Para trocar um selo, troque a imagem ali.
+
 ## O que mais é editável
 
 - **Depoimentos e clientes** — Catálogos. Depoimento sem foto mostra
   iniciais, de propósito (ver a seção 3).
-- **Contato, rodapé e menu** — Globais (papel de administrador).
+- **Contato, rodapé e menu** — Globais (papel de administrador). O
+  **endereço** em Contato é opcional desde 29/09 (a ATRA não tem endereço
+  fixo): vazio, ele não aparece no rodapé nem ao lado dos formulários.
 - **SEO de cada página** — todo conteúdo tem o grupo "SEO": título para
   buscadores, **descrição** (o texto cinza no resultado do Google) e imagem de
   compartilhamento. ⚠️ A **descrição da home está vazia** — preencher é

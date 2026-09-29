@@ -1099,3 +1099,42 @@ tranca: ligadas sem a credencial no servidor, a integração segue inerte.
   `ATRAIR_API_URL` não for provisionada na VPS, o campo nasce apontando para o
   endereço de desenvolvimento e o mapper o recusa (`endpoint: null`), o que é o
   estado seguro: a grade vem do CMS.
+
+## D-42 — Toda página interna termina com a mesma faixa, e as soluções perdem o formulário
+
+*Decidida em 29/09/2026 por G-ferrari, na leva de ajustes antes dos testes de
+30/09.*
+
+**Contexto.** Cada tipo de página interna fechava de um jeito: case, artigo,
+webinar e material com a caixa azul `ContactCta` (telefone, e-mail e "Fale com
+um especialista"); as 12 soluções do WordPress e os 8 segmentos com uma faixa
+escura seguida do **formulário** na própria página; IA e RC18 com um botão que
+abria o **WhatsApp** (na RC18, o do Fabio); /sobre com "Vem ser ATRA", para as
+vagas. A página do Google Cloud já terminava com a faixa que o dono queria para
+todas.
+
+**Decisão.** Todas as páginas internas terminam com a faixa do Google Cloud —
+"Entre em contato", **"Fale conosco" para /contato** e "Dúvida Rápida? Fale com
+nossa IA" para /chat —, com o texto da homologação em 29/09. Nas soluções e
+segmentos **o formulário sai** ("Tira o formulário"): quem quer falar vai para
+/contato, e o "Quero saber mais" do herói, que rolava até o formulário, passa a
+levar para lá.
+
+**Consequências.**
+
+- Páginas em código usam `components/layout/chamada-final.tsx`, que é o próprio
+  `BlocoCta` na variante `dark-centered` com texto PT/EN. As páginas por blocos
+  foram trocadas pela migração `20260929_223200_fim_das_paginas_internas`, com a
+  regra e a trava em `migrations/arquivos/fim-das-paginas.ts` (com teste): só
+  mexe em página que termina como a migração conhece, e avisa no log o que
+  deixou de fora. O seed (`migracoes-de-dados.ts`) e os importadores do
+  WordPress chamam a mesma migração no fim, para banco novo sair igual.
+- **Fica de fora a página de cada vaga**: a faixa dela é de recrutamento ("Quer
+  fazer parte do time? Falar com o RH") e entra na revisão das vagas.
+- A RC18 perde, no fim, o selo do prazo (a variante centralizada não o desenha)
+  e o WhatsApp do Fabio; o herói dela segue igual, com os dois.
+- Menos captura de lead dentro da página: o formulário de /contato passa a ser o
+  único caminho de texto livre fora da home. Foi escolha explícita, contra a
+  recomendação de mantê-lo.
+- O texto da faixa está em dois lugares — o componente e cada bloco gravado. O
+  bloco é editável no admin página a página; o componente, só por código.
