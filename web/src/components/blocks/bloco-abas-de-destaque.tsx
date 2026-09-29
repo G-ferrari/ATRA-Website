@@ -17,15 +17,22 @@ import { iconePorNome } from './icones'
 /* "Soluções Integradas" — porte de `legacy/src/App.tsx:1438`.
  *
  * Lista de abas à esquerda e um cartão grande à direita que troca junto. As
- * abas giram sozinhas a cada 8s; `?e2e=1` prende na primeira, dos dois lados. */
+ * abas giram sozinhas a cada 8s; `?e2e=1` prende na primeira, dos dois lados.
+ *
+ * Passar o mouse (ou o foco do teclado) já seleciona a aba — pedido do
+ * G-ferrari em 28/09: só com clique, o card ficava com cara de selecionado no
+ * hover e o painel da direita não acompanhava. O clique continua valendo, e é o
+ * caminho do celular. ⚠️ A rotação pausa enquanto o ponteiro ou o foco estão na
+ * lista: sem isso, o painel trocaria sozinho embaixo do cursor. */
 export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
   const [ativa, setAtiva] = useState(0)
+  const [pausada, setPausada] = useState(false)
 
   useEffect(() => {
-    if (congelado()) return
+    if (congelado() || pausada) return
     const t = setInterval(() => setAtiva((i) => (i + 1) % bloco.items.length), 8000)
     return () => clearInterval(t)
-  }, [bloco.items.length])
+  }, [bloco.items.length, pausada])
 
   const item = bloco.items[ativa]
   if (!item) return null
@@ -65,7 +72,15 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
         </div>
 
         <div className="grid lg:grid-cols-12 gap-6 items-stretch">
-          <div className="lg:col-span-5 flex flex-col justify-between gap-2.5 lg:gap-0 lg:h-full">
+          <div
+            className="lg:col-span-5 flex flex-col justify-between gap-2.5 lg:gap-0 lg:h-full"
+            onMouseEnter={() => setPausada(true)}
+            onMouseLeave={() => setPausada(false)}
+            onFocus={() => setPausada(true)}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget)) setPausada(false)
+            }}
+          >
             {bloco.items.map((f, i) => {
               const Icone = iconePorNome(f.icon)
               const atual = i === ativa
@@ -74,6 +89,8 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
                   key={f.title}
                   type="button"
                   onClick={() => setAtiva(i)}
+                  onMouseEnter={() => setAtiva(i)}
+                  onFocus={() => setAtiva(i)}
                   className={cn(
                     'w-full text-left p-4 sm:p-5 rounded-[6px] transition-all duration-300 flex items-center justify-between gap-4 cursor-pointer group border',
                     atual
