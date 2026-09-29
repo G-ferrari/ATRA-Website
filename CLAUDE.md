@@ -360,6 +360,23 @@ CustomEvent (`atra:consentimento`). Vídeo de webinar é click-to-load, fora do
 banner. Mesmo gate de código de D-29: `bannerMessage` (global `cookie-consent`)
 nasce vazio até P-14, e sem ele nada renderiza — gabarito do gate intacto.
 
+**D-41 (29/09)** tirou a integração com o **ATRAIR** do ambiente: o global
+`integrations` (Sistema → Integrações, só admin) tem **duas chaves** —
+`jobsFeed`, a grade de `/carreiras`, e `talentPool`, a ida do currículo — mais o
+endereço, editável, que **nasce preenchido** com `ATRAIR_API_URL` (agora só
+reserva; o admin vence). `ATRAIR_API_KEY` **fica no ambiente**: é credencial, e
+é a segunda tranca — ligado no CMS sem ela segue inerte, e é isso que fez a
+decisão não mudar o que está no ar. ⚠️ O ganho real é de tipo:
+`buscarVagasAbertas` devolve `ResultadoDeVagas`, e `{ fonte: 'atrair', vagas:
+[] }` (o ATRAIR respondeu que não há vaga → página vazia) deixou de ser
+confundível com `{ fonte: 'cms' }` (não foi possível perguntar → lista da
+collection `jobs`). Antes os dois eram `[]`, e vaga fechada no ATRAIR voltava ao
+ar pela lista do CMS. ⚠️ `defaultValue` de endpoint é **função**: literal, o
+drizzle assa o `ATRAIR_API_URL` de quem gerou a migração como `DEFAULT` da
+coluna, num arquivo que roda no CI e em produção. Falta provisionar
+`ATRAIR_API_URL` na VPS — sem ela o campo nasce com o endereço de dev, o mapper
+recusa, e a grade vem do CMS (estado seguro).
+
 A revisão crítica de 25/08 (MIG-140–147) fechou: IP confiável nos limites
 (`lib/ip.ts` — nunca ler `x-forwarded-for` primeiro), tetos do chat
 (`lib/chat.ts`), campos do formulário cortados, mídia sem SVG, cabeçalhos de

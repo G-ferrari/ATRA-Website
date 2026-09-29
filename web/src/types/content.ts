@@ -776,6 +776,25 @@ export type Rastreamento = {
   lushaSiteId: string | null
 }
 
+/** As chaves da integração com o ATRAIR (D-41), do global `integrations`.
+ *
+ * `endpoint: null` é "sem endereço utilizável" — vazio no admin ou fora do
+ * formato. Com ele nulo as duas chaves não valem nada, porque não há para onde
+ * chamar.
+ *
+ * ⚠️ `vagas` ligado **não** garante vaga na tela, e `false` não é o mesmo que
+ * "lista vazia": é o que separa "integração desligada" de "o ATRAIR respondeu
+ * que não há vaga aberta". Ver `ResultadoDeVagas` em `lib/atrair.ts` — foi essa
+ * confusão que a D-41 desfez. */
+export type IntegracaoAtrair = {
+  /** Base da API, já validada e **sem barra final**. */
+  endpoint: string | null
+  /** A grade de /carreiras lista as vagas publicadas no ATRAIR. */
+  vagas: boolean
+  /** O currículo do Banco de Talentos é criado no ATRAIR. */
+  bancoDeTalentos: boolean
+}
+
 /** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global
  * `data-maturity-diagnostic`. Servem à página, à conclusão e ao e-mail do
  * resultado.

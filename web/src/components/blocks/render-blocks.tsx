@@ -72,14 +72,18 @@ function emendaNaAnterior(anterior: Bloco | undefined, bloco: Bloco): boolean {
 export function RenderBlocks({
   blocos,
   locale,
-  vagasAbertas,
+  vagasDoAtrair,
 }: {
   blocos: Bloco[]
   locale: Locale
   /* Só a página de carreiras passa: são as vagas publicadas no ATRAIR, que
    * viram a grade e levam o candidato para a página da vaga lá (D-33). Quem
-   * monta o bloco não busca — recebe (regra 4). */
-  vagasAbertas?: VagaAberta[]
+   * monta o bloco não busca — recebe (regra 4).
+   *
+   * ⚠️ `null` e `[]` são estados diferentes (D-41): `null` é "integração
+   * desligada ou fora do ar" e a grade cai para a collection `jobs`; `[]` é o
+   * ATRAIR dizendo que não há vaga aberta, e a grade mostra o vazio. */
+  vagasDoAtrair?: VagaAberta[] | null
 }) {
   const renderizar = (b: Bloco) => {
     switch (b.tipo) {
@@ -102,7 +106,7 @@ export function RenderBlocks({
       case 'ctaContact':
         return <BlocoContato key={b.id} bloco={b} locale={locale} />
       case 'jobsList':
-        return <BlocoVagas key={b.id} bloco={b} locale={locale} vagasAbertas={vagasAbertas} />
+        return <BlocoVagas key={b.id} bloco={b} locale={locale} vagasDoAtrair={vagasDoAtrair} />
       case 'partnerShowcase':
         return <BlocoParceiros key={b.id} bloco={b} />
       case 'valueCards':

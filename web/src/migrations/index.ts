@@ -63,6 +63,7 @@ import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './20260928_001000_carrossel_da_home_com_rc18';
 import * as migration_20260928_120000_pagina_rc18 from './20260928_120000_pagina_rc18';
+import * as migration_20260929_122603_integracoes from './20260929_122603_integracoes';
 
 export const migrations = [
   {
@@ -389,5 +390,10 @@ export const migrations = [
     up: migration_20260928_120000_pagina_rc18.up,
     down: migration_20260928_120000_pagina_rc18.down,
     name: '20260928_120000_pagina_rc18',
+  },
+  {
+    up: migration_20260929_122603_integracoes.up,
+    down: migration_20260929_122603_integracoes.down,
+    name: '20260929_122603_integracoes'
   },
 ];

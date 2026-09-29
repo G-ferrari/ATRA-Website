@@ -45,12 +45,18 @@ services:
       # Integração com o ATRAIR (D-33): a grade de /carreiras lista as vagas
       # que o ATRAIR publica, e cada card leva para a página da vaga lá.
       #
+      # ⚠️ Estas duas NÃO são mais o interruptor (D-41): quem liga e desliga é
+      # o global `integrations` no admin (Sistema → Integrações). A URL aqui é
+      # a **reserva** com que o campo do admin nasce preenchido — o admin
+      # vence. A chave segue sendo credencial, e é a segunda tranca.
+      #
       # ⚠️ `host.docker.internal`, não `localhost`: dentro do contêiner,
       # localhost é o PRÓPRIO contêiner. O ATRAIR roda fora deste compose —
       # nativo ou no compose dele — então o endereço é o da máquina.
       #
       # Sem estas duas, nada quebra: a grade cai para a lista do CMS, que é o
-      # comportamento projetado para quando o ATRAIR está fora.
+      # comportamento projetado para quando o ATRAIR está fora — e é o mesmo
+      # que a chave desligada no admin produz.
       ATRAIR_API_URL: ${ATRAIR_API_URL:-http://host.docker.internal:3300}
       ATRAIR_API_KEY: ${ATRAIR_API_KEY:-}
     volumes:

@@ -1015,3 +1015,87 @@ marketing quando ele era só a UTM é perguntado de novo.
 - Coberto por `e2e/rastreamento.spec.ts` (sem aceite, só estatística, só
   marketing, aceite da versão 1, aceite dado depois), com ids de teste que o
   seed só grava com `SEED_FIXTURES=1`, e por `lib/mappers/tracking.test.ts`.
+
+## D-41 — A integração com o ATRAIR liga e desliga no admin, em duas chaves
+
+*Decidida em 29/09/2026 por Leonardo (dono do produto), ao pedir um feature
+flag para a integração que carrega as vagas.* Estende a D-33, que trouxe as
+vagas do ATRAIR para `/carreiras`, e segue o precedente da D-40, que tirou os
+ids de rastreamento do ambiente.
+
+**Contexto.** Desde a D-33 a grade de `/carreiras` vem do ATRAIR, e quem
+decidia isso era o **ambiente**: `ATRAIR_API_URL` + `ATRAIR_API_KEY`
+preenchidas ligavam, vazias desligavam, e mudar exigia deploy. Dois problemas.
+
+O primeiro é operacional: desligar a integração — porque o ATRAIR está em
+manutenção, porque o RH quer publicar vaga pelo CMS numa semana específica — não
+podia ser feito por quem opera o site.
+
+O segundo é pior e estava invisível. O desligamento era **implícito**:
+`buscarVagasAbertas` devolvia `VagaAberta[]`, e `[]` queria dizer três coisas
+incompatíveis — integração desligada, ATRAIR fora do ar, e ATRAIR respondendo
+que **não há vaga aberta**. As duas primeiras querem a lista do CMS na tela; a
+terceira quer a página vazia. Colapsadas em `[]`, uma vaga fechada no ATRAIR
+**voltava ao ar** pela lista antiga da collection `jobs`, sem ninguém ver.
+
+**Opções.** (a) Uma chave só, para a integração inteira; (b) duas chaves, uma
+para a vinda das vagas e outra para a ida dos currículos; (c) manter no ambiente
+e só documentar melhor.
+
+**Decisão: (b), duas chaves, no global `integrations` (Sistema → Integrações).**
+
+- **`atrair.jobsFeed`** — a grade de `/carreiras`. Ligada, as vagas vêm do
+  ATRAIR e o card leva para a vaga lá. Desligada, vêm da collection `jobs`, com
+  página própria em `/carreiras/[slug]`.
+- **`atrair.talentPool`** — a ida do currículo do Banco de Talentos. Separada
+  por decisão do dono: as duas pontas quebram por motivos diferentes e se
+  desligam em momentos diferentes. Nada aqui muda o que o candidato vê — a
+  inscrição é gravada no admin antes de qualquer sincronização (D-26).
+- **`atrair.endpoint`** — o endereço, editável, que **nasce preenchido** com o
+  do ambiente (`ATRAIR_API_URL`, que segue de reserva no mapper: o admin vence).
+- **Só admin edita.** O site manda a `ATRAIR_API_KEY` no cabeçalho para o
+  endereço deste campo — trocar o endereço é escolher para quem a chave de
+  servidor é entregue. Formato fechado em `lib/formatos-de-integracao.ts`,
+  testado duas vezes (admin e mapper): URL absoluta, sem query, sem fragmento,
+  sem credencial embutida, e **`https` obrigatório** menos para o ATRAIR local —
+  `http` para host externo poria a chave em texto claro na rede.
+
+**A chave de API fica no ambiente.** Endpoint e liga/desliga são configuração;
+`ATRAIR_API_KEY` é credencial, e credencial em coluna do Postgres entra no
+backup diário e aparece no admin. As duas chaves são, portanto, a **segunda**
+tranca: ligadas sem a credencial no servidor, a integração segue inerte.
+
+**Consequência.**
+
+- `buscarVagasAbertas` passou a devolver **`ResultadoDeVagas`**, um tipo somado:
+  `{ fonte: 'atrair', vagas }` é "o ATRAIR respondeu" — inclusive com `vagas:
+  []`, que mostra o vazio da página; `{ fonte: 'cms', motivo }` é "não foi
+  possível perguntar", e aí o CMS assume. É a distinção que a decisão existe
+  para criar, e o tipo é o que impede desfazê-la por descuido. A prop do bloco
+  virou `VagaAberta[] | null` pela mesma razão.
+- **As duas chaves nascem ligadas** (`defaultValue: true`), e um global ainda
+  não gravado é lido como ligado (`?? true` no mapper). Somado à credencial no
+  ambiente, isto faz a decisão **não mudar o que está no ar**: em produção, onde
+  `ATRAIR_API_KEY` não está provisionada, a integração continua inerte e a grade
+  continua vindo do CMS.
+- ⚠️ O `defaultValue` do endpoint é **função, não literal**. Literal, o drizzle
+  o assa como `DEFAULT` da coluna, com o valor do `ATRAIR_API_URL` de quem
+  *gerou* a migração: a primeira tentativa produziu
+  `"atrair_endpoint" varchar DEFAULT 'http://host.docker.internal:3300'` num
+  arquivo versionado que roda no CI e em produção. Migração
+  `20260929_122603_integracoes`.
+- Ligar e desligar **não pede deploy**: o hook dos globals revalida o site
+  (MIG-143). ⚠️ Desligar tem efeito imediato — a página deixa de chamar o
+  ATRAIR. Ligar pode levar até 5 min para mostrar vaga nova, que é o cache do
+  `fetch` da lista.
+- O CI e o `pnpm gate` rodam **sem** as envs do ATRAIR, então a grade cai para o
+  CMS e o smoke de `/carreiras` — que exige um link `/carreiras/<slug>` — segue
+  valendo. O gabarito de `/carreiras` já estava fora do gate desde a Fase 4b.
+- Coberto por `lib/atrair.test.ts` (os três motivos de cair para o CMS, as duas
+  chaves independentes, e o caso "ATRAIR respondendo zero vagas é `atrair`"),
+  `lib/formatos-de-integracao.test.ts` e `lib/mappers/integracao.test.ts`.
+- ⚠️ **Pendência:** o `endpoint` de produção. O repo nunca registrou a URL do
+  ATRAIR no Cloud Run — `docs/04-infra/ambientes.md` só a descreve. Enquanto
+  `ATRAIR_API_URL` não for provisionada na VPS, o campo nasce apontando para o
+  endereço de desenvolvimento e o mapper o recusa (`endpoint: null`), o que é o
+  estado seguro: a grade vem do CMS.

@@ -6,6 +6,7 @@ import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
 import { enviarParaAtrair } from '@/lib/atrair'
+import { lerIntegracaoAtrair } from '@/lib/integracoes'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
 import { destinoDoAviso } from '@/lib/destino-do-aviso'
@@ -122,7 +123,13 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
 
   /* MIG-102: currículo segue para o ATRAIR (sistema de R&S) — melhor esforço,
    * como a sincronização com o CRM: `false` não muda o `Resultado`, porque a
-   * candidatura já está gravada acima e visível no admin. */
+   * candidatura já está gravada acima e visível no admin.
+   *
+   * ⚠️ Quem manda é a chave `talentPool` do global `integrations` (D-41), lida
+   * aqui e passada adiante: a action é o limite onde o dado é resolvido, não o
+   * `lib/atrair.ts` (regra 4 — nem action nem componente deixam a decisão para
+   * a camada de baixo). Desligada, `enviarParaAtrair` devolve `false` sem
+   * chamar ninguém, e a inscrição fica só no admin. */
   if (kind === 'talent-pool') {
     await enviarParaAtrair({
       name: texto(dados, 'name'),
@@ -132,7 +139,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
       area: texto(dados, 'area') || undefined,
       senioridade: texto(dados, 'senioridade') || undefined,
       source: texto(dados, 'source') || undefined,
-    })
+    }, await lerIntegracaoAtrair())
   }
 
   /* O aviso é o **segundo** passo e não pode derrubar o primeiro. Sem chave de

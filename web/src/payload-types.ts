@@ -127,6 +127,7 @@ export interface Config {
     'cookie-consent': CookieConsent;
     'data-maturity-diagnostic': DataMaturityDiagnostic;
     footer: Footer;
+    integrations: Integration;
     navigation: Navigation;
     'site-settings': SiteSetting;
     tracking: Tracking;
@@ -137,6 +138,7 @@ export interface Config {
     'cookie-consent': CookieConsentSelect<false> | CookieConsentSelect<true>;
     'data-maturity-diagnostic': DataMaturityDiagnosticSelect<false> | DataMaturityDiagnosticSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    integrations: IntegrationsSelect<false> | IntegrationsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     tracking: TrackingSelect<false> | TrackingSelect<true>;
@@ -11605,6 +11607,31 @@ export interface Footer {
   createdAt?: string | null;
 }
 /**
+ * ATRAIR (recruiting) integration. Admins only. The API key lives on the server — without it nothing syncs, even when enabled here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integrations".
+ */
+export interface Integration {
+  id: number;
+  atrair?: {
+    /**
+     * On: the /careers grid lists the jobs published in ATRAIR, each card linking to the role there. Off: it lists the jobs registered under Content → Jobs, with their own page on the site.
+     */
+    jobsFeed?: boolean | null;
+    /**
+     * On: Talent Pool sign-ups are created in ATRAIR (deduplicated by e-mail there). Off: the sign-up stays in Form Submissions here. Either way the candidate never sees an error.
+     */
+    talentPool?: boolean | null;
+    /**
+     * The base of the ATRAIR API, without the route — the site appends /api/public/vagas and /api/public/talent-pool. Pre-filled with this environment’s address; change it only if ATRAIR moves. Empty: both toggles above stay inert.
+     */
+    endpoint?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * The 7 menu categories and each panel’s content.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -11991,6 +12018,22 @@ export interface FooterSelect<T extends boolean = true> {
         id?: T;
       };
   copyright?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integrations_select".
+ */
+export interface IntegrationsSelect<T extends boolean = true> {
+  atrair?:
+    | T
+    | {
+        jobsFeed?: T;
+        talentPool?: T;
+        endpoint?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

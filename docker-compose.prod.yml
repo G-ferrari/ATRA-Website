@@ -54,8 +54,14 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      # MIG-102: candidaturas do Banco de Talentos seguem para o ATRAIR (R&S).
-      # Vazias = integração desligada; a candidatura fica só no admin.
+      # MIG-102: candidaturas do Banco de Talentos seguem para o ATRAIR (R&S),
+      # e a grade de /carreiras lista as vagas de lá (D-33).
+      #
+      # ⚠️ O interruptor é o global `integrations` no admin desde a D-41
+      # (Sistema → Integrações): duas chaves, vagas e currículos. A URL aqui é
+      # só a reserva com que o campo do admin nasce preenchido — e ainda está
+      # **vazia em produção**, o que deixa a grade vindo do CMS. A chave é
+      # credencial e a segunda tranca: sem ela, ligado no CMS segue inerte.
       ATRAIR_API_URL: ${ATRAIR_API_URL:-}
       ATRAIR_API_KEY: ${ATRAIR_API_KEY:-}
       # D-29: chave de engenharia do convite de lead no chat. As outras duas

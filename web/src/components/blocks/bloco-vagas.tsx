@@ -20,23 +20,33 @@ import type { Locale } from '@/lib/locales'
  * colunas eram 48px de diferença contra o gabarito. Informação a mais é
  * melhoria, e melhoria não entra junto com migração (D-15).
  *
- * As vagas de verdade vêm do ATRAIR (D-33): quem cuida do recrutamento abre a
- * vaga lá, marca "publicar", e ela aparece aqui — o card leva para a página da
- * vaga no ATRAIR, onde a pessoa lê a descrição e se candidata. A lista do CMS
- * continua como reserva: se o ATRAIR estiver fora do ar ou a integração
- * desligada, a página de carreiras não fica vazia. */
+ * A grade tem **duas fontes**, e quem escolhe é a chave `jobsFeed` do global
+ * `integrations` (D-41):
+ *
+ * - **Ligada** — as vagas vêm do ATRAIR: quem cuida do recrutamento abre a vaga
+ *   lá, marca "publicar", e ela aparece aqui; o card leva para a página da vaga
+ *   no ATRAIR, onde a pessoa lê a descrição e se candidata.
+ * - **Desligada** (ou ATRAIR fora do ar) — as vagas vêm da collection `jobs`, e
+ *   o card leva para `/carreiras/[slug]`, a página da vaga **no site**.
+ *
+ * ⚠️ A distinção que custou a D-41: `vagasDoAtrair` **`null`** é "não foi
+ * possível perguntar ao ATRAIR" e cai para o CMS; **`[]`** é o ATRAIR
+ * respondendo que não há vaga aberta, e aí a grade mostra o `emptyText`. Antes
+ * os dois eram lista vazia, e uma vaga fechada no ATRAIR voltava ao ar pela
+ * lista antiga do CMS. Não trocar por `?.length` — apaga exatamente isso. */
 export function BlocoVagas({
   bloco,
   locale,
-  vagasAbertas = [],
+  vagasDoAtrair = null,
 }: {
   bloco: BlocoJobsList
   locale: Locale
-  /* As vagas publicadas no ATRAIR. Vazia quando a integração está desligada
-   * ou fora do ar — e aí a grade cai para a lista do CMS. */
-  vagasAbertas?: VagaAberta[]
+  /* As vagas publicadas no ATRAIR, ou `null` quando a integração está
+   * desligada no CMS ou o ATRAIR não respondeu — ver ⚠️ acima. */
+  vagasDoAtrair?: VagaAberta[] | null
 }) {
-  const doAtrair = vagasAbertas.length > 0
+  const doAtrair = vagasDoAtrair !== null
+  const vazia = doAtrair ? vagasDoAtrair.length === 0 : bloco.vagas.length === 0
   return (
     <section
       id={bloco.anchor ?? undefined}
@@ -68,14 +78,14 @@ export function BlocoVagas({
           </div>
         )}
 
-        {!doAtrair && bloco.vagas.length === 0 ? (
+        {vazia ? (
           <p className="text-center text-text-muted text-sm font-light max-w-2xl mx-auto">
             {bloco.emptyText ?? 'Nenhuma vaga aberta no momento. Volte em breve.'}
           </p>
         ) : (
           <div className={cn('grid md:grid-cols-2 gap-4 max-w-5xl mx-auto', bloco.talentBank && 'mb-20')}>
             {doAtrair
-              ? vagasAbertas.map((v) => (
+              ? vagasDoAtrair.map((v) => (
                   /* Link para FORA do site: é uma página do ATRAIR, e o
                    * `next/link` não tem o que otimizar num destino que não é
                    * nosso. O endereço vem pronto da API (campo `url`) — o site
