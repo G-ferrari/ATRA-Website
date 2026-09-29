@@ -34,7 +34,7 @@ const vazio = (v: string | null | undefined): string | null => {
 /* Parceiro não populado é descartado em silêncio, não derruba: aqui é uma
  * vitrine decorativa, e a página inteira fora do ar por um logo é troca ruim.
  * Difere de `cases.heroImage`, onde a imagem é o conteúdo. */
-type ParceiroPopulado = { name: string; slug: string; logo: unknown; logoDark?: unknown; logoScale?: unknown }
+export type ParceiroPopulado = { name: string; slug: string; logo: unknown; logoDark?: unknown; logoScale?: unknown }
 
 function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
   if (!isPopulated<ParceiroPopulado>(valor)) return null
@@ -538,17 +538,23 @@ export function toBlocos(
         })
         break
 
-      case 'partnerShowcase':
+      case 'partnerShowcase': {
+        /* Sem valor gravado (versão anterior a 29/09) vale o padrão do campo. */
+        const source = b.source === 'selected' ? 'selected' : 'all'
         blocos.push({
           ...base(b),
           tipo: 'partnerShowcase',
           title: vazio(b.title),
           grayscale: b.grayscale ?? true,
-          partners: (b.partners ?? [])
-            .map(toPartnerBadge)
-            .filter((p): p is PartnerBadge => p !== null),
+          source,
+          // Em "Todos", preenchidos pela página, da collection `partners`.
+          partners:
+            source === 'selected'
+              ? (b.partners ?? []).map(toPartnerBadge).filter((p): p is PartnerBadge => p !== null)
+              : [],
         })
         break
+      }
 
       case 'valueCards':
         blocos.push({
@@ -691,6 +697,13 @@ export function comClientes(blocos: Bloco[], clientes: LogoDeCliente[]): Bloco[]
 /** Injeta os parceiros na faixa de logos da home. */
 export function comParceiros(blocos: Bloco[], parceiros: ParceiroDaFaixa[]): Bloco[] {
   for (const b of blocos) if (b.tipo === 'logoMarquee') b.partners = parceiros
+  return blocos
+}
+
+/** Injeta o cadastro de parceiros nas vitrines em "Todos" (29/09). */
+export function comVitrineDeParceiros(blocos: Bloco[], parceiros: ParceiroPopulado[]): Bloco[] {
+  const selos = parceiros.map(toPartnerBadge).filter((p): p is PartnerBadge => p !== null)
+  for (const b of blocos) if (b.tipo === 'partnerShowcase' && b.source === 'all') b.partners = selos
   return blocos
 }
 

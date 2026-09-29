@@ -12,10 +12,10 @@ import type { Contato } from '@/types/content'
  * `contato.telefone` no lugar de `telefoneComDdd` e sem i18n. Consolidado aqui a
  * partir da versão da home (a mais atualizada), agora com rótulos PT/EN.
  *
- * E-mail e endereço são **fixos** (iguais em todo o site) — a quebra do endereço
- * em três linhas é pixel do gabarito; o e-mail **não** parte (a quebra saiu a
- * pedido, melhoria de UI sancionada, D-31). WhatsApp e redes vêm do global
- * `contato` (MIG-072). */
+ * O e-mail é **fixo** (igual em todo o site) e **não** parte (a quebra saiu a
+ * pedido, melhoria de UI sancionada, D-31). WhatsApp, redes e endereço vêm do
+ * global `contato` (MIG-072). O endereço era escrito aqui, em três linhas, e
+ * saiu em 29/09: a ATRA não tem mais sede fixa. Só volta se o global ganhar um. */
 
 const TEXTOS = {
   pt: {
@@ -71,18 +71,14 @@ export function PainelDeContatos({
             </p>
             <p className="text-sm font-light text-text-main dark:text-white/90">negocios@atra.com.br</p>
           </div>
-          <div>
-            <p className="text-[10px] text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-2">
-              {t.endereco}
-            </p>
-            <p className="text-sm font-light text-text-main dark:text-white/90">
-              Av. Queiroz Filho, 1700
-              <br />
-              Torre D Sala 802
-              <br />
-              Vila Hamburguesa – SP
-            </p>
-          </div>
+          {contato?.endereco && (
+            <div>
+              <p className="text-[10px] text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-2">
+                {t.endereco}
+              </p>
+              <p className="text-sm font-light text-text-main dark:text-white/90 whitespace-pre-line">{contato.endereco}</p>
+            </div>
+          )}
         </div>
       </div>
 

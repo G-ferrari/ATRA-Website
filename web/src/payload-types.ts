@@ -1474,7 +1474,7 @@ export interface Partner {
             image?: (number | null) | Media;
             imageLabel?: string | null;
             /**
-             * Used in the image label and on every grid card.
+             * Used in the image label.
              */
             logo?: (number | null) | Media;
             /**
@@ -1515,7 +1515,11 @@ export interface Partner {
           }
         | {
             title?: string | null;
-            partners: (number | Partner)[];
+            /**
+             * With "All", the showcase follows the Partners collection, in its order.
+             */
+            source?: ('all' | 'selected') | null;
+            partners?: (number | Partner)[] | null;
             /**
              * They gain colour on hover.
              */
@@ -1935,7 +1939,7 @@ export interface Partner {
             title: string;
             subtitle?: string | null;
             /**
-             * Phone, e-mail, address and socials beside the form.
+             * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
             variant?: ('panel' | 'photo') | null;
@@ -3150,7 +3154,7 @@ export interface Page {
         image?: (number | null) | Media;
         imageLabel?: string | null;
         /**
-         * Used in the image label and on every grid card.
+         * Used in the image label.
          */
         logo?: (number | null) | Media;
         /**
@@ -3191,7 +3195,11 @@ export interface Page {
       }
     | {
         title?: string | null;
-        partners: (number | Partner)[];
+        /**
+         * With "All", the showcase follows the Partners collection, in its order.
+         */
+        source?: ('all' | 'selected') | null;
+        partners?: (number | Partner)[] | null;
         /**
          * They gain colour on hover.
          */
@@ -3611,7 +3619,7 @@ export interface Page {
         title: string;
         subtitle?: string | null;
         /**
-         * Phone, e-mail, address and socials beside the form.
+         * Phone, e-mail, address (when there is one) and socials beside the form.
          */
         showContactCard?: boolean | null;
         variant?: ('panel' | 'photo') | null;
@@ -5026,7 +5034,7 @@ export interface Segment {
             image?: (number | null) | Media;
             imageLabel?: string | null;
             /**
-             * Used in the image label and on every grid card.
+             * Used in the image label.
              */
             logo?: (number | null) | Media;
             /**
@@ -5067,7 +5075,11 @@ export interface Segment {
           }
         | {
             title?: string | null;
-            partners: (number | Partner)[];
+            /**
+             * With "All", the showcase follows the Partners collection, in its order.
+             */
+            source?: ('all' | 'selected') | null;
+            partners?: (number | Partner)[] | null;
             /**
              * They gain colour on hover.
              */
@@ -5487,7 +5499,7 @@ export interface Segment {
             title: string;
             subtitle?: string | null;
             /**
-             * Phone, e-mail, address and socials beside the form.
+             * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
             variant?: ('panel' | 'photo') | null;
@@ -6670,7 +6682,7 @@ export interface Solution {
             image?: (number | null) | Media;
             imageLabel?: string | null;
             /**
-             * Used in the image label and on every grid card.
+             * Used in the image label.
              */
             logo?: (number | null) | Media;
             /**
@@ -6711,7 +6723,11 @@ export interface Solution {
           }
         | {
             title?: string | null;
-            partners: (number | Partner)[];
+            /**
+             * With "All", the showcase follows the Partners collection, in its order.
+             */
+            source?: ('all' | 'selected') | null;
+            partners?: (number | Partner)[] | null;
             /**
              * They gain colour on hover.
              */
@@ -7131,7 +7147,7 @@ export interface Solution {
             title: string;
             subtitle?: string | null;
             /**
-             * Phone, e-mail, address and socials beside the form.
+             * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
             variant?: ('panel' | 'photo') | null;
@@ -8292,6 +8308,7 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              source?: T;
               partners?: T;
               grayscale?: T;
               anchor?: T;
@@ -9247,6 +9264,7 @@ export interface PartnersSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              source?: T;
               partners?: T;
               grayscale?: T;
               anchor?: T;
@@ -10092,6 +10110,7 @@ export interface SegmentsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              source?: T;
               partners?: T;
               grayscale?: T;
               anchor?: T;
@@ -10943,6 +10962,7 @@ export interface SolutionsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              source?: T;
               partners?: T;
               grayscale?: T;
               anchor?: T;
@@ -11481,7 +11501,10 @@ export interface Contact {
   phoneWithArea: string;
   whatsapp: string;
   email: string;
-  address: string;
+  /**
+   * Optional. When empty, the address appears nowhere on the site.
+   */
+  address?: string | null;
   social?: {
     linkedin?: string | null;
     instagram?: string | null;

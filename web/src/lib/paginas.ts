@@ -1,12 +1,12 @@
 import { draftMode } from 'next/headers'
 
 import type { Locale } from './locales'
-import { comClientes, comContato, comDepoimentos, comParceiros, comVagas, toBlocos, toMetricas, toSelos } from './mappers/blocks'
+import { comClientes, comContato, comDepoimentos, comVagas, toBlocos, toMetricas, toSelos } from './mappers/blocks'
 import { toDepoimento, toLogoDeCliente } from './mappers/client'
 import { toSeo } from './mappers/seo'
 import { lerContato } from './contato'
 import { toVaga } from './mappers/job'
-import { toParceiroDaFaixa } from './mappers/partner'
+import { comParceirosCadastrados } from './parceiros'
 import { getPayload } from './payload'
 import type { Bloco, Seo } from '@/types/content'
 
@@ -72,24 +72,11 @@ export async function resolverPagina(
     comClientes(blocos, clientes.map(toLogoDeCliente))
   }
 
-  /* A faixa "Parceiros de Confiança" lê a collection `partners`, a mesma do
-     mega-menu: trocar ou adicionar um logo no admin muda os dois lugares. Até
-     aqui ela guardava uma lista própria de uploads, e o logo novo do menu não
-     chegava à home. `partners` não tem rascunho — não há `_status` a filtrar. */
-  if (blocos.some((b) => b.tipo === 'logoMarquee')) {
-    const { docs: parceiros } = await payload.find({
-      collection: 'partners',
-      locale,
-      depth: 1,
-      limit: 100,
-      sort: 'order',
-      select: { name: true, slug: true, logo: true, logoDark: true, logoScale: true, hasPage: true },
-    })
-    comParceiros(
-      blocos,
-      parceiros.map((p) => toParceiroDaFaixa(p, locale)).filter((p) => p !== null),
-    )
-  }
+  /* A faixa "Parceiros de Confiança" e a vitrine em "Todos" leem a collection
+     `partners`, a mesma do mega-menu: trocar ou adicionar um logo no admin muda
+     todos os lugares. Até aqui a faixa guardava uma lista própria de uploads, e
+     o logo novo do menu não chegava à home. */
+  await comParceirosCadastrados(blocos, locale)
 
   if (blocos.some((b) => b.tipo === 'testimonialCarousel')) {
     const { docs: depoimentos } = await payload.find({

@@ -94,10 +94,12 @@ export function SiteFooter({
                       {contato.email}
                     </a>
                   </li>
-                  <li className="flex gap-2.5">
-                    <MapPin size={16} className="text-secondary opacity-80 shrink-0" aria-hidden />
-                    <span className="leading-relaxed text-slate-500 dark:text-white/60">{contato.endereco}</span>
-                  </li>
+                  {contato.endereco && (
+                    <li className="flex gap-2.5">
+                      <MapPin size={16} className="text-secondary opacity-80 shrink-0" aria-hidden />
+                      <span className="leading-relaxed text-slate-500 dark:text-white/60">{contato.endereco}</span>
+                    </li>
+                  )}
                 </ul>
               ) : (
                 <ul className="space-y-2 text-xs font-light">

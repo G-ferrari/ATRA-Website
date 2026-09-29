@@ -62,7 +62,8 @@ const PAGINA_DO_BLOCO: Record<string, string> = {
   insightsHub: '/insights',
   homeBento: '/',
   ctaBanner: '/solucoes/cloud',
-  ctaContact: '/solucoes/cloud',
+  // As soluções perderam o formulário em 29/09; /contato segue com ele.
+  ctaContact: '/contato',
   jobsList: '/carreiras',
 }
 

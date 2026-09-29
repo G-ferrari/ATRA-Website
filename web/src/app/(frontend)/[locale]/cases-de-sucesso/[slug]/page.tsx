@@ -7,10 +7,10 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { RascunhoIncompleto } from '@/components/content/rascunho-incompleto'
+import { ChamadaFinal } from '@/components/layout/chamada-final'
 import { RichText } from '@/components/content/rich-text'
 import { AREAS_DE_ATUACAO } from '@/lib/areas'
-import { ContactCta, QuoteBlock } from '@/components/ui'
-import { lerContato } from '@/lib/contato'
+import { QuoteBlock } from '@/components/ui'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toCaseDetail } from '@/lib/mappers/case'
 import { mapearOuFaltando } from '@/lib/mappers/shared'
@@ -32,13 +32,6 @@ const TEXTOS = {
     conector: ' e ',
     infoProjeto: 'Informações do Projeto',
     areas: 'Áreas de atuação',
-    ctaTitulo: 'O próximo case de sucesso',
-    ctaDestaque: 'pode ser o seu!',
-    ctaDescricao:
-      'Pronto para transformar seus dados em resultados? Entregamos soluções sob medida para cada negócio, garantindo resultados concretos e de alto impacto. Fale com a gente para começar sua história de sucesso.',
-    ctaTelefone: 'Telefone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Fale com um especialista',
   },
   en: {
     voltar: 'Back to cases',
@@ -52,13 +45,6 @@ const TEXTOS = {
     conector: ' and ',
     infoProjeto: 'Project details',
     areas: 'Areas of expertise',
-    ctaTitulo: 'The next success story',
-    ctaDestaque: 'could be yours!',
-    ctaDescricao:
-      'Ready to turn your data into results? We deliver tailored solutions for every business, with concrete, high-impact outcomes. Talk to us to start your own success story.',
-    ctaTelefone: 'Phone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Talk to a specialist',
   },
 } as const
 
@@ -128,7 +114,6 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
   if (!resultado) notFound()
 
   const t = TEXTOS[locale]
-  const contato = await lerContato()
 
   if ('faltando' in resultado) {
     return (
@@ -312,16 +297,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
         </div>
       </section>
 
-      <ContactCta
-        title={t.ctaTitulo}
-        titleHighlight={t.ctaDestaque}
-        description={t.ctaDescricao}
-        phoneLabel={t.ctaTelefone}
-        emailLabel={t.ctaEmail}
-        actionLabel={t.ctaAcao}
-        href={hrefDe('contato', locale)}
-        contato={contato}
-      />
+      <ChamadaFinal locale={locale} />
     </main>
   )
 }

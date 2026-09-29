@@ -58,7 +58,20 @@ export const Contact: GlobalConfig = {
         { name: 'email', type: 'email', required: true, label: { pt: 'E-mail', en: 'Email' } },
       ],
     },
-    { name: 'address', type: 'textarea', required: true, label: { pt: 'Endereço', en: 'Address' } },
+    {
+      /* Opcional desde 29/09: a ATRA não tem mais endereço fixo (pedido do
+       * G-ferrari). Vazio, a linha some do rodapé, do painel ao lado dos
+       * formulários e do JSON-LD — nenhum lugar desenha um rótulo sem valor. */
+      name: 'address',
+      type: 'textarea',
+      label: { pt: 'Endereço', en: 'Address' },
+      admin: {
+        description: {
+          pt: 'Opcional. Vazio, o endereço não aparece em lugar nenhum do site.',
+          en: 'Optional. When empty, the address appears nowhere on the site.',
+        },
+      },
+    },
     {
       name: 'social',
       type: 'group',

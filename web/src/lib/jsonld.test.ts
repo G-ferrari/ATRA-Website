@@ -34,6 +34,12 @@ describe('organizacao', () => {
     expect(sem).not.toHaveProperty('logo')
     expect(sem).not.toHaveProperty('foundingDate')
   })
+
+  /* A ATRA não tem mais sede fixa (29/09): sem endereço, nada de PostalAddress vazio. */
+  it('omite o endereço quando o global não tem', () => {
+    expect(o.address).toMatchObject({ streetAddress: 'Av. Queiroz Filho, 1700 – SP' })
+    expect(organizacao({ contato: { ...contato, endereco: null }, logo: null })).not.toHaveProperty('address')
+  })
 })
 
 describe('artigo', () => {

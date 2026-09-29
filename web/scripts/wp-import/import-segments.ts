@@ -18,6 +18,7 @@ import { getPayload } from 'payload'
 
 import config from '../../src/payload.config'
 import { up as montarSegmentosDoWordpress } from '../../src/migrations/20260927_235930_segmentos_do_wordpress'
+import { up as trocarOFimDasPaginas } from '../../src/migrations/20260929_223200_fim_das_paginas_internas'
 import { slugify } from '../../src/fields/slug'
 import { casarIds } from '../seed/ids'
 import { createWpClient } from './client'
@@ -179,6 +180,8 @@ console.log(`\n  ${criados} criados · ${atualizados} atualizados · ${mantidos}
  * o segmento já foi remontado ou editado, a trava o deixa como está. */
 console.log('\n→ remontando no padrão das páginas de solução')
 await montarSegmentosDoWordpress({ payload } as never)
+// E o fim padrão das páginas internas (29/09), que tira o formulário que a remontagem acabou de pôr.
+await trocarOFimDasPaginas({ payload } as never)
 for (const f of falhas) console.log(`  ✗ ${f}`)
 console.log(falhas.length ? '\n✗ importação com falhas' : '\n✓ importação completa')
 process.exit(falhas.length ? 1 : 0)

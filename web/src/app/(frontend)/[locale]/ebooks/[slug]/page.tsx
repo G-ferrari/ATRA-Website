@@ -3,7 +3,6 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { PaginaDeMaterial, type TextosDoMaterial } from '@/components/content/pagina-de-material'
-import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { buscarMaterial, slugsDeMaterial } from '@/lib/materiais'
 import { metadataDe } from '@/lib/seo'
@@ -23,12 +22,6 @@ const TEXTOS: Record<'pt' | 'en', TextosDoMaterial> = {
     paginas: 'páginas',
     semCorpoTitulo: 'Prévia em preparação',
     semCorpoTexto: 'Assim que a prévia do e-book estiver pronta, ela aparece aqui.',
-    ctaTitulo: 'Quer aplicar isso',
-    ctaDestaque: 'na sua operação?',
-    ctaDescricao: 'Nossos especialistas ajudam a sair do guia para a prática, com o que você já tem hoje.',
-    ctaTelefone: 'Telefone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Fale com um especialista',
   },
   en: {
     voltar: 'Back to ebooks',
@@ -38,12 +31,6 @@ const TEXTOS: Record<'pt' | 'en', TextosDoMaterial> = {
     paginas: 'pages',
     semCorpoTitulo: 'Preview in preparation',
     semCorpoTexto: 'The ebook preview shows up here as soon as it is ready.',
-    ctaTitulo: 'Want to apply this',
-    ctaDestaque: 'to your operation?',
-    ctaDescricao: 'Our specialists help you move from the guide to practice, with what you already have.',
-    ctaTelefone: 'Phone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Talk to a specialist',
   },
 }
 
@@ -79,6 +66,6 @@ export default async function MaterialPage({ params }: PageProps<'/[locale]/eboo
   if (!material) notFound()
 
   return (
-    <PaginaDeMaterial material={material} secao={SECAO} locale={locale} t={TEXTOS[locale]} contato={await lerContato()} />
+    <PaginaDeMaterial material={material} secao={SECAO} locale={locale} t={TEXTOS[locale]} />
   )
 }

@@ -142,9 +142,10 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
                       key={nome}
                       className="bg-surface-1  p-4 rounded-[6px] aspect-square flex flex-col items-center justify-center text-center shadow-xs hover:border-primary/40 transition-all"
                     >
-                      {bloco.logo && (
-                        <LogoComTema logo={bloco.logo} logoDark={bloco.logoDark} className="h-5 mb-2 object-contain" />
-                      )}
+                      {/* Sem o logo do parceiro, que o legado repete em cada
+                          cartão: a 20px ele era ilegível, e no tema escuro, sem
+                          `logoDark`, sumia de vez — parecia selo quebrado. Os
+                          selos de verdade vão na grade logo abaixo (29/09). */}
                       {/* ⚠️ No legado este rótulo é literal em português
                           (`PartnerPageBase.tsx:299`), mesmo na versão inglesa da
                           página. Traduzido aqui porque é chrome de componente,

@@ -143,8 +143,10 @@ const MIMES: Record<string, string> = { '.jpg': 'image/jpeg', '.jpeg': 'image/jp
 /* ⚠️ A busca é pelo nome do arquivo sem extensão, com `contains`: a `Media`
  * converte todo upload para WebP, e o `.jpg` vira `.webp` no `filename` (a
  * armadilha do `scripts/seed/midia.ts`). Por isso os prefixos `solucao-wp-` e
- * `selo-google-cloud-` — "cloud" sozinho casaria com o logo do Google Cloud. */
-async function imagem(
+ * `selo-google-cloud-` — "cloud" sozinho casaria com o logo do Google Cloud.
+ * Exportada porque a grade de selos da página do Google Cloud (29/09) sobe os
+ * mesmos arquivos, e em banco novo pode ser ela a primeira a precisar deles. */
+export async function imagem(
   { payload, req }: Pick<MigrateUpArgs, 'payload' | 'req'>,
   arquivo: string,
   alt: string,

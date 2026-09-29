@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { ancorasDe, toBlocos } from './blocks'
+import { ancorasDe, comVitrineDeParceiros, toBlocos } from './blocks'
 import type { Page } from '@/payload-types'
 
 /* O layout vem do Payload com muito mais campo do que o mapper lê; o `as`
@@ -164,11 +164,37 @@ describe('blocos de MIG-048', () => {
         id: '1',
         blockType: 'partnerShowcase',
         title: 'Parceiros',
+        source: 'selected',
         // O primeiro veio como id (depth insuficiente); o segundo, populado.
         partners: [7, { name: 'Google Cloud', slug: 'google-cloud', logo: null }],
       }),
     )
-    expect(b).toMatchObject({ tipo: 'partnerShowcase', grayscale: true })
+    expect(b).toMatchObject({ tipo: 'partnerShowcase', grayscale: true, source: 'selected' })
     expect((b as { partners: unknown[] }).partners).toHaveLength(1)
+  })
+
+  /* 29/09: a vitrine em "Todos" ignora a lista gravada no bloco (a "foto" do dia
+     da migração) e recebe o cadastro da página — inclusive sem valor gravado,
+     que é o padrão do campo. */
+  it('partnerShowcase em "Todos" ignora a lista do bloco e recebe o cadastro', () => {
+    const gravado = { name: 'Antigo', slug: 'antigo', logo: null }
+    const blocos = toBlocos(
+      layout(
+        { id: '1', blockType: 'partnerShowcase', source: 'all', partners: [gravado] },
+        { id: '2', blockType: 'partnerShowcase', partners: [gravado] },
+        { id: '3', blockType: 'partnerShowcase', source: 'selected', partners: [gravado] },
+      ),
+    )
+    expect(blocos.map((b) => (b as { partners: unknown[] }).partners.length)).toEqual([0, 0, 1])
+
+    comVitrineDeParceiros(blocos, [
+      { name: 'Google Cloud', slug: 'google-cloud', logo: null },
+      { name: 'Databricks', slug: 'databricks', logo: null },
+    ])
+    expect(blocos.map((b) => (b as { partners: { slug: string }[] }).partners.map((p) => p.slug))).toEqual([
+      ['google-cloud', 'databricks'],
+      ['google-cloud', 'databricks'],
+      ['antigo'],
+    ])
   })
 })

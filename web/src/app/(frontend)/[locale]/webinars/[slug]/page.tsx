@@ -6,8 +6,7 @@ import Link from 'next/link'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
-import { ContactCta } from '@/components/ui'
-import { lerContato } from '@/lib/contato'
+import { ChamadaFinal } from '@/components/layout/chamada-final'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toWebinar } from '@/lib/mappers/webinar'
 import { getPayload } from '@/lib/payload'
@@ -34,13 +33,6 @@ const TEXTOS = {
     semVideoTexto:
       'Este webinar ainda não tem gravação publicada. Assim que o vídeo estiver disponível, ele aparece aqui.',
     assistir: 'Assistir à gravação',
-    ctaTitulo: 'Quer esse tema',
-    ctaDestaque: 'dentro da sua empresa?',
-    ctaDescricao:
-      'Nossos especialistas apresentam o conteúdo adaptado ao seu contexto, com os seus dados na mesa. Fale com a gente.',
-    ctaTelefone: 'Telefone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Fale com um especialista',
   },
   en: {
     voltar: 'Back to webinars',
@@ -50,13 +42,6 @@ const TEXTOS = {
     semVideoTexto:
       'This webinar has no published recording yet. The video shows up here as soon as it is available.',
     assistir: 'Watch the recording',
-    ctaTitulo: 'Want this topic',
-    ctaDestaque: 'inside your company?',
-    ctaDescricao:
-      'Our specialists present the content adapted to your context, with your own data on the table. Talk to us.',
-    ctaTelefone: 'Phone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Talk to a specialist',
   },
 } as const
 
@@ -110,7 +95,6 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
   if (!w) notFound()
 
   const t = TEXTOS[locale]
-  const contato = await lerContato()
   const embed = paraEmbed(w.videoUrl)
 
   return (
@@ -176,16 +160,7 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
         </div>
       </section>
 
-      <ContactCta
-        title={t.ctaTitulo}
-        titleHighlight={t.ctaDestaque}
-        description={t.ctaDescricao}
-        phoneLabel={t.ctaTelefone}
-        emailLabel={t.ctaEmail}
-        actionLabel={t.ctaAcao}
-        href={hrefDe('contato', locale)}
-        contato={contato}
-      />
+      <ChamadaFinal locale={locale} />
     </main>
   )
 }
