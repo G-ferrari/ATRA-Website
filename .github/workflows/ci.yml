@@ -278,6 +278,9 @@ jobs:
           echo "${{ secrets.VPS_HOST_KEY }}" > ~/.ssh/known_hosts
 
       - name: Código para a VPS
+        # `VPS_USER` vazio cai em root, que é como a Hostinger funciona. A VM do
+        # Google (30/09) não aceita root por SSH: lá o usuário é outro, no grupo
+        # docker, dono de /opt/atra (infra/provisionar/preparar-vm.sh).
         # O mesmo conjunto que o Dockerfile consome (contexto = raiz do repo,
         # por causa do redirects.csv — ver o topo do Dockerfile). `legacy/` fica
         # de fora: o runtime não lê nada de lá, só o seed, que não roda aqui.
@@ -292,7 +295,7 @@ jobs:
             --exclude '.env*' \
             -e "ssh -i ~/.ssh/deploy" \
             Dockerfile docker-compose.prod.yml Caddyfile web docs infra \
-            root@${{ secrets.VPS_HOST }}:/opt/atra/
+            ${{ secrets.VPS_USER || 'root' }}@${{ secrets.VPS_HOST }}:/opt/atra/
 
       - name: Migra, builda e troca
         # Retry aqui também — e é seguro: o deploy.sh é a própria rotina de
@@ -300,5 +303,5 @@ jobs:
         # healthcheck e rollback). Cair no meio e recomeçar é o caminho normal.
         run: |
           tentar() { for i in 1 2 3; do "$@" && return 0; sleep 20; done; return 1; }
-          tentar ssh -i ~/.ssh/deploy root@${{ secrets.VPS_HOST }} \
+          tentar ssh -i ~/.ssh/deploy ${{ secrets.VPS_USER || 'root' }}@${{ secrets.VPS_HOST }} \
             "chmod +x /opt/atra/infra/deploy/deploy.sh /opt/atra/infra/backup/*.sh && /opt/atra/infra/deploy/deploy.sh ${{ github.sha }}"

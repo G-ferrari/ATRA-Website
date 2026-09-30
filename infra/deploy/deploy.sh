@@ -29,6 +29,10 @@ valor() { { grep "^$1=" "$RAIZ/.env.prod" || true; } | head -1 | cut -d= -f2- | 
 POSTGRES_PASSWORD="$(valor POSTGRES_PASSWORD)"
 SITE_URL="$(valor SITE_URL)"
 TAG_ANTERIOR="$(valor TAG)"
+# O primeiro nome de `SITE_HOST` é o que a conferência externa testa. Era o
+# hostname da Hostinger escrito à mão, e a troca para a VM do Google (30/09)
+# teria reprovado todo deploy bom por falta de certificado naquele nome.
+HOST_EXTERNO="$(valor SITE_HOST | cut -d, -f1 | tr -d '[:space:]')"
 
 echo "→ deploy de $SHA (atual: $TAG_ANTERIOR)"
 
@@ -82,8 +86,8 @@ echo "→ conferência externa"
 codigo=000
 for _ in 1 2 3; do
   codigo=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
-    --resolve srv1927832.hstgr.cloud:443:127.0.0.1 \
-    "https://srv1927832.hstgr.cloud/" || true)
+    --resolve "$HOST_EXTERNO:443:127.0.0.1" \
+    "https://$HOST_EXTERNO/" || true)
   case "$codigo" in 200|401) break ;; esac
   sleep 5
 done
