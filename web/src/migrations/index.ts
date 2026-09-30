@@ -59,11 +59,16 @@ import * as migration_20260926_220000_rc18_aponta_para_o_diagnostico from './202
 import * as migration_20260927_105730_reconcilia_snapshot_destino_e_diagnostico from './20260927_105730_reconcilia_snapshot_destino_e_diagnostico';
 import * as migration_20260927_163411_add_tracking from './20260927_163411_add_tracking';
 import * as migration_20260927_215331_add_image_grid from './20260927_215331_add_image_grid';
+import * as migration_20260927_215400_partner_showcase_source from './20260927_215400_partner_showcase_source';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './20260928_001000_carrossel_da_home_com_rc18';
 import * as migration_20260928_120000_pagina_rc18 from './20260928_120000_pagina_rc18';
 import * as migration_20260929_122603_integracoes from './20260929_122603_integracoes';
+import * as migration_20260929_222024_optional_address_and_partner_source from './20260929_222024_optional_address_and_partner_source';
+import * as migration_20260929_223000_sem_endereco_fixo from './20260929_223000_sem_endereco_fixo';
+import * as migration_20260929_223100_selos_na_pagina_do_google_cloud from './20260929_223100_selos_na_pagina_do_google_cloud';
+import * as migration_20260929_223200_fim_das_paginas_internas from './20260929_223200_fim_das_paginas_internas';
 
 export const migrations = [
   {
@@ -372,6 +377,11 @@ export const migrations = [
     name: '20260927_215331_add_image_grid',
   },
   {
+    up: migration_20260927_215400_partner_showcase_source.up,
+    down: migration_20260927_215400_partner_showcase_source.down,
+    name: '20260927_215400_partner_showcase_source',
+  },
+  {
     up: migration_20260927_235900_solucoes_do_wordpress.up,
     down: migration_20260927_235900_solucoes_do_wordpress.down,
     name: '20260927_235900_solucoes_do_wordpress',
@@ -394,6 +404,26 @@ export const migrations = [
   {
     up: migration_20260929_122603_integracoes.up,
     down: migration_20260929_122603_integracoes.down,
-    name: '20260929_122603_integracoes'
+    name: '20260929_122603_integracoes',
+  },
+  {
+    up: migration_20260929_222024_optional_address_and_partner_source.up,
+    down: migration_20260929_222024_optional_address_and_partner_source.down,
+    name: '20260929_222024_optional_address_and_partner_source',
+  },
+  {
+    up: migration_20260929_223000_sem_endereco_fixo.up,
+    down: migration_20260929_223000_sem_endereco_fixo.down,
+    name: '20260929_223000_sem_endereco_fixo',
+  },
+  {
+    up: migration_20260929_223100_selos_na_pagina_do_google_cloud.up,
+    down: migration_20260929_223100_selos_na_pagina_do_google_cloud.down,
+    name: '20260929_223100_selos_na_pagina_do_google_cloud',
+  },
+  {
+    up: migration_20260929_223200_fim_das_paginas_internas.up,
+    down: migration_20260929_223200_fim_das_paginas_internas.down,
+    name: '20260929_223200_fim_das_paginas_internas',
   },
 ];

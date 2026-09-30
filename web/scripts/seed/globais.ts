@@ -31,7 +31,8 @@ const CONTATO = {
   phoneWithArea: '+55 (11) 96305-2391',
   whatsapp: 'https://wa.me/5511963052391',
   email: 'negocios@atra.com.br',
-  address: 'Av. Queiroz Filho, 1700 – Torre D Sala 802 Vila Hamburguesa – SP',
+  /* Sem `address`: a ATRA não tem mais endereço fixo (29/09). O campo segue no
+   * global, opcional, para o dia em que tiver. */
   /* P-26: no rodapé do protótipo as redes apontam para `#`, e as do CTA de
    * contato (`App.tsx:2412`) eram perfis antigos (`atra-tecnologia`,
    * `atratecnologia`). Estas são as que a ATRA confirmou em 26/09/2026. */

@@ -40,7 +40,8 @@ export function organizacao(args: { contato: Contato; logo: Image | null; fundad
     ...(fundadaEm ? { foundingDate: String(fundadaEm) } : {}),
     email: contato.email,
     telephone: contato.telefone,
-    address: { '@type': 'PostalAddress', streetAddress: contato.endereco, addressCountry: 'BR' },
+    // Sem endereço no global, sem `address`: um PostalAddress vazio é pior que nenhum.
+    ...(contato.endereco ? { address: { '@type': 'PostalAddress', streetAddress: contato.endereco, addressCountry: 'BR' } } : {}),
     ...(redes.length ? { sameAs: redes } : {}),
   }
 }

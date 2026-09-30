@@ -389,14 +389,40 @@ export const PartnerShowcase: Block = {
   fields: [
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
     {
+      /* ⚠️ Pedido de 29/09: o bloco tem que refletir o cadastro. As 20 páginas
+       * de solução e segmento guardavam uma **foto** da lista de parceiros
+       * tirada no dia da migração, e parceiro novo no admin não chegava a
+       * nenhuma delas — ao contrário da faixa da home, que lê a collection.
+       * "Todos" é o padrão, e é o que toda vitrine existente virou (inclusive
+       * /sobre, que mostrava 4 escolhidos: decisão do G-ferrari). "Escolher"
+       * fica para quem precisar de uma seleção. */
+      name: 'source',
+      type: 'select',
+      defaultValue: 'all',
+      options: [
+        { value: 'all', label: { pt: 'Todos os parceiros cadastrados', en: 'All registered partners' } },
+        { value: 'selected', label: { pt: 'Escolher os parceiros', en: 'Choose the partners' } },
+      ],
+      label: { pt: 'Quais parceiros', en: 'Which partners' },
+      admin: {
+        description: {
+          pt: 'Em "Todos", a vitrine acompanha o cadastro de Parceiros, na ordem de lá: entrou, saiu ou mudou a ordem, muda aqui.',
+          en: 'With "All", the showcase follows the Partners collection, in its order.',
+        },
+      },
+    },
+    {
       /* Relação com `partners`, não upload solto: o logo do Google Cloud
-       * aparece aqui, na página do parceiro e no card de case. Um lugar só. */
+       * aparece aqui, na página do parceiro e no card de case. Um lugar só.
+       * Só vale em "Escolher"; em "Todos" a lista é ignorada. */
       name: 'partners',
       type: 'relationship',
       relationTo: 'partners',
       hasMany: true,
-      required: true,
       label: { pt: 'Parceiros', en: 'Partners' },
+      admin: { condition: (_, irmaos) => irmaos?.source === 'selected' },
+      validate: (valor: unknown, { siblingData }: { siblingData: Record<string, unknown> }) =>
+        siblingData?.source !== 'selected' || (Array.isArray(valor) && valor.length > 0) || 'Escolha ao menos um parceiro.',
     },
     {
       name: 'grayscale',
@@ -611,7 +637,7 @@ export const CtaContact: Block = {
       type: 'checkbox',
       defaultValue: true,
       label: { pt: 'Mostrar o cartão de contato', en: 'Show the contact card' },
-      admin: { description: { pt: 'Telefone, e-mail, endereço e redes ao lado do formulário.', en: 'Phone, e-mail, address and socials beside the form.' } },
+      admin: { description: { pt: 'Telefone, e-mail, endereço (quando houver) e redes ao lado do formulário.', en: 'Phone, e-mail, address (when there is one) and socials beside the form.' } },
     },
     {
       /* ⚠️ As duas formas não são estilo: são markups diferentes do legado.
@@ -1080,10 +1106,11 @@ export const PartnerSplit: Block = {
       relationTo: 'media',
       label: { pt: 'Logo do parceiro', en: 'Partner logo' },
       admin: {
-        condition: (_, irmaos) => irmaos?.rightColumn !== 'checklist',
+        // Só a etiqueta da imagem usa o logo: os cartões da grade o perderam em 29/09.
+        condition: (_, irmaos) => irmaos?.rightColumn === 'image',
         description: {
-          pt: 'Na etiqueta da imagem e em cada cartão da grade.',
-          en: 'Used in the image label and on every grid card.',
+          pt: 'Na etiqueta sobre a imagem.',
+          en: 'Used in the image label.',
         },
       },
     },
@@ -1093,7 +1120,7 @@ export const PartnerSplit: Block = {
       relationTo: 'media',
       label: { pt: 'Logo do parceiro (tema escuro)', en: 'Partner logo (dark theme)' },
       admin: {
-        condition: (_, irmaos) => irmaos?.rightColumn !== 'checklist',
+        condition: (_, irmaos) => irmaos?.rightColumn === 'image',
         description: {
           pt: 'Opcional. Vazio, o logo acima vale nos dois temas.',
           en: 'Optional. When empty, the logo above is used in both themes.',

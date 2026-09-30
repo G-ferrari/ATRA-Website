@@ -463,6 +463,8 @@ export type BlocoProcessSteps = Base & {
 export type BlocoPartnerShowcase = Base & {
   tipo: 'partnerShowcase'
   title: string | null
+  /** `all` segue o cadastro de parceiros (a página injeta); `selected` usa a lista do bloco. */
+  source: 'all' | 'selected'
   partners: PartnerBadge[]
   grayscale: boolean
 }
@@ -819,7 +821,8 @@ export type Contato = {
   telefoneComDdd: string
   whatsapp: string
   email: string
-  endereco: string
+  /** `null` quando o global não tem endereço — a ATRA não tem sede fixa desde 29/09. */
+  endereco: string | null
   redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
   /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
   destinos: Record<FormularioComAviso, string | null>

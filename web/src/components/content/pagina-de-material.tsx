@@ -3,12 +3,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { RichText } from '@/components/content/rich-text'
+import { ChamadaFinal } from '@/components/layout/chamada-final'
 import { DownloadGate } from '@/components/forms/download-gate'
-import { ContactCta } from '@/components/ui'
 import type { Locale } from '@/lib/locales'
 import { dataPorExtenso } from '@/lib/mappers/resource'
 import { hrefDe, type Secao } from '@/lib/routes'
-import type { Contato, ResourceDetail } from '@/types/content'
+import type { ResourceDetail } from '@/types/content'
 
 /* Landing de material rico (MIG-045), compartilhada por /relatorios/[slug] e
  * /ebooks/[slug] — as duas diferem em rótulo e num dado (data contra número de
@@ -31,12 +31,6 @@ export type TextosDoMaterial = {
   paginas: string
   semCorpoTitulo: string
   semCorpoTexto: string
-  ctaTitulo: string
-  ctaDestaque: string
-  ctaDescricao: string
-  ctaTelefone: string
-  ctaEmail: string
-  ctaAcao: string
 }
 
 export function PaginaDeMaterial({
@@ -44,13 +38,11 @@ export function PaginaDeMaterial({
   secao,
   locale,
   t,
-  contato,
 }: {
   material: ResourceDetail
   secao: Extract<Secao, 'relatorios' | 'ebooks'>
   locale: Locale
   t: TextosDoMaterial
-  contato: Contato
 }) {
   const ehEbook = material.kind === 'ebook'
 
@@ -158,16 +150,7 @@ export function PaginaDeMaterial({
         </div>
       </section>
 
-      <ContactCta
-        title={t.ctaTitulo}
-        titleHighlight={t.ctaDestaque}
-        description={t.ctaDescricao}
-        phoneLabel={t.ctaTelefone}
-        emailLabel={t.ctaEmail}
-        actionLabel={t.ctaAcao}
-        href={hrefDe('contato', locale)}
-        contato={contato}
-      />
+      <ChamadaFinal locale={locale} />
     </main>
   )
 }

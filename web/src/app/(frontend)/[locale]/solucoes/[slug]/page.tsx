@@ -6,6 +6,7 @@ import { locale as getLocale } from 'next/root-params'
 import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { comContato, toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
+import { comParceirosCadastrados } from '@/lib/parceiros'
 import { getPayload } from '@/lib/payload'
 import { lerContato } from '@/lib/contato'
 import { toSeo } from '@/lib/mappers/seo'
@@ -52,6 +53,8 @@ async function buscarSolucao(slug: string, locale: Locale) {
    * nascia vazio aqui. Nasceu para o formulário da RC18, que saiu na task 029;
    * segue valendo para toda solução com `ctaContact` (ex.: alocação de consultores). */
   comContato(blocos, contato)
+  // A vitrine de parceiros em "Todos" lê o cadastro (29/09).
+  await comParceirosCadastrados(blocos, locale)
   return { doc: docs[0], blocos }
 }
 

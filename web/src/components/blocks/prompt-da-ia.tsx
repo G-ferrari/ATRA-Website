@@ -18,6 +18,10 @@ import type { BlocoHomeHero } from '@/types/content'
  * O envio leva para /chat com a mensagem digitada, como no gabarito. A rota
  * ainda não existe (MIG-061); até lá o `push` cai no 404 desenhado, que é o
  * mesmo destino que o legado dá a quem tem JavaScript desligado. */
+
+/* Tempo que a esteira leva para andar a largura de um logo (156px + margens). */
+const SEGUNDOS_POR_LOGO = 7.5
+
 export function PromptDaIa({
   prompt,
   clientes,
@@ -39,6 +43,12 @@ export function PromptDaIa({
   /* A esteira leva a lista **duplicada**: é o que faz a emenda não saltar, já
      que a animação vai de 0 a -50%. Mesmo truque da vitrine vertical de /sobre. */
   const esteira = [...clientes, ...clientes]
+
+  /* ⚠️ A duração acompanha o número de logos. O CSS fixava 26s por volta: com 7
+     clientes dá ~50px/s, e cada cliente cadastrado a mais **acelerava** a
+     esteira, porque a mesma volta ficava mais longa. Pedido de 29/09: mais
+     devagar — 7,5s por logo, metade da velocidade de antes, e igual com 7 ou 20. */
+  const duracao = `${Math.max(clientes.length, 1) * SEGUNDOS_POR_LOGO}s`
 
   return (
     <div className="relative z-10 w-full">
@@ -130,7 +140,7 @@ export function PromptDaIa({
                       WebkitMaskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)',
                     }}
                   >
-                    <div className="animate-marquee-horizontal py-1">
+                    <div className="animate-marquee-horizontal py-1" style={{ animationDuration: duracao }}>
                       {esteira.map((c, i) => (
                         <div
                           key={`${c.name}-${i}`}

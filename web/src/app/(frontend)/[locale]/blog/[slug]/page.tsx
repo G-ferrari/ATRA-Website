@@ -7,9 +7,8 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { RascunhoIncompleto } from '@/components/content/rascunho-incompleto'
+import { ChamadaFinal } from '@/components/layout/chamada-final'
 import { RichText } from '@/components/content/rich-text'
-import { ContactCta } from '@/components/ui'
-import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toPostDetail } from '@/lib/mappers/post'
 import { mapearOuFaltando } from '@/lib/mappers/shared'
@@ -31,8 +30,9 @@ import { DadosEstruturados } from '@/components/layout/dados-estruturados'
  *   verifica é `smoke.spec.ts`: responde 200, rascunho não vaza, e post sem
  *   corpo sai com `noindex`.
  * - O layout é composto do que já foi portado — mesma abertura da página de
- *   case, mesmo `RichText`, mesmo `ContactCta` — em vez de inventar uma
- *   linguagem visual nova para uma única rota. */
+ *   case, mesmo `RichText` — em vez de inventar uma linguagem visual nova para
+ *   uma única rota. O fechamento é a `ChamadaFinal` desde 29/09, a mesma faixa
+ *   de todas as páginas internas. */
 
 const TEXTOS = {
   pt: {
@@ -41,26 +41,12 @@ const TEXTOS = {
     semCorpoTitulo: 'Conteúdo em preparação',
     semCorpoTexto:
       'Este artigo ainda não tem texto publicado. Assim que estiver pronto, ele aparece aqui.',
-    ctaTitulo: 'Quer conversar sobre',
-    ctaDestaque: 'o seu projeto?',
-    ctaDescricao:
-      'Nossos especialistas ajudam a transformar dados em decisão. Fale com a gente e descubra o que dá para fazer com o que você já tem.',
-    ctaTelefone: 'Telefone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Fale com um especialista',
   },
   en: {
     voltar: 'Back to the blog',
     prefixo: 'Post',
     semCorpoTitulo: 'Content in preparation',
     semCorpoTexto: 'This post has no published text yet. It shows up here as soon as it is ready.',
-    ctaTitulo: 'Want to talk about',
-    ctaDestaque: 'your project?',
-    ctaDescricao:
-      'Our specialists turn data into decisions. Talk to us and find out what can be done with what you already have.',
-    ctaTelefone: 'Phone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Talk to a specialist',
   },
 } as const
 
@@ -121,7 +107,6 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
   if (!resultado) notFound()
 
   const t = TEXTOS[locale]
-  const contato = await lerContato()
 
   if ('faltando' in resultado) {
     return (
@@ -211,16 +196,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
         </div>
       </section>
 
-      <ContactCta
-        title={t.ctaTitulo}
-        titleHighlight={t.ctaDestaque}
-        description={t.ctaDescricao}
-        phoneLabel={t.ctaTelefone}
-        emailLabel={t.ctaEmail}
-        actionLabel={t.ctaAcao}
-        href={hrefDe('contato', locale)}
-        contato={contato}
-      />
+      <ChamadaFinal locale={locale} />
     </main>
   )
 }

@@ -28,6 +28,7 @@ import { getPayload } from 'payload'
 import config from '../../src/payload.config'
 import { up as montarAlocacao } from '../../src/migrations/20260926_171500_alocacao_de_consultores'
 import { up as montarSolucoesDoWordpress } from '../../src/migrations/20260927_235900_solucoes_do_wordpress'
+import { up as trocarOFimDasPaginas } from '../../src/migrations/20260929_223200_fim_das_paginas_internas'
 import { slugify } from '../../src/fields/slug'
 import { casarIds } from '../seed/ids'
 import { createWpClient } from './client'
@@ -201,6 +202,8 @@ for (const f of falhas) console.log(`  ✗ ${f}`)
 console.log('\n→ remontando no padrão das páginas de solução')
 await montarAlocacao({ payload } as never)
 await montarSolucoesDoWordpress({ payload } as never)
+// E o fim padrão das páginas internas (29/09), que tira o formulário que a remontagem acabou de pôr.
+await trocarOFimDasPaginas({ payload } as never)
 
 const { totalDocs: publicadas } = await payload.find({
   collection: 'solutions',
