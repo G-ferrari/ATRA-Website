@@ -1148,19 +1148,20 @@ do `ci.yml` só rodava em push nessa branch. A `main` recebia CI (lint, types,
 e2e) mas nunca publicava, e estava 209 commits atrás. Publicar dependia de quem
 trabalha na `migracao` — um gargalo de pessoa, não de código.
 
-**Decisão.** O job `deploy` roda em push para **`main` ou `migracao`**. A
-`main` passa a ser o caminho de publicação que não depende de desenvolvedor
-específico; a `migracao` continua publicando até o cutover, e sai do `if`
-quando a migração fechar.
+**Decisão.** O job `deploy` roda **só em push para `main`**. A `migracao`
+continua sendo a branch de trabalho, com CI completo, mas deixa de publicar:
+publicar é fazer merge da `migracao` na `main`. Qualquer pessoa com permissão
+de merge publica, sem depender de desenvolvedor específico.
 
 **Consequências.**
 
-- As duas branches publicam no **mesmo** servidor (`VPS_HOST`), com o grupo de
-  concorrência `deploy-vps` serializando. Não existe "produção pela main e
-  homologação pela migracao": é um host só até a VM nova entrar.
-- ⚠️ A `main` precisa estar **à frente** da `migracao` antes de qualquer push.
-  Um push de `main` atrasada leva ao ar código velho sobre um banco que já
+- Push na `migracao` roda lint, types e e2e e para aí. O servidor só muda
+  quando a `main` muda.
+- ⚠️ O merge é sempre **da `migracao` para a `main`**, nunca o contrário. Um
+  push de `main` atrasada leva ao ar código velho sobre um banco que já
   recebeu as migrações novas — o Payload cai em `column ... does not exist`.
-  Sincronizar é merge de `migracao` em `main` (ou fast-forward), nunca o
-  contrário.
+  A `main` foi sincronizada em 01/10 (estava 209 commits atrás, parada no
+  merge do PR 12).
 - PR continua sem deploy: o `if` exige `push`.
+- Fica recomendada a proteção da `main` no GitHub, exigindo o CI verde antes
+  do merge: "qualquer um pode publicar" não deve virar "qualquer push publica".
