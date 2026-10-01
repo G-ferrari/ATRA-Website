@@ -46,8 +46,12 @@ export type FeaturedHeroProps = {
   /** Sem ícone próprio, o legado fecha o botão com uma seta. */
   actionIcon?: ReactNode
   /* Botão secundário. Só webinar tem um no legado
-   * (`FeaturedHero.tsx:130`), levando à página do evento. */
-  acaoSecundaria?: { label: string; href: string }
+   * (`FeaturedHero.tsx:130`), levando à página do evento.
+   *
+   * ⚠️ Sem `href`: o destino é o do item **ativo**. Antes a página passava o
+   * endereço do primeiro webinar, e "Ver detalhes" levava a ele mesmo com
+   * outro destaque na tela. */
+  acaoSecundaria?: { label: string }
   /** Intervalo da rotação automática, em ms. */
   intervalo?: number
 }
@@ -139,7 +143,7 @@ export function FeaturedHero({
                 </Link>
                 {acaoSecundaria && (
                   <Link
-                    href={acaoSecundaria.href}
+                    href={ativo.href}
                     className="pill-btn-outline py-3 px-6 text-xs sm:text-sm font-bold justify-center"
                   >
                     {acaoSecundaria.label}

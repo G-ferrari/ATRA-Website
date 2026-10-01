@@ -15,7 +15,7 @@ const ROTAS_PORTADAS = {
   pt: [
     '/',
     '/cases-de-sucesso',
-    '/relatorios',
+    '/atra-na-midia',
     '/ebooks',
     '/webinars',
     '/blog',
@@ -30,7 +30,7 @@ const ROTAS_PORTADAS = {
   en: [
     '/en',
     '/en/success-stories',
-    '/en/reports',
+    '/en/atra-in-the-media',
     '/en/ebooks',
     '/en/webinars',
     '/en/blog',
@@ -165,16 +165,16 @@ test.describe('app novo', () => {
     })
   })
 
-  /* `/relatorios/[slug]` e `/ebooks/[slug]` também não existem no protótipo. */
+  /* `/atra-na-midia/[slug]` e `/ebooks/[slug]` também não existem no protótipo. */
   test.describe('materiais — rotas sem gabarito', () => {
     const RELATORIO = 'relatorio-anual-de-dados-2025-tendencias-e-projecoes'
     const EBOOK = 'o-guia-definitivo-do-data-lakehouse-para-executivos'
 
     test('material existente responde 200 nos dois idiomas', async ({ request }) => {
       for (const url of [
-        `${NEXT_URL}/relatorios/${RELATORIO}`,
+        `${NEXT_URL}/atra-na-midia/${RELATORIO}`,
         `${NEXT_URL}/ebooks/${EBOOK}`,
-        `${NEXT_URL}/en/reports/${RELATORIO}`,
+        `${NEXT_URL}/en/atra-in-the-media/${RELATORIO}`,
         `${NEXT_URL}/en/ebooks/${EBOOK}`,
       ]) {
         expect((await request.get(url)).status(), url).toBe(200)
@@ -184,13 +184,30 @@ test.describe('app novo', () => {
     /* O tipo entra na consulta, não só na rota. Sem isso o mesmo material
      * responderia sob as duas seções e o Google veria conteúdo duplicado. */
     test('slug do outro tipo responde 404', async ({ request }) => {
-      for (const url of [`${NEXT_URL}/relatorios/${EBOOK}`, `${NEXT_URL}/ebooks/${RELATORIO}`]) {
+      for (const url of [`${NEXT_URL}/atra-na-midia/${EBOOK}`, `${NEXT_URL}/ebooks/${RELATORIO}`]) {
         expect((await request.get(url)).status(), url).toBe(404)
       }
     })
 
+    /* 01/10: "Relatórios" virou "ATRA na mídia" e o endereço mudou junto. O
+       antigo está em link gravado no CMS e em favorito de quem viu a
+       homologação: tem de chegar, com e sem slug, nos dois idiomas. */
+    test('o endereço antigo dos relatórios redireciona para o novo', async ({ request }) => {
+      for (const [antigo, novo] of [
+        ['/relatorios', '/atra-na-midia'],
+        [`/relatorios/${RELATORIO}`, `/atra-na-midia/${RELATORIO}`],
+        ['/en/reports', '/en/atra-in-the-media'],
+        [`/en/reports/${RELATORIO}`, `/en/atra-in-the-media/${RELATORIO}`],
+      ]) {
+        const r = await request.get(`${NEXT_URL}${antigo}`, { maxRedirects: 0 })
+        expect(r.status(), antigo).toBe(308)
+        // O `Location` pode vir absoluto ou relativo; o que se compara é o caminho.
+        expect(new URL(r.headers()['location'] ?? '', NEXT_URL).pathname, antigo).toBe(novo)
+      }
+    })
+
     test('material sem corpo sai com noindex', async ({ request }) => {
-      const r = await request.get(`${NEXT_URL}/relatorios/${RELATORIO}`)
+      const r = await request.get(`${NEXT_URL}/atra-na-midia/${RELATORIO}`)
       expect(await r.text()).toContain('noindex')
     })
   })
@@ -647,7 +664,7 @@ test.describe('app novo', () => {
        texto vira violação de strict mode. Por isso cada teste entra pela região
        que lhe interessa. */
     const abrirMenu = async (page: import('@playwright/test').Page) => {
-      await page.goto(`${NEXT_URL}/relatorios`)
+      await page.goto(`${NEXT_URL}/atra-na-midia`)
       await page.getByRole('button', { name: 'Abrir menu' }).click()
       return page.getByTestId('menu-categorias')
     }
@@ -763,7 +780,7 @@ test.describe('app novo', () => {
 
     test('no celular vira gaveta, e só as categorias com lista expandem', async ({ page }) => {
       test.skip(!noCelular(page), 'a gaveta é `md:hidden`')
-      await page.goto(`${NEXT_URL}/relatorios`)
+      await page.goto(`${NEXT_URL}/atra-na-midia`)
       await page.getByRole('button', { name: 'Abrir menu' }).click()
 
       const gaveta = page.getByTestId('menu-gaveta')

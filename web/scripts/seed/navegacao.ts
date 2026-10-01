@@ -79,7 +79,7 @@ const PT: Categoria[] = [
     panel: 'links',
     links: links([
       ['star', 'Cases de Sucesso', 'Histórias reais de transformação digital.', '/cases-de-sucesso'],
-      ['file-text', 'Relatórios', 'Análises profundas do mercado de dados.', '/relatorios'],
+      ['file-text', 'ATRA na mídia', 'Análises profundas do mercado de dados.', '/atra-na-midia'],
       ['newspaper', 'Blog', 'Artigos, tendências e novidades técnicas.', '/blog'],
       ['video', 'Webinars', 'Conteúdo em vídeo com nossos especialistas.', '/webinars'],
       ['book', 'Ebooks', 'Guias completos para sua jornada de dados.', '/ebooks'],
@@ -192,7 +192,7 @@ const EN: Categoria[] = [
     panel: 'links',
     links: links([
       ['star', 'Success Stories', 'Real stories of digital transformation.', '/cases-de-sucesso'],
-      ['file-text', 'Reports', 'Deep analysis of the data market.', '/relatorios'],
+      ['file-text', 'ATRA in the media', 'Deep analysis of the data market.', '/atra-na-midia'],
       ['newspaper', 'Blog', 'Articles, trends, and technical news.', '/blog'],
       ['video', 'Webinars', 'Video content with our experts.', '/webinars'],
       ['book', 'Ebooks', 'Complete guides for your data journey.', '/ebooks'],

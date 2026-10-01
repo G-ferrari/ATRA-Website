@@ -69,6 +69,7 @@ import * as migration_20260929_222024_optional_address_and_partner_source from '
 import * as migration_20260929_223000_sem_endereco_fixo from './20260929_223000_sem_endereco_fixo';
 import * as migration_20260929_223100_selos_na_pagina_do_google_cloud from './20260929_223100_selos_na_pagina_do_google_cloud';
 import * as migration_20260929_223200_fim_das_paginas_internas from './20260929_223200_fim_das_paginas_internas';
+import * as migration_20261001_120000_relatorios_vira_atra_na_midia from './20261001_120000_relatorios_vira_atra_na_midia';
 
 export const migrations = [
   {
@@ -425,5 +426,10 @@ export const migrations = [
     up: migration_20260929_223200_fim_das_paginas_internas.up,
     down: migration_20260929_223200_fim_das_paginas_internas.down,
     name: '20260929_223200_fim_das_paginas_internas',
+  },
+  {
+    up: migration_20261001_120000_relatorios_vira_atra_na_midia.up,
+    down: migration_20261001_120000_relatorios_vira_atra_na_midia.down,
+    name: '20261001_120000_relatorios_vira_atra_na_midia',
   },
 ];
