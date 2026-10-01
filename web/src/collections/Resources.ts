@@ -49,7 +49,7 @@ export const Resources: CollectionConfig = {
         { value: 'ebook', label: { pt: 'E-book', en: 'Ebook' } },
       ],
       label: { pt: 'Tipo', en: 'Kind' },
-      admin: { description: { pt: 'Relatório aparece em /relatorios; e-book em /ebooks.', en: 'Reports list on /reports; ebooks on /ebooks.' } },
+      admin: { description: { pt: 'Relatório aparece em /atra-na-midia ("ATRA na mídia"); e-book em /ebooks.', en: 'Reports list on /atra-in-the-media ("ATRA in the media"); ebooks on /ebooks.' } },
     },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     slugField('title'),

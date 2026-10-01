@@ -2,6 +2,7 @@ import { Calendar, Play } from 'lucide-react'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
+import Link from 'next/link'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
@@ -91,10 +92,7 @@ export default async function WebinarsPage() {
           actionLabel={t.acao}
           actionIcon={<Play size={20} aria-hidden />}
           eyebrowIcon={<Calendar size={15} aria-hidden />}
-          acaoSecundaria={{
-            label: t.acaoSecundaria,
-            href: hrefDe('webinars', locale, webinars[0].slug),
-          }}
+          acaoSecundaria={{ label: t.acaoSecundaria }}
         />
       )}
 
@@ -112,7 +110,7 @@ export default async function WebinarsPage() {
                 key={w.slug}
                 index={i}
                 escala
-                className="group flex flex-col gap-5 bg-surface-2 dark:bg-[#181b22]  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] p-4 sm:p-5 transition-all duration-300 shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 dark:hover:bg-[#1e222b]"
+                className="group relative flex flex-col gap-5 bg-surface-2 dark:bg-[#181b22]  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] p-4 sm:p-5 transition-all duration-300 shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 dark:hover:bg-[#1e222b]"
               >
                 <div className="aspect-video rounded-[6px] overflow-hidden relative shadow-md group cursor-pointer ">
                   <Image
@@ -142,7 +140,17 @@ export default async function WebinarsPage() {
                     {w.dateLabel}
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold font-display text-text-main dark:text-white group-hover:text-primary transition-colors leading-snug">
-                    {w.title}
+                    {/* ⚠️ O cartão inteiro leva ao webinar. No legado ele tinha
+                        cursor de mão e hover, mas não era link — e foi portado
+                        assim (D-15); em 30/09 o G-ferrari relatou como defeito.
+                        O link fica no título, com `after:inset-0` cobrindo o
+                        cartão: um link só por cartão, com o título como nome. */}
+                    <Link
+                      href={hrefDe('webinars', locale, w.slug)}
+                      className="after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:after:rounded-[6px] focus-visible:after:ring-2 focus-visible:after:ring-[#3C98FA]"
+                    >
+                      {w.title}
+                    </Link>
                   </h3>
                 </div>
               </EntradaAnimada>

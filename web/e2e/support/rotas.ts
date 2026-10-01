@@ -10,7 +10,8 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'cases-detalhe', caminho: '/cases-de-sucesso/eficiencia-processos-risco' },
   /* `/glossario` **saiu** em 26/09 (D-36): a rota responde 404 enquanto o
      glossário estiver escondido. `smoke.spec.ts` confere o 404. */
-  { nome: 'relatorios', caminho: '/relatorios' },
+  // O nome fica (é o do arquivo de gabarito); o endereço mudou em 01/10.
+  { nome: 'relatorios', caminho: '/atra-na-midia' },
   { nome: 'ebooks', caminho: '/ebooks' },
   { nome: 'webinars', caminho: '/webinars' },
   /* `/blog` **saiu** na Fase 4b, e `/carreiras` junto. As duas listam conteúdo,

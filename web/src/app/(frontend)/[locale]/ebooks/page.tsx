@@ -1,6 +1,7 @@
 import { Calendar, Download } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
@@ -91,7 +92,7 @@ export default async function EbooksPage() {
               <EntradaAnimada
                 key={r.slug}
                 index={i}
-                className="bg-surface-2  hover:border-primary/40 rounded-[6px] p-6 sm:p-8 shadow-sm hover:shadow-xl hover:bg-surface-3 transition-all duration-300 group flex flex-col justify-between"
+                className="relative bg-surface-2  hover:border-primary/40 rounded-[6px] p-6 sm:p-8 shadow-sm hover:shadow-xl hover:bg-surface-3 transition-all duration-300 group flex flex-col justify-between"
               >
                 <div>
                   <div className="aspect-[3/4] rounded-[6px] overflow-hidden mb-6 shadow-inner relative ">
@@ -115,13 +116,14 @@ export default async function EbooksPage() {
                     {r.pages} {t.paginas}
                   </div>
                 </div>
-                {/* Ver a nota do botão em /relatorios: o legado também não baixa nada. */}
-                <button
-                  type="button"
-                  className="w-full py-3 rounded-[6px] border border-primary/40 text-primary font-bold text-xs sm:text-sm hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-98"
+                {/* Ver a nota em /relatorios: era botão sem destino, agora leva
+                    à página do e-book, e o cartão inteiro clica. */}
+                <Link
+                  href={hrefDe('ebooks', locale, r.slug)}
+                  className="w-full py-3 rounded-[6px] border border-primary/40 text-primary font-bold text-xs sm:text-sm hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2 shadow-xs active:scale-98 after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3C98FA]"
                 >
                   <Download size={16} aria-hidden /> <span>{t.cta}</span>
-                </button>
+                </Link>
               </EntradaAnimada>
             ))}
           </div>

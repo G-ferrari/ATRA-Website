@@ -3792,7 +3792,7 @@ export interface Post {
 export interface Resource {
   id: number;
   /**
-   * Reports list on /reports; ebooks on /ebooks.
+   * Reports list on /atra-in-the-media ("ATRA in the media"); ebooks on /ebooks.
    */
   kind: 'report' | 'ebook';
   title: string;

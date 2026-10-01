@@ -99,6 +99,23 @@ export const ROTAS_APOSENTADAS = [
   },
 ] as const
 
+/**
+ * Seções que **mudaram de endereço** e seguem existindo (01/10/2026):
+ * "Relatórios" virou "ATRA na mídia", e `/relatorios` virou `/atra-na-midia`
+ * antes de o site ir ao ar. O endereço antigo já está em link gravado no CMS
+ * (menu, página Insights) e em quem acompanhou a homologação.
+ *
+ * Mesmas regras de `ROTAS_APOSENTADAS`: origem escrita à mão e sem barra final,
+ * destino por `hrefDe`. Lista separada porque lá cada destino carrega
+ * `?setor=`, e os testes cobram isso de toda linha.
+ */
+export const ROTAS_RENOMEADAS = [
+  { source: '/relatorios', destination: hrefDe('relatorios', 'pt'), permanent: true },
+  { source: '/relatorios/:slug', destination: `${hrefDe('relatorios', 'pt')}/:slug`, permanent: true },
+  { source: '/en/reports', destination: hrefDe('relatorios', 'en'), permanent: true },
+  { source: '/en/reports/:slug', destination: `${hrefDe('relatorios', 'en')}/:slug`, permanent: true },
+] as const
+
 /** As URLs que saem de propósito, para o `proxy.ts` responder 410. */
 export function caminhosGone(linhas: LinhaDeRedirect[]): string[] {
   return linhas.filter((l) => l.status === 410).map((l) => l.from.replace(/\/$/, ''))

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { ehSetor } from './diagnostico-maturidade'
-import { ROTAS_APOSENTADAS, caminhosGone, lerCsv, redirectsDoNext } from './redirects'
+import { ROTAS_APOSENTADAS, ROTAS_RENOMEADAS, caminhosGone, lerCsv, redirectsDoNext } from './redirects'
 import { canonizarSegmento } from './routes'
 
 const CSV = `from,to,status,note
@@ -100,6 +100,36 @@ describe('ROTAS_APOSENTADAS', () => {
   it('a origem não é mais seção do site', () => {
     expect(canonizarSegmento('diagnostico-rc18', 'pt')).toBeNull()
     expect(canonizarSegmento('rc18-diagnostic', 'en')).toBeNull()
+  })
+})
+
+/* 01/10: "Relatórios" virou "ATRA na mídia" e o endereço mudou junto. O antigo
+   está em link gravado no CMS e em favorito de quem viu a homologação. */
+describe('ROTAS_RENOMEADAS', () => {
+  const destinoDe = (source: string) => ROTAS_RENOMEADAS.find((r) => r.source === source)?.destination
+
+  it('leva /relatorios e /en/reports ao endereço novo, com e sem slug', () => {
+    expect(destinoDe('/relatorios')).toBe('/atra-na-midia')
+    expect(destinoDe('/relatorios/:slug')).toBe('/atra-na-midia/:slug')
+    expect(destinoDe('/en/reports')).toBe('/en/atra-in-the-media')
+    expect(destinoDe('/en/reports/:slug')).toBe('/en/atra-in-the-media/:slug')
+  })
+
+  it('origem sem barra final, diferente do destino e permanente', () => {
+    for (const r of ROTAS_RENOMEADAS) {
+      expect(r.source).not.toMatch(/\/$/)
+      expect(r.destination).not.toBe(r.source)
+      expect(r.permanent).toBe(true)
+    }
+  })
+
+  /* Se o endereço antigo voltar a `routes.ts`, a rota reaparece e o redirect a
+     esconde: uma das duas coisas está errada. */
+  it('a origem não é mais endereço de seção', () => {
+    expect(canonizarSegmento('relatorios', 'pt')).toBeNull()
+    expect(canonizarSegmento('reports', 'en')).toBeNull()
+    expect(canonizarSegmento('atra-na-midia', 'pt')).toBe('atra-na-midia')
+    expect(canonizarSegmento('atra-in-the-media', 'en')).toBe('atra-na-midia')
   })
 })
 

@@ -13,7 +13,13 @@ export const SECOES = {
   // está quebrado lá também. Centralizado aqui para não nascer na mão.
   contato: { pt: 'contato', en: 'contact' },
   glossario: { pt: 'glossario', en: 'glossary' },
-  relatorios: { pt: 'relatorios', en: 'reports' },
+  /* ⚠️ A chave segue `relatorios`, o endereço não: em 01/10 a seção passou a se
+     chamar "ATRA na mídia" (G-ferrari), e o endereço mudou junto, antes de o
+     site ir ao ar — `/relatorios` e `/en/reports` redirecionam
+     (`ROTAS_RENOMEADAS`, em `lib/redirects.ts`). A chave e a collection
+     (`resources`, tipo `report`) ficam como estão até a seção virar matérias
+     de imprensa de fato, que é mudança de modelo e outra tarefa. */
+  relatorios: { pt: 'atra-na-midia', en: 'atra-in-the-media' },
   ebooks: { pt: 'ebooks', en: 'ebooks' },
   webinars: { pt: 'webinars', en: 'webinars' },
   blog: { pt: 'blog', en: 'blog' },
