@@ -1138,3 +1138,37 @@ levar para lá.
   recomendação de mantê-lo.
 - O texto da faixa está em dois lugares — o componente e cada bloco gravado. O
   bloco é editável no admin página a página; o componente, só por código.
+
+## D-43 — "Relatórios" vira "ATRA na mídia", com endereço novo antes do lançamento
+
+*Decidida em 01/10/2026 por G-ferrari, na véspera da virada.*
+
+**Contexto.** A seção `/relatorios` veio do protótipo como arquivo de relatórios
+para baixar, com três itens de exemplo. O que a ATRA quer naquele lugar é a
+presença dela na imprensa.
+
+**Decisão.** A seção passa a se chamar **"ATRA na mídia"** e o endereço muda
+junto, para `/atra-na-midia` (`/en/atra-in-the-media`), **antes** de o site ir ao
+ar — depois, a troca custaria links e indexação apontando para o antigo. A seção
+**vira matérias de imprensa** (veículo, data, link para fora, sem download nem
+formulário), mas isso é mudança de modelo e fica como tarefa: hoje muda só o
+nome e o endereço.
+
+**Consequências.**
+
+- `lib/routes.ts`: a chave continua `relatorios`, o endereço não. A pasta da
+  rota foi renomeada (o sistema de arquivos usa o caminho em português), e
+  `/relatorios` e `/en/reports`, com e sem slug, redirecionam por
+  `ROTAS_RENOMEADAS` (`lib/redirects.ts`), separada de `ROTAS_APOSENTADAS`
+  porque lá toda linha carrega `?setor=`.
+- No CMS, a migração `20261001_120000_relatorios_vira_atra_na_midia` troca o
+  rótulo do menu, a aba e a categoria dos cartões da página Insights, e todo
+  link para `/relatorios`. A regra (`migrations/arquivos/atra-na-midia.ts`, com
+  teste) troca rótulo exato e destino, **nunca frase**.
+- ⚠️ **Fica com o marketing (D-22):** a descrição do item no menu ("Análises
+  profundas do mercado de dados.") e a da página Insights ("…relatórios de
+  mercado…") ainda falam de relatório; os itens seguem com selo "Relatório" e
+  botão "Baixar Relatório Grátis" até o modelo mudar. A meta descrição da página
+  também é a antiga.
+- Collection `resources` e tipo `report` não mudam de nome: a renomeação de
+  verdade vem com o modelo de matéria.
