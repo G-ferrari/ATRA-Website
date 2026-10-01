@@ -15,7 +15,7 @@ depende_de: [../00-contexto/decisoes.md]
 | Postgres | container | container no mesmo host, só em 127.0.0.1 | container no mesmo host |
 | Storage | MinIO em container | MinIO em container, sem porta pública — R2 segue recomendado (deploy-vps.md) | idem, até P-21/R2 |
 | Dado | seed determinístico | **real** — 207 posts, 7 vagas, mídia do WP; zero fixture | real |
-| Acesso | — | senha (Basic Auth) + `noindex` + robots bloqueando | público |
+| Acesso | — | `noindex` + robots bloqueando; a senha (Basic Auth) saiu em 01/10 (D-45) | público |
 | E-mail | logado no console | sem chave: lead grava e `notified` fica falso | Resend |
 | Sentry | desligado | pendente (MIG-122, espera conta) | `environment: production` |
 
@@ -23,12 +23,11 @@ depende_de: [../00-contexto/decisoes.md]
 por header — o Basic do Caddy já ocupa o `Authorization`. A nota completa está
 no runbook (seção do Ensaio).
 
-**Onde fica a credencial do Basic Auth:** na própria VPS. O repositório e o
-`.env.prod` guardam só o **hash bcrypt** (irreversível); o usuário e a senha em
-texto estão anotados na VPS. Perdeu? Não se recupera — troca-se: `caddy
-hash-password` gera o hash novo, que substitui o antigo no `.env.prod` **por
-edição de texto** (nunca `source` — o `$$` do bcrypt vira PID no bash), e o
-Caddy é recriado.
+**A senha do Basic Auth saiu em 01/10/2026 (D-45).** A homologação virou
+interna, com os funcionários da ATRA, e o bloqueio deixou de fazer sentido. Se
+voltar um dia: `caddy hash-password` gera o hash, que entra no `.env.prod` **por
+edição de texto** (nunca `source` — o `$$` do bcrypt vira PID no bash), o bloco
+`basic_auth` volta ao Caddyfile e o Caddy é recriado.
 
 **Staging não é opcional.** É onde o ensaio de cutover roda (MIG-132) e onde o
 `redirects.csv` é validado antes de valer para o Google.

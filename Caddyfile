@@ -45,23 +45,19 @@
 Disallow: /" 200
 	}
 
-	# ⚠️ A senha protege o ambiente, não o conteúdo — ele é o mesmo que já está
-	# público em atra.com.br. Serve para robô não entrar e para link vazado não
-	# virar site paralelo. O hash é bcrypt, gerado por `caddy hash-password`.
-	basic_auth {
-		{$BASIC_AUTH_USER} {$BASIC_AUTH_HASH}
-	}
+	# A senha (Basic Auth) saiu em 01/10/2026 (D-45): a homologação passou a ser
+	# interna, com os funcionários, e a senha atrapalhava mais do que protegia.
+	# O que segura robô continua sendo o `noindex` e o robots acima.
 
 	# MIG-104: o caminho público das URLs pré-assinadas do bucket privado.
 	# O MinIO segue sem porta exposta — só se chega por aqui, e sem assinatura
 	# válida ele responde 403 (provado). Declarado ANTES do proxy geral: a
 	# primeira rota que casa vence.
 	#
-	# ⚠️ `-Authorization` é obrigatório: no staging o navegador reanexa o Basic
-	# do site, e o MinIO interpreta qualquer header Authorization como
-	# assinatura AWS — a presença dele quebra a URL pré-assinada. A autenticação
-	# do site já aconteceu no basic_auth acima; daqui para dentro vale a
-	# assinatura da URL.
+	# ⚠️ `-Authorization` fica mesmo sem a senha do site: o MinIO interpreta
+	# qualquer header Authorization como assinatura AWS, e um navegador que
+	# ainda guarde o Basic antigo quebraria a URL pré-assinada. Daqui para
+	# dentro vale só a assinatura da URL.
 	reverse_proxy /atra-privado/* minio:9000 {
 		header_up -Authorization
 	}

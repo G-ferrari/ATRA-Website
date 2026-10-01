@@ -24,12 +24,10 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      # O Caddyfile lê estes três com a sintaxe `{$VAR}`. Sem passá-los aqui,
-      # o placeholder resolve vazio: o site responderia em qualquer hostname,
-      # sem certificado e sem senha.
+      # O Caddyfile lê este com a sintaxe `{$VAR}`. Sem passá-lo aqui, o
+      # placeholder resolve vazio: o site responderia em qualquer hostname e
+      # sem certificado. (BASIC_AUTH_USER/HASH saíram em 01/10, D-45.)
       SITE_HOST: ${SITE_HOST}
-      BASIC_AUTH_USER: ${BASIC_AUTH_USER}
-      BASIC_AUTH_HASH: ${BASIC_AUTH_HASH}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data      # certificados: perder isto refaz o ACME do zero
