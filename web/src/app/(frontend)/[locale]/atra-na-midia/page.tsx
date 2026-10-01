@@ -1,6 +1,7 @@
 import { Download, FileText } from 'lucide-react'
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
@@ -12,7 +13,14 @@ import { hrefDe } from '@/lib/routes'
 import type { Resource } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
 
-/* /relatorios (MIG-041) — porte de `legacy/src/pages/Reports.tsx`. */
+/* /atra-na-midia — era /relatorios (MIG-041), porte de
+ * `legacy/src/pages/Reports.tsx`.
+ *
+ * Em 01/10 a seção passou a se chamar "ATRA na mídia" e o endereço mudou junto
+ * (ver `lib/routes.ts`). ⚠️ Só o nome mudou aqui: os itens ainda são os
+ * relatórios para baixar, com selo "Relatório" e botão de download. Virar
+ * matérias de imprensa (veículo, data, link para fora) é mudança de modelo, e
+ * está registrada como tarefa. */
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
@@ -23,22 +31,22 @@ const TEXTOS = {
     selo: 'Relatório',
     eyebrow: 'Relatório Técnico',
     acao: 'Baixar Relatório Grátis',
-    tituloArquivo: 'Arquivo de',
-    tituloDestaque: 'Relatórios',
+    tituloArquivo: 'ATRA na',
+    tituloDestaque: 'mídia',
     cta: 'Solicitar acesso',
     rotuloDaCapa: 'Report 2026',
-    metaTitle: 'Relatórios',
+    metaTitle: 'ATRA na mídia',
     metaDescription: 'Pesquisas e benchmarks sobre dados, IA e cloud no mercado brasileiro.',
   },
   en: {
     selo: 'Report',
     eyebrow: 'Technical Report',
     acao: 'Download the free report',
-    tituloArquivo: 'Report',
-    tituloDestaque: 'archive',
+    tituloArquivo: 'ATRA in the',
+    tituloDestaque: 'media',
     cta: 'Request access',
     rotuloDaCapa: 'Report 2026',
-    metaTitle: 'Reports',
+    metaTitle: 'ATRA in the media',
     metaDescription: 'Research and benchmarks on data, AI and cloud in the Brazilian market.',
   },
 } as const
@@ -100,7 +108,7 @@ export default async function RelatoriosPage() {
               <EntradaAnimada
                 key={r.slug}
                 index={i}
-                className="group flex flex-col bg-surface-2 dark:bg-[#181b22]  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 dark:hover:bg-[#1e222b] transition-all duration-300"
+                className="group relative flex flex-col bg-surface-2 dark:bg-[#181b22]  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 dark:hover:bg-[#1e222b] transition-all duration-300"
               >
                 <div className="aspect-[16/10] overflow-hidden relative border-b border-slate-200 dark:border-white/10">
                   <Image
@@ -127,15 +135,18 @@ export default async function RelatoriosPage() {
                   <p className="text-text-muted dark:text-gray-300 text-xs sm:text-sm font-light leading-relaxed line-clamp-3 mb-6 flex-1">
                     {r.description}
                   </p>
-                  {/* Botão sem destino: no legado ele também não faz nada. O
-                      formulário de acesso é MIG-045 (debito-tecnico.md). */}
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 text-primary dark:text-[#3C98FA] hover:text-primary-dark dark:hover:text-white font-bold text-xs sm:text-sm hover:gap-3 transition-all cursor-pointer self-start"
+                  {/* ⚠️ Era um botão sem destino, como no legado (D-15), e o
+                      cartão não levava a lugar nenhum — o mesmo defeito dos
+                      webinars, relatado em 30/09. Leva à página do material,
+                      onde está o formulário de acesso (MIG-045); o
+                      `after:inset-0` faz o cartão inteiro clicar. */}
+                  <Link
+                    href={hrefDe('relatorios', locale, r.slug)}
+                    className="inline-flex items-center gap-2 text-primary dark:text-[#3C98FA] hover:text-primary-dark dark:hover:text-white font-bold text-xs sm:text-sm hover:gap-3 transition-all self-start after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:after:rounded-[6px] focus-visible:after:ring-2 focus-visible:after:ring-[#3C98FA]"
                   >
                     <span>{t.cta}</span>
                     <Download size={15} aria-hidden />
-                  </button>
+                  </Link>
                 </div>
               </EntradaAnimada>
             ))}

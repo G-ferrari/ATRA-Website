@@ -7,7 +7,7 @@ import { isLocale, LOCALES } from '@/lib/locales'
 import { buscarMaterial, slugsDeMaterial } from '@/lib/materiais'
 import { metadataDe } from '@/lib/seo'
 
-/* /relatorios/[slug] (MIG-045). Rota **sem gabarito** — não existe no protótipo.
+/* /atra-na-midia/[slug] — era /relatorios/[slug] (MIG-045). Rota **sem gabarito** — não existe no protótipo.
  * A estrutura vive em `PaginaDeMaterial`, compartilhada com a outra rota. */
 
 const KIND = 'report' as const
@@ -15,7 +15,7 @@ const SECAO = 'relatorios' as const
 
 const TEXTOS: Record<'pt' | 'en', TextosDoMaterial> = {
   pt: {
-    voltar: 'Voltar para relatórios',
+    voltar: 'Voltar para ATRA na mídia',
     prefixo: 'Relatório Técnico',
     cta: 'Baixar Relatório Grátis',
     ctaIndisponivel: 'O arquivo ainda não está disponível para download.',
@@ -24,7 +24,7 @@ const TEXTOS: Record<'pt' | 'en', TextosDoMaterial> = {
     semCorpoTexto: 'Assim que o resumo do relatório estiver pronto, ele aparece aqui.',
   },
   en: {
-    voltar: 'Back to reports',
+    voltar: 'Back to ATRA in the media',
     prefixo: 'Technical Report',
     cta: 'Download the free report',
     ctaIndisponivel: 'The file is not available for download yet.',
@@ -45,7 +45,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps<'/[locale]/relatorios/[slug]'>): Promise<Metadata> {
+}: PageProps<'/[locale]/atra-na-midia/[slug]'>): Promise<Metadata> {
   const { slug } = await params
   const locale = await getLocale()
   if (!isLocale(locale)) return {}
@@ -57,7 +57,7 @@ export async function generateMetadata({
   return metadataDe({ locale, local: { secao: 'relatorios', slug }, seo: material.seo, corpo: material.body })
 }
 
-export default async function MaterialPage({ params }: PageProps<'/[locale]/relatorios/[slug]'>) {
+export default async function MaterialPage({ params }: PageProps<'/[locale]/atra-na-midia/[slug]'>) {
   const { slug } = await params
   const locale = await getLocale()
   if (!isLocale(locale)) notFound()
