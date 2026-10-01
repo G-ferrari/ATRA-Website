@@ -241,12 +241,17 @@ jobs:
 
   deploy:
     name: deploy na VPS
-    # Só em push para migracao. PR não faz deploy: o código de fora do
-    # repositório nunca deve chegar ao servidor.
+    # Só em push para `main` ou `migracao`. PR não faz deploy: o código de
+    # fora do repositório nunca deve chegar ao servidor.
+    # `main` entrou em 01/10 (D-44): a publicação não pode depender de quem
+    # trabalha na `migracao`. As duas apontam para o MESMO servidor
+    # (`VPS_HOST`), então `main` só recebe push quando está à frente da
+    # `migracao` — push de uma `main` atrasada leva ao ar código velho sobre
+    # um banco já migrado. `migracao` sai daqui no cutover.
     # O e2e voltou ao `needs` em 27/09 (D-39): de 26/08 até ali o deploy saía
     # só com o `verify`. Religar era pré-requisito do cutover — um deploy que
     # não espera a suíte leva ao ar o formulário que parou de gravar.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/migracao'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/migracao')
     needs: [verify, e2e]
     runs-on: ubuntu-latest
     # Um deploy de cada vez, sem cancelar o que está no meio: interromper entre

@@ -133,7 +133,7 @@ pnpm gate --baseline                     # regrava o gabarito a partir do legado
 pnpm gate --sem-build                    # reaproveita o .next existente
 pnpm gate --rota home --viewport desktop # 1 teste em vez de 207, para iterar
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 261 linhas
-git push origin migracao                 # deploy: CI valida e a VPS troca sozinha, com rollback
+git push origin migracao                 # deploy: CI valida e a VPS troca sozinha, com rollback (push na `main` também publica, D-44)
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
 ```
 
@@ -276,7 +276,7 @@ interna legível sem pôr foto de banco no ar. Os arquivos ficam em
 
 Desde 24/08 o site roda **em homologação numa VPS** (`srv1927832.hstgr.cloud`,
 Hostinger KVM2, atrás de senha e `noindex`), com o conteúdo real completo.
-**`git push` na `migracao` é o deploy**: CI valida (lint, types, gate) e a VPS
+**`git push` na `migracao` ou na `main` é o deploy** (D-44): CI valida (lint, types, gate) e a VPS
 rebuilda, migra e troca com healthcheck e rollback — `infra/deploy/deploy.sh` e
 o job `deploy` do `ci.yml`. Backup diário com restore **verificado por
 contagem** (`infra/backup/`). E **publicar no CMS atualiza o site sem deploy**
