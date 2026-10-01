@@ -322,7 +322,7 @@ interna legível sem pôr foto de banco no ar. Os arquivos ficam em
 `credit` da mídia.
 
 Desde 24/08 o site roda **em homologação numa VPS** (`srv1927832.hstgr.cloud`,
-Hostinger KVM2, atrás de senha e `noindex`), com o conteúdo real completo.
+Hostinger KVM2, com `noindex`; a senha saiu em 01/10, D-45), com o conteúdo real completo.
 **`git push` na `main` é o deploy** (D-44; até 01/10 era a `migracao`): CI valida (lint, types, gate) e a VPS
 rebuilda, migra e troca com healthcheck e rollback — `infra/deploy/deploy.sh` e
 o job `deploy` do `ci.yml`. Backup diário com restore **verificado por

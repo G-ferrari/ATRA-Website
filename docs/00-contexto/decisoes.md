@@ -1199,3 +1199,29 @@ de merge publica, sem depender de desenvolvedor específico.
 - PR continua sem deploy: o `if` exige `push`.
 - Fica recomendada a proteção da `main` no GitHub, exigindo o CI verde antes
   do merge: "qualquer um pode publicar" não deve virar "qualquer push publica".
+
+## D-45 — A homologação perde a senha
+
+*Decidida em 01/10/2026 por Leonardo, ao abrir a homologação na VM do Google
+para os funcionários da ATRA.*
+
+**Contexto.** Desde 24/08 o ambiente de homologação ficava atrás de um Basic
+Auth no Caddy (usuário e hash bcrypt no `.env.prod`), para robô não entrar e
+link vazado não virar site paralelo. Com a homologação interna, cada
+funcionário precisaria da senha, e ela colidia com o header `Authorization`
+do CMS (ver a nota do runbook de cutover).
+
+**Decisão.** O bloco `basic_auth` sai do Caddyfile e as variáveis
+`BASIC_AUTH_USER` e `BASIC_AUTH_HASH` saem do compose. O que continua
+segurando indexação é o `X-Robots-Tag: noindex` e o `robots.txt` bloqueando
+tudo — isso não muda enquanto o ambiente for homologação.
+
+**Consequências.**
+
+- O conteúdo da homologação fica acessível a quem tiver a URL. É o mesmo
+  conteúdo já público em atra.com.br, mais o que o marketing editar antes da
+  virada; link vazado é risco aceito pelo dono.
+- O `deploy.sh` segue aceitando 401 na conferência externa, por
+  compatibilidade; o que importa é que 200 passa.
+- A nota do runbook sobre autenticar por cookie no CMS deixa de ser
+  necessária: sem o Basic, o header `Authorization` fica livre para o JWT.
