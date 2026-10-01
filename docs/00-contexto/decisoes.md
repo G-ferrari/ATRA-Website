@@ -1225,3 +1225,40 @@ tudo — isso não muda enquanto o ambiente for homologação.
   compatibilidade; o que importa é que 200 passa.
 - A nota do runbook sobre autenticar por cookie no CMS deixa de ser
   necessária: sem o Basic, o header `Authorization` fica livre para o JWT.
+
+## D-46 — Observabilidade de erros: Sentry inerte até a conta, uptime por issue, logs no journald
+
+*Decidida em 01/10/2026 por Leonardo, depois de uma queda percebida por um
+testador que ninguém conseguiu medir.*
+
+**Contexto.** A spec de observabilidade (backup-e-observabilidade.md) existia
+desde agosto, mas MIG-122 (Sentry) esperava uma conta e MIG-124 (uptime)
+esperava um destino de alerta. Sem log de acesso no Caddy e com o log dos
+containers morrendo a cada deploy, a investigação de 01/10 só conseguiu
+reconstruir a linha do tempo pelo journal do Docker.
+
+**Decisão.** Implementar o que não depende de conta nenhuma, e deixar o Sentry
+pronto para o dia em que a conta existir:
+
+- **Sentry** nos três lados (servidor, edge, navegador), com `environment`
+  derivado de `NEXT_PUBLIC_SITE_URL`, `release` igual ao SHA do deploy, 0.1 de
+  amostra, sem PII (padrão do SDK 11; `sendDefaultPii` não existe mais), corpo e cookies da requisição removidos no
+  `beforeSend`, e ruído de extensão de navegador descartado. **Sem DSN o SDK é
+  inerte** — é como roda no CI, no dev e no gate. Sem upload de source map nem
+  criação de release pelo plugin: exigem token, e é decisão separada.
+- **Uptime pelo GitHub Actions**, a cada 5 minutos (o mínimo do cron), com os
+  alvos da spec e a validade do certificado. Queda abre uma issue com a
+  etiqueta `uptime` e a fecha ao voltar; o e-mail do GitHub é o alerta. É
+  interino, porque o cron atrasa e 5 min não é 1 min, mas é o destino de
+  notificação que existe.
+- **Logs**: containers no journald do host (30 dias, 2 GB), que sobrevive ao
+  `--force-recreate`; log de acesso do Caddy em arquivo JSON por 30 dias.
+
+**Consequências.**
+
+- `SENTRY_DSN` e `NEXT_PUBLIC_SENTRY_DSN` entram no `.env.prod` quando a conta
+  existir; o segundo é build-arg no `deploy.sh`. Nada mais muda para ligar.
+- O cron só roda na branch padrão; o alvo vem de `vars.SITE_URL` do
+  repositório, para a virada de domínio não exigir commit.
+- Trocar o driver de log exige recriar os quatro containers uma vez. Postgres
+  e MinIO são recriados à mão, no mesmo intervalo de um deploy.

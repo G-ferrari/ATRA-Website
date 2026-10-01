@@ -53,6 +53,8 @@ docker build --target runner --network=host --no-cache-filter build,runner \
   --build-arg NEXT_PUBLIC_SITE_URL="${SITE_URL}" \
   --build-arg S3_ENDPOINT="http://127.0.0.1:9000" \
   --build-arg S3_BUCKET="atra-media" \
+  --build-arg SENTRY_RELEASE="$SHA" \
+  --build-arg NEXT_PUBLIC_SENTRY_DSN="$(valor NEXT_PUBLIC_SENTRY_DSN)" \
   -t "atra-website:$SHA" . 2>&1 | grep --line-buffered -E "Generating static pages|ERROR" \
   || true  # o veredito é do healthcheck adiante; aqui é só progresso fluindo
 # ⚠️ `--line-buffered` e sem `tail`: o progresso precisa **fluir** durante os

@@ -38,6 +38,7 @@
     "@payloadcms/richtext-lexical": "3.88.0",
     "@payloadcms/storage-s3": "3.88.0",
     "@payloadcms/translations": "3.88.0",
+    "@sentry/nextjs": "^11.1.0",
     "clsx": "^2.1.1",
     "graphql": "^16.14.2",
     "lucide-react": "^0.546.0",

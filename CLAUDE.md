@@ -361,6 +361,10 @@ CustomEvent (`atra:consentimento`). Vídeo de webinar é click-to-load, fora do
 banner. Mesmo gate de código de D-29: `bannerMessage` (global `cookie-consent`)
 nasce vazio até P-14, e sem ele nada renderiza — gabarito do gate intacto.
 
+**D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
+`SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
+containers logando no journald e o Caddy com log de acesso em arquivo.
+
 **D-41 (29/09)** tirou a integração com o **ATRAIR** do ambiente: o global
 `integrations` (Sistema → Integrações, só admin) tem **duas chaves** —
 `jobsFeed`, a grade de `/carreiras`, e `talentPool`, a ida do currículo — mais o

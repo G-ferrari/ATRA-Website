@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import { withPayload } from '@payloadcms/next/withPayload'
+import { withSentryConfig } from '@sentry/nextjs/config'
 import { cpus } from 'node:os'
 import path from 'node:path'
 import type { NextConfig } from 'next'
@@ -104,4 +105,27 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withPayload(nextConfig, { devBundleServerPackages: false })
+/* Sentry por fora do Payload, como o SDK pede (ele precisa ver a config final).
+ *
+ * ⚠️ Importado de `@sentry/nextjs/config`, não da raiz do pacote: o `next
+ * typegen` e o `next build` compilam este arquivo com a condição de exports
+ * errada para a raiz, e `withSentryConfig` chegava `undefined` ("is not a
+ * function"). O subcaminho `config` só tem `default` e resolve igual em
+ * qualquer modo.
+ *
+ * ⚠️ Sem upload de source map e sem criar release no painel: os dois exigem
+ * `SENTRY_AUTH_TOKEN`, que não existe no build da VM nem no CI, e o plugin
+ * avisaria a cada build. O stack trace chega minificado; o `release` (SHA do
+ * deploy) e o `environment` chegam, que é o que liga erro a commit. Ligar o
+ * upload é decisão separada, com token no `.env.prod`. `silent` cala o aviso
+ * de token ausente; `telemetry` é a do plugin para a Sentry, não a nossa. */
+export default withSentryConfig(withPayload(nextConfig, { devBundleServerPackages: false }), {
+  silent: true,
+  telemetry: false,
+  sourcemaps: { disable: true },
+  release: { name: process.env.SENTRY_RELEASE, create: false, finalize: false },
+  widenClientFileUpload: false,
+  /* Tira do bundle do navegador o código de log do próprio SDK (o antigo
+   * `disableLogger`, que o SDK 11 renomeou). */
+  bundleSizeOptimizations: { excludeDebugStatements: true },
+})
