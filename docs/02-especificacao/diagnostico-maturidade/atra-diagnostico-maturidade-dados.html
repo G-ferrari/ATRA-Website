@@ -1,0 +1,1078 @@
+<!-- =====================================================================
+     ATRA · Diagnóstico de Maturidade de Dados (quiz interativo)
+     Arquivo único: HTML + CSS + JS vanilla. Sem dependências externas
+     além da fonte Inter (Google Fonts, opcional).
+     Cole inteiro num widget "HTML" do Elementor ou num bloco
+     "HTML personalizado" do Gutenberg. Configure a seção CONFIG do JS.
+     ===================================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* ---------- Tokens (paleta ATRA) ---------- */
+  #atra-quiz{
+    --primary:#01588a;      /* azul profundo · texto/ações principais */
+    --accent:#0d99ff;       /* azul vivo · filete, foco, progresso   */
+    --deep:#0c2340;         /* navy · títulos                        */
+    --warm:#ffab40;         /* laranja · destaque, CTA secundário    */
+    --warm-ink:#8a5200;
+    --ink:#373737;
+    --muted:#6b7280;
+    --line:#e4ebf5;
+    --bg:#f4f7fc;
+    --card:#ffffff;
+    --ok:#1f9d57;
+    --err:#d93025;
+    --radius:18px;
+    --shadow:0 18px 50px rgba(12,35,64,.10);
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    box-sizing:border-box;
+    position:relative;
+    width:100%;
+    max-width:760px;
+    margin:0 auto;
+    padding:16px;
+  }
+  #atra-quiz *,#atra-quiz *::before,#atra-quiz *::after{box-sizing:inherit}
+  #atra-quiz [hidden]{display:none!important}
+
+  /* Motivo de fundo: blobs suaves azul + laranja */
+  #atra-quiz::before,#atra-quiz::after{
+    content:"";position:absolute;z-index:0;border-radius:50%;filter:blur(60px);opacity:.35;pointer-events:none
+  }
+  #atra-quiz::before{width:320px;height:320px;left:-120px;top:-80px;background:radial-gradient(circle,var(--accent),transparent 70%)}
+  #atra-quiz::after{width:260px;height:260px;right:-100px;bottom:-40px;background:radial-gradient(circle,var(--warm),transparent 70%)}
+
+  .aq-card{
+    position:relative;z-index:1;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden
+  }
+  .aq-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px 0}
+  .aq-brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--deep);font-size:14px;letter-spacing:.02em}
+  .aq-brand img{height:30px;width:auto;display:block}
+  .aq-step-label{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap}
+
+  /* Barra de progresso fluida */
+  .aq-progress{height:6px;background:var(--line);margin:14px 24px 0;border-radius:99px;overflow:hidden}
+  .aq-progress > i{display:block;height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--primary),var(--accent));
+    transition:width .45s cubic-bezier(.22,.8,.3,1)}
+
+  .aq-body{padding:22px 24px 24px;min-height:340px}
+  .aq-screen{display:none;animation:aqIn .32s ease both}
+  .aq-screen.is-active{display:block}
+  @keyframes aqIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .aq-pilar{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--primary);background:#e8f4ff;padding:5px 10px;border-radius:99px;margin-bottom:12px}
+  .aq-pilar::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .aq-tags{display:flex;flex-wrap:wrap;gap:6px;margin:-6px 0 16px}
+  .aq-tags span{font-size:11px;font-weight:600;color:var(--warm-ink);background:#fff4e5;border:1px solid #ffd9a6;border-radius:99px;padding:3px 9px}
+  .aq-tags .lb{color:var(--muted);background:transparent;border:0;padding-left:0;font-weight:500}
+  .aq-setor-impactos{margin:4px 0 0}
+  .aq-tags .etc{color:var(--muted);background:transparent;border-color:var(--line);font-weight:500}
+  .aq-tags .dama{color:var(--primary);background:#e8f4ff;border-color:#bde3ff;margin-right:6px}
+  .aq-title{font-size:clamp(19px,2.4vw,24px);line-height:1.3;font-weight:700;color:var(--deep);margin:0 0 6px}
+  .aq-sub{font-size:14px;color:var(--muted);margin:0 0 18px;line-height:1.5}
+
+  /* Opções de resposta */
+  .aq-options{display:grid;gap:10px}
+  .aq-opt{
+    display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;cursor:pointer;
+    background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;
+    font:inherit;font-size:15px;line-height:1.45;color:var(--ink);
+    transition:border-color .18s,box-shadow .18s,transform .18s,background .18s
+  }
+  .aq-opt:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 6px 18px rgba(13,153,255,.12)}
+  .aq-opt:focus-visible{outline:3px solid rgba(13,153,255,.35);outline-offset:2px}
+  .aq-opt.is-selected{border-color:var(--primary);background:#eef6ff;box-shadow:inset 0 0 0 1px var(--primary)}
+  .aq-opt .k{flex:0 0 26px;height:26px;border-radius:8px;display:grid;place-items:center;
+    font-size:12px;font-weight:700;color:var(--primary);background:#e8f4ff}
+  .aq-opt.is-selected .k{background:var(--primary);color:#fff}
+
+  /* Campos */
+  .aq-grid{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+  .aq-field{display:flex;flex-direction:column;gap:6px}
+  .aq-field.full{grid-column:1/-1}
+  .aq-field label{font-size:13px;font-weight:600;color:var(--deep)}
+  .aq-field label small{color:var(--muted);font-weight:500}
+  .aq-field input:not([type=checkbox]),.aq-field select{
+    font:inherit;font-size:15px;color:var(--ink);background:#fff;border:1.5px solid var(--line);
+    border-radius:12px;padding:12px 14px;width:100%;transition:border-color .18s,box-shadow .18s;appearance:none;-webkit-appearance:none
+  }
+  .aq-field select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2301588a' stroke-width='2.5'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+  .aq-field input:not([type=checkbox]):focus,.aq-field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(13,153,255,.15)}
+  .aq-field.is-invalid input:not([type=checkbox]),.aq-field.is-invalid select{border-color:var(--err)}
+  .aq-field .err{display:none;font-size:12px;color:var(--err)}
+  .aq-field.is-invalid .err{display:block}
+  .aq-consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.5}
+  .aq-consent input[type=checkbox]{appearance:auto;-webkit-appearance:checkbox;flex:0 0 18px;width:18px;height:18px;margin:2px 0 0;accent-color:var(--primary);cursor:pointer}
+  .aq-consent span{cursor:pointer}
+  .aq-field.is-invalid .aq-consent input[type=checkbox]{outline:2px solid var(--err);outline-offset:2px;border-radius:3px}
+  .aq-consent a{color:var(--primary)}
+
+  /* Rodapé de navegação */
+  .aq-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 24px 22px}
+  .aq-btn{
+    font:inherit;font-weight:600;font-size:15px;cursor:pointer;border:0;border-radius:12px;padding:13px 22px;
+    display:inline-flex;align-items:center;gap:8px;transition:transform .15s,box-shadow .15s,opacity .15s;text-decoration:none
+  }
+  .aq-btn:disabled{opacity:.45;cursor:not-allowed}
+  .aq-btn-primary{background:var(--primary);color:#fff;box-shadow:0 8px 20px rgba(1,88,138,.25)}
+  .aq-btn-primary:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(1,88,138,.32)}
+  .aq-btn-ghost{background:transparent;color:var(--muted);padding-left:8px}
+  .aq-btn-ghost:hover{color:var(--primary)}
+  .aq-btn-warm{background:var(--warm);color:var(--deep)}
+  .aq-btn-wa{background:#25d366;color:#fff}
+  .aq-help{font-size:13px;color:var(--muted);text-align:center;padding:0 24px 20px;line-height:1.5}
+  .aq-help a{color:var(--primary);font-weight:600;text-decoration:none}
+
+  /* Tela final */
+  .aq-done{text-align:center;padding:14px 0 4px}
+  .aq-done .ico{width:64px;height:64px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff;font-size:28px}
+  .aq-done .aq-title{margin-bottom:10px}
+  .aq-ctas{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px}
+  .aq-alert{display:none;background:#fff4e5;border:1px solid #ffd9a6;color:var(--warm-ink);border-radius:12px;padding:12px 14px;font-size:13px;margin-top:14px}
+  .aq-alert.is-on{display:block}
+  .aq-loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:aqSpin .7s linear infinite}
+  @keyframes aqSpin{to{transform:rotate(360deg)}}
+
+  /* Tela de resultado (temporária: o conteúdo irá por e-mail via automação) */
+  .aq-res{display:flex;flex-direction:column;gap:18px}
+  .aq-res-head{display:flex;gap:18px;align-items:center;background:linear-gradient(135deg,var(--deep),var(--primary));color:#fff;border-radius:16px;padding:20px 22px}
+  .aq-res-head .n{flex:0 0 84px;height:84px;border-radius:50%;background:rgba(255,255,255,.12);border:3px solid var(--accent);display:grid;place-items:center;font-size:36px;font-weight:800}
+  .aq-res-head h3{margin:0 0 4px;font-size:20px;line-height:1.25}
+  .aq-res-head p{margin:0;font-size:14px;color:#dbeafe;line-height:1.45}
+  .aq-res h4{margin:6px 0 0;font-size:15px;color:var(--deep)}
+  .aq-bars{display:grid;gap:10px}
+  .aq-bar-row{display:grid;grid-template-columns:120px 1fr 52px;gap:10px;align-items:center;font-size:13px}
+  .aq-bar-row b{color:var(--deep);font-weight:600}
+  .aq-bar-row .t{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+  .aq-bar-row .t i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--accent))}
+  .aq-bar-row .s{text-align:right;font-weight:700;color:var(--primary)}
+  .aq-bar-row .s.warn{color:var(--warm-ink)}.aq-bar-row .s.crit{color:var(--err)}
+  .aq-gaps{display:flex;flex-wrap:wrap;gap:8px}
+  .aq-gaps span{font-size:12px;font-weight:600;color:var(--warm-ink);background:#fff4e5;border:1px solid #ffd9a6;border-radius:99px;padding:5px 11px}
+  .aq-road{display:grid;gap:10px}
+  .aq-phase{display:grid;grid-template-columns:110px 1fr;gap:12px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:14px 16px}
+  .aq-phase.f2{border-left-color:var(--primary)}.aq-phase.f3{border-left-color:var(--warm)}
+  .aq-phase .ph{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--primary)}
+  .aq-phase .ph small{display:block;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:0;text-transform:none;margin-top:3px}
+  .aq-phase h5{margin:0 0 4px;font-size:14px;color:var(--deep)}
+  .aq-phase p{margin:0;font-size:13px;line-height:1.5;color:var(--ink)}
+  .aq-reg{display:grid;gap:8px}
+  .aq-reg div{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;background:#fbfcfe;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .aq-reg div b{flex:0 0 auto;color:var(--warm-ink)}
+  .aq-note{font-size:12px;color:var(--muted);line-height:1.5;border-top:1px dashed var(--line);padding-top:12px}
+  .aq-btn-tmp{background:#fff;color:var(--primary);border:1.5px dashed var(--accent)}
+  @media (max-width:600px){
+    #atra-quiz{padding:8px}
+    .aq-head,.aq-body,.aq-foot,.aq-help{padding-left:16px;padding-right:16px}
+    .aq-progress{margin-left:16px;margin-right:16px}
+    .aq-grid{grid-template-columns:1fr}
+    .aq-foot{flex-direction:column-reverse;align-items:stretch}
+    .aq-btn{justify-content:center}
+    .aq-bar-row{grid-template-columns:90px 1fr 46px}
+    .aq-phase{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){
+    #atra-quiz *{animation:none!important;transition:none!important}
+  }
+</style>
+
+<div id="atra-quiz" data-version="1.7">
+  <div class="aq-card">
+    <div class="aq-head">
+      <div class="aq-brand">
+        <img src="https://www.atra.com.br/wp-content/uploads/2025/08/atra_horizontal_cor-1024x567.png" alt="ATRA">
+        <span>Diagnóstico de Maturidade de Dados</span>
+      </div>
+      <div class="aq-step-label" id="aq-step-label">Perfil</div>
+    </div>
+    <div class="aq-progress"><i id="aq-bar"></i></div>
+
+    <div class="aq-body" id="aq-body">
+      <!-- Tela 0 · Perfil -->
+      <section class="aq-screen is-active" data-screen="profile">
+        <span class="aq-pilar">Perfil da empresa</span>
+        <h2 class="aq-title">Em 5 minutos, descubra onde sua empresa está na jornada de dados e nos reguladores de 2026-2027.</h2>
+        <p class="aq-sub">Três informações nos ajudam a mostrar apenas as perguntas relevantes para o seu setor e regulação.</p>
+        <div class="aq-grid">
+          <div class="aq-field full">
+            <label for="aq-setor">Setor de atuação</label>
+            <select id="aq-setor" required>
+              <option value="">Selecione…</option>
+              <option value="financeiro">Mercado Financeiro · Bancos, Fintechs, Meios de Pagamento</option>
+              <option value="capitais">Mercado de Capitais · Gestoras, Corretoras, Assets</option>
+              <option value="seguros">Seguros e Previdência</option>
+              <option value="saude">Saúde · Life Sciences · Operadoras</option>
+              <option value="telecom">Telecomunicações</option>
+              <option value="educacao">Educação · Grupos educacionais, EdTechs</option>
+              <option value="varejo">Varejo, Indústria e Serviços</option>
+              <option value="outros">Outros</option>
+            </select>
+            <span class="err">Informe o setor.</span>
+            <div class="aq-tags aq-setor-impactos" id="aq-setor-impactos" hidden></div>
+          </div>
+          <div class="aq-field">
+            <label for="aq-porte">Faturamento anual aproximado</label>
+            <select id="aq-porte" required>
+              <option value="">Selecione…</option>
+              <option value="ate_50mi">Até R$ 50 mi</option>
+              <option value="50_300mi">R$ 50 mi – 300 mi</option>
+              <option value="300mi_1bi">R$ 300 mi – 1 bi</option>
+              <option value="1_5bi">R$ 1 bi – 5 bi</option>
+              <option value="acima_5bi">Acima de R$ 5 bi</option>
+            </select>
+            <span class="err">Informe o porte.</span>
+          </div>
+          <div class="aq-field">
+            <label for="aq-cargo">Seu cargo</label>
+            <select id="aq-cargo" required>
+              <option value="">Selecione…</option>
+              <option value="ceo_presidente">CEO / Presidente / Sócio</option>
+              <option value="cfo_cro">CFO / CRO / Diretor Financeiro ou de Riscos</option>
+              <option value="cio_cto_cdo">CIO / CTO / CDO</option>
+              <option value="diretor_gerente">Diretor(a) / Gerente de área</option>
+              <option value="coordenador_analista">Coordenação / Especialista / Analista</option>
+              <option value="outro">Outro</option>
+            </select>
+            <span class="err">Informe o cargo.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Telas de perguntas são geradas pelo JS aqui -->
+
+      <!-- Tela · Contato -->
+      <section class="aq-screen" data-screen="lead">
+        <span class="aq-pilar">Quase lá</span>
+        <h2 class="aq-title">Para onde enviamos o seu diagnóstico?</h2>
+        <p class="aq-sub">Você recebe por e-mail a leitura da maturidade por pilar, os gaps regulatórios do seu setor e recomendações práticas da ATRA.</p>
+        <div class="aq-grid">
+          <div class="aq-field full">
+            <label for="aq-nome">Nome completo</label>
+            <input id="aq-nome" type="text" autocomplete="name" required placeholder="Como devemos te chamar">
+            <span class="err">Informe seu nome.</span>
+          </div>
+          <div class="aq-field">
+            <label for="aq-email">E-mail corporativo</label>
+            <input id="aq-email" type="email" autocomplete="email" inputmode="email" required placeholder="voce@suaempresa.com.br">
+            <span class="err">Use um e-mail corporativo válido (não aceitamos gmail, hotmail, etc.).</span>
+          </div>
+          <div class="aq-field">
+            <label for="aq-telefone">Telefone / WhatsApp</label>
+            <input id="aq-telefone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="(11) 99999-9999">
+            <span class="err">Informe um telefone com DDD.</span>
+          </div>
+          <div class="aq-field full">
+            <label for="aq-empresa">Empresa <small>(opcional)</small></label>
+            <input id="aq-empresa" type="text" autocomplete="organization" placeholder="Razão social ou nome fantasia">
+          </div>
+          <div class="aq-field full">
+            <label class="aq-consent">
+              <input id="aq-consent" type="checkbox" required>
+              <span>Autorizo a ATRA a entrar em contato e a tratar meus dados conforme a <a href="https://www.atra.com.br/politica-de-privacidade" target="_blank" rel="noopener">Política de Privacidade</a> (LGPD).</span>
+            </label>
+            <span class="err">É preciso autorizar o contato para receber o diagnóstico.</span>
+          </div>
+        </div>
+        <div class="aq-alert" id="aq-send-error">Não conseguimos registrar agora. Tente novamente ou fale direto com a gente pelo WhatsApp.</div>
+      </section>
+
+      <!-- Tela · Concluído -->
+      <section class="aq-screen" data-screen="done">
+        <div class="aq-done">
+          <div class="ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></div>
+          <h2 class="aq-title">Diagnóstico registrado. Obrigado!</h2>
+          <p class="aq-sub" id="aq-done-msg">Em breve você recebe por e-mail a leitura completa. Se preferir, um especialista da ATRA pode comentar os resultados com você agora.</p>
+          <div class="aq-ctas">
+            <a class="aq-btn aq-btn-wa" id="aq-cta-wa" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 12 12 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg> Falar no WhatsApp</a>
+            <a class="aq-btn aq-btn-warm" id="aq-cta-agenda" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg> Agendar com um especialista</a>
+            <button class="aq-btn aq-btn-tmp" id="aq-cta-resultado" type="button" title="Botão temporário: o resultado será enviado por e-mail pela automação">Ver meu resultado agora</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tela · Resultado (temporária: vai por e-mail após a automação no RD) -->
+      <section class="aq-screen" data-screen="result">
+        <span class="aq-pilar">Resultado do diagnóstico</span>
+        <div class="aq-res" id="aq-res"></div>
+        <div class="aq-ctas" style="margin-top:22px">
+          <a class="aq-btn aq-btn-wa" id="aq-res-wa" href="#" target="_blank" rel="noopener">Falar com um especialista</a>
+          <a class="aq-btn aq-btn-warm" id="aq-res-agenda" href="#" target="_blank" rel="noopener">Agendar leitura do diagnóstico</a>
+          <button class="aq-btn aq-btn-ghost" id="aq-res-back" type="button">&larr; Voltar</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="aq-foot">
+      <button class="aq-btn aq-btn-ghost" id="aq-back" type="button" hidden>&larr; Voltar</button>
+      <button class="aq-btn aq-btn-primary" id="aq-next" type="button">Começar →</button>
+    </div>
+    <p class="aq-help" id="aq-help">Gostaria de um atendimento mais personalizado? <a id="aq-help-wa" href="#" target="_blank" rel="noopener">Clique para falar com nossos especialistas da ATRA</a></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* =====================================================================
+     CONFIG · ajuste aqui antes de publicar
+     ===================================================================== */
+  var CONFIG = {
+    // Opção A (recomendada): endpoint próprio (proxy no WordPress ou n8n/Make/Zapier)
+    // que recebe o JSON e repassa ao RD Station com a chave privada no servidor.
+    webhookUrl: '',                                   // ex.: 'https://www.atra.com.br/wp-json/atra/v1/quiz'
+
+    // Opção B: chamar a API de Conversões do RD Station direto do navegador.
+    // Use somente a "API Key" pública (Integrações > API Key). NUNCA coloque
+    // aqui o Client Secret ou tokens privados.
+    rdApiKey: '',                                     // ex.: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    rdConversionIdentifier: 'quiz-maturidade-dados',  // identificador da conversão no RD
+
+    whatsapp: '5511999999999',                        // DDI+DDD+número, só dígitos
+    whatsappMsg: 'Olá! Acabei de responder o Diagnóstico de Maturidade de Dados da ATRA e quero falar com um especialista.',
+    agendaUrl: 'https://calendly.com/atra/diagnostico', // Calendly, HubSpot Meetings, Google Appointment…
+    blockedEmailDomains: ['gmail.com','hotmail.com','outlook.com','yahoo.com','yahoo.com.br','icloud.com','live.com','bol.com.br','uol.com.br','terra.com.br','msn.com','aol.com','protonmail.com'],
+    autoAdvanceMs: 350                                // avanço automático após escolher a opção
+  };
+
+  /* =====================================================================
+     BASE DE PERGUNTAS
+     - pilar: Governança | Qualidade | Segurança | Conformidade
+     - dama:  área de conhecimento DAMA-DMBOK correspondente
+     - sectors: ['all'] = transversal; senão só aparece para os setores listados
+     - options: score 1..5 (nível de maturidade DMBOK/CMMI: 1 Inicial · 2 Repetível
+       · 3 Definido · 4 Gerenciado · 5 Otimizado) + tags regulatórias afetadas
+     ===================================================================== */
+  var QUESTIONS = [
+    /* ---------------- Governança ---------------- */
+    { id:'gov_estrategia', pilar:'Governança', dama:'Data Governance', sectors:['all'],
+      text:'Como a estratégia de dados se conecta à estratégia do negócio?',
+      options:[
+        {s:1, t:'Não existe uma estratégia de dados formal; iniciativas surgem por demanda.', tags:['governanca']},
+        {s:2, t:'Há iniciativas em áreas isoladas, sem patrocínio executivo claro.', tags:['governanca']},
+        {s:3, t:'Existe uma estratégia documentada, com patrocinador executivo e metas anuais.', tags:[]},
+        {s:5, t:'Dados são um pilar do planejamento estratégico, com KPIs acompanhados pela diretoria.', tags:[]}
+      ]},
+    { id:'gov_papeis', pilar:'Governança', dama:'Data Governance', sectors:['all'],
+      text:'Quem responde pelos dados críticos da empresa (data owners e data stewards)?',
+      options:[
+        {s:1, t:'Ninguém formalmente; a TI é procurada quando algo dá errado.', tags:['governanca','lgpd']},
+        {s:2, t:'Alguns responsáveis informais em áreas específicas.', tags:['governanca','lgpd']},
+        {s:3, t:'Papéis definidos para os domínios principais, com comitê de dados ativo.', tags:[]},
+        {s:5, t:'Owners e stewards nomeados para todos os domínios, com metas e rituais de governança.', tags:[]}
+      ]},
+    { id:'gov_catalogo', pilar:'Governança', dama:'Metadata Management', sectors:['all'],
+      text:'Como as pessoas descobrem quais dados existem, o que significam e de onde vêm?',
+      options:[
+        {s:1, t:'Perguntando a quem conhece o sistema; não há documentação centralizada.', tags:['governanca','ifrs9','ifrs17','cvm']},
+        {s:2, t:'Planilhas ou wikis mantidas manualmente e frequentemente desatualizadas.', tags:['governanca']},
+        {s:3, t:'Catálogo de dados implantado para os domínios principais, com glossário de negócio.', tags:[]},
+        {s:5, t:'Catálogo com linhagem automática ponta a ponta, classificação e uso monitorado.', tags:[]}
+      ]},
+    { id:'gov_arquitetura', pilar:'Governança', dama:'Data Architecture / Integration', sectors:['all'],
+      text:'Como os dados chegam às áreas que decidem?',
+      options:[
+        {s:1, t:'Extrações manuais e planilhas; cada área monta a sua versão do número.', tags:['governanca']},
+        {s:2, t:'Alguns relatórios centralizados, mas com múltiplas fontes concorrentes.', tags:['governanca']},
+        {s:3, t:'Plataforma de dados (data warehouse / lakehouse) com fonte única para os indicadores principais.', tags:[]},
+        {s:5, t:'Plataforma moderna em nuvem com produtos de dados por domínio, self-service e monitoração.', tags:[]}
+      ]},
+
+    { id:'gov_decisao', pilar:'Governança', dama:'Data Warehousing & BI / Analytics', sectors:['all'],
+      text:'Quando a diretoria precisa de uma resposta nova a partir dos dados (um indicador que não existe, um cruzamento entre áreas), quanto tempo leva?',
+      options:[
+        {s:1, t:'Semanas: depende de pedido à TI, extrações e planilhas montadas à mão.', tags:['governanca']},
+        {s:2, t:'Dias: analistas conseguem, mas cada resposta é um projeto.', tags:['governanca']},
+        {s:3, t:'Horas: os indicadores principais estão em self-service e o resto é pedido pontual.', tags:[]},
+        {s:5, t:'Minutos: as áreas exploram dados governados por conta própria, com IA e analytics avançado.', tags:[]}
+      ]},
+
+    /* ---------------- Qualidade ---------------- */
+    { id:'qual_confianca', pilar:'Qualidade', dama:'Data Quality', sectors:['all'],
+      text:'Com que frequência a diretoria questiona a confiabilidade de um número apresentado?',
+      options:[
+        {s:1, t:'Frequentemente; reconciliar números entre áreas consome parte das reuniões.', tags:['qualidade','ifrs9','ifrs17','cvm']},
+        {s:2, t:'Às vezes; existem divergências conhecidas que ainda não foram tratadas.', tags:['qualidade']},
+        {s:3, t:'Raramente; os indicadores principais têm regras de qualidade definidas.', tags:[]},
+        {s:5, t:'Praticamente nunca; a qualidade é medida, publicada e melhorada continuamente.', tags:[]}
+      ]},
+    { id:'qual_regras', pilar:'Qualidade', dama:'Data Quality', sectors:['all'],
+      text:'Existem regras e monitoração de qualidade (completude, consistência, atualidade) nos dados críticos?',
+      options:[
+        {s:1, t:'Não; problemas são descobertos pelo usuário final ou pelo cliente.', tags:['qualidade','lgpd']},
+        {s:2, t:'Validações pontuais em alguns processos, sem monitoração contínua.', tags:['qualidade']},
+        {s:3, t:'Regras definidas e monitoradas para os dados críticos, com tratamento de incidentes.', tags:[]},
+        {s:5, t:'Observabilidade de dados com alertas, SLAs e scorecards de qualidade por domínio.', tags:[]}
+      ]},
+    { id:'qual_mdm', pilar:'Qualidade', dama:'Master & Reference Data', sectors:['all'],
+      text:'Como estão os cadastros mestres (clientes, produtos, fornecedores)?',
+      options:[
+        {s:1, t:'Duplicados e divergentes entre sistemas; não há visão única.', tags:['qualidade','lgpd']},
+        {s:2, t:'Deduplicação eventual, feita manualmente em campanhas.', tags:['qualidade','lgpd']},
+        {s:3, t:'Processo de gestão de dados mestres (MDM) para o cadastro principal.', tags:[]},
+        {s:5, t:'MDM multidomínio com golden record, regras de sobrevivência e stewardship ativo.', tags:[]}
+      ]},
+
+    /* ---------------- Segurança ---------------- */
+    { id:'seg_acesso', pilar:'Segurança', dama:'Data Security', sectors:['all'],
+      text:'Como o acesso a dados sensíveis é concedido e revisado?',
+      options:[
+        {s:1, t:'Acessos amplos por conveniência; revisões não são feitas.', tags:['seguranca','lgpd','bcb','susep']},
+        {s:2, t:'Perfis por sistema, com revisão esporádica.', tags:['seguranca','lgpd']},
+        {s:3, t:'Controle por papéis (RBAC), classificação de dados e revisão periódica de acessos.', tags:[]},
+        {s:5, t:'Acesso por atributo/finalidade, mascaramento dinâmico, trilha de auditoria e revisão automatizada.', tags:[]}
+      ]},
+    { id:'seg_incidente', pilar:'Segurança', dama:'Data Security', sectors:['all'],
+      text:'Se houvesse um vazamento de dados hoje, em quanto tempo a empresa saberia e responderia?',
+      options:[
+        {s:1, t:'Não temos como saber; dependeríamos de alguém avisar.', tags:['seguranca','lgpd','bcb','susep','anatel']},
+        {s:2, t:'Há monitoração básica, mas sem plano de resposta testado.', tags:['seguranca','lgpd']},
+        {s:3, t:'Plano de resposta a incidentes definido, com comunicação à ANPD e aos titulares prevista.', tags:[]},
+        {s:5, t:'Detecção contínua, resposta ensaiada (tabletop) e métricas de tempo de detecção e resposta.', tags:[]}
+      ]},
+
+    /* ---------------- Conformidade · LGPD / ANPD (transversal) ---------------- */
+    { id:'conf_lgpd_mapa', pilar:'Conformidade', dama:'Data Governance / Security', sectors:['all'],
+      text:'A empresa sabe onde estão os dados pessoais que trata, com que base legal e por quanto tempo, e avalia o risco dos tratamentos mais sensíveis?',
+      options:[
+        {s:1, t:'Não há inventário de dados pessoais, RIPD nem encarregado (DPO) nomeado.', tags:['lgpd','anpd']},
+        {s:2, t:'Inventário parcial feito uma vez; políticas existem, mas sem acompanhamento nem RIPD.', tags:['lgpd','anpd']},
+        {s:3, t:'Mapeamento (ROPA) mantido, DPO ativo, RIPD para tratamentos de alto risco, retenção e descarte aplicados.', tags:[]},
+        {s:5, t:'Privacidade por design: classificação automática, consentimento gerenciado, RIPD revisado e auditoria contínua.', tags:[]}
+      ]},
+    { id:'conf_lgpd_titular', pilar:'Conformidade', dama:'Data Governance', sectors:['all'],
+      text:'Como a empresa atende pedidos de titulares (acesso, correção, exclusão) e como reagiria a um incidente que precise ser comunicado à ANPD?',
+      options:[
+        {s:1, t:'Caso a caso, sem processo, prazo controlado nem plano de comunicação de incidentes (a ANPD exige comunicação em prazo definido).', tags:['lgpd','anpd']},
+        {s:2, t:'Processo manual, com dificuldade de localizar os dados em todos os sistemas; incidentes tratados de improviso.', tags:['lgpd','anpd']},
+        {s:3, t:'Fluxo definido para titulares e para incidentes, com prazos monitorados e rastreabilidade das ações.', tags:[]},
+        {s:5, t:'Portal do titular integrado aos sistemas, execução automatizada, playbook de incidente testado e evidências.', tags:[]}
+      ]},
+    { id:'conf_ia', pilar:'Conformidade', dama:'Data Governance / Data Ethics', sectors:['all'],
+      text:'A empresa sabe quais sistemas de IA usam seus dados, com que nível de risco, e de onde vêm e que qualidade têm os dados que os alimentam?',
+      options:[
+        {s:1, t:'Não sabemos quais sistemas de IA usam dados da empresa; iniciativas surgem sem avaliação.', tags:['ia','lgpd','anpd']},
+        {s:2, t:'Temos uma lista informal de iniciativas de IA, sem classificação de risco nem controle dos dados usados.', tags:['ia','lgpd']},
+        {s:3, t:'Inventário de sistemas de IA com classificação de risco, avaliação de impacto e regras para dados pessoais.', tags:[]},
+        {s:5, t:'Governança de IA integrada à de dados: linhagem dos dados de treinamento, monitoração de viés, explicabilidade e trilha de auditoria.', tags:[]}
+      ]},
+
+    /* ---------------- Conformidade · Mercado Financeiro ---------------- */
+    { id:'conf_fin_rc18', pilar:'Conformidade', dama:'Data Governance / Data Quality', sectors:['financeiro'],
+      text:'Como a instituição está em relação à Resolução Conjunta CMN/BCB nº 18/2025 (Política de Qualidade das Informações, diretor estatutário responsável, dicionário de dados, relatório semestral)? O prazo de adequação termina em 31/12/2026.',
+      options:[
+        {s:1, t:'Ainda não mapeamos o impacto; não há política, diretor designado nem dicionário de dados.', tags:['rc18','bcb']},
+        {s:2, t:'Política em elaboração e diretor designado, mas o dicionário de dados e o relatório semestral ainda não existem.', tags:['rc18','bcb']},
+        {s:3, t:'Política aprovada pelo Conselho, dicionário de dados dos reportes críticos e primeiro relatório semestral produzido.', tags:[]},
+        {s:5, t:'Programa completo e operando: política, dicionário integrado ao catálogo, testes antes do envio, indicadores e relatório semestral automatizados.', tags:[]}
+      ]},
+    { id:'conf_fin_rc18_dim', pilar:'Conformidade', dama:'Data Quality / Metadata Management', sectors:['financeiro'],
+      text:'Para cada informação enviada ao Banco Central, a instituição consegue comprovar as 12 dimensões de qualidade da RC 18 (rastreabilidade da origem até o envio, acurácia, completude, consistência e tempestividade), na linha do BCBS 239?',
+      options:[
+        {s:1, t:'Não; os reportes são montados manualmente e não sabemos reconstruir a origem de um número.', tags:['rc18','bcb','bcbs239','qualidade']},
+        {s:2, t:'Rastreamos alguns reportes com esforço manual; erros são descobertos após o envio ou por questionamento do BCB.', tags:['rc18','bcb','bcbs239']},
+        {s:3, t:'Linhagem documentada para os reportes críticos, validações antes do envio e tratamento de irregularidades com plano de ação.', tags:[]},
+        {s:5, t:'Linhagem automática ponta a ponta, regras de qualidade por dimensão monitoradas continuamente e evidências prontas para o supervisor.', tags:[]}
+      ]},
+    { id:'conf_fin_ciber', pilar:'Conformidade', dama:'Data Security', sectors:['financeiro'],
+      text:'A instituição já se adequou à Resolução CMN 5.274/2025 (atualiza a 4.893/2021 de cibersegurança, prazo 1º/3/2026): controles estendidos a terceiros e nuvem, teste de intrusão anual independente e evidências de correção?',
+      options:[
+        {s:1, t:'Não conhecemos as mudanças; os controles de fornecedores e nuvem não são verificados.', tags:['cmn5274','bcb','seguranca']},
+        {s:2, t:'Política de cibersegurança existe, mas sem cláusulas e evidências dos terceiros críticos nem pentest independente.', tags:['cmn5274','bcb']},
+        {s:3, t:'Contratos com fornecedores críticos revisados, pentest anual independente e planos de ação documentados.', tags:[]},
+        {s:5, t:'Gestão contínua de risco de terceiros, monitoração integrada, testes recorrentes e reporte ao Conselho.', tags:[]}
+      ]},
+    { id:'conf_fin_of', pilar:'Conformidade', dama:'Data Integration / Data Quality', sectors:['financeiro'],
+      text:'No Open Finance, a instituição acompanha a disponibilidade e a qualidade dos dados que compartilha e recebe, e a rastreabilidade dos consentimentos dos clientes?',
+      options:[
+        {s:1, t:'Cumprimos o mínimo; não acompanhamos indicadores de disponibilidade nem qualidade das APIs.', tags:['openfinance','bcb']},
+        {s:2, t:'Acompanhamos os indicadores exigidos, mas falhas de dados e consentimento são tratadas de forma reativa.', tags:['openfinance','bcb']},
+        {s:3, t:'Monitoração das APIs e dos consentimentos com alertas, e uso dos dados recebidos governado.', tags:[]},
+        {s:5, t:'Open Finance como produto de dados: qualidade medida, consentimentos auditáveis e dados recebidos integrados a crédito e relacionamento.', tags:[]}
+      ]},
+    { id:'conf_fin_ifrs9', pilar:'Conformidade', dama:'Data Quality / Data Integration', sectors:['financeiro'],
+      text:'Os dados que alimentam os modelos de perda esperada (IFRS 9 / Resolução CMN 4.966) são rastreáveis e reconciliáveis com a contabilidade?',
+      options:[
+        {s:1, t:'Os cálculos dependem de planilhas e ajustes manuais difíceis de reproduzir.', tags:['ifrs9','bcb']},
+        {s:2, t:'Existe um processo, mas a reconciliação entre risco e contabilidade é trabalhosa.', tags:['ifrs9']},
+        {s:3, t:'Pipelines documentados, com linhagem e reconciliação periódica.', tags:[]},
+        {s:5, t:'Linhagem automática, reconciliação diária e trilha completa para auditoria e regulador.', tags:[]}
+      ]},
+
+    /* ---------------- Conformidade · Mercado de Capitais ---------------- */
+    { id:'conf_cap_cvm', pilar:'Conformidade', dama:'Data Governance / Quality', sectors:['capitais'],
+      text:'Como a gestora/corretora garante a qualidade e a rastreabilidade das informações enviadas à CVM e à ANBIMA (Resolução CVM 175, informes periódicos, suitability)?',
+      options:[
+        {s:1, t:'Consolidação manual em planilhas, com retrabalho e risco de erro nos envios.', tags:['cvm','anbima']},
+        {s:2, t:'Processo semiautomatizado, mas sem controles de qualidade antes do envio.', tags:['cvm','anbima']},
+        {s:3, t:'Bases governadas, validações antes do envio e trilha das versões enviadas.', tags:[]},
+        {s:5, t:'Geração automatizada com validação, linhagem e reconciliação com administradores e custodiantes.', tags:[]}
+      ]},
+    { id:'conf_cap_suit', pilar:'Conformidade', dama:'Master Data / Security', sectors:['capitais'],
+      text:'Os dados de perfil do investidor (suitability, KYC, PLD/FT) estão íntegros, atualizados e disponíveis para a área de compliance?',
+      options:[
+        {s:1, t:'Estão espalhados entre sistemas e formulários, com cadastros desatualizados.', tags:['cvm','pld','lgpd']},
+        {s:2, t:'Centralizados, mas com atualização e monitoração manual.', tags:['cvm','pld']},
+        {s:3, t:'Cadastro único com regras de atualização e alertas para compliance.', tags:[]},
+        {s:5, t:'Monitoração contínua com modelos de risco e evidências automáticas para auditoria.', tags:[]}
+      ]},
+    { id:'conf_cap_esg', pilar:'Conformidade', dama:'Data Governance / Quality', sectors:['capitais'],
+      text:'Com a Resolução CVM 244/2026, o reporte IFRS S1/S2 passou a ser voluntário com dever de "pratique ou explique" a partir de 2027. A casa (ou as companhias que analisa) tem dados de sustentabilidade governados para reportar ou justificar?',
+      options:[
+        {s:1, t:'Não há coleta estruturada de dados de sustentabilidade; a decisão de reportar não foi discutida.', tags:['cvm244','esg']},
+        {s:2, t:'Dados coletados em planilhas para relatórios pontuais, sem controle de qualidade.', tags:['cvm244','esg']},
+        {s:3, t:'Decisão tomada, indicadores definidos com responsáveis e validação antes da publicação.', tags:[]},
+        {s:5, t:'Dados de sustentabilidade integrados à plataforma de dados, auditáveis e conectados às decisões de investimento.', tags:[]}
+      ]},
+
+    /* ---------------- Conformidade · Seguros ---------------- */
+    { id:'conf_seg_ifrs17', pilar:'Conformidade', dama:'Data Integration / Quality', sectors:['seguros'],
+      text:'Os dados de contratos, sinistros e provisões que alimentam o IFRS 17 / CPC 50 (companhias abertas) e os reportes prudenciais à SUSEP são integrados e reconciliáveis?',
+      options:[
+        {s:1, t:'Cada sistema tem a sua base; a consolidação é manual e demorada.', tags:['ifrs17','susep']},
+        {s:2, t:'Existe integração parcial, com ajustes manuais no fechamento.', tags:['ifrs17','susep']},
+        {s:3, t:'Base atuarial e contábil integradas, com linhagem e reconciliação periódica.', tags:[]},
+        {s:5, t:'Fechamento automatizado, reconciliação contínua e evidências prontas para auditoria.', tags:[]}
+      ]},
+    { id:'conf_seg_sro', pilar:'Conformidade', dama:'Data Quality / Data Integration', sectors:['seguros'],
+      text:'Como a seguradora garante qualidade e tempestividade no Sistema de Registro de Operações (SRO) e no Open Insurance (compartilhamento de dados e consentimentos)?',
+      options:[
+        {s:1, t:'Registros enviados com atraso e rejeições recorrentes; não medimos a qualidade.', tags:['susep','sro','openinsurance']},
+        {s:2, t:'Envio automatizado, mas as rejeições são tratadas manualmente e sem causa raiz.', tags:['susep','sro']},
+        {s:3, t:'Validações antes do envio, indicadores de rejeição e consentimentos do Open Insurance rastreáveis.', tags:[]},
+        {s:5, t:'Qualidade monitorada na origem, reconciliação automática com a registradora e dados do Open Insurance usados no negócio.', tags:[]}
+      ]},
+    { id:'conf_seg_ciber', pilar:'Conformidade', dama:'Data Security', sectors:['seguros'],
+      text:'A seguradora atende à Circular SUSEP 638/2021 e suas atualizações de 2026 (contratos de nuvem e processamento de dados acessíveis à SUSEP, gestão de incidentes, manual de segurança cibernética)?',
+      options:[
+        {s:1, t:'Não temos inventário dos serviços de nuvem e processamento contratados nem plano de resposta a incidentes.', tags:['susep','seguranca','lgpd']},
+        {s:2, t:'Política existe, mas os contratos e evidências dos fornecedores não estão organizados para a SUSEP.', tags:['susep','seguranca']},
+        {s:3, t:'Inventário de fornecedores críticos, contratos acessíveis, plano de incidentes definido e testado.', tags:[]},
+        {s:5, t:'Gestão contínua de risco cibernético e de terceiros, com métricas reportadas ao Conselho.', tags:[]}
+      ]},
+
+    /* ---------------- Conformidade · Saúde ---------------- */
+    { id:'conf_sau_anvisa', pilar:'Conformidade', dama:'Data Governance / Security', sectors:['saude'],
+      text:'Como a organização garante integridade, rastreabilidade e proteção dos dados clínicos (prontuário eletrônico, dados sensíveis de saúde) exigidos pela Anvisa, pelo CFM e pela LGPD? Dados de saúde são foco da ANPD em 2026-2027.',
+      options:[
+        {s:1, t:'Registros em sistemas separados, sem trilha de auditoria confiável nem classificação de dados sensíveis.', tags:['anvisa','cfm','lgpd_saude','anpd']},
+        {s:2, t:'Trilha de auditoria em alguns sistemas; integração feita manualmente.', tags:['anvisa','cfm','lgpd_saude']},
+        {s:3, t:'Dados clínicos governados, com trilha de auditoria, classificação de dados sensíveis e controles de acesso.', tags:[]},
+        {s:5, t:'Plataforma integrada com auditoria contínua, privacidade por design e evidências automatizadas.', tags:[]}
+      ]},
+    { id:'conf_sau_tiss', pilar:'Conformidade', dama:'Data Integration / Quality', sectors:['saude'],
+      text:'Com a RN ANS 639/2025 (fim do SIP e centralização no Monitoramento TISS desde março de 2026) e a interoperabilidade com a RNDS em HL7 FHIR (Decreto 12.560/2025), como estão os dados assistenciais e de faturamento?',
+      options:[
+        {s:1, t:'Guias e registros com muitas glosas e rejeições; não há padrão nem integração com a RNDS.', tags:['ans','tiss','rnds']},
+        {s:2, t:'TISS atendido com retrabalho manual; interoperabilidade FHIR ainda não iniciada.', tags:['ans','tiss','rnds']},
+        {s:3, t:'Dados assistenciais padronizados na origem, validações antes do envio e integração com a RNDS em andamento.', tags:[]},
+        {s:5, t:'Interoperabilidade FHIR operando, qualidade monitorada por indicador e dados usados na gestão clínica e financeira.', tags:[]}
+      ]},
+
+    /* ---------------- Conformidade · Telecom ---------------- */
+    { id:'conf_tel_anatel', pilar:'Conformidade', dama:'Data Governance / Quality', sectors:['telecom'],
+      text:'Como a operadora produz os indicadores e reportes exigidos pela Anatel e as evidências de transparência e proteção de dados do novo Regulamento Geral de Direitos do Consumidor (RGC, em vigor desde setembro de 2025)?',
+      options:[
+        {s:1, t:'Consolidação manual a partir de vários sistemas, com retrabalho recorrente.', tags:['anatel','rgc','lgpd']},
+        {s:2, t:'Rotinas automatizadas parciais, sem validação de qualidade antes do envio.', tags:['anatel','rgc']},
+        {s:3, t:'Bases governadas com validações e trilha dos reportes enviados.', tags:[]},
+        {s:5, t:'Geração automatizada, monitoração de qualidade e painéis de conformidade em tempo real.', tags:[]}
+      ]},
+    { id:'conf_tel_ciber', pilar:'Conformidade', dama:'Data Security', sectors:['telecom'],
+      text:'A operadora atende ao Regulamento de Segurança Cibernética da Anatel e às exigências recentes: notificação de incidentes, combate a fraude e spoofing, guarda de registros do Marco Civil e verificação de idade do ECA Digital (em vigor desde março de 2026)?',
+      options:[
+        {s:1, t:'Não há processo formal de incidentes nem controles de identidade e idade nos canais digitais.', tags:['anatel','eca','marco_civil','lgpd','seguranca']},
+        {s:2, t:'Processo de incidentes existe, mas verificação de idade e antifraude são pontuais.', tags:['anatel','eca']},
+        {s:3, t:'Incidentes notificados nos prazos, antifraude integrado e mecanismos de verificação de idade definidos.', tags:[]},
+        {s:5, t:'Segurança e identidade monitoradas continuamente, com evidências automatizadas para Anatel e ANPD.', tags:[]}
+      ]},
+
+    /* ---------------- Conformidade · Educação ---------------- */
+    { id:'conf_edu_mec', pilar:'Conformidade', dama:'Data Quality / Data Integration', sectors:['educacao'],
+      text:'Os dados acadêmicos e financeiros enviados ao MEC/INEP (Censo da Educação Superior, e-MEC, Enade, FIES/ProUni) são consistentes entre os sistemas acadêmico, financeiro e de captação, e rastreáveis até a origem?',
+      options:[
+        {s:1, t:'Cada sistema tem a sua versão do aluno; os envios exigem conciliação manual e há divergências recorrentes.', tags:['mec','inep','fies']},
+        {s:2, t:'Existe um processo de consolidação, mas depende de planilhas e de poucas pessoas.', tags:['mec','inep']},
+        {s:3, t:'Cadastro único do aluno, validações antes do envio e trilha das versões enviadas.', tags:[]},
+        {s:5, t:'Dados acadêmicos governados como produto, com linhagem, reconciliação automática e indicadores regulatórios em painel.', tags:[]}
+      ]},
+    { id:'conf_edu_menores', pilar:'Conformidade', dama:'Data Governance / Security', sectors:['educacao'],
+      text:'Como a instituição trata dados de crianças e adolescentes nas plataformas digitais (ECA Digital em vigor desde março de 2026: verificação de idade, consentimento dos responsáveis, uso de IA em tutoria e provas)?',
+      options:[
+        {s:1, t:'Não diferenciamos dados de menores; consentimento e verificação de idade não são controlados.', tags:['eca','lgpd','anpd','ia']},
+        {s:2, t:'Consentimento dos responsáveis coletado na matrícula, mas sem controle nas plataformas e nos fornecedores de EdTech.', tags:['eca','lgpd','anpd']},
+        {s:3, t:'Dados de menores classificados, verificação de idade e consentimento gerenciados, fornecedores avaliados.', tags:[]},
+        {s:5, t:'Privacidade por design para menores, avaliação de impacto dos sistemas de IA educacionais e auditoria contínua.', tags:[]}
+      ]},
+    { id:'conf_edu_retencao', pilar:'Conformidade', dama:'Data Quality / Master Data', sectors:['educacao'],
+      text:'Os dados de captação, matrícula, evasão e inadimplência têm qualidade suficiente para modelos de retenção e para os reportes a investidores e ao MEC?',
+      options:[
+        {s:1, t:'Indicadores de evasão e inadimplência divergem entre áreas; não há definição única.', tags:['mec','qualidade']},
+        {s:2, t:'Definições existem, mas os dados de origem (polos, franquias, plataformas) chegam com falhas.', tags:['mec','qualidade']},
+        {s:3, t:'Glossário de negócio e regras de qualidade para os indicadores de aluno, com monitoração.', tags:[]},
+        {s:5, t:'Indicadores certificados, modelos preditivos de evasão em produção e evidências para auditoria e investidores.', tags:[]}
+      ]},
+
+    /* ---------------- Conformidade · Varejo / Indústria / Outros ---------------- */
+    { id:'conf_ger_esg', pilar:'Conformidade', dama:'Data Governance / Quality', sectors:['varejo','outros'],
+      text:'Como a empresa produz os dados de auditoria e de sustentabilidade exigidos por auditores, grandes clientes e, para companhias abertas, pela CVM (IFRS S1/S2 voluntário com "pratique ou explique" a partir de 2027, Resolução CVM 244/2026)?',
+      options:[
+        {s:1, t:'Sob demanda, com esforço manual e pouca confiança nos números.', tags:['esg','cvm244']},
+        {s:2, t:'Processo definido, mas dependente de planilhas e poucas pessoas.', tags:['esg','cvm244']},
+        {s:3, t:'Dados governados, com responsáveis e validações antes da publicação.', tags:[]},
+        {s:5, t:'Reportes automatizados, auditáveis e integrados à plataforma de dados.', tags:[]}
+      ]},
+    { id:'conf_ger_tributaria', pilar:'Conformidade', dama:'Data Integration / Master Data', sectors:['varejo','outros','saude','telecom','educacao'],
+      text:'A Reforma Tributária (CBS/IBS) entrou em fase de teste em 2026 e a CBS passa a valer integralmente em 2027. Os cadastros de produtos, clientes, fornecedores e as regras fiscais nos sistemas estão prontos para a transição?',
+      options:[
+        {s:1, t:'Ainda não avaliamos o impacto nos cadastros e nos sistemas; dependemos do fornecedor do ERP.', tags:['reforma_tributaria','fiscal']},
+        {s:2, t:'Impacto mapeado, mas os cadastros mestres têm inconsistências que atrasam a parametrização.', tags:['reforma_tributaria','fiscal','qualidade']},
+        {s:3, t:'Cadastros saneados, regras fiscais parametrizadas e testes em ambiente de homologação.', tags:[]},
+        {s:5, t:'Transição operando com dados mestres governados, simulações de carga tributária e monitoração das obrigações acessórias.', tags:[]}
+      ]}
+  ];
+
+  /* Rótulos amigáveis das tags (usados no payload e no e-mail do diagnóstico) */
+  var TAG_LABELS = {
+    governanca:'Governança de dados', qualidade:'Qualidade de dados', seguranca:'Segurança de dados',
+    lgpd:'LGPD', anpd:'ANPD', lgpd_saude:'LGPD (dados de saúde)', ia:'Marco Legal da IA',
+    rc18:'Resolução Conjunta CMN/BCB 18/2025', bcb:'Banco Central', cmn5274:'Resolução CMN 5.274/2025', bcbs239:'BCBS 239',
+    openfinance:'Open Finance', ifrs9:'IFRS 9', ifrs17:'IFRS 17',
+    cvm:'CVM', cvm244:'Resolução CVM 244/2026', anbima:'ANBIMA', pld:'PLD/FT',
+    susep:'SUSEP', sro:'SRO (SUSEP)', openinsurance:'Open Insurance',
+    anvisa:'Anvisa', cfm:'CFM', ans:'ANS', tiss:'ANS RN 639/2025 (TISS)', rnds:'RNDS',
+    anatel:'Anatel', rgc:'RGC (Anatel)', eca:'ECA Digital (Lei 15.211/2025)', marco_civil:'Marco Civil da Internet',
+    mec:'MEC', inep:'INEP', fies:'FIES / ProUni',
+    esg:'ESG / IFRS S1-S2', fiscal:'Fiscal / auditoria', reforma_tributaria:'Reforma Tributária'
+  };
+
+  /* =====================================================================
+     ESTADO E RENDERIZAÇÃO
+     ===================================================================== */
+  var root  = document.getElementById('atra-quiz');
+  var body  = document.getElementById('aq-body');
+  var bar   = document.getElementById('aq-bar');
+  var lbl   = document.getElementById('aq-step-label');
+  var btnN  = document.getElementById('aq-next');
+  var btnB  = document.getElementById('aq-back');
+  var help  = document.getElementById('aq-help');
+  var state = { step:0, sector:'', active:[], answers:{}, startedAt:Date.now() };
+
+  var waLink = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.whatsappMsg);
+  document.getElementById('aq-help-wa').href = waLink;
+  document.getElementById('aq-cta-wa').href  = waLink;
+  document.getElementById('aq-cta-agenda').href = CONFIG.agendaUrl;
+
+  /* Tags relevantes por setor: uma pergunta transversal só exibe (e só pontua gap para) os reguladores do setor escolhido */
+  var UNIVERSAL_TAGS = ['lgpd','anpd','ia','esg','fiscal','reforma_tributaria','governanca','qualidade','seguranca'];
+  var SECTOR_TAGS = {
+    financeiro:['rc18','bcb','cmn5274','bcbs239','openfinance','ifrs9','pld'],
+    capitais:['cvm','cvm244','anbima','pld'],
+    seguros:['susep','sro','openinsurance','ifrs17'],
+    saude:['anvisa','cfm','ans','tiss','rnds','lgpd_saude'],
+    telecom:['anatel','rgc','eca','marco_civil'],
+    educacao:['mec','inep','fies','eca'],
+    varejo:['cvm244'],
+    outros:['cvm244']
+  };
+  function tagRelevant(t){ return UNIVERSAL_TAGS.indexOf(t) > -1 || (SECTOR_TAGS[state.sector] || []).indexOf(t) > -1; }
+
+  /* Etiquetas dos reguladores/temas impactados pela pergunta (união das tags das opções, filtrada pelo setor) */
+  var INTERNAL_TAGS = ['governanca','qualidade','seguranca'];
+  function tagChips(q){
+    var seen = {}, out = [];
+    q.options.forEach(function(o){ o.tags.forEach(function(t){ if (!seen[t] && INTERNAL_TAGS.indexOf(t) < 0 && tagRelevant(t)){ seen[t] = 1; out.push(t); } }); });
+    var regs = out.length
+      ? out.map(function(t){ return '<span data-tag="' + t + '">' + (TAG_LABELS[t] || t) + '</span>'; }).join('')
+      : '<span data-tag="base">Base para todas as regulações do setor</span>';
+    return '<div class="aq-tags" aria-label="Área DAMA e regulações impactadas">' +
+           '<span class="dama" title="Área de conhecimento DAMA-DMBOK">DAMA · ' + q.dama + '</span>' +
+           '<span class="lb">Impacta:</span>' + regs + '</div>';
+  }
+
+  /* Roteamento dinâmico: filtra a base pelo setor e (re)cria as telas */
+  function buildQuestions(sector){
+    state.active = QUESTIONS.filter(function(q){
+      return q.sectors.indexOf('all') > -1 || q.sectors.indexOf(sector) > -1;
+    });
+    body.querySelectorAll('[data-screen="q"]').forEach(function(el){ el.remove(); });
+    var leadScreen = body.querySelector('[data-screen="lead"]');
+    state.active.forEach(function(q, i){
+      var sec = document.createElement('section');
+      sec.className = 'aq-screen';
+      sec.setAttribute('data-screen','q');
+      sec.setAttribute('data-qid', q.id);
+      sec.setAttribute('data-pilar', q.pilar);
+      sec.setAttribute('data-dama', q.dama);
+      sec.setAttribute('data-tags', q.sectors.join(','));
+      var html = '<span class="aq-pilar">' + q.pilar + ' · ' + (i+1) + '/' + state.active.length + '</span>' +
+                 '<h2 class="aq-title">' + q.text + '</h2>' +
+                 '<p class="aq-sub">Escolha a alternativa que mais se aproxima da realidade hoje.</p>' +
+                 tagChips(q) +
+                 '<div class="aq-options" role="radiogroup">';
+      q.options.forEach(function(o, j){
+        html += '<button type="button" class="aq-opt" role="radio" aria-checked="false"' +
+                ' data-score="' + o.s + '" data-tags="' + o.tags.join(',') + '" data-idx="' + j + '">' +
+                '<span class="k">' + String.fromCharCode(65+j) + '</span><span>' + o.t + '</span></button>';
+      });
+      html += '</div>';
+      sec.innerHTML = html;
+      body.insertBefore(sec, leadScreen);
+    });
+  }
+
+  function screens(){ return Array.prototype.slice.call(body.querySelectorAll('.aq-screen')); }
+  function total(){ return state.active.length + 3; } /* perfil + perguntas + contato + concluído (a tela de resultado fica fora da barra) */
+
+  function render(){
+    var all = screens();
+    all.forEach(function(s, i){ s.classList.toggle('is-active', i === state.step); });
+    var cur = all[state.step];
+    var kind = cur.getAttribute('data-screen');
+    var pct = (kind === 'done' || kind === 'result') ? 100 : Math.round((state.step / (total() - 1)) * 100);
+    bar.style.width = pct + '%';
+
+    if (kind === 'profile'){ lbl.textContent = 'Perfil'; btnN.textContent = 'Começar \u2192'; btnN.disabled = false; }
+    else if (kind === 'q'){
+      lbl.textContent = 'Pergunta ' + state.step + ' de ' + state.active.length;
+      btnN.textContent = 'Próxima \u2192';
+      btnN.disabled = !state.answers[cur.getAttribute('data-qid')];
+    }
+    else if (kind === 'lead'){ lbl.textContent = 'Contato'; btnN.innerHTML = 'Receber meu diagnóstico'; btnN.disabled = false; }
+    else if (kind === 'done'){ lbl.textContent = 'Concluído'; }
+    else if (kind === 'result'){ lbl.textContent = 'Resultado'; }
+
+    btnB.hidden = (state.step === 0 || kind === 'done' || kind === 'result');
+    btnN.hidden = (kind === 'done' || kind === 'result');
+    help.hidden = (kind === 'done' || kind === 'result');
+    root.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  /* Impactos regulatórios do setor escolhido, mostrados na tela de perfil */
+  var PROFILE_UNIVERSAL = ['lgpd','anpd','ia'];
+  function sectorImpactChips(sector){
+    var tags = PROFILE_UNIVERSAL.concat(SECTOR_TAGS[sector] || []).concat(
+      QUESTIONS.some(function(q){ return q.sectors.indexOf(sector) > -1 && q.options.some(function(o){ return o.tags.indexOf('reforma_tributaria') > -1; }); }) ? ['reforma_tributaria'] : []);
+    var seen = {}, chips = [];
+    tags.forEach(function(t){ if (!seen[t]){ seen[t] = 1; chips.push('<span data-tag="' + t + '">' + (TAG_LABELS[t] || t) + '</span>'); } });
+    return chips.join('') + '<span class="etc">entre outros</span>';
+  }
+  function renderSectorImpacts(){
+    var box = document.getElementById('aq-setor-impactos'), sector = document.getElementById('aq-setor').value;
+    if (!sector){ box.hidden = true; box.innerHTML = ''; return; }
+    box.innerHTML = '<span class="lb">Impactos avaliados:</span>' + sectorImpactChips(sector);
+    box.hidden = false;
+  }
+  document.getElementById('aq-setor').addEventListener('change', renderSectorImpacts);
+
+  /* ---------- Perfil ---------- */
+  function validateProfile(){
+    var ok = true;
+    ['aq-setor','aq-porte','aq-cargo'].forEach(function(id){
+      var el = document.getElementById(id), f = el.closest('.aq-field');
+      var bad = !el.value; f.classList.toggle('is-invalid', bad); if (bad) ok = false;
+    });
+    return ok;
+  }
+
+  /* ---------- Respostas ---------- */
+  body.addEventListener('click', function(e){
+    var opt = e.target.closest('.aq-opt'); if (!opt) return;
+    var sec = opt.closest('[data-screen="q"]'); var qid = sec.getAttribute('data-qid');
+    sec.querySelectorAll('.aq-opt').forEach(function(o){ o.classList.remove('is-selected'); o.setAttribute('aria-checked','false'); });
+    opt.classList.add('is-selected'); opt.setAttribute('aria-checked','true');
+    state.answers[qid] = {
+      score: +opt.getAttribute('data-score'),
+      tags: opt.getAttribute('data-tags').split(',').filter(Boolean),
+      idx: +opt.getAttribute('data-idx'),
+      label: opt.querySelector('span:last-child').textContent
+    };
+    btnN.disabled = false;
+    clearTimeout(state._t);
+    state._t = setTimeout(function(){ if (screens()[state.step] === sec) next(); }, CONFIG.autoAdvanceMs);
+  });
+
+  /* Teclado: A/B/C/D ou 1-4 escolhem a opção; Enter avança */
+  root.addEventListener('keydown', function(e){
+    var cur = screens()[state.step]; if (!cur || cur.getAttribute('data-screen') !== 'q') return;
+    var k = e.key.toUpperCase(); var idx = 'ABCDE'.indexOf(k); if (idx < 0 && /^[1-5]$/.test(k)) idx = +k - 1;
+    if (idx > -1){ var o = cur.querySelectorAll('.aq-opt')[idx]; if (o) o.click(); }
+  });
+
+  /* ---------- Navegação ---------- */
+  function next(){
+    var cur = screens()[state.step]; var kind = cur.getAttribute('data-screen');
+    if (kind === 'profile'){
+      if (!validateProfile()) return;
+      var sector = document.getElementById('aq-setor').value;
+      if (sector !== state.sector){ state.sector = sector; state.answers = {}; buildQuestions(sector); }
+      state.step = 1; render(); return;
+    }
+    if (kind === 'q'){
+      if (!state.answers[cur.getAttribute('data-qid')]) return;
+      state.step++; render(); return;
+    }
+    if (kind === 'lead'){ submitLead(); }
+  }
+  function back(){ if (state.step > 0){ clearTimeout(state._t); state.step--; render(); } }
+  btnN.addEventListener('click', next);
+  btnB.addEventListener('click', back);
+  body.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.type !== 'checkbox'){ e.preventDefault(); next(); }
+  });
+  ['aq-setor','aq-porte','aq-cargo','aq-nome','aq-email','aq-telefone','aq-consent'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', function(){ this.closest('.aq-field').classList.remove('is-invalid'); });
+  });
+
+  /* =====================================================================
+     PONTUAÇÃO (DAMA-DMBOK · níveis 1-5) E GAPS POR TAG REGULATÓRIA
+     ===================================================================== */
+  function computeScores(){
+    var byPilar = {}, byDama = {}, gaps = {}, sum = 0, n = 0;
+    state.active.forEach(function(q){
+      var a = state.answers[q.id]; if (!a) return;
+      sum += a.score; n++;
+      (byPilar[q.pilar] = byPilar[q.pilar] || []).push(a.score);
+      (byDama[q.dama]   = byDama[q.dama]   || []).push(a.score);
+      var gap = 5 - a.score;                      /* distância até o nível "Otimizado" */
+      a.tags.forEach(function(t){ if (tagRelevant(t)) gaps[t] = (gaps[t] || 0) + gap; });
+    });
+    var avg = function(arr){ return +(arr.reduce(function(x,y){return x+y;},0) / arr.length).toFixed(2); };
+    var pilares = {}; Object.keys(byPilar).forEach(function(k){ pilares[k] = avg(byPilar[k]); });
+    var damas   = {}; Object.keys(byDama).forEach(function(k){ damas[k] = avg(byDama[k]); });
+    var overall = n ? +(sum / n).toFixed(2) : 0;
+    var nivel = overall < 1.8 ? '1 · Inicial' : overall < 2.6 ? '2 · Repetível' : overall < 3.5 ? '3 · Definido' : overall < 4.3 ? '4 · Gerenciado' : '5 · Otimizado';
+    var topGaps = Object.keys(gaps).sort(function(a,b){ return gaps[b] - gaps[a]; }).slice(0,3)
+                  .map(function(t){ return (TAG_LABELS[t] || t) + ' (' + gaps[t] + ')'; });
+    return { overall:overall, nivel:nivel, pilares:pilares, damas:damas, gaps:gaps, topGaps:topGaps };
+  }
+
+  /* =====================================================================
+     ENVIO · RD Station
+     ===================================================================== */
+  function validateLead(){
+    var ok = true;
+    var nome = document.getElementById('aq-nome'), email = document.getElementById('aq-email'),
+        tel = document.getElementById('aq-telefone'), cons = document.getElementById('aq-consent');
+    var setBad = function(el, bad){ el.closest('.aq-field').classList.toggle('is-invalid', bad); if (bad) ok = false; };
+    setBad(nome, nome.value.trim().length < 3);
+    var dom = (email.value.split('@')[1] || '').toLowerCase();
+    setBad(email, !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value) || CONFIG.blockedEmailDomains.indexOf(dom) > -1);
+    setBad(tel, tel.value.replace(/\D/g,'').length < 10);
+    setBad(cons, !cons.checked);
+    return ok;
+  }
+
+  function buildPayload(){
+    var sc = computeScores();
+    var sel = function(id){ var el = document.getElementById(id); return el.options[el.selectedIndex].text; };
+    var respostas = {};
+    state.active.forEach(function(q){ var a = state.answers[q.id]; if (a) respostas[q.id] = { pilar:q.pilar, dama:q.dama, score:a.score, tags:a.tags, resposta:a.label }; });
+    var params = new URLSearchParams(location.search);
+    return {
+      /* ---- campos padrão do RD ---- */
+      conversion_identifier: CONFIG.rdConversionIdentifier,
+      name: document.getElementById('aq-nome').value.trim(),
+      email: document.getElementById('aq-email').value.trim().toLowerCase(),
+      personal_phone: document.getElementById('aq-telefone').value.trim(),
+      mobile_phone: document.getElementById('aq-telefone').value.trim(),
+      company_name: document.getElementById('aq-empresa').value.trim(),
+      job_title: sel('aq-cargo'),
+      legal_bases: [{ category:'communications', type:'consent', status:'granted' }],
+      traffic_source: params.get('utm_source') || document.referrer || 'direto',
+      traffic_medium: params.get('utm_medium') || '',
+      traffic_campaign: params.get('utm_campaign') || '',
+      /* ---- campos personalizados (crie no RD com exatamente estes nomes) ---- */
+      cf_quiz_setor: sel('aq-setor'),
+      cf_quiz_setor_codigo: state.sector,
+      cf_quiz_porte: sel('aq-porte'),
+      cf_quiz_cargo_codigo: document.getElementById('aq-cargo').value,
+      cf_quiz_maturidade_geral: sc.overall,
+      cf_quiz_nivel_dmbok: sc.nivel,
+      cf_quiz_governanca: sc.pilares['Governança'] || 0,
+      cf_quiz_qualidade: sc.pilares['Qualidade'] || 0,
+      cf_quiz_seguranca: sc.pilares['Segurança'] || 0,
+      cf_quiz_conformidade: sc.pilares['Conformidade'] || 0,
+      cf_quiz_gaps_top3: sc.topGaps.join(' | '),
+      cf_quiz_gaps_json: JSON.stringify(sc.gaps),
+      cf_quiz_dama_json: JSON.stringify(sc.damas),
+      cf_quiz_respostas_json: JSON.stringify(respostas),
+      cf_quiz_roadmap: roadmapText(buildRoadmap(sc)),
+      cf_quiz_duracao_seg: Math.round((Date.now() - state.startedAt) / 1000),
+      cf_quiz_versao: root.getAttribute('data-version'),
+      cf_quiz_url: location.href
+    };
+  }
+
+  function submitLead(){
+    if (!validateLead()) return;
+    var payload = buildPayload();
+    var errBox = document.getElementById('aq-send-error'); errBox.classList.remove('is-on');
+    btnN.disabled = true; btnN.innerHTML = '<span class="aq-loading"></span> Enviando…';
+
+    var req;
+    if (CONFIG.webhookUrl){
+      req = fetch(CONFIG.webhookUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    } else if (CONFIG.rdApiKey){
+      req = fetch('https://api.rd.services/platform/conversions?api_key=' + encodeURIComponent(CONFIG.rdApiKey), {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ event_type:'CONVERSION', event_family:'CDP', payload:payload })
+      });
+    } else {
+      console.warn('[ATRA quiz] Nenhum destino configurado. Payload:', payload);
+      req = Promise.resolve({ ok:true, simulated:true });
+    }
+
+    req.then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      try { window.dataLayer = window.dataLayer || []; window.dataLayer.push({ event:'quiz_maturidade_lead', quiz_setor:state.sector, quiz_nivel:payload.cf_quiz_nivel_dmbok }); } catch(e){}
+      var name = payload.name.split(' ')[0];
+      document.getElementById('aq-done-msg').textContent = name + ', em breve você recebe por e-mail a leitura completa do seu diagnóstico. Se preferir, um especialista da ATRA pode comentar os resultados com você agora.';
+      var wa = document.getElementById('aq-cta-wa');
+      wa.href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent('Olá! Sou ' + payload.name + (payload.company_name ? ' (' + payload.company_name + ')' : '') + '. Acabei de responder o Diagnóstico de Maturidade de Dados da ATRA (nível ' + payload.cf_quiz_nivel_dmbok + ') e quero falar com um especialista.');
+      state.step = screens().findIndex(function(x){ return x.getAttribute('data-screen') === 'done'; }); render();
+    }).catch(function(err){
+      console.error('[ATRA quiz] Falha no envio', err);
+      errBox.classList.add('is-on');
+      btnN.disabled = false; btnN.textContent = 'Tentar novamente';
+    });
+  }
+
+  /* =====================================================================
+     RESULTADO E ROADMAP (temporário na tela; vai por e-mail após a automação)
+     ===================================================================== */
+  var LEVELS = {
+    1:{n:'Inicial', d:'Os dados dependem de pessoas, planilhas e esforço heroico. Decisões são tomadas com números que ninguém consegue reproduzir.'},
+    2:{n:'Repetível', d:'Há ilhas de organização, mas sem patrocínio, papéis ou padrão comuns. O risco regulatório está concentrado em poucas pessoas.'},
+    3:{n:'Definido', d:'Políticas, responsáveis e catálogo cobrem os dados críticos. O próximo salto é medir e automatizar.'},
+    4:{n:'Gerenciado', d:'Qualidade medida, acessos revisados e evidências prontas. Falta escalar para toda a organização e para a IA.'},
+    5:{n:'Otimizado', d:'Dados tratados como produto, com monitoração contínua. O foco passa a ser valor: IA, novos produtos e eficiência.'}
+  };
+  /* Oferta da ATRA por pilar e por faixa de maturidade (baixa < 2.6, média < 3.5, alta) */
+  var OFFERS = {
+    'Governança':{
+      low:{t:'Estrutura de governança de dados', d:'Diagnóstico executivo, definição de data owners e stewards, comitê de dados, política e glossário de negócio para os domínios críticos.'},
+      mid:{t:'Catálogo e linhagem', d:'Implantação de catálogo de dados com linhagem dos indicadores e reportes críticos, integrado ao dicionário de dados exigido pelos reguladores.'},
+      high:{t:'Dados como produto', d:'Produtos de dados por domínio, contratos de dados e governança federada com self-service monitorado.'}},
+    'Qualidade':{
+      low:{t:'Fonte única e regras de qualidade', d:'Plataforma de dados com fonte única para os indicadores principais, regras de completude, consistência e atualidade nos dados críticos.'},
+      mid:{t:'MDM e monitoração', d:'Gestão de dados mestres (cliente, produto, fornecedor) com golden record e scorecards de qualidade por domínio.'},
+      high:{t:'Observabilidade de dados', d:'Alertas, SLAs e detecção de anomalias nos pipelines, com qualidade medida na origem.'}},
+    'Segurança':{
+      low:{t:'Acesso e resposta a incidentes', d:'Classificação de dados, controle de acesso por papéis, revisão periódica e plano de resposta a incidentes com comunicação à ANPD.'},
+      mid:{t:'Proteção por finalidade', d:'Mascaramento dinâmico, trilha de auditoria centralizada e gestão de risco de terceiros e nuvem.'},
+      high:{t:'Segurança contínua', d:'Detecção e resposta automatizadas, revisão de acessos automatizada e métricas reportadas ao Conselho.'}},
+    'Conformidade':{
+      low:{t:'Mapa regulatório e evidências', d:'Inventário de dados pessoais e regulatórios, RIPD, responsáveis por norma e trilha de evidências para o regulador do setor.'},
+      mid:{t:'Automação dos reportes', d:'Pipelines governados para os reportes regulatórios, validações antes do envio e reconciliação com a contabilidade.'},
+      high:{t:'Conformidade contínua', d:'Controles automatizados, painéis para auditoria e governança de IA integrada à de dados.'}}
+  };
+  /* Ação recomendada por regulação (prazo e frente de trabalho) */
+  var REG_ACTIONS = {
+    rc18:'Programa RC 18/2025 até 31/12/2026: política de qualidade das informações, diretor responsável, dicionário de dados, testes antes do envio e relatório semestral.',
+    cmn5274:'Adequação à CMN 5.274/2025: controles de cibersegurança em terceiros e nuvem, teste de intrusão anual independente e evidências de correção.',
+    bcb:'Rastreabilidade ponta a ponta das informações enviadas ao Banco Central, com linhagem e reconciliação.',
+    openfinance:'Monitoração de disponibilidade e qualidade das APIs e dos consentimentos do Open Finance; uso governado dos dados recebidos.',
+    ifrs9:'Linhagem e reconciliação diária entre risco e contabilidade para os modelos de perda esperada (IFRS 9 / CMN 4.966).',
+    ifrs17:'Integração das bases atuarial e contábil para o IFRS 17 / CPC 50 e para os reportes prudenciais à SUSEP, com fechamento automatizado e evidências para auditoria.',
+    lgpd:'Inventário de dados pessoais (ROPA), RIPD, DPO ativo, retenção e descarte, e fluxo de atendimento ao titular com prazo monitorado.',
+    anpd:'Playbook de comunicação de incidentes à ANPD e evidências para os temas prioritários de fiscalização 2026-2027.',
+    ia:'Inventário de sistemas de IA com classificação de risco e governança dos dados de treinamento, antecipando o Marco Legal da IA (PL 2338/2023, votação prevista para o fim de 2026) e a fiscalização da ANPD.',
+    bcbs239:'Agregação de dados de risco com linhagem, reconciliação e controles, nos princípios do BCBS 239 que a RC 18 traz para o Brasil.',
+    cfm:'Prontuário eletrônico com integridade, trilha de auditoria e guarda conforme as normas do CFM e a Lei 13.787/2018.',
+    marco_civil:'Guarda de registros de conexão e de acesso nos prazos do Marco Civil da Internet, com acesso controlado e auditável.',
+    cvm:'Bases governadas e validações antes dos envios à CVM e à ANBIMA, com trilha das versões enviadas.',
+    cvm244:'Decisão documentada sobre o IFRS S1/S2 e dados de sustentabilidade governados para reportar ou justificar a partir de 2027.',
+    pld:'Cadastro único do investidor com regras de atualização e alertas para compliance (suitability, KYC, PLD/FT).',
+    susep:'Inventário de fornecedores de nuvem e processamento, contratos acessíveis à SUSEP e plano de incidentes testado.',
+    sro:'Validações antes do envio ao SRO, indicadores de rejeição e reconciliação com a registradora.',
+    openinsurance:'Consentimentos rastreáveis e dados do Open Insurance integrados ao negócio.',
+    anvisa:'Dados clínicos governados com trilha de auditoria, classificação de dados sensíveis e controles de acesso.',
+    ans:'Padronização dos dados assistenciais na origem e validações antes do envio ao Monitoramento TISS.',
+    tiss:'Adequação à RN ANS 639/2025: dados assistenciais no padrão TISS com qualidade medida por indicador.',
+    rnds:'Interoperabilidade HL7 FHIR com a RNDS, começando pelos registros de maior volume.',
+    anatel:'Bases governadas para os indicadores e reportes da Anatel, com validação antes do envio.',
+    rgc:'Evidências de transparência e proteção de dados exigidas pelo RGC, geradas de forma automatizada.',
+    eca:'Classificação de dados de menores, verificação de idade e consentimento dos responsáveis nas plataformas digitais (ECA Digital, Lei 15.211/2025, em vigor desde 17/3/2026).',
+    mec:'Cadastro único do aluno e reconciliação entre acadêmico, financeiro e captação antes dos envios ao MEC/INEP.',
+    inep:'Trilha das versões enviadas ao Censo e ao Enade, com validação prévia.',
+    fies:'Consistência dos dados de FIES/ProUni entre sistemas e evidências para auditoria.',
+    esg:'Indicadores de sustentabilidade com responsáveis, validação e integração à plataforma de dados.',
+    fiscal:'Dados fiscais e de auditoria governados, auditáveis e integrados.',
+    reforma_tributaria:'Saneamento dos cadastros mestres e parametrização das regras fiscais (CBS/IBS) com testes em homologação antes de 2027.',
+    lgpd_saude:'Privacidade por design para dados sensíveis de saúde, com auditoria contínua.'
+  };
+  /* Consequências práticas por pilar fraco (aparecem no resultado e servem ao e-mail) */
+  var STAKES = {
+    'Governança':'Sem donos, definições comuns e uma fonte única, cada área produz a sua versão do número. Decisões e reportes regulatórios ficam expostos a contestação, e cada resposta nova à diretoria vira um projeto.',
+    'Qualidade':'Dados inconsistentes viram retrabalho no fechamento, reportes devolvidos pelo regulador e modelos de IA que não podem ir para produção. O custo aparece em horas de conciliação e em decisões adiadas.',
+    'Segurança':'Acessos amplos e resposta improvisada a incidentes elevam a chance de vazamento. A LGPD prevê sanções de até 2% do faturamento, limitadas a R$ 50 milhões por infração, além do dano de reputação.',
+    'Conformidade':'Evidências montadas à mão a cada demanda consomem o time e não escalam. Prazos como o da RC 18 (31/12/2026) e as prioridades de fiscalização da ANPD para 2026-2027 aumentam a pressão sobre quem ainda não tem dicionário, linhagem e trilha de auditoria.'
+  };
+  function band(v){ return v < 2.6 ? 'low' : v < 3.5 ? 'mid' : 'high'; }
+  function buildRoadmap(sc){
+    var pilares = ['Governança','Qualidade','Segurança','Conformidade'].map(function(p){ return {p:p, v:sc.pilares[p] || 0}; }).sort(function(a,b){ return a.v - b.v; });
+    var phases = [
+      {f:'Fase 1', w:'0 a 3 meses', cls:'f1', items:[]},
+      {f:'Fase 2', w:'3 a 6 meses', cls:'f2', items:[]},
+      {f:'Fase 3', w:'6 a 12 meses', cls:'f3', items:[]}
+    ];
+    phases[0].items.push({t:'Diagnóstico executivo de dados', d:'Leitura detalhada deste resultado com um especialista da ATRA, priorização dos gaps por risco e prazo regulatório, e roadmap aprovado pela diretoria.'});
+    pilares.forEach(function(x, i){
+      var o = OFFERS[x.p][band(x.v)];
+      phases[i < 2 ? i : 2].items.push({t:o.t + ' · ' + x.p, d:o.d});
+    });
+    var topTags = Object.keys(sc.gaps).sort(function(a,b){ return sc.gaps[b] - sc.gaps[a]; }).filter(function(t){ return REG_ACTIONS[t]; }).slice(0,4);
+    var regs = topTags.map(function(t){ return {t:(TAG_LABELS[t] || t), d:REG_ACTIONS[t], g:sc.gaps[t]}; });
+    if (regs.length) phases[1].items.push({t:'Frente regulatória prioritária', d:regs[0].t + ': ' + regs[0].d});
+    if (sc.overall >= 3.5) phases[2].items.push({t:'IA sobre dados confiáveis', d:'Casos de uso de IA e analytics avançado sobre a base governada, com governança de modelos e dados de treinamento.'});
+    return {pilares:pilares, phases:phases, regs:regs};
+  }
+  function renderResult(){
+    var sc = computeScores(), rm = buildRoadmap(sc);
+    var lvlNum = Math.max(1, Math.min(5, Math.round(sc.overall)));
+    var L = LEVELS[lvlNum];
+    var porte = document.getElementById('aq-porte').value;
+    var bigCo = (porte === '1_5bi' || porte === 'acima_5bi');
+    var bench = (bigCo && sc.overall < 3) ? 'Para o seu porte, esse nível está abaixo do esperado pelos pares e pelos reguladores.' : (sc.overall >= 4 ? 'Nível acima da média do mercado brasileiro.' : 'Nível compatível com a maioria das empresas do seu porte, com espaço claro de evolução.');
+    var h = '<div class="aq-res-head"><div class="n">' + sc.overall.toFixed(1).replace('.', ',') + '</div><div><h3>Nível ' + lvlNum + ' · ' + L.n + '</h3><p>' + L.d + ' ' + bench + '</p></div></div>';
+    h += '<h4>Impactos avaliados para o seu setor</h4><div class="aq-gaps">' + sectorImpactChips(state.sector) + '</div>';
+    h += '<h4>Maturidade por pilar</h4><div class="aq-bars">' + rm.pilares.slice().sort(function(a,b){ return b.v - a.v; }).map(function(x){
+      var cls = x.v < 2.6 ? 'crit' : x.v < 3.5 ? 'warn' : '';
+      return '<div class="aq-bar-row"><b>' + x.p + '</b><div class="t"><i style="width:' + Math.round(x.v / 5 * 100) + '%"></i></div><span class="s ' + cls + '">' + x.v.toFixed(1).replace('.', ',') + '</span></div>';
+    }).join('') + '</div>';
+    var weak = rm.pilares.filter(function(x){ return x.v < 3.5; }).slice(0,3);
+    if (weak.length) h += '<h4>O que está em jogo</h4><div class="aq-reg">' + weak.map(function(x){ return '<div><b>' + x.p + '</b><span>' + STAKES[x.p] + '</span></div>'; }).join('') + '</div>';
+    if (rm.regs.length) h += '<h4>Regulações com maior gap</h4><div class="aq-gaps">' + rm.regs.map(function(r){ return '<span>' + r.t + '</span>'; }).join('') + '</div>';
+    h += '<h4>Roadmap recomendado · consultoria e implementação ATRA</h4><div class="aq-road">' + rm.phases.map(function(ph){
+      return '<div class="aq-phase ' + ph.cls + '"><div class="ph">' + ph.f + '<small>' + ph.w + '</small></div><div>' + ph.items.map(function(it){ return '<h5>' + it.t + '</h5><p>' + it.d + '</p>'; }).join('<div style="height:8px"></div>') + '</div></div>';
+    }).join('') + '</div>';
+    if (rm.regs.length > 1) h += '<h4>Ações por regulação</h4><div class="aq-reg">' + rm.regs.map(function(r){ return '<div><b>' + r.t + '</b><span>' + r.d + '</span></div>'; }).join('') + '</div>';
+    h += '<p class="aq-note">Resultado gerado a partir das suas respostas, na escala de maturidade DAMA-DMBOK (1 Inicial a 5 Otimizado). O gap de cada regulação é a distância até o nível 5 somada nas respostas relacionadas. As recomendações são um ponto de partida: a leitura completa acontece na sessão com o especialista.</p>';
+    document.getElementById('aq-res').innerHTML = h;
+    document.getElementById('aq-res-wa').href = document.getElementById('aq-cta-wa').href;
+    document.getElementById('aq-res-agenda').href = CONFIG.agendaUrl;
+    return rm;
+  }
+  function roadmapText(rm){
+    return rm.phases.map(function(ph){ return ph.f + ' (' + ph.w + '): ' + ph.items.map(function(i){ return i.t; }).join('; '); }).join(' | ');
+  }
+  document.getElementById('aq-cta-resultado').addEventListener('click', function(){
+    renderResult();
+    state.step = screens().findIndex(function(x){ return x.getAttribute('data-screen') === 'result'; }); render();
+  });
+  document.getElementById('aq-res-back').addEventListener('click', function(){
+    state.step = screens().findIndex(function(x){ return x.getAttribute('data-screen') === 'done'; }); render();
+  });
+
+  render();
+})();
+</script>

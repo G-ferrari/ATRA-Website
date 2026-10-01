@@ -6,8 +6,10 @@ import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
 import { enviarParaAtrair } from '@/lib/atrair'
+import { lerIntegracaoAtrair } from '@/lib/integracoes'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
+import { destinoDoAviso } from '@/lib/destino-do-aviso'
 import { enviarAviso } from '@/lib/email'
 import { getPayload } from '@/lib/payload'
 import { MAX_POR_VALOR } from '@/lib/utm'
@@ -45,6 +47,7 @@ const campanha = (dados: FormData, campo: string): string | undefined =>
 /** Aceita o que parece e-mail. Validação de verdade é o e-mail chegar. */
 const pareceEmail = (v: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
 
+
 export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   const kind = texto(dados, 'kind')
   if (kind !== 'contact' && kind !== 'newsletter' && kind !== 'talent-pool') {
@@ -71,6 +74,8 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   /* MIG-102: o Banco de Talentos tem campos sem coluna própria em
    * form-submissions (LinkedIn, área, senioridade) — entram serializados na
    * mensagem, visíveis no admin e no e-mail de aviso, sem migração. */
+  /* ⚠️ Sem vaga: este formulário é o banco de talentos geral (D-33). Quem se
+   * candidata A UMA VAGA o faz na página da vaga, no ATRAIR. */
   const extrasDeTalento =
     kind === 'talent-pool'
       ? [
@@ -118,7 +123,13 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
 
   /* MIG-102: currículo segue para o ATRAIR (sistema de R&S) — melhor esforço,
    * como a sincronização com o CRM: `false` não muda o `Resultado`, porque a
-   * candidatura já está gravada acima e visível no admin. */
+   * candidatura já está gravada acima e visível no admin.
+   *
+   * ⚠️ Quem manda é a chave `talentPool` do global `integrations` (D-41), lida
+   * aqui e passada adiante: a action é o limite onde o dado é resolvido, não o
+   * `lib/atrair.ts` (regra 4 — nem action nem componente deixam a decisão para
+   * a camada de baixo). Desligada, `enviarParaAtrair` devolve `false` sem
+   * chamar ninguém, e a inscrição fica só no admin. */
   if (kind === 'talent-pool') {
     await enviarParaAtrair({
       name: texto(dados, 'name'),
@@ -128,7 +139,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
       area: texto(dados, 'area') || undefined,
       senioridade: texto(dados, 'senioridade') || undefined,
       source: texto(dados, 'source') || undefined,
-    })
+    }, await lerIntegracaoAtrair())
   }
 
   /* O aviso é o **segundo** passo e não pode derrubar o primeiro. Sem chave de
@@ -143,7 +154,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   } else {
     const contato = await lerContato()
     enviou = await enviarAviso({
-      para: contato.email,
+      para: destinoDoAviso(contato, kind === 'talent-pool' ? 'carreiras' : 'contato'),
       assunto: `[site] ${ASSUNTO[kind]}${texto(dados, 'company') ? ` — ${texto(dados, 'company')}` : ''}`,
       responderPara: email,
       texto: resumo(dados, email),

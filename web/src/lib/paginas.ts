@@ -6,6 +6,7 @@ import { toDepoimento, toLogoDeCliente } from './mappers/client'
 import { toSeo } from './mappers/seo'
 import { lerContato } from './contato'
 import { toVaga } from './mappers/job'
+import { comParceirosCadastrados } from './parceiros'
 import { getPayload } from './payload'
 import type { Bloco, Seo } from '@/types/content'
 
@@ -70,6 +71,12 @@ export async function resolverPagina(
     })
     comClientes(blocos, clientes.map(toLogoDeCliente))
   }
+
+  /* A faixa "Parceiros de Confiança" e a vitrine em "Todos" leem a collection
+     `partners`, a mesma do mega-menu: trocar ou adicionar um logo no admin muda
+     todos os lugares. Até aqui a faixa guardava uma lista própria de uploads, e
+     o logo novo do menu não chegava à home. */
+  await comParceirosCadastrados(blocos, locale)
 
   if (blocos.some((b) => b.tipo === 'testimonialCarousel')) {
     const { docs: depoimentos } = await payload.find({

@@ -9,7 +9,8 @@ const contato: Contato = {
   whatsapp: 'https://wa.me/5511963052391',
   email: 'negocios@atra.com.br',
   endereco: 'Av. Queiroz Filho, 1700 – SP',
-  redes: { linkedin: 'https://linkedin.com/company/atra', instagram: null, youtube: 'https://youtube.com/@atra' },
+  redes: { linkedin: 'https://linkedin.com/company/atra', instagram: null, facebook: 'https://facebook.com/atra', youtube: 'https://youtube.com/@atra' },
+  destinos: { contato: null, consultores: null, diagnostico: null, carreiras: null, chat: null },
 }
 const seo: Seo = { title: 'Título', description: 'Resumo', image: { url: '/capa.webp', alt: 'a', width: 1200, height: 630 }, noIndex: false }
 
@@ -25,13 +26,19 @@ describe('organizacao', () => {
 
   /* `null` viraria a string "null" no JSON e o Google trataria como perfil. */
   it('só lista as redes que existem', () => {
-    expect(o.sameAs).toEqual(['https://linkedin.com/company/atra', 'https://youtube.com/@atra'])
+    expect(o.sameAs).toEqual(['https://linkedin.com/company/atra', 'https://facebook.com/atra', 'https://youtube.com/@atra'])
   })
 
   it('omite logo e fundação quando não há', () => {
     const sem = organizacao({ contato, logo: null })
     expect(sem).not.toHaveProperty('logo')
     expect(sem).not.toHaveProperty('foundingDate')
+  })
+
+  /* A ATRA não tem mais sede fixa (29/09): sem endereço, nada de PostalAddress vazio. */
+  it('omite o endereço quando o global não tem', () => {
+    expect(o.address).toMatchObject({ streetAddress: 'Av. Queiroz Filho, 1700 – SP' })
+    expect(organizacao({ contato: { ...contato, endereco: null }, logo: null })).not.toHaveProperty('address')
   })
 })
 

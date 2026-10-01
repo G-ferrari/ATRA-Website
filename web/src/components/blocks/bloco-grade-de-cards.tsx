@@ -35,6 +35,10 @@ const COLUNAS: Record<BlocoIconCardGrid['variant'], Record<2 | 3 | 4, string>> =
   },
 }
 
+/* Cor do traço do ícone; a caixa fica sempre azul-clara (bg-primary/10), como no
+   legado — só o traço intercala azul/laranja (`accent`, injetado pela página). */
+const COR_ICONE = { primary: 'text-primary', secondary: 'text-secondary' } as const
+
 export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
   const compacto = bloco.variant === 'compact'
   /* Mesmo cartão do `card`, centralizado: ícone com `mx-auto` e texto no meio
@@ -85,7 +89,10 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
                 className="p-5 bg-surface-1  rounded-[6px] hover:shadow-md motion-safe:hover:-translate-y-0.5 transition duration-200 flex flex-col justify-center items-center text-center group"
               >
                 <div className="w-10 h-10 rounded-[6px] bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary transition-all">
-                  <Icone className="w-5 h-5 text-primary group-hover:text-white transition-colors" aria-hidden />
+                  <Icone
+                    className={cn('w-5 h-5 group-hover:text-white transition-colors', COR_ICONE[item.accent ?? 'primary'])}
+                    aria-hidden
+                  />
                 </div>
                 <span className="text-xs font-semibold text-text-main group-hover:text-primary transition-colors leading-relaxed">
                   {item.title}
@@ -106,7 +113,8 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
               >
                 <div
                   className={cn(
-                    'w-12 h-12 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all',
+                    'w-12 h-12 rounded-[6px] bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all',
+                    COR_ICONE[item.accent ?? 'primary'],
                     centrado && 'mx-auto',
                   )}
                 >

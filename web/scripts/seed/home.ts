@@ -26,30 +26,6 @@ const upsertMidiaLocal = (arquivo: string, alt: string) =>
   midiaDe(payload, path.resolve(process.cwd(), arquivo), alt)
 const upsertMidia = (arquivo: string, alt: string) => midiaDe(payload, path.join(LEGADO, arquivo), alt)
 
-/* Os 9 logos da faixa, na ordem e com os nomes do legado (`App.tsx:1397`).
- *
- * ⚠️ O quarto se chama **"Partner"** mesmo. É assim no gabarito, e o nome
- * aparece escrito embaixo do logo — não é `alt`. Trocar por "AWS" seria decisão
- * de conteúdo (D-22, P-10) e mudaria pixel. Lista própria do bloco, e não a
- * collection, justamente por causa dele; ver a nota do campo em `blocks/index.ts`. */
-const LOGOS = [
-  { name: 'Google Cloud', arquivo: 'logo_google_cloud.png' },
-  { name: 'Denodo', arquivo: 'logo_denodo.png' },
-  { name: 'BigID', arquivo: 'logo_bigid.jpg' },
-  { name: 'Partner', arquivo: 'logo_aws.png' },
-  { name: 'Azure', arquivo: 'logo_azure.png' },
-  { name: 'Atlan', arquivo: 'logo_atlan.png' },
-  { name: 'IBM', arquivo: 'logo_ibm.png' },
-  { name: 'Salesforce Informatica', arquivo: 'logo_informatica.png' },
-  { name: 'Databricks', arquivo: 'logo_databricks.png' },
-]
-
-console.log('→ logos de parceiro')
-const partners = []
-for (const l of LOGOS) {
-  partners.push({ name: l.name, logo: await upsertMidiaLocal(`scripts/seed/assets/parceiros/${l.arquivo}`, l.name) })
-}
-
 /* ⚠️ Onde o gabarito tem imagem, o porte precisa ter **alguma** imagem.
  *
  * O aceite visual mascara `img`, e a máscara cobre a caixa do elemento: no
@@ -157,6 +133,22 @@ const layout = [
       { icon: 'target' as const, tag: 'Enterprise', value: '20+', label: 'Clientes Estratégicos', color: 'secondary' as const },
     ],
   },
+  /* Destaques (reunião de 24/09), logo abaixo dos números. Nasce só com a
+     RC18; os próximos entram pelo admin. O texto é o do herói da página da
+     RC18 (`solucoes-rc18.ts`) — a redação final é do marketing (D-22). */
+  {
+    blockType: 'highlightCarousel' as const,
+    autoplay: true,
+    items: [
+      {
+        tag: 'Resolução Conjunta nº 18/2025',
+        title: 'RC 18/2025: sua instituição está preparada para comprovar a qualidade dos dados?',
+        description:
+          'Prazo de adequação: 31 de dezembro de 2026. A exigência não termina na criação de uma política: é preciso processos, tecnologia e evidências capazes de demonstrar a qualidade das informações prestadas ao Banco Central.',
+        cta: { label: 'Conhecer a solução', href: '/solucoes/rc18' },
+      },
+    ],
+  },
   {
     blockType: 'featureTabs' as const,
     eyebrow: 'Nosso Processo de Valor',
@@ -170,14 +162,14 @@ const layout = [
     blockType: 'logoMarquee' as const,
     theme: 'surface-2' as const,
     title: 'Parceiros de Confiança',
-    partners,
+    // Os logos saem da collection `partners`; ver a nota do campo em `blocks/index.ts`.
   },
   {
     blockType: 'caseCarousel' as const,
     theme: 'surface-2' as const,
     eyebrow: 'Histórias de Impacto',
     title: 'Investindo no Sucesso dos Nossos Clientes',
-    description: 'Nosso portfólio reflete foco e excelência em arquitetura de dados, nuvem e inteligência artificial — transformando visão estratégica em valor de longo prazo.',
+    description: 'Nosso portfólio reflete foco e excelência em arquitetura de dados, nuvem e inteligência artificial, transformando visão estratégica em valor de longo prazo.',
     readLabel: 'Ler estudo de caso',
     cta: { label: 'Ver todos os cases', href: '/cases-de-sucesso' },
     items: cases,

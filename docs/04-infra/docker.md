@@ -48,7 +48,7 @@ services:
       retries: 10
 
   minio:
-    image: minio/minio
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z   # fork; ver nota abaixo
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: atra
@@ -57,7 +57,7 @@ services:
     volumes: [minio:/data]
 
   createbucket:            # cria o bucket na primeira subida
-    image: minio/mc
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z   # a mesma imagem traz o mc
     depends_on: [minio]
     entrypoint: >
       /bin/sh -c "
@@ -72,6 +72,13 @@ volumes:
 
 MinIO em vez de S3 real no desenvolvimento: mesma API, sem custo, sem
 credencial de nuvem na máquina de ninguém, e funciona offline.
+
+⚠️ A imagem é `pgsty/minio`, não `minio/minio`: em set/2026 o MinIO tirou as
+imagens públicas do Docker Hub e do quay.io. O fork é do mesmo código e traz o
+`mc`, então o `createbucket` usa a mesma imagem. O `docker-compose.yml` real
+prende também o digest. Produção (`docker-compose.prod.yml` e
+`infra/backup/backup.sh`) ainda aponta para `minio/minio:latest` e
+`minio/mc:latest`, que só existem no cache da VPS — ver P-32.
 
 ## Dockerfile de produção
 

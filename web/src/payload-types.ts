@@ -125,17 +125,23 @@ export interface Config {
     'atra-ai': AtraAi;
     contact: Contact;
     'cookie-consent': CookieConsent;
+    'data-maturity-diagnostic': DataMaturityDiagnostic;
     footer: Footer;
+    integrations: Integration;
     navigation: Navigation;
     'site-settings': SiteSetting;
+    tracking: Tracking;
   };
   globalsSelect: {
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     'cookie-consent': CookieConsentSelect<false> | CookieConsentSelect<true>;
+    'data-maturity-diagnostic': DataMaturityDiagnosticSelect<false> | DataMaturityDiagnosticSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    integrations: IntegrationsSelect<false> | IntegrationsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    tracking: TrackingSelect<false> | TrackingSelect<true>;
   };
   locale: 'pt' | 'en';
   widgets: {
@@ -423,9 +429,16 @@ export interface Partner {
    */
   slug: string;
   /**
-   * Prefer SVG. The repository already has intact partner SVGs.
+   * Transparent PNG, cropped tight to the logo (no margin), at least 400px wide. Margin in the file counts as logo and makes it smaller than the others.
    */
   logo: number | Media;
+  /**
+   * Optional. When empty, the logo above is used in both themes. Same file rules.
+   */
+  logoDark?: (number | null) | Media;
+  /**
+   * Fine-tuning. The site already balances logos by their proportions; use only if one still looks too big or too small.
+   */
   logoScale?: ('sm' | 'md' | 'lg') | null;
   /**
    * One sentence, used in the menu.
@@ -492,6 +505,73 @@ export interface Partner {
             blockType: 'pageHero';
           }
         | {
+            badge?: string | null;
+            chip?: string | null;
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            /**
+             * Shown on every award card in the strip.
+             */
+            logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
+            awards?:
+              | {
+                  topText?: string | null;
+                  title: string;
+                  highlight?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerHero';
+          }
+        | {
+            titlePrefix: string;
+            rotatingWords: string[];
+            description?: string | null;
+            scrollLabel?: string | null;
+            prompt?: {
+              title?: string | null;
+              placeholder?: string | null;
+              disclaimer?: string | null;
+              clientsTitle?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeHero';
+          }
+        | {
             variant?: ('institutional' | 'solution') | null;
             bottomGap?: ('normal' | 'none') | null;
             /**
@@ -510,85 +590,17 @@ export interface Partner {
             blockType: 'stickyPageNav';
           }
         | {
-            source?: ('siteSettings' | 'custom') | null;
-            customItems?:
-              | {
-                  value: number;
-                  suffix?: string | null;
-                  label: string;
-                  id?: string | null;
-                }[]
-              | null;
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'statsGrid';
-          }
-        | {
             eyebrow?: string | null;
-            title?: string | null;
-            body?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-            image?: (number | null) | Media;
-            ctas?:
-              | {
-                  label: string;
-                  href: string;
-                  id?: string | null;
-                }[]
-              | null;
-            headerLayout?: ('inline' | 'centered') | null;
+            title: string;
             description?: string | null;
-            subtitle?: string | null;
-            callout?: {
+            footnote?: string | null;
+            cta?: {
               label?: string | null;
-              text?: string | null;
+              href?: string | null;
             };
-            imagePosition?: ('left' | 'right' | 'none') | null;
             /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
+             * Numbering (01, 02…) follows the order. The first one opens active.
              */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'richTextSection';
-          }
-        | {
-            eyebrow?: string | null;
-            title?: string | null;
-            columns?: ('2' | '3' | '4') | null;
-            variant?: ('compact' | 'card' | 'card-centered') | null;
-            headerWidth?: ('full' | 'narrow') | null;
             items: {
               icon:
                 | 'sparkles'
@@ -626,80 +638,10 @@ export interface Partner {
                 | 'server'
                 | 'code'
                 | 'headset';
-              title: string;
-              /**
-               * Left empty, the card renders compact and centred.
-               */
-              description?: string | null;
-              id?: string | null;
-            }[];
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'iconCardGrid';
-          }
-        | {
-            eyebrow?: string | null;
-            title?: string | null;
-            highlight?: string | null;
-            variant?: ('glow' | 'expanded') | null;
-            description?: string | null;
-            items: {
-              icon:
-                | 'sparkles'
-                | 'target'
-                | 'shield'
-                | 'rocket'
-                | 'users'
-                | 'database'
-                | 'cloud'
-                | 'brain'
-                | 'chart'
-                | 'lock'
-                | 'workflow'
-                | 'award'
-                | 'app'
-                | 'search'
-                | 'settings'
-                | 'zap'
-                | 'cpu'
-                | 'shield-check'
-                | 'trending-up'
-                | 'arrow-up-right'
-                | 'star'
-                | 'file-text'
-                | 'newspaper'
-                | 'video'
-                | 'book'
-                | 'briefcase'
-                | 'graduation-cap'
-                | 'heart'
-                | 'info'
-                | 'user-check'
-                | 'building'
-                | 'coffee'
-                | 'server'
-                | 'code'
-                | 'headset';
-              bullets?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
-              glowColor?: ('blue' | 'orange') | null;
+              badge: string;
               title: string;
               description: string;
+              image?: (number | null) | Media;
               id?: string | null;
             }[];
             /**
@@ -715,73 +657,7 @@ export interface Partner {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'valueCards';
-          }
-        | {
-            title?: string | null;
-            partners: (number | Partner)[];
-            /**
-             * They gain colour on hover.
-             */
-            grayscale?: boolean | null;
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'partnerShowcase';
-          }
-        | {
-            title?: string | null;
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'sealsBanner';
-          }
-        | {
-            eyebrow?: string | null;
-            title?: string | null;
-            description?: string | null;
-            /**
-             * Numbering follows the order. Drag to reorder.
-             */
-            steps: {
-              title: string;
-              description: string;
-              id?: string | null;
-            }[];
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'processSteps';
+            blockType: 'featureTabs';
           }
         | {
             eyebrow?: string | null;
@@ -899,6 +775,75 @@ export interface Partner {
             id?: string | null;
             blockName?: string | null;
             blockType: 'methodCards';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            highlight?: string | null;
+            variant?: ('glow' | 'expanded') | null;
+            description?: string | null;
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              bullets?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              glowColor?: ('blue' | 'orange') | null;
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'valueCards';
           }
         | {
             eyebrow?: string | null;
@@ -1072,6 +1017,71 @@ export interface Partner {
           }
         | {
             eyebrow?: string | null;
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            variant?: ('compact' | 'card' | 'card-centered') | null;
+            headerWidth?: ('full' | 'narrow') | null;
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              title: string;
+              /**
+               * Left empty, the card renders compact and centred.
+               */
+              description?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'iconCardGrid';
+          }
+        | {
+            eyebrow?: string | null;
             eyebrowIcon?:
               | (
                   | 'sparkles'
@@ -1173,6 +1183,82 @@ export interface Partner {
             id?: string | null;
             blockName?: string | null;
             blockType: 'audienceSplit';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            image?: (number | null) | Media;
+            ctas?:
+              | {
+                  label: string;
+                  href: string;
+                  id?: string | null;
+                }[]
+              | null;
+            headerLayout?: ('inline' | 'centered') | null;
+            description?: string | null;
+            subtitle?: string | null;
+            callout?: {
+              label?: string | null;
+              text?: string | null;
+            };
+            imagePosition?: ('left' | 'right' | 'none') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richTextSection';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
+            /**
+             * Numbering follows the order. Drag to reorder.
+             */
+            steps: {
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'processSteps';
           }
         | {
             eyebrow?: string | null;
@@ -1285,14 +1371,14 @@ export interface Partner {
             blockType: 'accordionSteps';
           }
         | {
-            title: string;
-            subtitle?: string | null;
-            /**
-             * Phone, e-mail, address and socials beside the form.
-             */
-            showContactCard?: boolean | null;
-            variant?: ('panel' | 'photo') | null;
-            photo?: (number | null) | Media;
+            title?: string | null;
+            partners?:
+              | {
+                  name: string;
+                  logo: number | Media;
+                  id?: string | null;
+                }[]
+              | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1306,49 +1392,35 @@ export interface Partner {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'ctaContact';
+            blockType: 'logoMarquee';
+          }
+        | {
+            title?: string | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'sealsBanner';
           }
         | {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
-            emptyText?: string | null;
-            talentBank?: {
-              eyebrow?: string | null;
-              title?: string | null;
-              highlight?: string | null;
-              description?: string | null;
-              note?: string | null;
-            };
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'jobsList';
-          }
-        | {
-            title: string;
-            highlight?: string | null;
-            description?: string | null;
-            cta?: {
-              label?: string | null;
-              href?: string | null;
-            };
-            secondaryCta?: {
-              label?: string | null;
-              href?: string | null;
+            images: {
+              image: number | Media;
               caption?: string | null;
-            };
-            variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
+              id?: string | null;
+            }[];
+            boxed?: boolean | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1362,30 +1434,18 @@ export interface Partner {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'ctaBanner';
+            blockType: 'imageGrid';
           }
         | {
-            badge?: string | null;
-            chip?: string | null;
-            title: string;
-            highlight?: string | null;
-            description?: string | null;
-            /**
-             * Shown on every award card in the strip.
-             */
-            logo?: (number | null) | Media;
-            awards?:
+            source?: ('siteSettings' | 'custom') | null;
+            customItems?:
               | {
-                  topText?: string | null;
-                  title: string;
-                  highlight?: string | null;
+                  value: number;
+                  suffix?: string | null;
+                  label: string;
                   id?: string | null;
                 }[]
               | null;
-            cta?: {
-              label?: string | null;
-              href?: string | null;
-            };
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1399,7 +1459,7 @@ export interface Partner {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'partnerHero';
+            blockType: 'statsGrid';
           }
         | {
             eyebrow?: string | null;
@@ -1414,9 +1474,13 @@ export interface Partner {
             image?: (number | null) | Media;
             imageLabel?: string | null;
             /**
-             * Used in the image label and on every grid card.
+             * Used in the image label.
              */
             logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
             /**
              * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
              */
@@ -1450,38 +1514,16 @@ export interface Partner {
             blockType: 'partnerSplit';
           }
         | {
-            titlePrefix: string;
-            rotatingWords: string[];
-            description?: string | null;
-            scrollLabel?: string | null;
-            prompt?: {
-              title?: string | null;
-              placeholder?: string | null;
-              disclaimer?: string | null;
-              clientsTitle?: string | null;
-            };
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'homeHero';
-          }
-        | {
             title?: string | null;
-            partners: {
-              name: string;
-              logo: number | Media;
-              id?: string | null;
-            }[];
+            /**
+             * With "All", the showcase follows the Partners collection, in its order.
+             */
+            source?: ('all' | 'selected') | null;
+            partners?: (number | Partner)[] | null;
+            /**
+             * They gain colour on hover.
+             */
+            grayscale?: boolean | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1495,77 +1537,7 @@ export interface Partner {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'logoMarquee';
-          }
-        | {
-            eyebrow?: string | null;
-            title: string;
-            description?: string | null;
-            footnote?: string | null;
-            cta?: {
-              label?: string | null;
-              href?: string | null;
-            };
-            /**
-             * Numbering (01, 02…) follows the order. The first one opens active.
-             */
-            items: {
-              icon:
-                | 'sparkles'
-                | 'target'
-                | 'shield'
-                | 'rocket'
-                | 'users'
-                | 'database'
-                | 'cloud'
-                | 'brain'
-                | 'chart'
-                | 'lock'
-                | 'workflow'
-                | 'award'
-                | 'app'
-                | 'search'
-                | 'settings'
-                | 'zap'
-                | 'cpu'
-                | 'shield-check'
-                | 'trending-up'
-                | 'arrow-up-right'
-                | 'star'
-                | 'file-text'
-                | 'newspaper'
-                | 'video'
-                | 'book'
-                | 'briefcase'
-                | 'graduation-cap'
-                | 'heart'
-                | 'info'
-                | 'user-check'
-                | 'building'
-                | 'coffee'
-                | 'server'
-                | 'code'
-                | 'headset';
-              badge: string;
-              title: string;
-              description: string;
-              image?: (number | null) | Media;
-              id?: string | null;
-            }[];
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'featureTabs';
+            blockType: 'partnerShowcase';
           }
         | {
             partnerCard?: {
@@ -1743,66 +1715,31 @@ export interface Partner {
             blockType: 'testimonialCarousel';
           }
         | {
-            eyebrow?: string | null;
-            title: string;
-            description?: string | null;
-            cards?:
-              | {
-                  icon:
-                    | 'sparkles'
-                    | 'target'
-                    | 'shield'
-                    | 'rocket'
-                    | 'users'
-                    | 'database'
-                    | 'cloud'
-                    | 'brain'
-                    | 'chart'
-                    | 'lock'
-                    | 'workflow'
-                    | 'award'
-                    | 'app'
-                    | 'search'
-                    | 'settings'
-                    | 'zap'
-                    | 'cpu'
-                    | 'shield-check'
-                    | 'trending-up'
-                    | 'arrow-up-right'
-                    | 'star'
-                    | 'file-text'
-                    | 'newspaper'
-                    | 'video'
-                    | 'book'
-                    | 'briefcase'
-                    | 'graduation-cap'
-                    | 'heart'
-                    | 'info'
-                    | 'user-check'
-                    | 'building'
-                    | 'coffee'
-                    | 'server'
-                    | 'code'
-                    | 'headset';
-                  category: string;
-                  title: string;
-                  href?: string | null;
-                  image?: (number | null) | Media;
-                  column: 'first' | 'second';
-                  id?: string | null;
-                }[]
-              | null;
-            featured?: {
-              category?: string | null;
-              title?: string | null;
-              ctaLabel?: string | null;
-              href?: string | null;
+            /**
+             * Optional. When empty, the banners show without a heading.
+             */
+            title?: string | null;
+            /**
+             * The order here is the carousel order.
+             */
+            items: {
+              tag?: string | null;
+              title: string;
+              description?: string | null;
+              /**
+               * Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.
+               */
               image?: (number | null) | Media;
-            };
-            newsletter?: {
-              title?: string | null;
-              placeholder?: string | null;
-            };
+              cta?: {
+                label?: string | null;
+                href?: string | null;
+              };
+              id?: string | null;
+            }[];
+            /**
+             * Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.
+             */
+            autoplay?: boolean | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -1816,7 +1753,7 @@ export interface Partner {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'contentTeaser';
+            blockType: 'highlightCarousel';
           }
         | {
             badge?: string | null;
@@ -1921,6 +1858,162 @@ export interface Partner {
             id?: string | null;
             blockName?: string | null;
             blockType: 'insightsHub';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            description?: string | null;
+            cards?:
+              | {
+                  icon:
+                    | 'sparkles'
+                    | 'target'
+                    | 'shield'
+                    | 'rocket'
+                    | 'users'
+                    | 'database'
+                    | 'cloud'
+                    | 'brain'
+                    | 'chart'
+                    | 'lock'
+                    | 'workflow'
+                    | 'award'
+                    | 'app'
+                    | 'search'
+                    | 'settings'
+                    | 'zap'
+                    | 'cpu'
+                    | 'shield-check'
+                    | 'trending-up'
+                    | 'arrow-up-right'
+                    | 'star'
+                    | 'file-text'
+                    | 'newspaper'
+                    | 'video'
+                    | 'book'
+                    | 'briefcase'
+                    | 'graduation-cap'
+                    | 'heart'
+                    | 'info'
+                    | 'user-check'
+                    | 'building'
+                    | 'coffee'
+                    | 'server'
+                    | 'code'
+                    | 'headset';
+                  category: string;
+                  title: string;
+                  href?: string | null;
+                  image?: (number | null) | Media;
+                  column: 'first' | 'second';
+                  id?: string | null;
+                }[]
+              | null;
+            featured?: {
+              category?: string | null;
+              title?: string | null;
+              ctaLabel?: string | null;
+              href?: string | null;
+              image?: (number | null) | Media;
+            };
+            newsletter?: {
+              title?: string | null;
+              placeholder?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'contentTeaser';
+          }
+        | {
+            title: string;
+            subtitle?: string | null;
+            /**
+             * Phone, e-mail, address (when there is one) and socials beside the form.
+             */
+            showContactCard?: boolean | null;
+            variant?: ('panel' | 'photo') | null;
+            photo?: (number | null) | Media;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaContact';
+          }
+        | {
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryCta?: {
+              label?: string | null;
+              href?: string | null;
+              caption?: string | null;
+            };
+            variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaBanner';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
+            emptyText?: string | null;
+            talentBank?: {
+              eyebrow?: string | null;
+              title?: string | null;
+              highlight?: string | null;
+              description?: string | null;
+              note?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'jobsList';
           }
       )[]
     | null;
@@ -2092,6 +2185,73 @@ export interface Page {
         blockType: 'pageHero';
       }
     | {
+        badge?: string | null;
+        chip?: string | null;
+        title: string;
+        highlight?: string | null;
+        description?: string | null;
+        /**
+         * Shown on every award card in the strip.
+         */
+        logo?: (number | null) | Media;
+        /**
+         * Optional. When empty, the logo above is used in both themes.
+         */
+        logoDark?: (number | null) | Media;
+        awards?:
+          | {
+              topText?: string | null;
+              title: string;
+              highlight?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        cta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'partnerHero';
+      }
+    | {
+        titlePrefix: string;
+        rotatingWords: string[];
+        description?: string | null;
+        scrollLabel?: string | null;
+        prompt?: {
+          title?: string | null;
+          placeholder?: string | null;
+          disclaimer?: string | null;
+          clientsTitle?: string | null;
+        };
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'homeHero';
+      }
+    | {
         variant?: ('institutional' | 'solution') | null;
         bottomGap?: ('normal' | 'none') | null;
         /**
@@ -2110,85 +2270,17 @@ export interface Page {
         blockType: 'stickyPageNav';
       }
     | {
-        source?: ('siteSettings' | 'custom') | null;
-        customItems?:
-          | {
-              value: number;
-              suffix?: string | null;
-              label: string;
-              id?: string | null;
-            }[]
-          | null;
-        /**
-         * When filled, the block joins the page side nav. E.g. who-we-are.
-         */
-        anchor?: string | null;
-        /**
-         * Empty falls back to the section title.
-         */
-        navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'statsGrid';
-      }
-    | {
         eyebrow?: string | null;
-        title?: string | null;
-        body?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        image?: (number | null) | Media;
-        ctas?:
-          | {
-              label: string;
-              href: string;
-              id?: string | null;
-            }[]
-          | null;
-        headerLayout?: ('inline' | 'centered') | null;
+        title: string;
         description?: string | null;
-        subtitle?: string | null;
-        callout?: {
+        footnote?: string | null;
+        cta?: {
           label?: string | null;
-          text?: string | null;
+          href?: string | null;
         };
-        imagePosition?: ('left' | 'right' | 'none') | null;
         /**
-         * When filled, the block joins the page side nav. E.g. who-we-are.
+         * Numbering (01, 02…) follows the order. The first one opens active.
          */
-        anchor?: string | null;
-        /**
-         * Empty falls back to the section title.
-         */
-        navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'richTextSection';
-      }
-    | {
-        eyebrow?: string | null;
-        title?: string | null;
-        columns?: ('2' | '3' | '4') | null;
-        variant?: ('compact' | 'card' | 'card-centered') | null;
-        headerWidth?: ('full' | 'narrow') | null;
         items: {
           icon:
             | 'sparkles'
@@ -2226,80 +2318,10 @@ export interface Page {
             | 'server'
             | 'code'
             | 'headset';
-          title: string;
-          /**
-           * Left empty, the card renders compact and centred.
-           */
-          description?: string | null;
-          id?: string | null;
-        }[];
-        /**
-         * When filled, the block joins the page side nav. E.g. who-we-are.
-         */
-        anchor?: string | null;
-        /**
-         * Empty falls back to the section title.
-         */
-        navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'iconCardGrid';
-      }
-    | {
-        eyebrow?: string | null;
-        title?: string | null;
-        highlight?: string | null;
-        variant?: ('glow' | 'expanded') | null;
-        description?: string | null;
-        items: {
-          icon:
-            | 'sparkles'
-            | 'target'
-            | 'shield'
-            | 'rocket'
-            | 'users'
-            | 'database'
-            | 'cloud'
-            | 'brain'
-            | 'chart'
-            | 'lock'
-            | 'workflow'
-            | 'award'
-            | 'app'
-            | 'search'
-            | 'settings'
-            | 'zap'
-            | 'cpu'
-            | 'shield-check'
-            | 'trending-up'
-            | 'arrow-up-right'
-            | 'star'
-            | 'file-text'
-            | 'newspaper'
-            | 'video'
-            | 'book'
-            | 'briefcase'
-            | 'graduation-cap'
-            | 'heart'
-            | 'info'
-            | 'user-check'
-            | 'building'
-            | 'coffee'
-            | 'server'
-            | 'code'
-            | 'headset';
-          bullets?:
-            | {
-                text: string;
-                id?: string | null;
-              }[]
-            | null;
-          glowColor?: ('blue' | 'orange') | null;
+          badge: string;
           title: string;
           description: string;
+          image?: (number | null) | Media;
           id?: string | null;
         }[];
         /**
@@ -2315,73 +2337,7 @@ export interface Page {
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
-        blockType: 'valueCards';
-      }
-    | {
-        title?: string | null;
-        partners: (number | Partner)[];
-        /**
-         * They gain colour on hover.
-         */
-        grayscale?: boolean | null;
-        /**
-         * When filled, the block joins the page side nav. E.g. who-we-are.
-         */
-        anchor?: string | null;
-        /**
-         * Empty falls back to the section title.
-         */
-        navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'partnerShowcase';
-      }
-    | {
-        title?: string | null;
-        /**
-         * When filled, the block joins the page side nav. E.g. who-we-are.
-         */
-        anchor?: string | null;
-        /**
-         * Empty falls back to the section title.
-         */
-        navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'sealsBanner';
-      }
-    | {
-        eyebrow?: string | null;
-        title?: string | null;
-        description?: string | null;
-        /**
-         * Numbering follows the order. Drag to reorder.
-         */
-        steps: {
-          title: string;
-          description: string;
-          id?: string | null;
-        }[];
-        /**
-         * When filled, the block joins the page side nav. E.g. who-we-are.
-         */
-        anchor?: string | null;
-        /**
-         * Empty falls back to the section title.
-         */
-        navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'processSteps';
+        blockType: 'featureTabs';
       }
     | {
         eyebrow?: string | null;
@@ -2499,6 +2455,75 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'methodCards';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        highlight?: string | null;
+        variant?: ('glow' | 'expanded') | null;
+        description?: string | null;
+        items: {
+          icon:
+            | 'sparkles'
+            | 'target'
+            | 'shield'
+            | 'rocket'
+            | 'users'
+            | 'database'
+            | 'cloud'
+            | 'brain'
+            | 'chart'
+            | 'lock'
+            | 'workflow'
+            | 'award'
+            | 'app'
+            | 'search'
+            | 'settings'
+            | 'zap'
+            | 'cpu'
+            | 'shield-check'
+            | 'trending-up'
+            | 'arrow-up-right'
+            | 'star'
+            | 'file-text'
+            | 'newspaper'
+            | 'video'
+            | 'book'
+            | 'briefcase'
+            | 'graduation-cap'
+            | 'heart'
+            | 'info'
+            | 'user-check'
+            | 'building'
+            | 'coffee'
+            | 'server'
+            | 'code'
+            | 'headset';
+          bullets?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          glowColor?: ('blue' | 'orange') | null;
+          title: string;
+          description: string;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'valueCards';
       }
     | {
         eyebrow?: string | null;
@@ -2672,6 +2697,71 @@ export interface Page {
       }
     | {
         eyebrow?: string | null;
+        title?: string | null;
+        columns?: ('2' | '3' | '4') | null;
+        variant?: ('compact' | 'card' | 'card-centered') | null;
+        headerWidth?: ('full' | 'narrow') | null;
+        items: {
+          icon:
+            | 'sparkles'
+            | 'target'
+            | 'shield'
+            | 'rocket'
+            | 'users'
+            | 'database'
+            | 'cloud'
+            | 'brain'
+            | 'chart'
+            | 'lock'
+            | 'workflow'
+            | 'award'
+            | 'app'
+            | 'search'
+            | 'settings'
+            | 'zap'
+            | 'cpu'
+            | 'shield-check'
+            | 'trending-up'
+            | 'arrow-up-right'
+            | 'star'
+            | 'file-text'
+            | 'newspaper'
+            | 'video'
+            | 'book'
+            | 'briefcase'
+            | 'graduation-cap'
+            | 'heart'
+            | 'info'
+            | 'user-check'
+            | 'building'
+            | 'coffee'
+            | 'server'
+            | 'code'
+            | 'headset';
+          title: string;
+          /**
+           * Left empty, the card renders compact and centred.
+           */
+          description?: string | null;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'iconCardGrid';
+      }
+    | {
+        eyebrow?: string | null;
         eyebrowIcon?:
           | (
               | 'sparkles'
@@ -2773,6 +2863,82 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'audienceSplit';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        image?: (number | null) | Media;
+        ctas?:
+          | {
+              label: string;
+              href: string;
+              id?: string | null;
+            }[]
+          | null;
+        headerLayout?: ('inline' | 'centered') | null;
+        description?: string | null;
+        subtitle?: string | null;
+        callout?: {
+          label?: string | null;
+          text?: string | null;
+        };
+        imagePosition?: ('left' | 'right' | 'none') | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'richTextSection';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        description?: string | null;
+        /**
+         * Numbering follows the order. Drag to reorder.
+         */
+        steps: {
+          title: string;
+          description: string;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'processSteps';
       }
     | {
         eyebrow?: string | null;
@@ -2885,14 +3051,14 @@ export interface Page {
         blockType: 'accordionSteps';
       }
     | {
-        title: string;
-        subtitle?: string | null;
-        /**
-         * Phone, e-mail, address and socials beside the form.
-         */
-        showContactCard?: boolean | null;
-        variant?: ('panel' | 'photo') | null;
-        photo?: (number | null) | Media;
+        title?: string | null;
+        partners?:
+          | {
+              name: string;
+              logo: number | Media;
+              id?: string | null;
+            }[]
+          | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -2906,49 +3072,35 @@ export interface Page {
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
-        blockType: 'ctaContact';
+        blockType: 'logoMarquee';
+      }
+    | {
+        title?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sealsBanner';
       }
     | {
         eyebrow?: string | null;
         title?: string | null;
         description?: string | null;
-        emptyText?: string | null;
-        talentBank?: {
-          eyebrow?: string | null;
-          title?: string | null;
-          highlight?: string | null;
-          description?: string | null;
-          note?: string | null;
-        };
-        /**
-         * When filled, the block joins the page side nav. E.g. who-we-are.
-         */
-        anchor?: string | null;
-        /**
-         * Empty falls back to the section title.
-         */
-        navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'jobsList';
-      }
-    | {
-        title: string;
-        highlight?: string | null;
-        description?: string | null;
-        cta?: {
-          label?: string | null;
-          href?: string | null;
-        };
-        secondaryCta?: {
-          label?: string | null;
-          href?: string | null;
+        images: {
+          image: number | Media;
           caption?: string | null;
-        };
-        variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
+          id?: string | null;
+        }[];
+        boxed?: boolean | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -2962,30 +3114,18 @@ export interface Page {
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
-        blockType: 'ctaBanner';
+        blockType: 'imageGrid';
       }
     | {
-        badge?: string | null;
-        chip?: string | null;
-        title: string;
-        highlight?: string | null;
-        description?: string | null;
-        /**
-         * Shown on every award card in the strip.
-         */
-        logo?: (number | null) | Media;
-        awards?:
+        source?: ('siteSettings' | 'custom') | null;
+        customItems?:
           | {
-              topText?: string | null;
-              title: string;
-              highlight?: string | null;
+              value: number;
+              suffix?: string | null;
+              label: string;
               id?: string | null;
             }[]
           | null;
-        cta?: {
-          label?: string | null;
-          href?: string | null;
-        };
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -2999,7 +3139,7 @@ export interface Page {
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
-        blockType: 'partnerHero';
+        blockType: 'statsGrid';
       }
     | {
         eyebrow?: string | null;
@@ -3014,9 +3154,13 @@ export interface Page {
         image?: (number | null) | Media;
         imageLabel?: string | null;
         /**
-         * Used in the image label and on every grid card.
+         * Used in the image label.
          */
         logo?: (number | null) | Media;
+        /**
+         * Optional. When empty, the logo above is used in both themes.
+         */
+        logoDark?: (number | null) | Media;
         /**
          * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
          */
@@ -3050,38 +3194,16 @@ export interface Page {
         blockType: 'partnerSplit';
       }
     | {
-        titlePrefix: string;
-        rotatingWords: string[];
-        description?: string | null;
-        scrollLabel?: string | null;
-        prompt?: {
-          title?: string | null;
-          placeholder?: string | null;
-          disclaimer?: string | null;
-          clientsTitle?: string | null;
-        };
-        /**
-         * When filled, the block joins the page side nav. E.g. who-we-are.
-         */
-        anchor?: string | null;
-        /**
-         * Empty falls back to the section title.
-         */
-        navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'homeHero';
-      }
-    | {
         title?: string | null;
-        partners: {
-          name: string;
-          logo: number | Media;
-          id?: string | null;
-        }[];
+        /**
+         * With "All", the showcase follows the Partners collection, in its order.
+         */
+        source?: ('all' | 'selected') | null;
+        partners?: (number | Partner)[] | null;
+        /**
+         * They gain colour on hover.
+         */
+        grayscale?: boolean | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -3095,77 +3217,7 @@ export interface Page {
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
-        blockType: 'logoMarquee';
-      }
-    | {
-        eyebrow?: string | null;
-        title: string;
-        description?: string | null;
-        footnote?: string | null;
-        cta?: {
-          label?: string | null;
-          href?: string | null;
-        };
-        /**
-         * Numbering (01, 02…) follows the order. The first one opens active.
-         */
-        items: {
-          icon:
-            | 'sparkles'
-            | 'target'
-            | 'shield'
-            | 'rocket'
-            | 'users'
-            | 'database'
-            | 'cloud'
-            | 'brain'
-            | 'chart'
-            | 'lock'
-            | 'workflow'
-            | 'award'
-            | 'app'
-            | 'search'
-            | 'settings'
-            | 'zap'
-            | 'cpu'
-            | 'shield-check'
-            | 'trending-up'
-            | 'arrow-up-right'
-            | 'star'
-            | 'file-text'
-            | 'newspaper'
-            | 'video'
-            | 'book'
-            | 'briefcase'
-            | 'graduation-cap'
-            | 'heart'
-            | 'info'
-            | 'user-check'
-            | 'building'
-            | 'coffee'
-            | 'server'
-            | 'code'
-            | 'headset';
-          badge: string;
-          title: string;
-          description: string;
-          image?: (number | null) | Media;
-          id?: string | null;
-        }[];
-        /**
-         * When filled, the block joins the page side nav. E.g. who-we-are.
-         */
-        anchor?: string | null;
-        /**
-         * Empty falls back to the section title.
-         */
-        navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'featureTabs';
+        blockType: 'partnerShowcase';
       }
     | {
         partnerCard?: {
@@ -3343,66 +3395,31 @@ export interface Page {
         blockType: 'testimonialCarousel';
       }
     | {
-        eyebrow?: string | null;
-        title: string;
-        description?: string | null;
-        cards?:
-          | {
-              icon:
-                | 'sparkles'
-                | 'target'
-                | 'shield'
-                | 'rocket'
-                | 'users'
-                | 'database'
-                | 'cloud'
-                | 'brain'
-                | 'chart'
-                | 'lock'
-                | 'workflow'
-                | 'award'
-                | 'app'
-                | 'search'
-                | 'settings'
-                | 'zap'
-                | 'cpu'
-                | 'shield-check'
-                | 'trending-up'
-                | 'arrow-up-right'
-                | 'star'
-                | 'file-text'
-                | 'newspaper'
-                | 'video'
-                | 'book'
-                | 'briefcase'
-                | 'graduation-cap'
-                | 'heart'
-                | 'info'
-                | 'user-check'
-                | 'building'
-                | 'coffee'
-                | 'server'
-                | 'code'
-                | 'headset';
-              category: string;
-              title: string;
-              href?: string | null;
-              image?: (number | null) | Media;
-              column: 'first' | 'second';
-              id?: string | null;
-            }[]
-          | null;
-        featured?: {
-          category?: string | null;
-          title?: string | null;
-          ctaLabel?: string | null;
-          href?: string | null;
+        /**
+         * Optional. When empty, the banners show without a heading.
+         */
+        title?: string | null;
+        /**
+         * The order here is the carousel order.
+         */
+        items: {
+          tag?: string | null;
+          title: string;
+          description?: string | null;
+          /**
+           * Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.
+           */
           image?: (number | null) | Media;
-        };
-        newsletter?: {
-          title?: string | null;
-          placeholder?: string | null;
-        };
+          cta?: {
+            label?: string | null;
+            href?: string | null;
+          };
+          id?: string | null;
+        }[];
+        /**
+         * Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.
+         */
+        autoplay?: boolean | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -3416,7 +3433,7 @@ export interface Page {
         theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
-        blockType: 'contentTeaser';
+        blockType: 'highlightCarousel';
       }
     | {
         badge?: string | null;
@@ -3521,6 +3538,162 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'insightsHub';
+      }
+    | {
+        eyebrow?: string | null;
+        title: string;
+        description?: string | null;
+        cards?:
+          | {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              category: string;
+              title: string;
+              href?: string | null;
+              image?: (number | null) | Media;
+              column: 'first' | 'second';
+              id?: string | null;
+            }[]
+          | null;
+        featured?: {
+          category?: string | null;
+          title?: string | null;
+          ctaLabel?: string | null;
+          href?: string | null;
+          image?: (number | null) | Media;
+        };
+        newsletter?: {
+          title?: string | null;
+          placeholder?: string | null;
+        };
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'contentTeaser';
+      }
+    | {
+        title: string;
+        subtitle?: string | null;
+        /**
+         * Phone, e-mail, address (when there is one) and socials beside the form.
+         */
+        showContactCard?: boolean | null;
+        variant?: ('panel' | 'photo') | null;
+        photo?: (number | null) | Media;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ctaContact';
+      }
+    | {
+        title: string;
+        highlight?: string | null;
+        description?: string | null;
+        cta?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        secondaryCta?: {
+          label?: string | null;
+          href?: string | null;
+          caption?: string | null;
+        };
+        variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ctaBanner';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        description?: string | null;
+        emptyText?: string | null;
+        talentBank?: {
+          eyebrow?: string | null;
+          title?: string | null;
+          highlight?: string | null;
+          description?: string | null;
+          note?: string | null;
+        };
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'jobsList';
       }
   )[];
   /**
@@ -3892,6 +4065,73 @@ export interface Segment {
             blockType: 'pageHero';
           }
         | {
+            badge?: string | null;
+            chip?: string | null;
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            /**
+             * Shown on every award card in the strip.
+             */
+            logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
+            awards?:
+              | {
+                  topText?: string | null;
+                  title: string;
+                  highlight?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerHero';
+          }
+        | {
+            titlePrefix: string;
+            rotatingWords: string[];
+            description?: string | null;
+            scrollLabel?: string | null;
+            prompt?: {
+              title?: string | null;
+              placeholder?: string | null;
+              disclaimer?: string | null;
+              clientsTitle?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeHero';
+          }
+        | {
             variant?: ('institutional' | 'solution') | null;
             bottomGap?: ('normal' | 'none') | null;
             /**
@@ -3910,85 +4150,17 @@ export interface Segment {
             blockType: 'stickyPageNav';
           }
         | {
-            source?: ('siteSettings' | 'custom') | null;
-            customItems?:
-              | {
-                  value: number;
-                  suffix?: string | null;
-                  label: string;
-                  id?: string | null;
-                }[]
-              | null;
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'statsGrid';
-          }
-        | {
             eyebrow?: string | null;
-            title?: string | null;
-            body?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-            image?: (number | null) | Media;
-            ctas?:
-              | {
-                  label: string;
-                  href: string;
-                  id?: string | null;
-                }[]
-              | null;
-            headerLayout?: ('inline' | 'centered') | null;
+            title: string;
             description?: string | null;
-            subtitle?: string | null;
-            callout?: {
+            footnote?: string | null;
+            cta?: {
               label?: string | null;
-              text?: string | null;
+              href?: string | null;
             };
-            imagePosition?: ('left' | 'right' | 'none') | null;
             /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
+             * Numbering (01, 02…) follows the order. The first one opens active.
              */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'richTextSection';
-          }
-        | {
-            eyebrow?: string | null;
-            title?: string | null;
-            columns?: ('2' | '3' | '4') | null;
-            variant?: ('compact' | 'card' | 'card-centered') | null;
-            headerWidth?: ('full' | 'narrow') | null;
             items: {
               icon:
                 | 'sparkles'
@@ -4026,80 +4198,10 @@ export interface Segment {
                 | 'server'
                 | 'code'
                 | 'headset';
-              title: string;
-              /**
-               * Left empty, the card renders compact and centred.
-               */
-              description?: string | null;
-              id?: string | null;
-            }[];
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'iconCardGrid';
-          }
-        | {
-            eyebrow?: string | null;
-            title?: string | null;
-            highlight?: string | null;
-            variant?: ('glow' | 'expanded') | null;
-            description?: string | null;
-            items: {
-              icon:
-                | 'sparkles'
-                | 'target'
-                | 'shield'
-                | 'rocket'
-                | 'users'
-                | 'database'
-                | 'cloud'
-                | 'brain'
-                | 'chart'
-                | 'lock'
-                | 'workflow'
-                | 'award'
-                | 'app'
-                | 'search'
-                | 'settings'
-                | 'zap'
-                | 'cpu'
-                | 'shield-check'
-                | 'trending-up'
-                | 'arrow-up-right'
-                | 'star'
-                | 'file-text'
-                | 'newspaper'
-                | 'video'
-                | 'book'
-                | 'briefcase'
-                | 'graduation-cap'
-                | 'heart'
-                | 'info'
-                | 'user-check'
-                | 'building'
-                | 'coffee'
-                | 'server'
-                | 'code'
-                | 'headset';
-              bullets?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
-              glowColor?: ('blue' | 'orange') | null;
+              badge: string;
               title: string;
               description: string;
+              image?: (number | null) | Media;
               id?: string | null;
             }[];
             /**
@@ -4115,73 +4217,7 @@ export interface Segment {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'valueCards';
-          }
-        | {
-            title?: string | null;
-            partners: (number | Partner)[];
-            /**
-             * They gain colour on hover.
-             */
-            grayscale?: boolean | null;
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'partnerShowcase';
-          }
-        | {
-            title?: string | null;
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'sealsBanner';
-          }
-        | {
-            eyebrow?: string | null;
-            title?: string | null;
-            description?: string | null;
-            /**
-             * Numbering follows the order. Drag to reorder.
-             */
-            steps: {
-              title: string;
-              description: string;
-              id?: string | null;
-            }[];
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'processSteps';
+            blockType: 'featureTabs';
           }
         | {
             eyebrow?: string | null;
@@ -4299,6 +4335,75 @@ export interface Segment {
             id?: string | null;
             blockName?: string | null;
             blockType: 'methodCards';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            highlight?: string | null;
+            variant?: ('glow' | 'expanded') | null;
+            description?: string | null;
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              bullets?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              glowColor?: ('blue' | 'orange') | null;
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'valueCards';
           }
         | {
             eyebrow?: string | null;
@@ -4472,6 +4577,71 @@ export interface Segment {
           }
         | {
             eyebrow?: string | null;
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            variant?: ('compact' | 'card' | 'card-centered') | null;
+            headerWidth?: ('full' | 'narrow') | null;
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              title: string;
+              /**
+               * Left empty, the card renders compact and centred.
+               */
+              description?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'iconCardGrid';
+          }
+        | {
+            eyebrow?: string | null;
             eyebrowIcon?:
               | (
                   | 'sparkles'
@@ -4573,6 +4743,82 @@ export interface Segment {
             id?: string | null;
             blockName?: string | null;
             blockType: 'audienceSplit';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            image?: (number | null) | Media;
+            ctas?:
+              | {
+                  label: string;
+                  href: string;
+                  id?: string | null;
+                }[]
+              | null;
+            headerLayout?: ('inline' | 'centered') | null;
+            description?: string | null;
+            subtitle?: string | null;
+            callout?: {
+              label?: string | null;
+              text?: string | null;
+            };
+            imagePosition?: ('left' | 'right' | 'none') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richTextSection';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
+            /**
+             * Numbering follows the order. Drag to reorder.
+             */
+            steps: {
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'processSteps';
           }
         | {
             eyebrow?: string | null;
@@ -4685,14 +4931,14 @@ export interface Segment {
             blockType: 'accordionSteps';
           }
         | {
-            title: string;
-            subtitle?: string | null;
-            /**
-             * Phone, e-mail, address and socials beside the form.
-             */
-            showContactCard?: boolean | null;
-            variant?: ('panel' | 'photo') | null;
-            photo?: (number | null) | Media;
+            title?: string | null;
+            partners?:
+              | {
+                  name: string;
+                  logo: number | Media;
+                  id?: string | null;
+                }[]
+              | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -4706,49 +4952,35 @@ export interface Segment {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'ctaContact';
+            blockType: 'logoMarquee';
+          }
+        | {
+            title?: string | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'sealsBanner';
           }
         | {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
-            emptyText?: string | null;
-            talentBank?: {
-              eyebrow?: string | null;
-              title?: string | null;
-              highlight?: string | null;
-              description?: string | null;
-              note?: string | null;
-            };
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'jobsList';
-          }
-        | {
-            title: string;
-            highlight?: string | null;
-            description?: string | null;
-            cta?: {
-              label?: string | null;
-              href?: string | null;
-            };
-            secondaryCta?: {
-              label?: string | null;
-              href?: string | null;
+            images: {
+              image: number | Media;
               caption?: string | null;
-            };
-            variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
+              id?: string | null;
+            }[];
+            boxed?: boolean | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -4762,30 +4994,18 @@ export interface Segment {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'ctaBanner';
+            blockType: 'imageGrid';
           }
         | {
-            badge?: string | null;
-            chip?: string | null;
-            title: string;
-            highlight?: string | null;
-            description?: string | null;
-            /**
-             * Shown on every award card in the strip.
-             */
-            logo?: (number | null) | Media;
-            awards?:
+            source?: ('siteSettings' | 'custom') | null;
+            customItems?:
               | {
-                  topText?: string | null;
-                  title: string;
-                  highlight?: string | null;
+                  value: number;
+                  suffix?: string | null;
+                  label: string;
                   id?: string | null;
                 }[]
               | null;
-            cta?: {
-              label?: string | null;
-              href?: string | null;
-            };
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -4799,7 +5019,7 @@ export interface Segment {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'partnerHero';
+            blockType: 'statsGrid';
           }
         | {
             eyebrow?: string | null;
@@ -4814,9 +5034,13 @@ export interface Segment {
             image?: (number | null) | Media;
             imageLabel?: string | null;
             /**
-             * Used in the image label and on every grid card.
+             * Used in the image label.
              */
             logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
             /**
              * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
              */
@@ -4850,38 +5074,16 @@ export interface Segment {
             blockType: 'partnerSplit';
           }
         | {
-            titlePrefix: string;
-            rotatingWords: string[];
-            description?: string | null;
-            scrollLabel?: string | null;
-            prompt?: {
-              title?: string | null;
-              placeholder?: string | null;
-              disclaimer?: string | null;
-              clientsTitle?: string | null;
-            };
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'homeHero';
-          }
-        | {
             title?: string | null;
-            partners: {
-              name: string;
-              logo: number | Media;
-              id?: string | null;
-            }[];
+            /**
+             * With "All", the showcase follows the Partners collection, in its order.
+             */
+            source?: ('all' | 'selected') | null;
+            partners?: (number | Partner)[] | null;
+            /**
+             * They gain colour on hover.
+             */
+            grayscale?: boolean | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -4895,77 +5097,7 @@ export interface Segment {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'logoMarquee';
-          }
-        | {
-            eyebrow?: string | null;
-            title: string;
-            description?: string | null;
-            footnote?: string | null;
-            cta?: {
-              label?: string | null;
-              href?: string | null;
-            };
-            /**
-             * Numbering (01, 02…) follows the order. The first one opens active.
-             */
-            items: {
-              icon:
-                | 'sparkles'
-                | 'target'
-                | 'shield'
-                | 'rocket'
-                | 'users'
-                | 'database'
-                | 'cloud'
-                | 'brain'
-                | 'chart'
-                | 'lock'
-                | 'workflow'
-                | 'award'
-                | 'app'
-                | 'search'
-                | 'settings'
-                | 'zap'
-                | 'cpu'
-                | 'shield-check'
-                | 'trending-up'
-                | 'arrow-up-right'
-                | 'star'
-                | 'file-text'
-                | 'newspaper'
-                | 'video'
-                | 'book'
-                | 'briefcase'
-                | 'graduation-cap'
-                | 'heart'
-                | 'info'
-                | 'user-check'
-                | 'building'
-                | 'coffee'
-                | 'server'
-                | 'code'
-                | 'headset';
-              badge: string;
-              title: string;
-              description: string;
-              image?: (number | null) | Media;
-              id?: string | null;
-            }[];
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'featureTabs';
+            blockType: 'partnerShowcase';
           }
         | {
             partnerCard?: {
@@ -5143,66 +5275,31 @@ export interface Segment {
             blockType: 'testimonialCarousel';
           }
         | {
-            eyebrow?: string | null;
-            title: string;
-            description?: string | null;
-            cards?:
-              | {
-                  icon:
-                    | 'sparkles'
-                    | 'target'
-                    | 'shield'
-                    | 'rocket'
-                    | 'users'
-                    | 'database'
-                    | 'cloud'
-                    | 'brain'
-                    | 'chart'
-                    | 'lock'
-                    | 'workflow'
-                    | 'award'
-                    | 'app'
-                    | 'search'
-                    | 'settings'
-                    | 'zap'
-                    | 'cpu'
-                    | 'shield-check'
-                    | 'trending-up'
-                    | 'arrow-up-right'
-                    | 'star'
-                    | 'file-text'
-                    | 'newspaper'
-                    | 'video'
-                    | 'book'
-                    | 'briefcase'
-                    | 'graduation-cap'
-                    | 'heart'
-                    | 'info'
-                    | 'user-check'
-                    | 'building'
-                    | 'coffee'
-                    | 'server'
-                    | 'code'
-                    | 'headset';
-                  category: string;
-                  title: string;
-                  href?: string | null;
-                  image?: (number | null) | Media;
-                  column: 'first' | 'second';
-                  id?: string | null;
-                }[]
-              | null;
-            featured?: {
-              category?: string | null;
-              title?: string | null;
-              ctaLabel?: string | null;
-              href?: string | null;
+            /**
+             * Optional. When empty, the banners show without a heading.
+             */
+            title?: string | null;
+            /**
+             * The order here is the carousel order.
+             */
+            items: {
+              tag?: string | null;
+              title: string;
+              description?: string | null;
+              /**
+               * Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.
+               */
               image?: (number | null) | Media;
-            };
-            newsletter?: {
-              title?: string | null;
-              placeholder?: string | null;
-            };
+              cta?: {
+                label?: string | null;
+                href?: string | null;
+              };
+              id?: string | null;
+            }[];
+            /**
+             * Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.
+             */
+            autoplay?: boolean | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -5216,7 +5313,7 @@ export interface Segment {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'contentTeaser';
+            blockType: 'highlightCarousel';
           }
         | {
             badge?: string | null;
@@ -5321,6 +5418,162 @@ export interface Segment {
             id?: string | null;
             blockName?: string | null;
             blockType: 'insightsHub';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            description?: string | null;
+            cards?:
+              | {
+                  icon:
+                    | 'sparkles'
+                    | 'target'
+                    | 'shield'
+                    | 'rocket'
+                    | 'users'
+                    | 'database'
+                    | 'cloud'
+                    | 'brain'
+                    | 'chart'
+                    | 'lock'
+                    | 'workflow'
+                    | 'award'
+                    | 'app'
+                    | 'search'
+                    | 'settings'
+                    | 'zap'
+                    | 'cpu'
+                    | 'shield-check'
+                    | 'trending-up'
+                    | 'arrow-up-right'
+                    | 'star'
+                    | 'file-text'
+                    | 'newspaper'
+                    | 'video'
+                    | 'book'
+                    | 'briefcase'
+                    | 'graduation-cap'
+                    | 'heart'
+                    | 'info'
+                    | 'user-check'
+                    | 'building'
+                    | 'coffee'
+                    | 'server'
+                    | 'code'
+                    | 'headset';
+                  category: string;
+                  title: string;
+                  href?: string | null;
+                  image?: (number | null) | Media;
+                  column: 'first' | 'second';
+                  id?: string | null;
+                }[]
+              | null;
+            featured?: {
+              category?: string | null;
+              title?: string | null;
+              ctaLabel?: string | null;
+              href?: string | null;
+              image?: (number | null) | Media;
+            };
+            newsletter?: {
+              title?: string | null;
+              placeholder?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'contentTeaser';
+          }
+        | {
+            title: string;
+            subtitle?: string | null;
+            /**
+             * Phone, e-mail, address (when there is one) and socials beside the form.
+             */
+            showContactCard?: boolean | null;
+            variant?: ('panel' | 'photo') | null;
+            photo?: (number | null) | Media;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaContact';
+          }
+        | {
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryCta?: {
+              label?: string | null;
+              href?: string | null;
+              caption?: string | null;
+            };
+            variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaBanner';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
+            emptyText?: string | null;
+            talentBank?: {
+              eyebrow?: string | null;
+              title?: string | null;
+              highlight?: string | null;
+              description?: string | null;
+              note?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'jobsList';
           }
       )[]
     | null;
@@ -5460,6 +5713,73 @@ export interface Solution {
             blockType: 'pageHero';
           }
         | {
+            badge?: string | null;
+            chip?: string | null;
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            /**
+             * Shown on every award card in the strip.
+             */
+            logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
+            awards?:
+              | {
+                  topText?: string | null;
+                  title: string;
+                  highlight?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerHero';
+          }
+        | {
+            titlePrefix: string;
+            rotatingWords: string[];
+            description?: string | null;
+            scrollLabel?: string | null;
+            prompt?: {
+              title?: string | null;
+              placeholder?: string | null;
+              disclaimer?: string | null;
+              clientsTitle?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeHero';
+          }
+        | {
             variant?: ('institutional' | 'solution') | null;
             bottomGap?: ('normal' | 'none') | null;
             /**
@@ -5478,85 +5798,17 @@ export interface Solution {
             blockType: 'stickyPageNav';
           }
         | {
-            source?: ('siteSettings' | 'custom') | null;
-            customItems?:
-              | {
-                  value: number;
-                  suffix?: string | null;
-                  label: string;
-                  id?: string | null;
-                }[]
-              | null;
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'statsGrid';
-          }
-        | {
             eyebrow?: string | null;
-            title?: string | null;
-            body?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-            image?: (number | null) | Media;
-            ctas?:
-              | {
-                  label: string;
-                  href: string;
-                  id?: string | null;
-                }[]
-              | null;
-            headerLayout?: ('inline' | 'centered') | null;
+            title: string;
             description?: string | null;
-            subtitle?: string | null;
-            callout?: {
+            footnote?: string | null;
+            cta?: {
               label?: string | null;
-              text?: string | null;
+              href?: string | null;
             };
-            imagePosition?: ('left' | 'right' | 'none') | null;
             /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
+             * Numbering (01, 02…) follows the order. The first one opens active.
              */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'richTextSection';
-          }
-        | {
-            eyebrow?: string | null;
-            title?: string | null;
-            columns?: ('2' | '3' | '4') | null;
-            variant?: ('compact' | 'card' | 'card-centered') | null;
-            headerWidth?: ('full' | 'narrow') | null;
             items: {
               icon:
                 | 'sparkles'
@@ -5594,80 +5846,10 @@ export interface Solution {
                 | 'server'
                 | 'code'
                 | 'headset';
-              title: string;
-              /**
-               * Left empty, the card renders compact and centred.
-               */
-              description?: string | null;
-              id?: string | null;
-            }[];
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'iconCardGrid';
-          }
-        | {
-            eyebrow?: string | null;
-            title?: string | null;
-            highlight?: string | null;
-            variant?: ('glow' | 'expanded') | null;
-            description?: string | null;
-            items: {
-              icon:
-                | 'sparkles'
-                | 'target'
-                | 'shield'
-                | 'rocket'
-                | 'users'
-                | 'database'
-                | 'cloud'
-                | 'brain'
-                | 'chart'
-                | 'lock'
-                | 'workflow'
-                | 'award'
-                | 'app'
-                | 'search'
-                | 'settings'
-                | 'zap'
-                | 'cpu'
-                | 'shield-check'
-                | 'trending-up'
-                | 'arrow-up-right'
-                | 'star'
-                | 'file-text'
-                | 'newspaper'
-                | 'video'
-                | 'book'
-                | 'briefcase'
-                | 'graduation-cap'
-                | 'heart'
-                | 'info'
-                | 'user-check'
-                | 'building'
-                | 'coffee'
-                | 'server'
-                | 'code'
-                | 'headset';
-              bullets?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
-              glowColor?: ('blue' | 'orange') | null;
+              badge: string;
               title: string;
               description: string;
+              image?: (number | null) | Media;
               id?: string | null;
             }[];
             /**
@@ -5683,73 +5865,7 @@ export interface Solution {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'valueCards';
-          }
-        | {
-            title?: string | null;
-            partners: (number | Partner)[];
-            /**
-             * They gain colour on hover.
-             */
-            grayscale?: boolean | null;
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'partnerShowcase';
-          }
-        | {
-            title?: string | null;
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'sealsBanner';
-          }
-        | {
-            eyebrow?: string | null;
-            title?: string | null;
-            description?: string | null;
-            /**
-             * Numbering follows the order. Drag to reorder.
-             */
-            steps: {
-              title: string;
-              description: string;
-              id?: string | null;
-            }[];
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'processSteps';
+            blockType: 'featureTabs';
           }
         | {
             eyebrow?: string | null;
@@ -5867,6 +5983,75 @@ export interface Solution {
             id?: string | null;
             blockName?: string | null;
             blockType: 'methodCards';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            highlight?: string | null;
+            variant?: ('glow' | 'expanded') | null;
+            description?: string | null;
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              bullets?:
+                | {
+                    text: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              glowColor?: ('blue' | 'orange') | null;
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'valueCards';
           }
         | {
             eyebrow?: string | null;
@@ -6040,6 +6225,71 @@ export interface Solution {
           }
         | {
             eyebrow?: string | null;
+            title?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            variant?: ('compact' | 'card' | 'card-centered') | null;
+            headerWidth?: ('full' | 'narrow') | null;
+            items: {
+              icon:
+                | 'sparkles'
+                | 'target'
+                | 'shield'
+                | 'rocket'
+                | 'users'
+                | 'database'
+                | 'cloud'
+                | 'brain'
+                | 'chart'
+                | 'lock'
+                | 'workflow'
+                | 'award'
+                | 'app'
+                | 'search'
+                | 'settings'
+                | 'zap'
+                | 'cpu'
+                | 'shield-check'
+                | 'trending-up'
+                | 'arrow-up-right'
+                | 'star'
+                | 'file-text'
+                | 'newspaper'
+                | 'video'
+                | 'book'
+                | 'briefcase'
+                | 'graduation-cap'
+                | 'heart'
+                | 'info'
+                | 'user-check'
+                | 'building'
+                | 'coffee'
+                | 'server'
+                | 'code'
+                | 'headset';
+              title: string;
+              /**
+               * Left empty, the card renders compact and centred.
+               */
+              description?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'iconCardGrid';
+          }
+        | {
+            eyebrow?: string | null;
             eyebrowIcon?:
               | (
                   | 'sparkles'
@@ -6141,6 +6391,82 @@ export interface Solution {
             id?: string | null;
             blockName?: string | null;
             blockType: 'audienceSplit';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            image?: (number | null) | Media;
+            ctas?:
+              | {
+                  label: string;
+                  href: string;
+                  id?: string | null;
+                }[]
+              | null;
+            headerLayout?: ('inline' | 'centered') | null;
+            description?: string | null;
+            subtitle?: string | null;
+            callout?: {
+              label?: string | null;
+              text?: string | null;
+            };
+            imagePosition?: ('left' | 'right' | 'none') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richTextSection';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
+            /**
+             * Numbering follows the order. Drag to reorder.
+             */
+            steps: {
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'processSteps';
           }
         | {
             eyebrow?: string | null;
@@ -6253,14 +6579,14 @@ export interface Solution {
             blockType: 'accordionSteps';
           }
         | {
-            title: string;
-            subtitle?: string | null;
-            /**
-             * Phone, e-mail, address and socials beside the form.
-             */
-            showContactCard?: boolean | null;
-            variant?: ('panel' | 'photo') | null;
-            photo?: (number | null) | Media;
+            title?: string | null;
+            partners?:
+              | {
+                  name: string;
+                  logo: number | Media;
+                  id?: string | null;
+                }[]
+              | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -6274,49 +6600,35 @@ export interface Solution {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'ctaContact';
+            blockType: 'logoMarquee';
+          }
+        | {
+            title?: string | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'sealsBanner';
           }
         | {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
-            emptyText?: string | null;
-            talentBank?: {
-              eyebrow?: string | null;
-              title?: string | null;
-              highlight?: string | null;
-              description?: string | null;
-              note?: string | null;
-            };
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'jobsList';
-          }
-        | {
-            title: string;
-            highlight?: string | null;
-            description?: string | null;
-            cta?: {
-              label?: string | null;
-              href?: string | null;
-            };
-            secondaryCta?: {
-              label?: string | null;
-              href?: string | null;
+            images: {
+              image: number | Media;
               caption?: string | null;
-            };
-            variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
+              id?: string | null;
+            }[];
+            boxed?: boolean | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -6330,30 +6642,18 @@ export interface Solution {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'ctaBanner';
+            blockType: 'imageGrid';
           }
         | {
-            badge?: string | null;
-            chip?: string | null;
-            title: string;
-            highlight?: string | null;
-            description?: string | null;
-            /**
-             * Shown on every award card in the strip.
-             */
-            logo?: (number | null) | Media;
-            awards?:
+            source?: ('siteSettings' | 'custom') | null;
+            customItems?:
               | {
-                  topText?: string | null;
-                  title: string;
-                  highlight?: string | null;
+                  value: number;
+                  suffix?: string | null;
+                  label: string;
                   id?: string | null;
                 }[]
               | null;
-            cta?: {
-              label?: string | null;
-              href?: string | null;
-            };
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -6367,7 +6667,7 @@ export interface Solution {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'partnerHero';
+            blockType: 'statsGrid';
           }
         | {
             eyebrow?: string | null;
@@ -6382,9 +6682,13 @@ export interface Solution {
             image?: (number | null) | Media;
             imageLabel?: string | null;
             /**
-             * Used in the image label and on every grid card.
+             * Used in the image label.
              */
             logo?: (number | null) | Media;
+            /**
+             * Optional. When empty, the logo above is used in both themes.
+             */
+            logoDark?: (number | null) | Media;
             /**
              * In the checklist, one sentence per row. In the grid, the specialisation name, which also feeds the chips on the left.
              */
@@ -6418,38 +6722,16 @@ export interface Solution {
             blockType: 'partnerSplit';
           }
         | {
-            titlePrefix: string;
-            rotatingWords: string[];
-            description?: string | null;
-            scrollLabel?: string | null;
-            prompt?: {
-              title?: string | null;
-              placeholder?: string | null;
-              disclaimer?: string | null;
-              clientsTitle?: string | null;
-            };
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'homeHero';
-          }
-        | {
             title?: string | null;
-            partners: {
-              name: string;
-              logo: number | Media;
-              id?: string | null;
-            }[];
+            /**
+             * With "All", the showcase follows the Partners collection, in its order.
+             */
+            source?: ('all' | 'selected') | null;
+            partners?: (number | Partner)[] | null;
+            /**
+             * They gain colour on hover.
+             */
+            grayscale?: boolean | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -6463,77 +6745,7 @@ export interface Solution {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'logoMarquee';
-          }
-        | {
-            eyebrow?: string | null;
-            title: string;
-            description?: string | null;
-            footnote?: string | null;
-            cta?: {
-              label?: string | null;
-              href?: string | null;
-            };
-            /**
-             * Numbering (01, 02…) follows the order. The first one opens active.
-             */
-            items: {
-              icon:
-                | 'sparkles'
-                | 'target'
-                | 'shield'
-                | 'rocket'
-                | 'users'
-                | 'database'
-                | 'cloud'
-                | 'brain'
-                | 'chart'
-                | 'lock'
-                | 'workflow'
-                | 'award'
-                | 'app'
-                | 'search'
-                | 'settings'
-                | 'zap'
-                | 'cpu'
-                | 'shield-check'
-                | 'trending-up'
-                | 'arrow-up-right'
-                | 'star'
-                | 'file-text'
-                | 'newspaper'
-                | 'video'
-                | 'book'
-                | 'briefcase'
-                | 'graduation-cap'
-                | 'heart'
-                | 'info'
-                | 'user-check'
-                | 'building'
-                | 'coffee'
-                | 'server'
-                | 'code'
-                | 'headset';
-              badge: string;
-              title: string;
-              description: string;
-              image?: (number | null) | Media;
-              id?: string | null;
-            }[];
-            /**
-             * When filled, the block joins the page side nav. E.g. who-we-are.
-             */
-            anchor?: string | null;
-            /**
-             * Empty falls back to the section title.
-             */
-            navLabel?: string | null;
-            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-            spacing?: ('normal' | 'roomy') | null;
-            theme?: ('surface-1' | 'surface-2') | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'featureTabs';
+            blockType: 'partnerShowcase';
           }
         | {
             partnerCard?: {
@@ -6711,66 +6923,31 @@ export interface Solution {
             blockType: 'testimonialCarousel';
           }
         | {
-            eyebrow?: string | null;
-            title: string;
-            description?: string | null;
-            cards?:
-              | {
-                  icon:
-                    | 'sparkles'
-                    | 'target'
-                    | 'shield'
-                    | 'rocket'
-                    | 'users'
-                    | 'database'
-                    | 'cloud'
-                    | 'brain'
-                    | 'chart'
-                    | 'lock'
-                    | 'workflow'
-                    | 'award'
-                    | 'app'
-                    | 'search'
-                    | 'settings'
-                    | 'zap'
-                    | 'cpu'
-                    | 'shield-check'
-                    | 'trending-up'
-                    | 'arrow-up-right'
-                    | 'star'
-                    | 'file-text'
-                    | 'newspaper'
-                    | 'video'
-                    | 'book'
-                    | 'briefcase'
-                    | 'graduation-cap'
-                    | 'heart'
-                    | 'info'
-                    | 'user-check'
-                    | 'building'
-                    | 'coffee'
-                    | 'server'
-                    | 'code'
-                    | 'headset';
-                  category: string;
-                  title: string;
-                  href?: string | null;
-                  image?: (number | null) | Media;
-                  column: 'first' | 'second';
-                  id?: string | null;
-                }[]
-              | null;
-            featured?: {
-              category?: string | null;
-              title?: string | null;
-              ctaLabel?: string | null;
-              href?: string | null;
+            /**
+             * Optional. When empty, the banners show without a heading.
+             */
+            title?: string | null;
+            /**
+             * The order here is the carousel order.
+             */
+            items: {
+              tag?: string | null;
+              title: string;
+              description?: string | null;
+              /**
+               * Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.
+               */
               image?: (number | null) | Media;
-            };
-            newsletter?: {
-              title?: string | null;
-              placeholder?: string | null;
-            };
+              cta?: {
+                label?: string | null;
+                href?: string | null;
+              };
+              id?: string | null;
+            }[];
+            /**
+             * Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.
+             */
+            autoplay?: boolean | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -6784,7 +6961,7 @@ export interface Solution {
             theme?: ('surface-1' | 'surface-2') | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'contentTeaser';
+            blockType: 'highlightCarousel';
           }
         | {
             badge?: string | null;
@@ -6889,6 +7066,162 @@ export interface Solution {
             id?: string | null;
             blockName?: string | null;
             blockType: 'insightsHub';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            description?: string | null;
+            cards?:
+              | {
+                  icon:
+                    | 'sparkles'
+                    | 'target'
+                    | 'shield'
+                    | 'rocket'
+                    | 'users'
+                    | 'database'
+                    | 'cloud'
+                    | 'brain'
+                    | 'chart'
+                    | 'lock'
+                    | 'workflow'
+                    | 'award'
+                    | 'app'
+                    | 'search'
+                    | 'settings'
+                    | 'zap'
+                    | 'cpu'
+                    | 'shield-check'
+                    | 'trending-up'
+                    | 'arrow-up-right'
+                    | 'star'
+                    | 'file-text'
+                    | 'newspaper'
+                    | 'video'
+                    | 'book'
+                    | 'briefcase'
+                    | 'graduation-cap'
+                    | 'heart'
+                    | 'info'
+                    | 'user-check'
+                    | 'building'
+                    | 'coffee'
+                    | 'server'
+                    | 'code'
+                    | 'headset';
+                  category: string;
+                  title: string;
+                  href?: string | null;
+                  image?: (number | null) | Media;
+                  column: 'first' | 'second';
+                  id?: string | null;
+                }[]
+              | null;
+            featured?: {
+              category?: string | null;
+              title?: string | null;
+              ctaLabel?: string | null;
+              href?: string | null;
+              image?: (number | null) | Media;
+            };
+            newsletter?: {
+              title?: string | null;
+              placeholder?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'contentTeaser';
+          }
+        | {
+            title: string;
+            subtitle?: string | null;
+            /**
+             * Phone, e-mail, address (when there is one) and socials beside the form.
+             */
+            showContactCard?: boolean | null;
+            variant?: ('panel' | 'photo') | null;
+            photo?: (number | null) | Media;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaContact';
+          }
+        | {
+            title: string;
+            highlight?: string | null;
+            description?: string | null;
+            cta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryCta?: {
+              label?: string | null;
+              href?: string | null;
+              caption?: string | null;
+            };
+            variant?: ('primary' | 'subtle' | 'dark' | 'dark-centered') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaBanner';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            description?: string | null;
+            emptyText?: string | null;
+            talentBank?: {
+              eyebrow?: string | null;
+              title?: string | null;
+              highlight?: string | null;
+              description?: string | null;
+              note?: string | null;
+            };
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'jobsList';
           }
       )[]
     | null;
@@ -7026,7 +7359,9 @@ export interface FormSubmission {
     | 'talent-pool'
     | 'job-application'
     | 'material-download'
-    | 'rc18-diagnostic';
+    | 'rc18-diagnostic'
+    | 'consultant-request'
+    | 'data-maturity-diagnostic';
   status: 'new' | 'read' | 'archived';
   email: string;
   confirmationToken?: string | null;
@@ -7042,6 +7377,60 @@ export interface FormSubmission {
   company?: string | null;
   message?: string | null;
   chatContext?: string | null;
+  diagnostic?: {
+    sector?: string | null;
+    size?: string | null;
+    role?: string | null;
+    average?: number | null;
+    level?: string | null;
+    pillars?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    dama?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    /**
+     * Sum of (5 − score) over the answers tied to each regulation: the higher, the further from optimized.
+     */
+    gaps?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    topGaps?: string | null;
+    answers?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    roadmap?: string | null;
+    version?: string | null;
+    durationSeconds?: number | null;
+  };
+  /**
+   * Empty = the lead did not receive the result.
+   */
+  resultSentAt?: string | null;
   source?: string | null;
   utm?: {
     source?: string | null;
@@ -7446,6 +7835,61 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerHero?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              logo?: T;
+              logoDark?: T;
+              awards?:
+                | T
+                | {
+                    topText?: T;
+                    title?: T;
+                    highlight?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        homeHero?:
+          | T
+          | {
+              titlePrefix?: T;
+              rotatingWords?: T;
+              description?: T;
+              scrollLabel?: T;
+              prompt?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                    disclaimer?: T;
+                    clientsTitle?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         stickyPageNav?:
           | T
           | {
@@ -7459,150 +7903,27 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        statsGrid?:
-          | T
-          | {
-              source?: T;
-              customItems?:
-                | T
-                | {
-                    value?: T;
-                    suffix?: T;
-                    label?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        richTextSection?:
+        featureTabs?:
           | T
           | {
               eyebrow?: T;
               title?: T;
-              body?: T;
-              image?: T;
-              ctas?:
+              description?: T;
+              footnote?: T;
+              cta?:
                 | T
                 | {
                     label?: T;
                     href?: T;
-                    id?: T;
                   };
-              headerLayout?: T;
-              description?: T;
-              subtitle?: T;
-              callout?:
-                | T
-                | {
-                    label?: T;
-                    text?: T;
-                  };
-              imagePosition?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        iconCardGrid?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              columns?: T;
-              variant?: T;
-              headerWidth?: T;
               items?:
                 | T
                 | {
                     icon?: T;
+                    badge?: T;
                     title?: T;
                     description?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        valueCards?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              highlight?: T;
-              variant?: T;
-              description?: T;
-              items?:
-                | T
-                | {
-                    icon?: T;
-                    bullets?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
-                    glowColor?: T;
-                    title?: T;
-                    description?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        partnerShowcase?:
-          | T
-          | {
-              title?: T;
-              partners?: T;
-              grayscale?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        sealsBanner?:
-          | T
-          | {
-              title?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        processSteps?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              description?: T;
-              steps?:
-                | T
-                | {
-                    title?: T;
-                    description?: T;
+                    image?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -7640,6 +7961,37 @@ export interface PagesSelect<T extends boolean = true> {
                           text?: T;
                           id?: T;
                         };
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        valueCards?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              highlight?: T;
+              variant?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    glowColor?: T;
+                    title?: T;
+                    description?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -7700,6 +8052,30 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        iconCardGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              columns?: T;
+              variant?: T;
+              headerWidth?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         audienceSplit?:
           | T
           | {
@@ -7718,6 +8094,59 @@ export interface PagesSelect<T extends boolean = true> {
                 | {
                     icon?: T;
                     accent?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richTextSection?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              body?: T;
+              image?: T;
+              ctas?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              headerLayout?: T;
+              description?: T;
+              subtitle?: T;
+              callout?:
+                | T
+                | {
+                    label?: T;
+                    text?: T;
+                  };
+              imagePosition?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        processSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              steps?:
+                | T
+                | {
                     title?: T;
                     description?: T;
                     id?: T;
@@ -7760,14 +8189,17 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        ctaContact?:
+        logoMarquee?:
           | T
           | {
               title?: T;
-              subtitle?: T;
-              showContactCard?: T;
-              variant?: T;
-              photo?: T;
+              partners?:
+                | T
+                | {
+                    name?: T;
+                    logo?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -7776,80 +8208,51 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        jobsList?:
+        sealsBanner?:
+          | T
+          | {
+              title?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageGrid?:
           | T
           | {
               eyebrow?: T;
               title?: T;
               description?: T;
-              emptyText?: T;
-              talentBank?:
+              images?:
                 | T
                 | {
-                    eyebrow?: T;
-                    title?: T;
-                    highlight?: T;
-                    description?: T;
-                    note?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        ctaBanner?:
-          | T
-          | {
-              title?: T;
-              highlight?: T;
-              description?: T;
-              cta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
-                  };
-              secondaryCta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
+                    image?: T;
                     caption?: T;
-                  };
-              variant?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        partnerHero?:
-          | T
-          | {
-              badge?: T;
-              chip?: T;
-              title?: T;
-              highlight?: T;
-              description?: T;
-              logo?: T;
-              awards?:
-                | T
-                | {
-                    topText?: T;
-                    title?: T;
-                    highlight?: T;
                     id?: T;
                   };
-              cta?:
+              boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        statsGrid?:
+          | T
+          | {
+              source?: T;
+              customItems?:
                 | T
                 | {
+                    value?: T;
+                    suffix?: T;
                     label?: T;
-                    href?: T;
+                    id?: T;
                   };
               anchor?: T;
               navLabel?: T;
@@ -7874,6 +8277,7 @@ export interface PagesSelect<T extends boolean = true> {
               image?: T;
               imageLabel?: T;
               logo?: T;
+              logoDark?: T;
               items?:
                 | T
                 | {
@@ -7900,71 +8304,13 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        homeHero?:
-          | T
-          | {
-              titlePrefix?: T;
-              rotatingWords?: T;
-              description?: T;
-              scrollLabel?: T;
-              prompt?:
-                | T
-                | {
-                    title?: T;
-                    placeholder?: T;
-                    disclaimer?: T;
-                    clientsTitle?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        logoMarquee?:
+        partnerShowcase?:
           | T
           | {
               title?: T;
-              partners?:
-                | T
-                | {
-                    name?: T;
-                    logo?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        featureTabs?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              description?: T;
-              footnote?: T;
-              cta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
-                  };
-              items?:
-                | T
-                | {
-                    icon?: T;
-                    badge?: T;
-                    title?: T;
-                    description?: T;
-                    image?: T;
-                    id?: T;
-                  };
+              source?: T;
+              partners?: T;
+              grayscale?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -8065,38 +8411,26 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        contentTeaser?:
+        highlightCarousel?:
           | T
           | {
-              eyebrow?: T;
               title?: T;
-              description?: T;
-              cards?:
+              items?:
                 | T
                 | {
-                    icon?: T;
-                    category?: T;
+                    tag?: T;
                     title?: T;
-                    href?: T;
+                    description?: T;
                     image?: T;
-                    column?: T;
+                    cta?:
+                      | T
+                      | {
+                          label?: T;
+                          href?: T;
+                        };
                     id?: T;
                   };
-              featured?:
-                | T
-                | {
-                    category?: T;
-                    title?: T;
-                    ctaLabel?: T;
-                    href?: T;
-                    image?: T;
-                  };
-              newsletter?:
-                | T
-                | {
-                    title?: T;
-                    placeholder?: T;
-                  };
+              autoplay?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -8167,6 +8501,114 @@ export interface PagesSelect<T extends boolean = true> {
                     ctaHref?: T;
                     secondaryLabel?: T;
                     secondaryHref?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        contentTeaser?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              cards?:
+                | T
+                | {
+                    icon?: T;
+                    category?: T;
+                    title?: T;
+                    href?: T;
+                    image?: T;
+                    column?: T;
+                    id?: T;
+                  };
+              featured?:
+                | T
+                | {
+                    category?: T;
+                    title?: T;
+                    ctaLabel?: T;
+                    href?: T;
+                    image?: T;
+                  };
+              newsletter?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaContact?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              showContactCard?: T;
+              variant?: T;
+              photo?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaBanner?:
+          | T
+          | {
+              title?: T;
+              highlight?: T;
+              description?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    caption?: T;
+                  };
+              variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        jobsList?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              emptyText?: T;
+              talentBank?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    highlight?: T;
+                    description?: T;
+                    note?: T;
                   };
               anchor?: T;
               navLabel?: T;
@@ -8302,6 +8744,7 @@ export interface PartnersSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   logo?: T;
+  logoDark?: T;
   logoScale?: T;
   description?: T;
   tier?: T;
@@ -8348,6 +8791,61 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerHero?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              logo?: T;
+              logoDark?: T;
+              awards?:
+                | T
+                | {
+                    topText?: T;
+                    title?: T;
+                    highlight?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        homeHero?:
+          | T
+          | {
+              titlePrefix?: T;
+              rotatingWords?: T;
+              description?: T;
+              scrollLabel?: T;
+              prompt?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                    disclaimer?: T;
+                    clientsTitle?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         stickyPageNav?:
           | T
           | {
@@ -8361,150 +8859,27 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        statsGrid?:
-          | T
-          | {
-              source?: T;
-              customItems?:
-                | T
-                | {
-                    value?: T;
-                    suffix?: T;
-                    label?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        richTextSection?:
+        featureTabs?:
           | T
           | {
               eyebrow?: T;
               title?: T;
-              body?: T;
-              image?: T;
-              ctas?:
+              description?: T;
+              footnote?: T;
+              cta?:
                 | T
                 | {
                     label?: T;
                     href?: T;
-                    id?: T;
                   };
-              headerLayout?: T;
-              description?: T;
-              subtitle?: T;
-              callout?:
-                | T
-                | {
-                    label?: T;
-                    text?: T;
-                  };
-              imagePosition?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        iconCardGrid?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              columns?: T;
-              variant?: T;
-              headerWidth?: T;
               items?:
                 | T
                 | {
                     icon?: T;
+                    badge?: T;
                     title?: T;
                     description?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        valueCards?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              highlight?: T;
-              variant?: T;
-              description?: T;
-              items?:
-                | T
-                | {
-                    icon?: T;
-                    bullets?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
-                    glowColor?: T;
-                    title?: T;
-                    description?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        partnerShowcase?:
-          | T
-          | {
-              title?: T;
-              partners?: T;
-              grayscale?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        sealsBanner?:
-          | T
-          | {
-              title?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        processSteps?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              description?: T;
-              steps?:
-                | T
-                | {
-                    title?: T;
-                    description?: T;
+                    image?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -8542,6 +8917,37 @@ export interface PartnersSelect<T extends boolean = true> {
                           text?: T;
                           id?: T;
                         };
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        valueCards?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              highlight?: T;
+              variant?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    glowColor?: T;
+                    title?: T;
+                    description?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -8602,6 +9008,30 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        iconCardGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              columns?: T;
+              variant?: T;
+              headerWidth?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         audienceSplit?:
           | T
           | {
@@ -8620,6 +9050,59 @@ export interface PartnersSelect<T extends boolean = true> {
                 | {
                     icon?: T;
                     accent?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richTextSection?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              body?: T;
+              image?: T;
+              ctas?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              headerLayout?: T;
+              description?: T;
+              subtitle?: T;
+              callout?:
+                | T
+                | {
+                    label?: T;
+                    text?: T;
+                  };
+              imagePosition?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        processSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              steps?:
+                | T
+                | {
                     title?: T;
                     description?: T;
                     id?: T;
@@ -8662,14 +9145,17 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        ctaContact?:
+        logoMarquee?:
           | T
           | {
               title?: T;
-              subtitle?: T;
-              showContactCard?: T;
-              variant?: T;
-              photo?: T;
+              partners?:
+                | T
+                | {
+                    name?: T;
+                    logo?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -8678,80 +9164,51 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        jobsList?:
+        sealsBanner?:
+          | T
+          | {
+              title?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageGrid?:
           | T
           | {
               eyebrow?: T;
               title?: T;
               description?: T;
-              emptyText?: T;
-              talentBank?:
+              images?:
                 | T
                 | {
-                    eyebrow?: T;
-                    title?: T;
-                    highlight?: T;
-                    description?: T;
-                    note?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        ctaBanner?:
-          | T
-          | {
-              title?: T;
-              highlight?: T;
-              description?: T;
-              cta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
-                  };
-              secondaryCta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
+                    image?: T;
                     caption?: T;
-                  };
-              variant?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        partnerHero?:
-          | T
-          | {
-              badge?: T;
-              chip?: T;
-              title?: T;
-              highlight?: T;
-              description?: T;
-              logo?: T;
-              awards?:
-                | T
-                | {
-                    topText?: T;
-                    title?: T;
-                    highlight?: T;
                     id?: T;
                   };
-              cta?:
+              boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        statsGrid?:
+          | T
+          | {
+              source?: T;
+              customItems?:
                 | T
                 | {
+                    value?: T;
+                    suffix?: T;
                     label?: T;
-                    href?: T;
+                    id?: T;
                   };
               anchor?: T;
               navLabel?: T;
@@ -8776,6 +9233,7 @@ export interface PartnersSelect<T extends boolean = true> {
               image?: T;
               imageLabel?: T;
               logo?: T;
+              logoDark?: T;
               items?:
                 | T
                 | {
@@ -8802,71 +9260,13 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        homeHero?:
-          | T
-          | {
-              titlePrefix?: T;
-              rotatingWords?: T;
-              description?: T;
-              scrollLabel?: T;
-              prompt?:
-                | T
-                | {
-                    title?: T;
-                    placeholder?: T;
-                    disclaimer?: T;
-                    clientsTitle?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        logoMarquee?:
+        partnerShowcase?:
           | T
           | {
               title?: T;
-              partners?:
-                | T
-                | {
-                    name?: T;
-                    logo?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        featureTabs?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              description?: T;
-              footnote?: T;
-              cta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
-                  };
-              items?:
-                | T
-                | {
-                    icon?: T;
-                    badge?: T;
-                    title?: T;
-                    description?: T;
-                    image?: T;
-                    id?: T;
-                  };
+              source?: T;
+              partners?: T;
+              grayscale?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -8967,38 +9367,26 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        contentTeaser?:
+        highlightCarousel?:
           | T
           | {
-              eyebrow?: T;
               title?: T;
-              description?: T;
-              cards?:
+              items?:
                 | T
                 | {
-                    icon?: T;
-                    category?: T;
+                    tag?: T;
                     title?: T;
-                    href?: T;
+                    description?: T;
                     image?: T;
-                    column?: T;
+                    cta?:
+                      | T
+                      | {
+                          label?: T;
+                          href?: T;
+                        };
                     id?: T;
                   };
-              featured?:
-                | T
-                | {
-                    category?: T;
-                    title?: T;
-                    ctaLabel?: T;
-                    href?: T;
-                    image?: T;
-                  };
-              newsletter?:
-                | T
-                | {
-                    title?: T;
-                    placeholder?: T;
-                  };
+              autoplay?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -9069,6 +9457,114 @@ export interface PartnersSelect<T extends boolean = true> {
                     ctaHref?: T;
                     secondaryLabel?: T;
                     secondaryHref?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        contentTeaser?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              cards?:
+                | T
+                | {
+                    icon?: T;
+                    category?: T;
+                    title?: T;
+                    href?: T;
+                    image?: T;
+                    column?: T;
+                    id?: T;
+                  };
+              featured?:
+                | T
+                | {
+                    category?: T;
+                    title?: T;
+                    ctaLabel?: T;
+                    href?: T;
+                    image?: T;
+                  };
+              newsletter?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaContact?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              showContactCard?: T;
+              variant?: T;
+              photo?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaBanner?:
+          | T
+          | {
+              title?: T;
+              highlight?: T;
+              description?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    caption?: T;
+                  };
+              variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        jobsList?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              emptyText?: T;
+              talentBank?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    highlight?: T;
+                    description?: T;
+                    note?: T;
                   };
               anchor?: T;
               navLabel?: T;
@@ -9141,6 +9637,61 @@ export interface SegmentsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerHero?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              logo?: T;
+              logoDark?: T;
+              awards?:
+                | T
+                | {
+                    topText?: T;
+                    title?: T;
+                    highlight?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        homeHero?:
+          | T
+          | {
+              titlePrefix?: T;
+              rotatingWords?: T;
+              description?: T;
+              scrollLabel?: T;
+              prompt?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                    disclaimer?: T;
+                    clientsTitle?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         stickyPageNav?:
           | T
           | {
@@ -9154,150 +9705,27 @@ export interface SegmentsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        statsGrid?:
-          | T
-          | {
-              source?: T;
-              customItems?:
-                | T
-                | {
-                    value?: T;
-                    suffix?: T;
-                    label?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        richTextSection?:
+        featureTabs?:
           | T
           | {
               eyebrow?: T;
               title?: T;
-              body?: T;
-              image?: T;
-              ctas?:
+              description?: T;
+              footnote?: T;
+              cta?:
                 | T
                 | {
                     label?: T;
                     href?: T;
-                    id?: T;
                   };
-              headerLayout?: T;
-              description?: T;
-              subtitle?: T;
-              callout?:
-                | T
-                | {
-                    label?: T;
-                    text?: T;
-                  };
-              imagePosition?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        iconCardGrid?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              columns?: T;
-              variant?: T;
-              headerWidth?: T;
               items?:
                 | T
                 | {
                     icon?: T;
+                    badge?: T;
                     title?: T;
                     description?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        valueCards?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              highlight?: T;
-              variant?: T;
-              description?: T;
-              items?:
-                | T
-                | {
-                    icon?: T;
-                    bullets?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
-                    glowColor?: T;
-                    title?: T;
-                    description?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        partnerShowcase?:
-          | T
-          | {
-              title?: T;
-              partners?: T;
-              grayscale?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        sealsBanner?:
-          | T
-          | {
-              title?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        processSteps?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              description?: T;
-              steps?:
-                | T
-                | {
-                    title?: T;
-                    description?: T;
+                    image?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -9335,6 +9763,37 @@ export interface SegmentsSelect<T extends boolean = true> {
                           text?: T;
                           id?: T;
                         };
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        valueCards?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              highlight?: T;
+              variant?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    glowColor?: T;
+                    title?: T;
+                    description?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -9395,6 +9854,30 @@ export interface SegmentsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        iconCardGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              columns?: T;
+              variant?: T;
+              headerWidth?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         audienceSplit?:
           | T
           | {
@@ -9413,6 +9896,59 @@ export interface SegmentsSelect<T extends boolean = true> {
                 | {
                     icon?: T;
                     accent?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richTextSection?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              body?: T;
+              image?: T;
+              ctas?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              headerLayout?: T;
+              description?: T;
+              subtitle?: T;
+              callout?:
+                | T
+                | {
+                    label?: T;
+                    text?: T;
+                  };
+              imagePosition?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        processSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              steps?:
+                | T
+                | {
                     title?: T;
                     description?: T;
                     id?: T;
@@ -9455,14 +9991,17 @@ export interface SegmentsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        ctaContact?:
+        logoMarquee?:
           | T
           | {
               title?: T;
-              subtitle?: T;
-              showContactCard?: T;
-              variant?: T;
-              photo?: T;
+              partners?:
+                | T
+                | {
+                    name?: T;
+                    logo?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -9471,80 +10010,51 @@ export interface SegmentsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        jobsList?:
+        sealsBanner?:
+          | T
+          | {
+              title?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageGrid?:
           | T
           | {
               eyebrow?: T;
               title?: T;
               description?: T;
-              emptyText?: T;
-              talentBank?:
+              images?:
                 | T
                 | {
-                    eyebrow?: T;
-                    title?: T;
-                    highlight?: T;
-                    description?: T;
-                    note?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        ctaBanner?:
-          | T
-          | {
-              title?: T;
-              highlight?: T;
-              description?: T;
-              cta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
-                  };
-              secondaryCta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
+                    image?: T;
                     caption?: T;
-                  };
-              variant?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        partnerHero?:
-          | T
-          | {
-              badge?: T;
-              chip?: T;
-              title?: T;
-              highlight?: T;
-              description?: T;
-              logo?: T;
-              awards?:
-                | T
-                | {
-                    topText?: T;
-                    title?: T;
-                    highlight?: T;
                     id?: T;
                   };
-              cta?:
+              boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        statsGrid?:
+          | T
+          | {
+              source?: T;
+              customItems?:
                 | T
                 | {
+                    value?: T;
+                    suffix?: T;
                     label?: T;
-                    href?: T;
+                    id?: T;
                   };
               anchor?: T;
               navLabel?: T;
@@ -9569,6 +10079,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               image?: T;
               imageLabel?: T;
               logo?: T;
+              logoDark?: T;
               items?:
                 | T
                 | {
@@ -9595,71 +10106,13 @@ export interface SegmentsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        homeHero?:
-          | T
-          | {
-              titlePrefix?: T;
-              rotatingWords?: T;
-              description?: T;
-              scrollLabel?: T;
-              prompt?:
-                | T
-                | {
-                    title?: T;
-                    placeholder?: T;
-                    disclaimer?: T;
-                    clientsTitle?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        logoMarquee?:
+        partnerShowcase?:
           | T
           | {
               title?: T;
-              partners?:
-                | T
-                | {
-                    name?: T;
-                    logo?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        featureTabs?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              description?: T;
-              footnote?: T;
-              cta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
-                  };
-              items?:
-                | T
-                | {
-                    icon?: T;
-                    badge?: T;
-                    title?: T;
-                    description?: T;
-                    image?: T;
-                    id?: T;
-                  };
+              source?: T;
+              partners?: T;
+              grayscale?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -9760,38 +10213,26 @@ export interface SegmentsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        contentTeaser?:
+        highlightCarousel?:
           | T
           | {
-              eyebrow?: T;
               title?: T;
-              description?: T;
-              cards?:
+              items?:
                 | T
                 | {
-                    icon?: T;
-                    category?: T;
+                    tag?: T;
                     title?: T;
-                    href?: T;
+                    description?: T;
                     image?: T;
-                    column?: T;
+                    cta?:
+                      | T
+                      | {
+                          label?: T;
+                          href?: T;
+                        };
                     id?: T;
                   };
-              featured?:
-                | T
-                | {
-                    category?: T;
-                    title?: T;
-                    ctaLabel?: T;
-                    href?: T;
-                    image?: T;
-                  };
-              newsletter?:
-                | T
-                | {
-                    title?: T;
-                    placeholder?: T;
-                  };
+              autoplay?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -9862,6 +10303,114 @@ export interface SegmentsSelect<T extends boolean = true> {
                     ctaHref?: T;
                     secondaryLabel?: T;
                     secondaryHref?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        contentTeaser?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              cards?:
+                | T
+                | {
+                    icon?: T;
+                    category?: T;
+                    title?: T;
+                    href?: T;
+                    image?: T;
+                    column?: T;
+                    id?: T;
+                  };
+              featured?:
+                | T
+                | {
+                    category?: T;
+                    title?: T;
+                    ctaLabel?: T;
+                    href?: T;
+                    image?: T;
+                  };
+              newsletter?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaContact?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              showContactCard?: T;
+              variant?: T;
+              photo?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaBanner?:
+          | T
+          | {
+              title?: T;
+              highlight?: T;
+              description?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    caption?: T;
+                  };
+              variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        jobsList?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              emptyText?: T;
+              talentBank?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    highlight?: T;
+                    description?: T;
+                    note?: T;
                   };
               anchor?: T;
               navLabel?: T;
@@ -9940,6 +10489,61 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerHero?:
+          | T
+          | {
+              badge?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              logo?: T;
+              logoDark?: T;
+              awards?:
+                | T
+                | {
+                    topText?: T;
+                    title?: T;
+                    highlight?: T;
+                    id?: T;
+                  };
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        homeHero?:
+          | T
+          | {
+              titlePrefix?: T;
+              rotatingWords?: T;
+              description?: T;
+              scrollLabel?: T;
+              prompt?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                    disclaimer?: T;
+                    clientsTitle?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         stickyPageNav?:
           | T
           | {
@@ -9953,150 +10557,27 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        statsGrid?:
-          | T
-          | {
-              source?: T;
-              customItems?:
-                | T
-                | {
-                    value?: T;
-                    suffix?: T;
-                    label?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        richTextSection?:
+        featureTabs?:
           | T
           | {
               eyebrow?: T;
               title?: T;
-              body?: T;
-              image?: T;
-              ctas?:
+              description?: T;
+              footnote?: T;
+              cta?:
                 | T
                 | {
                     label?: T;
                     href?: T;
-                    id?: T;
                   };
-              headerLayout?: T;
-              description?: T;
-              subtitle?: T;
-              callout?:
-                | T
-                | {
-                    label?: T;
-                    text?: T;
-                  };
-              imagePosition?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        iconCardGrid?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              columns?: T;
-              variant?: T;
-              headerWidth?: T;
               items?:
                 | T
                 | {
                     icon?: T;
+                    badge?: T;
                     title?: T;
                     description?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        valueCards?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              highlight?: T;
-              variant?: T;
-              description?: T;
-              items?:
-                | T
-                | {
-                    icon?: T;
-                    bullets?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
-                    glowColor?: T;
-                    title?: T;
-                    description?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        partnerShowcase?:
-          | T
-          | {
-              title?: T;
-              partners?: T;
-              grayscale?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        sealsBanner?:
-          | T
-          | {
-              title?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        processSteps?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              description?: T;
-              steps?:
-                | T
-                | {
-                    title?: T;
-                    description?: T;
+                    image?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -10134,6 +10615,37 @@ export interface SolutionsSelect<T extends boolean = true> {
                           text?: T;
                           id?: T;
                         };
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        valueCards?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              highlight?: T;
+              variant?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    glowColor?: T;
+                    title?: T;
+                    description?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -10194,6 +10706,30 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        iconCardGrid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              columns?: T;
+              variant?: T;
+              headerWidth?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         audienceSplit?:
           | T
           | {
@@ -10212,6 +10748,59 @@ export interface SolutionsSelect<T extends boolean = true> {
                 | {
                     icon?: T;
                     accent?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richTextSection?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              body?: T;
+              image?: T;
+              ctas?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              headerLayout?: T;
+              description?: T;
+              subtitle?: T;
+              callout?:
+                | T
+                | {
+                    label?: T;
+                    text?: T;
+                  };
+              imagePosition?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        processSteps?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              steps?:
+                | T
+                | {
                     title?: T;
                     description?: T;
                     id?: T;
@@ -10254,14 +10843,17 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        ctaContact?:
+        logoMarquee?:
           | T
           | {
               title?: T;
-              subtitle?: T;
-              showContactCard?: T;
-              variant?: T;
-              photo?: T;
+              partners?:
+                | T
+                | {
+                    name?: T;
+                    logo?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10270,80 +10862,51 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        jobsList?:
+        sealsBanner?:
+          | T
+          | {
+              title?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageGrid?:
           | T
           | {
               eyebrow?: T;
               title?: T;
               description?: T;
-              emptyText?: T;
-              talentBank?:
+              images?:
                 | T
                 | {
-                    eyebrow?: T;
-                    title?: T;
-                    highlight?: T;
-                    description?: T;
-                    note?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        ctaBanner?:
-          | T
-          | {
-              title?: T;
-              highlight?: T;
-              description?: T;
-              cta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
-                  };
-              secondaryCta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
+                    image?: T;
                     caption?: T;
-                  };
-              variant?: T;
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        partnerHero?:
-          | T
-          | {
-              badge?: T;
-              chip?: T;
-              title?: T;
-              highlight?: T;
-              description?: T;
-              logo?: T;
-              awards?:
-                | T
-                | {
-                    topText?: T;
-                    title?: T;
-                    highlight?: T;
                     id?: T;
                   };
-              cta?:
+              boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        statsGrid?:
+          | T
+          | {
+              source?: T;
+              customItems?:
                 | T
                 | {
+                    value?: T;
+                    suffix?: T;
                     label?: T;
-                    href?: T;
+                    id?: T;
                   };
               anchor?: T;
               navLabel?: T;
@@ -10368,6 +10931,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               image?: T;
               imageLabel?: T;
               logo?: T;
+              logoDark?: T;
               items?:
                 | T
                 | {
@@ -10394,71 +10958,13 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        homeHero?:
-          | T
-          | {
-              titlePrefix?: T;
-              rotatingWords?: T;
-              description?: T;
-              scrollLabel?: T;
-              prompt?:
-                | T
-                | {
-                    title?: T;
-                    placeholder?: T;
-                    disclaimer?: T;
-                    clientsTitle?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        logoMarquee?:
+        partnerShowcase?:
           | T
           | {
               title?: T;
-              partners?:
-                | T
-                | {
-                    name?: T;
-                    logo?: T;
-                    id?: T;
-                  };
-              anchor?: T;
-              navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
-              id?: T;
-              blockName?: T;
-            };
-        featureTabs?:
-          | T
-          | {
-              eyebrow?: T;
-              title?: T;
-              description?: T;
-              footnote?: T;
-              cta?:
-                | T
-                | {
-                    label?: T;
-                    href?: T;
-                  };
-              items?:
-                | T
-                | {
-                    icon?: T;
-                    badge?: T;
-                    title?: T;
-                    description?: T;
-                    image?: T;
-                    id?: T;
-                  };
+              source?: T;
+              partners?: T;
+              grayscale?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10559,38 +11065,26 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        contentTeaser?:
+        highlightCarousel?:
           | T
           | {
-              eyebrow?: T;
               title?: T;
-              description?: T;
-              cards?:
+              items?:
                 | T
                 | {
-                    icon?: T;
-                    category?: T;
+                    tag?: T;
                     title?: T;
-                    href?: T;
+                    description?: T;
                     image?: T;
-                    column?: T;
+                    cta?:
+                      | T
+                      | {
+                          label?: T;
+                          href?: T;
+                        };
                     id?: T;
                   };
-              featured?:
-                | T
-                | {
-                    category?: T;
-                    title?: T;
-                    ctaLabel?: T;
-                    href?: T;
-                    image?: T;
-                  };
-              newsletter?:
-                | T
-                | {
-                    title?: T;
-                    placeholder?: T;
-                  };
+              autoplay?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10661,6 +11155,114 @@ export interface SolutionsSelect<T extends boolean = true> {
                     ctaHref?: T;
                     secondaryLabel?: T;
                     secondaryHref?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        contentTeaser?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              cards?:
+                | T
+                | {
+                    icon?: T;
+                    category?: T;
+                    title?: T;
+                    href?: T;
+                    image?: T;
+                    column?: T;
+                    id?: T;
+                  };
+              featured?:
+                | T
+                | {
+                    category?: T;
+                    title?: T;
+                    ctaLabel?: T;
+                    href?: T;
+                    image?: T;
+                  };
+              newsletter?:
+                | T
+                | {
+                    title?: T;
+                    placeholder?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaContact?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              showContactCard?: T;
+              variant?: T;
+              photo?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ctaBanner?:
+          | T
+          | {
+              title?: T;
+              highlight?: T;
+              description?: T;
+              cta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    caption?: T;
+                  };
+              variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        jobsList?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              emptyText?: T;
+              talentBank?:
+                | T
+                | {
+                    eyebrow?: T;
+                    title?: T;
+                    highlight?: T;
+                    description?: T;
+                    note?: T;
                   };
               anchor?: T;
               navLabel?: T;
@@ -10742,6 +11344,24 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   company?: T;
   message?: T;
   chatContext?: T;
+  diagnostic?:
+    | T
+    | {
+        sector?: T;
+        size?: T;
+        role?: T;
+        average?: T;
+        level?: T;
+        pillars?: T;
+        dama?: T;
+        gaps?: T;
+        topGaps?: T;
+        answers?: T;
+        roadmap?: T;
+        version?: T;
+        durationSeconds?: T;
+      };
+  resultSentAt?: T;
   source?: T;
   utm?:
     | T
@@ -10881,11 +11501,25 @@ export interface Contact {
   phoneWithArea: string;
   whatsapp: string;
   email: string;
-  address: string;
+  /**
+   * Optional. When empty, the address appears nowhere on the site.
+   */
+  address?: string | null;
   social?: {
     linkedin?: string | null;
     instagram?: string | null;
+    facebook?: string | null;
     youtube?: string | null;
+  };
+  /**
+   * Which inbox receives each form. When empty, the email above is used.
+   */
+  formRecipients?: {
+    contact?: string | null;
+    consultants?: string | null;
+    diagnostic?: string | null;
+    careers?: string | null;
+    chat?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -10915,10 +11549,44 @@ export interface CookieConsent {
     name?: string | null;
     description?: string | null;
   };
+  /**
+   * This category enables UTM capture and Lusha, which identifies the company a visit comes from (System → Tracking). The description should mention both.
+   */
   marketing?: {
     name?: string | null;
     description?: string | null;
   };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "data-maturity-diagnostic".
+ */
+export interface DataMaturityDiagnostic {
+  id: number;
+  title?: string | null;
+  /**
+   * Right below the title, on the profile screen. Empty = no paragraph.
+   */
+  intro?: string | null;
+  /**
+   * Shown after submitting, next to the destination e-mail confirmation. Empty = no paragraph.
+   */
+  doneMessage?: string | null;
+  emailSubject?: string | null;
+  /**
+   * First paragraph of the e-mail, before the result. Empty = the e-mail starts with the result.
+   */
+  emailIntro?: string | null;
+  /**
+   * Optional. With a link, the completion screen and the e-mail get a "Schedule a call" button; empty = no button.
+   */
+  agendaUrl?: string | null;
+  /**
+   * The "Chat on WhatsApp" button on the page, the completion screen and the e-mail. Empty falls back to the default link: it is the way out when the e-mail does not arrive.
+   */
+  whatsappUrl?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -10958,6 +11626,31 @@ export interface Footer {
       }[]
     | null;
   copyright: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * ATRAIR (recruiting) integration. Admins only. The API key lives on the server — without it nothing syncs, even when enabled here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integrations".
+ */
+export interface Integration {
+  id: number;
+  atrair?: {
+    /**
+     * On: the /careers grid lists the jobs published in ATRAIR, each card linking to the role there. Off: it lists the jobs registered under Content → Jobs, with their own page on the site.
+     */
+    jobsFeed?: boolean | null;
+    /**
+     * On: Talent Pool sign-ups are created in ATRAIR (deduplicated by e-mail there). Off: the sign-up stays in Form Submissions here. Either way the candidate never sees an error.
+     */
+    talentPool?: boolean | null;
+    /**
+     * The base of the ATRAIR API, without the route — the site appends /api/public/vagas and /api/public/talent-pool. Pre-filled with this environment’s address; change it only if ATRAIR moves. Empty: both toggles above stay inert.
+     */
+    endpoint?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -11203,6 +11896,25 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * Google Tag Manager and Lusha ids. Admins only. Nothing loads until the visitor accepts in the cookie notice.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tracking".
+ */
+export interface Tracking {
+  id: number;
+  /**
+   * The Tag Manager container, as GTM-XXXXXXX. Loads only for visitors who accept "analytics". Empty: no Google script on the site.
+   */
+  gtmId?: string | null;
+  /**
+   * The siteId from Lusha’s Website Visitors dashboard. Loads only for visitors who accept "marketing". Empty: Lusha stays off the site.
+   */
+  lushaSiteId?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "atra-ai_select".
  */
@@ -11241,7 +11953,17 @@ export interface ContactSelect<T extends boolean = true> {
     | {
         linkedin?: T;
         instagram?: T;
+        facebook?: T;
         youtube?: T;
+      };
+  formRecipients?:
+    | T
+    | {
+        contact?: T;
+        consultants?: T;
+        diagnostic?: T;
+        careers?: T;
+        chat?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -11284,6 +12006,22 @@ export interface CookieConsentSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "data-maturity-diagnostic_select".
+ */
+export interface DataMaturityDiagnosticSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  doneMessage?: T;
+  emailSubject?: T;
+  emailIntro?: T;
+  agendaUrl?: T;
+  whatsappUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
@@ -11303,6 +12041,22 @@ export interface FooterSelect<T extends boolean = true> {
         id?: T;
       };
   copyright?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integrations_select".
+ */
+export interface IntegrationsSelect<T extends boolean = true> {
+  atrair?:
+    | T
+    | {
+        jobsFeed?: T;
+        talentPool?: T;
+        endpoint?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -11381,6 +12135,17 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         id?: T;
       };
   foundedYear?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tracking_select".
+ */
+export interface TrackingSelect<T extends boolean = true> {
+  gtmId?: T;
+  lushaSiteId?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

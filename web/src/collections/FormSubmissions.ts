@@ -25,6 +25,12 @@ import { sincronizarComCrm } from '@/hooks/sincronizar-crm'
  * backup diário volta a ser a única cópia — o RPO de 24h que P-22 questiona.
  * Lead perdido não volta.
  */
+
+/* Os campos do diagnóstico de maturidade só aparecem nos envios desse kind:
+ * nos outros seriam um bloco vazio no meio do lead. */
+const soDiagnosticoDeMaturidade = (data: Partial<{ kind: string }> | undefined) =>
+  data?.kind === 'data-maturity-diagnostic'
+
 export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
   admin: {
@@ -61,7 +67,25 @@ export const FormSubmissions: CollectionConfig = {
         { value: 'job-application', label: { pt: 'Candidatura', en: 'Job application' } },
         { value: 'material-download', label: { pt: 'Download de material', en: 'Material download' } },
         { value: 'rc18-diagnostic', label: { pt: 'Diagnóstico RC 18', en: 'RC 18 diagnostic' } },
+        { value: 'consultant-request', label: { pt: 'Solicitação de consultores', en: 'Consultant request' } },
+        { value: 'data-maturity-diagnostic', label: { pt: 'Diagnóstico de maturidade', en: 'Data maturity diagnostic' } },
       ],
+      /* D-35 — o diagnóstico de maturidade substitui o da RC 18, e
+       * `rc18-diagnostic` sai das opções **sem sair do enum**: tirar o valor do
+       * tipo do Postgres é migração destrutiva, e os envios antigos ficariam
+       * sem origem legível.
+       *
+       * ⚠️ O filtro olha o valor **do próprio documento**, e não é só cosmético:
+       * o Payload roda `filterOptions` também na validação do servidor, com o
+       * documento já somado ao que está sendo gravado. Esconder sempre faria o
+       * envio antigo recusar qualquer edição (até "marcar como lido") e a action
+       * da RC 18, que ainda grava esse kind até a task 028, passar a falhar.
+       * Assim a opção some do seletor do admin para quem não é RC 18, e o
+       * servidor segue aceitando quem grava `rc18-diagnostic` por código. */
+      filterOptions: ({ data, options }) =>
+        data?.kind === 'rc18-diagnostic'
+          ? options
+          : options.filter((o) => (typeof o === 'string' ? o : o.value) !== 'rc18-diagnostic'),
       label: { pt: 'Origem', en: 'Kind' },
       admin: { position: 'sidebar' },
     },
@@ -116,6 +140,96 @@ export const FormSubmissions: CollectionConfig = {
       type: 'textarea',
       label: { pt: 'O que perguntou à ATRA AI', en: 'What they asked ATRA AI' },
       admin: { readOnly: true },
+    },
+    {
+      /* D-35 — o resultado do diagnóstico de maturidade: a "visão dos
+       * clientes" que o comercial lê aqui e no RD Station CRM. Só o kind
+       * `data-maturity-diagnostic` preenche (a action da task 025), sempre a
+       * partir da conta refeita no servidor pelo motor
+       * (`lib/diagnostico-maturidade`) — nunca do que o navegador mandou.
+       *
+       * Perfil, média e nível em colunas tipadas porque é por eles que se
+       * filtra a lista no admin ("todos os de saúde no nível 2"). O que é
+       * estrutura variável — pilares, áreas DAMA, gaps, respostas — vai em
+       * JSON: a base de perguntas é versionada (`version`) e muda sem migração.
+       *
+       * ⚠️ Somente leitura: é a fotografia do que o lead respondeu. Editar à
+       * mão desalinharia o registro do e-mail que ele recebeu. O `readOnly` do
+       * grupo desce para cada campo. Sem IP e sem user-agent, como o resto da
+       * collection (LGPD — ver o topo deste arquivo). */
+      name: 'diagnostic',
+      type: 'group',
+      label: { pt: 'Diagnóstico de maturidade', en: 'Data maturity diagnostic' },
+      admin: { readOnly: true, condition: soDiagnosticoDeMaturidade },
+      fields: [
+        /* Códigos do motor (`financeiro`, `ate_50mi`, `cio_cto_cdo`), não o
+         * rótulo do HTML: o rótulo é texto do marketing e muda; o código é o
+         * que se filtra e o que o motor reconhece. */
+        { name: 'sector', type: 'text', label: { pt: 'Setor', en: 'Sector' } },
+        { name: 'size', type: 'text', label: { pt: 'Porte (faturamento)', en: 'Size (revenue)' } },
+        { name: 'role', type: 'text', label: { pt: 'Cargo', en: 'Role' } },
+        { name: 'average', type: 'number', label: { pt: 'Média geral (1 a 5)', en: 'Overall average (1 to 5)' } },
+        { name: 'level', type: 'text', label: { pt: 'Nível', en: 'Level' } },
+        { name: 'pillars', type: 'json', label: { pt: 'Média por pilar', en: 'Average per pillar' } },
+        { name: 'dama', type: 'json', label: { pt: 'Média por área DAMA-DMBOK', en: 'Average per DAMA-DMBOK area' } },
+        {
+          name: 'gaps',
+          type: 'json',
+          label: { pt: 'Gaps por regulação', en: 'Gaps per regulation' },
+          admin: {
+            description: {
+              pt: 'Soma de (5 − nota) das respostas que tocam cada regulação: quanto maior, mais distante do nível otimizado.',
+              en: 'Sum of (5 − score) over the answers tied to each regulation: the higher, the further from optimized.',
+            },
+          },
+        },
+        {
+          /* No formato em que o questionário do Roger manda ao CRM
+           * (`cf_quiz_gaps_top3`): 'LGPD (12) | IA (9) | BCB (7)'. A nota da
+           * negociação no RD Station (`lib/crm.ts`) repete o texto como está. */
+          name: 'topGaps',
+          type: 'textarea',
+          label: { pt: 'Três maiores gaps', en: 'Top 3 gaps' },
+        },
+        {
+          /* Uma entrada por pergunta respondida: id, pilar, nota, tags e o
+           * texto da alternativa escolhida — legível sem abrir o HTML da
+           * versão que o lead respondeu. */
+          name: 'answers',
+          type: 'json',
+          label: { pt: 'Respostas', en: 'Answers' },
+        },
+        {
+          name: 'roadmap',
+          type: 'textarea',
+          label: { pt: 'Roadmap sugerido', en: 'Suggested roadmap' },
+        },
+        { name: 'version', type: 'text', label: { pt: 'Versão do questionário', en: 'Questionnaire version' } },
+        {
+          name: 'durationSeconds',
+          type: 'number',
+          label: { pt: 'Tempo de resposta (segundos)', en: 'Time to answer (seconds)' },
+        },
+      ],
+    },
+    {
+      /* O resultado só chega ao lead por e-mail (decisão de 26/09), então um
+       * envio que falhou é um lead que respondeu tudo e não recebeu nada. A
+       * action preenche isto **só** quando o envio deu certo — mesmo espírito
+       * do `notified` e do `crm.syncedAt`: a falta fica visível no admin em vez
+       * de virar silêncio. */
+      name: 'resultSentAt',
+      type: 'date',
+      label: { pt: 'Resultado enviado em', en: 'Result sent at' },
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        condition: soDiagnosticoDeMaturidade,
+        description: {
+          pt: 'Vazio = o lead não recebeu o resultado.',
+          en: 'Empty = the lead did not receive the result.',
+        },
+      },
     },
     {
       /* De onde veio, para o marketing saber o que converte. Caminho e idioma

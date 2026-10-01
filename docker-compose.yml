@@ -42,6 +42,23 @@ services:
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:-dev-secret-trocar-em-producao}
       NEXT_TELEMETRY_DISABLED: "1"
       WATCHPACK_POLLING: "true"
+      # Integração com o ATRAIR (D-33): a grade de /carreiras lista as vagas
+      # que o ATRAIR publica, e cada card leva para a página da vaga lá.
+      #
+      # ⚠️ Estas duas NÃO são mais o interruptor (D-41): quem liga e desliga é
+      # o global `integrations` no admin (Sistema → Integrações). A URL aqui é
+      # a **reserva** com que o campo do admin nasce preenchido — o admin
+      # vence. A chave segue sendo credencial, e é a segunda tranca.
+      #
+      # ⚠️ `host.docker.internal`, não `localhost`: dentro do contêiner,
+      # localhost é o PRÓPRIO contêiner. O ATRAIR roda fora deste compose —
+      # nativo ou no compose dele — então o endereço é o da máquina.
+      #
+      # Sem estas duas, nada quebra: a grade cai para a lista do CMS, que é o
+      # comportamento projetado para quando o ATRAIR está fora — e é o mesmo
+      # que a chave desligada no admin produz.
+      ATRAIR_API_URL: ${ATRAIR_API_URL:-http://host.docker.internal:3300}
+      ATRAIR_API_KEY: ${ATRAIR_API_KEY:-}
     volumes:
       - ./web:/app
       # ⚠️ `docs/` entra porque o `next.config.ts` lê
@@ -80,8 +97,14 @@ services:
 
   # Storage S3-compatível. Mesma API do S3/R2, sem credencial de nuvem na
   # máquina de ninguém e funcionando offline.
+  #
+  # ⚠️ Não voltar para `minio/minio`. Em set/2026 o MinIO tirou as imagens
+  # públicas do Docker Hub e do quay.io, e o CI morreu em "pull access denied"
+  # antes de rodar um teste. `pgsty/minio` é o fork comunitário do mesmo código:
+  # mesmo entrypoint, mesmo `server /data`, e já traz o `mc` — por isso o
+  # `createbucket` usa a mesma imagem. Presa por digest porque é de terceiro.
   minio:
-    image: minio/minio
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z@sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
@@ -100,7 +123,7 @@ services:
 
   # Cria o bucket na primeira subida e sai. Sem isso, o primeiro upload falha.
   createbucket:
-    image: minio/mc
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z@sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372
     depends_on:
       minio:
         condition: service_healthy

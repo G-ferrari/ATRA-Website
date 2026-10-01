@@ -1,4 +1,4 @@
-import { LEGACY_URL, NEXT_URL } from '../../playwright.config'
+import { LEGACY_URL, NEXT_URL, PARIDADE_COM_PROTOTIPO } from '../../playwright.config'
 import { ROTAS_COM_GABARITO } from './rotas'
 
 /* Aquecimento das rotas antes da suíte.
@@ -36,7 +36,13 @@ async function esperarNoAr(origem: string): Promise<boolean> {
 }
 
 export default async function aquecer() {
-  for (const origem of [NEXT_URL, LEGACY_URL]) {
+  /* ⚠️ O legado só entra com `PARIDADE_COM_PROTOTIPO=1` (D-39). Sem a condição,
+   * uma corrida sem o legado no ar — o CI, desde que ele parou de subi-lo —
+   * gastaria os 120s do teto esperando uma origem que não vem, antes do
+   * primeiro teste. */
+  const legado = PARIDADE_COM_PROTOTIPO ? [LEGACY_URL] : []
+
+  for (const origem of [NEXT_URL, ...legado]) {
     if (!(await esperarNoAr(origem))) {
       console.warn(`  ⚠️ ${origem} não respondeu em ${TETO_DE_ESPERA / 1000}s`)
     }
@@ -48,14 +54,17 @@ export default async function aquecer() {
    * restart. Manter em dia ao portar rotas novas. */
   const alvos = [
     ...ROTAS_COM_GABARITO.map((r) => `${NEXT_URL}${r.caminho}`),
-    ...ROTAS_COM_GABARITO.map((r) => `${LEGACY_URL}${r.caminho}`),
+    ...legado.flatMap((origem) => ROTAS_COM_GABARITO.map((r) => `${origem}${r.caminho}`)),
     `${NEXT_URL}/`,
     `${NEXT_URL}/en`,
     `${NEXT_URL}/en/success-stories`,
     `${NEXT_URL}/en/about`,
+    /* Rota sem gabarito, mas o smoke e `diagnostico-maturidade.spec.ts` a
+       visitam nos três viewports em paralelo. */
+    `${NEXT_URL}/diagnostico-maturidade`,
     `${NEXT_URL}/admin`,
     `${NEXT_URL}/rota-que-nao-existe`,
-    `${LEGACY_URL}/`,
+    ...legado.map((origem) => `${origem}/`),
   ]
 
   for (const url of alvos) {

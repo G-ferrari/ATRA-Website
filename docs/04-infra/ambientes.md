@@ -67,12 +67,13 @@ Levantado em 17/08/2026, por DNS e headers públicos:
 | `GEMINI_API_KEY` | `.env.local` | gerenciador do host | **sim** |
 | `RESEND_API_KEY` | vazio (loga no console) | gerenciador do host | **sim** |
 | `SENTRY_DSN` | vazio | gerenciador do host | não |
-| `NEXT_PUBLIC_GTM_ID` | vazio | id do container (P-19) — com D-30 o script só entra no DOM após o aceite de estatística no banner | não — id público, aparece no HTML de qualquer site que use GTM |
+| `NEXT_PUBLIC_GTM_ID` | vazio | **reserva** desde a D-40: o id do container mora no admin (Sistema → Rastreamento), que vence. Só vale se o admin estiver vazio; o script continua esperando o aceite de estatística (D-30) | não — id público, aparece no HTML de qualquer site que use GTM |
 | `RDSTATION_CRM_TOKEN` | vazio (sincronização inerte, `crm.syncedAt` vazio no admin) | gerenciador do host — **produção só depois de P-14** (D-26/D-29) | **sim** |
 | `RDSTATION_CRM_DEAL_STAGE_ID` | vazio (a conta usa a etapa padrão) | id da etapa do funil onde a negociação nasce | não |
-| `ATRAIR_API_URL` | `http://localhost:3000` do ATRAIR local (vazio = sincronização inerte) | URL do ATRAIR (Cloud Run) | não |
-| `ATRAIR_API_KEY` | vazio (candidatura fica só no admin, falta aparece no log) | gerenciador do host — mesma `TALENT_POOL_API_KEY` configurada no ATRAIR (MIG-102) | **sim** |
+| `ATRAIR_API_URL` | `http://localhost:3300` do ATRAIR local (no compose, `http://host.docker.internal:3300`) | **reserva** desde a D-41: o endereço mora no admin (Sistema → Integrações), que vence, e o campo lá **nasce preenchido com esta variável**. ⚠️ Ainda **não provisionada na VPS** — sem ela o campo nasce com o endereço de dev, o mapper o recusa e a grade de `/carreiras` vem do CMS (estado seguro). Falta a URL do ATRAIR no Cloud Run | não |
+| `ATRAIR_API_KEY` | vazio (candidatura fica só no admin, falta aparece no log) | gerenciador do host — mesma `TALENT_POOL_API_KEY` configurada no ATRAIR (MIG-102). ⚠️ **Fica no ambiente de propósito** (D-41): é credencial, e credencial em coluna do Postgres entra no backup e aparece no admin. É a **segunda tranca** — as chaves do CMS ligadas sem ela seguem inertes | **sim** |
 | `ENABLE_CHAT_LEAD` | ausente | `1` liga o convite de lead no chat (D-29) — as outras duas chaves são o toggle e o `consentNotice` no CMS; **produção só depois de P-14** | não |
+| ~~`RC18_LEAD_EMAIL`~~ | — | — | ✅ **Removida (D-35, task 028 de `diagnostico-maturidade-dados`).** Saiu com o diagnóstico RC18, que era quem a lia; `/diagnostico-rc18` redireciona para `/diagnostico-maturidade?setor=financeiro`, cujo aviso vai para o `email` do global `contact`. A caixa própria (P-29) segue pendente para o diagnóstico novo |
 | `S3_PRIVATE_BUCKET` | `atra-privado` | idem | não — nome de bucket; o segredo é a credencial |
 | `ENABLE_JOB_APPLICATIONS` | ausente | `1` **só depois de P-17** — liga o formulário de candidatura; exige rebuild, de propósito | não |
 | ~~`REVALIDATE_SECRET`~~ | — | — | ✅ **Removida (MIG-143).** A revalidação virou hook em processo (`hooks/revalidar.ts`): o Payload roda dentro do Next e chama `revalidatePath` direto — não há endpoint HTTP, logo não há segredo |

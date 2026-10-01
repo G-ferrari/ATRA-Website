@@ -4,7 +4,7 @@ import { cpus } from 'node:os'
 import path from 'node:path'
 import type { NextConfig } from 'next'
 
-import { lerRedirects, redirectsDoNext } from './src/lib/redirects'
+import { ROTAS_APOSENTADAS, lerRedirects, redirectsDoNext } from './src/lib/redirects'
 
 /* ⚠️ Concorrência e tempo de build viraram assunto na Fase 4b.
  *
@@ -95,8 +95,12 @@ const nextConfig: NextConfig = {
 
   experimental: { cpus: WORKERS },
 
+  /* O WordPress (CSV) e as rotas do próprio site que saíram — hoje o
+   * diagnóstico RC18, que a D-35 trocou pelo de maturidade. Aqui e não no
+   * `proxy.ts` porque é 308 fixo, e 308 é serviço deste mecanismo; o proxy só
+   * fica com o 410, que o `redirects()` não sabe emitir. */
   async redirects() {
-    return redirectsDoNext(lerRedirects(CSV_DE_REDIRECTS))
+    return [...redirectsDoNext(lerRedirects(CSV_DE_REDIRECTS)), ...ROTAS_APOSENTADAS]
   },
 }
 

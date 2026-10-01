@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { caminhosGone, lerCsv, redirectsDoNext } from './redirects'
+import { ehSetor } from './diagnostico-maturidade'
+import { ROTAS_APOSENTADAS, caminhosGone, lerCsv, redirectsDoNext } from './redirects'
+import { canonizarSegmento } from './routes'
 
 const CSV = `from,to,status,note
 /2021/10/18/elementor-2817/,/blog/elementor-2817,301,post 1:1
@@ -62,6 +64,42 @@ describe('redirectsDoNext', () => {
 
   it('marca tudo como permanente', () => {
     expect(r.every((x) => x.permanent)).toBe(true)
+  })
+})
+
+/* D-35: o link do diagnóstico RC18 circula em e-mail de campanha e favorito, e
+   tem de cair no diagnóstico novo já no setor financeiro. */
+describe('ROTAS_APOSENTADAS', () => {
+  const destinoDe = (source: string) => ROTAS_APOSENTADAS.find((r) => r.source === source)?.destination
+
+  it('leva o diagnóstico RC18 ao de maturidade, no setor financeiro, nos dois idiomas', () => {
+    expect(destinoDe('/diagnostico-rc18')).toBe('/diagnostico-maturidade?setor=financeiro')
+    expect(destinoDe('/en/rc18-diagnostic')).toBe('/en/data-maturity-assessment?setor=financeiro')
+  })
+
+  /* Com `trailingSlash: false` a barra final sai antes da consulta à lista:
+     origem com barra nunca casaria, e origem igual ao destino seria laço. */
+  it('origem sem barra final, diferente do destino e permanente', () => {
+    for (const r of ROTAS_APOSENTADAS) {
+      expect(r.source).not.toMatch(/\/$/)
+      expect(r.destination.split('?')[0]).not.toBe(r.source)
+      expect(r.permanent).toBe(true)
+    }
+  })
+
+  /* O `?setor=` é lido pela página nova; código que o motor não conhece abre o
+     perfil sem seleção, e o redirect perderia o sentido sem ninguém notar. */
+  it('o setor do destino é um código que o diagnóstico conhece', () => {
+    for (const r of ROTAS_APOSENTADAS) {
+      expect(ehSetor(new URLSearchParams(r.destination.split('?')[1]).get('setor'))).toBe(true)
+    }
+  })
+
+  /* Se a seção voltar a `routes.ts`, a rota reaparece e o redirect a esconde:
+     uma das duas coisas está errada. */
+  it('a origem não é mais seção do site', () => {
+    expect(canonizarSegmento('diagnostico-rc18', 'pt')).toBeNull()
+    expect(canonizarSegmento('rc18-diagnostic', 'en')).toBeNull()
   })
 })
 

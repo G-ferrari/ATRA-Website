@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, ChevronDown, Menu, X } from 'lucide-react'
+import { ArrowRight, ChevronDown, Menu, MessageCircle, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { Icone } from '@/components/blocks/icones'
 import { PainelDoMenu } from '@/components/layout/mega-menu'
 import { TEXTOS_CASCA } from '@/lib/navegacao'
+import { larguraOticaCss } from '@/lib/logo'
 import { hrefDe } from '@/lib/routes'
 import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
@@ -28,10 +29,13 @@ export function SiteHeader({
   locale,
   navegacao,
   logo,
+  whatsapp,
 }: {
   locale: Locale
   navegacao: Navegacao
   logo: Imagem | null
+  /** Do global `contact`; vazio no admin, o botão não aparece. */
+  whatsapp: string | null
 }) {
   const t = TEXTOS_CASCA[locale]
   const [rolou, setRolou] = useState(false)
@@ -202,12 +206,38 @@ export function SiteHeader({
             <Link
               href={`${prefixo}/#fale-conosco`}
               className={cn(
-                'items-center gap-2 rounded-[6px] text-sm font-normal transition-all shadow-md hover:shadow-lg capitalize border border-primary text-primary hover:bg-primary/10 bg-transparent px-5 py-2.5 active:scale-95 cursor-pointer',
+                /* `h-9`: menor que antes (28/09) e da altura do botão do
+                   WhatsApp ao lado, para os dois alinharem. */
+                'items-center gap-1.5 rounded-[6px] text-[13px] font-normal transition-all shadow-md hover:shadow-lg capitalize border border-primary text-primary hover:bg-primary/10 bg-transparent h-9 px-4 active:scale-95 cursor-pointer',
                 aberto ? 'hidden' : 'hidden lg:flex',
               )}
             >
-              {t.faleConosco} <ArrowRight size={16} aria-hidden />
+              {t.faleConosco} <ArrowRight size={14} aria-hidden />
             </Link>
+
+            {/* WhatsApp só com o ícone (28/09), no verde do "Conversar agora"
+                do painel de contatos — é o verde que o site já usa para
+                WhatsApp. Aparece em toda largura: no celular o "Fale Conosco"
+                vai para a gaveta, e este fica a um toque. Some junto com ele
+                quando o megamenu abre no desktop, pelo mesmo motivo (a fileira
+                de categorias invade o canto perto de 1024px); no celular fica,
+                ao lado do botão de fechar. `-600` no claro: o `-500` do painel
+                não chega a 3:1 sobre fundo branco para um ícone sozinho. */}
+            {whatsapp && (
+              <a
+                href={whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t.whatsapp}
+                title={t.whatsapp}
+                className={cn(
+                  'w-9 h-9 rounded-[6px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25 items-center justify-center shrink-0 transition-colors active:scale-95',
+                  aberto ? 'flex md:hidden' : 'flex',
+                )}
+              >
+                <MessageCircle size={18} aria-hidden />
+              </a>
+            )}
 
             {aberto && (
               <button
@@ -380,8 +410,19 @@ function ItensDaGaveta({
       <>
         {navegacao.parceiros.map((p) => (
           <Link key={p.slug} href={hrefDe('parceiros', locale, p.slug)} className={linha} onClick={aoNavegar}>
-            <div className="w-8 h-8 rounded-md bg-white dark:bg-white/10 flex items-center justify-center text-primary shrink-0 p-1 relative">
-              {p.logo && <Image src={p.logo.url} alt={p.logo.alt} fill sizes="32px" className="object-contain p-1" />}
+            <div className="w-8 h-8 rounded-md bg-white dark:bg-white/10 flex items-center justify-center text-primary shrink-0 p-1">
+              {/* Mesma regra do mega-menu (`lib/logo.ts`), numa caixa quadrada. */}
+              {p.logo && (
+                <div
+                  className="relative"
+                  style={{ width: larguraOticaCss(p.logo, p.logoScale, 1), aspectRatio: `${p.logo.width} / ${p.logo.height}` }}
+                >
+                  <Image src={p.logo.url} alt={p.logo.alt} fill sizes="32px" className={cn('object-contain', p.logoDark && 'dark:hidden')} />
+                  {p.logoDark && (
+                    <Image src={p.logoDark.url} alt={p.logoDark.alt} fill sizes="32px" className="object-contain hidden dark:block" />
+                  )}
+                </div>
+              )}
             </div>
             <span className="text-xs font-semibold capitalize tracking-wide leading-tight">{p.name}</span>
           </Link>

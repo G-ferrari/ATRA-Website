@@ -34,6 +34,14 @@ export type LeadParaCrm = {
   source?: string | null
   /** Só o kind `chat-lead` (MIG-149) preenche. */
   chatContext?: string | null
+  /** Só o kind `data-maturity-diagnostic` (D-35) preenche. `pillars` é o JSON
+   * do Payload: chega como `unknown` e a anotação confere o formato. */
+  diagnostic?: {
+    level?: string | null
+    average?: number | null
+    pillars?: unknown
+    topGaps?: string | null
+  } | null
   confirmedAt?: string | null
   utm?: {
     source?: string | null
@@ -60,7 +68,14 @@ export type ResultadoDaSincronizacao =
  * dado de RH — currículo dentro de pipeline comercial seria vazamento de
  * finalidade (LGPD), não integração. Se a ATRA quiser o banco de talentos lá,
  * é decisão dela, não default nosso (D-29). */
-const KINDS_COMERCIAIS = new Set(['contact', 'chat-lead', 'material-download', 'rc18-diagnostic'])
+export const KINDS_COMERCIAIS = new Set([
+  'contact',
+  'chat-lead',
+  'material-download',
+  'rc18-diagnostic',
+  'consultant-request',
+  'data-maturity-diagnostic',
+])
 
 /**
  * Se este doc deve ir ao CRM **agora**. Pura, para a matriz de teste.
@@ -100,6 +115,8 @@ const ROTULO: Record<string, string> = {
   'chat-lead': 'Lead do chat (ATRA AI)',
   'material-download': 'Download de material',
   'rc18-diagnostic': 'Diagnóstico RC 18/2025',
+  'consultant-request': 'Solicitação de consultores',
+  'data-maturity-diagnostic': 'Diagnóstico de maturidade de dados',
   newsletter: 'Inscrição na newsletter',
 }
 
@@ -144,6 +161,7 @@ async function anotar(token: string, dealId: string, doc: LeadParaCrm): Promise<
   const texto = [
     doc.message && `Mensagem: ${doc.message}`,
     doc.chatContext && `O que perguntou à ATRA AI:\n${doc.chatContext}`,
+    resumoDoDiagnostico(doc.diagnostic),
     doc.source && `Converteu em: ${doc.source}`,
     doc.utm?.source && `Origem: ${doc.utm.source}${doc.utm.medium ? ` / ${doc.utm.medium}` : ''}`,
     doc.utm?.campaign && `Campanha: ${doc.utm.campaign}`,
@@ -152,6 +170,32 @@ async function anotar(token: string, dealId: string, doc: LeadParaCrm): Promise<
     .join('\n')
   if (!texto) return
   await chamar(token, 'POST', '/activities', { activity: { deal_id: dealId, text: texto } })
+}
+
+/* D-35 — o que o comercial precisa ler antes de ligar: nível, média, onde a
+ * empresa está mais fraca e o que mais pesa na regulação. O resto (áreas DAMA,
+ * respostas, roadmap) fica no admin — a anotação é o resumo, não a ficha.
+ *
+ * Vírgula decimal porque quem lê é o time comercial, em português. Pilar com
+ * valor que não é número (JSON editado, versão futura do motor) é pulado em vez
+ * de sair "NaN" na negociação. */
+export function resumoDoDiagnostico(d: LeadParaCrm['diagnostic']): string | null {
+  if (!d) return null
+  const nota = (n: number) => String(n).replace('.', ',')
+  const pilares =
+    d.pillars && typeof d.pillars === 'object' && !Array.isArray(d.pillars)
+      ? Object.entries(d.pillars as Record<string, unknown>)
+          .filter((par): par is [string, number] => typeof par[1] === 'number' && Number.isFinite(par[1]))
+          .map(([pilar, n]) => `${pilar} ${nota(n)}`)
+          .join(' · ')
+      : ''
+  const linhas = [
+    d.level &&
+      `Diagnóstico de maturidade: nível ${d.level}${typeof d.average === 'number' ? ` (média ${nota(d.average)})` : ''}`,
+    pilares && `Pilares: ${pilares}`,
+    d.topGaps?.trim() && `Maiores gaps: ${d.topGaps.trim()}`,
+  ].filter(Boolean)
+  return linhas.length ? linhas.join('\n') : null
 }
 
 /* A API devolve o id ora como `_id`, ora como `id`, ora aninhado no recurso —

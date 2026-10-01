@@ -1,4 +1,4 @@
-import { Instagram, Linkedin, MessageCircle, Youtube } from 'lucide-react'
+import { Facebook, Instagram, Linkedin, MessageCircle, Youtube } from 'lucide-react'
 import Image from 'next/image'
 
 import type { Locale } from '@/lib/locales'
@@ -12,10 +12,10 @@ import type { Contato } from '@/types/content'
  * `contato.telefone` no lugar de `telefoneComDdd` e sem i18n. Consolidado aqui a
  * partir da versão da home (a mais atualizada), agora com rótulos PT/EN.
  *
- * E-mail e endereço são **fixos** (iguais em todo o site) — a quebra do endereço
- * em três linhas é pixel do gabarito; o e-mail **não** parte (a quebra saiu a
- * pedido, melhoria de UI sancionada, D-31). WhatsApp e redes vêm do global
- * `contato` (MIG-072). */
+ * O e-mail é **fixo** (igual em todo o site) e **não** parte (a quebra saiu a
+ * pedido, melhoria de UI sancionada, D-31). WhatsApp, redes e endereço vêm do
+ * global `contato` (MIG-072). O endereço era escrito aqui, em três linhas, e
+ * saiu em 29/09: a ATRA não tem mais sede fixa. Só volta se o global ganhar um. */
 
 const TEXTOS = {
   pt: {
@@ -71,18 +71,14 @@ export function PainelDeContatos({
             </p>
             <p className="text-sm font-light text-text-main dark:text-white/90">negocios@atra.com.br</p>
           </div>
-          <div>
-            <p className="text-[10px] text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-2">
-              {t.endereco}
-            </p>
-            <p className="text-sm font-light text-text-main dark:text-white/90">
-              Av. Queiroz Filho, 1700
-              <br />
-              Torre D Sala 802
-              <br />
-              Vila Hamburguesa – SP
-            </p>
-          </div>
+          {contato?.endereco && (
+            <div>
+              <p className="text-[10px] text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-2">
+                {t.endereco}
+              </p>
+              <p className="text-sm font-light text-text-main dark:text-white/90 whitespace-pre-line">{contato.endereco}</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -118,11 +114,13 @@ export function PainelDeContatos({
               {[
                 { Icone: Linkedin, nome: 'LinkedIn', url: contato.redes.linkedin, cor: 'bg-[#0A66C2]/15 text-[#0A66C2] dark:bg-[#0A66C2]/20 dark:text-[#388DFF]' },
                 { Icone: Instagram, nome: 'Instagram', url: contato.redes.instagram, cor: 'bg-[#E4405F]/15 text-[#E4405F] dark:bg-[#E4405F]/20 dark:text-[#FA7298]' },
+                { Icone: Facebook, nome: 'Facebook', url: contato.redes.facebook, cor: 'bg-[#1877F2]/15 text-[#1877F2] dark:bg-[#1877F2]/20 dark:text-[#5A9DFF]' },
                 { Icone: Youtube, nome: 'YouTube', url: contato.redes.youtube, cor: 'bg-[#FF0000]/15 text-[#FF0000] dark:bg-[#FF0000]/20 dark:text-[#FF4E4E]' },
-              ].map(({ Icone, nome, url, cor }) => (
+                // Rede sem URL no admin não aparece: o ícone levaria a `#` numa aba nova.
+              ].filter((r): r is typeof r & { url: string } => Boolean(r.url)).map(({ Icone, nome, url, cor }) => (
                 <a
                   key={nome}
-                  href={url ?? '#'}
+                  href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${nome} da ATRA`}

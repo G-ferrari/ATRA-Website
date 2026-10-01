@@ -1,7 +1,7 @@
 ---
 id: 006
 title: Rota e ilha do diagnóstico RC18 (autoavaliação com nota na hora)
-status: em revisão
+status: cancelada
 feature: rc18
 area: frontend
 priority: P0
@@ -18,6 +18,8 @@ arch_refs:
 ---
 
 # 006 — Rota e ilha do diagnóstico RC18 (autoavaliação com nota na hora)
+
+> **Cancelada.** Substituída pela feature `diagnostico-maturidade-dados` (D-35, 26/09/2026).
 
 ## Objetivo
 Entregar a página `/diagnostico-rc18` com a autoavaliação interativa: o visitante responde

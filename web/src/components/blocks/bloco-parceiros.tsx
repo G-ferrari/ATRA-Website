@@ -1,12 +1,7 @@
 import { BORDAS } from '@/components/blocks/bordas'
+import { LogoComTema } from '@/components/ui'
+import { larguraOticaCss } from '@/lib/logo'
 import { cn } from '@/lib/utils'
-
-/* As três alturas do legado (`About.tsx:384`). */
-const ALTURAS = {
-  sm: 'h-6 md:h-8',
-  md: 'h-8 md:h-10',
-  lg: 'h-10 md:h-12',
-} as const
 import type { BlocoPartnerShowcase } from '@/types/content'
 
 /* Vitrine de parceiros — porte de `legacy/src/pages/About.tsx:376`.
@@ -44,19 +39,19 @@ export function BlocoParceiros({ bloco }: { bloco: BlocoPartnerShowcase }) {
         >
           {bloco.partners.map((p) =>
             p.logo ? (
-              /* eslint-disable-next-line @next/next/no-img-element -- a largura
-                 sai do aspecto do arquivo (`w-auto`), e o `next/image` a fixaria
-                 pelos width/height declarados. O legado usa <img> simples aqui
-                 (`About.tsx:384`); manter igual é o que faz os dois lados
-                 medirem o mesmo. */
-              <img
-                key={p.slug}
-                src={p.logo.url}
-                alt={p.name}
-                loading="lazy"
-                decoding="async"
-                className={cn(ALTURAS[p.logoScale], 'w-auto object-contain')}
-              />
+              /* O legado dava uma altura por logo (`About.tsx:384`), que
+                 compensava a margem dos arquivos. Agora cada um ganha a mesma
+                 caixa e a largura sai da proporção (`lib/logo.ts`); 0,3 é a
+                 altura sobre a largura dela. */
+              <span key={p.slug} className="flex h-10 w-32 items-center justify-center md:h-12 md:w-40">
+                <LogoComTema
+                  logo={p.logo}
+                  logoDark={p.logoDark}
+                  alt={p.name}
+                  style={{ width: larguraOticaCss(p.logo, p.logoScale, 0.3) }}
+                  className="h-auto max-h-full object-contain"
+                />
+              </span>
             ) : null,
           )}
         </div>

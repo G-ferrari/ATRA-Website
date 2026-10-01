@@ -6,6 +6,7 @@ import type {
   Depoimento,
   LogoDeCliente,
   MetricaInstitucional,
+  ParceiroDaFaixa,
   PartnerBadge,
   Selo,
   TemaDoBloco,
@@ -33,7 +34,7 @@ const vazio = (v: string | null | undefined): string | null => {
 /* Parceiro não populado é descartado em silêncio, não derruba: aqui é uma
  * vitrine decorativa, e a página inteira fora do ar por um logo é troca ruim.
  * Difere de `cases.heroImage`, onde a imagem é o conteúdo. */
-type ParceiroPopulado = { name: string; slug: string; logo: unknown; logoScale?: unknown }
+export type ParceiroPopulado = { name: string; slug: string; logo: unknown; logoDark?: unknown; logoScale?: unknown }
 
 function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
   if (!isPopulated<ParceiroPopulado>(valor)) return null
@@ -41,6 +42,7 @@ function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
     name: valor.name,
     slug: valor.slug,
     logo: toImageOpcional(valor.logo as never, 'partnerShowcase.partners.logo'),
+    logoDark: toImageOpcional(valor.logoDark as never, 'partnerShowcase.partners.logoDark'),
     logoScale: (valor.logoScale as 'sm' | 'md' | 'lg') ?? 'md',
   }
 }
@@ -183,6 +185,7 @@ export function toBlocos(
           highlight: vazio(b.highlight),
           description: vazio(b.description),
           logo: toImageOpcional(b.logo, 'partnerHero.logo'),
+          logoDark: toImageOpcional(b.logoDark, 'partnerHero.logoDark'),
           awards: (b.awards ?? []).map((a) => ({
             topText: vazio(a.topText),
             title: a.title,
@@ -203,6 +206,7 @@ export function toBlocos(
           image: toImageOpcional(b.image, 'partnerSplit.image'),
           imageLabel: vazio(b.imageLabel),
           logo: toImageOpcional(b.logo, 'partnerSplit.logo'),
+          logoDark: toImageOpcional(b.logoDark, 'partnerSplit.logoDark'),
           items: (b.items ?? []).map((i) => i.text),
           cta: toCta(b.cta),
           linkCta: toCta(b.linkCta),
@@ -235,9 +239,8 @@ export function toBlocos(
           ...base(b),
           tipo: 'logoMarquee',
           title: vazio(b.title),
-          partners: (b.partners ?? [])
-            .map((p) => ({ name: p.name, logo: toImageOpcional(p.logo, 'logoMarquee.partners.logo') }))
-            .filter((p): p is { name: string; logo: NonNullable<typeof p.logo> } => p.logo !== null),
+          // Preenchidos pela página, da collection `partners`.
+          partners: [],
         })
         break
 
@@ -316,6 +319,22 @@ export function toBlocos(
             href: i.href,
             image: toImageOpcional(i.image, 'caseCarousel.items.image'),
             color: i.color,
+          })),
+        })
+        break
+
+      case 'highlightCarousel':
+        blocos.push({
+          ...base(b),
+          tipo: 'highlightCarousel',
+          title: vazio(b.title),
+          autoplay: b.autoplay ?? true,
+          items: (b.items ?? []).map((i) => ({
+            tag: vazio(i.tag),
+            title: i.title,
+            description: vazio(i.description),
+            image: toImageOpcional(i.image, 'highlightCarousel.items.image'),
+            cta: toCta(i.cta),
           })),
         })
         break
@@ -458,6 +477,21 @@ export function toBlocos(
         })
         break
 
+      case 'imageGrid':
+        blocos.push({
+          ...base(b),
+          tipo: 'imageGrid',
+          eyebrow: vazio(b.eyebrow),
+          title: vazio(b.title),
+          description: vazio(b.description),
+          images: (b.images ?? []).map((i) => ({
+            image: toImage(i.image, 'imageGrid.images.image'),
+            caption: vazio(i.caption),
+          })),
+          boxed: b.boxed ?? true,
+        })
+        break
+
       case 'processSteps':
         blocos.push({
           ...base(b),
@@ -504,17 +538,23 @@ export function toBlocos(
         })
         break
 
-      case 'partnerShowcase':
+      case 'partnerShowcase': {
+        /* Sem valor gravado (versão anterior a 29/09) vale o padrão do campo. */
+        const source = b.source === 'selected' ? 'selected' : 'all'
         blocos.push({
           ...base(b),
           tipo: 'partnerShowcase',
           title: vazio(b.title),
           grayscale: b.grayscale ?? true,
-          partners: (b.partners ?? [])
-            .map(toPartnerBadge)
-            .filter((p): p is PartnerBadge => p !== null),
+          source,
+          // Em "Todos", preenchidos pela página, da collection `partners`.
+          partners:
+            source === 'selected'
+              ? (b.partners ?? []).map(toPartnerBadge).filter((p): p is PartnerBadge => p !== null)
+              : [],
         })
         break
+      }
 
       case 'valueCards':
         blocos.push({
@@ -654,6 +694,19 @@ export function comClientes(blocos: Bloco[], clientes: LogoDeCliente[]): Bloco[]
   return blocos
 }
 
+/** Injeta os parceiros na faixa de logos da home. */
+export function comParceiros(blocos: Bloco[], parceiros: ParceiroDaFaixa[]): Bloco[] {
+  for (const b of blocos) if (b.tipo === 'logoMarquee') b.partners = parceiros
+  return blocos
+}
+
+/** Injeta o cadastro de parceiros nas vitrines em "Todos" (29/09). */
+export function comVitrineDeParceiros(blocos: Bloco[], parceiros: ParceiroPopulado[]): Bloco[] {
+  const selos = parceiros.map(toPartnerBadge).filter((p): p is PartnerBadge => p !== null)
+  for (const b of blocos) if (b.tipo === 'partnerShowcase' && b.source === 'all') b.partners = selos
+  return blocos
+}
+
 /** Injeta os dados de contato nos CTAs que desenham o cartão (MIG-072). */
 export function comContato(blocos: Bloco[], contato: Contato): Bloco[] {
   for (const b of blocos) if (b.tipo === 'ctaContact') b.contato = contato
@@ -683,8 +736,9 @@ export function comDepoimentos(blocos: Bloco[], depoimentos: Depoimento[]): Bloc
 export function ancorasDe(blocos: Bloco[]): { anchor: string; label: string }[] {
   /* `ctaBanner` fica fora do submenu por padrão — seu `anchor` costuma ser só
      alvo de link (ex.: `#contato`), não uma seção navegável. Exceção opt-in:
-     quando o bloco define `navLabel` explícito, ele entra (a RC18 usa o CTA final
-     como "Contato" do submenu, com o formulário logo abaixo). */
+     quando o bloco define `navLabel` explícito, ele entra. Nenhum seed usa hoje:
+     a RC18 era o caso previsto, e o formulário que ficava abaixo do CTA final
+     dela saiu na task 029. */
   return blocos
     .filter((b) => b.anchor && (b.tipo !== 'ctaBanner' || Boolean(b.navLabel)))
     .map((b) => ({

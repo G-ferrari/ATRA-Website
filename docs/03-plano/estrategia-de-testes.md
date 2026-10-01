@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-17
+atualizado_em: 2026-09-27
 depende_de: [roadmap.md, ../00-contexto/decisoes.md]
 ---
 
@@ -15,6 +15,14 @@ Isso inverte a pirâmide de testes usual — e é deliberado.
 ## Prioridades
 
 ### 1. Regressão visual (Playwright) — prioridade máxima
+
+> ⚠️ **Fora do CI desde 27/09/2026 (D-39).** Esta prioridade valia enquanto o
+> critério de aceite era o porte fiel. Com a D-31 o site passou a mudar de
+> propósito, e o gabarito de 21/08 reprovava a decisão de design, não a
+> regressão (P-30). A paridade continua no repositório, ligada por
+> `PARIDADE_COM_PROTOTIPO=1`; o que roda no CI é o smoke, o comportamento, o
+> contraste, os redirects e o axe. O texto abaixo descreve a paridade como foi
+> montada.
 
 Compara cada rota do site novo com a mesma rota do legado.
 
@@ -368,6 +376,14 @@ que as verifica:
 ⚠️ **Não invente gabarito para elas.** Capturar a própria saída e chamar de
 referência transforma o teste num espelho: ele passa a provar que o código não
 mudou, não que está certo.
+
+**Uma terceira categoria apareceu em 24/09 (D-34): a rota que diverge de
+propósito.** `/consultores` tinha gabarito e o perdeu — não porque o conteúdo
+mudou, como `/blog`, mas porque o **desenho** mudou por decisão do dono, e o
+protótipo continua mostrando o anterior. A escolha foi tirar a rota do gate, e
+não capturar o app novo: a regra acima valeu, mesmo com a rota já verificada.
+O que a cobre é `e2e/consultores.spec.ts`, que testa o comportamento que a
+captura nunca testou — filtro nos dois modos, carrinho, aba e envio.
 
 O layout dessas rotas é **composto do que já foi portado** — a abertura da
 página de case, o `RichText`, o `ContactCta` — e não desenhado do zero. Assim a

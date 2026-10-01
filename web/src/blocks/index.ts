@@ -389,14 +389,40 @@ export const PartnerShowcase: Block = {
   fields: [
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
     {
+      /* ⚠️ Pedido de 29/09: o bloco tem que refletir o cadastro. As 20 páginas
+       * de solução e segmento guardavam uma **foto** da lista de parceiros
+       * tirada no dia da migração, e parceiro novo no admin não chegava a
+       * nenhuma delas — ao contrário da faixa da home, que lê a collection.
+       * "Todos" é o padrão, e é o que toda vitrine existente virou (inclusive
+       * /sobre, que mostrava 4 escolhidos: decisão do G-ferrari). "Escolher"
+       * fica para quem precisar de uma seleção. */
+      name: 'source',
+      type: 'select',
+      defaultValue: 'all',
+      options: [
+        { value: 'all', label: { pt: 'Todos os parceiros cadastrados', en: 'All registered partners' } },
+        { value: 'selected', label: { pt: 'Escolher os parceiros', en: 'Choose the partners' } },
+      ],
+      label: { pt: 'Quais parceiros', en: 'Which partners' },
+      admin: {
+        description: {
+          pt: 'Em "Todos", a vitrine acompanha o cadastro de Parceiros, na ordem de lá: entrou, saiu ou mudou a ordem, muda aqui.',
+          en: 'With "All", the showcase follows the Partners collection, in its order.',
+        },
+      },
+    },
+    {
       /* Relação com `partners`, não upload solto: o logo do Google Cloud
-       * aparece aqui, na página do parceiro e no card de case. Um lugar só. */
+       * aparece aqui, na página do parceiro e no card de case. Um lugar só.
+       * Só vale em "Escolher"; em "Todos" a lista é ignorada. */
       name: 'partners',
       type: 'relationship',
       relationTo: 'partners',
       hasMany: true,
-      required: true,
       label: { pt: 'Parceiros', en: 'Partners' },
+      admin: { condition: (_, irmaos) => irmaos?.source === 'selected' },
+      validate: (valor: unknown, { siblingData }: { siblingData: Record<string, unknown> }) =>
+        siblingData?.source !== 'selected' || (Array.isArray(valor) && valor.length > 0) || 'Escolha ao menos um parceiro.',
     },
     {
       name: 'grayscale',
@@ -534,6 +560,44 @@ export const SealsBanner: Block = {
   ],
 }
 
+/* Grade de imagens soltas — selos, certificações, prêmios. Nasceu para os 10
+ * selos do Google Cloud da página Data Analytics do WordPress (27/09), que
+ * nenhum bloco comportava: a faixa de selos lê os de `site-settings`, e a de
+ * parceiros, a collection `partners`. Aqui as imagens são do próprio bloco.
+ *
+ * O texto alternativo vem de cada imagem, na Biblioteca: é ali que o editor já
+ * descreve a mídia, e repetir o campo aqui daria dois lugares para divergir. */
+export const ImageGrid: Block = {
+  slug: 'imageGrid',
+  labels: { singular: { pt: 'Grade de imagens', en: 'Image grid' }, plural: { pt: 'Grades de imagens', en: 'Image grids' } },
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },
+    {
+      name: 'images',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Imagens', en: 'Images' },
+      fields: [
+        { name: 'image', type: 'upload', relationTo: 'media', required: true, label: { pt: 'Imagem', en: 'Image' } },
+        { name: 'caption', type: 'text', localized: true, label: { pt: 'Legenda', en: 'Caption' } },
+      ],
+    },
+    {
+      /* Ligado por padrão: selo e certificado costumam vir em JPEG de fundo
+       * branco, que no tema escuro vira um quadrado solto. A caixa branca é a
+       * mesma solução da faixa de selos. */
+      name: 'boxed',
+      type: 'checkbox',
+      defaultValue: true,
+      label: { pt: 'Caixa branca atrás de cada imagem', en: 'White box behind each image' },
+    },
+    ...camposComuns,
+  ],
+}
+
 export const ProcessSteps: Block = {
   slug: 'processSteps',
   labels: { singular: { pt: 'Etapas de processo', en: 'Process steps' }, plural: { pt: 'Etapas', en: 'Process steps' } },
@@ -573,7 +637,7 @@ export const CtaContact: Block = {
       type: 'checkbox',
       defaultValue: true,
       label: { pt: 'Mostrar o cartão de contato', en: 'Show the contact card' },
-      admin: { description: { pt: 'Telefone, e-mail, endereço e redes ao lado do formulário.', en: 'Phone, e-mail, address and socials beside the form.' } },
+      admin: { description: { pt: 'Telefone, e-mail, endereço (quando houver) e redes ao lado do formulário.', en: 'Phone, e-mail, address (when there is one) and socials beside the form.' } },
     },
     {
       /* ⚠️ As duas formas não são estilo: são markups diferentes do legado.
@@ -956,6 +1020,18 @@ export const PartnerHero: Block = {
       },
     },
     {
+      name: 'logoDark',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Logo do parceiro (tema escuro)', en: 'Partner logo (dark theme)' },
+      admin: {
+        description: {
+          pt: 'Opcional. Vazio, o logo acima vale nos dois temas.',
+          en: 'Optional. When empty, the logo above is used in both themes.',
+        },
+      },
+    },
+    {
       /* A faixa de prêmios (`PartnerPageBase.tsx:131`): cartões de largura fixa
        * que rolam na horizontal no mobile e centralizam a partir de `md`. O
        * título quebra linha por `whitespace-pre-line` — "Partner of the Year" e
@@ -1030,10 +1106,24 @@ export const PartnerSplit: Block = {
       relationTo: 'media',
       label: { pt: 'Logo do parceiro', en: 'Partner logo' },
       admin: {
-        condition: (_, irmaos) => irmaos?.rightColumn !== 'checklist',
+        // Só a etiqueta da imagem usa o logo: os cartões da grade o perderam em 29/09.
+        condition: (_, irmaos) => irmaos?.rightColumn === 'image',
         description: {
-          pt: 'Na etiqueta da imagem e em cada cartão da grade.',
-          en: 'Used in the image label and on every grid card.',
+          pt: 'Na etiqueta sobre a imagem.',
+          en: 'Used in the image label.',
+        },
+      },
+    },
+    {
+      name: 'logoDark',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Logo do parceiro (tema escuro)', en: 'Partner logo (dark theme)' },
+      admin: {
+        condition: (_, irmaos) => irmaos?.rightColumn === 'image',
+        description: {
+          pt: 'Opcional. Vazio, o logo acima vale nos dois temas.',
+          en: 'Optional. When empty, the logo above is used in both themes.',
         },
       },
     },
@@ -1133,20 +1223,20 @@ export const LogoMarquee: Block = {
   fields: [
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
     {
-      /* ⚠️ Lista própria, e **não** a collection `partners`, embora seja o que a
-       * regra de fonte única pediria.
+      /* ⚠️ Campo aposentado: os logos da faixa saem da collection `partners`
+       * (`resolverPagina`), a mesma do mega-menu, para uma troca de logo no
+       * admin valer nos dois lugares.
        *
-       * O legado mostra 9 logos e a collection tem 8: o nono está cadastrado lá
-       * só como "Partner", sem nome real (P-10), e `parceiros-catalogo.ts`
-       * decidiu não publicar um card genérico com esse nome. Ligar a faixa à
-       * collection forçaria responder P-10 para a home ficar igual ao gabarito.
+       * Antes era lista própria porque o legado mostra 9 logos e a collection
+       * tem 8 — o nono é um "Partner" sem nome real (P-10). O dono pediu a faixa
+       * ligada ao cadastro e cada logo levando à página do parceiro, e um logo
+       * sem parceiro não leva a lugar nenhum: o nono sai da home.
        *
-       * O custo é baixo porque esta faixa é decoração: os logos não levam a
-       * lugar nenhum, ao contrário dos do megamenu e da vitrine de /sobre. */
+       * O campo fica, escondido, só para não exigir migração que apaga a
+       * tabela e os dados antigos. Não é lido por ninguém. */
       name: 'partners',
       type: 'array',
-      required: true,
-      minRows: 1,
+      admin: { hidden: true },
       label: { pt: 'Logos', en: 'Logos' },
       fields: [
         { name: 'name', type: 'text', required: true, label: { pt: 'Nome', en: 'Name' } },
@@ -1494,7 +1584,130 @@ export const InsightsHub: Block = {
   ],
 }
 
-export const BLOCOS = [
+export const HighlightCarousel: Block = {
+  slug: 'highlightCarousel',
+  labels: {
+    singular: { pt: 'Carrossel de destaques', en: 'Highlight carousel' },
+    plural: { pt: 'Carrosséis de destaques', en: 'Highlight carousels' },
+  },
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Título da seção', en: 'Section title' },
+      admin: { description: { pt: 'Opcional. Vazio, os banners aparecem sem cabeçalho.', en: 'Optional. When empty, the banners show without a heading.' } },
+    },
+    {
+      /* Banners editáveis pelo marketing, um por destaque (reunião de 24/09):
+       * nasceu com a RC18 e recebe Atra Analytics e PDD Febraban quando as
+       * páginas existirem. O teto de 6 é de leitura, não técnico — com mais
+       * que isso ninguém vê o último antes de rolar a página. */
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 6,
+      label: { pt: 'Banners', en: 'Banners' },
+      admin: { description: { pt: 'A ordem aqui é a ordem no carrossel.', en: 'The order here is the carousel order.' } },
+      fields: [
+        { name: 'tag', type: 'text', localized: true, label: { pt: 'Etiqueta', en: 'Tag' } },
+        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+        { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto', en: 'Text' } },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          label: { pt: 'Imagem', en: 'Image' },
+          admin: {
+            description: {
+              pt: 'Opcional. Sem imagem, o banner usa o gradiente da marca. Horizontal, com pelo menos 1200px de largura: no celular ela é cortada em 16:9, no computador em 4:3.',
+              en: 'Optional. Without an image the banner uses the brand gradient. Landscape, at least 1200px wide: cropped to 16:9 on mobile and 4:3 on desktop.',
+            },
+          },
+        },
+        {
+          name: 'cta',
+          type: 'group',
+          label: { pt: 'Botão', en: 'Button' },
+          fields: [
+            { name: 'label', type: 'text', localized: true, label: { pt: 'Texto', en: 'Label' } },
+            { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'autoplay',
+      type: 'checkbox',
+      defaultValue: true,
+      label: { pt: 'Avançar sozinho', en: 'Autoplay' },
+      admin: {
+        description: {
+          pt: 'A cada 7 segundos, pausando com o mouse em cima ou o foco dentro. Nunca avança para quem pediu menos movimento no sistema.',
+          en: 'Every 7 seconds, pausing on hover or focus. Never advances for visitors who asked the system for reduced motion.',
+        },
+      },
+    },
+    ...camposComuns,
+  ],
+}
+
+/* O seletor "Adicionar Seção" do admin (feature seletor-de-secoes, task 031).
+ *
+ * ⚠️ O Payload agrupa pelo `admin.group` mas **não ordena**: o drawer mostra os
+ * blocos na ordem deste array. Com 28 blocos numa lista só, a editora não achava
+ * nem o carrossel da home (27/09). A ordem é montada aqui — grupo na sequência
+ * de `GRUPOS`, e alfabética pelo rótulo em português dentro dele —, para bloco
+ * novo cair no lugar certo sem ninguém reordenar à mão.
+ *
+ * A ordem não entra no schema: as tabelas de bloco são por slug, e reordenar
+ * não gera migração (conferido com `migrate:create --skip-empty`). */
+const GRUPOS = {
+  abertura: { pt: 'Abertura e navegação', en: 'Opening and navigation' },
+  texto: { pt: 'Texto e cards', en: 'Text and cards' },
+  etapas: { pt: 'Etapas', en: 'Steps' },
+  prova: { pt: 'Prova: números, selos e parceiros', en: 'Proof: figures, seals and partners' },
+  vitrines: { pt: 'Carrosséis e vitrines', en: 'Carousels and showcases' },
+  chamadas: { pt: 'Chamadas e contato', en: 'Calls to action and contact' },
+}
+
+type Grupo = keyof typeof GRUPOS
+
+/* Bloco novo sem linha aqui cai sem grupo, no fim do seletor — e reprova
+ * `index.test.ts`. O TypeScript não pega: o Payload tipa `slug` como `string`. */
+const GRUPO_DO_BLOCO = {
+  pageHero: 'abertura',
+  partnerHero: 'abertura',
+  homeHero: 'abertura',
+  stickyPageNav: 'abertura',
+  richTextSection: 'texto',
+  iconCardGrid: 'texto',
+  valueCards: 'texto',
+  methodCards: 'texto',
+  bentoGrid: 'texto',
+  audienceSplit: 'texto',
+  featureTabs: 'texto',
+  processSteps: 'etapas',
+  accordionSteps: 'etapas',
+  statsGrid: 'prova',
+  sealsBanner: 'prova',
+  imageGrid: 'prova',
+  partnerShowcase: 'prova',
+  logoMarquee: 'prova',
+  partnerSplit: 'prova',
+  highlightCarousel: 'vitrines',
+  caseCarousel: 'vitrines',
+  testimonialCarousel: 'vitrines',
+  contentTeaser: 'vitrines',
+  insightsHub: 'vitrines',
+  homeBento: 'vitrines',
+  ctaBanner: 'chamadas',
+  ctaContact: 'chamadas',
+  jobsList: 'chamadas',
+} satisfies Record<string, Grupo>
+
+const TODOS = [
   PageHero,
   StickyPageNav,
   StatsGrid,
@@ -1503,6 +1716,7 @@ export const BLOCOS = [
   ValueCards,
   PartnerShowcase,
   SealsBanner,
+  ImageGrid,
   ProcessSteps,
   MethodCards,
   BentoGrid,
@@ -1518,7 +1732,43 @@ export const BLOCOS = [
   FeatureTabs,
   HomeBento,
   CaseCarousel,
+  HighlightCarousel,
   TestimonialCarousel,
   ContentTeaser,
   InsightsHub,
 ]
+
+const ORDEM_DOS_GRUPOS = Object.keys(GRUPOS) as Grupo[]
+
+export const grupoDe = (bloco: Block): Grupo | undefined =>
+  (GRUPO_DO_BLOCO as Record<string, Grupo | undefined>)[bloco.slug]
+
+export const rotuloPt = (bloco: Block): string => {
+  const singular = bloco.labels?.singular
+  return typeof singular === 'string' ? singular : ((singular as Record<string, string> | undefined)?.pt ?? bloco.slug)
+}
+
+/* A miniatura de cada card do seletor (task 033): a seção como aparece no
+ * site, gerada por `e2e/miniaturas.spec.ts` em `public/miniaturas-de-blocos/`.
+ * Fora de `public/admin/` de propósito: o caminho colidiria com a rota do
+ * admin do Payload. */
+export const miniaturaDe = (bloco: Block) => ({
+  url: `/miniaturas-de-blocos/${bloco.slug}.webp`,
+  alt: `Como fica a seção "${rotuloPt(bloco)}" no site`,
+})
+
+export const BLOCOS: Block[] = TODOS.map((b) => {
+  const grupo = grupoDe(b)
+  return {
+    ...b,
+    admin: {
+      ...b.admin,
+      ...(grupo ? { group: GRUPOS[grupo] } : {}),
+      images: { thumbnail: miniaturaDe(b) },
+    },
+  }
+}).sort(
+  (a, b) =>
+    ORDEM_DOS_GRUPOS.indexOf(grupoDe(a)!) - ORDEM_DOS_GRUPOS.indexOf(grupoDe(b)!) ||
+    rotuloPt(a).localeCompare(rotuloPt(b), 'pt'),
+)

@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-17
+atualizado_em: 2026-09-27
 depende_de: [deploy-vps.md, backup-e-observabilidade.md, ../02-especificacao/seo-e-redirects.md]
 ---
 
@@ -27,10 +27,13 @@ só depois de horas, ninguém quer descobrir no sábado.
 
 ## Pré-requisitos (nada começa sem todos)
 
-- [ ] **Gate visual religado no CI** — desligado temporariamente em 26/08/2026
-      para acelerar a validação em homologação (`if: false` no job `e2e` do
-      `ci.yml`, e o `needs` do deploy sem ele). Religar é remover o `if` e
-      devolver `e2e` ao `needs`. **Nenhum cutover com o gate desligado.**
+- [ ] **Testes e2e de comportamento religados no CI (D-39)** — o job `e2e`
+      ficou desligado de 26/08 a 27/09/2026 para acelerar a validação em
+      homologação, e voltou **sem** a paridade com o protótipo: o gabarito de
+      21/08 reprovava as rotas por mudança deliberada de design (P-30). O deploy
+      voltou a esperar por ele (`needs: [verify, e2e]`). Marcar só depois da
+      **primeira execução verde** na `migracao` — religar no arquivo não é o
+      mesmo que passar. **Nenhum cutover com o e2e desligado ou vermelho.**
 
 - [ ] Fase 4c concluída: **paridade de conteúdo** (D-17) — 207 posts, 13 soluções, 10 segmentos, 6 vagas, página legal
 - [ ] Fase 6 concluída: performance, backup **com restore testado**, Sentry, uptime

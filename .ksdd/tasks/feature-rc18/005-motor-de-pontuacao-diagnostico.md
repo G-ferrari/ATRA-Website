@@ -1,7 +1,7 @@
 ---
 id: 005
 title: Motor de pontuação do diagnóstico RC18 (lib + testes)
-status: em revisão
+status: cancelada
 feature: rc18
 area: backend
 priority: P0
@@ -17,6 +17,8 @@ arch_refs:
 ---
 
 # 005 — Motor de pontuação do diagnóstico RC18 (lib + testes)
+
+> **Cancelada.** Substituída pela feature `diagnostico-maturidade-dados` (D-35, 26/09/2026).
 
 ## Objetivo
 Isolar a lógica do diagnóstico numa lib pura e determinística, para que a mesma função

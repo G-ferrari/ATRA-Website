@@ -133,7 +133,7 @@ pnpm gate --baseline                     # regrava o gabarito a partir do legado
 pnpm gate --sem-build                    # reaproveita o .next existente
 pnpm gate --rota home --viewport desktop # 1 teste em vez de 207, para iterar
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 261 linhas
-git push origin migracao                 # deploy: CI valida e a VPS troca sozinha, com rollback
+git push origin main                     # deploy (D-44): CI valida e a VPS troca sozinha, com rollback; `main` só recebe merge da `migracao`
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
 ```
 
@@ -276,7 +276,7 @@ interna legível sem pôr foto de banco no ar. Os arquivos ficam em
 
 Desde 24/08 o site roda **em homologação numa VPS** (`srv1927832.hstgr.cloud`,
 Hostinger KVM2, atrás de senha e `noindex`), com o conteúdo real completo.
-**`git push` na `migracao` é o deploy**: CI valida (lint, types, gate) e a VPS
+**`git push` na `main` é o deploy** (D-44; até 01/10 era a `migracao`): CI valida (lint, types, gate) e a VPS
 rebuilda, migra e troca com healthcheck e rollback — `infra/deploy/deploy.sh` e
 o job `deploy` do `ci.yml`. Backup diário com restore **verificado por
 contagem** (`infra/backup/`). E **publicar no CMS atualiza o site sem deploy**
@@ -303,8 +303,11 @@ estado vazio de `/chat` não muda: o gabarito do gate segue válido.
 
 **D-30 (03/09, MIG-151–156)** é o consentimento de cookies: 3 categorias
 (essencial isenta; **estatística** = GA4/GTM com Consent Mode v2, dupla chave
-`NEXT_PUBLIC_GTM_ID` + aceite; **marketing** = a captura de UTM, reclassificada
-para opt-in — a UTM da chegada espera em memória e só persiste com aceite).
+id do container + aceite; **marketing** = a captura de UTM, reclassificada
+para opt-in — a UTM da chegada espera em memória e só persiste com aceite —,
+e a Lusha desde a D-40). **D-40 (27/09)** tirou os ids do ambiente: GTM e
+Lusha moram no global `tracking` (Sistema → Rastreamento), só admin edita,
+formato fechado, e o consentimento subiu para a versão 2.
 Cookie `atra-consent` versionado guarda a escolha; ilhas conversam por
 CustomEvent (`atra:consentimento`). Vídeo de webinar é click-to-load, fora do
 banner. Mesmo gate de código de D-29: `bannerMessage` (global `cookie-consent`)

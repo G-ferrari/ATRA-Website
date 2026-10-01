@@ -3,7 +3,8 @@
 Migração do site institucional da ATRA para **Next.js 16 + Payload CMS 3 +
 PostgreSQL**, substituindo o WordPress em `atra.com.br`.
 
-- `legacy/` — protótipo React + Vite, no ar em análise interna. É o **gabarito**.
+- `legacy/` — protótipo React + Vite, no ar em análise interna. Foi o
+  **gabarito** do porte; desde D-39 a suíte padrão não compara mais com ele.
 - `web/` — o site novo.
 - `docs/` — a especificação. Toda decisão vive em
   [`docs/00-contexto/decisoes.md`](docs/00-contexto/decisoes.md) como `D-xx`;
@@ -42,9 +43,10 @@ movia a rasterização de todo glifo do site.
 
 > ⚠️ **Relaxada em 02/09/2026 (D-31), por decisão do dono da ATRA via
 > G-ferrari:** melhoria de UI guiada pelo Impeccable é permitida. O que
-> permanece: cada mudança de UI regrava o gabarito (`pnpm gate --baseline`) com
-> justificativa no PR, e D-22 segue valendo — melhorar UI não autoriza mexer em
-> conteúdo nem preencher pendência `P-xx`.
+> permanece: D-22 segue valendo — melhorar UI não autoriza mexer em conteúdo
+> nem preencher pendência `P-xx`. Regravar o gabarito a cada mudança de UI
+> também era limite da D-31, e **caiu com a D-39** (27/09): sem gabarito no
+> aceite, não há o que regravar.
 
 ### 2. Decisão de conteúdo é do marketing (D-22)
 
@@ -122,24 +124,30 @@ divergência relatada por `getComputedStyle` que a imagem desmentia.
 
 ```bash
 docker compose up -d                     # postgres + minio + web (:3000)
-cd legacy && docker compose up -d        # gabarito (:3001)
+cd legacy && docker compose up -d        # gabarito (:3001) — só para a paridade (D-39)
 pnpm dev · pnpm lint · pnpm typecheck · pnpm test
 pnpm typegen                             # PageProps/LayoutProps antes do tsc em árvore limpa
 pnpm seed                                # idempotente (fixtures do e2e só com SEED_FIXTURES=1)
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/import-posts.ts   # 207 artigos
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/import-jobs.ts    # 7 vagas
-pnpm gate                                # build de produção + comparação visual
-pnpm gate --baseline                     # regrava o gabarito a partir do legado
+pnpm gate                                # build de produção + suíte e2e, sem o protótipo (D-39)
+pnpm gate --baseline                     # regrava o gabarito a partir do legado (liga a paridade)
 pnpm gate --sem-build                    # reaproveita o .next existente
-pnpm gate --rota home --viewport desktop # 1 teste em vez de 207, para iterar
+pnpm gate --rota home --viewport desktop # paridade de 1 rota em 1 viewport, para iterar
+PARIDADE_COM_PROTOTIPO=1 pnpm gate       # a suíte padrão mais a paridade inteira
+# miniaturas do seletor "Adicionar Seção" (public/miniaturas-de-blocos/), dentro de web/, contra o dev
+# em :3000 num banco SEM SEED_FIXTURES (foto de banco reprova). `--network host` e não host.docker.internal:
+# o dev do Next recusa recurso pedido por outra origem e a página não hidrata — no Docker Desktop, ligar
+# "Enable host networking" em Settings → Resources → Network.
+docker run --rm --network host -e NEXT_URL=http://localhost:3000 -e GERAR_MINIATURAS=1 -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.62.1-noble npx playwright test e2e/miniaturas.spec.ts --project=desktop
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 261 linhas
-git push origin migracao                 # deploy: CI valida e a VPS troca sozinha, com rollback
+git push origin main                     # deploy (D-44): CI valida e a VPS troca sozinha, com rollback; `main` só recebe merge da `migracao`
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
 ```
 
 `pnpm gate` é o único caminho: build de produção em :3100, suíte dentro da imagem
-oficial do Playwright — a mesma no macOS e no CI, para um gabarito só valer nos
-dois. `pnpm test:e2e` é o executor cru, usado por dentro do container.
+oficial do Playwright — a mesma no macOS e no CI, para uma falha valer nos dois.
+`pnpm test:e2e` é o executor cru, usado por dentro do container.
 
 Regravar gabarito exige justificativa no PR: apaga a evidência de regressão.
 
@@ -149,6 +157,19 @@ arquivo de tablet fica como estava, enquanto desktop e mobile são regravados.
 Ver um subconjunto dos gabaritos mudar é o esperado, não sinal de captura velha.
 
 ## Regressão visual
+
+⚠️ **A paridade com o protótipo saiu do CI em 27/09 (D-39).** O gabarito é de
+21/08, e o site mudou de propósito desde então (D-31, passada de 13/09): ele
+reprovava as 11 rotas por decisão de design, não por regressão (P-30). O que o
+CI roda agora é o `pnpm gate` padrão — smoke, comportamento
+(`consultores`, `diagnostico-maturidade`, `chat-lead`, `cookies`), contraste nos
+dois temas, o CSV inteiro de redirects e o axe —, e o deploy espera por ele.
+`visual.spec.ts`, `baseline.spec.ts`, `paridade-ds.spec.ts` e o teste do legado
+no smoke **ficam no repositório**, fora pelo `testIgnore` do
+`playwright.config.ts`; `PARIDADE_COM_PROTOTIPO=1` os religa, e `--baseline` e
+`--rota` ligam sozinhos. ⚠️ O preço: mudança visual não intencional não é mais
+pega por pixel em rota nenhuma. O resto desta seção descreve a paridade para
+quem a ligar.
 
 ⚠️ **O gabarito é capturado só no tema escuro.** O legado inicia em `dark`
 (`App.tsx:2575`), o porte também, e a captura nunca clica no alternador. O tema
@@ -171,7 +192,21 @@ Limite de **0,1%** de pixels, em 3 viewports (375/768/1280), página inteira.
 Fase 4b: o gabarito é uma captura do protótipo com 6 artigos e 6 vagas
 fictícios, e a página nova mostra os 207 e as 7 de verdade. Nenhuma captura do
 protótipo volta a bater, e regravar apagaria a evidência de regressão do resto
-da página. São 13 rotas sob o gate.
+da página.
+
+**Rota que diverge de propósito também sai (D-34).** `/consultores` saiu em
+24/09: seis mudanças pedidas pelo dono entre 21 e 23/09 não existem no
+protótipo, e um gabarito que mostra o desenho antigo reprova a decisão, não a
+regressão. Capturar o próprio app e chamar de gabarito foi recusado — é o
+espelho que `estrategia-de-testes.md` descreve. Quem cobre a rota agora é
+`e2e/consultores.spec.ts` e o smoke. ⚠️ O preço: mudança visual não intencional
+nessa rota não é mais pega por ninguém.
+
+**Rota fora do ar também sai (D-36).** `/glossario` responde 404 desde 26/09,
+com a página e os termos intactos no CMS; o smoke confere o 404.
+
+São **11 rotas** em `ROTAS_COM_GABARITO`. Com a paridade ligada, são elas que
+comparam; na suíte padrão, a mesma lista alimenta o contraste e o axe.
 
 - Imagens entram **mascaradas**: o legado serve o JPEG original e o app novo
   serve variante reencodada pelo `next/image`. Divergem por projeto, não por
@@ -233,13 +268,18 @@ da página. São 13 rotas sob o gate.
 | Caddy entra em laço de reinício com "illegal base64 data" após um script rodar | `source .env.prod` num script bash: o hash bcrypt guarda `$$` (escape do compose) e o bash expande para o **PID**; o compose dá precedência ao ambiente do shell sobre o `--env-file`. Nunca fazer source do arquivo — extrair variável por texto |
 | Teste de restore passa com banco vazio | `pg_restore --jobs` por stdin **aborta sem restaurar nada** (paralelismo exige arquivo posicionável) e o veredito morria mudo: `docker compose exec -T` dentro de `while read` come o stdin do laço, e `[ -z ] && continue` devolve 1 sob `set -e`. Três armadilhas no mesmo script |
 | Seed sobe as mesmas imagens de novo a cada corrida | A collection `Media` converte todo upload para **WebP** (`formatOptions`), então o `.jpg` que subiu vira `.webp` no `filename` e um `where: { filename: { equals: nome } }` nunca casa. Deduplicar pelo nome **sem extensão**, com `contains` |
+| CI morre em "pull access denied for minio/minio" antes de rodar um teste | O MinIO tirou as imagens públicas do Docker Hub e do quay.io (set/2026). Dev e CI usam o fork `pgsty/minio`, preso por digest, que já traz o `mc`. Produção ainda depende do cache da VPS — P-32 |
+| Migração de dados roda verde e a página continua como antes | Em **banco novo** o `migrate` roda antes de existir o conteúdo, a trava da migração não acha a página e pula — e a migração fica marcada como feita. `import-solutions.ts` chama as duas montagens (Alocação e as 11) no fim por isso, e `import-segments.ts` a dos 8 segmentos. E os importadores só reescrevem página ainda no formato deles (ou no do seed de teste, só o herói): rodado de novo num banco local em 27/09, ele tinha apagado a Alocação remontada |
+| Seed ou build do CI quebra em `relation "..." does not exist` com o passo de migração verde | O CLI do Payload carrega o `tsx` num worker e dispara com `void start()`: quando o carregamento empaca, o Node sai com **0 e sem imprimir nada**. Aconteceu duas vezes em 28/09. `pnpm migrate` (`web/scripts/migrar.mjs`) só aceita sucesso se o Payload disser "Done." ou "No migrations to run.", e tenta até 3 vezes; CI, imagem `migrator` e compose de produção usam ele. `pnpm payload migrate` direto continua valendo no dev, mas não prova nada |
+| CI morre no `migrate` em "column ... does not exist" numa migração **antiga**, que já passou mil vezes | Migração de dados usa a Local API com o config **de hoje**. Campo novo num bloco vira coluna no SELECT de toda consulta à collection, e em banco novo a migração antiga roda antes da coluna existir. Só as que consultam a collection inteira caem — filtro por slug em banco vazio pula o SELECT pesado, por isso o bug se esconde. Criar a coluna numa migração idempotente datada antes da primeira migração de dados (`20260927_215400_partner_showcase_source`) e testar com `pnpm migrate` num banco zerado |
+| Página funciona no dev e dá 404 na homologação | O conteúdo dela nasce de **seed**, e o deploy roda migração, não seed. Foi o caso do carrossel da home e da página do RC18 (28/09): o banner e o botão de Bancos levavam a 404. Conteúdo novo que precisa chegar a um ambiente que já existe vem por **migração de dados com trava** (cria só se não existir, não toca no que foi editado no admin), com o texto num módulo que o seed também importa — ver `scripts/seed/rc18-conteudo.ts` |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
 ## Estado
 
 Fases 1, 2, 3 e 4a concluídas: fundação, fatia vertical de cases, casca do site,
-Live Preview, as 20 rotas do protótipo (15 sob o gate visual) e o conteúdo do
-protótipo dentro do CMS.
+Live Preview, as 20 rotas do protótipo (12 sob o gate visual ao fechar a Fase
+3) e o conteúdo do protótipo dentro do CMS.
 
 Desde a 4a **nada do site vem do repositório nem do WordPress**: clientes,
 depoimentos, contato, rodapé e o logo saíram de arrays e módulos escritos à mão
@@ -248,7 +288,9 @@ de `lib/` ou de um bloco, é resíduo — o lugar dela é o CMS.
 
 A 4b importou o WordPress: **207 artigos** com corpo, imagem e links internos
 reescritos, **287 imagens** e as **7 vagas** (não 6 — uma abriu depois do
-levantamento). A 4c trouxe as **8 verticais** para `/segmentos` e a página legal
+levantamento). A 4c trouxe as **8 verticais** para `/segmentos` (remontadas em
+27/09 no padrão das soluções por `20260927_235930_segmentos_do_wordpress`, com
+o texto literal em `src/migrations/arquivos/segmentos-wp/`) e a página legal
 para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas**, com a
 geração reprovando se alguma URL do WordPress ficar sem destino.
 
@@ -259,7 +301,11 @@ publicadas e o site tem **18 ofertas** no menu e em `/solucoes`. ⚠️ Num banc
 local elas só ganham conteúdo real com
 `scripts/wp-import/import-solutions.ts`: a fixture do seed escreve "Texto de
 exemplo" nelas, e foi isso — não rascunho vazando — que a crítica do Impeccable
-de 10/09 viu no mega-menu.
+de 10/09 viu no mega-menu. Desde 27/09 as 12 do WordPress saem do importador
+**remontadas** no padrão das soluções desenhadas (cartões, imagem no herói,
+parceiros, formulário): a Alocação pela migração de 26/09 e as outras 11 por
+`20260927_235900_solucoes_do_wordpress`, com o texto literal em
+`src/migrations/arquivos/solucoes-wp/`.
 
 ⚠️ **Conteúdo de verdade não vem do `pnpm seed`.** Os artigos e as vagas entram
 por `scripts/wp-import/`; o seed só cria fixtures de teste, e agora **exige
@@ -277,7 +323,7 @@ interna legível sem pôr foto de banco no ar. Os arquivos ficam em
 
 Desde 24/08 o site roda **em homologação numa VPS** (`srv1927832.hstgr.cloud`,
 Hostinger KVM2, atrás de senha e `noindex`), com o conteúdo real completo.
-**`git push` na `migracao` é o deploy**: CI valida (lint, types, gate) e a VPS
+**`git push` na `main` é o deploy** (D-44; até 01/10 era a `migracao`): CI valida (lint, types, gate) e a VPS
 rebuilda, migra e troca com healthcheck e rollback — `infra/deploy/deploy.sh` e
 o job `deploy` do `ci.yml`. Backup diário com restore **verificado por
 contagem** (`infra/backup/`). E **publicar no CMS atualiza o site sem deploy**
@@ -285,10 +331,11 @@ contagem** (`infra/backup/`). E **publicar no CMS atualiza o site sem deploy**
 a nota antiga de "estático não muda depois do seed" segue valendo só para o
 `gate --sem-build`.
 
-⚠️ **O gate do CI está temporariamente desligado (26/08)** — o pipeline roda só
-build + deploy durante a validação em homologação, por decisão do Leonardo.
-`pnpm gate` local segue sendo o aceite visual, e religar antes de produção é
-pré-requisito do runbook de cutover.
+O **e2e do CI foi religado em 27/09 (D-39)**, depois de desligado desde 26/08
+por decisão do Leonardo, para iterar em homologação. Voltou **sem** a paridade
+com o protótipo, e o deploy voltou a esperar por ele (`needs: [verify, e2e]`).
+A primeira execução verde na `migracao` é o que fecha o pré-requisito do
+runbook de cutover.
 
 **D-29 (03/09, MIG-148–150)** ligou os leads ao **RD Station CRM**: hook
 `afterChange` em `form-submissions` (`hooks/sincronizar-crm.ts` + `lib/crm.ts`)
@@ -304,12 +351,32 @@ estado vazio de `/chat` não muda: o gabarito do gate segue válido.
 
 **D-30 (03/09, MIG-151–156)** é o consentimento de cookies: 3 categorias
 (essencial isenta; **estatística** = GA4/GTM com Consent Mode v2, dupla chave
-`NEXT_PUBLIC_GTM_ID` + aceite; **marketing** = a captura de UTM, reclassificada
-para opt-in — a UTM da chegada espera em memória e só persiste com aceite).
+id do container + aceite; **marketing** = a captura de UTM, reclassificada
+para opt-in — a UTM da chegada espera em memória e só persiste com aceite —,
+e a Lusha desde a D-40). **D-40 (27/09)** tirou os ids do ambiente: GTM e
+Lusha moram no global `tracking` (Sistema → Rastreamento), só admin edita,
+formato fechado, e o consentimento subiu para a versão 2.
 Cookie `atra-consent` versionado guarda a escolha; ilhas conversam por
 CustomEvent (`atra:consentimento`). Vídeo de webinar é click-to-load, fora do
 banner. Mesmo gate de código de D-29: `bannerMessage` (global `cookie-consent`)
 nasce vazio até P-14, e sem ele nada renderiza — gabarito do gate intacto.
+
+**D-41 (29/09)** tirou a integração com o **ATRAIR** do ambiente: o global
+`integrations` (Sistema → Integrações, só admin) tem **duas chaves** —
+`jobsFeed`, a grade de `/carreiras`, e `talentPool`, a ida do currículo — mais o
+endereço, editável, que **nasce preenchido** com `ATRAIR_API_URL` (agora só
+reserva; o admin vence). `ATRAIR_API_KEY` **fica no ambiente**: é credencial, e
+é a segunda tranca — ligado no CMS sem ela segue inerte, e é isso que fez a
+decisão não mudar o que está no ar. ⚠️ O ganho real é de tipo:
+`buscarVagasAbertas` devolve `ResultadoDeVagas`, e `{ fonte: 'atrair', vagas:
+[] }` (o ATRAIR respondeu que não há vaga → página vazia) deixou de ser
+confundível com `{ fonte: 'cms' }` (não foi possível perguntar → lista da
+collection `jobs`). Antes os dois eram `[]`, e vaga fechada no ATRAIR voltava ao
+ar pela lista do CMS. ⚠️ `defaultValue` de endpoint é **função**: literal, o
+drizzle assa o `ATRAIR_API_URL` de quem gerou a migração como `DEFAULT` da
+coluna, num arquivo que roda no CI e em produção. Falta provisionar
+`ATRAIR_API_URL` na VPS — sem ela o campo nasce com o endereço de dev, o mapper
+recusa, e a grade vem do CMS (estado seguro).
 
 A revisão crítica de 25/08 (MIG-140–147) fechou: IP confiável nos limites
 (`lib/ip.ts` — nunca ler `x-forwarded-for` primeiro), tetos do chat

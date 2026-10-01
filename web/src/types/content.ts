@@ -23,7 +23,9 @@ export type PartnerBadge = {
   name: string
   slug: string
   logo: Image | null
-  /** Altura de exibição do logo; varia por marca. */
+  /** Versão para o tema escuro; nula, o `logo` vale nos dois. */
+  logoDark: Image | null
+  /** Ajuste fino do tamanho; o peso visual já sai igual pela proporção (`lib/logo.ts`). */
   logoScale: 'sm' | 'md' | 'lg'
 }
 
@@ -183,7 +185,9 @@ export type BlocoIconCardGrid = Base & {
   columns: 2 | 3 | 4
   variant: 'compact' | 'card' | 'card-centered'
   headerWidth: 'full' | 'narrow'
-  items: { icon: string; title: string; description: string | null }[]
+  /** `accent` intercala a cor do traço do ícone (azul padrão, laranja escasso);
+   *  presentation-only, injetado pela página — o CMS não tem o campo. */
+  items: { icon: string; title: string; description: string | null; accent?: 'primary' | 'secondary' }[]
 }
 
 /* Blocos do template de página de parceiro (MIG-054a). A justificativa de cada
@@ -197,6 +201,7 @@ export type BlocoPartnerHero = Base & {
   highlight: string | null
   description: string | null
   logo: Image | null
+  logoDark: Image | null
   awards: { topText: string | null; title: string; highlight: string | null }[]
   cta: { label: string; href: string } | null
 }
@@ -211,6 +216,7 @@ export type BlocoPartnerSplit = Base & {
   image: Image | null
   imageLabel: string | null
   logo: Image | null
+  logoDark: Image | null
   items: string[]
   cta: { label: string; href: string } | null
   linkCta: { label: string; href: string } | null
@@ -234,10 +240,20 @@ export type BlocoHomeHero = Base & {
   clientes: LogoDeCliente[]
 }
 
+/** Ficha da faixa de parceiros da home. `href` nulo: parceiro sem página. */
+export type ParceiroDaFaixa = {
+  name: string
+  logo: Image
+  logoDark: Image | null
+  logoScale: 'sm' | 'md' | 'lg'
+  href: string | null
+}
+
 export type BlocoLogoMarquee = Base & {
   tipo: 'logoMarquee'
   title: string | null
-  partners: { name: string; logo: Image }[]
+  /** Resolvidos pela página, da collection `partners`. */
+  partners: ParceiroDaFaixa[]
 }
 
 export type BlocoFeatureTabs = Base & {
@@ -268,6 +284,19 @@ export type BlocoHomeBento = Base & {
     seals: Image[]
   } | null
   metrics: { icon: string; tag: string; value: string; label: string; color: 'primary' | 'secondary' }[]
+}
+
+export type BlocoHighlightCarousel = Base & {
+  tipo: 'highlightCarousel'
+  title: string | null
+  autoplay: boolean
+  items: {
+    tag: string | null
+    title: string
+    description: string | null
+    image: Image | null
+    cta: { label: string; href: string } | null
+  }[]
 }
 
 export type BlocoCaseCarousel = Base & {
@@ -409,6 +438,16 @@ export type BlocoSealsBanner = Base & {
   seals: Selo[]
 }
 
+/** Grade de imagens do próprio bloco — selos, certificações, prêmios. */
+export type BlocoImageGrid = Base & {
+  tipo: 'imageGrid'
+  eyebrow: string | null
+  title: string | null
+  description: string | null
+  images: { image: Image; caption: string | null }[]
+  boxed: boolean
+}
+
 export type BlocoProcessSteps = Base & {
   tipo: 'processSteps'
   eyebrow: string | null
@@ -424,6 +463,8 @@ export type BlocoProcessSteps = Base & {
 export type BlocoPartnerShowcase = Base & {
   tipo: 'partnerShowcase'
   title: string | null
+  /** `all` segue o cadastro de parceiros (a página injeta); `selected` usa a lista do bloco. */
+  source: 'all' | 'selected'
   partners: PartnerBadge[]
   grayscale: boolean
 }
@@ -585,12 +626,14 @@ export type Bloco =
   | BlocoFeatureTabs
   | BlocoHomeBento
   | BlocoCaseCarousel
+  | BlocoHighlightCarousel
   | BlocoTestimonialCarousel
   | BlocoContentTeaser
   | BlocoInsightsHub
   | BlocoValueCards
   | BlocoStickyPageNav
   | BlocoSealsBanner
+  | BlocoImageGrid
   | BlocoProcessSteps
   | BlocoCtaContact
   | BlocoJobsList
@@ -725,6 +768,52 @@ export type AvisoDeCookies = {
   }
 }
 
+/** Os ids dos scripts de rastreamento (D-40), do global `tracking`. `null` é
+ * "não configurado": o componente correspondente não faz nada. Mesmo com id,
+ * cada script espera o aceite da sua categoria no aviso de cookies. */
+export type Rastreamento = {
+  /** Google Tag Manager — categoria estatística. */
+  gtmId: string | null
+  /** Lusha Website Visitors — categoria marketing. */
+  lushaSiteId: string | null
+}
+
+/** As chaves da integração com o ATRAIR (D-41), do global `integrations`.
+ *
+ * `endpoint: null` é "sem endereço utilizável" — vazio no admin ou fora do
+ * formato. Com ele nulo as duas chaves não valem nada, porque não há para onde
+ * chamar.
+ *
+ * ⚠️ `vagas` ligado **não** garante vaga na tela, e `false` não é o mesmo que
+ * "lista vazia": é o que separa "integração desligada" de "o ATRAIR respondeu
+ * que não há vaga aberta". Ver `ResultadoDeVagas` em `lib/atrair.ts` — foi essa
+ * confusão que a D-41 desfez. */
+export type IntegracaoAtrair = {
+  /** Base da API, já validada e **sem barra final**. */
+  endpoint: string | null
+  /** A grade de /carreiras lista as vagas publicadas no ATRAIR. */
+  vagas: boolean
+  /** O currículo do Banco de Talentos é criado no ATRAIR. */
+  bancoDeTalentos: boolean
+}
+
+/** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global
+ * `data-maturity-diagnostic`. Servem à página, à conclusão e ao e-mail do
+ * resultado.
+ *
+ * `null` é o editor dizendo "sem isto": parágrafo que não se desenha, botão que
+ * não aparece. Título, assunto e WhatsApp nunca chegam vazios — sem eles a
+ * página fica sem cabeçalho, o e-mail sem assunto e o lead sem saída. */
+export type DiagnosticoDeMaturidade = {
+  titulo: string
+  abertura: string | null
+  conclusao: string | null
+  email: { assunto: string; abertura: string | null }
+  /** Vazio no CMS = sem botão "Agendar conversa" na conclusão e no e-mail. */
+  agendaUrl: string | null
+  whatsappUrl: string
+}
+
 /** Dados de contato da ATRA, do global `contact` (MIG-072). */
 export type Contato = {
   telefone: string
@@ -732,9 +821,16 @@ export type Contato = {
   telefoneComDdd: string
   whatsapp: string
   email: string
-  endereco: string
-  redes: { linkedin: string | null; instagram: string | null; youtube: string | null }
+  /** `null` quando o global não tem endereço — a ATRA não tem sede fixa desde 29/09. */
+  endereco: string | null
+  redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
+  /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
+  destinos: Record<FormularioComAviso, string | null>
 }
+
+/** Os formulários que avisam a ATRA por e-mail. A newsletter não entra: quem
+ *  recebe e-mail ali é o visitante (MIG-103). */
+export type FormularioComAviso = 'contato' | 'consultores' | 'diagnostico' | 'carreiras' | 'chat'
 
 export type ColunaDoRodape = {
   titulo: string

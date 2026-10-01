@@ -3,7 +3,14 @@ import { cpus } from 'node:os'
 import { setTimeout as esperar } from 'node:timers/promises'
 import path from 'node:path'
 
-/* Gate de regressão visual (MIG-035).
+/* Gate da suíte e2e (MIG-035; paridade fora do padrão desde D-39).
+ *
+ * ⚠️ Desde 27/09 (D-39) o modo padrão **não compara com o protótipo**: roda o
+ * comportamento, o smoke, o contraste, os redirects e o axe contra o build de
+ * produção. O gabarito de 21/08 reprovava as rotas por mudança deliberada de
+ * design (P-30), e o legado deixou de ser exigido — o CI nem o sobe mais. A
+ * paridade continua disponível nos modos que só servem para ela (`--baseline`,
+ * `--rota`) ou com `PARIDADE_COM_PROTOTIPO=1`; ver `playwright.config.ts`.
  *
  * Três decisões, cada uma para eliminar uma fonte de divergência que já custou
  * uma sessão de depuração:
@@ -19,11 +26,12 @@ import path from 'node:path'
  *    depender do que estiver rodando na sua máquina.
  *
  * Uso:
- *   pnpm gate                     compara o app novo contra o gabarito
+ *   pnpm gate                     a suíte de comportamento, sem o protótipo
  *   pnpm gate --baseline          regrava o gabarito a partir do legado (:3001)
  *   pnpm gate --sem-build         reaproveita o .next existente
- *   pnpm gate --rota home         só a regressão visual daquela rota
+ *   pnpm gate --rota home         só a paridade visual daquela rota
  *   pnpm gate --viewport desktop  só um viewport
+ *   PARIDADE_COM_PROTOTIPO=1 pnpm gate   a suíte padrão mais a paridade inteira
  *
  * ⚠️ `--rota` e `--viewport` existem para **iterar**, não para aprovar. Um
  * `pnpm gate` sem filtro custa ~9 min e a máquina inteira; conferir uma rota
@@ -51,6 +59,16 @@ const valorDe = (nome) => {
 const rota = valorDe('--rota')
 const viewport = valorDe('--viewport')
 
+/* D-39: a paridade com o protótipo só entra quando pedida. `--baseline` e
+ * `--rota` a ligam sozinhos — os dois só existem para ela, e sem a variável o
+ * `testIgnore` do config deixaria `visual.spec.ts` e `baseline.spec.ts` de fora,
+ * e o Playwright sairia com "No tests found". */
+const paridade = gravarGabarito || Boolean(rota) || process.env.PARIDADE_COM_PROTOTIPO === '1'
+/* O legado **vivo** só é lido por quem captura dele: o `--baseline` e a corrida
+ * inteira com paridade (`paridade-ds.spec.ts` e o smoke do legado). O `--rota`
+ * compara o app novo com os PNGs em disco, e nunca precisou do :3001 de pé. */
+const exigeLegado = paridade && !rota
+
 /* Filtro repassado ao Playwright.
  *
  * ⚠️ Os dois specs nomeiam o teste de formas diferentes — `visual.spec.ts` usa
@@ -65,6 +83,20 @@ const filtro = [
 function passo(titulo, fn) {
   process.stdout.write(`\n▶ ${titulo}\n`)
   return fn()
+}
+
+/* ⚠️ Nos modos que capturam do legado, ele tem que estar no ar **antes** do
+ * build. Sem esta checagem o `--baseline` só descobre a falta dele depois de
+ * minutos de build, teste a teste, cada um esgotando o próprio timeout. No
+ * modo padrão nada aqui roda: é o que deixa o CI sem o legado (D-39). */
+if (exigeLegado) {
+  try {
+    await fetch('http://localhost:3001/', { signal: AbortSignal.timeout(5_000) })
+  } catch {
+    console.error('✖ a paridade com o protótipo precisa do legado em :3001, e ele não respondeu.')
+    console.error('  Suba com:  cd ../legacy && docker compose up -d')
+    process.exit(1)
+  }
 }
 
 if (!semBuild) {
@@ -141,11 +173,28 @@ if (!(await passo(`subindo o build em :${PORTA}`, esperarNoAr))) {
   encerrar(1)
 }
 
+/* O banco do servidor sob teste, para `diagnostico-maturidade.spec.ts` conferir
+ * o lead gravado e apagá-lo depois. Visto **de dentro** do container: o
+ * `localhost` do `DATABASE_URI` ali é o próprio container, não o Postgres.
+ *
+ * Só quando o ambiente tem `DATABASE_URI` (o CI tem; localmente ele mora no
+ * `.env.local`, que só o Next lê). Sem ela o teste de envio é pulado — e não
+ * grava lead nenhum que não possa apagar. */
+const bancoDoTeste = process.env.DATABASE_URI?.replace(/@(localhost|127\.0\.0\.1)([:/])/, '@host.docker.internal$2')
+
 const comando = gravarGabarito
   ? ['sh', '-c', `GRAVAR_GABARITO=1 npx playwright test e2e/baseline.spec.ts --update-snapshots ${filtro.map((a) => `'${a}'`).join(' ')}`]
   : ['npx', 'playwright', 'test', ...(rota ? ['e2e/visual.spec.ts'] : []), ...filtro]
 
-const r = passo(gravarGabarito ? 'gravando o gabarito (legado)' : 'comparando', () =>
+const titulo = gravarGabarito
+  ? 'gravando o gabarito (legado)'
+  : rota
+    ? `paridade de ${rota} com o gabarito`
+    : paridade
+      ? 'rodando a suíte, com a paridade'
+      : 'rodando a suíte'
+
+const r = passo(titulo, () =>
   spawnSync(
     'docker',
     [
@@ -159,8 +208,9 @@ const r = passo(gravarGabarito ? 'gravando o gabarito (legado)' : 'comparando', 
       `--cpus=${TETO_DE_CPUS}`,
       '--add-host=host.docker.internal:host-gateway',
       '-e', `NEXT_URL=http://host.docker.internal:${PORTA}`,
-      '-e', `LEGACY_URL=${LEGADO}`,
+      ...(paridade ? ['-e', `LEGACY_URL=${LEGADO}`, '-e', 'PARIDADE_COM_PROTOTIPO=1'] : []),
       '-e', 'CI=1',
+      ...(bancoDoTeste ? ['-e', `E2E_DATABASE_URI=${bancoDoTeste}`] : []),
       '-v', `${process.cwd()}:/work`,
       /* ⚠️ `docs/` entra montado também, e não por conveniência: o
        * `redirects.spec.ts` lê `docs/02-especificacao/dados/redirects.csv`, que

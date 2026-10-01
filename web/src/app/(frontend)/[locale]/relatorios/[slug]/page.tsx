@@ -3,7 +3,6 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { PaginaDeMaterial, type TextosDoMaterial } from '@/components/content/pagina-de-material'
-import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { buscarMaterial, slugsDeMaterial } from '@/lib/materiais'
 import { metadataDe } from '@/lib/seo'
@@ -23,12 +22,6 @@ const TEXTOS: Record<'pt' | 'en', TextosDoMaterial> = {
     paginas: 'páginas',
     semCorpoTitulo: 'Resumo em preparação',
     semCorpoTexto: 'Assim que o resumo do relatório estiver pronto, ele aparece aqui.',
-    ctaTitulo: 'Precisa de um recorte',
-    ctaDestaque: 'para o seu setor?',
-    ctaDescricao: 'Nossos especialistas cruzam os dados deste relatório com a realidade do seu negócio. Fale com a gente.',
-    ctaTelefone: 'Telefone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Fale com um especialista',
   },
   en: {
     voltar: 'Back to reports',
@@ -38,12 +31,6 @@ const TEXTOS: Record<'pt' | 'en', TextosDoMaterial> = {
     paginas: 'pages',
     semCorpoTitulo: 'Summary in preparation',
     semCorpoTexto: 'The report summary shows up here as soon as it is ready.',
-    ctaTitulo: 'Need a cut',
-    ctaDestaque: 'for your sector?',
-    ctaDescricao: 'Our specialists cross this report with your own business reality. Talk to us.',
-    ctaTelefone: 'Phone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Talk to a specialist',
   },
 }
 
@@ -79,6 +66,6 @@ export default async function MaterialPage({ params }: PageProps<'/[locale]/rela
   if (!material) notFound()
 
   return (
-    <PaginaDeMaterial material={material} secao={SECAO} locale={locale} t={TEXTOS[locale]} contato={await lerContato()} />
+    <PaginaDeMaterial material={material} secao={SECAO} locale={locale} t={TEXTOS[locale]} />
   )
 }

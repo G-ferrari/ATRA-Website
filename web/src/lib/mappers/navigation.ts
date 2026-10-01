@@ -14,7 +14,7 @@ import { toImageOpcional } from './shared'
  * documento inteiro, para o `select` da consulta e o mapper não saírem de
  * sincronia — e porque `select` estreita o tipo de retorno do Payload. */
 type SolucaoDoMenu = Pick<Solution, 'title' | 'slug' | 'category' | 'icon' | 'shortDescription' | 'hasPage'>
-type ParceiroDoMenu = Pick<Partner, 'name' | 'slug' | 'logo' | 'logoScale' | 'description'>
+type ParceiroDoMenu = Pick<Partner, 'name' | 'slug' | 'logo' | 'logoDark' | 'logoScale' | 'description'>
 
 /* Global `navigation` + duas collections → o que o cabeçalho desenha (MIG-072a).
  *
@@ -29,12 +29,15 @@ const vazio = (v: string | null | undefined): string | null => {
 
 /* Ordem e rótulo das categorias de solução, iguais aos do índice `/solucoes`.
  * O rótulo do grupo é do menu, não da collection: `category` é um `select` com
- * três valores, e o texto que o editor vê está no admin, não no dado. */
+ * três valores, e o texto que o editor vê está no admin, não no dado.
+ *
+ * ⚠️ `rc18` não entra (D-37): a RC18 saiu de Soluções e se chega a ela pela
+ * página de Bancos e pelo destaque da home. O documento continua com
+ * `category: 'rc18'` — só deixa de ser agrupado, e o valor do enum fica. */
 const GRUPOS: { id: Solution['category']; pt: string; en: string }[] = [
   { id: 'innovation-ai', pt: 'Inovação & IA', en: 'Innovation & AI' },
   { id: 'data-bi', pt: 'Dados, BI & Advanced Analytics', en: 'Data, BI & Advanced Analytics' },
   { id: 'governance-culture', pt: 'Governança & Cultura', en: 'Governance & Culture' },
-  { id: 'rc18', pt: 'RC18', en: 'RC18' },
 ]
 
 export function toGruposDeSolucoes(
@@ -103,6 +106,7 @@ export function toParceirosDoMenu(docs: ParceiroDoMenu[]): {
       /* Logo ausente é descartado em silêncio, como na vitrine de /sobre: o
        * menu inteiro fora do ar por um arquivo faltando é troca ruim. */
       logo: toImageOpcional(p.logo as never, 'navigation.partners.logo'),
+      logoDark: toImageOpcional(p.logoDark as never, 'navigation.partners.logoDark'),
       logoScale: (p.logoScale as 'sm' | 'md' | 'lg') ?? 'md',
     })
     if (p.description) descricoes[p.slug] = p.description

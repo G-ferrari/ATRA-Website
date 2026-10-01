@@ -7,6 +7,7 @@ import { useState } from 'react'
 
 import { Icone } from '@/components/blocks/icones'
 import type { Locale } from '@/lib/locales'
+import { larguraOticaCss } from '@/lib/logo'
 import { hrefDe } from '@/lib/routes'
 import { cn } from '@/lib/utils'
 import type { CategoriaDoMenu, CorDeDestaque, Navegacao } from '@/types/content'
@@ -65,9 +66,19 @@ export function PainelDoMenu({
             onClick={aoNavegar}
             className={CELULA_DA_GRADE}
           >
-            <div className="w-14 h-10 flex items-center justify-center shrink-0 group-hover:scale-105 transition-all duration-200 relative">
+            <div className="w-16 h-12 flex items-center justify-center shrink-0 group-hover:scale-105 transition-all duration-200">
+              {/* Largura pela proporção do logo (`lib/logo.ts`); 0,75 é a altura
+                  sobre a largura desta caixa. A versão escura troca só por CSS. */}
               {p.logo && (
-                <Image src={p.logo.url} alt={p.logo.alt} fill sizes="56px" className="object-contain" />
+                <div
+                  className="relative"
+                  style={{ width: larguraOticaCss(p.logo, p.logoScale, 0.75), aspectRatio: `${p.logo.width} / ${p.logo.height}` }}
+                >
+                  <Image src={p.logo.url} alt={p.logo.alt} fill sizes="64px" className={cn('object-contain', p.logoDark && 'dark:hidden')} />
+                  {p.logoDark && (
+                    <Image src={p.logoDark.url} alt={p.logoDark.alt} fill sizes="64px" className="object-contain hidden dark:block" />
+                  )}
+                </div>
               )}
             </div>
             <div>
@@ -250,7 +261,7 @@ function PainelDeSolucoes({
         ))}
       </div>
 
-      {/* Categoria de item único (ex.: RC18) ocupa a largura toda — sem coluna
+      {/* Categoria de item único (foi o caso da RC18) ocupa a largura toda — sem coluna
        * vazia ao lado — para a aba funcionar como entrada direta para a página. */}
       <div className={cn('grid gap-6 pt-2', grupo.items.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
         {grupo.items.map((item) => {

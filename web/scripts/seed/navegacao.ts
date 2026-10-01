@@ -148,35 +148,6 @@ const PT: Categoria[] = [
       href: '/sobre',
     },
   },
-  {
-    label: 'Glossário',
-    href: '/glossario',
-    panel: 'split',
-    intro:
-      'Desvende a complexidade técnica com nosso guia prático e descomplicado sobre conceitos essenciais de dados, BI, IA e metodologias.',
-    highlights: [
-      {
-        icon: 'brain',
-        color: 'amber',
-        title: 'O que é LLM e RAG?',
-        description:
-          'Conceitos fundamentais explicados de forma simples para entender inteligência artificial generativa corporativa.',
-      },
-      {
-        icon: 'database',
-        color: 'blue',
-        title: 'Lakehouse e Data Mesh',
-        description: 'As arquiteturas modernas que sustentam analytics em escala, sem jargão.',
-      },
-    ],
-    card: {
-      icon: 'book',
-      title: 'Glossário de Dados & IA',
-      bullets: bullets(['Linguagem Simples', 'Termos Essenciais', 'Busca por Letra', 'Sempre Atualizado']),
-      ctaLabel: 'Consultar o Glossário',
-      href: '/glossario',
-    },
-  },
 ]
 
 const EN: Categoria[] = [
@@ -282,34 +253,6 @@ const EN: Categoria[] = [
       bullets: bullets(['Client focus', 'Ethical innovation', 'Major brands', 'Technical excellence']),
       ctaLabel: 'Read our story',
       href: '/sobre',
-    },
-  },
-  {
-    label: 'Glossary',
-    href: '/glossario',
-    panel: 'split',
-    intro:
-      'Cut through the jargon with a practical guide to the essential concepts of data, BI, AI and methodology.',
-    highlights: [
-      {
-        icon: 'brain',
-        color: 'amber',
-        title: 'What are LLMs and RAG?',
-        description: 'The fundamentals explained simply, to make sense of corporate generative AI.',
-      },
-      {
-        icon: 'database',
-        color: 'blue',
-        title: 'Lakehouse and Data Mesh',
-        description: 'The modern architectures behind analytics at scale, without the jargon.',
-      },
-    ],
-    card: {
-      icon: 'book',
-      title: 'Data & AI glossary',
-      bullets: bullets(['Plain language', 'Essential terms', 'Browse by letter', 'Always current']),
-      ctaLabel: 'Open the glossary',
-      href: '/glossario',
     },
   },
 ]

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { isEditorOrAdmin, isPublic } from '@/access'
+import { cabecalhosDoArquivoExterno } from '@/lib/arquivo-externo'
 
 const WEBP = { format: 'webp' as const, options: { quality: 82 } }
 
@@ -44,6 +45,9 @@ export const Media: CollectionConfig = {
       { name: 'hero', width: 1600, withoutEnlargement: true, formatOptions: WEBP },
     ],
     formatOptions: WEBP,
+    /* P-31: o editor de imagem baixa o original pelo endereço do próprio site,
+     * e na homologação a senha do Caddy barrava o download. Ver o módulo. */
+    externalFileHeaderFilter: cabecalhosDoArquivoExterno,
   },
   fields: [
     {

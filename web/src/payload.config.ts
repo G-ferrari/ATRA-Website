@@ -37,9 +37,12 @@ import { Webinars } from './collections/Webinars'
 import { AtraAi } from './globals/AtraAi'
 import { Contact } from './globals/Contact'
 import { CookieConsent } from './globals/CookieConsent'
+import { DiagnosticoDeMaturidade } from './globals/DiagnosticoDeMaturidade'
 import { Footer } from './globals/Footer'
+import { Integrations } from './globals/Integrations'
 import { Navigation } from './globals/Navigation'
 import { SiteSettings } from './globals/SiteSettings'
+import { Tracking } from './globals/Tracking'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -98,7 +101,7 @@ export default buildConfig({
     ['users', 'ai-usage', 'form-submissions', 'private-files'],
   ),
 
-  globals: [AtraAi, Contact, CookieConsent, Footer, Navigation, SiteSettings].map((g) => ({
+  globals: [AtraAi, Contact, CookieConsent, DiagnosticoDeMaturidade, Footer, Integrations, Navigation, SiteSettings, Tracking].map((g) => ({
     ...g,
     hooks: { ...g.hooks, afterChange: [...(g.hooks?.afterChange ?? []), () => revalidarSite()] },
   })),

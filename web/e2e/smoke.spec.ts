@@ -1,6 +1,6 @@
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
-import { LEGACY_URL, NEXT_URL } from '../playwright.config'
+import { LEGACY_URL, NEXT_URL, PARIDADE_COM_PROTOTIPO } from '../playwright.config'
 import { visit } from './support/stability'
 
 /* Smoke: barato, roda em toda PR, pega o modo de falha mais provável de uma
@@ -15,7 +15,6 @@ const ROTAS_PORTADAS = {
   pt: [
     '/',
     '/cases-de-sucesso',
-    '/glossario',
     '/relatorios',
     '/ebooks',
     '/webinars',
@@ -24,11 +23,13 @@ const ROTAS_PORTADAS = {
     // Fase 4c: as duas nascem aqui, sem equivalente no protótipo (D-17).
     '/segmentos',
     '/politicas-e-termos',
+    // Task 026: sem equivalente no protótipo, fora do gate visual. A EN serve o
+    // conteúdo em português, mas o slug é traduzido e é ele que se testa.
+    '/diagnostico-maturidade',
   ],
   en: [
     '/en',
     '/en/success-stories',
-    '/en/glossary',
     '/en/reports',
     '/en/ebooks',
     '/en/webinars',
@@ -36,10 +37,18 @@ const ROTAS_PORTADAS = {
     '/en/solutions',
     '/en/segments',
     '/en/privacy-and-terms',
+    '/en/data-maturity-assessment',
   ],
 } as const
 
 test.describe('app novo', () => {
+  /* D-36: o glossário saiu do ar com 404, nos dois idiomas. */
+  test('o glossário responde 404', async ({ request }) => {
+    for (const rota of ['/glossario', '/en/glossary']) {
+      expect((await request.get(`${NEXT_URL}${rota}`)).status(), rota).toBe(404)
+    }
+  })
+
   for (const [idioma, rotas] of Object.entries(ROTAS_PORTADAS)) {
     for (const rota of rotas) {
       test(`${idioma} ${rota} responde 200`, async ({ request }) => {
@@ -72,6 +81,50 @@ test.describe('app novo', () => {
   test('/pt redireciona para a raiz (sem conteúdo duplicado)', async ({ request }) => {
     const r = await request.get(`${NEXT_URL}/pt/`, { maxRedirects: 0 })
     expect(r.status()).toBe(308)
+  })
+
+  /* Task 026. O `?setor=` é lido no servidor, então o HTML já sai com o setor
+   * escolhido e a linha de impactos — o aceite se prova sem clicar em nada.
+   * `noindex` nos dois idiomas: é ferramenta de conversão, não conteúdo. */
+  test('o diagnóstico de maturidade sai com noindex e abre no setor da URL', async ({ request }) => {
+    /* ⚠️ Status conferido junto com o corpo (task 030). Uma página de erro
+     * também não tem a linha de impactos — a negativa do setor inválido
+     * passava sobre um 500 —, e pode sair com `noindex`. Foi visto no servidor
+     * de dev, que às vezes responde 500 a esta rota (ver o fim do topo de
+     * `diagnostico-maturidade.spec.ts`). */
+    const html = async (rota: string) => {
+      const r = await request.get(`${NEXT_URL}${rota}`)
+      expect(r.status(), rota).toBe(200)
+      return r.text()
+    }
+    for (const rota of ['/diagnostico-maturidade', '/en/data-maturity-assessment']) {
+      expect(await html(rota), rota).toContain('noindex')
+    }
+    const comSetor = await html('/diagnostico-maturidade?setor=saude')
+    expect(comSetor).toContain('<option value="saude" selected=""')
+    expect(comSetor).toContain('Impactos avaliados:')
+    // Setor fora dos oito códigos é ignorado: o perfil abre sem seleção.
+    const invalido = await html('/diagnostico-maturidade?setor=xpto')
+    // Nenhuma opção com valor escolhida: porte e cargo também nascem vazios.
+    expect(invalido).not.toMatch(/<option value="[^"]+" selected=""/)
+    expect(invalido).not.toContain('Impactos avaliados:')
+  })
+
+  /* Task 030. Sitemap e `robots` não podem se contradizer: anunciar ao robô uma
+   * URL que a própria página manda não indexar. O diagnóstico não está em
+   * `app/sitemap.ts`; isto impede que entre por engano — numa lista de índices,
+   * por exemplo —, e o endereço aposentado do RC18 junto, que é redirect.
+   *
+   * ⚠️ A primeira asserção é a de controle: um sitemap vazio ou quebrado
+   * passaria pelas negativas sem provar nada. */
+  test('o sitemap não anuncia o diagnóstico de maturidade', async ({ request }) => {
+    const r = await request.get(`${NEXT_URL}/sitemap.xml`)
+    expect(r.status()).toBe(200)
+    const xml = await r.text()
+    expect(xml).toContain('/cases-de-sucesso</loc>')
+    for (const caminho of ['/diagnostico-maturidade', '/data-maturity-assessment', '/diagnostico-rc18', '/rc18-diagnostic']) {
+      expect(xml, caminho).not.toContain(caminho)
+    }
   })
 
   /* `/blog/[slug]` **não existe no legado** (os cards apontam para `#`), então
@@ -214,7 +267,26 @@ test.describe('app novo', () => {
       return form
     }
 
-    test('envia de /contato e confirma na própria página', async ({ page }) => {
+    /* ⚠️ Os dois envios rodam **só no desktop** desde 27/09, quando o e2e
+       voltou ao CI (D-39). O teto de 5 envios por IP por hora
+       (`lib/anti-spam.ts`) é um só para todos os formulários, e na suíte todo
+       envio sai do mesmo IP — o do container do Playwright. Nos três viewports
+       estes dois somavam 6, e com o de `consultores.spec.ts` e o de
+       `diagnostico-maturidade.spec.ts`, 8. O diagnóstico roda depois dos
+       outros e confere a linha no banco: no build de produção, com um contador
+       só no processo, ele receberia o **sucesso falso** do teto e reprovaria.
+       (No servidor de dev a conta não fechou assim — os 8 gravaram numa corrida
+       de 27/09 —, mas é o build de produção que o CI mede.) No desktop são 4,
+       dentro do teto mesmo com um retry.
+
+       O formulário é o mesmo markup em toda largura: é o mesmo motivo que já
+       deixava os outros dois envios só no desktop. A isca, que não envia nada,
+       continua nos três. */
+    const soNoDesktop = (info: import('@playwright/test').TestInfo) =>
+      test.skip(info.project.name !== 'desktop', 'o envio roda uma vez; ver a nota acima')
+
+    test('envia de /contato e confirma na própria página', async ({ page }, info) => {
+      soNoDesktop(info)
       await page.goto(`${NEXT_URL}/contato`)
       const form = await preencher(page)
       /* A armadilha de tempo exige 3s entre a página montar e o envio — o
@@ -224,7 +296,8 @@ test.describe('app novo', () => {
       await expect(page.getByRole('status')).toBeVisible({ timeout: 20000 })
     })
 
-    test('envia da home, onde o bloco é a outra variante', async ({ page }) => {
+    test('envia da home, onde o bloco é a outra variante', async ({ page }, info) => {
+      soNoDesktop(info)
       await page.goto(`${NEXT_URL}/`)
       const form = await preencher(page)
       await page.waitForTimeout(3500)
@@ -280,7 +353,9 @@ test.describe('app novo', () => {
       expect(org, 'nenhum nó Organization na página').toBeTruthy()
       expect(org!.name).toBe('ATRA')
       expect(org!.email).toBe('negocios@atra.com.br')
-      expect(org!.sameAs).toContain('https://www.linkedin.com/company/atra-tecnologia/')
+      /* Os perfis que a ATRA confirmou em 26/09 (`ef139e2`, P-26). O antigo
+         (`atra-tecnologia`) vinha do CTA do protótipo e saiu do seed. */
+      expect(org!.sameAs).toContain('https://www.linkedin.com/company/atraoficial/')
     })
 
     test('o artigo declara Article ligado à mesma organização', async ({ page }) => {
@@ -359,25 +434,49 @@ test.describe('app novo', () => {
     })
   })
 
-  /* `/consultores` agora tem gabarito (ver `support/rotas.ts`). O que fica aqui
-     é o comportamento, que a captura não pega: o filtro. */
+  /* `/consultores` saiu do gabarito em 24/09 (D-34); o comportamento completo
+     está em `consultores.spec.ts`. O que fica aqui é o filtro, barato. */
   test('o catálogo de consultores filtra pela pílula de senioridade', async ({ page }) => {
     await page.goto(`${NEXT_URL}/consultores`)
-    // 8 perfis no total, cada um com um botão Solicitar.
-    await expect(page.getByRole('link', { name: 'Solicitar' })).toHaveCount(8)
+    /* 8 perfis, cada um com um botão Solicitar. ⚠️ `button` e não `link`
+       desde a task 010: o Solicitar deixou de levar a /contato — que perdia o
+       perfil que o visitante estava olhando — e passou a pôr o perfil na
+       lista "Minha solicitação". O nome acessível é "Solicitar: <perfil>";
+       depois do clique vira "Na solicitação: …", que o `^` deixa de fora. */
+    const solicitar = page.getByRole('button', { name: /^Solicitar: / })
+    await expect(solicitar).toHaveCount(8)
     /* Pílula, não `select`: a primeira versão da ilha usou dois `select` e isso
        foi parte dos 300px que faltavam na seção de filtros. */
     await page.getByRole('button', { name: 'Lead / Principal', exact: true }).click()
-    const n = await page.getByRole('link', { name: 'Solicitar' }).count()
+    const n = await solicitar.count()
     expect(n).toBeGreaterThan(0)
     expect(n).toBeLessThan(8)
   })
 
   /* O modal do perfil não entra na regressão visual porque nasce fechado. */
   test('o botão Detalhes abre o modal do perfil', async ({ page }) => {
-    await page.goto(`${NEXT_URL}/consultores`)
+    /* ⚠️ `?e2e=1` aqui é o **aviso de cookies**, não o carrossel. Num banco que
+       tenha `bannerMessage` preenchido — o que o seed manual de
+       `scripts/seed/cookie-consent.ts` faz em dev e em homologação — o aviso
+       renderiza `fixed bottom-3 left-3 right-3 z-[110]`: no mobile é uma faixa
+       de largura inteira no rodapé, **acima** do modal (z-50), e ela intercepta
+       o clique no "Fechar" do rodapé do modal. O teste estourava por timeout só
+       no mobile; no desktop o aviso é `md:max-w-md` à esquerda e não encosta no
+       botão. `congelado()` é o "cinto e suspensório" que `aviso-de-cookies.tsx`
+       documenta para exatamente este caso: sob `?e2e=1` o aviso não aparece.
+       É o único teste do smoke que precisa disso, porque é o único que clica
+       num controle no rodapé da janela. */
+    await page.goto(`${NEXT_URL}/consultores?e2e=1`)
     await page.getByRole('button', { name: 'Detalhes' }).first().click()
-    const modal = page.getByRole('dialog')
+    /* ⚠️ Escopo por `aria-modal`, não `getByRole('dialog')` solto: o aviso de
+       cookies também é um `dialog` (e é correto que seja), e com os dois na
+       tela o strict mode reprova com "resolved to 2 elements". O `?e2e=1` acima
+       já tira o aviso; isto é a segunda tranca, para o dia em que outro
+       `dialog` aparecer na página. `aria-modal="true"` é o discriminador certo
+       e não um remendo — o modal do perfil prende o foco, o aviso não, que é a
+       diferença que a propriedade existe para declarar. Não trocar por
+       `.first()`, que casaria com quem chegasse primeiro no DOM. */
+    const modal = page.locator('[role="dialog"][aria-modal="true"]')
     await expect(modal).toBeVisible()
     await expect(modal.getByText('Tecnologias de Domínio')).toBeVisible()
     /* `.last()`: há três formas de fechar — o fundo, o X e o botão do rodapé —
@@ -396,20 +495,38 @@ test.describe('app novo', () => {
     expect((await request.get(`${NEXT_URL}/parceiros/salesforce-informatica`)).status()).toBe(404)
   })
 
+  test('a faixa de parceiros da home vem da collection e só linka quem tem página', async ({ page, request }) => {
+    await page.goto(`${NEXT_URL}/`)
+    const faixa = page.locator('section', { has: page.getByRole('heading', { name: 'Parceiros de Confiança' }) }).last()
+    // O nome da collection, e não o da lista antiga do bloco ("Azure").
+    /* ⚠️ `visible: true` antes do `first()`. A faixa monta as fichas duas vezes
+       — a fileira `sm:flex` e a grade `sm:hidden` do celular —, e o primeiro
+       "Microsoft Azure" do DOM é o da fileira, escondida abaixo de 640px: no
+       mobile o teste esperava 20s por um texto que nunca aparece. */
+    await expect(faixa.getByText('Microsoft Azure').filter({ visible: true }).first()).toBeVisible()
+
+    const links = faixa.locator('a[href^="/parceiros/"]')
+    const hrefs = [...new Set(await links.evaluateAll((as) => as.map((a) => a.getAttribute('href'))))]
+    expect(hrefs).toContain('/parceiros/google-cloud')
+    expect(hrefs).not.toContain('/parceiros/salesforce-informatica')
+    for (const href of hrefs) expect((await request.get(`${NEXT_URL}${href}`)).status(), href!).toBe(200)
+  })
+
   /* `/solucoes` é a única rota que **muda de comportamento** (D-09): no legado
      ela serve a página de IA, aqui vira índice. Não há gabarito visual, então o
      aceite é este. */
   test.describe('/solucoes — índice novo (D-09)', () => {
-    /* ⚠️ **19, e não 6.** P-16 (21/08/2026): as 6 do protótipo convivem com as 12
-       do WordPress (MIG-093); a 19ª é a RC18 (feature rc18), a 4ª categoria do
-       menu. O número é asserção de verdade e não contagem frouxa — se cair, alguém
-       despublicou; se subir, rascunho está vazando. */
-    test('lista as 19 soluções agrupadas nas 4 categorias', async ({ page }) => {
+    /* ⚠️ **18, e não 6.** P-16 (21/08/2026): as 6 do protótipo convivem com as 12
+       do WordPress (MIG-093). A RC18 existe e está publicada, mas saiu do índice
+       e do menu em 26/09 (D-37). O número é asserção de verdade e não contagem
+       frouxa — se cair, alguém despublicou; se subir, rascunho está vazando. */
+    test('lista as 18 soluções agrupadas nas 3 categorias, sem a RC18', async ({ page }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
-      for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura', 'RC18']) {
+      for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
         await expect(page.getByRole('heading', { name: categoria, level: 2 })).toBeVisible()
       }
-      await expect(page.getByRole('heading', { level: 3 })).toHaveCount(19)
+      await expect(page.getByRole('heading', { name: 'RC18', level: 2 })).toHaveCount(0)
+      await expect(page.getByRole('heading', { level: 3 })).toHaveCount(18)
     })
 
     /* Só quem tem `hasPage` vira link: a de IA, portada em MIG-056, mais as 12
@@ -419,11 +536,11 @@ test.describe('app novo', () => {
     test('só as soluções com página viram link, e elas respondem', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
       const links = page.locator('a[href*="/solucoes/"]')
-      await expect(links).toHaveCount(14)
+      await expect(links).toHaveCount(13)
 
       const hrefs = await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')))
       expect(hrefs).toContain('/solucoes/inteligencia-artificial')
-      expect(hrefs).toContain('/solucoes/rc18')
+      expect(hrefs).not.toContain('/solucoes/rc18')
       for (const href of hrefs) {
         expect((await request.get(`${NEXT_URL}${href}`)).status(), href!).toBe(200)
       }
@@ -444,8 +561,8 @@ test.describe('app novo', () => {
   })
 
   /* Feature rc18 — a landing da RC 18/2025 (`/solucoes/rc18`, documento da coleção
-     Solutions) e o diagnóstico de prontidão (`/diagnostico-rc18`, rota própria).
-     Rotas novas sem gabarito: aqui é a rede. */
+     Solutions) e o endereço do diagnóstico de prontidão, que a D-35 aposentou:
+     virou redirect para o diagnóstico de maturidade. Sem gabarito: aqui é a rede. */
   test.describe('RC 18/2025 — página e diagnóstico', () => {
     test('a página de solução responde nos dois idiomas', async ({ request }) => {
       for (const url of [`${NEXT_URL}/solucoes/rc18`, `${NEXT_URL}/en/solutions/rc18`]) {
@@ -453,8 +570,7 @@ test.describe('app novo', () => {
       }
     })
 
-    /* A landing é conteúdo de SEO: indexável e com `Service` (o diagnóstico, não —
-       ver abaixo). */
+    /* A landing é conteúdo de SEO: indexável e com `Service`. */
     test('a página é indexável e declara Service', async ({ page, request }) => {
       expect(await (await request.get(`${NEXT_URL}/solucoes/rc18`)).text()).not.toContain('noindex')
       await page.goto(`${NEXT_URL}/solucoes/rc18`)
@@ -464,34 +580,59 @@ test.describe('app novo', () => {
       expect(servico, 'nenhum nó Service em /solucoes/rc18').toBeTruthy()
     })
 
-    /* O diagnóstico é ferramenta de conversão, não conteúdo: `noindex`, como `/chat`. */
-    test('o diagnóstico responde nos dois idiomas e é noindex', async ({ request }) => {
-      for (const url of [`${NEXT_URL}/diagnostico-rc18`, `${NEXT_URL}/en/rc18-diagnostic`]) {
-        expect((await request.get(url)).status(), url).toBe(200)
+    /* Task 029 (ata de 24/09, D-35): quem chega à RC18 vai para o diagnóstico,
+       não para um formulário genérico. O `ctaContact` saiu, e com ele a âncora
+       `#contato` e o item "Contato" do submenu, que se monta das âncoras. O CTA
+       do herói vai direto à rota nova, já no setor financeiro — não pelo
+       redirect do endereço antigo, que fica só para link de fora do site. */
+    test('leva ao diagnóstico de maturidade no setor financeiro, sem formulário de contato', async ({ page, request }) => {
+      for (const url of [`${NEXT_URL}/solucoes/rc18`, `${NEXT_URL}/en/solutions/rc18`]) {
+        const html = await (await request.get(url)).text()
+        expect(html, url).not.toContain('id="contato"')
+        expect(html, url).not.toContain('href="/diagnostico-rc18"')
+        expect(html, url).toContain('href="/diagnostico-maturidade?setor=financeiro"')
       }
-      expect(await (await request.get(`${NEXT_URL}/diagnostico-rc18`)).text()).toContain('noindex')
+
+      await page.goto(`${NEXT_URL}/solucoes/rc18`)
+      await expect(page.locator('#contato')).toHaveCount(0)
+      await expect(page.locator('a[href="#contato"]')).toHaveCount(0)
+      await expect(page.getByRole('link', { name: 'Verificar diagnóstico' })).toHaveAttribute(
+        'href',
+        '/diagnostico-maturidade?setor=financeiro',
+      )
     })
 
-    /* A autoavaliação calcula na hora: 12 dimensões no maior nível → 100% / Avançado.
-       O score em si é unitário (`lib/diagnostico-rc18.test.ts`); aqui é a fiação. */
-    test('a autoavaliação calcula o índice a partir das respostas', async ({ page }) => {
-      await page.goto(`${NEXT_URL}/diagnostico-rc18`)
-      const maximo = page.getByRole('button', { name: 'Regra, medição e evidência — o piso da norma.' })
-      await expect(maximo).toHaveCount(12)
-      const total = await maximo.count()
-      for (let i = 0; i < total; i++) await maximo.nth(i).click()
-      await page.getByRole('button', { name: 'Ver minha prontidão' }).click()
-      await expect(page.getByText('Avançado')).toBeVisible()
+    /* D-35: o link antigo circula em e-mail de campanha e favorito, e tem de cair
+       no diagnóstico novo já no setor financeiro. Com e sem barra final: a
+       barra sai num 308 do próprio Next antes da regra, e a regra não pode
+       virar laço. O destino é conferido pelo `Location`, não só o status. */
+    test('o diagnóstico antigo redireciona para o de maturidade, no setor financeiro', async ({ request }) => {
+      /* O `Location` pode vir absoluto ou relativo; o que se compara é o caminho com a query. */
+      const caminho = (url: string) => {
+        const u = new URL(url, NEXT_URL)
+        return u.pathname + u.search
+      }
+      for (const [antigo, novo] of [
+        ['/diagnostico-rc18', '/diagnostico-maturidade?setor=financeiro'],
+        ['/en/rc18-diagnostic', '/en/data-maturity-assessment?setor=financeiro'],
+      ] as const) {
+        const r = await request.get(`${NEXT_URL}${antigo}`, { maxRedirects: 0 })
+        expect(r.status(), antigo).toBe(308)
+        expect(caminho(r.headers()['location'] ?? ''), antigo).toBe(novo)
+
+        const comBarra = await request.get(`${NEXT_URL}${antigo}/`)
+        expect(comBarra.status(), `${antigo}/`).toBe(200)
+        expect(caminho(comBarra.url()), `${antigo}/`).toBe(novo)
+      }
     })
   })
 
   /* Megamenu (MIG-072a). Os painéis só existem com o menu aberto, então a
      regressão visual — que captura o estado fechado — não os cobre. É aqui. */
   test.describe('megamenu', () => {
-    /* 8 desde que `/segmentos` entrou no menu: as 7 do protótipo mais Segmentos,
-       ao lado de Soluções. O protótipo recebeu a mesma categoria, senão o
-       gabarito passaria a medir a diferença em vez da regressão. */
-    const CATEGORIAS = ['Soluções', 'Segmentos', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre', 'Glossário']
+    /* As 7 do protótipo mais Segmentos, ao lado de Soluções, e menos o
+       Glossário, que saiu do ar em 26/09 (D-36). */
+    const CATEGORIAS = ['Soluções', 'Segmentos', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre']
 
     /* As categorias e o rótulo do rodapé têm o mesmo texto, então todo locator
        aqui é escopado no `<nav>`. A fileira é `hidden md:flex`: no celular a
@@ -506,7 +647,7 @@ test.describe('app novo', () => {
        texto vira violação de strict mode. Por isso cada teste entra pela região
        que lhe interessa. */
     const abrirMenu = async (page: import('@playwright/test').Page) => {
-      await page.goto(`${NEXT_URL}/glossario`)
+      await page.goto(`${NEXT_URL}/relatorios`)
       await page.getByRole('button', { name: 'Abrir menu' }).click()
       return page.getByTestId('menu-categorias')
     }
@@ -541,7 +682,7 @@ test.describe('app novo', () => {
       }).toPass({ timeout: 20000 })
     }
 
-    test('abre com as 8 categorias e o painel de soluções', async ({ page }) => {
+    test('abre com as 7 categorias e o painel de soluções', async ({ page }) => {
       test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
       const fileira = await abrirMenu(page)
 
@@ -622,7 +763,7 @@ test.describe('app novo', () => {
 
     test('no celular vira gaveta, e só as categorias com lista expandem', async ({ page }) => {
       test.skip(!noCelular(page), 'a gaveta é `md:hidden`')
-      await page.goto(`${NEXT_URL}/glossario`)
+      await page.goto(`${NEXT_URL}/relatorios`)
       await page.getByRole('button', { name: 'Abrir menu' }).click()
 
       const gaveta = page.getByTestId('menu-gaveta')
@@ -685,12 +826,18 @@ test.describe('app novo', () => {
   })
 })
 
-test.describe('legado (gabarito da regressão visual)', () => {
-  test('está no ar em :3001', async ({ request }) => {
-    const r = await request.get(LEGACY_URL)
-    expect(
-      r.status(),
-      `O legado precisa estar rodando: cd legacy && docker compose up -d`,
-    ).toBe(200)
+/* ⚠️ Só com `PARIDADE_COM_PROTOTIPO=1` (D-39). O legado deixou de ser gabarito
+ * da suíte padrão, e o CI não o sobe mais: sem esta condição, o primeiro teste a
+ * reprovar seria o que confere se ele está no ar. Quem liga a paridade precisa
+ * dele de pé, e é para isso que este teste continua existindo. */
+if (PARIDADE_COM_PROTOTIPO) {
+  test.describe('legado (gabarito da regressão visual)', () => {
+    test('está no ar em :3001', async ({ request }) => {
+      const r = await request.get(LEGACY_URL)
+      expect(
+        r.status(),
+        `O legado precisa estar rodando: cd legacy && docker compose up -d`,
+      ).toBe(200)
+    })
   })
-})
+}

@@ -78,6 +78,14 @@ export const CookieConsent: GlobalConfig = {
       name: 'marketing',
       type: 'group',
       label: { pt: 'Categoria: marketing', en: 'Category: marketing' },
+      /* D-40: a descrição precisa citar a Lusha. É ela que o visitante lê
+         antes de aceitar, e a Lusha carrega sob esta categoria. */
+      admin: {
+        description: {
+          pt: 'Esta categoria libera a captura de UTM e a Lusha, que identifica a empresa de onde vem a visita (Sistema → Rastreamento). A descrição deve citar as duas.',
+          en: 'This category enables UTM capture and Lusha, which identifies the company a visit comes from (System → Tracking). The description should mention both.',
+        },
+      },
       fields: [
         { name: 'name', type: 'text', localized: true, label: { pt: 'Nome', en: 'Name' } },
         { name: 'description', type: 'textarea', localized: true, label: { pt: 'Descrição', en: 'Description' } },

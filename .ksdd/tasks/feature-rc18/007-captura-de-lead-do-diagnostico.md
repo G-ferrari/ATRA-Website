@@ -1,7 +1,7 @@
 ---
 id: 007
 title: Captura de lead do diagnóstico (kind + Server Action + CRM)
-status: em revisão
+status: cancelada
 feature: rc18
 area: backend
 priority: P0
@@ -19,6 +19,8 @@ arch_refs:
 ---
 
 # 007 — Captura de lead do diagnóstico (kind + Server Action + CRM)
+
+> **Cancelada.** Substituída pela feature `diagnostico-maturidade-dados` (D-35, 26/09/2026).
 
 ## Objetivo
 Persistir o lead do diagnóstico com o resumo do resultado e sincronizá-lo no CRM como
