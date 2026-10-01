@@ -1172,3 +1172,29 @@ nome e o endereço.
   também é a antiga.
 - Collection `resources` e tipo `report` não mudam de nome: a renomeação de
   verdade vem com o modelo de matéria.
+
+## D-44 — Push na `main` também publica
+
+*Decidida em 01/10/2026 por Leonardo, ao preparar a publicação do site.*
+
+**Contexto.** Desde 24/08 o deploy era exclusivo da `migracao`: o job `deploy`
+do `ci.yml` só rodava em push nessa branch. A `main` recebia CI (lint, types,
+e2e) mas nunca publicava, e estava 209 commits atrás. Publicar dependia de quem
+trabalha na `migracao` — um gargalo de pessoa, não de código.
+
+**Decisão.** O job `deploy` roda em push para **`main` ou `migracao`**. A
+`main` passa a ser o caminho de publicação que não depende de desenvolvedor
+específico; a `migracao` continua publicando até o cutover, e sai do `if`
+quando a migração fechar.
+
+**Consequências.**
+
+- As duas branches publicam no **mesmo** servidor (`VPS_HOST`), com o grupo de
+  concorrência `deploy-vps` serializando. Não existe "produção pela main e
+  homologação pela migracao": é um host só até a VM nova entrar.
+- ⚠️ A `main` precisa estar **à frente** da `migracao` antes de qualquer push.
+  Um push de `main` atrasada leva ao ar código velho sobre um banco que já
+  recebeu as migrações novas — o Payload cai em `column ... does not exist`.
+  Sincronizar é merge de `migracao` em `main` (ou fast-forward), nunca o
+  contrário.
+- PR continua sem deploy: o `if` exige `push`.
