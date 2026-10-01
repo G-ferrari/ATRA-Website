@@ -132,7 +132,7 @@ pnpm gate                                # build de produção + comparação vi
 pnpm gate --baseline                     # regrava o gabarito a partir do legado
 pnpm gate --sem-build                    # reaproveita o .next existente
 pnpm gate --rota home --viewport desktop # 1 teste em vez de 207, para iterar
-pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 261 linhas
+pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 267 linhas
 git push origin main                     # deploy (D-44): CI valida e a VPS troca sozinha, com rollback; `main` só recebe merge da `migracao`
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
 ```
@@ -248,7 +248,9 @@ de `lib/` ou de um bloco, é resíduo — o lugar dela é o CMS.
 A 4b importou o WordPress: **207 artigos** com corpo, imagem e links internos
 reescritos, **287 imagens** e as **7 vagas** (não 6 — uma abriu depois do
 levantamento). A 4c trouxe as **8 verticais** para `/segmentos` e a página legal
-para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas**, com a
+para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas** (267 desde 01/10, com os 6
+artigos publicados depois da carga — eles entram no site por
+`import-posts.ts --so-novos`, que não regrava os 207 que já existem), com a
 geração reprovando se alguma URL do WordPress ficar sem destino.
 
 **MIG-084** (P-27) segue em pendência — o WP tem 1 categoria e 0 tags, não há

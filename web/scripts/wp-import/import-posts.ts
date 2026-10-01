@@ -9,6 +9,16 @@
  * Rodar com: pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/import-posts.ts
  *   --limite=N          importa só os N primeiros (para conferir antes de tudo)
  *   --remover-fixtures  apaga os posts do protótipo que não vieram do WP
+ *   --so-novos          só cria o que ainda não existe; não regrava nenhum post
+ *
+ * ⚠️ Depois da carga inicial, rodar **sempre** com `--so-novos`. Sem a chave o
+ * importador regrava os posts que já existem com o texto do WordPress, por cima
+ * de qualquer correção feita no admin. Em 01/10 havia 6 artigos publicados no
+ * WordPress depois da carga (de 03/09 a 25/09) fora do site novo, e é para
+ * trazê-los — antes da virada do DNS, enquanto o WordPress ainda responde em
+ * atra.com.br — que a chave existe. No servidor:
+ *   docker compose -f docker-compose.prod.yml --profile tarefas run --rm migrate \
+ *     pnpm exec tsx scripts/wp-import/import-posts.ts --so-novos
  */
 import { getPayload } from 'payload'
 
@@ -17,15 +27,27 @@ import { slugify } from '../../src/fields/slug'
 import { createWpClient } from './client'
 import { criarConversor, percorrer } from './convert'
 import { criarImportadorDeMidia } from './media'
+import { soOsNovos } from './posts-novos'
 import { decodificar, encurtar, textoPuro } from './texto'
 import type { LexicalNode, WpPost } from './types'
 
 const args = process.argv.slice(2)
 const LIMITE = Number(args.find((a) => a.startsWith('--limite='))?.split('=')[1] ?? 0)
 const REMOVER_FIXTURES = args.includes('--remover-fixtures')
+const SO_NOVOS = args.includes('--so-novos')
+
+/* As duas juntas apagariam o site: sem regravar nada, nenhum post é "tocado",
+ * e o que a remoção de fixtures apaga é exatamente o que não foi tocado. */
+if (SO_NOVOS && REMOVER_FIXTURES) {
+  console.error('✗ --so-novos e --remover-fixtures não combinam: a remoção apagaria todos os posts que já existem.')
+  process.exit(1)
+}
 
 const payload = await getPayload({ config })
-const cliente = createWpClient()
+/* ⚠️ `refresh` em `--so-novos`: o cache em disco não expira, e numa máquina que
+ * já rodou a carga ele devolveria a lista antiga — o importador veria os mesmos
+ * 207 de sempre e terminaria "completo" sem trazer nada. */
+const cliente = createWpClient(SO_NOVOS ? { cacheMode: 'refresh' } : {})
 
 console.log('→ baixando do WordPress')
 const [posts, midias] = await Promise.all([
@@ -34,7 +56,23 @@ const [posts, midias] = await Promise.all([
 ])
 console.log(`  ${posts.length} posts · ${midias.length} mídias na biblioteca`)
 
-const alvo = LIMITE ? posts.slice(0, LIMITE) : posts
+let candidatos = posts
+if (SO_NOVOS) {
+  const { docs: existentes } = await payload.find({
+    collection: 'posts',
+    locale: 'pt',
+    depth: 0,
+    limit: 5000,
+    pagination: false,
+    // Só o slug: sem isto a consulta arrasta o corpo dos 207 artigos.
+    select: { slug: true },
+  })
+  candidatos = soOsNovos(posts, existentes.map((d) => d.slug))
+  console.log(`  ${existentes.length} posts já no site (mantidos como estão) · ${candidatos.length} novos`)
+  for (const p of candidatos) console.log(`      + ${p.date.slice(0, 10)} ${p.slug}`)
+}
+
+const alvo = LIMITE ? candidatos.slice(0, LIMITE) : candidatos
 const converter = await criarConversor({ slugsDePost: new Set(posts.map((p) => p.slug)) })
 const midia = await criarImportadorDeMidia({ payload, cliente, midias })
 
@@ -175,7 +213,8 @@ for (const f of falhas) console.log(`  ✗ ${f}`)
  * corrida — 206 de 207, sem erro nenhum no log. Por id, o que a importação
  * acabou de gravar nunca entra na lista de remoção. */
 const { docs: todos } = await payload.find({ collection: 'posts', limit: 500, locale: 'pt', depth: 0 })
-const fixtures = LIMITE ? [] : todos.filter((d) => !tocados.has(d.id))
+// Em `--so-novos` nada disto vale: os posts que já existiam não foram tocados de propósito.
+const fixtures = LIMITE || SO_NOVOS ? [] : todos.filter((d) => !tocados.has(d.id))
 
 if (fixtures.length && !REMOVER_FIXTURES) {
   console.log(`\n  ⚠ ${fixtures.length} posts fora do WordPress (fixtures do protótipo):`)

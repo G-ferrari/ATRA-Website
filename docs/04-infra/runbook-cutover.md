@@ -66,6 +66,21 @@ só depois de horas, ninguém quer descobrir no sábado.
 | 9 | Revisão final em staging: amostra de 30 URLs antigas, os 4 cases, 3 posts, formulário e chat | Checklist assinado |
 | 10 | Confirmar que os **MX seguem apontando para o Google Workspace** e que ninguém vai tocá-los | `dig MX atra.com.br` registrado antes e depois |
 
+⚠️ O passo 7, para os artigos, é **sempre com `--so-novos`**:
+
+```bash
+docker compose -f docker-compose.prod.yml --profile tarefas run --rm migrate \
+  pnpm exec tsx scripts/wp-import/import-posts.ts --so-novos
+```
+
+Sem a chave o importador **regrava** os artigos que já existem com o texto do
+WordPress, por cima do que o marketing corrigiu no admin. Com ela, só cria o que
+falta e lista o que criou. Tem de rodar **antes do passo 15**: depois da virada
+`atra.com.br` é o site novo, e o importador não acha mais o WordPress. Em 01/10
+faltavam 6 artigos (de 03/09 a 25/09); os redirects deles já estão no
+`redirects.csv`, mas cada artigo publicado depois disso precisa da linha dele
+(passos 2 e 3).
+
 ⚠️ O passo 6 é o que torna o rollback rápido. Sem reduzir o TTL antes, reverter
 pode levar horas em vez de minutos.
 
