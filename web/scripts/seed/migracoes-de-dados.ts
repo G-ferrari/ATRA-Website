@@ -14,11 +14,18 @@ import config from '../../src/payload.config'
 import { up as semEnderecoFixo } from '../../src/migrations/20260929_223000_sem_endereco_fixo'
 import { up as selosNaPaginaDoGoogleCloud } from '../../src/migrations/20260929_223100_selos_na_pagina_do_google_cloud'
 import { up as fimDasPaginasInternas } from '../../src/migrations/20260929_223200_fim_das_paginas_internas'
+import { criarMateriasDaImprensa } from '../../src/migrations/20261002_170000_materias_da_imprensa'
 
 const payload = await getPayload({ config })
 
 await semEnderecoFixo({ payload } as never)
 await selosNaPaginaDoGoogleCloud({ payload } as never)
 await fimDasPaginasInternas({ payload } as never)
+
+/* As matérias de "ATRA na mídia" (D-49) são conteúdo real, não fixture: entram
+ * em todo banco, e aqui sem a trava da carga — é este o banco que não a tem. A
+ * migração pula no `migrate` também porque o job `verify` do CI não tem storage
+ * para as capas; este passo roda onde o MinIO existe. */
+await criarMateriasDaImprensa({ payload } as never, { exigirCarga: false })
 
 process.exit(0)

@@ -76,6 +76,7 @@ export interface Config {
     jobs: Job;
     pages: Page;
     posts: Post;
+    press: Press;
     resources: Resource;
     webinars: Webinar;
     clients: Client;
@@ -102,6 +103,7 @@ export interface Config {
     jobs: JobsSelect<false> | JobsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    press: PressSelect<false> | PressSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
     webinars: WebinarsSelect<false> | WebinarsSelect<true>;
     clients: ClientsSelect<false> | ClientsSelect<true>;
@@ -3784,6 +3786,35 @@ export interface Post {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Articles, interviews and videos about ATRA in the press. Each item shows on "ATRA in the media" and opens on the outlet's site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "press".
+ */
+export interface Press {
+  id: number;
+  title: string;
+  /**
+   * Who published it. E.g. Gazeta Mercantil Digital.
+   */
+  outlet: string;
+  description: string;
+  /**
+   * The address on the outlet's site (or the video's). It is where the card leads, in a new tab.
+   */
+  url: string;
+  coverImage: number | Media;
+  kind: 'article' | 'video';
+  publishedAt?: string | null;
+  /**
+   * Lower comes first.
+   */
+  order: number;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Reports and ebooks. The kind decides which page lists the item.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3792,7 +3823,7 @@ export interface Post {
 export interface Resource {
   id: number;
   /**
-   * Reports list on /atra-in-the-media ("ATRA in the media"); ebooks on /ebooks.
+   * Ebooks list on /ebooks. Reports have had no page on the site since 02/10 (D-49): they are kept here.
    */
   kind: 'report' | 'ebook';
   title: string;
@@ -7513,6 +7544,10 @@ export interface PayloadLockedDocument {
         value: number | Post;
       } | null)
     | ({
+        relationTo: 'press';
+        value: number | Press;
+      } | null)
+    | ({
         relationTo: 'resources';
         value: number | Resource;
       } | null)
@@ -8656,6 +8691,23 @@ export interface PostsSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "press_select".
+ */
+export interface PressSelect<T extends boolean = true> {
+  title?: T;
+  outlet?: T;
+  description?: T;
+  url?: T;
+  coverImage?: T;
+  kind?: T;
+  publishedAt?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

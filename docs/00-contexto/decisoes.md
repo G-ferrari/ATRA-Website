@@ -1347,3 +1347,52 @@ Integradas" e, na homologação, em "Cases de sucesso") só distribui a lista pe
 altura do painel a partir de 4 itens — com 2, os cartões ficavam um no topo e
 outro no rodapé — e o painel passou a ter a altura do maior item, em vez de
 crescer e encolher a cada troca.
+
+## D-49 — "ATRA na mídia" vira matérias de imprensa, com collection própria
+
+*Decidida em 02/10/2026 por G-ferrari. Completa a D-43, que só trocou o nome e
+o endereço.*
+
+**Contexto.** A seção `/atra-na-midia` ainda mostrava os três relatórios de
+exemplo do protótipo, com selo "Relatório" e botão de download. O WordPress tem
+a página de verdade, `/atra-na-midia/`: seis matérias, entrevistas e vídeos, cada
+uma com capa, veículo, título, resumo e link para fora.
+
+**Decisão.** A seção passa a ter o molde de `/webinars` — destaque rotativo no
+topo e grade de cartões — com o conteúdo da página do WordPress. Duas escolhas:
+
+- **O cartão abre a matéria no veículo, em outra aba**; não há página interna
+  por matéria. Uma página nossa só teria o resumo e um botão, e seria página
+  magra (D-08).
+- **Os relatórios de exemplo saem do site.** Continuam guardados no admin
+  (`resources`, tipo `report`), sem rota.
+
+**Consequências.**
+
+- Collection **`press`** (Conteúdo → ATRA na mídia): título, veículo, resumo,
+  link (`unique` — é a identidade do item), capa, tipo (matéria ou vídeo), data
+  opcional e ordem. Sem `slug` nem `seo`, porque não há página por item. O tipo
+  só muda o desenho: vídeo ganha o botão de play e "Assistir".
+- As seis matérias entram pela migração `20261002_170000_materias_da_imprensa`,
+  com o texto literal em `migrations/arquivos/atra-na-midia/` e as capas ao
+  lado. Só age onde a carga do WordPress está; em banco novo quem as cria é o
+  seed, pela mesma função — o job `verify` do CI não tem storage para as capas.
+- A rota `/atra-na-midia/[slug]` saiu. `/relatorios/:slug` e
+  `/en/reports/:slug` passam a redirecionar para a **lista**. A chave da seção
+  em `lib/routes.ts` virou `midia`.
+- O `FeaturedHero` ganhou dois opcionais por item: `externo` (abre em outra
+  aba) e `actionLabel` (texto do botão). O destaque mostra as 4 primeiras, para
+  a régua de miniaturas não ganhar barra de rolagem.
+- A página antiga fechava com um formulário próprio ("Quer falar sobre dados,
+  IA e inovação?"); aqui vale o fim padrão (D-42).
+- ⚠️ **Collection nova mexe em tabela que migração antiga consulta.** Toda
+  collection ganha uma coluna em `payload_locked_documents_rels`, que o Payload
+  lê a cada `update`. Em banco novo, a migração do RC18 de 28/09 fazia um
+  `update` antes de a coluna existir. A coluna nasce em
+  `20260927_215500_locked_documents_press`, idempotente — a segunda vez em uma
+  semana que a mesma armadilha aparece (ver `…_partner_showcase_source`).
+- ⚠️ **Fica com o marketing (D-22):** na página Insights, a aba "ATRA na mídia"
+  ainda mostra dois cartões de relatório do protótipo, e a descrição do item no
+  menu fala de "análises profundas do mercado de dados". Os dois se editam no
+  admin. O texto de apresentação da página (título e dois parágrafos, literais
+  do WordPress) e a descrição para buscadores estão no código.

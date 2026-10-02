@@ -233,50 +233,69 @@ test.describe('app novo', () => {
     })
   })
 
-  /* `/atra-na-midia/[slug]` e `/ebooks/[slug]` também não existem no protótipo. */
+  /* `/ebooks/[slug]` também não existe no protótipo. Os relatórios, que dividiam
+     esta landing, saíram do site em 02/10 (D-49). */
   test.describe('materiais — rotas sem gabarito', () => {
     const RELATORIO = 'relatorio-anual-de-dados-2025-tendencias-e-projecoes'
     const EBOOK = 'o-guia-definitivo-do-data-lakehouse-para-executivos'
 
-    test('material existente responde 200 nos dois idiomas', async ({ request }) => {
-      for (const url of [
-        `${NEXT_URL}/atra-na-midia/${RELATORIO}`,
-        `${NEXT_URL}/ebooks/${EBOOK}`,
-        `${NEXT_URL}/en/atra-in-the-media/${RELATORIO}`,
-        `${NEXT_URL}/en/ebooks/${EBOOK}`,
-      ]) {
+    test('e-book existente responde 200 nos dois idiomas', async ({ request }) => {
+      for (const url of [`${NEXT_URL}/ebooks/${EBOOK}`, `${NEXT_URL}/en/ebooks/${EBOOK}`]) {
         expect((await request.get(url)).status(), url).toBe(200)
       }
     })
 
-    /* O tipo entra na consulta, não só na rota. Sem isso o mesmo material
-     * responderia sob as duas seções e o Google veria conteúdo duplicado. */
-    test('slug do outro tipo responde 404', async ({ request }) => {
-      for (const url of [`${NEXT_URL}/atra-na-midia/${EBOOK}`, `${NEXT_URL}/ebooks/${RELATORIO}`]) {
+    /* O tipo entra na consulta, não só na rota: relatório não responde como e-book. */
+    test('slug de relatório não responde em /ebooks', async ({ request }) => {
+      const url = `${NEXT_URL}/ebooks/${RELATORIO}`
+      expect((await request.get(url)).status(), url).toBe(404)
+    })
+
+    test('material sem corpo sai com noindex', async ({ request }) => {
+      const r = await request.get(`${NEXT_URL}/ebooks/${EBOOK}`)
+      expect(await r.text()).toContain('noindex')
+    })
+  })
+
+  /* D-49: a seção que era o arquivo de relatórios virou "ATRA na mídia", com as
+     matérias da imprensa. O cartão abre a matéria no veículo, em outra aba, e
+     não há página por matéria. */
+  test.describe('/atra-na-midia — matérias da imprensa', () => {
+    test('lista as matérias, e cada cartão leva ao veículo em outra aba', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/atra-na-midia`)
+      const cartoes = page.locator('main h3 a[target="_blank"]')
+      await expect(cartoes.first()).toBeVisible()
+      expect(await cartoes.count()).toBeGreaterThanOrEqual(6)
+
+      for (const a of await cartoes.all()) {
+        expect(await a.getAttribute('href'), 'destino fora do site').toMatch(/^https:\/\//)
+        // `noopener` é o que impede a página aberta de mexer nesta.
+        expect(await a.getAttribute('rel')).toContain('noopener')
+      }
+      // O botão do destaque também sai do site, pelo mesmo caminho.
+      await expect(page.locator('main a.pill-btn-primary[target="_blank"]')).toHaveCount(1)
+    })
+
+    test('não há página por matéria nem por relatório', async ({ request }) => {
+      for (const url of [`${NEXT_URL}/atra-na-midia/relatorio-anual-de-dados-2025-tendencias-e-projecoes`, `${NEXT_URL}/atra-na-midia/qualquer-coisa`]) {
         expect((await request.get(url)).status(), url).toBe(404)
       }
     })
 
-    /* 01/10: "Relatórios" virou "ATRA na mídia" e o endereço mudou junto. O
-       antigo está em link gravado no CMS e em favorito de quem viu a
-       homologação: tem de chegar, com e sem slug, nos dois idiomas. */
-    test('o endereço antigo dos relatórios redireciona para o novo', async ({ request }) => {
+    /* O endereço antigo está em link gravado no CMS e em favorito de quem viu a
+       homologação. Com slug, leva à lista: o item não existe mais. */
+    test('o endereço antigo dos relatórios leva à lista, com e sem slug', async ({ request }) => {
       for (const [antigo, novo] of [
         ['/relatorios', '/atra-na-midia'],
-        [`/relatorios/${RELATORIO}`, `/atra-na-midia/${RELATORIO}`],
+        ['/relatorios/relatorio-anual-de-dados-2025-tendencias-e-projecoes', '/atra-na-midia'],
         ['/en/reports', '/en/atra-in-the-media'],
-        [`/en/reports/${RELATORIO}`, `/en/atra-in-the-media/${RELATORIO}`],
+        ['/en/reports/relatorio-anual-de-dados-2025-tendencias-e-projecoes', '/en/atra-in-the-media'],
       ]) {
         const r = await request.get(`${NEXT_URL}${antigo}`, { maxRedirects: 0 })
         expect(r.status(), antigo).toBe(308)
         // O `Location` pode vir absoluto ou relativo; o que se compara é o caminho.
         expect(new URL(r.headers()['location'] ?? '', NEXT_URL).pathname, antigo).toBe(novo)
       }
-    })
-
-    test('material sem corpo sai com noindex', async ({ request }) => {
-      const r = await request.get(`${NEXT_URL}/atra-na-midia/${RELATORIO}`)
-      expect(await r.text()).toContain('noindex')
     })
   })
 

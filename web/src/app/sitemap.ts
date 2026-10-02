@@ -66,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { local: { secao: 'sobre' }, prioridade: 0.7 },
     { local: { secao: 'contato' }, prioridade: 0.6 },
     // `/glossario` fora do ar (D-36): responde 404 e não entra no sitemap.
-    { local: { secao: 'relatorios' }, prioridade: 0.5 },
+    { local: { secao: 'midia' }, prioridade: 0.5 },
     { local: { secao: 'ebooks' }, prioridade: 0.5 },
     { local: { secao: 'webinars' }, prioridade: 0.5 },
     { local: { secao: 'politicas' }, prioridade: 0.3 },

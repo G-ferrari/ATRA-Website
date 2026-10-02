@@ -97,6 +97,21 @@ export type Webinar = {
   seo: Seo
 }
 
+/** Matéria, entrevista ou vídeo sobre a ATRA na imprensa — "ATRA na mídia" (D-49). */
+export type MateriaDaImprensa = {
+  id: string
+  title: string
+  /** O veículo que publicou. */
+  outlet: string
+  description: string
+  /** Endereço no site do veículo: é para onde o cartão leva. */
+  url: string
+  image: Image
+  kind: 'article' | 'video'
+  /** ISO 8601, ou `null`: a página antiga não mostrava data. */
+  publishedAt: string | null
+}
+
 export type PostCard = {
   slug: string
   title: string

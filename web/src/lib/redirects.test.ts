@@ -110,9 +110,10 @@ describe('ROTAS_RENOMEADAS', () => {
 
   it('leva /relatorios e /en/reports ao endereço novo, com e sem slug', () => {
     expect(destinoDe('/relatorios')).toBe('/atra-na-midia')
-    expect(destinoDe('/relatorios/:slug')).toBe('/atra-na-midia/:slug')
+    // Com slug, a lista: os relatórios saíram do site e matéria não tem página (D-49).
+    expect(destinoDe('/relatorios/:slug')).toBe('/atra-na-midia')
     expect(destinoDe('/en/reports')).toBe('/en/atra-in-the-media')
-    expect(destinoDe('/en/reports/:slug')).toBe('/en/atra-in-the-media/:slug')
+    expect(destinoDe('/en/reports/:slug')).toBe('/en/atra-in-the-media')
   })
 
   it('origem sem barra final, diferente do destino e permanente', () => {
