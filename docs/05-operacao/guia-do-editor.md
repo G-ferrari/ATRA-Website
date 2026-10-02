@@ -137,6 +137,27 @@ ATRA aparece na imprensa. Para incluir uma:
 
 Não existe página interna por matéria: o visitante vai direto para o veículo.
 
+## O painel do menu de Soluções
+
+Em **Sistema → Painel do menu de Soluções** fica o painel que aparece à direita
+quando o visitante abre o menu de Soluções, em telas largas (de 1280px para
+cima). Ele é o mesmo nas três abas; só o case de baixo muda.
+
+- **Título** — "Por onde começar?". ⚠️ Apagar o título **tira o painel do
+  menu** inteiro: é o jeito de desligá-lo.
+- **Texto de abertura** — a frase sob o título.
+- **Caminhos** (até 3) — ícone, título, descrição e destino de cada um. O
+  destino é um endereço do site, começando com `/`; os três levam ao
+  diagnóstico (`/diagnostico-maturidade`).
+- **Texto e destino do botão** — "Falar com um especialista", para `/contato`.
+- **Prova social** (até 5) — cada item tem um **destaque** ("140+", "5x") e um
+  **rótulo** ("especialistas", "GPTW"). Cabem numa linha só se forem curtos.
+  ⚠️ Os números institucionais também moram em Globais → Configurações do
+  site: mudou lá, confira aqui.
+- **Cases de cada aba** — até 3 por aba (Inovação & IA, Dados, Governança). Com
+  mais de um, eles se alternam a cada 5 segundos. Aba sem case escolhido
+  mostra os 3 mais recentes, e case despublicado some do painel sozinho.
+
 ## O que mais é editável
 
 - **Depoimentos e clientes** — Catálogos. Depoimento sem foto mostra

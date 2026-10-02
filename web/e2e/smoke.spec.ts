@@ -857,6 +857,37 @@ test.describe('app novo', () => {
       await expect(painel.locator('a[href^="/parceiros/"]')).toHaveCount(8)
     })
 
+    /* D-51: a camada de conversão — o painel fixo à direita do menu de
+       Soluções. O conteúdo vem do global `conversion-panel`, e o case de baixo
+       acompanha a aba.
+       ⚠️ O case da aba de Dados é conferido por "um dos três", e não pelo
+       primeiro: fora do `?e2e=1` o rodízio troca a cada 5s, e o teste não deve
+       depender de chegar antes dele. A aba de Governança tem um só. */
+    test('o painel de conversão aparece em Soluções, e o case acompanha a aba', async ({ page }) => {
+      test.skip(soNoDesktop(page), 'o painel é `xl:flex`, e a troca por hover só é estável no desktop')
+      await abrirMenu(page)
+      const lateral = page.getByTestId('painel-de-conversao')
+      await passarNaCategoria(page, 'Soluções', () => expect(lateral).toBeVisible({ timeout: 2000 }))
+
+      await expect(lateral.getByRole('heading', { name: 'Por onde começar?' })).toBeVisible()
+      await expect(lateral.locator('a[href="/diagnostico-maturidade"]')).toHaveCount(3)
+      await expect(lateral.getByRole('link', { name: /Falar com um especialista/ })).toHaveAttribute('href', '/contato')
+      await expect(lateral.getByTestId('prova-social')).toHaveText(/140\+ especialistas.*15\+ anos.*Parceira Google Cloud.*5x GPTW.*4x LIPT/)
+
+      const abas = page.getByRole('navigation')
+      const caso = lateral.getByTestId('mini-case')
+      await abas.getByRole('button', { name: 'Governança & Cultura' }).hover()
+      await expect(caso).toHaveAttribute('href', '/cases-de-sucesso/marketplace-governanca-dados')
+
+      await abas.getByRole('button', { name: 'Dados, BI & Advanced Analytics' }).hover()
+      await expect(caso).toHaveAttribute(
+        'href',
+        /\/cases-de-sucesso\/(dashboards-estrategicos|migracao-legado-gcp|eficiencia-processos-risco)$/,
+      )
+      // O painel é o mesmo nas três abas: trocar de aba não o desmonta.
+      await expect(lateral.getByRole('heading', { name: 'Por onde começar?' })).toBeVisible()
+    })
+
     test('o painel de texto + cartão mostra destaques e chamada', async ({ page }) => {
       test.skip(soNoDesktop(page), 'a troca de painel por hover só é estável no desktop')
       await abrirMenu(page)

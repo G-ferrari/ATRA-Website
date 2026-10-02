@@ -3,14 +3,15 @@
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Icone } from '@/components/blocks/icones'
+import { congelado } from '@/lib/e2e'
 import type { Locale } from '@/lib/locales'
 import { larguraOticaCss } from '@/lib/logo'
 import { hrefDe } from '@/lib/routes'
 import { cn } from '@/lib/utils'
-import type { CategoriaDoMenu, CorDeDestaque, Navegacao } from '@/types/content'
+import type { CategoriaDoMenu, CorDeDestaque, MiniCase, Navegacao, PainelDeConversao } from '@/types/content'
 
 /* Painéis do megamenu — porte de `legacy/src/App.tsx:458-880`.
  *
@@ -53,7 +54,9 @@ export function PainelDoMenu({
   aoNavegar: () => void
 }) {
   if (categoria.panel === 'solutions') {
-    return <PainelDeSolucoes grupos={navegacao.solucoes} aoNavegar={aoNavegar} />
+    return (
+      <PainelDeSolucoes grupos={navegacao.solucoes} conversao={navegacao.conversao} locale={locale} aoNavegar={aoNavegar} />
+    )
   }
 
   if (categoria.panel === 'partners') {
@@ -227,12 +230,19 @@ function PainelDividido({
 }
 
 /* Abas de subcategoria + grade de duas colunas (`App.tsx:459`). A subcategoria
- * ativa é estado local: o legado troca no `onMouseEnter`. */
+ * ativa é estado local: o legado troca no `onMouseEnter`.
+ *
+ * Com o painel de conversão preenchido no CMS (D-51), a grade divide a linha
+ * com ele a partir de `xl`. Sem ele, o menu sai como sempre foi. */
 function PainelDeSolucoes({
   grupos,
+  conversao,
+  locale,
   aoNavegar,
 }: {
   grupos: Navegacao['solucoes']
+  conversao: PainelDeConversao | null
+  locale: Locale
   aoNavegar: () => void
 }) {
   const [ativa, setAtiva] = useState(0)
@@ -240,60 +250,249 @@ function PainelDeSolucoes({
   if (!grupo) return null
 
   return (
-    <div className="flex flex-col w-full gap-4 pt-2">
-      <div className="flex items-center gap-8 border-none pb-2">
-        {grupos.map((g, i) => (
-          <button
-            key={g.title}
-            type="button"
-            onMouseEnter={() => setAtiva(i)}
-            onFocus={() => setAtiva(i)}
-            aria-current={i === ativa ? 'true' : undefined}
-            className={cn(
-              'text-xs font-normal transition-all relative pb-1 cursor-pointer capitalize',
-              i === ativa
-                ? 'text-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:rounded-full'
-                : 'text-text-muted hover:text-text-main',
-            )}
-          >
-            {g.title}
-          </button>
-        ))}
-      </div>
+    <div className={cn('w-full pt-2', conversao && 'xl:grid xl:grid-cols-[minmax(0,1fr)_25rem] xl:gap-6 xl:items-start')}>
+      <div className="flex flex-col w-full gap-4">
+        <div className="flex items-center gap-8 border-none pb-2">
+          {grupos.map((g, i) => (
+            <button
+              key={g.title}
+              type="button"
+              onMouseEnter={() => setAtiva(i)}
+              onFocus={() => setAtiva(i)}
+              aria-current={i === ativa ? 'true' : undefined}
+              className={cn(
+                'text-xs font-normal transition-all relative pb-1 cursor-pointer capitalize',
+                i === ativa
+                  ? 'text-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:rounded-full'
+                  : 'text-text-muted hover:text-text-main',
+              )}
+            >
+              {g.title}
+            </button>
+          ))}
+        </div>
 
-      {/* Categoria de item único (foi o caso da RC18) ocupa a largura toda — sem coluna
-       * vazia ao lado — para a aba funcionar como entrada direta para a página. */}
-      <div className={cn('grid gap-6 pt-2', grupo.items.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
-        {grupo.items.map((item) => {
-          const conteudo = (
-            <>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <Icone nome={item.icon} size={18} />
+        {/* Categoria de item único (foi o caso da RC18) ocupa a largura toda — sem coluna
+         * vazia ao lado — para a aba funcionar como entrada direta para a página. */}
+        {/* Com o painel ao lado a grade fica mais estreita e os cartões mais
+            altos; o espaço menor entre eles devolve a altura que o menu tinha
+            em 1280px. */}
+        <div className={cn('grid gap-6 pt-2', conversao && 'xl:gap-4', grupo.items.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
+          {grupo.items.map((item) => {
+            const conteudo = (
+              <>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                    <Icone nome={item.icon} size={18} />
+                  </div>
+                  <h4 className="text-text-main font-normal text-xs leading-tight group-hover:text-primary transition-colors capitalize">
+                    {item.title}
+                  </h4>
                 </div>
-                <h4 className="text-text-main font-normal text-xs leading-tight group-hover:text-primary transition-colors capitalize">
-                  {item.title}
-                </h4>
-              </div>
-              <p className="text-[11px] text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">
-                {item.description}
-              </p>
-            </>
-          )
+                <p className="text-[11px] text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">
+                  {item.description}
+                </p>
+              </>
+            )
 
-          /* Solução sem página não vira link, como no índice (D-09). No legado
-           * todas são `<Link>`, inclusive as cinco que apontam para `#`. */
-          return item.href ? (
-            <Link key={item.title} href={item.href} onClick={aoNavegar} className={CARTAO}>
-              {conteudo}
-            </Link>
-          ) : (
-            <div key={item.title} className={cn(CARTAO, 'cursor-default')}>
-              {conteudo}
-            </div>
-          )
-        })}
+            /* Solução sem página não vira link, como no índice (D-09). No legado
+             * todas são `<Link>`, inclusive as cinco que apontam para `#`. */
+            return item.href ? (
+              <Link key={item.title} href={item.href} onClick={aoNavegar} className={CARTAO}>
+                {conteudo}
+              </Link>
+            ) : (
+              <div key={item.title} className={cn(CARTAO, 'cursor-default')}>
+                {conteudo}
+              </div>
+            )
+          })}
+        </div>
       </div>
+
+      {conversao && (
+        <CamadaDeConversao painel={conversao} cases={conversao.cases[grupo.id]} aba={grupo.id} locale={locale} aoNavegar={aoNavegar} />
+      )}
+    </div>
+  )
+}
+
+/* Camada de conversão (D-51): o painel fixo à direita do menu de Soluções. O
+ * conteúdo é o mesmo nas três abas; só o case de baixo acompanha a aba.
+ *
+ * `hidden xl:flex`: abaixo de 1280px a grade de soluções precisa da largura
+ * toda — medido em 1024px, os cartões apertados cresciam e a última linha da
+ * aba de Dados saía da tela. No celular a navegação é a gaveta, que já fecha
+ * com "Fale Conosco". */
+const TEXTOS_DA_CONVERSAO = {
+  pt: { rotulo: 'Por onde começar', case: 'Case', cases: 'Cases relacionados', irPara: (n: number, total: number) => `Case ${n} de ${total}` },
+  en: { rotulo: 'Where to start', case: 'Case', cases: 'Related cases', irPara: (n: number, total: number) => `Case ${n} of ${total}` },
+} as const
+
+function CamadaDeConversao({
+  painel,
+  cases,
+  aba,
+  locale,
+  aoNavegar,
+}: {
+  painel: PainelDeConversao
+  cases: MiniCase[]
+  aba: string
+  locale: Locale
+  aoNavegar: () => void
+}) {
+  const t = TEXTOS_DA_CONVERSAO[locale]
+
+  return (
+    <aside
+      aria-label={t.rotulo}
+      data-testid="painel-de-conversao"
+      className="hidden xl:flex flex-col gap-3 rounded-[6px] bg-primary/[0.06] dark:bg-white/[0.04] p-4 text-left"
+    >
+      <div>
+        {/* `!`: a regra global dos títulos (`h1…h6 { font-weight: 300 }`) está
+            fora das camadas do Tailwind e venceria o peso sem ele. */}
+        <h3 className="text-base font-semibold! tracking-normal font-display text-text-main leading-tight">{painel.titulo}</h3>
+        {painel.abertura && <p className="mt-1 text-[11px] text-text-muted leading-relaxed">{painel.abertura}</p>}
+      </div>
+
+      {painel.caminhos.length > 0 && (
+        <ul className="flex flex-col gap-2">
+          {painel.caminhos.map((c) => (
+            <li key={c.title}>
+              <Link
+                href={c.href}
+                onClick={aoNavegar}
+                className="group flex items-center gap-3 rounded-[6px] bg-surface-2 p-2.5 shadow-sm hover:shadow-md transition-all"
+              >
+                <span className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+                  <Icone nome={c.icon} size={17} />
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="block text-xs font-semibold text-text-main group-hover:text-primary transition-colors">{c.title}</span>
+                  {c.description && <span className="block text-[10px] text-text-muted leading-snug">{c.description}</span>}
+                </span>
+                <ArrowRight size={15} className="text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" aria-hidden />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {painel.cta && (
+        <Link
+          href={painel.cta.href}
+          onClick={aoNavegar}
+          className="flex items-center justify-center gap-2 w-full rounded-[6px] bg-primary text-white text-xs font-semibold py-2.5 shadow-md hover:bg-primary-dark active:scale-[0.99] transition-all"
+        >
+          {painel.cta.label} <ArrowRight size={14} aria-hidden />
+        </Link>
+      )}
+
+      {/* Uma linha só nos 25rem do painel, com os cinco itens da especificação
+          (medido: 356px de 368). O `flex-wrap` é a rede para um rótulo mais
+          comprido digitado no admin: quebra em duas em vez de vazar. */}
+      {painel.provas.length > 0 && (
+        <ul data-testid="prova-social" className="flex flex-wrap items-baseline justify-center gap-x-1 gap-y-0.5 text-[10px] text-text-muted leading-relaxed">
+          {painel.provas.map((p, i) => (
+            <li key={`${p.value} ${p.label ?? ''}`} className="flex items-baseline gap-1 whitespace-nowrap">
+              {i > 0 && <span aria-hidden className="text-text-muted/60">·</span>}
+              <span>
+                <strong className="font-semibold text-text-main">{p.value}</strong>
+                {p.label && ` ${p.label}`}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* `key` pela aba: trocar de aba monta o rodízio de novo, no primeiro
+          case dela, em vez de herdar a posição da aba anterior. */}
+      {cases.length > 0 && <CasesDaAba key={aba} cases={cases} textos={t} aoNavegar={aoNavegar} />}
+    </aside>
+  )
+}
+
+/** Tempo de cada case na tela, quando a aba tem mais de um. */
+const TROCA_DE_CASE_MS = 5000
+
+function CasesDaAba({
+  cases,
+  textos,
+  aoNavegar,
+}: {
+  cases: MiniCase[]
+  textos: (typeof TEXTOS_DA_CONVERSAO)[Locale]
+  aoNavegar: () => void
+}) {
+  const [indice, setIndice] = useState(0)
+  const [pausado, setPausado] = useState(false)
+  const atual = cases[indice] ?? cases[0]
+
+  /* O rodízio para com o ponteiro ou o foco em cima — ninguém clica num cartão
+     que troca debaixo do dedo —, para quem pediu menos movimento ao sistema e
+     sob `?e2e=1`, que congela todo carrossel do site. */
+  useEffect(() => {
+    if (cases.length < 2 || pausado || congelado()) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const relogio = window.setInterval(() => setIndice((i) => (i + 1) % cases.length), TROCA_DE_CASE_MS)
+    return () => window.clearInterval(relogio)
+  }, [cases.length, pausado])
+
+  return (
+    <div
+      aria-label={textos.cases}
+      role="group"
+      onMouseEnter={() => setPausado(true)}
+      onMouseLeave={() => setPausado(false)}
+      onFocus={() => setPausado(true)}
+      onBlur={() => setPausado(false)}
+      className="flex flex-col gap-2"
+    >
+      {/* Altura fixa: o título tem tamanhos diferentes de case para case, e um
+          cartão que cresce e encolhe a cada troca sacode o menu inteiro. */}
+      <Link
+        href={atual.href}
+        onClick={aoNavegar}
+        data-testid="mini-case"
+        className="group flex items-center gap-3 h-[4.75rem] rounded-[6px] bg-surface-2 p-2.5 shadow-sm hover:shadow-md transition-all"
+      >
+        {atual.image && (
+          <span className="relative w-14 h-14 rounded-[6px] overflow-hidden shrink-0">
+            <Image src={atual.image.url} alt="" fill sizes="56px" className="object-cover" />
+          </span>
+        )}
+        <span className="flex-1 min-w-0">
+          <span className="block text-xs font-semibold text-text-main group-hover:text-primary transition-colors truncate">
+            {atual.client ? `${textos.case}: ${atual.client}` : textos.case}
+          </span>
+          <span className="block text-[10px] text-text-muted leading-snug line-clamp-2">{atual.title}</span>
+        </span>
+        <ArrowRight size={15} className="text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" aria-hidden />
+      </Link>
+
+      {cases.length > 1 && (
+        <div className="flex items-center justify-center gap-1">
+          {cases.map((c, i) => (
+            <button
+              key={c.slug}
+              type="button"
+              onClick={() => setIndice(i)}
+              aria-label={textos.irPara(i + 1, cases.length)}
+              aria-current={i === indice ? 'true' : undefined}
+              className="p-1 cursor-pointer group/ponto"
+            >
+              <span
+                className={cn(
+                  'block w-1.5 h-1.5 rounded-full transition-colors',
+                  i === indice ? 'bg-primary' : 'bg-slate-300 dark:bg-white/20 group-hover/ponto:bg-slate-400 dark:group-hover/ponto:bg-white/40',
+                )}
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
