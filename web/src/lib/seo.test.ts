@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { metadataDe, robotsDeCorpo } from './seo'
 import { toSeo } from './mappers/seo'
@@ -71,7 +71,39 @@ describe('metadataDe', () => {
       url: 'http://localhost:3000/blog/x',
       locale: 'pt_BR',
     })
-    expect(comImagem.openGraph?.images).toEqual([{ url: '/capa.webp', alt: 'Capa', width: 1200, height: 630 }])
+    expect(comImagem.openGraph?.images).toEqual([
+      { url: 'http://localhost:3000/capa.webp', alt: 'Capa', width: 1200, height: 630 },
+    ])
+  })
+
+  /* ⚠️ A imagem de compartilhamento tem de sair com a origem **do site**. Caminho
+     relativo o Next completa com `http://localhost:3000`, e foi isso que a
+     homologação publicou em todo artigo e case até 02/10. O módulo lê a origem
+     ao carregar, por isso o teste o recarrega com a variável trocada. */
+  it('a imagem do Open Graph leva a origem do site, não localhost', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://www.atra.com.br/')
+    vi.resetModules()
+    try {
+      const { metadataDe: comOrigem } = await import('./seo')
+      const m = comOrigem({
+        locale: 'pt',
+        local: { secao: 'blog', slug: 'x' },
+        seo: seo({ image: { url: '/api/media/file/capa.webp', alt: 'Capa', width: 1200, height: 630 } }),
+      })
+      expect(m.openGraph?.images).toEqual([
+        { url: 'https://www.atra.com.br/api/media/file/capa.webp', alt: 'Capa', width: 1200, height: 630 },
+      ])
+      // Mídia que já vem com endereço completo (storage externo) fica como está.
+      const externa = comOrigem({
+        locale: 'pt',
+        local: { secao: 'blog', slug: 'x' },
+        seo: seo({ image: { url: 'https://cdn.exemplo.com/capa.webp', alt: 'Capa', width: 1200, height: 630 } }),
+      })
+      expect((externa.openGraph?.images as { url: string }[])[0].url).toBe('https://cdn.exemplo.com/capa.webp')
+    } finally {
+      vi.unstubAllEnvs()
+      vi.resetModules()
+    }
   })
 
   /* A caixa do editor é decisão explícita; corpo cheio é só o estado normal.

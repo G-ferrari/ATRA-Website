@@ -38,6 +38,12 @@ export function robotsDeCorpo(corpo: unknown): Metadata['robots'] {
  */
 export const ORIGEM = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
 
+/** URL de mídia vira absoluta. O Google recusa caminho relativo em `image`, e a
+ *  imagem de compartilhamento relativa é pior ainda — ver `metadataDe`. */
+export function absoluta(url: string): string {
+  return url.startsWith('http') ? url : `${ORIGEM}${url}`
+}
+
 /** Onde a página vive. `secao` monta a URL nos dois idiomas; `caminho` é para a raiz. */
 export type Local = { secao: Secao; slug?: string } | { caminho: string }
 
@@ -104,7 +110,14 @@ export function metadataDe({ locale, local, seo, corpo }: Descricao): Metadata {
       url: `${ORIGEM}${caminho}`,
       title,
       description,
-      images: og ? [{ url: og.url, alt: og.alt, width: og.width, height: og.height }] : undefined,
+      /* ⚠️ Absoluta, com a origem do site. A mídia do CMS vem como caminho
+       * (`/api/media/file/…`), e o Next completa caminho relativo com a
+       * `metadataBase` — que, sem ninguém definir, é `http://localhost:3000`.
+       * Foi assim até 02/10: todo artigo e case da homologação anunciava a
+       * imagem de compartilhamento em `localhost`, e o link colado no LinkedIn
+       * ou no WhatsApp saía sem imagem. A canônica nunca sofreu disso porque já
+       * era montada com `ORIGEM`. */
+      images: og ? [{ url: absoluta(og.url), alt: og.alt, width: og.width, height: og.height }] : undefined,
     },
     /* `noIndex` do editor vence; senão vale a regra de página magra. Nunca o
      * contrário: marcar a caixa é decisão explícita e corpo cheio é só o
