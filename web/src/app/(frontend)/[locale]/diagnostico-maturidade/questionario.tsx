@@ -344,8 +344,19 @@ export function Questionario({
               /* O envio mora no rodapé, no lugar do "Próxima" — é o `btnN` do
                  HTML trocando de texto. `form` o liga ao formulário da tela,
                  que fica acima dele: é atributo nativo, envia também sem
-                 JavaScript. O texto é o do HTML, sem a seta. */
+                 JavaScript. O texto é o do HTML, sem a seta.
+
+                 ⚠️ As `key` diferentes nos dois botões não são enfeite. Sem
+                 elas o React reaproveita o **mesmo** `<button>` ao trocar de
+                 tela: o "Próxima" da última pergunta virava `type="submit"`
+                 no meio do próprio clique, e o navegador, ao terminar o
+                 clique, enviava o formulário vazio — o contato já nascia com
+                 os quatro campos em vermelho. Só para quem clica no botão
+                 (movimento reduzido, ou depois de voltar); quem escolhe a
+                 alternativa avança sozinho e nunca via. Com `key`, o botão
+                 clicado sai do DOM e o de envio é outro elemento. */
               <button
+                key="enviar"
                 type="submit"
                 form={ids.formulario}
                 disabled={enviando}
@@ -363,7 +374,7 @@ export function Questionario({
                 )}
               </button>
             ) : (
-              <button type="button" onClick={avancar} disabled={!podeAvancar(estado)} className={BOTAO_DE_AVANCAR}>
+              <button key="avancar" type="button" onClick={avancar} disabled={!podeAvancar(estado)} className={BOTAO_DE_AVANCAR}>
                 {etapa.tipo === 'perfil' ? 'Começar' : 'Próxima'} <span aria-hidden>→</span>
               </button>
             )}
