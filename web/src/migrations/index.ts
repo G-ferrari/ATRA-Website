@@ -75,6 +75,8 @@ import * as migration_20261002_120000_posts_novos_do_wordpress from './20261002_
 import * as migration_20261002_165837_add_press from './20261002_165837_add_press';
 import * as migration_20261002_170000_materias_da_imprensa from './20261002_170000_materias_da_imprensa';
 import * as migration_20261002_180000_rodape_link_unico_de_politicas from './20261002_180000_rodape_link_unico_de_politicas';
+import * as migration_20261002_202832_conversion_panel from './20261002_202832_conversion_panel';
+import * as migration_20261002_203000_painel_de_conversao from './20261002_203000_painel_de_conversao';
 
 export const migrations = [
   {
@@ -461,5 +463,15 @@ export const migrations = [
     up: migration_20261002_180000_rodape_link_unico_de_politicas.up,
     down: migration_20261002_180000_rodape_link_unico_de_politicas.down,
     name: '20261002_180000_rodape_link_unico_de_politicas',
+  },
+  {
+    up: migration_20261002_202832_conversion_panel.up,
+    down: migration_20261002_202832_conversion_panel.down,
+    name: '20261002_202832_conversion_panel',
+  },
+  {
+    up: migration_20261002_203000_painel_de_conversao.up,
+    down: migration_20261002_203000_painel_de_conversao.down,
+    name: '20261002_203000_painel_de_conversao',
   },
 ];

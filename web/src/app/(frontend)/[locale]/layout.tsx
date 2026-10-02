@@ -19,6 +19,7 @@ import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
 import { lerContato } from '@/lib/contato'
 import { organizacao } from '@/lib/jsonld'
 import { LOCALES, isLocale } from '@/lib/locales'
+import { toPainelDeConversao } from '@/lib/mappers/conversion-panel'
 import { toNavegacao } from '@/lib/mappers/navigation'
 import { toImageOpcional } from '@/lib/mappers/shared'
 import { toRodape } from '@/lib/mappers/site'
@@ -70,7 +71,7 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
    * o menu só precisa do cartão — sem ele, `solutions` arrasta um join por
    * tipo de bloco e o cabeçalho passa a custar dezenas de segundos. */
   const payload = await getPayload()
-  const [navGlobal, rodapeGlobal, institucional, contato, solucoes, parceiros, segmentos] = await Promise.all([
+  const [navGlobal, rodapeGlobal, institucional, contato, solucoes, parceiros, segmentos, painelGlobal, casesDoMenu] = await Promise.all([
     payload.findGlobal({ slug: 'navigation', locale, depth: 0 }),
     payload.findGlobal({ slug: 'footer', locale, depth: 0 }),
     /* `depth: 1` só pelo logo: o `site-settings` também carrega selos e
@@ -109,6 +110,20 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
       where: { _status: { equals: 'published' } },
       select: { name: true, slug: true, icon: true, shortDescription: true },
     }),
+    /* D-51: o painel de conversão do menu de Soluções. `depth: 0` porque os
+       cases de cada aba chegam só como id — quem os resolve é a consulta
+       abaixo, que já filtra o que está publicado. */
+    payload.findGlobal({ slug: 'conversion-panel', locale, depth: 0 }),
+    payload.find({
+      collection: 'cases',
+      locale,
+      /* `depth: 1` só pela capa. */
+      depth: 1,
+      limit: 50,
+      sort: '-publishedAt',
+      where: { _status: { equals: 'published' } },
+      select: { title: true, slug: true, client: true, heroImage: true },
+    }),
   ])
 
   const logo = toImageOpcional(institucional.logo, 'site-settings.logo')
@@ -124,6 +139,15 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
     solucoes: solucoes.docs,
     parceiros: parceiros.docs,
     segmentos: segmentos.docs,
+    conversao: toPainelDeConversao({
+      global: painelGlobal,
+      cases: casesDoMenu.docs,
+      /* Os destinos do painel são texto do admin (`/contato`), como os do
+         rodapé: o prefixo do idioma entra aqui, e o `proxy.ts` faz a ponte para
+         o slug traduzido. */
+      hrefLocal: (href) => (locale !== 'pt' && href.startsWith('/') ? `/${locale}${href}` : href),
+      hrefDoCase: (slug) => hrefDe('cases', locale, slug),
+    }),
     locale,
     hrefDaSolucao: (slug) => hrefDe('solucoes', locale, slug),
   })

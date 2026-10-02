@@ -1,9 +1,11 @@
 import type { Navigation, Partner, Solution } from '@/payload-types'
 import type {
+  AbaDeSolucoes,
   CategoriaDoMenu,
   CorDeDestaque,
   GrupoDeSolucoes,
   Navegacao,
+  PainelDeConversao,
   PartnerBadge,
 } from '@/types/content'
 
@@ -34,7 +36,7 @@ const vazio = (v: string | null | undefined): string | null => {
  * ⚠️ `rc18` não entra (D-37): a RC18 saiu de Soluções e se chega a ela pela
  * página de Bancos e pelo destaque da home. O documento continua com
  * `category: 'rc18'` — só deixa de ser agrupado, e o valor do enum fica. */
-const GRUPOS: { id: Solution['category']; pt: string; en: string }[] = [
+const GRUPOS: { id: AbaDeSolucoes; pt: string; en: string }[] = [
   { id: 'innovation-ai', pt: 'Inovação & IA', en: 'Innovation & AI' },
   { id: 'data-bi', pt: 'Dados, BI & Advanced Analytics', en: 'Data, BI & Advanced Analytics' },
   { id: 'governance-culture', pt: 'Governança & Cultura', en: 'Governance & Culture' },
@@ -46,6 +48,7 @@ export function toGruposDeSolucoes(
   hrefDaSolucao: (slug: string) => string,
 ): GrupoDeSolucoes[] {
   return GRUPOS.map((g) => ({
+    id: g.id,
     title: g[locale],
     items: docs
       .filter((d) => d.category === g.id)
@@ -123,6 +126,8 @@ export function toNavegacao(args: {
   solucoes: SolucaoDoMenu[]
   parceiros: ParceiroDoMenu[]
   segmentos: SegmentoDoMenu[]
+  /** Já mapeado (`conversion-panel.ts`); `null` enquanto não tiver título. */
+  conversao: PainelDeConversao | null
   locale: 'pt' | 'en'
   hrefDaSolucao: (slug: string) => string
 }): Navegacao {
@@ -130,6 +135,7 @@ export function toNavegacao(args: {
   return {
     categorias: toCategorias(args.global),
     solucoes: toGruposDeSolucoes(args.solucoes, args.locale, args.hrefDaSolucao),
+    conversao: args.conversao,
     parceiros,
     descricoesDeParceiro: descricoes,
     segmentos: args.segmentos.map(toSegmentCard),

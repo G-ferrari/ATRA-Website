@@ -725,7 +725,13 @@ export type CartaoDoMenu = {
 }
 
 /** Uma solução no painel, agrupada pela categoria do mega-menu. */
+/** As três abas do menu de Soluções — os valores de `solutions.category` que o
+ *  menu agrupa (`rc18` fica de fora, D-37). */
+export type AbaDeSolucoes = 'innovation-ai' | 'data-bi' | 'governance-culture'
+
 export type GrupoDeSolucoes = {
+  /** A aba: é por ela que o painel de conversão escolhe o case (D-51). */
+  id: AbaDeSolucoes
   title: string
   items: { title: string; description: string; icon: string; href: string | null }[]
 }
@@ -861,10 +867,35 @@ export type Rodape = {
   direitos: string
 }
 
+/** O case rotativo do painel de conversão: o que o cartão desenha, com o
+ *  endereço já resolvido no idioma. */
+export type MiniCase = {
+  slug: string
+  title: string
+  client: string | null
+  image: Image | null
+  href: string
+}
+
+/** Painel fixo à direita do menu de Soluções (D-51), do global
+ *  `conversion-panel`. Destinos já chegam com o prefixo do idioma. */
+export type PainelDeConversao = {
+  titulo: string
+  abertura: string | null
+  caminhos: { icon: string; title: string; description: string | null; href: string }[]
+  /** `null` sem texto ou sem destino: o botão não é desenhado. */
+  cta: { label: string; href: string } | null
+  provas: { value: string; label: string | null }[]
+  /** O que cada aba mostra. Aba sem case escolhido recebe os mais recentes. */
+  cases: Record<AbaDeSolucoes, MiniCase[]>
+}
+
 /** Tudo que o cabeçalho precisa, resolvido no servidor. */
 export type Navegacao = {
   categorias: CategoriaDoMenu[]
   solucoes: GrupoDeSolucoes[]
+  /** `null` enquanto o painel não tiver título no CMS: o menu sai como era. */
+  conversao: PainelDeConversao | null
   parceiros: PartnerBadge[]
   segmentos: SegmentCard[]
   /** Descrição de cada parceiro, para o painel — o `PartnerBadge` não a carrega. */

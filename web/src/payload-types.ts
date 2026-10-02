@@ -126,6 +126,7 @@ export interface Config {
   globals: {
     'atra-ai': AtraAi;
     contact: Contact;
+    'conversion-panel': ConversionPanel;
     'cookie-consent': CookieConsent;
     'data-maturity-diagnostic': DataMaturityDiagnostic;
     footer: Footer;
@@ -137,6 +138,7 @@ export interface Config {
   globalsSelect: {
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
+    'conversion-panel': ConversionPanelSelect<false> | ConversionPanelSelect<true>;
     'cookie-consent': CookieConsentSelect<false> | CookieConsentSelect<true>;
     'data-maturity-diagnostic': DataMaturityDiagnosticSelect<false> | DataMaturityDiagnosticSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
@@ -11577,6 +11579,89 @@ export interface Contact {
   createdAt?: string | null;
 }
 /**
+ * The fixed panel on the right of the Solutions menu: paths, button, figures and each tab’s case. Wide screens only.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversion-panel".
+ */
+export interface ConversionPanel {
+  id: number;
+  /**
+   * E.g. “Where to start?”. Empty: the panel is not shown.
+   */
+  title?: string | null;
+  intro?: string | null;
+  paths?:
+    | {
+        icon:
+          | 'sparkles'
+          | 'target'
+          | 'shield'
+          | 'rocket'
+          | 'users'
+          | 'database'
+          | 'cloud'
+          | 'brain'
+          | 'chart'
+          | 'lock'
+          | 'workflow'
+          | 'award'
+          | 'app'
+          | 'search'
+          | 'settings'
+          | 'zap'
+          | 'cpu'
+          | 'shield-check'
+          | 'trending-up'
+          | 'arrow-up-right'
+          | 'star'
+          | 'file-text'
+          | 'newspaper'
+          | 'video'
+          | 'book'
+          | 'briefcase'
+          | 'graduation-cap'
+          | 'heart'
+          | 'info'
+          | 'user-check'
+          | 'building'
+          | 'coffee'
+          | 'server'
+          | 'code'
+          | 'headset';
+        title: string;
+        description?: string | null;
+        /**
+         * In-site address, starting with “/”. The three paths lead to the assessment.
+         */
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  ctaLabel?: string | null;
+  ctaHref?: string | null;
+  /**
+   * One line only: “140+ specialists · 15+ years · …”. Five short items is what fits.
+   */
+  proof?:
+    | {
+        value: string;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Up to 3 per tab; with more than one, they rotate. A tab with none shows the latest ones.
+   */
+  cases?: {
+    innovationAi?: (number | Case)[] | null;
+    dataBi?: (number | Case)[] | null;
+    governanceCulture?: (number | Case)[] | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "cookie-consent".
  */
@@ -12016,6 +12101,42 @@ export interface ContactSelect<T extends boolean = true> {
         diagnostic?: T;
         careers?: T;
         chat?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversion-panel_select".
+ */
+export interface ConversionPanelSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  paths?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        href?: T;
+        id?: T;
+      };
+  ctaLabel?: T;
+  ctaHref?: T;
+  proof?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  cases?:
+    | T
+    | {
+        innovationAi?: T;
+        dataBi?: T;
+        governanceCulture?: T;
       };
   updatedAt?: T;
   createdAt?: T;

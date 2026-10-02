@@ -1419,3 +1419,50 @@ clicava em "Cookies" caía no topo do mesmo texto.
   de tradução (P-08).
 - Separar de novo — uma página por documento, ou âncora por seção — é decisão
   jurídica e de conteúdo, e se faz no admin (Sistema → Rodapé).
+
+## D-51 — Camada de conversão no menu de Soluções
+
+*Decidida em 02/10/2026 por G-ferrari, a partir da especificação e do print de 30/09.*
+
+**Contexto.** O menu de Soluções só listava as soluções: nenhuma saída para
+quem ainda não sabe o que procura, e nenhum caminho para contato sem fechar o
+menu.
+
+**Decisão.** Um painel fixo à direita do mega-menu, igual nas três abas:
+
+- **"Por onde começar?"**, com três caminhos — Decidir mais rápido com dados,
+  Colocar IA no negócio, Cortar custo e risco em nuvem — que levam ao
+  diagnóstico de maturidade;
+- o botão **"Falar com um especialista"**, sempre visível, para `/contato`;
+- a **prova social em uma linha**: 140+ especialistas · 15+ anos · Parceira
+  Google Cloud · 5x GPTW · 4x LIPT;
+- embaixo, o **case da aba**: muda conforme a aba (IA, Dados ou Governança),
+  alterna quando a aba tem mais de um, e o clique abre o case.
+
+**Consequências.**
+
+- Tudo é conteúdo do CMS, no global **`conversion-panel`** (Sistema → Painel do
+  menu de Soluções): título, abertura, caminhos (ícone, título, descrição,
+  destino), botão, itens da prova social e até 3 cases por aba. **Sem título, o
+  painel não é desenhado** e o menu sai como era.
+- ⚠️ **Global próprio, e não campos em `navigation`.** A migração de dados de
+  01/10 lê `navigation` com o config de hoje; coluna nova ali quebraria o
+  `migrate` em banco novo (a armadilha do CLAUDE.md). Global novo só cria
+  tabela que nenhuma migração antiga consulta.
+- O conteúdo chega aos ambientes pela migração
+  `20261002_203000_painel_de_conversao`, em dois passos com trava própria:
+  textos só em painel vazio; cases só se nenhuma aba tiver escolha. O seed
+  chama a mesma função depois de criar os cases.
+- **Aba sem case escolhido mostra os 3 mais recentes**, e case despublicado
+  some do painel sozinho — a consulta só traz publicado.
+- **Só a partir de 1280px** (`xl`). Em 1024px os cartões de solução, apertados
+  ao lado do painel, cresciam e a última linha da aba de Dados saía da tela.
+  Abaixo disso, e na gaveta do celular, o menu é o de antes.
+- O rodízio de cases para com o ponteiro ou o foco em cima, com "reduzir
+  movimento" ligado no sistema e sob `?e2e=1`.
+- ⚠️ **Fica com o marketing (D-22):** qual case vai em qual aba. A migração
+  parte de uma distribuição inicial — três cases em Dados, um em Governança,
+  nenhum em IA, porque nenhum dos quatro publicados é de IA. E os números: o
+  painel diz **5x GPTW**, e "Configurações do site" ainda diz 4x, marcado como
+  número em disputa (P-01).
+- O inglês é tradução literal, à espera da revisão (P-08).

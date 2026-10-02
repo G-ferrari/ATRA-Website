@@ -37,6 +37,7 @@ import { Press } from './collections/Press'
 import { Webinars } from './collections/Webinars'
 import { AtraAi } from './globals/AtraAi'
 import { Contact } from './globals/Contact'
+import { ConversionPanel } from './globals/ConversionPanel'
 import { CookieConsent } from './globals/CookieConsent'
 import { DiagnosticoDeMaturidade } from './globals/DiagnosticoDeMaturidade'
 import { Footer } from './globals/Footer'
@@ -102,7 +103,7 @@ export default buildConfig({
     ['users', 'ai-usage', 'form-submissions', 'private-files'],
   ),
 
-  globals: [AtraAi, Contact, CookieConsent, DiagnosticoDeMaturidade, Footer, Integrations, Navigation, SiteSettings, Tracking].map((g) => ({
+  globals: [AtraAi, Contact, ConversionPanel, CookieConsent, DiagnosticoDeMaturidade, Footer, Integrations, Navigation, SiteSettings, Tracking].map((g) => ({
     ...g,
     hooks: { ...g.hooks, afterChange: [...(g.hooks?.afterChange ?? []), () => revalidarSite()] },
   })),
