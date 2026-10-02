@@ -82,9 +82,9 @@ export const Footer: GlobalConfig = {
               label: { pt: 'Destino', en: 'Target' },
               admin: {
                 description: {
-                  /* Os 3 links legais e as 3 soluções apontam para `#` no legado;
-                   * portados assim (D-15). `/politicas-e-termos` existe no
-                   * WordPress e entra em MIG-094. */
+                  /* Os 3 links legais e as 3 soluções apontavam para `#` no
+                   * legado. Hoje nenhum link do rodapé está vazio, mas o campo
+                   * continua aceitando. */
                   pt: 'Vazio ou “#”: o link não leva a lugar nenhum, como no protótipo.',
                   en: 'Empty or “#”: the link goes nowhere, as in the prototype.',
                 },

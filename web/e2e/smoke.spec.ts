@@ -488,7 +488,7 @@ test.describe('app novo', () => {
 
   /* Os 3 links de solução do rodapé apontavam para `#`, herdado do protótipo.
      São as 3 categorias do mega-menu, sem página própria, então o destino de
-     todas é o índice — mesmo caso dos 3 links legais. */
+     todas é o índice. */
   test.describe('rodapé — os links de solução deixam de ser mortos', () => {
     test('as 3 categorias levam ao índice de soluções', async ({ page }) => {
       await page.goto(`${NEXT_URL}/sobre`)
@@ -498,10 +498,13 @@ test.describe('app novo', () => {
   })
 
   test.describe('/politicas-e-termos — pré-requisito de LGPD', () => {
-    test('os 3 links legais do rodapé levam à página, que responde 200', async ({ page, request }) => {
+    /* Eram três links — Privacidade, Termos de Uso e Cookies — para a mesma
+       página. Desde 02/10 é um só, com o nome dela. */
+    test('o rodapé tem um link para a página, que responde 200', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/sobre`)
-      const legais = page.locator('footer a[href="/politicas-e-termos"]')
-      await expect(legais).toHaveCount(3)
+      const legal = page.locator('footer a[href="/politicas-e-termos"]')
+      await expect(legal).toHaveCount(1)
+      await expect(legal).toHaveText('Políticas e Termos')
       expect((await request.get(`${NEXT_URL}/politicas-e-termos`)).status()).toBe(200)
     })
   })

@@ -74,6 +74,7 @@ import * as migration_20261001_120000_relatorios_vira_atra_na_midia from './2026
 import * as migration_20261002_120000_posts_novos_do_wordpress from './20261002_120000_posts_novos_do_wordpress';
 import * as migration_20261002_165837_add_press from './20261002_165837_add_press';
 import * as migration_20261002_170000_materias_da_imprensa from './20261002_170000_materias_da_imprensa';
+import * as migration_20261002_180000_rodape_link_unico_de_politicas from './20261002_180000_rodape_link_unico_de_politicas';
 
 export const migrations = [
   {
@@ -455,5 +456,10 @@ export const migrations = [
     up: migration_20261002_170000_materias_da_imprensa.up,
     down: migration_20261002_170000_materias_da_imprensa.down,
     name: '20261002_170000_materias_da_imprensa',
+  },
+  {
+    up: migration_20261002_180000_rodape_link_unico_de_politicas.up,
+    down: migration_20261002_180000_rodape_link_unico_de_politicas.down,
+    name: '20261002_180000_rodape_link_unico_de_politicas',
   },
 ];
