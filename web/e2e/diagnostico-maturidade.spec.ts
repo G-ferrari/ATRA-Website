@@ -160,6 +160,25 @@ test.describe('/diagnostico-maturidade — perguntas', () => {
     expect(await responderTodas(page)).toBe(PERGUNTAS_DE_SAUDE)
   })
 
+  /* ⚠️ O "Próxima" e o botão de envio ocupam o mesmo lugar no rodapé. Sem `key`
+   * o React reaproveitava o mesmo `<button>`, que virava `type="submit"` no meio
+   * do clique da última pergunta — e o navegador enviava o formulário vazio: o
+   * contato nascia com os quatro campos em vermelho (visto em 02/10). O clique
+   * tem de ser no botão, como `responderTodas` faz: quem avança escolhendo a
+   * alternativa não passa por aqui. */
+  test('o contato chega limpo: clicar em "Próxima" na última pergunta não envia o formulário', async ({ page }) => {
+    const posts = registrarPosts(page)
+    await abrir(page, `?setor=${SETOR}&e2e=1`)
+    await comecar(page)
+    await responderTodas(page)
+
+    const c = cartao(page)
+    await expect(enviar(page)).toBeVisible()
+    await expect(c.locator('[aria-invalid="true"]')).toHaveCount(0)
+    await expect(c.getByText('Informe seu nome')).toHaveCount(0)
+    expect(posts).toHaveLength(0)
+  })
+
   test('Voltar refaz o caminho e não perde as respostas', async ({ page }) => {
     await abrir(page, `?setor=${SETOR}&e2e=1`)
     const c = cartao(page)
