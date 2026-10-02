@@ -1262,3 +1262,46 @@ pronto para o dia em que a conta existir:
   repositório, para a virada de domínio não exigir commit.
 - Trocar o driver de log exige recriar os quatro containers uma vez. Postgres
   e MinIO são recriados à mão, no mesmo intervalo de um deploy.
+
+## D-47 — O blog tem paginação de verdade, com um endereço por página
+
+*Decidida em 02/10/2026 por G-ferrari, a partir da análise da listagem na
+homologação.*
+
+**Contexto.** A paginação do blog veio do protótipo como decoração: dois botões
+fixos, "1" e "2", que mudavam de cor e não fatiavam nada (débito registrado na
+Fase 3). Com a carga do WordPress o defeito cresceu sem ninguém ver: a consulta
+pedia `limit: 100`, havia 207 artigos, e os **107 anteriores a maio de 2025 não
+apareciam na lista nem na busca** — só abriam por link direto. A página
+carregava os 100 cartões de uma vez (561 KB de HTML), e a barra de categorias —
+seis nomes fixos do protótipo — nunca achava nada, porque os artigos vieram sem
+tag (P-27).
+
+**Opções.** (A) Paginar só no navegador, com a página num parâmetro
+(`/blog?pagina=2`): um endereço só; ou a rota deixa de ser pré-montada, ou a
+página 2 abre mostrando a 1 antes de trocar. (B) Um endereço por página
+(`/blog/pagina/2`), pré-montado como o resto do site.
+
+**Decisão.** (B), com **12 artigos por página** e a barra de categorias
+**escondida enquanto nenhum artigo tiver tag**.
+
+**Consequências.**
+
+- `/blog` é a primeira página e `/blog/pagina/[numero]` as seguintes;
+  `/blog/pagina/1` redireciona para `/blog`, e número inválido ou além da última
+  dá 404. Cada página é canônica de si mesma. O destaque do topo só existe na
+  primeira; nas outras o título da lista é o `h1`, com "Página N de T".
+- A ilha recebe **todos** os artigos (`lib/blog.ts`, sem `limit`) e mostra a
+  fatia da rota. É o que faz a **busca valer para todos**: com busca ou filtro a
+  lista é o resultado, paginado em estado, com botões em vez de links. O custo é
+  a lista inteira no payload de cada página — ~0,5 KB por artigo; rever se o
+  blog passar de uns 600.
+- A conta mora em `lib/paginacao.ts`, com teste (fatias que cobrem a lista sem
+  repetir nem pular; numeração com reticências). A regra das categorias em
+  `lib/categorias-do-blog.ts`: só aparece a que tem artigo, então a barra volta
+  sozinha quando o marketing classificar os artigos.
+- ⚠️ No inglês o trecho continua `pagina` (`/en/blog/pagina/2`): o proxy só
+  traduz o primeiro segmento. Traduzir entra com a tarefa de tradução.
+- ⚠️ O banco do CI tem só as fixtures, uma página: o smoke confere as bordas da
+  rota e que a numeração não aparece; a paginação em escala foi conferida num
+  banco local com os 213 artigos importados.

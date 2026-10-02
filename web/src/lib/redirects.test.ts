@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { ehSetor } from './diagnostico-maturidade'
-import { ROTAS_APOSENTADAS, ROTAS_RENOMEADAS, caminhosGone, lerCsv, redirectsDoNext } from './redirects'
+import { PRIMEIRA_PAGINA, ROTAS_APOSENTADAS, ROTAS_RENOMEADAS, caminhosGone, lerCsv, redirectsDoNext } from './redirects'
 import { canonizarSegmento } from './routes'
 
 const CSV = `from,to,status,note
@@ -130,6 +130,17 @@ describe('ROTAS_RENOMEADAS', () => {
     expect(canonizarSegmento('reports', 'en')).toBeNull()
     expect(canonizarSegmento('atra-na-midia', 'pt')).toBe('atra-na-midia')
     expect(canonizarSegmento('atra-in-the-media', 'en')).toBe('atra-na-midia')
+  })
+})
+
+/* D-47: `/blog/pagina/1` é `/blog`. Na lista de redirects, e não dentro da
+   página — lá o Next respondia com o `Location` em dobro. */
+describe('PRIMEIRA_PAGINA', () => {
+  it('leva a página 1 do blog à própria seção, nos dois idiomas', () => {
+    expect(PRIMEIRA_PAGINA).toEqual([
+      { source: '/blog/pagina/1', destination: '/blog', permanent: true },
+      { source: '/en/blog/pagina/1', destination: '/en/blog', permanent: true },
+    ])
   })
 })
 
