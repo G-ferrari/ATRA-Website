@@ -5649,7 +5649,10 @@ export interface Solution {
    * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
    */
   slug: string;
-  category: 'innovation-ai' | 'data-bi' | 'governance-culture' | 'rc18';
+  /**
+   * The tab in the Solutions menu.
+   */
+  category: 'innovation-ai' | 'data-bi' | 'governance-culture' | 'specialized-services' | 'rc18';
   icon:
     | 'sparkles'
     | 'target'
@@ -5686,6 +5689,10 @@ export interface Solution {
     | 'server'
     | 'code'
     | 'headset';
+  /**
+   * Optional. When filled, the card is highlighted and shows the badge in the menu and index.
+   */
+  badge?: string | null;
   /**
    * One sentence. Used in the Solutions menu and on the index card.
    */
@@ -10500,6 +10507,7 @@ export interface SolutionsSelect<T extends boolean = true> {
   slug?: T;
   category?: T;
   icon?: T;
+  badge?: T;
   shortDescription?: T;
   hasPage?: T;
   layout?:
@@ -11657,6 +11665,7 @@ export interface ConversionPanel {
     innovationAi?: (number | Case)[] | null;
     dataBi?: (number | Case)[] | null;
     governanceCulture?: (number | Case)[] | null;
+    specializedServices?: (number | Case)[] | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -12137,6 +12146,7 @@ export interface ConversionPanelSelect<T extends boolean = true> {
         innovationAi?: T;
         dataBi?: T;
         governanceCulture?: T;
+        specializedServices?: T;
       };
   updatedAt?: T;
   createdAt?: T;

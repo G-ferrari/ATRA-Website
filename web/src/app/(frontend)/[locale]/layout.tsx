@@ -91,7 +91,7 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
        * que só apareceu quando MIG-093 pôs 12 soluções em rascunho, meses depois
        * de a consulta ter sido escrita. */
       where: { _status: { equals: 'published' } },
-      select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true },
+      select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true, badge: true },
     }),
     payload.find({
       collection: 'partners',

@@ -5,6 +5,7 @@ import { BLOCOS } from '@/blocks'
 import { campoDeIcone } from '@/blocks/shared'
 import { seoField } from '@/fields/seo'
 import { slugField } from '@/fields/slug'
+import { ABAS_DE_SOLUCOES } from '@/lib/abas-de-solucoes'
 
 /* Ofertas da ATRA (MIG-055).
  *
@@ -55,13 +56,17 @@ export const Solutions: CollectionConfig = {
       name: 'category',
       type: 'select',
       required: true,
+      /* ⚠️ Desde a D-52 (02/10) são **quatro abas**, com nomes novos. Os três
+       * valores antigos ficaram e só o rótulo mudou — renomear valor de enum é
+       * migração destrutiva —, então o valor já não descreve a aba:
+       * `governance-culture` é "Governança & FinOps", e a cultura de dados foi
+       * para Serviços Especializados. Quem manda é `ABAS_DE_SOLUCOES`. */
       options: [
-        { value: 'innovation-ai', label: { pt: 'Inovação & IA', en: 'Innovation & AI' } },
-        { value: 'data-bi', label: { pt: 'Dados, BI & Advanced Analytics', en: 'Data, BI & Advanced Analytics' } },
-        { value: 'governance-culture', label: { pt: 'Governança & Cultura', en: 'Governance & Culture' } },
+        ...ABAS_DE_SOLUCOES.map((a) => ({ value: a.id, label: { pt: a.pt, en: a.en } })),
         { value: 'rc18', label: { pt: 'RC18', en: 'RC18' } },
       ],
       label: { pt: 'Categoria', en: 'Category' },
+      admin: { description: { pt: 'A aba do menu de Soluções.', en: 'The tab in the Solutions menu.' } },
     },
     {
       /* ⚠️ modelo-de-conteudo.md previa `text` com o nome do ícone Fluent
@@ -72,6 +77,21 @@ export const Solutions: CollectionConfig = {
        * Lucide — a troca de biblioteca já estava feita, e manter o nome Fluent
        * aqui guardaria um identificador que nada resolve. */
       ...campoDeIcone,
+    },
+    {
+      /* D-52: o selo do cartão em destaque — "Diferencial ATRA" em Analytics
+       * Conversacional. Texto livre e não checkbox: o que destaca o cartão é o
+       * selo ter o que dizer. */
+      name: 'badge',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Selo', en: 'Badge' },
+      admin: {
+        description: {
+          pt: 'Opcional. Preenchido, o cartão ganha destaque e o selo no menu e no índice. Ex.: “Diferencial ATRA”.',
+          en: 'Optional. When filled, the card is highlighted and shows the badge in the menu and index.',
+        },
+      },
     },
     {
       name: 'shortDescription',

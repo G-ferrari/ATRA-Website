@@ -1466,3 +1466,77 @@ menu.
   painel diz **5x GPTW**, e "Configurações do site" ainda diz 4x, marcado como
   número em disputa (P-01).
 - O inglês é tradução literal, à espera da revisão (P-08).
+
+## D-52 — Estrutura nova do menu de Soluções: 4 abas, 18 soluções
+
+*Decidida em 02/10/2026 por G-ferrari, com a lista de abas e soluções.*
+
+**Contexto.** O menu tinha 18 soluções em 3 abas — as 6 do protótipo e as 12
+páginas trazidas do WordPress —, com nomes e agrupamento herdados do site
+antigo. A oferta foi redesenhada.
+
+**Decisão.** O menu passa a ter **4 abas** e **18 soluções novas**:
+
+- **IA & Analytics Avançada** (5) — IA Generativa & Agentes Conversacionais,
+  Analytics Conversacional, Modelos Preditivos & de Recomendação, Extração
+  Inteligente de Documentos, BI & Advanced Analytics;
+- **Dados & Cloud** (6) — Plataforma de Dados & Lakehouse, Engenharia de Dados
+  & Pipelines, Migração & Modernização, Integração de Dados, Master Data &
+  Customer 360, Apps Web, Mobile & APIs;
+- **Governança & FinOps** (2) — Governança & Qualidade de Dados, FinOps &
+  Eficiência em Nuvem;
+- **Serviços Especializados** (5) — Fábrica de Soluções de Dados, Sustentação
+  Remota Especializada, Alocação de Consultores, Assessoria em Produtos,
+  Cultura de Dados & Treinamentos.
+
+Três escolhas do G-ferrari, entre as alternativas apresentadas:
+
+- **As 18 antigas são apagadas de vez**, e não despublicadas nem
+  reaproveitadas — inclusive a página de IA do protótipo e a Alocação de
+  Consultores remontada em 26/09.
+- **As novas nascem no ar, como esqueleto**: o topo, com o título e a frase da
+  lista, e a faixa final padrão (D-42). Sem texto inventado; o time da ATRA
+  escreve cada página no admin.
+- **"Analytics Conversacional" é o cartão em destaque**, com o selo
+  "Diferencial ATRA".
+
+**Consequências.**
+
+- A troca chega pela migração `20261002_213000_nova_estrutura_de_solucoes`, com
+  a lista em `migrations/arquivos/solucoes-estrutura.ts`. Ela só apaga o que
+  está em `SLUGS_ANTIGOS`, e não faz nada se a solução-marcador da estrutura
+  nova já existir — é o que impede uma segunda corrida de apagar página já
+  escrita.
+- ⚠️ **O que traz o texto antigo de volta é o backup diário da VPS**, ou o
+  WordPress enquanto ele existir. As imagens ficam na Biblioteca.
+  `import-solutions.ts` foi aposentado: recusa rodar sem `--mesmo-assim`.
+- **A RC18 fica.** Tem página, não tem aba (D-37), e não está na lista do que
+  sai.
+- As abas moram num lugar só, `lib/abas-de-solucoes.ts`, de onde leem a
+  collection, o menu, o índice e o painel de conversão. ⚠️ Os três valores
+  antigos de `solutions.category` ficaram e só o rótulo mudou (renomear valor
+  de enum é migração destrutiva): `governance-culture` é "Governança &
+  FinOps". A quarta aba é o valor novo `specialized-services`.
+- Campo novo **"Selo"** na solução (`badge`, localizado): preenchido, o cartão
+  ganha contorno e o selo no menu e no índice. A coluna nasce cedo, em
+  `20260927_215600_solutions_badge` — a terceira vez da armadilha da migração
+  de dados antiga em banco novo.
+- **Endereços antigos.** `/solucoes/<antigo>` leva à solução nova mais próxima
+  em assunto (`SOLUCOES_QUE_MUDARAM`, em `lib/redirects.ts`), e as 11 URLs do
+  WordPress que apontavam para páginas que saíram vão direto ao destino novo no
+  `redirects.csv`. Alocação de Consultores e Assessoria em Produtos mantêm o
+  endereço.
+- O rodapé passa a listar as quatro abas (migração
+  `20261002_213100_rodape_com_as_abas_novas`), e o painel de conversão (D-51)
+  ganha a escolha de cases da quarta aba.
+- No CI não há mais seed de solução do menu: as 18 entram no `migrate`, que não
+  depende de conteúdo nem de storage. `solucoes.ts`, `solucao-ia.ts` e
+  `solucoes-wp.ts` saíram do repositório.
+- A rota `solucao-detalhe` dos testes passa a ser uma solução nova; a paridade
+  com o protótipo não vale mais para ela (como `/consultores`, D-34). Os blocos
+  `methodCards` e `bentoGrid` ficaram sem página que os use.
+- O inglês repete o português, com o mesmo endereço (P-08).
+- ⚠️ **Fica com o marketing (D-22):** o conteúdo das 18 páginas — antes da
+  virada, ou vão ao ar magras (D-08) —; o texto do assistente do site (ATRA
+  AI), que ainda descreve a oferta antiga; e a home, onde o bloco "Soluções
+  Integradas" segue com os nomes de antes.

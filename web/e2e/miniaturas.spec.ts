@@ -35,24 +35,28 @@ import { settle } from './support/stability'
  * D-27 e a D-14 recusam. O teste reprova a miniatura que tiver uma — o nome do
  * arquivo sobrevive na URL da mídia. */
 
-const PAGINA_DO_BLOCO: Record<string, string> = {
-  pageHero: '/solucoes/cloud',
+/* ⚠️ Desde a D-52 (02/10) as soluções antigas não existem mais, e as novas são
+ * esqueleto: quem ilustra os blocos de página é um segmento (remontado no mesmo
+ * padrão) e a RC18. Dois blocos ficaram **sem página nenhuma** — `null` —, e a
+ * miniatura versionada deles segue valendo até alguém usar o bloco de novo. */
+const PAGINA_DO_BLOCO: Record<string, string | null> = {
+  pageHero: '/segmentos/varejo',
   partnerHero: '/parceiros/google-cloud',
   homeHero: '/',
   stickyPageNav: '/solucoes/rc18',
-  richTextSection: '/solucoes/cloud',
-  iconCardGrid: '/solucoes/cloud',
+  richTextSection: '/segmentos/varejo',
+  iconCardGrid: '/segmentos/varejo',
   valueCards: '/sobre',
-  methodCards: '/solucoes/inteligencia-artificial',
-  bentoGrid: '/solucoes/inteligencia-artificial',
+  methodCards: null,
+  bentoGrid: null,
   audienceSplit: '/solucoes/rc18',
   featureTabs: '/',
   processSteps: '/solucoes/rc18',
-  accordionSteps: '/solucoes/inteligencia-artificial',
+  accordionSteps: '/solucoes/rc18',
   statsGrid: '/sobre',
   sealsBanner: '/carreiras',
-  imageGrid: '/solucoes/data-analytics',
-  partnerShowcase: '/solucoes/cloud',
+  imageGrid: '/parceiros/google-cloud',
+  partnerShowcase: '/segmentos/varejo',
   logoMarquee: '/',
   partnerSplit: '/parceiros/google-cloud',
   highlightCarousel: '/',
@@ -61,7 +65,7 @@ const PAGINA_DO_BLOCO: Record<string, string> = {
   contentTeaser: '/',
   insightsHub: '/insights',
   homeBento: '/',
-  ctaBanner: '/solucoes/cloud',
+  ctaBanner: '/segmentos/varejo',
   // As soluções perderam o formulário em 29/09; /contato segue com ele.
   ctaContact: '/contato',
   jobsList: '/carreiras',
@@ -80,6 +84,8 @@ test.describe('miniaturas do seletor de seções', () => {
 
   for (const [bloco, caminho] of Object.entries(PAGINA_DO_BLOCO)) {
     test(`miniatura: ${bloco}`, async ({ page }) => {
+      test.skip(caminho === null, 'nenhuma página usa este bloco hoje — a miniatura versionada fica')
+      if (caminho === null) return
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto(new URL(caminho, NEXT_URL).toString(), { waitUntil: 'domcontentloaded' })
       await page.evaluate(() => document.documentElement.classList.add('dark'))

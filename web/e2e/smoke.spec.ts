@@ -479,20 +479,20 @@ test.describe('app novo', () => {
     })
 
     test('a solução declara Service', async ({ page }) => {
-      await page.goto(`${NEXT_URL}/solucoes/inteligencia-artificial`)
+      await page.goto(`${NEXT_URL}/solucoes/ia-generativa-e-agentes-conversacionais`)
       const servico = (await jsonLd(page)).find((d) => d['@type'] === 'Service')
       expect(servico, 'nenhum nó Service').toBeTruthy()
       expect(servico!.name).toBeTruthy()
     })
   })
 
-  /* Os 3 links de solução do rodapé apontavam para `#`, herdado do protótipo.
-     São as 3 categorias do mega-menu, sem página própria, então o destino de
-     todas é o índice. */
+  /* Os links de solução do rodapé apontavam para `#`, herdado do protótipo.
+     São as abas do mega-menu — quatro desde a D-52 —, sem página própria,
+     então o destino de todas é o índice. */
   test.describe('rodapé — os links de solução deixam de ser mortos', () => {
-    test('as 3 categorias levam ao índice de soluções', async ({ page }) => {
+    test('as 4 abas levam ao índice de soluções', async ({ page }) => {
       await page.goto(`${NEXT_URL}/sobre`)
-      await expect(page.locator('footer a[href="/solucoes"]')).toHaveCount(3)
+      await expect(page.locator('footer a[href="/solucoes"]')).toHaveCount(4)
       await expect(page.locator('footer a[href="#"]')).toHaveCount(0)
     })
   })
@@ -623,40 +623,55 @@ test.describe('app novo', () => {
      ela serve a página de IA, aqui vira índice. Não há gabarito visual, então o
      aceite é este. */
   test.describe('/solucoes — índice novo (D-09)', () => {
-    /* ⚠️ **18, e não 6.** P-16 (21/08/2026): as 6 do protótipo convivem com as 12
-       do WordPress (MIG-093). A RC18 existe e está publicada, mas saiu do índice
-       e do menu em 26/09 (D-37). O número é asserção de verdade e não contagem
-       frouxa — se cair, alguém despublicou; se subir, rascunho está vazando. */
-    test('lista as 18 soluções agrupadas nas 3 categorias, sem a RC18', async ({ page }) => {
+    /* ⚠️ **18 em 4 abas** desde a D-52 (02/10): a estrutura nova trocou as 6 do
+       protótipo e as 12 do WordPress por 18 soluções novas (5, 6, 2 e 5). A RC18
+       existe e está publicada, mas saiu do índice e do menu em 26/09 (D-37). O
+       número é asserção de verdade e não contagem frouxa — se cair, alguém
+       despublicou; se subir, rascunho está vazando. */
+    test('lista as 18 soluções agrupadas nas 4 abas, sem a RC18', async ({ page }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
-      for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
+      for (const categoria of ['IA & Analytics Avançada', 'Dados & Cloud', 'Governança & FinOps', 'Serviços Especializados']) {
         await expect(page.getByRole('heading', { name: categoria, level: 2 })).toBeVisible()
       }
       await expect(page.getByRole('heading', { name: 'RC18', level: 2 })).toHaveCount(0)
       await expect(page.getByRole('heading', { level: 3 })).toHaveCount(18)
     })
 
-    /* Só quem tem `hasPage` vira link: a de IA, portada em MIG-056, mais as 12
-       do WordPress, que têm corpo. As outras 5 do protótipo continuam sem
-       página. Sem esta asserção o índice poderia voltar a oferecer destinos que
-       respondem 404 — o buraco que MIG-050 abriu e MIG-051 teve que fechar. */
-    test('só as soluções com página viram link, e elas respondem', async ({ page, request }) => {
+    /* Só quem tem `hasPage` vira link, e as 18 novas nascem com página (o
+       esqueleto: topo e faixa final). Sem esta asserção o índice poderia voltar
+       a oferecer destinos que respondem 404 — o buraco que MIG-050 abriu e
+       MIG-051 teve que fechar. */
+    test('as 18 soluções viram link, e as páginas respondem', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
       const links = page.locator('a[href*="/solucoes/"]')
-      await expect(links).toHaveCount(13)
+      await expect(links).toHaveCount(18)
 
       const hrefs = await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')))
-      expect(hrefs).toContain('/solucoes/inteligencia-artificial')
+      expect(hrefs).toContain('/solucoes/analytics-conversacional')
       expect(hrefs).not.toContain('/solucoes/rc18')
       for (const href of hrefs) {
         expect((await request.get(`${NEXT_URL}${href}`)).status(), href!).toBe(200)
       }
     })
 
-    /* Solução sem `hasPage` não ganha URL: o slug existe na collection, mas a
-       página não. Sem o filtro na consulta as 5 responderiam 200 vazias. */
-    test('solução sem página responde 404', async ({ request }) => {
-      expect((await request.get(`${NEXT_URL}/solucoes/cultura-de-dados`)).status()).toBe(404)
+    test('solução que não existe responde 404', async ({ request }) => {
+      expect((await request.get(`${NEXT_URL}/solucoes/solucao-que-nao-existe`)).status()).toBe(404)
+    })
+
+    /* D-52: as soluções antigas foram apagadas, e o endereço de cada uma leva à
+       solução nova mais próxima — link salvo da homologação não dá 404. */
+    test('o endereço de uma solução antiga leva à nova', async ({ request }) => {
+      const resposta = await request.get(`${NEXT_URL}/solucoes/inteligencia-artificial`)
+      expect(resposta.status()).toBe(200)
+      expect(new URL(resposta.url()).pathname).toBe('/solucoes/ia-generativa-e-agentes-conversacionais')
+    })
+
+    /* O selo do cartão em destaque vem do campo "Selo" da solução. */
+    test('Analytics Conversacional é o cartão em destaque, com o selo', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/solucoes`)
+      const cartao = page.locator('a[href="/solucoes/analytics-conversacional"]')
+      await expect(cartao.getByText('Diferencial ATRA')).toBeVisible()
+      await expect(page.getByText('Diferencial ATRA')).toHaveCount(1)
     })
 
     test('o inglês responde no slug traduzido e o canônico redireciona', async ({ request }) => {
@@ -802,15 +817,15 @@ test.describe('app novo', () => {
          `onMouseEnter` troca o painel, como no legado. */
       const painel = page.getByRole('navigation')
       await passarNaCategoria(page, 'Soluções', () =>
-        expect(painel.getByRole('button', { name: 'Inovação & IA' })).toBeVisible({ timeout: 2000 }),
+        expect(painel.getByRole('button', { name: 'IA & Analytics Avançada' })).toBeVisible({ timeout: 2000 }),
       )
 
-      for (const grupo of ['Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
+      for (const grupo of ['Dados & Cloud', 'Governança & FinOps', 'Serviços Especializados']) {
         await expect(painel.getByRole('button', { name: grupo })).toBeVisible()
       }
-      await expect(painel.getByRole('link', { name: /Inteligência Artificial & IA Generativa/ })).toHaveAttribute(
+      await expect(painel.getByRole('link', { name: /IA Generativa & Agentes Conversacionais/ })).toHaveAttribute(
         'href',
-        '/solucoes/inteligencia-artificial',
+        '/solucoes/ia-generativa-e-agentes-conversacionais',
       )
     })
 
@@ -876,10 +891,10 @@ test.describe('app novo', () => {
 
       const abas = page.getByRole('navigation')
       const caso = lateral.getByTestId('mini-case')
-      await abas.getByRole('button', { name: 'Governança & Cultura' }).hover()
+      await abas.getByRole('button', { name: 'Governança & FinOps' }).hover()
       await expect(caso).toHaveAttribute('href', '/cases-de-sucesso/marketplace-governanca-dados')
 
-      await abas.getByRole('button', { name: 'Dados, BI & Advanced Analytics' }).hover()
+      await abas.getByRole('button', { name: 'Dados & Cloud' }).hover()
       await expect(caso).toHaveAttribute(
         'href',
         /\/cases-de-sucesso\/(dashboards-estrategicos|migracao-legado-gcp|eficiencia-processos-risco)$/,
@@ -916,7 +931,7 @@ test.describe('app novo', () => {
          debito-tecnico.md. Num aparelho de toque não há hover e o problema não
          existe, que é por onde a gaveta é usada de verdade. */
       await gaveta.getByRole('link', { name: 'Soluções', exact: true }).dispatchEvent('click')
-      await expect(gaveta.getByText('Inovação & IA')).toBeVisible()
+      await expect(gaveta.getByText('IA & Analytics Avançada')).toBeVisible()
     })
   })
 

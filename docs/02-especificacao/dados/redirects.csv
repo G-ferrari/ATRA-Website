@@ -227,26 +227,26 @@ from,to,status,note
 /category/uncategorized/,,410,taxonomia vazia - o WP tem 1 categoria e 0 tags
 /cientista-de-dados-pl-sr/,/carreiras/cientista-de-dados-pl-sr,301,vaga 1:1
 /clientes/,/sobre,301,N:1 - os logos de cliente vivem na home e em /sobre
-/cloud/,/solucoes/cloud,301,solucao 1:1
+/cloud/,/solucoes/migracao-e-modernizacao,301,solucao N:1 - estrutura nova de 02/10 (D-52)
 /conheca-atra/,/sobre,301,N:1 institucional
 /contato/,/contato,301,indice 1:1 - valida D-10
-/customer-360/,/solucoes/customer-360,301,solucao 1:1
-/data-analytics/,/solucoes/data-analytics,301,solucao 1:1
-/data-discovery/,/solucoes/data-discovery,301,solucao 1:1
-/data-integration/,/solucoes/data-integration,301,solucao 1:1
+/customer-360/,/solucoes/master-data-e-customer-360,301,solucao N:1 - estrutura nova de 02/10 (D-52)
+/data-analytics/,/solucoes/bi-e-advanced-analytics,301,solucao N:1 - estrutura nova de 02/10 (D-52)
+/data-discovery/,/solucoes/bi-e-advanced-analytics,301,solucao N:1 - estrutura nova de 02/10 (D-52)
+/data-integration/,/solucoes/integracao-de-dados,301,solucao N:1 - estrutura nova de 02/10 (D-52)
 /educacao/,/segmentos/educacao,301,segmento 1:1
 /em-manutencao/,,410,pagina tecnica do WordPress
 /engenheiro-de-dados-sr-oracle-cloud-oci/,/carreiras/engenheiro-de-dados-sr-oracle-cloud-oci,301,vaga 1:1
 /engenheiroa-de-dados-sr-azure-databricks/,/carreiras/engenheiroa-de-dados-sr-azure-databricks,301,vaga 1:1
 /eventos/,/insights,301,N:1 - nao ha rota de eventos; o hub de conteudo e o mais proximo
-/fabrica-de-transformacao-de-dados/,/solucoes/fabrica-de-transformacao-de-dados,301,solucao 1:1
-/governanca-de-dados/,/solucoes/governanca-de-dados,301,solucao 1:1
+/fabrica-de-transformacao-de-dados/,/solucoes/fabrica-de-solucoes-de-dados,301,solucao N:1 - estrutura nova de 02/10 (D-52)
+/governanca-de-dados/,/solucoes/governanca-e-qualidade-de-dados,301,solucao N:1 - estrutura nova de 02/10 (D-52)
 /health-check/,,410,pagina tecnica do WordPress
 /industria/,/segmentos/industria,301,segmento 1:1
-/inteligencia-artificial/,/solucoes/inteligencia-artificial,301,solucao 1:1
+/inteligencia-artificial/,/solucoes/ia-generativa-e-agentes-conversacionais,301,solucao N:1 - estrutura nova de 02/10 (D-52)
 /key-account-manager-pl-sr/,/carreiras/key-account-manager-pl-sr,301,vaga 1:1
 /logistica/,/segmentos/logistica,301,segmento 1:1
-/master-data-management/,/solucoes/master-data-management,301,solucao 1:1
+/master-data-management/,/solucoes/master-data-e-customer-360,301,solucao N:1 - estrutura nova de 02/10 (D-52)
 /nossas-conquistas/,/sobre,301,N:1 institucional - os selos vivem em /sobre
 /parceiros/,/sobre,301,N:1 - a vitrine de parceiros vive em /sobre; nao ha indice
 /politicas-e-termos/,/politicas-e-termos,301,pagina legal 1:1 (MIG-094)
@@ -259,10 +259,10 @@ from,to,status,note
 /sobre/,/sobre,301,N:1 institucional
 /solucoes-atra/,/solucoes,301,indice N:1 - o WP tem duas paginas de indice
 /solucoes/,/solucoes,301,indice 1:1
-/sustentacao-remota/,/solucoes/sustentacao-remota,301,solucao 1:1
+/sustentacao-remota/,/solucoes/sustentacao-remota-especializada,301,solucao N:1 - estrutura nova de 02/10 (D-52)
 /telecom/,/segmentos/telecom,301,segmento 1:1
 /trabalhe-conosco/,/carreiras,301,N:1 carreiras
 /trainee-engenheiro-de-data-analytics-ai/,/carreiras/trainee-engenheiro-de-data-analytics-ai,301,vaga 1:1
-/treinamento/,/solucoes/treinamento,301,solucao 1:1
+/treinamento/,/solucoes/cultura-de-dados-e-treinamentos,301,solucao N:1 - estrutura nova de 02/10 (D-52)
 /utilidades/,/segmentos/utilidades,301,segmento 1:1
 /varejo/,/segmentos/varejo,301,segmento 1:1

@@ -41,7 +41,10 @@ export const ROTAS_COM_GABARITO = [
      carrinho, aba e envio) e `smoke.spec.ts`. */
   /* `/solucoes` (o índice) fica **fora**: D-09 mudou o comportamento da rota e
      não há gabarito — o legado serve ali a página de IA. É esta que compara. */
-  { nome: 'solucao-detalhe', caminho: '/solucoes/inteligencia-artificial' },
+  /* ⚠️ Desde a D-52 a página de IA do protótipo não existe mais; a rota de
+     detalhe é uma solução da estrutura nova, e a paridade com o legado não
+     vale mais para ela (como /consultores, D-34). Contraste e axe seguem. */
+  { nome: 'solucao-detalhe', caminho: '/solucoes/ia-generativa-e-agentes-conversacionais' },
   /* Terceira rota que MIG-054 fechou sem gabarito, e a terceira a sair curta —
      38%, neste caso. Ver a nota no topo de `seed/parceiros.ts`. */
   { nome: 'parceiro-detalhe', caminho: '/parceiros/google-cloud' },

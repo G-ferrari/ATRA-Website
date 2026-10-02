@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 
+import { ENDERECOS_QUE_MUDARAM } from '../migrations/arquivos/solucoes-estrutura'
 import { LOCALES } from './locales'
 import { hrefDaPagina, hrefDe, SEGMENTO_DE_PAGINA } from './routes'
 
@@ -120,6 +121,24 @@ export const ROTAS_RENOMEADAS = [
   { source: '/en/reports', destination: hrefDe('midia', 'en'), permanent: true },
   { source: '/en/reports/:slug', destination: hrefDe('midia', 'en'), permanent: true },
 ] as const
+
+/**
+ * As soluções que **mudaram de endereço** com a estrutura nova do menu (D-52,
+ * 02/10/2026): as 18 antigas saíram, e cada endereço leva à solução nova mais
+ * próxima em assunto. O mapa é o da migração que fez a troca
+ * (`migrations/arquivos/solucoes-estrutura.ts`), para os dois não divergirem.
+ *
+ * Os endereços antigos nunca estiveram em produção — só na homologação —, mas
+ * é por eles que o time revisou o site, e link salvo não deve dar 404. As URLs
+ * do WordPress vão direto ao destino novo, pelo `redirects.csv`.
+ */
+export const SOLUCOES_QUE_MUDARAM = ENDERECOS_QUE_MUDARAM.flatMap(([antigo, novo]) =>
+  LOCALES.map((locale) => ({
+    source: hrefDe('solucoes', locale, antigo),
+    destination: hrefDe('solucoes', locale, novo),
+    permanent: true,
+  })),
+)
 
 /**
  * A primeira página de uma listagem paginada é a própria seção (D-47):

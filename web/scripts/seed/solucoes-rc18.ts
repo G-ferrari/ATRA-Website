@@ -36,9 +36,8 @@
  * pela migração `20260926_220000_rc18_aponta_para_o_diagnostico`, que roda no
  * deploy e só age se a página ainda estiver como este seed a deixava.
  *
- * Diferente de `solucao-ia.ts`, este seed **cria** o documento (RC18 não está
- * entre as 6 soluções-base de `solucoes.ts`) e depois grava o layout. Idempotente
- * pelo slug. A categoria `rc18` (4ª aba do mega-menu) veio na migração da task 002.
+ * Este seed **cria** o documento e depois grava o layout. Idempotente pelo
+ * slug. (As soluções do menu não têm mais seed: entram por migração, D-52.) A categoria `rc18` (4ª aba do mega-menu) veio na migração da task 002.
  *
  * ⚠️ EN é um **stub em português** (decisão PT-only da v1): a RC 18/2025 é norma
  * do BCB para instituições brasileiras, público 100% nacional. O layout de blocos

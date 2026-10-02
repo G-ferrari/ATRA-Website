@@ -8,8 +8,15 @@ import { spawnSync } from 'node:child_process'
  * seguinte no meio.
  *
  * Rodar com `pnpm seed`. Todos são idempotentes: rodar duas vezes não duplica.
+ *
+ * ⚠️ Não há mais seed das soluções do menu (D-52, 02/10): as 18 da estrutura
+ * nova entram pela migração `20261002_213000_nova_estrutura_de_solucoes`, que
+ * roda no `migrate` — inclusive em banco novo, porque não depende de conteúdo
+ * nem de storage. Os seeds antigos (`solucoes.ts`, `solucao-ia.ts`,
+ * `solucoes-wp.ts`) recriariam as soluções que a migração apagou. Só a RC18
+ * continua aqui.
  */
-const SEEDS = ['parceiros-catalogo.ts', 'cases.ts', 'glossary.ts', 'resources.ts', 'webinars.ts', 'posts.ts', 'clientes.ts', 'sobre.ts', 'carreiras.ts', 'contato.ts', 'consultores.ts', 'parceiros.ts', 'solucoes.ts', 'solucao-ia.ts', 'solucoes-rc18.ts', 'solucoes-wp.ts', 'home.ts', 'insights.ts', 'atra-ai.ts', 'navegacao.ts', 'globais.ts', 'segmentos.ts', 'rastreamento.ts', 'migracoes-de-dados.ts']
+const SEEDS = ['parceiros-catalogo.ts', 'cases.ts', 'glossary.ts', 'resources.ts', 'webinars.ts', 'posts.ts', 'clientes.ts', 'sobre.ts', 'carreiras.ts', 'contato.ts', 'consultores.ts', 'parceiros.ts', 'solucoes-rc18.ts', 'home.ts', 'insights.ts', 'atra-ai.ts', 'navegacao.ts', 'globais.ts', 'segmentos.ts', 'rastreamento.ts', 'migracoes-de-dados.ts']
 
 for (const arquivo of SEEDS) {
   console.log(`\n▶ ${arquivo}`)
