@@ -119,6 +119,24 @@ Três seções que mudaram de comportamento em 29/09:
 - **Grade de imagens** — é a dos selos (Google Cloud, na página do parceiro e
   em Data Analytics). Para trocar um selo, troque a imagem ali.
 
+## ATRA na mídia
+
+Em **Conteúdo → ATRA na mídia** fica cada matéria, entrevista ou vídeo em que a
+ATRA aparece na imprensa. Para incluir uma:
+
+1. **Título** e **Resumo** (até 300 caracteres) — como vão aparecer no cartão.
+2. **Veículo** — quem publicou. Ex.: Gazeta Mercantil Digital.
+3. **Link da matéria** — o endereço completo no site do veículo, começando com
+   `https://`. É para onde o cartão leva, em outra aba. A mesma matéria não
+   entra duas vezes: o link é único.
+4. **Capa** — a imagem do cartão, na proporção 4:3 ou 16:9.
+5. **Tipo** — "Vídeo" põe o botão de play sobre a capa e troca "Leia a matéria"
+   por "Assistir".
+6. **Ordem** — menor aparece primeiro. As **4 primeiras** são o destaque do
+   topo da página.
+
+Não existe página interna por matéria: o visitante vai direto para o veículo.
+
 ## O que mais é editável
 
 - **Depoimentos e clientes** — Catálogos. Depoimento sem foto mostra

@@ -106,15 +106,19 @@ export const ROTAS_APOSENTADAS = [
  * antes de o site ir ao ar. O endereço antigo já está em link gravado no CMS
  * (menu, página Insights) e em quem acompanhou a homologação.
  *
+ * ⚠️ Com slug, o destino é a **lista**, não uma página: desde 02/10 (D-49) a
+ * seção é de matérias de imprensa, que abrem no veículo, e os relatórios de
+ * exemplo saíram do site — não há página de item para onde levar.
+ *
  * Mesmas regras de `ROTAS_APOSENTADAS`: origem escrita à mão e sem barra final,
  * destino por `hrefDe`. Lista separada porque lá cada destino carrega
  * `?setor=`, e os testes cobram isso de toda linha.
  */
 export const ROTAS_RENOMEADAS = [
-  { source: '/relatorios', destination: hrefDe('relatorios', 'pt'), permanent: true },
-  { source: '/relatorios/:slug', destination: `${hrefDe('relatorios', 'pt')}/:slug`, permanent: true },
-  { source: '/en/reports', destination: hrefDe('relatorios', 'en'), permanent: true },
-  { source: '/en/reports/:slug', destination: `${hrefDe('relatorios', 'en')}/:slug`, permanent: true },
+  { source: '/relatorios', destination: hrefDe('midia', 'pt'), permanent: true },
+  { source: '/relatorios/:slug', destination: hrefDe('midia', 'pt'), permanent: true },
+  { source: '/en/reports', destination: hrefDe('midia', 'en'), permanent: true },
+  { source: '/en/reports/:slug', destination: hrefDe('midia', 'en'), permanent: true },
 ] as const
 
 /**

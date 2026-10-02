@@ -10,7 +10,7 @@ import { dataPorExtenso } from '@/lib/mappers/resource'
 import { hrefDe, type Secao } from '@/lib/routes'
 import type { ResourceDetail } from '@/types/content'
 
-/* Landing de material rico (MIG-045), compartilhada por /relatorios/[slug] e
+/* Landing de material rico (MIG-045). Nasceu compartilhada por /relatorios/[slug] e
  * /ebooks/[slug] — as duas diferem em rótulo e num dado (data contra número de
  * páginas), não em estrutura.
  *
@@ -40,7 +40,7 @@ export function PaginaDeMaterial({
   t,
 }: {
   material: ResourceDetail
-  secao: Extract<Secao, 'relatorios' | 'ebooks'>
+  secao: Extract<Secao, 'ebooks'>
   locale: Locale
   t: TextosDoMaterial
 }) {

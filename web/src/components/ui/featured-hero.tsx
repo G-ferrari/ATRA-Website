@@ -31,6 +31,13 @@ export type FeaturedItem = {
   eyebrow: string | null
   /** Legenda de cada miniatura na régua de baixo. */
   thumbLabel: string | null
+  /* "ATRA na mídia" (D-49): o destaque leva para fora do site, e o texto do
+   * botão depende do item — "Leia a matéria" ou "Assistir". Os dois são
+   * opcionais; sem eles vale o comportamento de sempre. */
+  /** O destino é outro site: abre em outra aba. */
+  externo?: boolean
+  /** Texto do botão só para este item; sem ele, vale o `actionLabel` do hero. */
+  actionLabel?: string
 }
 
 export type FeaturedHeroProps = {
@@ -136,9 +143,13 @@ export function FeaturedHero({
               )}
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Link href={ativo.href} className="pill-btn-primary py-3 px-6 text-xs sm:text-sm font-bold justify-center">
+                <Link
+                  href={ativo.href}
+                  {...(ativo.externo ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="pill-btn-primary py-3 px-6 text-xs sm:text-sm font-bold justify-center"
+                >
                   {actionIcon}
-                  <span>{actionLabel}</span>
+                  <span>{ativo.actionLabel ?? actionLabel}</span>
                   {!actionIcon && <ArrowRight size={16} aria-hidden />}
                 </Link>
                 {acaoSecundaria && (

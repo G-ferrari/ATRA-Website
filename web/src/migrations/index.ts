@@ -60,6 +60,7 @@ import * as migration_20260927_105730_reconcilia_snapshot_destino_e_diagnostico 
 import * as migration_20260927_163411_add_tracking from './20260927_163411_add_tracking';
 import * as migration_20260927_215331_add_image_grid from './20260927_215331_add_image_grid';
 import * as migration_20260927_215400_partner_showcase_source from './20260927_215400_partner_showcase_source';
+import * as migration_20260927_215500_locked_documents_press from './20260927_215500_locked_documents_press';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './20260928_001000_carrossel_da_home_com_rc18';
@@ -71,6 +72,8 @@ import * as migration_20260929_223100_selos_na_pagina_do_google_cloud from './20
 import * as migration_20260929_223200_fim_das_paginas_internas from './20260929_223200_fim_das_paginas_internas';
 import * as migration_20261001_120000_relatorios_vira_atra_na_midia from './20261001_120000_relatorios_vira_atra_na_midia';
 import * as migration_20261002_120000_posts_novos_do_wordpress from './20261002_120000_posts_novos_do_wordpress';
+import * as migration_20261002_165837_add_press from './20261002_165837_add_press';
+import * as migration_20261002_170000_materias_da_imprensa from './20261002_170000_materias_da_imprensa';
 
 export const migrations = [
   {
@@ -384,6 +387,11 @@ export const migrations = [
     name: '20260927_215400_partner_showcase_source',
   },
   {
+    up: migration_20260927_215500_locked_documents_press.up,
+    down: migration_20260927_215500_locked_documents_press.down,
+    name: '20260927_215500_locked_documents_press',
+  },
+  {
     up: migration_20260927_235900_solucoes_do_wordpress.up,
     down: migration_20260927_235900_solucoes_do_wordpress.down,
     name: '20260927_235900_solucoes_do_wordpress',
@@ -437,5 +445,15 @@ export const migrations = [
     up: migration_20261002_120000_posts_novos_do_wordpress.up,
     down: migration_20261002_120000_posts_novos_do_wordpress.down,
     name: '20261002_120000_posts_novos_do_wordpress',
+  },
+  {
+    up: migration_20261002_165837_add_press.up,
+    down: migration_20261002_165837_add_press.down,
+    name: '20261002_165837_add_press',
+  },
+  {
+    up: migration_20261002_170000_materias_da_imprensa.up,
+    down: migration_20261002_170000_materias_da_imprensa.down,
+    name: '20261002_170000_materias_da_imprensa',
   },
 ];
