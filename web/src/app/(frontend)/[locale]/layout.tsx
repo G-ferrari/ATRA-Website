@@ -12,7 +12,9 @@ import { CapturaDeUtm } from '@/components/layout/captura-de-utm'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
+import { HtmlComTema } from '@/components/layout/tema'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { SCRIPT_DO_TEMA } from '@/lib/tema'
 import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
 import { lerContato } from '@/lib/contato'
 import { organizacao } from '@/lib/jsonld'
@@ -127,22 +129,24 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   })
 
   return (
-    /* `dark` no servidor: o legado inicia no tema escuro (App.tsx:2571) e a
-     * regressão visual compara os dois. Aplicar por efeito no cliente causaria
-     * flash de tema claro na primeira pintura. O alternador entra com a casca
-     * do site (MIG-034). */
-    <html
-      lang={locale === 'pt' ? 'pt-BR' : 'en'}
-      /* Sem `antialiased`: o legado não define `-webkit-font-smoothing`, e
-       * ligá-lo muda a rasterização de todo glifo do site. Era a diferença que
-       * sobrava na regressão visual depois de layout e fonte já baterem — as
-       * 60 caixas de texto da listagem coincidem ao décimo de pixel, e ainda
-       * assim as bordas divergiam. Porte fiel vale para isso também (D-15). */
-      className={`${monaSans.variable} h-full dark`}
-    >
+    /* O `<html>` é desenhado por `HtmlComTema`, de cliente, que lhe dá a classe
+     * do tema (D-48). No servidor ela é `dark` — o legado inicia no escuro
+     * (App.tsx:2571), e a página é pré-montada, sem saber o tema de ninguém.
+     * Quem acerta antes da primeira pintura é o `SCRIPT_DO_TEMA`, no começo do
+     * `<body>`; quem mantém certo depois é o próprio `HtmlComTema`.
+     *
+     * Sem `antialiased` na classe: o legado não define `-webkit-font-smoothing`,
+     * e ligá-lo muda a rasterização de todo glifo do site. Era a diferença que
+     * sobrava na regressão visual depois de layout e fonte já baterem — as
+     * 60 caixas de texto da listagem coincidem ao décimo de pixel, e ainda
+     * assim as bordas divergiam. Porte fiel vale para isso também (D-15). */
+    <HtmlComTema lang={locale === 'pt' ? 'pt-BR' : 'en'} classeBase={`${monaSans.variable} h-full`}>
       {/* A árvore reproduz a do legado (`App.tsx:2597`): o `<body>` fica limpo,
         * como no `index.html` dele, e as classes de casca vivem no wrapper. */}
       <body>
+        {/* Primeiro filho do `<body>`, de propósito: roda antes de qualquer
+            conteúdo ser pintado. Ver `lib/tema.ts`. */}
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_DO_TEMA }} />
         {/* Uma vez por página, no layout: a organização é a mesma em todas, e
             repetir o nó em cada rota só multiplicaria bytes. */}
         <DadosEstruturados
@@ -199,6 +203,6 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
           {children}
         </Casca>
       </body>
-    </html>
+    </HtmlComTema>
   )
 }
