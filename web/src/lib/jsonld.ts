@@ -1,5 +1,5 @@
 import type { Contato, Image, Seo } from '@/types/content'
-import { ORIGEM } from './seo'
+import { absoluta, ORIGEM } from './seo'
 
 /* MIG-107 — dados estruturados schema.org.
  *
@@ -82,7 +82,3 @@ export function servico(args: { seo: Seo; url: string }): JsonLd {
   }
 }
 
-/** URL de mídia vira absoluta: o Google recusa caminho relativo em `image`. */
-function absoluta(url: string): string {
-  return url.startsWith('http') ? url : `${ORIGEM}${url}`
-}

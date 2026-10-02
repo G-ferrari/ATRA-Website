@@ -14,6 +14,7 @@ import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { HtmlComTema } from '@/components/layout/tema'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { ORIGEM } from '@/lib/seo'
 import { SCRIPT_DO_TEMA } from '@/lib/tema'
 import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
 import { lerContato } from '@/lib/contato'
@@ -50,6 +51,10 @@ const monaSans = Mona_Sans({
 })
 
 export const metadata: Metadata = {
+  /* ⚠️ Sem isto o Next completa todo endereço relativo de metatag com
+   * `http://localhost:3000`. `metadataDe` já manda a imagem de compartilhamento
+   * absoluta; esta linha cobre o que mais vier relativo, hoje e depois. */
+  metadataBase: new URL(ORIGEM),
   title: { default: 'ATRA', template: '%s | ATRA' },
   description: 'Consultoria de Dados e IA.',
 }
