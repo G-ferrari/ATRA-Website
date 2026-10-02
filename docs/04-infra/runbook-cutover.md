@@ -76,10 +76,15 @@ docker compose -f docker-compose.prod.yml --profile tarefas run --rm migrate \
 Sem a chave o importador **regrava** os artigos que já existem com o texto do
 WordPress, por cima do que o marketing corrigiu no admin. Com ela, só cria o que
 falta e lista o que criou. Tem de rodar **antes do passo 15**: depois da virada
-`atra.com.br` é o site novo, e o importador não acha mais o WordPress. Em 01/10
-faltavam 6 artigos (de 03/09 a 25/09); os redirects deles já estão no
-`redirects.csv`, mas cada artigo publicado depois disso precisa da linha dele
-(passos 2 e 3).
+`atra.com.br` é o site novo, e o importador não acha mais o WordPress.
+
+Os 6 artigos publicados entre a carga de 17/08 e 25/09 **já estão resolvidos**:
+chegam pela migração `20261002_120000_posts_novos_do_wordpress` no deploy, e os
+redirects deles estão no `redirects.csv`. O comando acima é para o que o
+WordPress publicar **depois de 25/09** — e cada artigo desses precisa também da
+linha dele no CSV (passos 2 e 3). Quem não tem acesso ao servidor traz artigo
+novo pelo mesmo caminho da migração: `scripts/wp-import/exportar-posts.ts
+--desde=AAAA-MM-DD` escreve o conteúdo em `src/migrations/arquivos/posts-wp/`.
 
 ⚠️ O passo 6 é o que torna o rollback rápido. Sem reduzir o TTL antes, reverter
 pode levar horas em vez de minutos.

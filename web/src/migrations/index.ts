@@ -70,6 +70,7 @@ import * as migration_20260929_223000_sem_endereco_fixo from './20260929_223000_
 import * as migration_20260929_223100_selos_na_pagina_do_google_cloud from './20260929_223100_selos_na_pagina_do_google_cloud';
 import * as migration_20260929_223200_fim_das_paginas_internas from './20260929_223200_fim_das_paginas_internas';
 import * as migration_20261001_120000_relatorios_vira_atra_na_midia from './20261001_120000_relatorios_vira_atra_na_midia';
+import * as migration_20261002_120000_posts_novos_do_wordpress from './20261002_120000_posts_novos_do_wordpress';
 
 export const migrations = [
   {
@@ -431,5 +432,10 @@ export const migrations = [
     up: migration_20261001_120000_relatorios_vira_atra_na_midia.up,
     down: migration_20261001_120000_relatorios_vira_atra_na_midia.down,
     name: '20261001_120000_relatorios_vira_atra_na_midia',
+  },
+  {
+    up: migration_20261002_120000_posts_novos_do_wordpress.up,
+    down: migration_20261002_120000_posts_novos_do_wordpress.down,
+    name: '20261002_120000_posts_novos_do_wordpress',
   },
 ];

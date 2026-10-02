@@ -292,8 +292,9 @@ levantamento). A 4c trouxe as **8 verticais** para `/segmentos` (remontadas em
 27/09 no padrão das soluções por `20260927_235930_segmentos_do_wordpress`, com
 o texto literal em `src/migrations/arquivos/segmentos-wp/`) e a página legal
 para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas** (267 desde 01/10, com os 6
-artigos publicados depois da carga — eles entram no site por
-`import-posts.ts --so-novos`, que não regrava os 207 que já existem), com a
+artigos publicados depois da carga — eles chegam pela migração
+`20261002_120000_posts_novos_do_wordpress`; o que vier depois entra por
+`import-posts.ts --so-novos`, que não regrava os que já existem), com a
 geração reprovando se alguma URL do WordPress ficar sem destino.
 
 **MIG-084** (P-27) segue em pendência — o WP tem 1 categoria e 0 tags, não há

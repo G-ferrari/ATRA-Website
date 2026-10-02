@@ -81,8 +81,24 @@ export function resolverAlt(m: WpMedia, reserva: string): { alt: string; fonte: 
   return { alt: reserva, fonte: 'tituloDoPost' }
 }
 
-const limparHtml = (s: string) =>
+export const limparHtml = (s: string) =>
   s.replace(/<[^>]*>/g, ' ').replace(/&#8217;/g, '’').replace(/&#8220;|&#8221;/g, '"').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim()
+
+/** Índice URL → id do WP, com as variantes de tamanho.
+ *
+ * ⚠️ O `<img>` do corpo aponta para o recorte (`…-1024x683.jpg`), não para o
+ * original. Sem as variantes, 284 das 287 imagens não casariam com item nenhum
+ * da biblioteca e o importador as trataria como externas. */
+export function indicePorUrl(midias: WpMedia[]): Map<string, number> {
+  const porUrl = new Map<string, number>()
+  for (const m of midias) {
+    porUrl.set(m.source_url, m.id)
+    for (const s of Object.values(m.media_details?.sizes ?? {})) {
+      if (s.source_url) porUrl.set(s.source_url, m.id)
+    }
+  }
+  return porUrl
+}
 
 export async function criarImportadorDeMidia(args: {
   payload: Payload
@@ -94,18 +110,7 @@ export async function criarImportadorDeMidia(args: {
 
   const porId = new Map(midias.map((m) => [m.id, m]))
 
-  /* Índice URL → id do WP, com as variantes de tamanho.
-   *
-   * ⚠️ O `<img>` do corpo aponta para o recorte (`…-1024x683.jpg`), não para o
-   * original. Sem as variantes, 284 das 287 imagens não casariam com item nenhum
-   * da biblioteca e o importador as trataria como externas. */
-  const porUrl = new Map<string, number>()
-  for (const m of midias) {
-    porUrl.set(m.source_url, m.id)
-    for (const s of Object.values(m.media_details?.sizes ?? {})) {
-      if (s.source_url) porUrl.set(s.source_url, m.id)
-    }
-  }
+  const porUrl = indicePorUrl(midias)
 
   const cache = new Map<number, number>()
   const resumo: ResumoDeMidia = { baixadas: 0, reaproveitadas: 0, alt: { biblioteca: 0, tituloDaMidia: 0, tituloDoPost: 0 } }

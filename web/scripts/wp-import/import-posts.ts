@@ -13,10 +13,11 @@
  *
  * ⚠️ Depois da carga inicial, rodar **sempre** com `--so-novos`. Sem a chave o
  * importador regrava os posts que já existem com o texto do WordPress, por cima
- * de qualquer correção feita no admin. Em 01/10 havia 6 artigos publicados no
- * WordPress depois da carga (de 03/09 a 25/09) fora do site novo, e é para
- * trazê-los — antes da virada do DNS, enquanto o WordPress ainda responde em
- * atra.com.br — que a chave existe. No servidor:
+ * de qualquer correção feita no admin. Os 6 artigos publicados entre a carga e
+ * 25/09 chegaram por migração (`20261002_120000_posts_novos_do_wordpress`, com
+ * o conteúdo exportado por `exportar-posts.ts`); a chave é para o que for
+ * publicado depois disso, e tem de rodar antes da virada do DNS, enquanto o
+ * WordPress ainda responde em atra.com.br. No servidor:
  *   docker compose -f docker-compose.prod.yml --profile tarefas run --rm migrate \
  *     pnpm exec tsx scripts/wp-import/import-posts.ts --so-novos
  */
