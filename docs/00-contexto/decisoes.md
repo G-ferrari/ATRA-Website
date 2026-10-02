@@ -1305,3 +1305,45 @@ página 2 abre mostrando a 1 antes de trocar. (B) Um endereço por página
 - ⚠️ O banco do CI tem só as fixtures, uma página: o smoke confere as bordas da
   rota e que a numeração não aparece; a paginação em escala foi conferida num
   banco local com os 213 artigos importados.
+
+## D-48 — O tema segue o sistema na primeira visita e guarda a escolha
+
+*Decidida em 02/10/2026 por G-ferrari.*
+
+**Contexto.** O site abria sempre no tema escuro e esquecia a troca do
+alternador a cada carregamento — herança do protótipo (`App.tsx:2575`), anotada
+no próprio componente como melhoria para depois do aceite visual. Quem usa o
+computador no claro recebia um site escuro em toda visita.
+
+**Decisão.** Três regras, em ordem: quem já escolheu no alternador recebe o que
+escolheu; quem nunca escolheu recebe o tema do sistema, e o site o acompanha ao
+vivo; sem saber nenhum dos dois (sem JavaScript, robô), escuro. A escolha fica no
+`localStorage` do navegador, na chave `atra-tema`.
+
+**Consequências.**
+
+- A regra está em `lib/tema.ts`, duas vezes de propósito: em TypeScript
+  (`temaInicial`) e como texto de `<script>` (`SCRIPT_DO_TEMA`), que roda no
+  começo do `<body>`, antes da primeira pintura — o servidor manda `dark`,
+  porque a página é pré-montada, e esperar a hidratação faria quem usa o claro
+  ver o site piscar no escuro. O teste roda o texto contra a função.
+- ⚠️ O `<html>` passou a ser desenhado por um componente de cliente
+  (`components/layout/tema.tsx`), que lê a mesma fonte que o alternador. Não é
+  enfeite: quando uma hidratação falha, o React remonta a árvore e regrava a
+  `class` do `<html>` com o que o componente manda. Vindo do layout de servidor
+  era sempre `dark`, e o tema certo durava meio segundo (medido em dev, onde
+  `?e2e=1` faz a hidratação falhar pelos contadores).
+- A suíte e2e segue no escuro (`colorScheme: 'dark'` no `playwright.config`); o
+  caso claro e a memória da escolha estão no smoke. O contraste troca a classe
+  do `<html>` à mão, e o React não desfaz: só regrava quando a própria fonte
+  muda.
+- ⚠️ **Política de cookies (P-14):** `atra-tema` é preferência de exibição, não
+  rastreamento — não identifica ninguém nem sai do aparelho — e não depende do
+  aceite do aviso. Tem de ser **citada** no texto da política quando a Karen o
+  revisar.
+
+No mesmo PR, sem decisão própria: o bloco "Abas de destaque" (usado em "Soluções
+Integradas" e, na homologação, em "Cases de sucesso") só distribui a lista pela
+altura do painel a partir de 4 itens — com 2, os cartões ficavam um no topo e
+outro no rodapé — e o painel passou a ter a altura do maior item, em vez de
+crescer e encolher a cada troca.

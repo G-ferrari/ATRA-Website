@@ -135,6 +135,47 @@ test.describe('app novo', () => {
    * suíte ao conteúdo do banco: o slug que estava aqui era de uma das 6
    * fixtures do protótipo, que MIG-083 apagou ao importar os 207 posts reais, e
    * três asserções passaram a apontar para um 404. */
+  /* D-48: o site abre no tema do sistema e guarda a escolha do alternador. O
+     resto da suíte roda com `colorScheme: 'dark'` (playwright.config), então o
+     caso claro só existe aqui. */
+  test.describe('tema — segue o sistema e guarda a escolha', () => {
+    const alternador = (page: import('@playwright/test').Page) => page.getByRole('button', { name: 'Alternar tema' })
+    /* ⚠️ `?e2e=1` tira o aviso de cookies do caminho: no celular ele ocupa o
+       rodapé inteiro, por cima do alternador (ver a nota do modal de perfil). */
+    const classeDoHtml = (page: import('@playwright/test').Page) => page.locator('html').getAttribute('class')
+
+    test.describe('sistema no claro', () => {
+      test.use({ colorScheme: 'light' })
+
+      /* O servidor manda `dark`; quem troca é o script do começo do `<body>`.
+         Conferido no `commit` da navegação, antes de hidratar: se dependesse de
+         componente, aqui ainda estaria escuro. */
+      test('abre no claro sem esperar a hidratação, e a escolha do botão vale depois de recarregar', async ({ page }) => {
+        await page.goto(`${NEXT_URL}/sobre?e2e=1`, { waitUntil: 'commit' })
+        await expect(page.locator('html')).toHaveClass(/(^|\s)light(\s|$)/)
+        expect(await classeDoHtml(page)).not.toMatch(/(^|\s)dark(\s|$)/)
+
+        await alternador(page).click()
+        await expect(page.locator('html')).toHaveClass(/(^|\s)dark(\s|$)/)
+
+        await page.reload()
+        await expect(page.locator('html')).toHaveClass(/(^|\s)dark(\s|$)/)
+        expect(await classeDoHtml(page)).not.toMatch(/(^|\s)light(\s|$)/)
+      })
+    })
+
+    test('sistema no escuro abre no escuro; trocar para o claro também fica guardado', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/sobre?e2e=1`)
+      await expect(page.locator('html')).toHaveClass(/(^|\s)dark(\s|$)/)
+
+      await alternador(page).click()
+      await expect(page.locator('html')).toHaveClass(/(^|\s)light(\s|$)/)
+
+      await page.goto(`${NEXT_URL}/contato?e2e=1`)
+      await expect(page.locator('html')).toHaveClass(/(^|\s)light(\s|$)/)
+    })
+  })
+
   /* D-47: a paginação do blog era decorativa e a lista parava nos 100 mais
      recentes. Cada página é um endereço. ⚠️ O banco do CI tem só as fixtures —
      uma página —, então o que se confere aqui são as bordas da rota; a conta
