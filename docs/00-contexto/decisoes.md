@@ -1396,3 +1396,26 @@ topo e grade de cartões — com o conteúdo da página do WordPress. Duas escol
   menu fala de "análises profundas do mercado de dados". Os dois se editam no
   admin. O texto de apresentação da página (título e dois parágrafos, literais
   do WordPress) e a descrição para buscadores estão no código.
+
+## D-50 — O rodapé tem um link só para as políticas
+
+*Decidida em 02/10/2026 por G-ferrari.*
+
+**Contexto.** A coluna "Legal" do rodapé tinha três links — Privacidade, Termos
+de Uso e Cookies —, herdados do protótipo. Desde MIG-094 os três levavam à
+mesma página, `/politicas-e-termos`, porque a ATRA tem um documento só: quem
+clicava em "Cookies" caía no topo do mesmo texto.
+
+**Decisão.** Fica um link, **"Políticas e Termos"**, que é o nome da página.
+
+**Consequências.**
+
+- O rodapé é global do CMS, e o deploy não roda seed: a troca chega pela
+  migração `20261002_180000_rodape_link_unico_de_politicas`, com a regra em
+  `migrations/arquivos/rodape-legal.ts`. Ela junta só os links **repetidos**
+  para a página de políticas; outro link na mesma coluna fica, e rodapé já
+  arrumado no admin não é tocado.
+- O inglês recebe "Policies and Terms", tradução literal, à espera da revisão
+  de tradução (P-08).
+- Separar de novo — uma página por documento, ou âncora por seção — é decisão
+  jurídica e de conteúdo, e se faz no admin (Sistema → Rodapé).

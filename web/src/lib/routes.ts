@@ -42,8 +42,8 @@ export const SECOES = {
      `lib/redirects.ts`). */
   diagnosticoMaturidade: { pt: 'diagnostico-maturidade', en: 'data-maturity-assessment' },
   /* MIG-094. O WordPress serve **uma** página para privacidade, termos e
-     cookies (`/politicas-e-termos/`); os 3 links do rodapé apontam todos para
-     ela, que é o que já acontece lá. */
+     cookies (`/politicas-e-termos/`); o rodapé tem um link só para ela, com o
+     nome da página. */
   politicas: { pt: 'politicas-e-termos', en: 'privacy-and-terms' },
 } as const satisfies Record<string, Record<Locale, string>>
 

@@ -18,6 +18,7 @@ import path from 'node:path'
 
 import { getPayload } from 'payload'
 
+import { DESTINO, ROTULO } from '../../src/migrations/arquivos/rodape-legal'
 import config from '../../src/payload.config'
 
 const payload = await getPayload({ config })
@@ -54,8 +55,7 @@ const RODAPE = {
         title: 'Soluções',
         kind: 'links' as const,
         /* ⚠️ Os 3 apontam para o **índice**, e não cada um para um lugar: são as
-         * 3 categorias do mega-menu, não soluções com página própria. Mesmo
-         * caso dos 3 links legais, que vão todos para `/politicas-e-termos`.
+         * 3 categorias do mega-menu, não soluções com página própria.
          *
          * Apontavam para `#` até 21/08/2026, herdado do protótipo — e ali era
          * link morto, não ausência de destino: `/solucoes` existe desde a Fase
@@ -87,20 +87,15 @@ const RODAPE = {
       {
         title: 'Legal',
         kind: 'links' as const,
-        /* ⚠️ Os três apontam para a **mesma** página (MIG-094). No protótipo
-         * apontavam para `#`, e o WordPress não tem três documentos: tem um só,
-         * `/politicas-e-termos/`, que cobre privacidade, termos e cookies nas
-         * suas sete seções. Separar em três é decisão jurídica, não de
-         * migração.
+        /* Um link só, com o nome da página (02/10). O protótipo tinha três —
+         * Privacidade, Termos de Uso e Cookies —, e desde MIG-094 os três
+         * levavam ao mesmo documento: o WordPress não tem três, tem um,
+         * `/politicas-e-termos/`, que cobre tudo nas suas sete seções.
          *
-         * Trocar `#` por rota não move um pixel: o rodapé desenha `<a href="#">`
-         * quando o destino é vazio e `<Link>` quando não é, com o mesmo texto e
-         * as mesmas classes. */
-        links: [
-          { label: 'Privacidade', href: '/politicas-e-termos' },
-          { label: 'Termos de Uso', href: '/politicas-e-termos' },
-          { label: 'Cookies', href: '/politicas-e-termos' },
-        ],
+         * Num ambiente que já existe a troca chega pela migração
+         * `20261002_180000_rodape_link_unico_de_politicas`, que usa o mesmo
+         * rótulo. */
+        links: [{ label: ROTULO.pt, href: DESTINO }],
       },
     ],
   },
@@ -113,7 +108,7 @@ const RODAPE = {
       ['Innovation & AI', 'Data, BI & Advanced Analytics', 'Governance & Culture'],
       ['Segments', 'Consultants', 'Insights', 'Partners', 'Careers', 'About', 'Glossary'],
       [],
-      ['Privacy', 'Terms of Use', 'Cookies'],
+      [ROTULO.en],
     ],
   },
 }
