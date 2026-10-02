@@ -135,6 +135,33 @@ test.describe('app novo', () => {
    * suíte ao conteúdo do banco: o slug que estava aqui era de uma das 6
    * fixtures do protótipo, que MIG-083 apagou ao importar os 207 posts reais, e
    * três asserções passaram a apontar para um 404. */
+  /* D-47: a paginação do blog era decorativa e a lista parava nos 100 mais
+     recentes. Cada página é um endereço. ⚠️ O banco do CI tem só as fixtures —
+     uma página —, então o que se confere aqui são as bordas da rota; a conta
+     das páginas é de `lib/paginacao.test.ts`. */
+  test.describe('/blog/pagina/[numero] — paginação', () => {
+    test('a página 1 é /blog; página que não existe ou não é número dá 404', async ({ request }) => {
+      for (const prefixo of ['', '/en']) {
+        const um = await request.get(`${NEXT_URL}${prefixo}/blog/pagina/1`, { maxRedirects: 0 })
+        expect(um.status(), `${prefixo}/blog/pagina/1`).toBe(308)
+        expect(new URL(um.headers()['location'] ?? '', NEXT_URL).pathname).toBe(`${prefixo}/blog`)
+
+        for (const ruim of ['999', '0', '02', 'abc']) {
+          const url = `${NEXT_URL}${prefixo}/blog/pagina/${ruim}`
+          expect((await request.get(url)).status(), url).toBe(404)
+        }
+      }
+    })
+
+    /* Com uma página só não há numeração — e nenhum botão que não leva a nada,
+       que era o defeito. */
+    test('com uma página só, a numeração não aparece', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/blog`)
+      await expect(page.locator('main .grid h3').first()).toBeVisible()
+      await expect(page.getByRole('navigation', { name: 'Páginas do blog' })).toHaveCount(0)
+    })
+  })
+
   test.describe('/blog/[slug] — rota sem gabarito', () => {
     async function primeiroArtigo(request: APIRequestContext): Promise<string> {
       const html = await (await request.get(`${NEXT_URL}/blog`)).text()

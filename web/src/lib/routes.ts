@@ -63,6 +63,17 @@ export function hrefDe(secao: Secao, locale: Locale, slug?: string): string {
   return slug ? `${prefixo}/${segmento}/${slug}` : `${prefixo}/${segmento}`
 }
 
+/** O trecho da URL que antecede o número da página: `/blog/pagina/2`.
+ *  ⚠️ Em português nos dois idiomas, por ora: o proxy só traduz o primeiro
+ *  segmento. Traduzir (`/en/blog/page/2`) entra com a tarefa de tradução. */
+export const SEGMENTO_DE_PAGINA = 'pagina'
+
+/** URL da página N de uma listagem paginada. A primeira é a própria seção —
+ *  `/blog/pagina/1` seria um segundo endereço para o mesmo conteúdo. */
+export function hrefDaPagina(secao: Secao, locale: Locale, pagina: number): string {
+  return pagina <= 1 ? hrefDe(secao, locale) : hrefDe(secao, locale, `${SEGMENTO_DE_PAGINA}/${pagina}`)
+}
+
 /** Alias localizado → segmento canônico. Usado pelo proxy. */
 export function canonizarSegmento(segmento: string, locale: Locale): string | null {
   for (const secao of Object.keys(SECOES) as Secao[]) {
