@@ -6,6 +6,8 @@
  *
  * Ver docs/02-especificacao/contratos-de-dados.md. */
 
+import type { AbaDeSolucoes } from '@/lib/abas-de-solucoes'
+
 export type Image = {
   url: string
   /** Obrigatório no schema do Media — nunca chega indefinido aqui. */
@@ -669,7 +671,8 @@ export type ConsultantRole = {
   certifications: string[]
 }
 
-export type SolutionCategory = 'innovation-ai' | 'data-bi' | 'governance-culture' | 'rc18'
+/** A aba do menu de Soluções, ou `rc18` — que tem página e não tem aba (D-37). */
+export type SolutionCategory = AbaDeSolucoes | 'rc18'
 
 export type SolutionCard = {
   slug: string
@@ -679,6 +682,8 @@ export type SolutionCard = {
   shortDescription: string
   /** `false` mostra o card sem link — a solução ainda não tem página (D-09). */
   hasPage: boolean
+  /** O selo do cartão em destaque (D-52); `null` é cartão comum. */
+  badge: string | null
 }
 
 /**
@@ -725,15 +730,15 @@ export type CartaoDoMenu = {
 }
 
 /** Uma solução no painel, agrupada pela categoria do mega-menu. */
-/** As três abas do menu de Soluções — os valores de `solutions.category` que o
- *  menu agrupa (`rc18` fica de fora, D-37). */
-export type AbaDeSolucoes = 'innovation-ai' | 'data-bi' | 'governance-culture'
+/* As abas do menu de Soluções moram em `lib/abas-de-solucoes.ts`, que é de
+ * onde a collection, o menu e o índice leem a ordem e os nomes (D-52). */
+export type { AbaDeSolucoes }
 
 export type GrupoDeSolucoes = {
   /** A aba: é por ela que o painel de conversão escolhe o case (D-51). */
   id: AbaDeSolucoes
   title: string
-  items: { title: string; description: string; icon: string; href: string | null }[]
+  items: { title: string; description: string; icon: string; href: string | null; badge: string | null }[]
 }
 
 export type CategoriaDoMenu = {

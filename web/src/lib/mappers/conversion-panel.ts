@@ -1,4 +1,5 @@
 import type { Case, ConversionPanel, Media } from '@/payload-types'
+import { ABAS_DE_SOLUCOES } from '@/lib/abas-de-solucoes'
 import type { AbaDeSolucoes, MiniCase, PainelDeConversao } from '@/types/content'
 
 import { isPopulated, toImage } from './shared'
@@ -17,6 +18,7 @@ const CAMPO_DA_ABA = {
   'innovation-ai': 'innovationAi',
   'data-bi': 'dataBi',
   'governance-culture': 'governanceCulture',
+  'specialized-services': 'specializedServices',
 } as const satisfies Record<AbaDeSolucoes, keyof NonNullable<ConversionPanel['cases']>>
 
 const vazio = (v: string | null | undefined): string | null => {
@@ -81,10 +83,6 @@ export function toPainelDeConversao(args: {
     })),
     cta: ctaLabel && ctaHref ? { label: ctaLabel, href: hrefLocal(ctaHref) } : null,
     provas: (global.proof ?? []).map((p) => ({ value: p.value, label: vazio(p.label) })),
-    cases: {
-      'innovation-ai': daAba('innovation-ai'),
-      'data-bi': daAba('data-bi'),
-      'governance-culture': daAba('governance-culture'),
-    },
+    cases: Object.fromEntries(ABAS_DE_SOLUCOES.map((a) => [a.id, daAba(a.id)])) as Record<AbaDeSolucoes, MiniCase[]>,
   }
 }

@@ -5,7 +5,14 @@ import { cpus } from 'node:os'
 import path from 'node:path'
 import type { NextConfig } from 'next'
 
-import { PRIMEIRA_PAGINA, ROTAS_APOSENTADAS, ROTAS_RENOMEADAS, lerRedirects, redirectsDoNext } from './src/lib/redirects'
+import {
+  PRIMEIRA_PAGINA,
+  ROTAS_APOSENTADAS,
+  ROTAS_RENOMEADAS,
+  SOLUCOES_QUE_MUDARAM,
+  lerRedirects,
+  redirectsDoNext,
+} from './src/lib/redirects'
 
 /* ⚠️ Concorrência e tempo de build viraram assunto na Fase 4b.
  *
@@ -101,7 +108,13 @@ const nextConfig: NextConfig = {
    * `proxy.ts` porque é 308 fixo, e 308 é serviço deste mecanismo; o proxy só
    * fica com o 410, que o `redirects()` não sabe emitir. */
   async redirects() {
-    return [...redirectsDoNext(lerRedirects(CSV_DE_REDIRECTS)), ...ROTAS_APOSENTADAS, ...ROTAS_RENOMEADAS, ...PRIMEIRA_PAGINA]
+    return [
+      ...redirectsDoNext(lerRedirects(CSV_DE_REDIRECTS)),
+      ...ROTAS_APOSENTADAS,
+      ...ROTAS_RENOMEADAS,
+      ...SOLUCOES_QUE_MUDARAM,
+      ...PRIMEIRA_PAGINA,
+    ]
   },
 }
 

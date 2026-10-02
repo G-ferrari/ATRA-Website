@@ -77,6 +77,19 @@ const PORTADAS_DO_PROTOTIPO = new Set([
   'cultura-de-dados',
 ])
 
+/* ⚠️ **Aposentado em 02/10/2026 (D-52).** As 12 soluções que este script traz
+ * do WordPress foram apagadas do site: o menu de Soluções foi reorganizado em 18
+ * soluções novas, escritas pelo time no admin. Rodar isto recriaria as páginas
+ * antigas ao lado das novas — por isso ele recusa, a menos que alguém peça de
+ * propósito (para consultar o texto antigo num banco local, por exemplo). */
+if (!process.argv.includes('--mesmo-assim')) {
+  console.error(
+    '✖ import-solutions.ts está aposentado (D-52): as soluções do WordPress saíram do site em 02/10/2026.\n' +
+      '  Rodar recria as 12 páginas antigas. Se é isso mesmo que você quer (banco local), passe --mesmo-assim.',
+  )
+  process.exit(1)
+}
+
 const payload = await getPayload({ config })
 const cliente = createWpClient()
 

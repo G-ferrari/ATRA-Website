@@ -137,6 +137,26 @@ ATRA aparece na imprensa. Para incluir uma:
 
 Não existe página interna por matéria: o visitante vai direto para o veículo.
 
+## Escrever a página de uma solução
+
+As 18 soluções do menu estão em **Catálogos → Soluções**, em 4 abas. Cada uma
+já tem página no ar, mas só com o **esqueleto**: o topo (título e uma frase) e
+a faixa final de contato. Falta o meio.
+
+1. Abra a solução. **Título**, **Descrição curta** (a frase do cartão no menu e
+   no índice) e **Ícone** já estão preenchidos — ajuste se precisar.
+2. Em **Seções da página**, use **Adicionar Seção** para pôr o conteúdo entre o
+   topo e a faixa final: texto, cartões, etapas, parceiros. Arraste para
+   ordenar. A faixa "Entre em contato" fica por último.
+3. **Categoria** é a aba do menu em que a solução aparece; **Ordem** é a
+   posição dentro da aba (menor primeiro).
+4. **Selo** é opcional: preenchido, o cartão ganha destaque no menu e no índice.
+   Hoje só "Analytics Conversacional" tem ("Diferencial ATRA").
+5. Confira no Live Preview e **Publicar alterações**.
+
+⚠️ Não desmarque **"Tem página própria"**: sem isso a solução continua no menu,
+mas deixa de ser link e o endereço dela responde "não encontrado".
+
 ## O painel do menu de Soluções
 
 Em **Sistema → Painel do menu de Soluções** fica o painel que aparece à direita

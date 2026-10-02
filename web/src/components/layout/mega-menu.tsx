@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { Icone } from '@/components/blocks/icones'
+import { SeloDeSolucao } from '@/components/ui/selo-de-solucao'
 import { congelado } from '@/lib/e2e'
 import type { Locale } from '@/lib/locales'
 import { larguraOticaCss } from '@/lib/logo'
@@ -38,6 +39,9 @@ const COR_DO_DESTAQUE: Record<CorDeDestaque, string> = {
 
 const CARTAO =
   'flex flex-col p-4 rounded-[6px] bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all hover:shadow-md group'
+
+/* Solução com selo (D-52) — o "Diferencial ATRA" de Analytics Conversacional. */
+const CARTAO_EM_DESTAQUE = 'ring-1 ring-primary/40 bg-primary/[0.04] dark:bg-primary/[0.08]'
 
 const CELULA_DA_GRADE =
   'flex flex-col items-center text-center gap-2 p-4 rounded-[6px] bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all group shadow-sm'
@@ -285,9 +289,13 @@ function PainelDeSolucoes({
                   <div className="w-8 h-8 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                     <Icone nome={item.icon} size={18} />
                   </div>
-                  <h4 className="text-text-main font-normal text-xs leading-tight group-hover:text-primary transition-colors capitalize">
+                  {/* Sem `capitalize` desde a D-52: o título vem do admin já com as
+                      maiúsculas certas, e a classe transformava "de" em "De"
+                      ("Fábrica De Soluções De Dados"). */}
+                  <h4 className="text-text-main font-normal text-xs leading-tight group-hover:text-primary transition-colors">
                     {item.title}
                   </h4>
+                  {item.badge && <SeloDeSolucao texto={item.badge} className="ml-auto" />}
                 </div>
                 <p className="text-[11px] text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">
                   {item.description}
@@ -298,11 +306,11 @@ function PainelDeSolucoes({
             /* Solução sem página não vira link, como no índice (D-09). No legado
              * todas são `<Link>`, inclusive as cinco que apontam para `#`. */
             return item.href ? (
-              <Link key={item.title} href={item.href} onClick={aoNavegar} className={CARTAO}>
+              <Link key={item.title} href={item.href} onClick={aoNavegar} className={cn(CARTAO, item.badge && CARTAO_EM_DESTAQUE)}>
                 {conteudo}
               </Link>
             ) : (
-              <div key={item.title} className={cn(CARTAO, 'cursor-default')}>
+              <div key={item.title} className={cn(CARTAO, item.badge && CARTAO_EM_DESTAQUE, 'cursor-default')}>
                 {conteudo}
               </div>
             )
@@ -318,7 +326,7 @@ function PainelDeSolucoes({
 }
 
 /* Camada de conversão (D-51): o painel fixo à direita do menu de Soluções. O
- * conteúdo é o mesmo nas três abas; só o case de baixo acompanha a aba.
+ * conteúdo é o mesmo em todas as abas; só o case de baixo acompanha a aba.
  *
  * `hidden xl:flex`: abaixo de 1280px a grade de soluções precisa da largura
  * toda — medido em 1024px, os cartões apertados cresciam e a última linha da

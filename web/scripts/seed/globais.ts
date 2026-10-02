@@ -18,6 +18,7 @@ import path from 'node:path'
 
 import { getPayload } from 'payload'
 
+import { ABAS_DE_SOLUCOES } from '../../src/lib/abas-de-solucoes'
 import { DESTINO, ROTULO } from '../../src/migrations/arquivos/rodape-legal'
 import config from '../../src/payload.config'
 
@@ -54,18 +55,11 @@ const RODAPE = {
       {
         title: 'Soluções',
         kind: 'links' as const,
-        /* ⚠️ Os 3 apontam para o **índice**, e não cada um para um lugar: são as
-         * 3 categorias do mega-menu, não soluções com página própria.
-         *
-         * Apontavam para `#` até 21/08/2026, herdado do protótipo — e ali era
-         * link morto, não ausência de destino: `/solucoes` existe desde a Fase
-         * 3. Trocar `#` por rota não move um pixel: o rodapé desenha o mesmo
-         * `<a>` com as mesmas classes nos dois casos. */
-        links: [
-          { label: 'Inovação & IA', href: '/solucoes' },
-          { label: 'Dados, BI & Advanced Analytics', href: '/solucoes' },
-          { label: 'Governança & Cultura', href: '/solucoes' },
-        ],
+        /* ⚠️ Todos apontam para o **índice**, e não cada um para um lugar: são
+         * as abas do mega-menu (`lib/abas-de-solucoes.ts`), não soluções com
+         * página própria. Quatro desde a D-52; num ambiente que já existe a
+         * troca chega pela migração `20261002_213100_rodape_com_as_abas_novas`. */
+        links: ABAS_DE_SOLUCOES.map((aba) => ({ label: aba.pt as string, href: '/solucoes' })),
       },
       {
         title: 'Sobre',
@@ -105,7 +99,7 @@ const RODAPE = {
     copyright: '© 2026 ATRA. All rights reserved.',
     colunas: ['Solutions', 'About', 'Contact Us', 'Legal'],
     rotulos: [
-      ['Innovation & AI', 'Data, BI & Advanced Analytics', 'Governance & Culture'],
+      ABAS_DE_SOLUCOES.map((aba) => aba.en as string),
       ['Segments', 'Consultants', 'Insights', 'Partners', 'Careers', 'About', 'Glossary'],
       [],
       [ROTULO.en],

@@ -61,6 +61,7 @@ import * as migration_20260927_163411_add_tracking from './20260927_163411_add_t
 import * as migration_20260927_215331_add_image_grid from './20260927_215331_add_image_grid';
 import * as migration_20260927_215400_partner_showcase_source from './20260927_215400_partner_showcase_source';
 import * as migration_20260927_215500_locked_documents_press from './20260927_215500_locked_documents_press';
+import * as migration_20260927_215600_solutions_badge from './20260927_215600_solutions_badge';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './20260928_001000_carrossel_da_home_com_rc18';
@@ -77,6 +78,9 @@ import * as migration_20261002_170000_materias_da_imprensa from './20261002_1700
 import * as migration_20261002_180000_rodape_link_unico_de_politicas from './20261002_180000_rodape_link_unico_de_politicas';
 import * as migration_20261002_202832_conversion_panel from './20261002_202832_conversion_panel';
 import * as migration_20261002_203000_painel_de_conversao from './20261002_203000_painel_de_conversao';
+import * as migration_20261002_212500_solutions_tabs_and_badge from './20261002_212500_solutions_tabs_and_badge';
+import * as migration_20261002_213000_nova_estrutura_de_solucoes from './20261002_213000_nova_estrutura_de_solucoes';
+import * as migration_20261002_213100_rodape_com_as_abas_novas from './20261002_213100_rodape_com_as_abas_novas';
 
 export const migrations = [
   {
@@ -395,6 +399,11 @@ export const migrations = [
     name: '20260927_215500_locked_documents_press',
   },
   {
+    up: migration_20260927_215600_solutions_badge.up,
+    down: migration_20260927_215600_solutions_badge.down,
+    name: '20260927_215600_solutions_badge',
+  },
+  {
     up: migration_20260927_235900_solucoes_do_wordpress.up,
     down: migration_20260927_235900_solucoes_do_wordpress.down,
     name: '20260927_235900_solucoes_do_wordpress',
@@ -473,5 +482,20 @@ export const migrations = [
     up: migration_20261002_203000_painel_de_conversao.up,
     down: migration_20261002_203000_painel_de_conversao.down,
     name: '20261002_203000_painel_de_conversao',
+  },
+  {
+    up: migration_20261002_212500_solutions_tabs_and_badge.up,
+    down: migration_20261002_212500_solutions_tabs_and_badge.down,
+    name: '20261002_212500_solutions_tabs_and_badge',
+  },
+  {
+    up: migration_20261002_213000_nova_estrutura_de_solucoes.up,
+    down: migration_20261002_213000_nova_estrutura_de_solucoes.down,
+    name: '20261002_213000_nova_estrutura_de_solucoes',
+  },
+  {
+    up: migration_20261002_213100_rodape_com_as_abas_novas.up,
+    down: migration_20261002_213100_rodape_com_as_abas_novas.down,
+    name: '20261002_213100_rodape_com_as_abas_novas',
   },
 ];

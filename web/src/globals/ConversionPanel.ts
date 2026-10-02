@@ -2,9 +2,10 @@ import type { Field, GlobalConfig } from 'payload'
 
 import { isEditorOrAdmin, isPublic } from '@/access'
 import { campoDeIcone } from '@/blocks/shared'
+import { ABAS_DE_SOLUCOES } from '@/lib/abas-de-solucoes'
 
 /* Camada de conversão do menu de Soluções (D-51): o painel fixo à direita do
- * mega-menu, presente nas três abas — "Por onde começar?", o botão de falar com
+ * mega-menu, presente em todas as abas — "Por onde começar?", o botão de falar com
  * um especialista, a prova social em uma linha e o case rotativo da aba.
  *
  * ⚠️ **Global próprio, e não campos em `navigation`**, de propósito. A migração
@@ -124,9 +125,13 @@ export const ConversionPanel: GlobalConfig = {
         },
       },
       fields: [
-        cases('innovationAi', 'Inovação & IA', 'Innovation & AI'),
-        cases('dataBi', 'Dados, BI & Advanced Analytics', 'Data, BI & Advanced Analytics'),
-        cases('governanceCulture', 'Governança & Cultura', 'Governance & Culture'),
+        /* O nome do campo é o de antes da D-52 e não acompanha o rótulo: trocar
+         * o nome perderia os cases já escolhidos (o caminho do relacionamento
+         * é o nome). O rótulo vem das abas, e é o que o editor vê. */
+        cases('innovationAi', ABAS_DE_SOLUCOES[0].pt, ABAS_DE_SOLUCOES[0].en),
+        cases('dataBi', ABAS_DE_SOLUCOES[1].pt, ABAS_DE_SOLUCOES[1].en),
+        cases('governanceCulture', ABAS_DE_SOLUCOES[2].pt, ABAS_DE_SOLUCOES[2].en),
+        cases('specializedServices', ABAS_DE_SOLUCOES[3].pt, ABAS_DE_SOLUCOES[3].en),
       ],
     },
   ],

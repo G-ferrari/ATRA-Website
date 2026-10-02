@@ -6,10 +6,13 @@ import { locale as getLocale } from 'next/root-params'
 
 import { iconePorNome } from '@/components/blocks/icones'
 import { MetricChip, StatusBadge, TechCornerBraces } from '@/components/ui'
+import { SeloDeSolucao } from '@/components/ui/selo-de-solucao'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toSolutionCard } from '@/lib/mappers/solution'
 import { getPayload } from '@/lib/payload'
+import { ABAS_DE_SOLUCOES } from '@/lib/abas-de-solucoes'
 import { hrefDe } from '@/lib/routes'
+import { cn } from '@/lib/utils'
 import type { SolutionCard, SolutionCategory } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
 
@@ -20,7 +23,10 @@ import { metadataDe } from '@/lib/seo'
  * (`App.tsx:2621-2622`) — não há índice, e por isso não há gabarito visual.
  * O aceite aqui é funcional, e o vocabulário é o do próprio site: o card abaixo
  * é o do painel de Soluções do mega-menu (`App.tsx:252`), que mostra estas
- * mesmas 6 ofertas. MIG-072a monta o painel a partir da mesma collection. */
+ * mesmas 6 ofertas. MIG-072a monta o painel a partir da mesma collection.
+ *
+ * Desde a D-52 (02/10) são 18 soluções em 4 abas, todas com página, e a de IA
+ * do protótipo não existe mais — o endereço dela redireciona. */
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
@@ -29,39 +35,38 @@ export function generateStaticParams() {
 const META = {
   pt: {
     title: 'Soluções',
-    description: 'Inovação e IA, dados e analytics, governança e cultura: a oferta da ATRA ponta a ponta.',
+    description: 'IA e analytics avançada, dados e cloud, governança e FinOps, serviços especializados: a oferta da ATRA ponta a ponta.',
   },
   en: {
     title: 'Solutions',
-    description: 'Innovation and AI, data and analytics, governance and culture: ATRA offerings end to end.',
+    description: 'AI and advanced analytics, data and cloud, governance and FinOps, specialized services: ATRA offerings end to end.',
   },
 } as const
 
 const TEXTOS = {
   pt: {
     badge: 'Da estratégia à operação',
-    chip: '3 frentes',
+    chip: '4 frentes',
     titulo: 'Soluções que ligam',
     destaque: 'dado a decisão',
     vazio: 'Nenhuma solução publicada.',
   },
   en: {
     badge: 'From strategy to operations',
-    chip: '3 fronts',
+    chip: '4 fronts',
     titulo: 'Solutions that turn',
     destaque: 'data into decisions',
     vazio: 'No published solutions.',
   },
 } as const
 
-/* Ordem e rótulo das 3 categorias do mega-menu (`App.tsx:45`). A ordem é a do
- * legado e não alfabética: começa em Inovação & IA, que é a ponta comercial.
- * A RC18 não entra desde a D-37 — ver `GRUPOS` em `mappers/navigation.ts`. */
-const CATEGORIAS: { id: SolutionCategory; label: Record<Locale, string> }[] = [
-  { id: 'innovation-ai', label: { pt: 'Inovação & IA', en: 'Innovation & AI' } },
-  { id: 'data-bi', label: { pt: 'Dados, BI & Advanced Analytics', en: 'Data, BI & Advanced Analytics' } },
-  { id: 'governance-culture', label: { pt: 'Governança & Cultura', en: 'Governance & Culture' } },
-]
+/* As abas do mega-menu, na mesma ordem e com os mesmos nomes
+ * (`lib/abas-de-solucoes.ts`, D-52): começa em IA, que é a porta de entrada
+ * pelo interesse de mercado. A RC18 não entra desde a D-37. */
+const CATEGORIAS: { id: SolutionCategory; label: Record<Locale, string> }[] = ABAS_DE_SOLUCOES.map((a) => ({
+  id: a.id,
+  label: { pt: a.pt, en: a.en },
+}))
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -102,6 +107,7 @@ export default async function SolucoesPage() {
       icon: true,
       shortDescription: true,
       hasPage: true,
+      badge: true,
     },
   })
   const solucoes = docs.map(toSolutionCard)
@@ -168,8 +174,12 @@ function CartaoDeSolucao({
   locale: Locale
   icone: LucideIcon
 }) {
-  const classe =
-    'flex flex-col p-5 rounded-md bg-surface-2  transition-all group'
+  /* Cartão com selo é o destaque da aba (D-52): ganha o contorno da marca, e o
+     selo fica no canto, fora do fluxo, para o título alinhar com os vizinhos. */
+  const classe = cn(
+    'relative flex flex-col p-5 rounded-md bg-surface-2  transition-all group',
+    solucao.badge && 'ring-1 ring-primary/40',
+  )
 
   const conteudo = (
     <>
@@ -180,6 +190,7 @@ function CartaoDeSolucao({
         <h3 className="text-text-main font-bold text-sm leading-tight group-hover:text-primary transition-colors">
           {solucao.title}
         </h3>
+        {solucao.badge && <SeloDeSolucao texto={solucao.badge} className="ml-auto" />}
       </div>
       <p className="text-xs text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">
         {solucao.shortDescription}
@@ -190,7 +201,7 @@ function CartaoDeSolucao({
   return solucao.hasPage ? (
     <Link
       href={hrefDe('solucoes', locale, solucao.slug)}
-      className={`${classe} hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:shadow-lg hover:border-primary/30`}
+      className={cn(classe, 'hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:shadow-lg hover:border-primary/30')}
     >
       {conteudo}
     </Link>

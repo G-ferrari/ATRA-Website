@@ -81,6 +81,12 @@ describe('toPainelDeConversao', () => {
     expect(painel.cases['governance-culture'].map((c) => c.slug)).toEqual(['case-1'])
   })
 
+  /* D-52: a 4ª aba entrou depois do painel, com campo próprio no global. */
+  it('a aba de Serviços Especializados tem a sua própria escolha', () => {
+    const painel = mapear(global({ cases: { specializedServices: [3] } }))!
+    expect(painel.cases['specialized-services'].map((c) => c.slug)).toEqual(['case-3'])
+  })
+
   it('aba sem case escolhido mostra os 3 mais recentes', () => {
     expect(mapear(global())!.cases['innovation-ai'].map((c) => c.slug)).toEqual(['case-4', 'case-3', 'case-2'])
   })
@@ -106,6 +112,11 @@ describe('toPainelDeConversao', () => {
   })
 
   it('sem nenhum case publicado, as abas ficam vazias', () => {
-    expect(mapear(global(), [])!.cases).toEqual({ 'innovation-ai': [], 'data-bi': [], 'governance-culture': [] })
+    expect(mapear(global(), [])!.cases).toEqual({
+      'innovation-ai': [],
+      'data-bi': [],
+      'governance-culture': [],
+      'specialized-services': [],
+    })
   })
 })
