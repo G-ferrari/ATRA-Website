@@ -80,7 +80,7 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
         className={cn(
           'pointer-events-auto w-full max-w-7xl mx-auto flex items-center overflow-x-auto no-scrollbar transition-all duration-300 bg-surface-2',
           solucao
-            ? 'py-4 md:py-4.5 min-h-[52px] md:min-h-[56px] px-6 md:px-8 justify-center'
+            ? 'py-4 md:py-4.5 min-h-[52px] md:min-h-[56px] px-6 md:px-8 justify-start md:justify-center'
             : 'py-2.5 sm:py-3.5 md:py-4.5 min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 sm:px-6 md:px-8 justify-start md:justify-center ',
           /* ⚠️ Sombra por estado. Flutuando (topo da página, o único estado que a
              regressão visual captura), a barra é um cartão solto: `shadow-xl` nas
@@ -95,18 +95,13 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
             : 'rounded-[6px] mt-2 shadow-xl',
         )}
       >
-        {/* ⚠️ Sem `whitespace-nowrap` nem `shrink-0` na variante de solução, de
-            propósito. O legado não os tem (`SolutionAI.tsx:191`), e no mobile
-            os quatro rótulos se espremem em 311px e quebram em várias linhas —
-            a faixa fica 96px alta em vez de 52px. É defeito do legado, e o
-            aceite visual é contra ele (D-15). A variante institucional mantém
-            os dois: lá o legado também tem. */}
-        <div
-          className={cn(
-            'flex items-center',
-            solucao ? 'gap-6 md:gap-8' : 'gap-4 sm:gap-6 md:gap-8 whitespace-nowrap shrink-0',
-          )}
-        >
+        {/* A variante de solução não tinha `whitespace-nowrap` nem `shrink-0`,
+            herdado do legado (`SolutionAI.tsx:191`): no celular os rótulos se
+            espremiam em 311px e quebravam em várias linhas, e a faixa ficava
+            96px alta em vez de 52px. Desde 02/10 (D-31, sem o aceite contra o
+            protótipo desde a D-39) as duas variantes rolam de lado no celular,
+            com os rótulos inteiros. */}
+        <div className={cn('flex items-center whitespace-nowrap shrink-0', solucao ? 'gap-6 md:gap-8' : 'gap-4 sm:gap-6 md:gap-8')}>
           {bloco.items.map((item) => (
             <a
               key={item.anchor}
@@ -119,8 +114,8 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
                  sem ele os 4 rótulos se espremem e quebram em linha no mobile,
                  e a faixa passa de 64px para 96px. */
               className={cn(
-                'font-medium transition-all duration-200 text-xs sm:text-sm cursor-pointer py-1',
-                !solucao && 'px-1.5 shrink-0',
+                'font-medium transition-all duration-200 text-xs sm:text-sm cursor-pointer py-1 shrink-0',
+                !solucao && 'px-1.5',
                 ativo === item.anchor
                   ? cn(
                       'text-primary font-semibold underline decoration-2',
