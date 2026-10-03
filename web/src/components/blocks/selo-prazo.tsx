@@ -21,7 +21,7 @@ export function SeloPrazo({ prazo, grande, className }: { prazo: string; grande?
     <div
       className={cn(
         'inline-flex items-center gap-2.5 rounded-[6px] bg-secondary/10 dark:bg-secondary/15 px-4 py-2.5',
-        grande && 'lg:flex lg:w-full lg:flex-col lg:items-start lg:gap-3 lg:p-7',
+        grande && 'lg:flex lg:w-full lg:flex-col lg:items-start lg:gap-3 lg:p-6 xl:p-7',
         className,
       )}
     >
@@ -34,8 +34,9 @@ export function SeloPrazo({ prazo, grande, className }: { prazo: string; grande?
       <span
         className={cn(
           'text-base sm:text-lg font-bold text-slate-900 dark:text-white',
-          /* 2xl em `lg`: em 1024px a coluna tem ~330px, e a data em 3xl quebrava. */
-          grande && 'lg:text-2xl xl:text-3xl lg:font-extrabold lg:font-display lg:leading-tight',
+          /* xl em `lg`: em 1024px a coluna tem ~330px, e a data maior quebrava em duas
+             linhas. A partir de 1280px cabe em 3xl. */
+          grande && 'lg:text-xl xl:text-3xl lg:font-extrabold lg:font-display lg:leading-tight',
         )}
       >
         {prazo}
