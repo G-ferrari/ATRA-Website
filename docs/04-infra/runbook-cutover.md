@@ -55,6 +55,7 @@ só depois de horas, ninguém quer descobrir no sábado.
 | 3 | Regerar `redirects.csv` com as diferenças e revalidar | Condutor |
 | 4 | Backup completo do WordPress, guardado fora do servidor | DNS |
 | 5 | Conferir que o servidor do WP continuará no ar 30 dias, fora do DNS | DNS |
+| 6 | **Sincronizar as vagas com o WordPress** (D-53) — elas abrem e fecham lá até a virada. `exportar-vagas.ts`, nova migração no molde de `20261003_120000_vagas_do_wordpress` (lista das que fecharam; `FIM_DA_CARGA` na data da sincronia anterior) e as linhas novas no `redirects.csv` — a vaga fechada leva a `/carreiras` | Condutor |
 
 ## D-2 — 48 horas antes
 

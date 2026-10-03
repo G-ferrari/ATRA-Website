@@ -81,6 +81,7 @@ import * as migration_20261002_203000_painel_de_conversao from './20261002_20300
 import * as migration_20261002_212500_solutions_tabs_and_badge from './20261002_212500_solutions_tabs_and_badge';
 import * as migration_20261002_213000_nova_estrutura_de_solucoes from './20261002_213000_nova_estrutura_de_solucoes';
 import * as migration_20261002_213100_rodape_com_as_abas_novas from './20261002_213100_rodape_com_as_abas_novas';
+import * as migration_20261003_120000_vagas_do_wordpress from './20261003_120000_vagas_do_wordpress';
 
 export const migrations = [
   {
@@ -497,5 +498,10 @@ export const migrations = [
     up: migration_20261002_213100_rodape_com_as_abas_novas.up,
     down: migration_20261002_213100_rodape_com_as_abas_novas.down,
     name: '20261002_213100_rodape_com_as_abas_novas',
+  },
+  {
+    up: migration_20261003_120000_vagas_do_wordpress.up,
+    down: migration_20261003_120000_vagas_do_wordpress.down,
+    name: '20261003_120000_vagas_do_wordpress',
   },
 ];

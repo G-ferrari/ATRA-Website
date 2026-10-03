@@ -523,6 +523,18 @@ test.describe('app novo', () => {
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     })
 
+    /* Revisão de 03/10: enquanto a candidatura com currículo espera a P-17, a
+       vaga leva ao banco de talentos — no topo e na faixa final. Antes o botão
+       ia ao contato comercial, e a candidatura virava lead de venda. */
+    test('a vaga leva ao banco de talentos, e não ao contato comercial', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/carreiras`)
+      await page.locator('a[href*="/carreiras/"]').first().click()
+      await expect(page).toHaveURL(/\/carreiras\/.+/)
+      const principal = page.locator('main')
+      await expect(principal.locator('a[href="/carreiras#banco-talentos"]').first()).toBeVisible()
+      await expect(principal.locator('a[href="/contato"]')).toHaveCount(0)
+    })
+
     test('slug de vaga inexistente dá 404', async ({ request }) => {
       const nope = await request.get(`${NEXT_URL}/carreiras/vaga-que-nao-existe`)
       expect(nope.status()).toBe(404)

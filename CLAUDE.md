@@ -140,7 +140,7 @@ PARIDADE_COM_PROTOTIPO=1 pnpm gate       # a suíte padrão mais a paridade inte
 # o dev do Next recusa recurso pedido por outra origem e a página não hidrata — no Docker Desktop, ligar
 # "Enable host networking" em Settings → Resources → Network.
 docker run --rm --network host -e NEXT_URL=http://localhost:3000 -e GERAR_MINIATURAS=1 -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.62.1-noble npx playwright test e2e/miniaturas.spec.ts --project=desktop
-pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 267 linhas
+pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 273 linhas
 git push origin main                     # deploy (D-44): CI valida e a VPS troca sozinha, com rollback; `main` só recebe merge da `migracao`
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
 ```
@@ -294,7 +294,7 @@ reescritos, **287 imagens** e as **7 vagas** (não 6 — uma abriu depois do
 levantamento). A 4c trouxe as **8 verticais** para `/segmentos` (remontadas em
 27/09 no padrão das soluções por `20260927_235930_segmentos_do_wordpress`, com
 o texto literal em `src/migrations/arquivos/segmentos-wp/`) e a página legal
-para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas** (267 desde 01/10, com os 6
+para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas** (273 desde 03/10: +6 de 01/10, com os 6
 artigos publicados depois da carga — eles chegam pela migração
 `20261002_120000_posts_novos_do_wordpress`; o que vier depois entra por
 `import-posts.ts --so-novos`, que não regrava os que já existem), com a
@@ -306,6 +306,13 @@ geração reprovando se alguma URL do WordPress ficar sem destino.
 (topo e faixa final) para o time da ATRA preencher no admin. As 18 antigas — as
 6 do protótipo e as 12 do WordPress de que o parágrafo abaixo fala — foram
 **apagadas**, e `import-solutions.ts` está aposentado. A RC18 ficou.
+
+⚠️ **As vagas mudam no WordPress até a virada.** A carga de 25/08 trouxe 7; em
+03/10 o WordPress tinha 9 (4 fechadas, 6 novas). A sincronia é
+`scripts/wp-import/exportar-vagas.ts` + uma migração de dados
+(`20261003_120000_vagas_do_wordpress`), que cria, atualiza só vaga intocada no
+admin e despublica as fechadas da lista. **Repetir na semana da virada**, com a
+data da trava (`FIM_DA_CARGA`) avançada para a da sincronia anterior.
 
 **MIG-084** (P-27) segue em pendência — o WP tem 1 categoria e 0 tags, não há
 taxonomia para mapear, e classificar não é migrar. **MIG-093** foi destravada:
