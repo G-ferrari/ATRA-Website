@@ -472,10 +472,20 @@ function CasesDaAba({
           </span>
         )}
         <span className="flex-1 min-w-0">
-          <span className="block text-xs font-semibold text-text-main group-hover:text-primary transition-colors truncate">
-            {atual.client ? `${textos.case}: ${atual.client}` : textos.case}
-          </span>
-          <span className="block text-[10px] text-text-muted leading-snug line-clamp-2">{atual.title}</span>
+          {/* Sem cliente (o case não o identifica), não há "Case: …": o título
+              sobe para a linha de cima, e nada fica no lugar do nome. */}
+          {atual.client ? (
+            <>
+              <span className="block text-xs font-semibold text-text-main group-hover:text-primary transition-colors truncate">
+                {`${textos.case}: ${atual.client}`}
+              </span>
+              <span className="block text-[10px] text-text-muted leading-snug line-clamp-2">{atual.title}</span>
+            </>
+          ) : (
+            <span className="block text-xs font-semibold text-text-main group-hover:text-primary transition-colors line-clamp-2">
+              {atual.title}
+            </span>
+          )}
         </span>
         <ArrowRight size={15} className="text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" aria-hidden />
       </Link>

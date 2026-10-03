@@ -69,11 +69,19 @@ export const Cases: CollectionConfig = {
             {
               name: 'client',
               type: 'text',
-              required: true,
               /* Não localizado: nome próprio não se traduz — mesmo critério de
-               * `testimonials.company` e `partners.name`. */
+               * `testimonials.company` e `partners.name`.
+               *
+               * ⚠️ **Opcional desde 03/10**: há case que o cliente não autoriza
+               * identificar. Vazio, o nome simplesmente não aparece — no cartão,
+               * no destaque, na página e no título para buscadores. */
               label: { pt: 'Cliente', en: 'Client' },
-              admin: { description: { pt: 'Ex.: Banco ABC.', en: 'E.g. Banco ABC.' } },
+              admin: {
+                description: {
+                  pt: 'Ex.: Banco ABC. Opcional: vazio, o nome do cliente não aparece em lugar nenhum do site.',
+                  en: 'E.g. Banco ABC. Optional: when empty, the client name is not shown anywhere on the site.',
+                },
+              },
             },
             {
               name: 'summary',
