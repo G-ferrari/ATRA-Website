@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 import { BORDAS, ESPACOS } from '@/components/blocks/bordas'
 import { cn } from '@/lib/utils'
 import type { BlocoIconCardGrid } from '@/types/content'
@@ -39,11 +41,19 @@ const COLUNAS: Record<BlocoIconCardGrid['variant'], Record<2 | 3 | 4, string>> =
    legado — só o traço intercala azul/laranja (`accent`, injetado pela página). */
 const COR_ICONE = { primary: 'text-primary', secondary: 'text-secondary' } as const
 
+/* Agrupa título e descrição ao lado do ícone no cartão em linha; fora dele, os
+ * devolve sem caixa nenhuma, e o cartão sai com o DOM de antes. Fora do
+ * componente: a regra de lint proíbe criar componente dentro de outro. */
+function Envolve({ quando, children }: { quando: boolean; children: ReactNode }) {
+  return quando ? <div className="min-w-0 pt-0.5 md:pt-0">{children}</div> : <>{children}</>
+}
+
 export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
   const compacto = bloco.variant === 'compact'
   /* Mesmo cartão do `card`, centralizado: ícone com `mx-auto` e texto no meio
    * (`Careers.tsx:566`). O `compact` também centraliza, mas não tem descrição. */
   const centrado = bloco.variant === 'card-centered'
+  const emLinha = Boolean(bloco.compactoNoCelular) && bloco.variant === 'card'
 
   return (
     <section
@@ -57,7 +67,13 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {(bloco.eyebrow || bloco.title) && (
-          <div className={cn('text-center mb-16', bloco.headerWidth === 'narrow' && 'max-w-3xl mx-auto')}>
+          <div
+            className={cn(
+              'text-center mb-16',
+              bloco.compactoNoCelular && 'mb-10 md:mb-16',
+              bloco.headerWidth === 'narrow' && 'max-w-3xl mx-auto',
+            )}
+          >
             {bloco.eyebrow && (
               <span className="text-primary font-bold tracking-widest text-xs uppercase mb-2 block">
                 {bloco.eyebrow}
@@ -79,7 +95,14 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
           </div>
         )}
 
-        <div className={cn('grid', compacto ? 'gap-4' : 'gap-6', COLUNAS[bloco.variant][bloco.columns])}>
+        <div
+          className={cn(
+            'grid',
+            compacto ? 'gap-4' : 'gap-6',
+            emLinha && 'gap-3 md:gap-6',
+            COLUNAS[bloco.variant][bloco.columns],
+          )}
+        >
           {bloco.items.map((item) => {
             const Icone = iconePorNome(item.icon)
 
@@ -109,6 +132,9 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
                      `hover:border-primary/30` era inerte (cor de borda sem largura). */
                   'bg-surface-2 rounded-[6px] p-6 group shadow-sm transition duration-200 hover:shadow-md motion-safe:hover:-translate-y-0.5',
                   centrado && 'text-center',
+                  /* No celular, ícone ao lado do texto: o cartão perde a faixa do
+                     ícone em cima e o respiro largo, e a seção encolhe pela metade. */
+                  emLinha && 'flex items-start gap-4 p-4 md:block md:p-6',
                 )}
               >
                 <div
@@ -116,15 +142,18 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
                     'w-12 h-12 rounded-[6px] bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all',
                     COR_ICONE[item.accent ?? 'primary'],
                     centrado && 'mx-auto',
+                    emLinha && 'w-10 h-10 shrink-0 mb-0 md:w-12 md:h-12 md:mb-4',
                   )}
                 >
                   <Icone size={centrado ? 22 : 20} aria-hidden />
                 </div>
+                <Envolve quando={emLinha}>
                 {item.description ? (
                   <>
                     <h3
                       className={cn(
                         'text-sm font-bold text-text-main mb-2',
+                        emLinha && 'mb-1 md:mb-2',
                         /* O cartão centralizado não pinta o título no hover
                            (`Careers.tsx:570`) — só a borda reage. */
                         !centrado && 'group-hover:text-primary transition-colors',
@@ -141,6 +170,7 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
                     {item.title}
                   </p>
                 )}
+                </Envolve>
               </div>
             )
           })}

@@ -205,6 +205,10 @@ export type BlocoIconCardGrid = Base & {
   /** `accent` intercala a cor do traço do ícone (azul padrão, laranja escasso);
    *  presentation-only, injetado pela página — o CMS não tem o campo. */
   items: { icon: string; title: string; description: string | null; accent?: 'primary' | 'secondary' }[]
+  /** Abaixo de `md`, cartão em linha (ícone ao lado do texto) e mais justo.
+   *  Presentation-only, injetado pela página — hoje só na RC18, onde as 12
+   *  dimensões empilhadas em cartão alto passavam de 1.900px no celular. */
+  compactoNoCelular?: boolean
 }
 
 /* Blocos do template de página de parceiro (MIG-054a). A justificativa de cada
