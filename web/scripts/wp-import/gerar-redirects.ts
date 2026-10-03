@@ -108,6 +108,14 @@ const CURADAS: Record<string, { to: string; status?: number; note: string }> = {
 /** Taxonomia vazia do WP: 1 categoria com os 207 posts, 0 tags (P-27). */
 const CURADAS_FORA_DAS_PAGINAS: Linha[] = [
   { from: '/category/uncategorized/', to: '', status: 410, note: 'taxonomia vazia - o WP tem 1 categoria e 0 tags' },
+  /* Vagas da carga de 25/08 que **fecharam** no WordPress até 03/10: a página
+   * saiu de lá, então a geração não a vê mais — mas o endereço pode estar
+   * indexado ou salvo, e leva à lista de vagas abertas. Mesma lista da
+   * migração `20261003_120000_vagas_do_wordpress`. */
+  { from: '/analista-de-sistemas-net-sr/', to: '/carreiras', status: 301, note: 'vaga fechada no WP em 10/2026 - leva a lista' },
+  { from: '/analytics-engineer-sr-gcp-dbt-looker-plataform/', to: '/carreiras', status: 301, note: 'vaga fechada no WP em 10/2026 - leva a lista' },
+  { from: '/engenheiro-de-dados-sr-oracle-cloud-oci/', to: '/carreiras', status: 301, note: 'vaga fechada no WP em 10/2026 - leva a lista' },
+  { from: '/engenheiroa-de-dados-sr-azure-databricks/', to: '/carreiras', status: 301, note: 'vaga fechada no WP em 10/2026 - leva a lista' },
 ]
 
 const payload = await getPayload({ config })

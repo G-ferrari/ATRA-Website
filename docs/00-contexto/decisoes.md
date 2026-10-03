@@ -1540,3 +1540,50 @@ Três escolhas do G-ferrari, entre as alternativas apresentadas:
   virada, ou vão ao ar magras (D-08) —; o texto do assistente do site (ATRA
   AI), que ainda descreve a oferta antiga; e a home, onde o bloco "Soluções
   Integradas" segue com os nomes de antes.
+
+## D-53 — Vagas sincronizadas com o WordPress; o candidato vai ao banco de talentos
+
+*Decidida em 03/10/2026 por G-ferrari, na revisão da página de cada vaga.*
+
+**Contexto.** A revisão das 7 páginas de vaga na homologação achou três coisas:
+
+- **As vagas estavam desatualizadas.** A carga de 25/08 trouxe 7; em 03/10 o
+  WordPress tinha 9 — 4 das 7 tinham fechado e 6 eram novas. É lá que o RH abre
+  e fecha vaga até a virada.
+- **Não havia como se candidatar na página.** No WordPress cada vaga tem
+  formulário com currículo; aqui ele existe (MIG-102), mas espera a P-17
+  (retenção do CV e acesso do RH). E a faixa final dizia "deixe seu currículo no
+  banco de talentos" com um botão para o contato **comercial**, mostrando o
+  telefone e o e-mail de negócios: a candidatura chegaria ao RD Station como
+  lead de venda.
+- **Contraste**: o topo azul, com texto laranja e cinza, e a caixa final — 10
+  pontos por página no axe.
+
+**Decisão.** Três escolhas do G-ferrari:
+
+- **Sincronizar com o WordPress** por migração de dados, e repetir antes da
+  virada.
+- **Enquanto a P-17 não chega, o candidato vai ao banco de talentos** de
+  `/carreiras` — pelo botão do topo e pelo da faixa final. Sai o contato
+  comercial da página.
+- **A página da vaga usa as peças das outras páginas internas**: o topo é o
+  `BlocoHero` e o fim é a faixa padrão (`BlocoCta`), com o texto de carreiras.
+
+**Consequências.**
+
+- `scripts/wp-import/exportar-vagas.ts` escreve as vagas abertas, já
+  convertidas, em `migrations/arquivos/vagas-wp/vagas.json`; a migração
+  `20261003_120000_vagas_do_wordpress` cria as que faltam, **atualiza só vaga
+  intocada no admin** desde a carga (a trava é a data de alteração) e
+  **despublica** as 4 fechadas da lista — sem apagar. Só age onde a carga do
+  WordPress está: banco novo segue com as vagas de teste do seed.
+- O endereço das vagas fechadas no WordPress leva a `/carreiras`, e as 6 novas
+  ganham a linha 1:1 no `redirects.csv` (273 linhas). O gerador conhece as
+  fechadas pela lista curada, porque a página delas saiu do WordPress.
+- Na página, o contraste próprio caiu de 10 pontos para zero; sobram o botão do
+  cabeçalho e o link "Área Restrita" do rodapé, que são do site inteiro.
+- ⚠️ **Repetir a sincronia na semana da virada** (runbook, D-7).
+- ⚠️ **Fica com o RH:** a P-17 — sem ela a vaga não recebe currículo, e o
+  banco de talentos não tem anexo. E os dados estruturados de vaga
+  (`JobPosting`, para a busca de empregos do Google) só valem depois que der
+  para se candidatar na própria página.
