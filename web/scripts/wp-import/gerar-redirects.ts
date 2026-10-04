@@ -72,25 +72,27 @@ const CURADAS: Record<string, { to: string; status?: number; note: string }> = {
   'trabalhe-conosco': { to: '/carreiras', note: 'N:1 carreiras' },
   'programa-de-trainee': { to: '/carreiras', note: 'N:1 carreiras - o trainee e uma secao de /carreiras' },
 
-  /* ⚠️ Estas 12 linhas são **rede de segurança**, não o caminho normal.
+  /* As soluções do WordPress, depois da estrutura nova de 02/10 (D-52).
    *
-   * Com P-16 respondida (publicar), as 12 soluções do WordPress têm página e a
-   * checagem acima já as manda 1:1. Elas continuam aqui para o caso de alguém
-   * despublicar uma: em vez de a geração reprovar por "página sem destino", a
-   * URL cai no índice `/solucoes`, que é a degradação certa. */
-  'inteligencia-artificial': { to: '/solucoes/inteligencia-artificial', note: 'solucao 1:1 - a unica com pagina no ar' },
-  cloud: { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'data-integration': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'data-analytics': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'master-data-management': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'data-discovery': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'customer-360': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'governanca-de-dados': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  treinamento: { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'alocacao-de-consultores': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'fabrica-de-transformacao-de-dados': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'sustentacao-remota': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
-  'assessoria-em-produtos': { to: '/solucoes', note: 'N:1 - so vale se a solucao for despublicada' },
+   * As 12 páginas de solução do WP (e a de IA) deixaram de existir no site novo:
+   * o menu foi reorganizado em 18 soluções novas. Cada URL antiga vai para a
+   * solução nova mais próxima em assunto — o mesmo mapa da migração
+   * (`migrations/arquivos/solucoes-estrutura.ts`).
+   *
+   * ⚠️ "Alocação de Consultores" e "Assessoria em Produtos" não estão aqui: as
+   * novas mantêm o endereço, e a checagem acima já as manda 1:1. Se uma solução
+   * de destino for despublicada, a geração reprova — é o aviso certo. */
+  'inteligencia-artificial': { to: '/solucoes/ia-generativa-e-agentes-conversacionais', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  'fabrica-de-transformacao-de-dados': { to: '/solucoes/fabrica-de-solucoes-de-dados', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  'sustentacao-remota': { to: '/solucoes/sustentacao-remota-especializada', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  cloud: { to: '/solucoes/migracao-e-modernizacao', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  'data-integration': { to: '/solucoes/integracao-de-dados', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  'data-analytics': { to: '/solucoes/bi-e-advanced-analytics', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  'master-data-management': { to: '/solucoes/master-data-e-customer-360', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  'data-discovery': { to: '/solucoes/bi-e-advanced-analytics', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  'customer-360': { to: '/solucoes/master-data-e-customer-360', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  'governanca-de-dados': { to: '/solucoes/governanca-e-qualidade-de-dados', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  treinamento: { to: '/solucoes/cultura-de-dados-e-treinamentos', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
 
   /* Sem destino, e sai de propósito. */
   'em-manutencao': { to: '', status: 410, note: 'pagina tecnica do WordPress' },
@@ -106,6 +108,14 @@ const CURADAS: Record<string, { to: string; status?: number; note: string }> = {
 /** Taxonomia vazia do WP: 1 categoria com os 207 posts, 0 tags (P-27). */
 const CURADAS_FORA_DAS_PAGINAS: Linha[] = [
   { from: '/category/uncategorized/', to: '', status: 410, note: 'taxonomia vazia - o WP tem 1 categoria e 0 tags' },
+  /* Vagas da carga de 25/08 que **fecharam** no WordPress até 03/10: a página
+   * saiu de lá, então a geração não a vê mais — mas o endereço pode estar
+   * indexado ou salvo, e leva à lista de vagas abertas. Mesma lista da
+   * migração `20261003_120000_vagas_do_wordpress`. */
+  { from: '/analista-de-sistemas-net-sr/', to: '/carreiras', status: 301, note: 'vaga fechada no WP em 10/2026 - leva a lista' },
+  { from: '/analytics-engineer-sr-gcp-dbt-looker-plataform/', to: '/carreiras', status: 301, note: 'vaga fechada no WP em 10/2026 - leva a lista' },
+  { from: '/engenheiro-de-dados-sr-oracle-cloud-oci/', to: '/carreiras', status: 301, note: 'vaga fechada no WP em 10/2026 - leva a lista' },
+  { from: '/engenheiroa-de-dados-sr-azure-databricks/', to: '/carreiras', status: 301, note: 'vaga fechada no WP em 10/2026 - leva a lista' },
 ]
 
 const payload = await getPayload({ config })

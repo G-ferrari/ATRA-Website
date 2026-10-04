@@ -1,9 +1,11 @@
 import type { Navigation, Partner, Solution } from '@/payload-types'
+import { ABAS_DE_SOLUCOES } from '@/lib/abas-de-solucoes'
 import type {
   CategoriaDoMenu,
   CorDeDestaque,
   GrupoDeSolucoes,
   Navegacao,
+  PainelDeConversao,
   PartnerBadge,
 } from '@/types/content'
 
@@ -13,7 +15,7 @@ import { toImageOpcional } from './shared'
 /* Como em `solution.ts`: o parâmetro é o `Pick` do que o menu usa, e não o
  * documento inteiro, para o `select` da consulta e o mapper não saírem de
  * sincronia — e porque `select` estreita o tipo de retorno do Payload. */
-type SolucaoDoMenu = Pick<Solution, 'title' | 'slug' | 'category' | 'icon' | 'shortDescription' | 'hasPage'>
+type SolucaoDoMenu = Pick<Solution, 'title' | 'slug' | 'category' | 'icon' | 'shortDescription' | 'hasPage' | 'badge'>
 type ParceiroDoMenu = Pick<Partner, 'name' | 'slug' | 'logo' | 'logoDark' | 'logoScale' | 'description'>
 
 /* Global `navigation` + duas collections → o que o cabeçalho desenha (MIG-072a).
@@ -27,25 +29,20 @@ const vazio = (v: string | null | undefined): string | null => {
   return t ? t : null
 }
 
-/* Ordem e rótulo das categorias de solução, iguais aos do índice `/solucoes`.
- * O rótulo do grupo é do menu, não da collection: `category` é um `select` com
- * três valores, e o texto que o editor vê está no admin, não no dado.
+/* A ordem e o rótulo das abas vêm de `lib/abas-de-solucoes.ts`, os mesmos do
+ * índice `/solucoes` (D-52).
  *
  * ⚠️ `rc18` não entra (D-37): a RC18 saiu de Soluções e se chega a ela pela
  * página de Bancos e pelo destaque da home. O documento continua com
  * `category: 'rc18'` — só deixa de ser agrupado, e o valor do enum fica. */
-const GRUPOS: { id: Solution['category']; pt: string; en: string }[] = [
-  { id: 'innovation-ai', pt: 'Inovação & IA', en: 'Innovation & AI' },
-  { id: 'data-bi', pt: 'Dados, BI & Advanced Analytics', en: 'Data, BI & Advanced Analytics' },
-  { id: 'governance-culture', pt: 'Governança & Cultura', en: 'Governance & Culture' },
-]
 
 export function toGruposDeSolucoes(
   docs: SolucaoDoMenu[],
   locale: 'pt' | 'en',
   hrefDaSolucao: (slug: string) => string,
 ): GrupoDeSolucoes[] {
-  return GRUPOS.map((g) => ({
+  return ABAS_DE_SOLUCOES.map((g) => ({
+    id: g.id,
     title: g[locale],
     items: docs
       .filter((d) => d.category === g.id)
@@ -55,6 +52,7 @@ export function toGruposDeSolucoes(
         icon: d.icon,
         // Solução sem página não vira link, igual ao índice (D-09).
         href: d.hasPage ? hrefDaSolucao(d.slug) : null,
+        badge: vazio(d.badge),
       })),
   })).filter((g) => g.items.length > 0)
 }
@@ -123,6 +121,8 @@ export function toNavegacao(args: {
   solucoes: SolucaoDoMenu[]
   parceiros: ParceiroDoMenu[]
   segmentos: SegmentoDoMenu[]
+  /** Já mapeado (`conversion-panel.ts`); `null` enquanto não tiver título. */
+  conversao: PainelDeConversao | null
   locale: 'pt' | 'en'
   hrefDaSolucao: (slug: string) => string
 }): Navegacao {
@@ -130,6 +130,7 @@ export function toNavegacao(args: {
   return {
     categorias: toCategorias(args.global),
     solucoes: toGruposDeSolucoes(args.solucoes, args.locale, args.hrefDaSolucao),
+    conversao: args.conversao,
     parceiros,
     descricoesDeParceiro: descricoes,
     segmentos: args.segmentos.map(toSegmentCard),

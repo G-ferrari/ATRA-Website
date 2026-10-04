@@ -1,14 +1,14 @@
-import { Briefcase, ChevronLeft, MapPin } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import Link from 'next/link'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
+import { BlocoCta } from '@/components/blocks/bloco-cta'
+import { BlocoHero } from '@/components/blocks/bloco-hero'
 import { RichText } from '@/components/content/rich-text'
 import { Candidatura } from '@/components/forms/candidatura'
-import { ContactCta } from '@/components/ui'
-import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toVagaDetalhe } from '@/lib/mappers/job'
 import { getPayload } from '@/lib/payload'
@@ -20,34 +20,38 @@ import { metadataDe } from '@/lib/seo'
  * no legado a vaga é um item de lista que rola para o banco de talentos, sem
  * página própria.
  *
- * ⚠️ A candidatura em si — formulário e upload de CV — é MIG-102, travada por
- * P-17 (retenção de currículo, acesso do RH). Aqui a vaga é só a descrição; o
- * botão leva ao banco de talentos em /carreiras, que também ainda não coleta. */
+ * Desde a revisão de 03/10 a página usa as peças das outras páginas internas:
+ * o topo é o `BlocoHero` (o cartão claro/grafite de soluções e segmentos) e o
+ * fim é o `BlocoCta` da faixa padrão. Antes eram um topo azul próprio, com
+ * texto laranja e cinza abaixo do contraste mínimo, e a caixa `ContactCta`.
+ *
+ * ⚠️ **Para onde vai o candidato.** A candidatura com currículo — formulário e
+ * upload — é MIG-102, travada por P-17 (retenção do CV, acesso do RH). Enquanto
+ * ela não liga, o botão do topo e o da faixa final levam ao **banco de
+ * talentos** em /carreiras. Até 03/10 a faixa dizia "deixe seu currículo no
+ * banco de talentos", mas o botão ia para /contato e mostrava o telefone e o
+ * e-mail comerciais: a candidatura chegava ao RD Station como lead de venda. */
 
 const TEXTOS = {
   pt: {
     voltar: 'Ver todas as vagas',
+    selo: 'Vaga aberta',
     candidatarTitulo: 'Candidate-se a esta vaga',
     semCorpoTitulo: 'Descrição em preparação',
     semCorpoTexto: 'Os detalhes desta vaga ainda estão sendo finalizados. Enquanto isso, fale com a gente pelo banco de talentos.',
-    ctaTitulo: 'Quer fazer parte',
-    ctaDestaque: 'do time?',
+    talentos: 'Cadastrar no banco de talentos',
+    ctaTitulo: 'Quer fazer parte do time?',
     ctaDescricao: 'Deixe seu currículo no nosso banco de talentos. Estamos sempre em busca de bons profissionais de dados.',
-    ctaTelefone: 'Telefone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Falar com o RH',
   },
   en: {
     voltar: 'See all roles',
+    selo: 'Open role',
     candidatarTitulo: 'Apply for this role',
     semCorpoTitulo: 'Description in preparation',
     semCorpoTexto: 'The details for this role are still being finalized. In the meantime, reach out through the talent pool.',
-    ctaTitulo: 'Want to join',
-    ctaDestaque: 'the team?',
+    talentos: 'Join our talent pool',
+    ctaTitulo: 'Want to join the team?',
     ctaDescricao: 'Leave your CV in our talent pool. We are always looking for good data professionals.',
-    ctaTelefone: 'Phone',
-    ctaEmail: 'E-mail',
-    ctaAcao: 'Talk to HR',
   },
 } as const
 
@@ -109,41 +113,48 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
   if (!vaga) notFound()
 
   const t = TEXTOS[locale]
-  const contato = await lerContato()
+  const listaDeVagas = `${hrefDe('carreiras', locale)}#trabalhe-conosco`
+  const bancoDeTalentos = `${hrefDe('carreiras', locale)}#banco-talentos`
 
   return (
-    <main className="min-h-screen bg-white dark:bg-[#0e1015]">
-      <section className="relative bg-primary overflow-hidden pt-32 md:pt-44 pb-16">
-        <div className="absolute inset-0 bg-linear-to-t from-primary via-primary/90 to-primary/70" />
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <Link
-            href={`${hrefDe('carreiras', locale)}#trabalhe-conosco`}
-            className="inline-flex items-center gap-2 text-white font-bold mb-8 hover:gap-3 hover:text-secondary transition-all"
-          >
-            <ChevronLeft size={20} aria-hidden /> {t.voltar}
-          </Link>
-          <div className="max-w-4xl">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-secondary font-black uppercase tracking-[0.15em] text-xs md:text-sm mb-4">
-              {/* Some quando a vaga não tem área (P-28): etiqueta com rótulo
-                  vazio ao lado do ícone é pior do que etiqueta nenhuma. */}
-              {vaga.area && (
-                <span className="flex items-center gap-2">
-                  <Briefcase size={14} aria-hidden /> {vaga.area}
-                </span>
-              )}
-              <span className="flex items-center gap-2">
-                <MapPin size={14} aria-hidden /> {vaga.locationLabel}
-              </span>
-            </div>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              {vaga.title}
-            </h1>
-            <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl">{vaga.summary}</p>
-          </div>
-        </div>
-      </section>
+    <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6">
+        <Link
+          href={listaDeVagas}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-muted hover:text-primary hover:gap-2.5 transition-all"
+        >
+          <ChevronLeft size={18} aria-hidden /> {t.voltar}
+        </Link>
+      </div>
 
-      <section className="py-24">
+      {/* O cartão de topo das páginas internas. A área (quando existe, P-28)
+          vai no selo; o modelo de trabalho, na etiqueta ao lado. */}
+      <BlocoHero
+        bloco={{
+          tipo: 'pageHero',
+          id: 'vaga',
+          anchor: null,
+          navLabel: null,
+          theme: 'surface-1',
+          borda: 'nenhuma',
+          espaco: 'normal',
+          badge: vaga.area ?? t.selo,
+          chip: vaga.locationLabel,
+          title: vaga.title,
+          highlight: [],
+          subtitle: null,
+          description: vaga.summary,
+          align: 'left',
+          ctas: [{ label: t.talentos, href: bancoDeTalentos }],
+          ctaVariant: 'secondary',
+          descriptionWidth: 'wide',
+          mediaMode: 'none',
+          images: [],
+          metrics: [],
+        }}
+      />
+
+      <section className="pt-8 pb-20">
         <div className="container mx-auto px-4 md:px-6">
           <div className="max-w-3xl mx-auto">
             {vaga.body ? (
@@ -176,15 +187,29 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
         </section>
       )}
 
-      <ContactCta
-        title={t.ctaTitulo}
-        titleHighlight={t.ctaDestaque}
-        description={t.ctaDescricao}
-        phoneLabel={t.ctaTelefone}
-        emailLabel={t.ctaEmail}
-        actionLabel={t.ctaAcao}
-        href={hrefDe('contato', locale)}
-        contato={contato}
+      {/* A faixa padrão do fim das páginas (D-42), com o texto de carreiras: o
+          visitante daqui é candidato, e a faixa de "Entre em contato" o mandaria
+          ao formulário comercial. */}
+      <BlocoCta
+        bloco={{
+          tipo: 'ctaBanner',
+          id: 'fim-da-vaga',
+          anchor: null,
+          navLabel: null,
+          theme: 'surface-1',
+          borda: 'nenhuma',
+          espaco: 'normal',
+          variant: 'dark-centered',
+          /* Sem destaque no título e sem segundo botão, de propósito: o trecho
+             destacado sai em laranja, abaixo do contraste no tema claro, e o
+             segundo botão desta variante leva o ícone da IA. A volta para a
+             lista já está no topo da página. */
+          title: t.ctaTitulo,
+          highlight: null,
+          description: t.ctaDescricao,
+          cta: { label: t.talentos, href: bancoDeTalentos },
+          secondaryCta: null,
+        }}
       />
     </main>
   )

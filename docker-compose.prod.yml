@@ -20,6 +20,15 @@ services:
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
+    # ⚠️ journald e não o `json-file` padrão: o log do json-file vive no
+    # container e some com ele a cada deploy (`--force-recreate`). No journald
+    # do host ele sobrevive e se consulta por período —
+    # `journalctl CONTAINER_NAME=atra-web-1 --since "13:00"`. Retenção em
+    # `preparar-vm.sh` (30 dias, 2 GB). `docker logs` continua funcionando.
+    logging:
+      driver: journald
+      options:
+        tag: "{{.Name}}"
     ports:
       - "80:80"
       - "443:443"
@@ -32,6 +41,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data      # certificados: perder isto refaz o ACME do zero
       - caddy_config:/config
+      - ./logs/caddy:/var/log/caddy   # log de acesso em JSON, rotação pelo próprio Caddy
     depends_on:
       web:
         condition: service_healthy
@@ -40,7 +50,19 @@ services:
   web:
     image: atra-website:${TAG:-local}
     restart: unless-stopped
+    # ⚠️ journald e não o `json-file` padrão: o log do json-file vive no
+    # container e some com ele a cada deploy (`--force-recreate`). No journald
+    # do host ele sobrevive e se consulta por período —
+    # `journalctl CONTAINER_NAME=atra-web-1 --since "13:00"`. Retenção em
+    # `preparar-vm.sh` (30 dias, 2 GB). `docker logs` continua funcionando.
+    logging:
+      driver: journald
+      options:
+        tag: "{{.Name}}"
     environment:
+      # Sentry (MIG-122, D-46): vazio = SDK carregado e inerte. O DSN do
+      # navegador vai como build-arg no deploy.sh, porque entra no bundle.
+      SENTRY_DSN: ${SENTRY_DSN:-}
       DATABASE_URI: postgres://atra:${POSTGRES_PASSWORD}@postgres:5432/atra
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
       NEXT_PUBLIC_SITE_URL: ${SITE_URL}
@@ -104,6 +126,15 @@ services:
   postgres:
     image: postgres:17-alpine
     restart: unless-stopped
+    # ⚠️ journald e não o `json-file` padrão: o log do json-file vive no
+    # container e some com ele a cada deploy (`--force-recreate`). No journald
+    # do host ele sobrevive e se consulta por período —
+    # `journalctl CONTAINER_NAME=atra-web-1 --since "13:00"`. Retenção em
+    # `preparar-vm.sh` (30 dias, 2 GB). `docker logs` continua funcionando.
+    logging:
+      driver: journald
+      options:
+        tag: "{{.Name}}"
     environment:
       POSTGRES_USER: atra
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -129,6 +160,15 @@ services:
   minio:
     image: minio/minio:latest
     restart: unless-stopped
+    # ⚠️ journald e não o `json-file` padrão: o log do json-file vive no
+    # container e some com ele a cada deploy (`--force-recreate`). No journald
+    # do host ele sobrevive e se consulta por período —
+    # `journalctl CONTAINER_NAME=atra-web-1 --since "13:00"`. Retenção em
+    # `preparar-vm.sh` (30 dias, 2 GB). `docker logs` continua funcionando.
+    logging:
+      driver: journald
+      options:
+        tag: "{{.Name}}"
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${S3_ACCESS_KEY}

@@ -108,7 +108,13 @@ export function limparTexto(s: string): string {
   return s.replace(/ /g, ' ').replace(/\s+/g, ' ').trim()
 }
 
-/** ⚠️ A API do WP responde 302 sem user-agent de browser. */
+/** O importador se identifica como o que é.
+ *
+ * ⚠️ O firewall do WordPress (RunCloud 8G) devolve 302 para o user-agent padrão
+ * de ferramenta — `curl`, `node`, vazio. Até 02/10 a saída era fingir ser o
+ * Chrome; medido naquele dia, um nome próprio e honesto passa igual, na API e
+ * em `wp-content/uploads`. Disfarce não é necessário, então não se usa: quem
+ * olha o log do servidor da ATRA vê quem está baixando o conteúdo e por quê. */
 export const WP_USER_AGENT =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120 Safari/537.36'
+  'ATRA-Website-Importer/1.0 (migracao do site institucional; contato negocios@atra.com.br)'
 export const WP_API = 'https://www.atra.com.br/wp-json/wp/v2'

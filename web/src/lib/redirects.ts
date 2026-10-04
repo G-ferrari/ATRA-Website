@@ -1,6 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs'
 
-import { hrefDe } from './routes'
+import { ENDERECOS_QUE_MUDARAM } from '../migrations/arquivos/solucoes-estrutura'
+import { LOCALES } from './locales'
+import { hrefDaPagina, hrefDe, SEGMENTO_DE_PAGINA } from './routes'
 
 /* Leitura do `redirects.csv` para o `next.config.ts` (MIG-108).
  *
@@ -105,16 +107,56 @@ export const ROTAS_APOSENTADAS = [
  * antes de o site ir ao ar. O endereço antigo já está em link gravado no CMS
  * (menu, página Insights) e em quem acompanhou a homologação.
  *
+ * ⚠️ Com slug, o destino é a **lista**, não uma página: desde 02/10 (D-49) a
+ * seção é de matérias de imprensa, que abrem no veículo, e os relatórios de
+ * exemplo saíram do site — não há página de item para onde levar.
+ *
  * Mesmas regras de `ROTAS_APOSENTADAS`: origem escrita à mão e sem barra final,
  * destino por `hrefDe`. Lista separada porque lá cada destino carrega
  * `?setor=`, e os testes cobram isso de toda linha.
  */
 export const ROTAS_RENOMEADAS = [
-  { source: '/relatorios', destination: hrefDe('relatorios', 'pt'), permanent: true },
-  { source: '/relatorios/:slug', destination: `${hrefDe('relatorios', 'pt')}/:slug`, permanent: true },
-  { source: '/en/reports', destination: hrefDe('relatorios', 'en'), permanent: true },
-  { source: '/en/reports/:slug', destination: `${hrefDe('relatorios', 'en')}/:slug`, permanent: true },
+  { source: '/relatorios', destination: hrefDe('midia', 'pt'), permanent: true },
+  { source: '/relatorios/:slug', destination: hrefDe('midia', 'pt'), permanent: true },
+  { source: '/en/reports', destination: hrefDe('midia', 'en'), permanent: true },
+  { source: '/en/reports/:slug', destination: hrefDe('midia', 'en'), permanent: true },
 ] as const
+
+/**
+ * As soluções que **mudaram de endereço** com a estrutura nova do menu (D-52,
+ * 02/10/2026): as 18 antigas saíram, e cada endereço leva à solução nova mais
+ * próxima em assunto. O mapa é o da migração que fez a troca
+ * (`migrations/arquivos/solucoes-estrutura.ts`), para os dois não divergirem.
+ *
+ * Os endereços antigos nunca estiveram em produção — só na homologação —, mas
+ * é por eles que o time revisou o site, e link salvo não deve dar 404. As URLs
+ * do WordPress vão direto ao destino novo, pelo `redirects.csv`.
+ */
+export const SOLUCOES_QUE_MUDARAM = ENDERECOS_QUE_MUDARAM.flatMap(([antigo, novo]) =>
+  LOCALES.map((locale) => ({
+    source: hrefDe('solucoes', locale, antigo),
+    destination: hrefDe('solucoes', locale, novo),
+    permanent: true,
+  })),
+)
+
+/**
+ * A primeira página de uma listagem paginada é a própria seção (D-47):
+ * `/blog/pagina/1` leva a `/blog`, ou seriam dois endereços para o mesmo
+ * conteúdo.
+ *
+ * ⚠️ Aqui, e não com `permanentRedirect()` dentro da página. Feito na página,
+ * o Next guarda o redirect como resultado pré-montado e, da segunda visita em
+ * diante, responde com **dois** cabeçalhos `Location` iguais — medido no CI de
+ * 02/10 (`"/blog, /blog"`), e invisível no dev, que não guarda nada. Navegador
+ * tolera; proxy e robô nem sempre. Na lista de redirects a resposta sai antes
+ * de a rota existir, com um `Location` só.
+ */
+export const PRIMEIRA_PAGINA = LOCALES.map((locale) => ({
+  source: hrefDe('blog', locale, `${SEGMENTO_DE_PAGINA}/1`),
+  destination: hrefDaPagina('blog', locale, 1),
+  permanent: true,
+}))
 
 /** As URLs que saem de propósito, para o `proxy.ts` responder 410. */
 export function caminhosGone(linhas: LinhaDeRedirect[]): string[] {

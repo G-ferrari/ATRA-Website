@@ -76,6 +76,7 @@ export interface Config {
     jobs: Job;
     pages: Page;
     posts: Post;
+    press: Press;
     resources: Resource;
     webinars: Webinar;
     clients: Client;
@@ -102,6 +103,7 @@ export interface Config {
     jobs: JobsSelect<false> | JobsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    press: PressSelect<false> | PressSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
     webinars: WebinarsSelect<false> | WebinarsSelect<true>;
     clients: ClientsSelect<false> | ClientsSelect<true>;
@@ -124,6 +126,7 @@ export interface Config {
   globals: {
     'atra-ai': AtraAi;
     contact: Contact;
+    'conversion-panel': ConversionPanel;
     'cookie-consent': CookieConsent;
     'data-maturity-diagnostic': DataMaturityDiagnostic;
     footer: Footer;
@@ -135,6 +138,7 @@ export interface Config {
   globalsSelect: {
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
+    'conversion-panel': ConversionPanelSelect<false> | ConversionPanelSelect<true>;
     'cookie-consent': CookieConsentSelect<false> | CookieConsentSelect<true>;
     'data-maturity-diagnostic': DataMaturityDiagnosticSelect<false> | DataMaturityDiagnosticSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
@@ -318,9 +322,9 @@ export interface Case {
   id: number;
   title: string;
   /**
-   * E.g. Banco ABC.
+   * E.g. Banco ABC. Optional: when empty, the client name is not shown anywhere on the site.
    */
-  client: string;
+  client?: string | null;
   /**
    * Up to 220 characters. Used on the listing card and as the search description.
    */
@@ -3784,6 +3788,35 @@ export interface Post {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Articles, interviews and videos about ATRA in the press. Each item shows on "ATRA in the media" and opens on the outlet's site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "press".
+ */
+export interface Press {
+  id: number;
+  title: string;
+  /**
+   * Who published it. E.g. Gazeta Mercantil Digital.
+   */
+  outlet: string;
+  description: string;
+  /**
+   * The address on the outlet's site (or the video's). It is where the card leads, in a new tab.
+   */
+  url: string;
+  coverImage: number | Media;
+  kind: 'article' | 'video';
+  publishedAt?: string | null;
+  /**
+   * Lower comes first.
+   */
+  order: number;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Reports and ebooks. The kind decides which page lists the item.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3792,7 +3825,7 @@ export interface Post {
 export interface Resource {
   id: number;
   /**
-   * Reports list on /atra-in-the-media ("ATRA in the media"); ebooks on /ebooks.
+   * Ebooks list on /ebooks. Reports have had no page on the site since 02/10 (D-49): they are kept here.
    */
   kind: 'report' | 'ebook';
   title: string;
@@ -5616,7 +5649,10 @@ export interface Solution {
    * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
    */
   slug: string;
-  category: 'innovation-ai' | 'data-bi' | 'governance-culture' | 'rc18';
+  /**
+   * The tab in the Solutions menu.
+   */
+  category: 'innovation-ai' | 'data-bi' | 'governance-culture' | 'specialized-services' | 'rc18';
   icon:
     | 'sparkles'
     | 'target'
@@ -5653,6 +5689,10 @@ export interface Solution {
     | 'server'
     | 'code'
     | 'headset';
+  /**
+   * Optional. When filled, the card is highlighted and shows the badge in the menu and index.
+   */
+  badge?: string | null;
   /**
    * One sentence. Used in the Solutions menu and on the index card.
    */
@@ -7513,6 +7553,10 @@ export interface PayloadLockedDocument {
         value: number | Post;
       } | null)
     | ({
+        relationTo: 'press';
+        value: number | Press;
+      } | null)
+    | ({
         relationTo: 'resources';
         value: number | Resource;
       } | null)
@@ -8656,6 +8700,23 @@ export interface PostsSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "press_select".
+ */
+export interface PressSelect<T extends boolean = true> {
+  title?: T;
+  outlet?: T;
+  description?: T;
+  url?: T;
+  coverImage?: T;
+  kind?: T;
+  publishedAt?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -10446,6 +10507,7 @@ export interface SolutionsSelect<T extends boolean = true> {
   slug?: T;
   category?: T;
   icon?: T;
+  badge?: T;
   shortDescription?: T;
   hasPage?: T;
   layout?:
@@ -11525,6 +11587,90 @@ export interface Contact {
   createdAt?: string | null;
 }
 /**
+ * The fixed panel on the right of the Solutions menu: paths, button, figures and each tab’s case. Wide screens only.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversion-panel".
+ */
+export interface ConversionPanel {
+  id: number;
+  /**
+   * E.g. “Where to start?”. Empty: the panel is not shown.
+   */
+  title?: string | null;
+  intro?: string | null;
+  paths?:
+    | {
+        icon:
+          | 'sparkles'
+          | 'target'
+          | 'shield'
+          | 'rocket'
+          | 'users'
+          | 'database'
+          | 'cloud'
+          | 'brain'
+          | 'chart'
+          | 'lock'
+          | 'workflow'
+          | 'award'
+          | 'app'
+          | 'search'
+          | 'settings'
+          | 'zap'
+          | 'cpu'
+          | 'shield-check'
+          | 'trending-up'
+          | 'arrow-up-right'
+          | 'star'
+          | 'file-text'
+          | 'newspaper'
+          | 'video'
+          | 'book'
+          | 'briefcase'
+          | 'graduation-cap'
+          | 'heart'
+          | 'info'
+          | 'user-check'
+          | 'building'
+          | 'coffee'
+          | 'server'
+          | 'code'
+          | 'headset';
+        title: string;
+        description?: string | null;
+        /**
+         * In-site address, starting with “/”. The three paths lead to the assessment.
+         */
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  ctaLabel?: string | null;
+  ctaHref?: string | null;
+  /**
+   * One line only: “140+ specialists · 15+ years · …”. Five short items is what fits.
+   */
+  proof?:
+    | {
+        value: string;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Up to 3 per tab; with more than one, they rotate. A tab with none shows the latest ones.
+   */
+  cases?: {
+    innovationAi?: (number | Case)[] | null;
+    dataBi?: (number | Case)[] | null;
+    governanceCulture?: (number | Case)[] | null;
+    specializedServices?: (number | Case)[] | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "cookie-consent".
  */
@@ -11964,6 +12110,43 @@ export interface ContactSelect<T extends boolean = true> {
         diagnostic?: T;
         careers?: T;
         chat?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversion-panel_select".
+ */
+export interface ConversionPanelSelect<T extends boolean = true> {
+  title?: T;
+  intro?: T;
+  paths?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        href?: T;
+        id?: T;
+      };
+  ctaLabel?: T;
+  ctaHref?: T;
+  proof?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  cases?:
+    | T
+    | {
+        innovationAi?: T;
+        dataBi?: T;
+        governanceCulture?: T;
+        specializedServices?: T;
       };
   updatedAt?: T;
   createdAt?: T;

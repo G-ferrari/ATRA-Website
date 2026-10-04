@@ -17,7 +17,8 @@ export function toCaseCard(doc: Case): CaseCard {
   return {
     slug: doc.slug,
     title: doc.title,
-    client: doc.client,
+    // Vazio é "não identificar o cliente" (03/10): vira `null`, e o nome some.
+    client: doc.client?.trim() || null,
     summary: doc.summary,
     impact: doc.impact ?? null,
     image: toImage(doc.heroImage, 'cases.heroImage'),

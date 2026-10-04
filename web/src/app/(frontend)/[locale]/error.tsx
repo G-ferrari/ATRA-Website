@@ -1,5 +1,6 @@
 'use client'
 
+import * as Sentry from '@sentry/nextjs'
 import { AlertTriangle, RotateCcw } from 'lucide-react'
 import { useEffect } from 'react'
 
@@ -23,7 +24,9 @@ export default function Erro({
   reset: () => void
 }) {
   useEffect(() => {
-    // Sentry entra aqui em MIG-121; por ora o log do servidor já tem o rastro.
+    /* O servidor já capturou o erro inteiro pelo `onRequestError`; este é o
+     * mesmo erro visto do navegador, ligado pelo `digest`. Sem DSN é inerte. */
+    Sentry.captureException(error)
     console.error('[erro na página]', error.digest ?? error.message)
   }, [error])
 

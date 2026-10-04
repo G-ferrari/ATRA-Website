@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest'
 
 import { ehSetor } from './diagnostico-maturidade'
-import { ROTAS_APOSENTADAS, ROTAS_RENOMEADAS, caminhosGone, lerCsv, redirectsDoNext } from './redirects'
+import {
+  PRIMEIRA_PAGINA,
+  ROTAS_APOSENTADAS,
+  ROTAS_RENOMEADAS,
+  SOLUCOES_QUE_MUDARAM,
+  caminhosGone,
+  lerCsv,
+  redirectsDoNext,
+} from './redirects'
 import { canonizarSegmento } from './routes'
 
 const CSV = `from,to,status,note
@@ -110,9 +118,10 @@ describe('ROTAS_RENOMEADAS', () => {
 
   it('leva /relatorios e /en/reports ao endereço novo, com e sem slug', () => {
     expect(destinoDe('/relatorios')).toBe('/atra-na-midia')
-    expect(destinoDe('/relatorios/:slug')).toBe('/atra-na-midia/:slug')
+    // Com slug, a lista: os relatórios saíram do site e matéria não tem página (D-49).
+    expect(destinoDe('/relatorios/:slug')).toBe('/atra-na-midia')
     expect(destinoDe('/en/reports')).toBe('/en/atra-in-the-media')
-    expect(destinoDe('/en/reports/:slug')).toBe('/en/atra-in-the-media/:slug')
+    expect(destinoDe('/en/reports/:slug')).toBe('/en/atra-in-the-media')
   })
 
   it('origem sem barra final, diferente do destino e permanente', () => {
@@ -130,6 +139,47 @@ describe('ROTAS_RENOMEADAS', () => {
     expect(canonizarSegmento('reports', 'en')).toBeNull()
     expect(canonizarSegmento('atra-na-midia', 'pt')).toBe('atra-na-midia')
     expect(canonizarSegmento('atra-in-the-media', 'en')).toBe('atra-na-midia')
+  })
+})
+
+/* D-52: as soluções antigas saíram, e o endereço de cada uma leva à solução
+   nova mais próxima. */
+describe('SOLUCOES_QUE_MUDARAM', () => {
+  const destinoDe = (source: string) => SOLUCOES_QUE_MUDARAM.find((r) => r.source === source)?.destination
+
+  it('leva o endereço antigo à solução nova, nos dois idiomas', () => {
+    expect(destinoDe('/solucoes/inteligencia-artificial')).toBe('/solucoes/ia-generativa-e-agentes-conversacionais')
+    expect(destinoDe('/en/solutions/inteligencia-artificial')).toBe('/en/solutions/ia-generativa-e-agentes-conversacionais')
+    expect(destinoDe('/solucoes/customer-360')).toBe('/solucoes/master-data-e-customer-360')
+  })
+
+  /* Estas duas nasceram de novo no mesmo endereço: redirect ali viraria laço. */
+  it('quem manteve o endereço não entra', () => {
+    expect(destinoDe('/solucoes/alocacao-de-consultores')).toBeUndefined()
+    expect(destinoDe('/solucoes/assessoria-em-produtos')).toBeUndefined()
+  })
+
+  it('a RC18 não é tocada', () => {
+    expect(SOLUCOES_QUE_MUDARAM.some((r) => r.source.includes('rc18') || r.destination.includes('rc18'))).toBe(false)
+  })
+
+  it('origem sem barra final, diferente do destino e permanente', () => {
+    for (const r of SOLUCOES_QUE_MUDARAM) {
+      expect(r.source).not.toMatch(/\/$/)
+      expect(r.destination).not.toBe(r.source)
+      expect(r.permanent).toBe(true)
+    }
+  })
+})
+
+/* D-47: `/blog/pagina/1` é `/blog`. Na lista de redirects, e não dentro da
+   página — lá o Next respondia com o `Location` em dobro. */
+describe('PRIMEIRA_PAGINA', () => {
+  it('leva a página 1 do blog à própria seção, nos dois idiomas', () => {
+    expect(PRIMEIRA_PAGINA).toEqual([
+      { source: '/blog/pagina/1', destination: '/blog', permanent: true },
+      { source: '/en/blog/pagina/1', destination: '/en/blog', permanent: true },
+    ])
   })
 })
 

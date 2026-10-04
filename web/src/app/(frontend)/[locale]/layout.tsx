@@ -12,11 +12,15 @@ import { CapturaDeUtm } from '@/components/layout/captura-de-utm'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
+import { HtmlComTema } from '@/components/layout/tema'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { ORIGEM } from '@/lib/seo'
+import { SCRIPT_DO_TEMA } from '@/lib/tema'
 import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
 import { lerContato } from '@/lib/contato'
 import { organizacao } from '@/lib/jsonld'
 import { LOCALES, isLocale } from '@/lib/locales'
+import { toPainelDeConversao } from '@/lib/mappers/conversion-panel'
 import { toNavegacao } from '@/lib/mappers/navigation'
 import { toImageOpcional } from '@/lib/mappers/shared'
 import { toRodape } from '@/lib/mappers/site'
@@ -47,6 +51,10 @@ const monaSans = Mona_Sans({
 })
 
 export const metadata: Metadata = {
+  /* ⚠️ Sem isto o Next completa todo endereço relativo de metatag com
+   * `http://localhost:3000`. `metadataDe` já manda a imagem de compartilhamento
+   * absoluta; esta linha cobre o que mais vier relativo, hoje e depois. */
+  metadataBase: new URL(ORIGEM),
   title: { default: 'ATRA', template: '%s | ATRA' },
   description: 'Consultoria de Dados e IA.',
 }
@@ -68,7 +76,7 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
    * o menu só precisa do cartão — sem ele, `solutions` arrasta um join por
    * tipo de bloco e o cabeçalho passa a custar dezenas de segundos. */
   const payload = await getPayload()
-  const [navGlobal, rodapeGlobal, institucional, contato, solucoes, parceiros, segmentos] = await Promise.all([
+  const [navGlobal, rodapeGlobal, institucional, contato, solucoes, parceiros, segmentos, painelGlobal, casesDoMenu] = await Promise.all([
     payload.findGlobal({ slug: 'navigation', locale, depth: 0 }),
     payload.findGlobal({ slug: 'footer', locale, depth: 0 }),
     /* `depth: 1` só pelo logo: o `site-settings` também carrega selos e
@@ -88,7 +96,7 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
        * que só apareceu quando MIG-093 pôs 12 soluções em rascunho, meses depois
        * de a consulta ter sido escrita. */
       where: { _status: { equals: 'published' } },
-      select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true },
+      select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true, badge: true },
     }),
     payload.find({
       collection: 'partners',
@@ -107,6 +115,20 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
       where: { _status: { equals: 'published' } },
       select: { name: true, slug: true, icon: true, shortDescription: true },
     }),
+    /* D-51: o painel de conversão do menu de Soluções. `depth: 0` porque os
+       cases de cada aba chegam só como id — quem os resolve é a consulta
+       abaixo, que já filtra o que está publicado. */
+    payload.findGlobal({ slug: 'conversion-panel', locale, depth: 0 }),
+    payload.find({
+      collection: 'cases',
+      locale,
+      /* `depth: 1` só pela capa. */
+      depth: 1,
+      limit: 50,
+      sort: '-publishedAt',
+      where: { _status: { equals: 'published' } },
+      select: { title: true, slug: true, client: true, heroImage: true },
+    }),
   ])
 
   const logo = toImageOpcional(institucional.logo, 'site-settings.logo')
@@ -122,27 +144,38 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
     solucoes: solucoes.docs,
     parceiros: parceiros.docs,
     segmentos: segmentos.docs,
+    conversao: toPainelDeConversao({
+      global: painelGlobal,
+      cases: casesDoMenu.docs,
+      /* Os destinos do painel são texto do admin (`/contato`), como os do
+         rodapé: o prefixo do idioma entra aqui, e o `proxy.ts` faz a ponte para
+         o slug traduzido. */
+      hrefLocal: (href) => (locale !== 'pt' && href.startsWith('/') ? `/${locale}${href}` : href),
+      hrefDoCase: (slug) => hrefDe('cases', locale, slug),
+    }),
     locale,
     hrefDaSolucao: (slug) => hrefDe('solucoes', locale, slug),
   })
 
   return (
-    /* `dark` no servidor: o legado inicia no tema escuro (App.tsx:2571) e a
-     * regressão visual compara os dois. Aplicar por efeito no cliente causaria
-     * flash de tema claro na primeira pintura. O alternador entra com a casca
-     * do site (MIG-034). */
-    <html
-      lang={locale === 'pt' ? 'pt-BR' : 'en'}
-      /* Sem `antialiased`: o legado não define `-webkit-font-smoothing`, e
-       * ligá-lo muda a rasterização de todo glifo do site. Era a diferença que
-       * sobrava na regressão visual depois de layout e fonte já baterem — as
-       * 60 caixas de texto da listagem coincidem ao décimo de pixel, e ainda
-       * assim as bordas divergiam. Porte fiel vale para isso também (D-15). */
-      className={`${monaSans.variable} h-full dark`}
-    >
+    /* O `<html>` é desenhado por `HtmlComTema`, de cliente, que lhe dá a classe
+     * do tema (D-48). No servidor ela é `dark` — o legado inicia no escuro
+     * (App.tsx:2571), e a página é pré-montada, sem saber o tema de ninguém.
+     * Quem acerta antes da primeira pintura é o `SCRIPT_DO_TEMA`, no começo do
+     * `<body>`; quem mantém certo depois é o próprio `HtmlComTema`.
+     *
+     * Sem `antialiased` na classe: o legado não define `-webkit-font-smoothing`,
+     * e ligá-lo muda a rasterização de todo glifo do site. Era a diferença que
+     * sobrava na regressão visual depois de layout e fonte já baterem — as
+     * 60 caixas de texto da listagem coincidem ao décimo de pixel, e ainda
+     * assim as bordas divergiam. Porte fiel vale para isso também (D-15). */
+    <HtmlComTema lang={locale === 'pt' ? 'pt-BR' : 'en'} classeBase={`${monaSans.variable} h-full`}>
       {/* A árvore reproduz a do legado (`App.tsx:2597`): o `<body>` fica limpo,
         * como no `index.html` dele, e as classes de casca vivem no wrapper. */}
       <body>
+        {/* Primeiro filho do `<body>`, de propósito: roda antes de qualquer
+            conteúdo ser pintado. Ver `lib/tema.ts`. */}
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_DO_TEMA }} />
         {/* Uma vez por página, no layout: a organização é a mesma em todas, e
             repetir o nó em cada rota só multiplicaria bytes. */}
         <DadosEstruturados
@@ -199,6 +232,6 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
           {children}
         </Casca>
       </body>
-    </html>
+    </HtmlComTema>
   )
 }

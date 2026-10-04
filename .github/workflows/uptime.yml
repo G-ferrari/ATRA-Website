@@ -1,0 +1,105 @@
+name: Uptime
+
+# MIG-124 (D-46): checagem externa do site, de fora da VM, com alerta por
+# issue — o único destino de notificação que existe hoje (e-mail do GitHub
+# para quem acompanha o repositório). Os alvos são os da spec
+# (backup-e-observabilidade.md): home, health que toca o banco, uma rota que
+# lê o banco (a home estática esconderia Postgres caído) e a validade do
+# certificado.
+#
+# ⚠️ A cada 5 minutos, não a cada minuto: é o menor intervalo do cron do
+# GitHub, e ele ainda atrasa em hora cheia. Serve como interino até um serviço
+# de uptime de verdade; a troca é só apontar os mesmos alvos lá.
+# ⚠️ Cron só roda na branch padrão (`main`). Alvo em `vars.SITE_URL`, para a
+# virada de domínio não exigir commit.
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+jobs:
+  checar:
+    name: site no ar?
+    runs-on: ubuntu-latest
+    env:
+      SITE: ${{ vars.SITE_URL || 'https://35-211-105-220.sslip.io' }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Checar os alvos
+        id: checar
+        run: |
+          falhas=()
+          relatorio=()
+          checar() { # nome url esperado [trecho obrigatório no corpo]
+            local nome=$1 url=$2 esperado=$3 trecho=${4:-}
+            local saida codigo tempo
+            saida=$(curl -sS -o /tmp/corpo -w '%{http_code} %{time_total}' --max-time 15 "$url" 2>/dev/null) || saida="000 15.0"
+            codigo=${saida%% *}; tempo=${saida##* }
+            relatorio+=("$nome: HTTP $codigo em ${tempo}s")
+            if [ "$codigo" != "$esperado" ]; then falhas+=("$nome respondeu HTTP $codigo (esperado $esperado)"); return; fi
+            if [ -n "$trecho" ] && ! grep -q "$trecho" /tmp/corpo; then falhas+=("$nome respondeu 200 sem \"$trecho\" no corpo"); fi
+          }
+          checar home "$SITE/" 200
+          checar health "$SITE/api/health" 200 '"status":"ok"'
+          checar cases "$SITE/cases-de-sucesso" 200
+
+          host=${SITE#https://}; host=${host%%/*}
+          fim=$(echo | openssl s_client -connect "$host:443" -servername "$host" 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
+          if [ -z "$fim" ]; then
+            falhas+=("não foi possível ler o certificado TLS de $host")
+          else
+            dias=$(( ( $(date -d "$fim" +%s) - $(date +%s) ) / 86400 ))
+            relatorio+=("certificado: expira em $dias dias ($fim)")
+            [ "$dias" -ge 20 ] || falhas+=("certificado expira em $dias dias")
+          fi
+
+          printf '%s\n' "${relatorio[@]}"
+          {
+            echo "relatorio<<FIM"; printf -- '- %s\n' "${relatorio[@]}"; echo "FIM"
+            echo "falhas<<FIM"; printf -- '- %s\n' "${falhas[@]}"; echo "FIM"
+            echo "falhou=$([ ${#falhas[@]} -gt 0 ] && echo true || echo false)"
+          } >> "$GITHUB_OUTPUT"
+          if [ ${#falhas[@]} -gt 0 ]; then printf '::error::%s\n' "${falhas[@]}"; fi
+
+      - name: Abrir ou atualizar a issue de queda
+        if: steps.checar.outputs.falhou == 'true'
+        run: |
+          gh label create uptime --color d73a4a --description "Alerta automático do workflow Uptime" --force >/dev/null 2>&1 || true
+          aberta=$(gh issue list --label uptime --state open --json number --jq '.[0].number // empty')
+          corpo="**Alvo:** $SITE  
+          **Quando:** $(date -u '+%Y-%m-%d %H:%M UTC')
+
+          **Falhas**
+          ${{ steps.checar.outputs.falhas }}
+
+          **Medições**
+          ${{ steps.checar.outputs.relatorio }}
+
+          _Aberta pelo workflow Uptime; fecha sozinha quando os alvos voltarem._"
+          if [ -n "$aberta" ]; then
+            gh issue comment "$aberta" --body "$corpo"
+          else
+            gh issue create --title "Site fora do ar: $(date -u '+%d/%m %H:%M UTC')" --label uptime --body "$corpo"
+          fi
+
+      - name: Fechar a issue se voltou
+        if: steps.checar.outputs.falhou == 'false'
+        run: |
+          aberta=$(gh issue list --label uptime --state open --json number --jq '.[0].number // empty')
+          [ -z "$aberta" ] && exit 0
+          gh issue close "$aberta" --comment "Voltou em $(date -u '+%Y-%m-%d %H:%M UTC').
+
+          ${{ steps.checar.outputs.relatorio }}"
+
+      - name: Reprovar o run quando o site está fora
+        if: steps.checar.outputs.falhou == 'true'
+        run: exit 1

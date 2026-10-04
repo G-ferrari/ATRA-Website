@@ -6,6 +6,8 @@
  *
  * Ver docs/02-especificacao/contratos-de-dados.md. */
 
+import type { AbaDeSolucoes } from '@/lib/abas-de-solucoes'
+
 export type Image = {
   url: string
   /** Obrigatório no schema do Media — nunca chega indefinido aqui. */
@@ -41,7 +43,8 @@ export type Testimonial = {
 export type CaseCard = {
   slug: string
   title: string
-  client: string
+  /** `null` quando o case não identifica o cliente: o nome some da tela. */
+  client: string | null
   summary: string
   impact: string | null
   image: Image
@@ -95,6 +98,21 @@ export type Webinar = {
   duration: string
   videoUrl: string | null
   seo: Seo
+}
+
+/** Matéria, entrevista ou vídeo sobre a ATRA na imprensa — "ATRA na mídia" (D-49). */
+export type MateriaDaImprensa = {
+  id: string
+  title: string
+  /** O veículo que publicou. */
+  outlet: string
+  description: string
+  /** Endereço no site do veículo: é para onde o cartão leva. */
+  url: string
+  image: Image
+  kind: 'article' | 'video'
+  /** ISO 8601, ou `null`: a página antiga não mostrava data. */
+  publishedAt: string | null
 }
 
 export type PostCard = {
@@ -188,6 +206,10 @@ export type BlocoIconCardGrid = Base & {
   /** `accent` intercala a cor do traço do ícone (azul padrão, laranja escasso);
    *  presentation-only, injetado pela página — o CMS não tem o campo. */
   items: { icon: string; title: string; description: string | null; accent?: 'primary' | 'secondary' }[]
+  /** Abaixo de `md`, cartão em linha (ícone ao lado do texto) e mais justo.
+   *  Presentation-only, injetado pela página — hoje só na RC18, onde as 12
+   *  dimensões empilhadas em cartão alto passavam de 1.900px no celular. */
+  compactoNoCelular?: boolean
 }
 
 /* Blocos do template de página de parceiro (MIG-054a). A justificativa de cada
@@ -654,7 +676,8 @@ export type ConsultantRole = {
   certifications: string[]
 }
 
-export type SolutionCategory = 'innovation-ai' | 'data-bi' | 'governance-culture' | 'rc18'
+/** A aba do menu de Soluções, ou `rc18` — que tem página e não tem aba (D-37). */
+export type SolutionCategory = AbaDeSolucoes | 'rc18'
 
 export type SolutionCard = {
   slug: string
@@ -664,6 +687,8 @@ export type SolutionCard = {
   shortDescription: string
   /** `false` mostra o card sem link — a solução ainda não tem página (D-09). */
   hasPage: boolean
+  /** O selo do cartão em destaque (D-52); `null` é cartão comum. */
+  badge: string | null
 }
 
 /**
@@ -710,9 +735,15 @@ export type CartaoDoMenu = {
 }
 
 /** Uma solução no painel, agrupada pela categoria do mega-menu. */
+/* As abas do menu de Soluções moram em `lib/abas-de-solucoes.ts`, que é de
+ * onde a collection, o menu e o índice leem a ordem e os nomes (D-52). */
+export type { AbaDeSolucoes }
+
 export type GrupoDeSolucoes = {
+  /** A aba: é por ela que o painel de conversão escolhe o case (D-51). */
+  id: AbaDeSolucoes
   title: string
-  items: { title: string; description: string; icon: string; href: string | null }[]
+  items: { title: string; description: string; icon: string; href: string | null; badge: string | null }[]
 }
 
 export type CategoriaDoMenu = {
@@ -846,10 +877,35 @@ export type Rodape = {
   direitos: string
 }
 
+/** O case rotativo do painel de conversão: o que o cartão desenha, com o
+ *  endereço já resolvido no idioma. */
+export type MiniCase = {
+  slug: string
+  title: string
+  client: string | null
+  image: Image | null
+  href: string
+}
+
+/** Painel fixo à direita do menu de Soluções (D-51), do global
+ *  `conversion-panel`. Destinos já chegam com o prefixo do idioma. */
+export type PainelDeConversao = {
+  titulo: string
+  abertura: string | null
+  caminhos: { icon: string; title: string; description: string | null; href: string }[]
+  /** `null` sem texto ou sem destino: o botão não é desenhado. */
+  cta: { label: string; href: string } | null
+  provas: { value: string; label: string | null }[]
+  /** O que cada aba mostra. Aba sem case escolhido recebe os mais recentes. */
+  cases: Record<AbaDeSolucoes, MiniCase[]>
+}
+
 /** Tudo que o cabeçalho precisa, resolvido no servidor. */
 export type Navegacao = {
   categorias: CategoriaDoMenu[]
   solucoes: GrupoDeSolucoes[]
+  /** `null` enquanto o painel não tiver título no CMS: o menu sai como era. */
+  conversao: PainelDeConversao | null
   parceiros: PartnerBadge[]
   segmentos: SegmentCard[]
   /** Descrição de cada parceiro, para o painel — o `PartnerBadge` não a carrega. */

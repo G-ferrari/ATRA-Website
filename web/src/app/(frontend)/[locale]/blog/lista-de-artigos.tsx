@@ -1,20 +1,34 @@
 'use client'
 
-import { ArrowRight, Calendar, ChevronLeft, ChevronRight, Search, Tag } from 'lucide-react'
+import { ArrowRight, Calendar, Search, Tag } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 
 import { ChipFilter, EntradaAnimada, SearchInput } from '@/components/ui'
+import { categoriasComArtigo } from '@/lib/categorias-do-blog'
 import type { Locale } from '@/lib/locales'
-import { hrefDe } from '@/lib/routes'
-import { cn } from '@/lib/utils'
+import { fatia, totalDePaginas } from '@/lib/paginacao'
+import { hrefDaPagina, hrefDe } from '@/lib/routes'
 import type { PostCard } from '@/types/content'
+
+import { Paginacao } from './paginacao'
 
 /* Listagem do blog — porte de `legacy/src/pages/Blog.tsx:88`.
  * Mesmo desenho de cases: o cabeçalho vem pronto do servidor e divide a linha
- * flex com a busca, que precisa de estado. */
+ * flex com a busca, que precisa de estado.
+ *
+ * Paginação (D-47). A ilha recebe **todos** os artigos e mostra uma fatia:
+ * - sem busca nem filtro, a fatia é a da **rota** (`pagina`), e a numeração é
+ *   feita de links — cada página é um endereço pré-montado;
+ * - com busca ou filtro, a lista é o resultado, que só existe nesta tela, e a
+ *   numeração vira botões com a página guardada em estado.
+ * A busca vale para todos os artigos, e não só para os da página aberta: é por
+ * isso que a lista inteira vem, e não só os 12. */
+
+/** Âncora da lista: é para onde a numeração leva, e não para o topo da página. */
+const ANCORA = 'artigos'
 
 const TEXTOS = {
   pt: {
@@ -26,6 +40,12 @@ const TEXTOS = {
     vazioTitulo: 'Nenhum artigo encontrado',
     vazioTexto: 'Tente buscar por outro termo ou selecione a categoria "Todos".',
     limpar: 'Resetar Filtros',
+    paginacao: {
+      navegacao: 'Páginas do blog',
+      anterior: 'Página anterior',
+      proxima: 'Próxima página',
+      pagina: (n: number) => `Página ${n}`,
+    },
   },
   en: {
     buscar: 'Search posts...',
@@ -36,6 +56,12 @@ const TEXTOS = {
     vazioTitulo: 'No post found',
     vazioTexto: 'Try another term or pick the "All" category.',
     limpar: 'Reset filters',
+    paginacao: {
+      navegacao: 'Blog pages',
+      anterior: 'Previous page',
+      proxima: 'Next page',
+      pagina: (n: number) => `Page ${n}`,
+    },
   },
 } as const
 
@@ -43,19 +69,37 @@ const TODOS = 'todos'
 
 export function ListaDeArtigos({
   posts,
+  pagina,
+  porPagina,
   categorias,
   locale,
   cabecalho,
 }: {
+  /** Todos os artigos, do mais novo para o mais antigo — não só os desta página. */
   posts: PostCard[]
+  /** A página da rota: 1 em `/blog`, N em `/blog/pagina/N`. */
+  pagina: number
+  porPagina: number
   categorias: string[]
   locale: Locale
   cabecalho: ReactNode
 }) {
   const t = TEXTOS[locale]
-  const [busca, setBusca] = useState('')
-  const [categoria, setCategoria] = useState<string>(TODOS)
-  const [pagina, setPagina] = useState(1)
+  const [busca, setBuscaCrua] = useState('')
+  const [categoria, setCategoriaCrua] = useState<string>(TODOS)
+  const [paginaDoFiltro, setPaginaDoFiltro] = useState(1)
+
+  /* Mudou a busca ou o filtro, o resultado é outro: volta para a primeira
+     página dele. No próprio gesto, e não num efeito, para não desenhar um
+     quadro com a lista nova na página velha. */
+  const setBusca = (valor: string) => {
+    setBuscaCrua(valor)
+    setPaginaDoFiltro(1)
+  }
+  const setCategoria = (valor: string) => {
+    setCategoriaCrua(valor)
+    setPaginaDoFiltro(1)
+  }
 
   const filtrados = useMemo(() => {
     const termo = busca.trim().toLowerCase()
@@ -69,10 +113,20 @@ export function ListaDeArtigos({
     })
   }, [posts, busca, categoria])
 
-  const opcoes = [
-    { id: TODOS, label: t.todos },
-    ...categorias.map((c) => ({ id: c, label: c })),
-  ]
+  // Só a categoria que tem artigo; sem nenhuma, a barra não aparece (ver o módulo).
+  const comArtigo = useMemo(() => categoriasComArtigo(categorias, posts), [categorias, posts])
+  const opcoes = [{ id: TODOS, label: t.todos }, ...comArtigo.map((c) => ({ id: c, label: c }))]
+
+  const filtrando = busca.trim() !== '' || categoria !== TODOS
+  const lista = filtrando ? filtrados : posts
+  const total = totalDePaginas(lista.length, porPagina)
+  const atual = filtrando ? Math.min(paginaDoFiltro, total) : pagina
+  const visiveis = fatia(lista, atual, porPagina)
+
+  const irParaAPaginaDoFiltro = (n: number) => {
+    setPaginaDoFiltro(n)
+    document.getElementById(ANCORA)?.scrollIntoView({ block: 'start' })
+  }
 
   const formatarData = (iso: string) =>
     new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
@@ -84,24 +138,28 @@ export function ListaDeArtigos({
 
   return (
     <>
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-6">
+      {/* `scroll-mt` compensa o cabeçalho fixo: sem ele a âncora pararia com o
+          título da lista escondido atrás do menu. */}
+      <div id={ANCORA} className="scroll-mt-28 flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-6">
         {cabecalho}
         <div className="flex items-center gap-3">
           <SearchInput value={busca} onChange={setBusca} placeholder={t.buscar} />
         </div>
       </div>
 
-      <div className="mb-10">
-        <ChipFilter
-          label={t.categorias}
-          options={opcoes}
-          activeId={categoria}
-          onChange={setCategoria}
-          variante="blog"
-        />
-      </div>
+      {comArtigo.length > 0 && (
+        <div className="mb-10">
+          <ChipFilter
+            label={t.categorias}
+            options={opcoes}
+            activeId={categoria}
+            onChange={setCategoria}
+            variante="blog"
+          />
+        </div>
+      )}
 
-      {filtrados.length === 0 ? (
+      {lista.length === 0 ? (
         <div className="bg-surface-2  rounded-[6px] p-10 text-center max-w-md mx-auto">
           <Search size={32} className="mx-auto text-text-muted mb-3" aria-hidden />
           <h3 className="text-base font-bold text-text-main mb-1">{t.vazioTitulo}</h3>
@@ -119,11 +177,11 @@ export function ListaDeArtigos({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-          {filtrados.map((p, i) => (
+          {visiveis.map((p, i) => (
             <EntradaAnimada
               key={p.slug}
               index={i}
-              className="group flex flex-col bg-surface-2  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 transition-all duration-300"
+              className="group relative flex flex-col bg-surface-2  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 transition-all duration-300"
             >
               <div className="aspect-[16/10] overflow-hidden relative border-b border-slate-200 dark:border-white/10">
                 <Image
@@ -149,7 +207,13 @@ export function ListaDeArtigos({
                   </div>
 
                   <h3 className="text-lg md:text-xl font-bold font-display text-text-main mb-3 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                    {p.title}
+                    {/* O cartão inteiro leva ao artigo (pedido de 04/10): até aqui
+                        só o "Continuar lendo" era link. O link fica no título,
+                        com `after:inset-0` cobrindo o cartão — um link só, com o
+                        título como nome, o mesmo desenho de /webinars. */}
+                    <Link href={hrefDe('blog', locale, p.slug)} className="after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:after:rounded-[6px] focus-visible:after:ring-2 focus-visible:after:ring-[#3C98FA]">
+                      {p.title}
+                    </Link>
                   </h3>
 
                   <p className="text-text-muted text-xs sm:text-sm font-light leading-relaxed line-clamp-3 mb-6">
@@ -170,13 +234,14 @@ export function ListaDeArtigos({
                   </div>
 
                   <div className="pt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between">
-                    <Link
-                      href={hrefDe('blog', locale, p.slug)}
-                      className="inline-flex items-center gap-2 text-primary font-bold text-xs sm:text-sm group-hover:gap-3 transition-all"
-                    >
+                    {/* Só a aparência de botão: quem leva ao artigo é o link do
+                        título, que cobre o cartão. Dois links para o mesmo
+                        destino fariam o leitor de tela anunciar cada artigo duas
+                        vezes. */}
+                    <span aria-hidden className="inline-flex items-center gap-2 text-primary font-bold text-xs sm:text-sm group-hover:gap-3 transition-all">
                       <span>{t.cta}</span>
-                      <ArrowRight size={14} aria-hidden />
-                    </Link>
+                      <ArrowRight size={14} />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -185,47 +250,19 @@ export function ListaDeArtigos({
         </div>
       )}
 
-      {/* ⚠️ Paginação decorativa, portada como está.
-          No legado `currentPage` muda mas a lista nunca é fatiada
-          (`Blog.tsx:68` e `:246`): os botões não fazem nada, e são fixos em duas
-          páginas para 6 posts. Com os 207 do WordPress (Fase 4b) isso precisa
-          virar paginação de verdade — registrado em debito-tecnico.md. */}
-      <div className="mt-14 md:mt-16 flex justify-center items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setPagina((p) => Math.max(1, p - 1))}
-          aria-label="Página anterior"
-          className="w-9 h-9 rounded-[6px]  bg-surface-2 flex items-center justify-center text-text-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
-        >
-          <ChevronLeft size={16} aria-hidden />
-        </button>
-        <div className="flex items-center gap-2">
-          {[1, 2].map((n) => (
-            <button
-              key={n}
-              type="button"
-              onClick={() => setPagina(n)}
-              aria-current={pagina === n ? 'page' : undefined}
-              className={cn(
-                'w-9 h-9 rounded-[6px] font-bold text-xs cursor-pointer transition-all',
-                pagina === n
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'bg-surface-2  text-text-main hover:border-primary',
-              )}
-            >
-              {n}
-            </button>
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={() => setPagina((p) => Math.min(2, p + 1))}
-          aria-label="Próxima página"
-          className="w-9 h-9 rounded-[6px]  bg-surface-2 flex items-center justify-center text-text-muted hover:text-primary hover:border-primary transition-all cursor-pointer"
-        >
-          <ChevronRight size={16} aria-hidden />
-        </button>
-      </div>
+      {/* Sem filtro, links: cada página é um endereço. A primeira leva a âncora
+          porque `/blog` abre no destaque, e quem clicou em "1" quer a lista; as
+          outras já começam nela. Com filtro, botões: o resultado não tem endereço. */}
+      {filtrando ? (
+        <Paginacao atual={atual} total={total} rotulos={t.paginacao} aoMudar={irParaAPaginaDoFiltro} />
+      ) : (
+        <Paginacao
+          atual={atual}
+          total={total}
+          rotulos={t.paginacao}
+          hrefDe={(n) => (n === 1 ? `${hrefDaPagina('blog', locale, 1)}#${ANCORA}` : hrefDaPagina('blog', locale, n))}
+        />
+      )}
     </>
   )
 }

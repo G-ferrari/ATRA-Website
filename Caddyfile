@@ -25,6 +25,20 @@
 {$SITE_HOST} {
 	encode zstd gzip
 
+	# Log de acesso em JSON, em arquivo no host (`./logs/caddy`, montado pelo
+	# compose), 30 dias. É o insumo do monitoramento de 404 pós-cutover que o
+	# runbook pede, e a única evidência de 502 durante um deploy — o stderr do
+	# container (erros do próprio Caddy) continua indo para o journald, mas
+	# morre com o container a cada `--force-recreate`; o arquivo sobrevive.
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 50MiB
+			roll_keep 30
+			roll_keep_for 720h
+		}
+		format json
+	}
+
 	# ⚠️ Enquanto isto for ambiente de homologação, **noindex é obrigatório**.
 	#
 	# O conteúdo aqui é idêntico ao de atra.com.br — 207 artigos, os mesmos

@@ -53,6 +53,15 @@ describe('toCaseCard', () => {
     })
   })
 
+  /* 03/10: o cliente é opcional — case que não identifica o cliente. Vazio,
+     só espaço ou ausente viram `null`, e a tela não desenha o nome. */
+  it('cliente vazio vira null', () => {
+    expect(toCaseCard(caso({ client: '' })).client).toBeNull()
+    expect(toCaseCard(caso({ client: '   ' })).client).toBeNull()
+    expect(toCaseCard(caso({ client: null })).client).toBeNull()
+    expect(toCaseCard(caso({ client: ' Banco ABC ' })).client).toBe('Banco ABC')
+  })
+
   it('falha alto quando a imagem vem como id, não como documento', () => {
     // Sem isto o componente receberia `undefined` e renderizaria imagem quebrada.
     expect(() => toCaseCard(caso({ heroImage: 42 }))).toThrowError(/heroImage[\s\S]*depth/)

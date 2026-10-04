@@ -140,7 +140,7 @@ PARIDADE_COM_PROTOTIPO=1 pnpm gate       # a suíte padrão mais a paridade inte
 # o dev do Next recusa recurso pedido por outra origem e a página não hidrata — no Docker Desktop, ligar
 # "Enable host networking" em Settings → Resources → Network.
 docker run --rm --network host -e NEXT_URL=http://localhost:3000 -e GERAR_MINIATURAS=1 -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.62.1-noble npx playwright test e2e/miniaturas.spec.ts --project=desktop
-pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 261 linhas
+pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 273 linhas
 git push origin main                     # deploy (D-44): CI valida e a VPS troca sozinha, com rollback; `main` só recebe merge da `migracao`
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
 ```
@@ -271,7 +271,10 @@ comparam; na suíte padrão, a mesma lista alimenta o contraste e o axe.
 | CI morre em "pull access denied for minio/minio" antes de rodar um teste | O MinIO tirou as imagens públicas do Docker Hub e do quay.io (set/2026). Dev e CI usam o fork `pgsty/minio`, preso por digest, que já traz o `mc`. Produção ainda depende do cache da VPS — P-32 |
 | Migração de dados roda verde e a página continua como antes | Em **banco novo** o `migrate` roda antes de existir o conteúdo, a trava da migração não acha a página e pula — e a migração fica marcada como feita. `import-solutions.ts` chama as duas montagens (Alocação e as 11) no fim por isso, e `import-segments.ts` a dos 8 segmentos. E os importadores só reescrevem página ainda no formato deles (ou no do seed de teste, só o herói): rodado de novo num banco local em 27/09, ele tinha apagado a Alocação remontada |
 | Seed ou build do CI quebra em `relation "..." does not exist` com o passo de migração verde | O CLI do Payload carrega o `tsx` num worker e dispara com `void start()`: quando o carregamento empaca, o Node sai com **0 e sem imprimir nada**. Aconteceu duas vezes em 28/09. `pnpm migrate` (`web/scripts/migrar.mjs`) só aceita sucesso se o Payload disser "Done." ou "No migrations to run.", e tenta até 3 vezes; CI, imagem `migrator` e compose de produção usam ele. `pnpm payload migrate` direto continua valendo no dev, mas não prova nada |
-| CI morre no `migrate` em "column ... does not exist" numa migração **antiga**, que já passou mil vezes | Migração de dados usa a Local API com o config **de hoje**. Campo novo num bloco vira coluna no SELECT de toda consulta à collection, e em banco novo a migração antiga roda antes da coluna existir. Só as que consultam a collection inteira caem — filtro por slug em banco vazio pula o SELECT pesado, por isso o bug se esconde. Criar a coluna numa migração idempotente datada antes da primeira migração de dados (`20260927_215400_partner_showcase_source`) e testar com `pnpm migrate` num banco zerado |
+| CI morre no `migrate` em "column ... does not exist" numa migração **antiga**, que já passou mil vezes | Migração de dados usa a Local API com o config **de hoje**. Campo novo num bloco vira coluna no SELECT de toda consulta à collection, e em banco novo a migração antiga roda antes da coluna existir. Só as que consultam a collection inteira caem — filtro por slug em banco vazio pula o SELECT pesado, por isso o bug se esconde. Criar a coluna numa migração idempotente datada antes da primeira migração de dados (`20260927_215400_partner_showcase_source`) e testar com `pnpm migrate` num banco zerado. ⚠️ **Collection nova cai na mesma armadilha por outra porta** (02/10, `press`): ela ganha uma coluna em `payload_locked_documents_rels`, que o Payload consulta a cada `update` — `20260927_215500_locked_documents_press` |
+| Redirect feito de dentro da página responde com o `Location` em dobro (`"/blog, /blog"`), só em produção | `permanentRedirect()` numa rota pré-montada: o Next guarda o redirect como resultado e, da segunda visita em diante, soma o cabeçalho guardado ao da resposta. O dev não guarda nada e mostra um só — o e2e do CI pegou, e só no projeto que rodou depois do primeiro. Redirect fixo vai na lista (`lib/redirects.ts` → `redirects()` do `next.config.ts`), que responde antes de a rota existir |
+| Título do menu sai com "De" maiúsculo ("Fábrica De Soluções De Dados") | A classe `capitalize` do Tailwind põe maiúscula em **toda** palavra, inclusive preposição. Servia para os títulos em minúscula do WordPress; texto que já vem certo do admin não leva a classe |
+| Link colado no LinkedIn ou WhatsApp sai sem imagem; `og:image` aponta para `http://localhost:3000` | A mídia do CMS chega como caminho (`/api/media/file/…`) e o Next completa metatag relativa com a `metadataBase`, que sem ninguém definir é `localhost:3000` — o `NEXT_PUBLIC_SITE_URL` do build não entra nisso. `metadataDe` manda a imagem absoluta (`absoluta()`, de `lib/seo.ts`) e o layout define `metadataBase`. ⚠️ O CI não pega: lá a origem do site **é** `localhost:3000`. Para ver, suba o dev com outra `NEXT_PUBLIC_SITE_URL` |
 | Página funciona no dev e dá 404 na homologação | O conteúdo dela nasce de **seed**, e o deploy roda migração, não seed. Foi o caso do carrossel da home e da página do RC18 (28/09): o banner e o botão de Bancos levavam a 404. Conteúdo novo que precisa chegar a um ambiente que já existe vem por **migração de dados com trava** (cria só se não existir, não toca no que foi editado no admin), com o texto num módulo que o seed também importa — ver `scripts/seed/rc18-conteudo.ts` |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 
@@ -291,8 +294,25 @@ reescritos, **287 imagens** e as **7 vagas** (não 6 — uma abriu depois do
 levantamento). A 4c trouxe as **8 verticais** para `/segmentos` (remontadas em
 27/09 no padrão das soluções por `20260927_235930_segmentos_do_wordpress`, com
 o texto literal em `src/migrations/arquivos/segmentos-wp/`) e a página legal
-para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas**, com a
+para `/politicas-e-termos`, e o `redirects.csv` fechou em **261 linhas** (273 desde 03/10: +6 de 01/10, com os 6
+artigos publicados depois da carga — eles chegam pela migração
+`20261002_120000_posts_novos_do_wordpress`; o que vier depois entra por
+`import-posts.ts --so-novos`, que não regrava os que já existem), com a
 geração reprovando se alguma URL do WordPress ficar sem destino.
+
+⚠️ **Desde 02/10 (D-52) o menu de Soluções tem estrutura nova**: 4 abas
+(`lib/abas-de-solucoes.ts`) e 18 soluções criadas pela migração
+`20261002_213000_nova_estrutura_de_solucoes`, cada uma com página-esqueleto
+(topo e faixa final) para o time da ATRA preencher no admin. As 18 antigas — as
+6 do protótipo e as 12 do WordPress de que o parágrafo abaixo fala — foram
+**apagadas**, e `import-solutions.ts` está aposentado. A RC18 ficou.
+
+⚠️ **As vagas mudam no WordPress até a virada.** A carga de 25/08 trouxe 7; em
+03/10 o WordPress tinha 9 (4 fechadas, 6 novas). A sincronia é
+`scripts/wp-import/exportar-vagas.ts` + uma migração de dados
+(`20261003_120000_vagas_do_wordpress`), que cria, atualiza só vaga intocada no
+admin e despublica as fechadas da lista. **Repetir na semana da virada**, com a
+data da trava (`FIM_DA_CARGA`) avançada para a da sincronia anterior.
 
 **MIG-084** (P-27) segue em pendência — o WP tem 1 categoria e 0 tags, não há
 taxonomia para mapear, e classificar não é migrar. **MIG-093** foi destravada:
@@ -360,6 +380,10 @@ Cookie `atra-consent` versionado guarda a escolha; ilhas conversam por
 CustomEvent (`atra:consentimento`). Vídeo de webinar é click-to-load, fora do
 banner. Mesmo gate de código de D-29: `bannerMessage` (global `cookie-consent`)
 nasce vazio até P-14, e sem ele nada renderiza — gabarito do gate intacto.
+
+**D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
+`SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
+containers logando no journald e o Caddy com log de acesso em arquivo.
 
 **D-41 (29/09)** tirou a integração com o **ATRAIR** do ambiente: o global
 `integrations` (Sistema → Integrações, só admin) tem **duas chaves** —

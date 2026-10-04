@@ -130,7 +130,11 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
       }
       /* Ícones da grade "O que precisa" (toda azul) ganham laranja escasso; a grade
          das 12 dimensões recebe o mesmo mais abaixo, na transformação. */
-      if (b.tipo === 'iconCardGrid') b.items.forEach((it, idx) => (it.accent = acento(idx, b.columns)))
+      if (b.tipo === 'iconCardGrid') {
+        b.items.forEach((it, idx) => (it.accent = acento(idx, b.columns)))
+        /* No celular, cartão em linha (ícone ao lado do texto). */
+        b.compactoNoCelular = true
+      }
       /* Os dois `processSteps` — "O prazo" e a jornada "Como a ATRA te ajuda" —
          viram linha do tempo horizontal, como na landing. Ficam em fundos alternados
          (surface-2 / surface-1), o que os mantém distintos apesar do mesmo formato. */
@@ -156,6 +160,7 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
             columns: 4 as const,
             variant: 'card' as const,
             headerWidth: 'full' as const,
+            compactoNoCelular: true,
             items: b.steps.map((s, idx) => ({
               icon: ICONES_DIMENSOES[idx] ?? 'sparkles',
               title: s.title,

@@ -76,6 +76,14 @@ ENV S3_ENDPOINT=$S3_ENDPOINT
 ARG S3_BUCKET
 ENV S3_BUCKET=$S3_BUCKET
 
+# Sentry (MIG-122). O DSN do navegador entra no bundle, logo é build-arg; o
+# `release` é o SHA do deploy, para o painel ligar erro a commit. Nenhum dos
+# dois é segredo — o `SENTRY_DSN` do servidor vem como variável do container.
+ARG NEXT_PUBLIC_SENTRY_DSN
+ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
+ARG SENTRY_RELEASE
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
+
 # Os dois geradores antes do build, pelos motivos que o CI já documenta: tipo
 # defasado do schema reprova o build, e importMap defasado quebra campo do admin
 # **em silêncio**.
@@ -112,6 +120,9 @@ CMD ["pnpm", "migrate"]
 FROM base AS runner
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+# O mesmo SHA do estágio de build, lido em tempo de execução pelo SDK do servidor.
+ARG SENTRY_RELEASE
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
 
 # Container como root é acesso ao host se houver escape do container.
 RUN groupadd -r app && useradd -r -g app app

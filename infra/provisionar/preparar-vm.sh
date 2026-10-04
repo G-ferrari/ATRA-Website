@@ -54,6 +54,23 @@ chmod 700 "$RAIZ/backup"
 # O CI entra como este usuário e roda `docker` sem sudo.
 [ "$DONO" = root ] || usermod -aG docker "$DONO"
 
+echo "→ journald e pasta de logs"
+# Os containers logam no journald do host (compose, `logging: journald`): o log
+# sobrevive ao `--force-recreate` de cada deploy e se consulta por período.
+# Persistente em disco e com teto, senão o padrão do Ubuntu guarda em RAM e
+# descarta no reboot. 30 dias é a retenção que backup-e-observabilidade.md pede.
+mkdir -p /etc/systemd/journald.conf.d /var/log/journal
+cat > /etc/systemd/journald.conf.d/atra.conf <<'JOURNAL'
+[Journal]
+Storage=persistent
+SystemMaxUse=2G
+MaxRetentionSec=30day
+JOURNAL
+systemctl restart systemd-journald
+# O Caddy escreve o log de acesso aqui (bind mount do compose).
+mkdir -p "$RAIZ/logs/caddy"
+chown -R "$DONO:$DONO" "$RAIZ/logs"
+
 echo "→ timer de backup"
 if [ -f "$RAIZ/infra/backup/atra-backup.service" ]; then
   cp "$RAIZ/infra/backup/atra-backup.service" "$RAIZ/infra/backup/atra-backup.timer" /etc/systemd/system/

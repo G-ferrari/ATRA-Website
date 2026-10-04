@@ -90,7 +90,7 @@ em todos os aspectos — mais um motivo para o R2.
 | Release | SHA do commit, para ligar erro a deploy |
 | `tracesSampleRate` | 0.1 em produção — performance sem inflar custo |
 | Filtros | Descartar ruído de extensão de browser e bot |
-| **PII** | `sendDefaultPii: false`; **nunca** enviar corpo de formulário nem conversa do chat |
+| **PII** | padrão do SDK (sem IP nem cookies — `sendDefaultPii` saiu no SDK 11); **nunca** enviar corpo de formulário nem conversa do chat |
 | Alerta | Erro novo, ou taxa acima do normal → e-mail/Slack |
 
 ### Uptime
@@ -107,13 +107,23 @@ Checagem externa a cada minuto, de fora da VPS:
 O terceiro alvo importa: com a home estática, o site pode parecer no ar com o
 Postgres caído. Monitorar só a home é monitorar o cache.
 
+### O que está implementado (01/10 — MIG-122 e MIG-124, D-46)
+
+| Item da spec | Estado |
+|---|---|
+| Sentry servidor + edge + navegador, `environment`, `release` por SHA, 0.1 de amostra, PII fora, ruído de extensão filtrado | ✅ no código (`src/lib/sentry/`, `instrumentation.ts`, `instrumentation-client.ts`, `global-error.tsx`); **inerte até existir `SENTRY_DSN`/`NEXT_PUBLIC_SENTRY_DSN` no `.env.prod`** — espera a conta |
+| Alerta do Sentry (erro novo, taxa) | ⏳ configuração do painel, depois da conta |
+| Uptime: 3 alvos + certificado | ✅ **interino** — `.github/workflows/uptime.yml`, a cada 5 min (o mínimo do cron do GitHub), alvo em `vars.SITE_URL`; queda abre issue com a etiqueta `uptime` e a fecha ao voltar. Um serviço de uptime de verdade entra com os mesmos alvos |
+| Log de acesso do proxy, 30 dias | ✅ `/opt/atra/logs/caddy/access.log`, JSON, rotação pelo Caddy |
+| Logs dos containers com retenção | ✅ journald do host (`logging: journald` no compose), 30 dias / 2 GB (`preparar-vm.sh`). `journalctl CONTAINER_NAME=atra-web-1 --since "13:00"` |
+
 ### Logs
 
 | Origem | Destino | Retenção |
 |---|---|---|
-| Next (stdout) | Coolify | 7 dias |
-| Postgres | Arquivo no host, com rotação | 14 dias |
-| Proxy (acesso) | Arquivo no host | 30 dias — insumo do monitoramento de 404 pós-cutover |
+| Next (stdout) | journald do host, `CONTAINER_NAME=atra-web-1` | 30 dias |
+| Postgres | journald do host, `CONTAINER_NAME=atra-postgres-1` | 30 dias |
+| Proxy (acesso) | `/opt/atra/logs/caddy/access.log`, JSON | 30 dias — insumo do monitoramento de 404 pós-cutover |
 | Uso da ATRA AI | Tabela `ai-usage` | Permanente (métrica agregada, sem conteúdo — ver P-20) |
 
 Log estruturado em JSON, com `requestId`. Nunca logar segredo, corpo de formulário

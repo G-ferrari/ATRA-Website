@@ -1225,3 +1225,365 @@ tudo — isso não muda enquanto o ambiente for homologação.
   compatibilidade; o que importa é que 200 passa.
 - A nota do runbook sobre autenticar por cookie no CMS deixa de ser
   necessária: sem o Basic, o header `Authorization` fica livre para o JWT.
+
+## D-46 — Observabilidade de erros: Sentry inerte até a conta, uptime por issue, logs no journald
+
+*Decidida em 01/10/2026 por Leonardo, depois de uma queda percebida por um
+testador que ninguém conseguiu medir.*
+
+**Contexto.** A spec de observabilidade (backup-e-observabilidade.md) existia
+desde agosto, mas MIG-122 (Sentry) esperava uma conta e MIG-124 (uptime)
+esperava um destino de alerta. Sem log de acesso no Caddy e com o log dos
+containers morrendo a cada deploy, a investigação de 01/10 só conseguiu
+reconstruir a linha do tempo pelo journal do Docker.
+
+**Decisão.** Implementar o que não depende de conta nenhuma, e deixar o Sentry
+pronto para o dia em que a conta existir:
+
+- **Sentry** nos três lados (servidor, edge, navegador), com `environment`
+  derivado de `NEXT_PUBLIC_SITE_URL`, `release` igual ao SHA do deploy, 0.1 de
+  amostra, sem PII (padrão do SDK 11; `sendDefaultPii` não existe mais), corpo e cookies da requisição removidos no
+  `beforeSend`, e ruído de extensão de navegador descartado. **Sem DSN o SDK é
+  inerte** — é como roda no CI, no dev e no gate. Sem upload de source map nem
+  criação de release pelo plugin: exigem token, e é decisão separada.
+- **Uptime pelo GitHub Actions**, a cada 5 minutos (o mínimo do cron), com os
+  alvos da spec e a validade do certificado. Queda abre uma issue com a
+  etiqueta `uptime` e a fecha ao voltar; o e-mail do GitHub é o alerta. É
+  interino, porque o cron atrasa e 5 min não é 1 min, mas é o destino de
+  notificação que existe.
+- **Logs**: containers no journald do host (30 dias, 2 GB), que sobrevive ao
+  `--force-recreate`; log de acesso do Caddy em arquivo JSON por 30 dias.
+
+**Consequências.**
+
+- `SENTRY_DSN` e `NEXT_PUBLIC_SENTRY_DSN` entram no `.env.prod` quando a conta
+  existir; o segundo é build-arg no `deploy.sh`. Nada mais muda para ligar.
+- O cron só roda na branch padrão; o alvo vem de `vars.SITE_URL` do
+  repositório, para a virada de domínio não exigir commit.
+- Trocar o driver de log exige recriar os quatro containers uma vez. Postgres
+  e MinIO são recriados à mão, no mesmo intervalo de um deploy.
+
+## D-47 — O blog tem paginação de verdade, com um endereço por página
+
+*Decidida em 02/10/2026 por G-ferrari, a partir da análise da listagem na
+homologação.*
+
+**Contexto.** A paginação do blog veio do protótipo como decoração: dois botões
+fixos, "1" e "2", que mudavam de cor e não fatiavam nada (débito registrado na
+Fase 3). Com a carga do WordPress o defeito cresceu sem ninguém ver: a consulta
+pedia `limit: 100`, havia 207 artigos, e os **107 anteriores a maio de 2025 não
+apareciam na lista nem na busca** — só abriam por link direto. A página
+carregava os 100 cartões de uma vez (561 KB de HTML), e a barra de categorias —
+seis nomes fixos do protótipo — nunca achava nada, porque os artigos vieram sem
+tag (P-27).
+
+**Opções.** (A) Paginar só no navegador, com a página num parâmetro
+(`/blog?pagina=2`): um endereço só; ou a rota deixa de ser pré-montada, ou a
+página 2 abre mostrando a 1 antes de trocar. (B) Um endereço por página
+(`/blog/pagina/2`), pré-montado como o resto do site.
+
+**Decisão.** (B), com **12 artigos por página** e a barra de categorias
+**escondida enquanto nenhum artigo tiver tag**.
+
+**Consequências.**
+
+- `/blog` é a primeira página e `/blog/pagina/[numero]` as seguintes;
+  `/blog/pagina/1` redireciona para `/blog`, e número inválido ou além da última
+  dá 404. Cada página é canônica de si mesma. O destaque do topo só existe na
+  primeira; nas outras o título da lista é o `h1`, com "Página N de T".
+- A ilha recebe **todos** os artigos (`lib/blog.ts`, sem `limit`) e mostra a
+  fatia da rota. É o que faz a **busca valer para todos**: com busca ou filtro a
+  lista é o resultado, paginado em estado, com botões em vez de links. O custo é
+  a lista inteira no payload de cada página — ~0,5 KB por artigo; rever se o
+  blog passar de uns 600.
+- A conta mora em `lib/paginacao.ts`, com teste (fatias que cobrem a lista sem
+  repetir nem pular; numeração com reticências). A regra das categorias em
+  `lib/categorias-do-blog.ts`: só aparece a que tem artigo, então a barra volta
+  sozinha quando o marketing classificar os artigos.
+- ⚠️ No inglês o trecho continua `pagina` (`/en/blog/pagina/2`): o proxy só
+  traduz o primeiro segmento. Traduzir entra com a tarefa de tradução.
+- ⚠️ O banco do CI tem só as fixtures, uma página: o smoke confere as bordas da
+  rota e que a numeração não aparece; a paginação em escala foi conferida num
+  banco local com os 213 artigos importados.
+
+## D-48 — O tema segue o sistema na primeira visita e guarda a escolha
+
+*Decidida em 02/10/2026 por G-ferrari.*
+
+**Contexto.** O site abria sempre no tema escuro e esquecia a troca do
+alternador a cada carregamento — herança do protótipo (`App.tsx:2575`), anotada
+no próprio componente como melhoria para depois do aceite visual. Quem usa o
+computador no claro recebia um site escuro em toda visita.
+
+**Decisão.** Três regras, em ordem: quem já escolheu no alternador recebe o que
+escolheu; quem nunca escolheu recebe o tema do sistema, e o site o acompanha ao
+vivo; sem saber nenhum dos dois (sem JavaScript, robô), escuro. A escolha fica no
+`localStorage` do navegador, na chave `atra-tema`.
+
+**Consequências.**
+
+- A regra está em `lib/tema.ts`, duas vezes de propósito: em TypeScript
+  (`temaInicial`) e como texto de `<script>` (`SCRIPT_DO_TEMA`), que roda no
+  começo do `<body>`, antes da primeira pintura — o servidor manda `dark`,
+  porque a página é pré-montada, e esperar a hidratação faria quem usa o claro
+  ver o site piscar no escuro. O teste roda o texto contra a função.
+- ⚠️ O `<html>` passou a ser desenhado por um componente de cliente
+  (`components/layout/tema.tsx`), que lê a mesma fonte que o alternador. Não é
+  enfeite: quando uma hidratação falha, o React remonta a árvore e regrava a
+  `class` do `<html>` com o que o componente manda. Vindo do layout de servidor
+  era sempre `dark`, e o tema certo durava meio segundo (medido em dev, onde
+  `?e2e=1` faz a hidratação falhar pelos contadores).
+- A suíte e2e segue no escuro (`colorScheme: 'dark'` no `playwright.config`); o
+  caso claro e a memória da escolha estão no smoke. O contraste troca a classe
+  do `<html>` à mão, e o React não desfaz: só regrava quando a própria fonte
+  muda.
+- ⚠️ **Política de cookies (P-14):** `atra-tema` é preferência de exibição, não
+  rastreamento — não identifica ninguém nem sai do aparelho — e não depende do
+  aceite do aviso. Tem de ser **citada** no texto da política quando a Karen o
+  revisar.
+
+No mesmo PR, sem decisão própria: o bloco "Abas de destaque" (usado em "Soluções
+Integradas" e, na homologação, em "Cases de sucesso") só distribui a lista pela
+altura do painel a partir de 4 itens — com 2, os cartões ficavam um no topo e
+outro no rodapé — e o painel passou a ter a altura do maior item, em vez de
+crescer e encolher a cada troca.
+
+## D-49 — "ATRA na mídia" vira matérias de imprensa, com collection própria
+
+*Decidida em 02/10/2026 por G-ferrari. Completa a D-43, que só trocou o nome e
+o endereço.*
+
+**Contexto.** A seção `/atra-na-midia` ainda mostrava os três relatórios de
+exemplo do protótipo, com selo "Relatório" e botão de download. O WordPress tem
+a página de verdade, `/atra-na-midia/`: seis matérias, entrevistas e vídeos, cada
+uma com capa, veículo, título, resumo e link para fora.
+
+**Decisão.** A seção passa a ter o molde de `/webinars` — destaque rotativo no
+topo e grade de cartões — com o conteúdo da página do WordPress. Duas escolhas:
+
+- **O cartão abre a matéria no veículo, em outra aba**; não há página interna
+  por matéria. Uma página nossa só teria o resumo e um botão, e seria página
+  magra (D-08).
+- **Os relatórios de exemplo saem do site.** Continuam guardados no admin
+  (`resources`, tipo `report`), sem rota.
+
+**Consequências.**
+
+- Collection **`press`** (Conteúdo → ATRA na mídia): título, veículo, resumo,
+  link (`unique` — é a identidade do item), capa, tipo (matéria ou vídeo), data
+  opcional e ordem. Sem `slug` nem `seo`, porque não há página por item. O tipo
+  só muda o desenho: vídeo ganha o botão de play e "Assistir".
+- As seis matérias entram pela migração `20261002_170000_materias_da_imprensa`,
+  com o texto literal em `migrations/arquivos/atra-na-midia/` e as capas ao
+  lado. Só age onde a carga do WordPress está; em banco novo quem as cria é o
+  seed, pela mesma função — o job `verify` do CI não tem storage para as capas.
+- A rota `/atra-na-midia/[slug]` saiu. `/relatorios/:slug` e
+  `/en/reports/:slug` passam a redirecionar para a **lista**. A chave da seção
+  em `lib/routes.ts` virou `midia`.
+- O `FeaturedHero` ganhou dois opcionais por item: `externo` (abre em outra
+  aba) e `actionLabel` (texto do botão). O destaque mostra as 4 primeiras, para
+  a régua de miniaturas não ganhar barra de rolagem.
+- A página antiga fechava com um formulário próprio ("Quer falar sobre dados,
+  IA e inovação?"); aqui vale o fim padrão (D-42).
+- ⚠️ **Collection nova mexe em tabela que migração antiga consulta.** Toda
+  collection ganha uma coluna em `payload_locked_documents_rels`, que o Payload
+  lê a cada `update`. Em banco novo, a migração do RC18 de 28/09 fazia um
+  `update` antes de a coluna existir. A coluna nasce em
+  `20260927_215500_locked_documents_press`, idempotente — a segunda vez em uma
+  semana que a mesma armadilha aparece (ver `…_partner_showcase_source`).
+- ⚠️ **Fica com o marketing (D-22):** na página Insights, a aba "ATRA na mídia"
+  ainda mostra dois cartões de relatório do protótipo, e a descrição do item no
+  menu fala de "análises profundas do mercado de dados". Os dois se editam no
+  admin. O texto de apresentação da página (título e dois parágrafos, literais
+  do WordPress) e a descrição para buscadores estão no código.
+
+## D-50 — O rodapé tem um link só para as políticas
+
+*Decidida em 02/10/2026 por G-ferrari.*
+
+**Contexto.** A coluna "Legal" do rodapé tinha três links — Privacidade, Termos
+de Uso e Cookies —, herdados do protótipo. Desde MIG-094 os três levavam à
+mesma página, `/politicas-e-termos`, porque a ATRA tem um documento só: quem
+clicava em "Cookies" caía no topo do mesmo texto.
+
+**Decisão.** Fica um link, **"Políticas e Termos"**, que é o nome da página.
+
+**Consequências.**
+
+- O rodapé é global do CMS, e o deploy não roda seed: a troca chega pela
+  migração `20261002_180000_rodape_link_unico_de_politicas`, com a regra em
+  `migrations/arquivos/rodape-legal.ts`. Ela junta só os links **repetidos**
+  para a página de políticas; outro link na mesma coluna fica, e rodapé já
+  arrumado no admin não é tocado.
+- O inglês recebe "Policies and Terms", tradução literal, à espera da revisão
+  de tradução (P-08).
+- Separar de novo — uma página por documento, ou âncora por seção — é decisão
+  jurídica e de conteúdo, e se faz no admin (Sistema → Rodapé).
+
+## D-51 — Camada de conversão no menu de Soluções
+
+*Decidida em 02/10/2026 por G-ferrari, a partir da especificação e do print de 30/09.*
+
+**Contexto.** O menu de Soluções só listava as soluções: nenhuma saída para
+quem ainda não sabe o que procura, e nenhum caminho para contato sem fechar o
+menu.
+
+**Decisão.** Um painel fixo à direita do mega-menu, igual nas três abas:
+
+- **"Por onde começar?"**, com três caminhos — Decidir mais rápido com dados,
+  Colocar IA no negócio, Cortar custo e risco em nuvem — que levam ao
+  diagnóstico de maturidade;
+- o botão **"Falar com um especialista"**, sempre visível, para `/contato`;
+- a **prova social em uma linha**: 140+ especialistas · 15+ anos · Parceira
+  Google Cloud · 5x GPTW · 4x LIPT;
+- embaixo, o **case da aba**: muda conforme a aba (IA, Dados ou Governança),
+  alterna quando a aba tem mais de um, e o clique abre o case.
+
+**Consequências.**
+
+- Tudo é conteúdo do CMS, no global **`conversion-panel`** (Sistema → Painel do
+  menu de Soluções): título, abertura, caminhos (ícone, título, descrição,
+  destino), botão, itens da prova social e até 3 cases por aba. **Sem título, o
+  painel não é desenhado** e o menu sai como era.
+- ⚠️ **Global próprio, e não campos em `navigation`.** A migração de dados de
+  01/10 lê `navigation` com o config de hoje; coluna nova ali quebraria o
+  `migrate` em banco novo (a armadilha do CLAUDE.md). Global novo só cria
+  tabela que nenhuma migração antiga consulta.
+- O conteúdo chega aos ambientes pela migração
+  `20261002_203000_painel_de_conversao`, em dois passos com trava própria:
+  textos só em painel vazio; cases só se nenhuma aba tiver escolha. O seed
+  chama a mesma função depois de criar os cases.
+- **Aba sem case escolhido mostra os 3 mais recentes**, e case despublicado
+  some do painel sozinho — a consulta só traz publicado.
+- **Só a partir de 1280px** (`xl`). Em 1024px os cartões de solução, apertados
+  ao lado do painel, cresciam e a última linha da aba de Dados saía da tela.
+  Abaixo disso, e na gaveta do celular, o menu é o de antes.
+- O rodízio de cases para com o ponteiro ou o foco em cima, com "reduzir
+  movimento" ligado no sistema e sob `?e2e=1`.
+- ⚠️ **Fica com o marketing (D-22):** qual case vai em qual aba. A migração
+  parte de uma distribuição inicial — três cases em Dados, um em Governança,
+  nenhum em IA, porque nenhum dos quatro publicados é de IA. E os números: o
+  painel diz **5x GPTW**, e "Configurações do site" ainda diz 4x, marcado como
+  número em disputa (P-01).
+- O inglês é tradução literal, à espera da revisão (P-08).
+
+## D-52 — Estrutura nova do menu de Soluções: 4 abas, 18 soluções
+
+*Decidida em 02/10/2026 por G-ferrari, com a lista de abas e soluções.*
+
+**Contexto.** O menu tinha 18 soluções em 3 abas — as 6 do protótipo e as 12
+páginas trazidas do WordPress —, com nomes e agrupamento herdados do site
+antigo. A oferta foi redesenhada.
+
+**Decisão.** O menu passa a ter **4 abas** e **18 soluções novas**:
+
+- **IA & Analytics Avançada** (5) — IA Generativa & Agentes Conversacionais,
+  Analytics Conversacional, Modelos Preditivos & de Recomendação, Extração
+  Inteligente de Documentos, BI & Advanced Analytics;
+- **Dados & Cloud** (6) — Plataforma de Dados & Lakehouse, Engenharia de Dados
+  & Pipelines, Migração & Modernização, Integração de Dados, Master Data &
+  Customer 360, Apps Web, Mobile & APIs;
+- **Governança & FinOps** (2) — Governança & Qualidade de Dados, FinOps &
+  Eficiência em Nuvem;
+- **Serviços Especializados** (5) — Fábrica de Soluções de Dados, Sustentação
+  Remota Especializada, Alocação de Consultores, Assessoria em Produtos,
+  Cultura de Dados & Treinamentos.
+
+Três escolhas do G-ferrari, entre as alternativas apresentadas:
+
+- **As 18 antigas são apagadas de vez**, e não despublicadas nem
+  reaproveitadas — inclusive a página de IA do protótipo e a Alocação de
+  Consultores remontada em 26/09.
+- **As novas nascem no ar, como esqueleto**: o topo, com o título e a frase da
+  lista, e a faixa final padrão (D-42). Sem texto inventado; o time da ATRA
+  escreve cada página no admin.
+- **"Analytics Conversacional" é o cartão em destaque**, com o selo
+  "Diferencial ATRA".
+
+**Consequências.**
+
+- A troca chega pela migração `20261002_213000_nova_estrutura_de_solucoes`, com
+  a lista em `migrations/arquivos/solucoes-estrutura.ts`. Ela só apaga o que
+  está em `SLUGS_ANTIGOS`, e não faz nada se a solução-marcador da estrutura
+  nova já existir — é o que impede uma segunda corrida de apagar página já
+  escrita.
+- ⚠️ **O que traz o texto antigo de volta é o backup diário da VPS**, ou o
+  WordPress enquanto ele existir. As imagens ficam na Biblioteca.
+  `import-solutions.ts` foi aposentado: recusa rodar sem `--mesmo-assim`.
+- **A RC18 fica.** Tem página, não tem aba (D-37), e não está na lista do que
+  sai.
+- As abas moram num lugar só, `lib/abas-de-solucoes.ts`, de onde leem a
+  collection, o menu, o índice e o painel de conversão. ⚠️ Os três valores
+  antigos de `solutions.category` ficaram e só o rótulo mudou (renomear valor
+  de enum é migração destrutiva): `governance-culture` é "Governança &
+  FinOps". A quarta aba é o valor novo `specialized-services`.
+- Campo novo **"Selo"** na solução (`badge`, localizado): preenchido, o cartão
+  ganha contorno e o selo no menu e no índice. A coluna nasce cedo, em
+  `20260927_215600_solutions_badge` — a terceira vez da armadilha da migração
+  de dados antiga em banco novo.
+- **Endereços antigos.** `/solucoes/<antigo>` leva à solução nova mais próxima
+  em assunto (`SOLUCOES_QUE_MUDARAM`, em `lib/redirects.ts`), e as 11 URLs do
+  WordPress que apontavam para páginas que saíram vão direto ao destino novo no
+  `redirects.csv`. Alocação de Consultores e Assessoria em Produtos mantêm o
+  endereço.
+- O rodapé passa a listar as quatro abas (migração
+  `20261002_213100_rodape_com_as_abas_novas`), e o painel de conversão (D-51)
+  ganha a escolha de cases da quarta aba.
+- No CI não há mais seed de solução do menu: as 18 entram no `migrate`, que não
+  depende de conteúdo nem de storage. `solucoes.ts`, `solucao-ia.ts` e
+  `solucoes-wp.ts` saíram do repositório.
+- A rota `solucao-detalhe` dos testes passa a ser uma solução nova; a paridade
+  com o protótipo não vale mais para ela (como `/consultores`, D-34). Os blocos
+  `methodCards` e `bentoGrid` ficaram sem página que os use.
+- O inglês repete o português, com o mesmo endereço (P-08).
+- ⚠️ **Fica com o marketing (D-22):** o conteúdo das 18 páginas — antes da
+  virada, ou vão ao ar magras (D-08) —; o texto do assistente do site (ATRA
+  AI), que ainda descreve a oferta antiga; e a home, onde o bloco "Soluções
+  Integradas" segue com os nomes de antes.
+
+## D-53 — Vagas sincronizadas com o WordPress; o candidato vai ao banco de talentos
+
+*Decidida em 03/10/2026 por G-ferrari, na revisão da página de cada vaga.*
+
+**Contexto.** A revisão das 7 páginas de vaga na homologação achou três coisas:
+
+- **As vagas estavam desatualizadas.** A carga de 25/08 trouxe 7; em 03/10 o
+  WordPress tinha 9 — 4 das 7 tinham fechado e 6 eram novas. É lá que o RH abre
+  e fecha vaga até a virada.
+- **Não havia como se candidatar na página.** No WordPress cada vaga tem
+  formulário com currículo; aqui ele existe (MIG-102), mas espera a P-17
+  (retenção do CV e acesso do RH). E a faixa final dizia "deixe seu currículo no
+  banco de talentos" com um botão para o contato **comercial**, mostrando o
+  telefone e o e-mail de negócios: a candidatura chegaria ao RD Station como
+  lead de venda.
+- **Contraste**: o topo azul, com texto laranja e cinza, e a caixa final — 10
+  pontos por página no axe.
+
+**Decisão.** Três escolhas do G-ferrari:
+
+- **Sincronizar com o WordPress** por migração de dados, e repetir antes da
+  virada.
+- **Enquanto a P-17 não chega, o candidato vai ao banco de talentos** de
+  `/carreiras` — pelo botão do topo e pelo da faixa final. Sai o contato
+  comercial da página.
+- **A página da vaga usa as peças das outras páginas internas**: o topo é o
+  `BlocoHero` e o fim é a faixa padrão (`BlocoCta`), com o texto de carreiras.
+
+**Consequências.**
+
+- `scripts/wp-import/exportar-vagas.ts` escreve as vagas abertas, já
+  convertidas, em `migrations/arquivos/vagas-wp/vagas.json`; a migração
+  `20261003_120000_vagas_do_wordpress` cria as que faltam, **atualiza só vaga
+  intocada no admin** desde a carga (a trava é a data de alteração) e
+  **despublica** as 4 fechadas da lista — sem apagar. Só age onde a carga do
+  WordPress está: banco novo segue com as vagas de teste do seed.
+- O endereço das vagas fechadas no WordPress leva a `/carreiras`, e as 6 novas
+  ganham a linha 1:1 no `redirects.csv` (273 linhas). O gerador conhece as
+  fechadas pela lista curada, porque a página delas saiu do WordPress.
+- Na página, o contraste próprio caiu de 10 pontos para zero; sobram o botão do
+  cabeçalho e o link "Área Restrita" do rodapé, que são do site inteiro.
+- ⚠️ **Repetir a sincronia na semana da virada** (runbook, D-7).
+- ⚠️ **Fica com o RH:** a P-17 — sem ela a vaga não recebe currículo, e o
+  banco de talentos não tem anexo. E os dados estruturados de vaga
+  (`JobPosting`, para a busca de empregos do Google) só valem depois que der
+  para se candidatar na própria página.

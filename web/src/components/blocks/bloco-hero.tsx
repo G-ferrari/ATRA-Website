@@ -1,6 +1,7 @@
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 
 import { MetricChip, StatusBadge, TechCornerBraces } from '@/components/ui'
 import { cn } from '@/lib/utils'
@@ -22,6 +23,14 @@ const COR_DA_METRICA = {
   emerald: 'text-emerald-600 dark:text-emerald-400',
 } as const
 
+/* Envolve os filhos numa `div` só quando `quando` é verdadeiro; senão os devolve
+ * como estão, sem caixa nenhuma — o herói sem painel de prazo sai com o mesmo
+ * DOM de antes. Fica fora do componente porque a regra de lint proíbe criar
+ * componente dentro de outro. */
+function Caixa({ quando, className, children }: { quando: boolean; className: string; children: ReactNode }) {
+  return quando ? <div className={className}>{children}</div> : <>{children}</>
+}
+
 /* Abertura de página — porte de `legacy/src/pages/About.tsx:150`, que é a mesma
  * caixa usada em `Glossary.tsx:71` e `Careers.tsx:99`. */
 export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
@@ -36,6 +45,12 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
   /* /carreiras (`Careers.tsx:101`) centraliza a caixa inteira e troca a grade
      de 12 colunas por uma coluna só de `max-w-3xl`. */
   const centro = bloco.align === 'center'
+  /* Prazo em destaque sem mídia ao lado (a RC18): o selo vai para a coluna da
+     direita a partir de `lg`, grande, ao lado da descrição e dos botões — antes a
+     metade direita do herói ficava vazia. A ordem do DOM é a de sempre
+     (descrição, selo, botões) e é ela que vale abaixo de `lg`: no celular nada
+     muda. Quem leva o selo para o lado é a posição na grade. */
+  const painelDePrazo = Boolean(bloco.prazoDestaque) && !centro && bloco.mediaMode === 'none'
 
   return (
     <section
@@ -91,6 +106,8 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                 <p className="text-sm md:text-lg font-medium text-slate-700 dark:text-white/90 mb-3">{bloco.subtitle}</p>
               )}
 
+              <Caixa quando={painelDePrazo} className="lg:grid lg:grid-cols-12 lg:gap-x-12">
+              <Caixa quando={painelDePrazo} className="lg:col-span-7">
               {bloco.description && (
                 /* ⚠️ A variante centralizada não é a mesma classe com
                    `text-center` por cima. `Careers.tsx:129` não tem
@@ -130,14 +147,23 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                 </div>
               )}
 
+              </Caixa>
+
               {/* Prazo em destaque logo acima dos botões (pedido do dono): fecha o
                   discurso do herói com a urgência antes da ação. */}
               {bloco.prazoDestaque && (
-                <div className={cn('mb-5', centro && 'text-center')}>
-                  <SeloPrazo prazo={bloco.prazoDestaque} />
+                <div
+                  className={cn(
+                    'mb-5',
+                    centro && 'text-center',
+                    painelDePrazo && 'lg:mb-0 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:row-span-2 lg:self-center',
+                  )}
+                >
+                  <SeloPrazo prazo={bloco.prazoDestaque} grande={painelDePrazo} />
                 </div>
               )}
 
+              <Caixa quando={painelDePrazo} className="lg:col-span-7 lg:col-start-1 lg:row-start-2">
               {bloco.ctas.length > 0 && (
                 <div className={cn('flex flex-wrap gap-3', centro && 'justify-center')}>
                   {bloco.ctas.map((cta, i) => (
@@ -166,6 +192,8 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
                   ))}
                 </div>
               )}
+              </Caixa>
+              </Caixa>
             </div>
 
             {bloco.mediaMode !== 'none' && bloco.images.length > 0 && (

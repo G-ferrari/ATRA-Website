@@ -135,6 +135,74 @@ test.describe('app novo', () => {
    * suíte ao conteúdo do banco: o slug que estava aqui era de uma das 6
    * fixtures do protótipo, que MIG-083 apagou ao importar os 207 posts reais, e
    * três asserções passaram a apontar para um 404. */
+  /* D-48: o site abre no tema do sistema e guarda a escolha do alternador. O
+     resto da suíte roda com `colorScheme: 'dark'` (playwright.config), então o
+     caso claro só existe aqui. */
+  test.describe('tema — segue o sistema e guarda a escolha', () => {
+    const alternador = (page: import('@playwright/test').Page) => page.getByRole('button', { name: 'Alternar tema' })
+    /* ⚠️ `?e2e=1` tira o aviso de cookies do caminho: no celular ele ocupa o
+       rodapé inteiro, por cima do alternador (ver a nota do modal de perfil). */
+    const classeDoHtml = (page: import('@playwright/test').Page) => page.locator('html').getAttribute('class')
+
+    test.describe('sistema no claro', () => {
+      test.use({ colorScheme: 'light' })
+
+      /* O servidor manda `dark`; quem troca é o script do começo do `<body>`.
+         Conferido no `commit` da navegação, antes de hidratar: se dependesse de
+         componente, aqui ainda estaria escuro. */
+      test('abre no claro sem esperar a hidratação, e a escolha do botão vale depois de recarregar', async ({ page }) => {
+        await page.goto(`${NEXT_URL}/sobre?e2e=1`, { waitUntil: 'commit' })
+        await expect(page.locator('html')).toHaveClass(/(^|\s)light(\s|$)/)
+        expect(await classeDoHtml(page)).not.toMatch(/(^|\s)dark(\s|$)/)
+
+        await alternador(page).click()
+        await expect(page.locator('html')).toHaveClass(/(^|\s)dark(\s|$)/)
+
+        await page.reload()
+        await expect(page.locator('html')).toHaveClass(/(^|\s)dark(\s|$)/)
+        expect(await classeDoHtml(page)).not.toMatch(/(^|\s)light(\s|$)/)
+      })
+    })
+
+    test('sistema no escuro abre no escuro; trocar para o claro também fica guardado', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/sobre?e2e=1`)
+      await expect(page.locator('html')).toHaveClass(/(^|\s)dark(\s|$)/)
+
+      await alternador(page).click()
+      await expect(page.locator('html')).toHaveClass(/(^|\s)light(\s|$)/)
+
+      await page.goto(`${NEXT_URL}/contato?e2e=1`)
+      await expect(page.locator('html')).toHaveClass(/(^|\s)light(\s|$)/)
+    })
+  })
+
+  /* D-47: a paginação do blog era decorativa e a lista parava nos 100 mais
+     recentes. Cada página é um endereço. ⚠️ O banco do CI tem só as fixtures —
+     uma página —, então o que se confere aqui são as bordas da rota; a conta
+     das páginas é de `lib/paginacao.test.ts`. */
+  test.describe('/blog/pagina/[numero] — paginação', () => {
+    test('a página 1 é /blog; página que não existe ou não é número dá 404', async ({ request }) => {
+      for (const prefixo of ['', '/en']) {
+        const um = await request.get(`${NEXT_URL}${prefixo}/blog/pagina/1`, { maxRedirects: 0 })
+        expect(um.status(), `${prefixo}/blog/pagina/1`).toBe(308)
+        expect(new URL(um.headers()['location'] ?? '', NEXT_URL).pathname).toBe(`${prefixo}/blog`)
+
+        for (const ruim of ['999', '0', '02', 'abc']) {
+          const url = `${NEXT_URL}${prefixo}/blog/pagina/${ruim}`
+          expect((await request.get(url)).status(), url).toBe(404)
+        }
+      }
+    })
+
+    /* Com uma página só não há numeração — e nenhum botão que não leva a nada,
+       que era o defeito. */
+    test('com uma página só, a numeração não aparece', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/blog`)
+      await expect(page.locator('main .grid h3').first()).toBeVisible()
+      await expect(page.getByRole('navigation', { name: 'Páginas do blog' })).toHaveCount(0)
+    })
+  })
+
   test.describe('/blog/[slug] — rota sem gabarito', () => {
     async function primeiroArtigo(request: APIRequestContext): Promise<string> {
       const html = await (await request.get(`${NEXT_URL}/blog`)).text()
@@ -165,50 +233,69 @@ test.describe('app novo', () => {
     })
   })
 
-  /* `/atra-na-midia/[slug]` e `/ebooks/[slug]` também não existem no protótipo. */
+  /* `/ebooks/[slug]` também não existe no protótipo. Os relatórios, que dividiam
+     esta landing, saíram do site em 02/10 (D-49). */
   test.describe('materiais — rotas sem gabarito', () => {
     const RELATORIO = 'relatorio-anual-de-dados-2025-tendencias-e-projecoes'
     const EBOOK = 'o-guia-definitivo-do-data-lakehouse-para-executivos'
 
-    test('material existente responde 200 nos dois idiomas', async ({ request }) => {
-      for (const url of [
-        `${NEXT_URL}/atra-na-midia/${RELATORIO}`,
-        `${NEXT_URL}/ebooks/${EBOOK}`,
-        `${NEXT_URL}/en/atra-in-the-media/${RELATORIO}`,
-        `${NEXT_URL}/en/ebooks/${EBOOK}`,
-      ]) {
+    test('e-book existente responde 200 nos dois idiomas', async ({ request }) => {
+      for (const url of [`${NEXT_URL}/ebooks/${EBOOK}`, `${NEXT_URL}/en/ebooks/${EBOOK}`]) {
         expect((await request.get(url)).status(), url).toBe(200)
       }
     })
 
-    /* O tipo entra na consulta, não só na rota. Sem isso o mesmo material
-     * responderia sob as duas seções e o Google veria conteúdo duplicado. */
-    test('slug do outro tipo responde 404', async ({ request }) => {
-      for (const url of [`${NEXT_URL}/atra-na-midia/${EBOOK}`, `${NEXT_URL}/ebooks/${RELATORIO}`]) {
+    /* O tipo entra na consulta, não só na rota: relatório não responde como e-book. */
+    test('slug de relatório não responde em /ebooks', async ({ request }) => {
+      const url = `${NEXT_URL}/ebooks/${RELATORIO}`
+      expect((await request.get(url)).status(), url).toBe(404)
+    })
+
+    test('material sem corpo sai com noindex', async ({ request }) => {
+      const r = await request.get(`${NEXT_URL}/ebooks/${EBOOK}`)
+      expect(await r.text()).toContain('noindex')
+    })
+  })
+
+  /* D-49: a seção que era o arquivo de relatórios virou "ATRA na mídia", com as
+     matérias da imprensa. O cartão abre a matéria no veículo, em outra aba, e
+     não há página por matéria. */
+  test.describe('/atra-na-midia — matérias da imprensa', () => {
+    test('lista as matérias, e cada cartão leva ao veículo em outra aba', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/atra-na-midia`)
+      const cartoes = page.locator('main h3 a[target="_blank"]')
+      await expect(cartoes.first()).toBeVisible()
+      expect(await cartoes.count()).toBeGreaterThanOrEqual(6)
+
+      for (const a of await cartoes.all()) {
+        expect(await a.getAttribute('href'), 'destino fora do site').toMatch(/^https:\/\//)
+        // `noopener` é o que impede a página aberta de mexer nesta.
+        expect(await a.getAttribute('rel')).toContain('noopener')
+      }
+      // O botão do destaque também sai do site, pelo mesmo caminho.
+      await expect(page.locator('main a.pill-btn-primary[target="_blank"]')).toHaveCount(1)
+    })
+
+    test('não há página por matéria nem por relatório', async ({ request }) => {
+      for (const url of [`${NEXT_URL}/atra-na-midia/relatorio-anual-de-dados-2025-tendencias-e-projecoes`, `${NEXT_URL}/atra-na-midia/qualquer-coisa`]) {
         expect((await request.get(url)).status(), url).toBe(404)
       }
     })
 
-    /* 01/10: "Relatórios" virou "ATRA na mídia" e o endereço mudou junto. O
-       antigo está em link gravado no CMS e em favorito de quem viu a
-       homologação: tem de chegar, com e sem slug, nos dois idiomas. */
-    test('o endereço antigo dos relatórios redireciona para o novo', async ({ request }) => {
+    /* O endereço antigo está em link gravado no CMS e em favorito de quem viu a
+       homologação. Com slug, leva à lista: o item não existe mais. */
+    test('o endereço antigo dos relatórios leva à lista, com e sem slug', async ({ request }) => {
       for (const [antigo, novo] of [
         ['/relatorios', '/atra-na-midia'],
-        [`/relatorios/${RELATORIO}`, `/atra-na-midia/${RELATORIO}`],
+        ['/relatorios/relatorio-anual-de-dados-2025-tendencias-e-projecoes', '/atra-na-midia'],
         ['/en/reports', '/en/atra-in-the-media'],
-        [`/en/reports/${RELATORIO}`, `/en/atra-in-the-media/${RELATORIO}`],
+        ['/en/reports/relatorio-anual-de-dados-2025-tendencias-e-projecoes', '/en/atra-in-the-media'],
       ]) {
         const r = await request.get(`${NEXT_URL}${antigo}`, { maxRedirects: 0 })
         expect(r.status(), antigo).toBe(308)
         // O `Location` pode vir absoluto ou relativo; o que se compara é o caminho.
         expect(new URL(r.headers()['location'] ?? '', NEXT_URL).pathname, antigo).toBe(novo)
       }
-    })
-
-    test('material sem corpo sai com noindex', async ({ request }) => {
-      const r = await request.get(`${NEXT_URL}/atra-na-midia/${RELATORIO}`)
-      expect(await r.text()).toContain('noindex')
     })
   })
 
@@ -392,29 +479,32 @@ test.describe('app novo', () => {
     })
 
     test('a solução declara Service', async ({ page }) => {
-      await page.goto(`${NEXT_URL}/solucoes/inteligencia-artificial`)
+      await page.goto(`${NEXT_URL}/solucoes/ia-generativa-e-agentes-conversacionais`)
       const servico = (await jsonLd(page)).find((d) => d['@type'] === 'Service')
       expect(servico, 'nenhum nó Service').toBeTruthy()
       expect(servico!.name).toBeTruthy()
     })
   })
 
-  /* Os 3 links de solução do rodapé apontavam para `#`, herdado do protótipo.
-     São as 3 categorias do mega-menu, sem página própria, então o destino de
-     todas é o índice — mesmo caso dos 3 links legais. */
+  /* Os links de solução do rodapé apontavam para `#`, herdado do protótipo.
+     São as abas do mega-menu — quatro desde a D-52 —, sem página própria,
+     então o destino de todas é o índice. */
   test.describe('rodapé — os links de solução deixam de ser mortos', () => {
-    test('as 3 categorias levam ao índice de soluções', async ({ page }) => {
+    test('as 4 abas levam ao índice de soluções', async ({ page }) => {
       await page.goto(`${NEXT_URL}/sobre`)
-      await expect(page.locator('footer a[href="/solucoes"]')).toHaveCount(3)
+      await expect(page.locator('footer a[href="/solucoes"]')).toHaveCount(4)
       await expect(page.locator('footer a[href="#"]')).toHaveCount(0)
     })
   })
 
   test.describe('/politicas-e-termos — pré-requisito de LGPD', () => {
-    test('os 3 links legais do rodapé levam à página, que responde 200', async ({ page, request }) => {
+    /* Eram três links — Privacidade, Termos de Uso e Cookies — para a mesma
+       página. Desde 02/10 é um só, com o nome dela. */
+    test('o rodapé tem um link para a página, que responde 200', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/sobre`)
-      const legais = page.locator('footer a[href="/politicas-e-termos"]')
-      await expect(legais).toHaveCount(3)
+      const legal = page.locator('footer a[href="/politicas-e-termos"]')
+      await expect(legal).toHaveCount(1)
+      await expect(legal).toHaveText('Políticas e Termos')
       expect((await request.get(`${NEXT_URL}/politicas-e-termos`)).status()).toBe(200)
     })
   })
@@ -431,6 +521,18 @@ test.describe('app novo', () => {
       // não só mudar a URL: o link ficou quebrado entre MIG-050 e esta task.
       await expect(page).toHaveURL(/\/carreiras\/.+/)
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    })
+
+    /* Revisão de 03/10: enquanto a candidatura com currículo espera a P-17, a
+       vaga leva ao banco de talentos — no topo e na faixa final. Antes o botão
+       ia ao contato comercial, e a candidatura virava lead de venda. */
+    test('a vaga leva ao banco de talentos, e não ao contato comercial', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/carreiras`)
+      await page.locator('a[href*="/carreiras/"]').first().click()
+      await expect(page).toHaveURL(/\/carreiras\/.+/)
+      const principal = page.locator('main')
+      await expect(principal.locator('a[href="/carreiras#banco-talentos"]').first()).toBeVisible()
+      await expect(principal.locator('a[href="/contato"]')).toHaveCount(0)
     })
 
     test('slug de vaga inexistente dá 404', async ({ request }) => {
@@ -533,40 +635,55 @@ test.describe('app novo', () => {
      ela serve a página de IA, aqui vira índice. Não há gabarito visual, então o
      aceite é este. */
   test.describe('/solucoes — índice novo (D-09)', () => {
-    /* ⚠️ **18, e não 6.** P-16 (21/08/2026): as 6 do protótipo convivem com as 12
-       do WordPress (MIG-093). A RC18 existe e está publicada, mas saiu do índice
-       e do menu em 26/09 (D-37). O número é asserção de verdade e não contagem
-       frouxa — se cair, alguém despublicou; se subir, rascunho está vazando. */
-    test('lista as 18 soluções agrupadas nas 3 categorias, sem a RC18', async ({ page }) => {
+    /* ⚠️ **18 em 4 abas** desde a D-52 (02/10): a estrutura nova trocou as 6 do
+       protótipo e as 12 do WordPress por 18 soluções novas (5, 6, 2 e 5). A RC18
+       existe e está publicada, mas saiu do índice e do menu em 26/09 (D-37). O
+       número é asserção de verdade e não contagem frouxa — se cair, alguém
+       despublicou; se subir, rascunho está vazando. */
+    test('lista as 18 soluções agrupadas nas 4 abas, sem a RC18', async ({ page }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
-      for (const categoria of ['Inovação & IA', 'Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
+      for (const categoria of ['IA & Analytics Avançada', 'Dados & Cloud', 'Governança & FinOps', 'Serviços Especializados']) {
         await expect(page.getByRole('heading', { name: categoria, level: 2 })).toBeVisible()
       }
       await expect(page.getByRole('heading', { name: 'RC18', level: 2 })).toHaveCount(0)
       await expect(page.getByRole('heading', { level: 3 })).toHaveCount(18)
     })
 
-    /* Só quem tem `hasPage` vira link: a de IA, portada em MIG-056, mais as 12
-       do WordPress, que têm corpo. As outras 5 do protótipo continuam sem
-       página. Sem esta asserção o índice poderia voltar a oferecer destinos que
-       respondem 404 — o buraco que MIG-050 abriu e MIG-051 teve que fechar. */
-    test('só as soluções com página viram link, e elas respondem', async ({ page, request }) => {
+    /* Só quem tem `hasPage` vira link, e as 18 novas nascem com página (o
+       esqueleto: topo e faixa final). Sem esta asserção o índice poderia voltar
+       a oferecer destinos que respondem 404 — o buraco que MIG-050 abriu e
+       MIG-051 teve que fechar. */
+    test('as 18 soluções viram link, e as páginas respondem', async ({ page, request }) => {
       await page.goto(`${NEXT_URL}/solucoes`)
       const links = page.locator('a[href*="/solucoes/"]')
-      await expect(links).toHaveCount(13)
+      await expect(links).toHaveCount(18)
 
       const hrefs = await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')))
-      expect(hrefs).toContain('/solucoes/inteligencia-artificial')
+      expect(hrefs).toContain('/solucoes/analytics-conversacional')
       expect(hrefs).not.toContain('/solucoes/rc18')
       for (const href of hrefs) {
         expect((await request.get(`${NEXT_URL}${href}`)).status(), href!).toBe(200)
       }
     })
 
-    /* Solução sem `hasPage` não ganha URL: o slug existe na collection, mas a
-       página não. Sem o filtro na consulta as 5 responderiam 200 vazias. */
-    test('solução sem página responde 404', async ({ request }) => {
-      expect((await request.get(`${NEXT_URL}/solucoes/cultura-de-dados`)).status()).toBe(404)
+    test('solução que não existe responde 404', async ({ request }) => {
+      expect((await request.get(`${NEXT_URL}/solucoes/solucao-que-nao-existe`)).status()).toBe(404)
+    })
+
+    /* D-52: as soluções antigas foram apagadas, e o endereço de cada uma leva à
+       solução nova mais próxima — link salvo da homologação não dá 404. */
+    test('o endereço de uma solução antiga leva à nova', async ({ request }) => {
+      const resposta = await request.get(`${NEXT_URL}/solucoes/inteligencia-artificial`)
+      expect(resposta.status()).toBe(200)
+      expect(new URL(resposta.url()).pathname).toBe('/solucoes/ia-generativa-e-agentes-conversacionais')
+    })
+
+    /* O selo do cartão em destaque vem do campo "Selo" da solução. */
+    test('Analytics Conversacional é o cartão em destaque, com o selo', async ({ page }) => {
+      await page.goto(`${NEXT_URL}/solucoes`)
+      const cartao = page.locator('a[href="/solucoes/analytics-conversacional"]')
+      await expect(cartao.getByText('Diferencial ATRA')).toBeVisible()
+      await expect(page.getByText('Diferencial ATRA')).toHaveCount(1)
     })
 
     test('o inglês responde no slug traduzido e o canônico redireciona', async ({ request }) => {
@@ -712,15 +829,15 @@ test.describe('app novo', () => {
          `onMouseEnter` troca o painel, como no legado. */
       const painel = page.getByRole('navigation')
       await passarNaCategoria(page, 'Soluções', () =>
-        expect(painel.getByRole('button', { name: 'Inovação & IA' })).toBeVisible({ timeout: 2000 }),
+        expect(painel.getByRole('button', { name: 'IA & Analytics Avançada' })).toBeVisible({ timeout: 2000 }),
       )
 
-      for (const grupo of ['Dados, BI & Advanced Analytics', 'Governança & Cultura']) {
+      for (const grupo of ['Dados & Cloud', 'Governança & FinOps', 'Serviços Especializados']) {
         await expect(painel.getByRole('button', { name: grupo })).toBeVisible()
       }
-      await expect(painel.getByRole('link', { name: /Inteligência Artificial & IA Generativa/ })).toHaveAttribute(
+      await expect(painel.getByRole('link', { name: /IA Generativa & Agentes Conversacionais/ })).toHaveAttribute(
         'href',
-        '/solucoes/inteligencia-artificial',
+        '/solucoes/ia-generativa-e-agentes-conversacionais',
       )
     })
 
@@ -767,6 +884,37 @@ test.describe('app novo', () => {
       await expect(painel.locator('a[href^="/parceiros/"]')).toHaveCount(8)
     })
 
+    /* D-51: a camada de conversão — o painel fixo à direita do menu de
+       Soluções. O conteúdo vem do global `conversion-panel`, e o case de baixo
+       acompanha a aba.
+       ⚠️ O case da aba de Dados é conferido por "um dos três", e não pelo
+       primeiro: fora do `?e2e=1` o rodízio troca a cada 5s, e o teste não deve
+       depender de chegar antes dele. A aba de Governança tem um só. */
+    test('o painel de conversão aparece em Soluções, e o case acompanha a aba', async ({ page }) => {
+      test.skip(soNoDesktop(page), 'o painel é `xl:flex`, e a troca por hover só é estável no desktop')
+      await abrirMenu(page)
+      const lateral = page.getByTestId('painel-de-conversao')
+      await passarNaCategoria(page, 'Soluções', () => expect(lateral).toBeVisible({ timeout: 2000 }))
+
+      await expect(lateral.getByRole('heading', { name: 'Por onde começar?' })).toBeVisible()
+      await expect(lateral.locator('a[href="/diagnostico-maturidade"]')).toHaveCount(3)
+      await expect(lateral.getByRole('link', { name: /Falar com um especialista/ })).toHaveAttribute('href', '/contato')
+      await expect(lateral.getByTestId('prova-social')).toHaveText(/140\+ especialistas.*15\+ anos.*Parceira Google Cloud.*5x GPTW.*4x LIPT/)
+
+      const abas = page.getByRole('navigation')
+      const caso = lateral.getByTestId('mini-case')
+      await abas.getByRole('button', { name: 'Governança & FinOps' }).hover()
+      await expect(caso).toHaveAttribute('href', '/cases-de-sucesso/marketplace-governanca-dados')
+
+      await abas.getByRole('button', { name: 'Dados & Cloud' }).hover()
+      await expect(caso).toHaveAttribute(
+        'href',
+        /\/cases-de-sucesso\/(dashboards-estrategicos|migracao-legado-gcp|eficiencia-processos-risco)$/,
+      )
+      // O painel é o mesmo nas três abas: trocar de aba não o desmonta.
+      await expect(lateral.getByRole('heading', { name: 'Por onde começar?' })).toBeVisible()
+    })
+
     test('o painel de texto + cartão mostra destaques e chamada', async ({ page }) => {
       test.skip(soNoDesktop(page), 'a troca de painel por hover só é estável no desktop')
       await abrirMenu(page)
@@ -795,7 +943,7 @@ test.describe('app novo', () => {
          debito-tecnico.md. Num aparelho de toque não há hover e o problema não
          existe, que é por onde a gaveta é usada de verdade. */
       await gaveta.getByRole('link', { name: 'Soluções', exact: true }).dispatchEvent('click')
-      await expect(gaveta.getByText('Inovação & IA')).toBeVisible()
+      await expect(gaveta.getByText('IA & Analytics Avançada')).toBeVisible()
     })
   })
 

@@ -55,6 +55,7 @@ só depois de horas, ninguém quer descobrir no sábado.
 | 3 | Regerar `redirects.csv` com as diferenças e revalidar | Condutor |
 | 4 | Backup completo do WordPress, guardado fora do servidor | DNS |
 | 5 | Conferir que o servidor do WP continuará no ar 30 dias, fora do DNS | DNS |
+| 6 | **Sincronizar as vagas com o WordPress** (D-53) — elas abrem e fecham lá até a virada. `exportar-vagas.ts`, nova migração no molde de `20261003_120000_vagas_do_wordpress` (lista das que fecharam; `FIM_DA_CARGA` na data da sincronia anterior) e as linhas novas no `redirects.csv` — a vaga fechada leva a `/carreiras` | Condutor |
 
 ## D-2 — 48 horas antes
 
@@ -65,6 +66,26 @@ só depois de horas, ninguém quer descobrir no sábado.
 | 8 | Congelar também o Payload (só leitura durante a virada) | — |
 | 9 | Revisão final em staging: amostra de 30 URLs antigas, os 4 cases, 3 posts, formulário e chat | Checklist assinado |
 | 10 | Confirmar que os **MX seguem apontando para o Google Workspace** e que ninguém vai tocá-los | `dig MX atra.com.br` registrado antes e depois |
+
+⚠️ O passo 7, para os artigos, é **sempre com `--so-novos`**:
+
+```bash
+docker compose -f docker-compose.prod.yml --profile tarefas run --rm migrate \
+  pnpm exec tsx scripts/wp-import/import-posts.ts --so-novos
+```
+
+Sem a chave o importador **regrava** os artigos que já existem com o texto do
+WordPress, por cima do que o marketing corrigiu no admin. Com ela, só cria o que
+falta e lista o que criou. Tem de rodar **antes do passo 15**: depois da virada
+`atra.com.br` é o site novo, e o importador não acha mais o WordPress.
+
+Os 6 artigos publicados entre a carga de 17/08 e 25/09 **já estão resolvidos**:
+chegam pela migração `20261002_120000_posts_novos_do_wordpress` no deploy, e os
+redirects deles estão no `redirects.csv`. O comando acima é para o que o
+WordPress publicar **depois de 25/09** — e cada artigo desses precisa também da
+linha dele no CSV (passos 2 e 3). Quem não tem acesso ao servidor traz artigo
+novo pelo mesmo caminho da migração: `scripts/wp-import/exportar-posts.ts
+--desde=AAAA-MM-DD` escreve o conteúdo em `src/migrations/arquivos/posts-wp/`.
 
 ⚠️ O passo 6 é o que torna o rollback rápido. Sem reduzir o TTL antes, reverter
 pode levar horas em vez de minutos.

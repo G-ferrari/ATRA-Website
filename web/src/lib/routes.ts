@@ -13,13 +13,11 @@ export const SECOES = {
   // está quebrado lá também. Centralizado aqui para não nascer na mão.
   contato: { pt: 'contato', en: 'contact' },
   glossario: { pt: 'glossario', en: 'glossary' },
-  /* ⚠️ A chave segue `relatorios`, o endereço não: em 01/10 a seção passou a se
-     chamar "ATRA na mídia" (G-ferrari), e o endereço mudou junto, antes de o
-     site ir ao ar — `/relatorios` e `/en/reports` redirecionam
-     (`ROTAS_RENOMEADAS`, em `lib/redirects.ts`). A chave e a collection
-     (`resources`, tipo `report`) ficam como estão até a seção virar matérias
-     de imprensa de fato, que é mudança de modelo e outra tarefa. */
-  relatorios: { pt: 'atra-na-midia', en: 'atra-in-the-media' },
+  /* "ATRA na mídia": a seção que era `/relatorios` no protótipo. Mudou de nome e
+     de endereço em 01/10 (D-43) e virou matérias de imprensa em 02/10 (D-49),
+     com collection própria (`press`). `/relatorios` e `/en/reports` redirecionam
+     para cá (`ROTAS_RENOMEADAS`, em `lib/redirects.ts`). */
+  midia: { pt: 'atra-na-midia', en: 'atra-in-the-media' },
   ebooks: { pt: 'ebooks', en: 'ebooks' },
   webinars: { pt: 'webinars', en: 'webinars' },
   blog: { pt: 'blog', en: 'blog' },
@@ -44,8 +42,8 @@ export const SECOES = {
      `lib/redirects.ts`). */
   diagnosticoMaturidade: { pt: 'diagnostico-maturidade', en: 'data-maturity-assessment' },
   /* MIG-094. O WordPress serve **uma** página para privacidade, termos e
-     cookies (`/politicas-e-termos/`); os 3 links do rodapé apontam todos para
-     ela, que é o que já acontece lá. */
+     cookies (`/politicas-e-termos/`); o rodapé tem um link só para ela, com o
+     nome da página. */
   politicas: { pt: 'politicas-e-termos', en: 'privacy-and-terms' },
 } as const satisfies Record<string, Record<Locale, string>>
 
@@ -61,6 +59,17 @@ export function hrefDe(secao: Secao, locale: Locale, slug?: string): string {
   const prefixo = locale === DEFAULT_LOCALE ? '' : `/${locale}`
   const segmento = SECOES[secao][locale]
   return slug ? `${prefixo}/${segmento}/${slug}` : `${prefixo}/${segmento}`
+}
+
+/** O trecho da URL que antecede o número da página: `/blog/pagina/2`.
+ *  ⚠️ Em português nos dois idiomas, por ora: o proxy só traduz o primeiro
+ *  segmento. Traduzir (`/en/blog/page/2`) entra com a tarefa de tradução. */
+export const SEGMENTO_DE_PAGINA = 'pagina'
+
+/** URL da página N de uma listagem paginada. A primeira é a própria seção —
+ *  `/blog/pagina/1` seria um segundo endereço para o mesmo conteúdo. */
+export function hrefDaPagina(secao: Secao, locale: Locale, pagina: number): string {
+  return pagina <= 1 ? hrefDe(secao, locale) : hrefDe(secao, locale, `${SEGMENTO_DE_PAGINA}/${pagina}`)
 }
 
 /** Alias localizado → segmento canônico. Usado pelo proxy. */

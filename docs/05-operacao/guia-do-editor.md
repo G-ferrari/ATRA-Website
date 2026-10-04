@@ -41,7 +41,11 @@ para você, é papel — não erro.
    o que não for obrigatório pode ficar para depois.
 3. O sistema salva **rascunho** automaticamente enquanto você edita. Rascunho
    **não aparece no site** — pode salvar pela metade sem medo.
-4. O seletor de idioma (canto superior) alterna entre **português e inglês**.
+4. O campo **Cliente** é opcional: se o cliente não autoriza ser identificado,
+   deixe vazio e o nome não aparece em lugar nenhum — cartão, destaque, página e
+   título no Google. ⚠️ Confira também os textos do case (subtítulo, resumo,
+   "Sobre o cliente"): o nome escrito neles continua aparecendo.
+5. O seletor de idioma (canto superior) alterna entre **português e inglês**.
    São dois conteúdos independentes da mesma página: preencher um não traduz o
    outro.
 
@@ -118,6 +122,65 @@ Três seções que mudaram de comportamento em 29/09:
   /contato.
 - **Grade de imagens** — é a dos selos (Google Cloud, na página do parceiro e
   em Data Analytics). Para trocar um selo, troque a imagem ali.
+
+## ATRA na mídia
+
+Em **Conteúdo → ATRA na mídia** fica cada matéria, entrevista ou vídeo em que a
+ATRA aparece na imprensa. Para incluir uma:
+
+1. **Título** e **Resumo** (até 300 caracteres) — como vão aparecer no cartão.
+2. **Veículo** — quem publicou. Ex.: Gazeta Mercantil Digital.
+3. **Link da matéria** — o endereço completo no site do veículo, começando com
+   `https://`. É para onde o cartão leva, em outra aba. A mesma matéria não
+   entra duas vezes: o link é único.
+4. **Capa** — a imagem do cartão, na proporção 4:3 ou 16:9.
+5. **Tipo** — "Vídeo" põe o botão de play sobre a capa e troca "Leia a matéria"
+   por "Assistir".
+6. **Ordem** — menor aparece primeiro. As **4 primeiras** são o destaque do
+   topo da página.
+
+Não existe página interna por matéria: o visitante vai direto para o veículo.
+
+## Escrever a página de uma solução
+
+As 18 soluções do menu estão em **Catálogos → Soluções**, em 4 abas. Cada uma
+já tem página no ar, mas só com o **esqueleto**: o topo (título e uma frase) e
+a faixa final de contato. Falta o meio.
+
+1. Abra a solução. **Título**, **Descrição curta** (a frase do cartão no menu e
+   no índice) e **Ícone** já estão preenchidos — ajuste se precisar.
+2. Em **Seções da página**, use **Adicionar Seção** para pôr o conteúdo entre o
+   topo e a faixa final: texto, cartões, etapas, parceiros. Arraste para
+   ordenar. A faixa "Entre em contato" fica por último.
+3. **Categoria** é a aba do menu em que a solução aparece; **Ordem** é a
+   posição dentro da aba (menor primeiro).
+4. **Selo** é opcional: preenchido, o cartão ganha destaque no menu e no índice.
+   Hoje só "Analytics Conversacional" tem ("Diferencial ATRA").
+5. Confira no Live Preview e **Publicar alterações**.
+
+⚠️ Não desmarque **"Tem página própria"**: sem isso a solução continua no menu,
+mas deixa de ser link e o endereço dela responde "não encontrado".
+
+## O painel do menu de Soluções
+
+Em **Sistema → Painel do menu de Soluções** fica o painel que aparece à direita
+quando o visitante abre o menu de Soluções, em telas largas (de 1280px para
+cima). Ele é o mesmo nas três abas; só o case de baixo muda.
+
+- **Título** — "Por onde começar?". ⚠️ Apagar o título **tira o painel do
+  menu** inteiro: é o jeito de desligá-lo.
+- **Texto de abertura** — a frase sob o título.
+- **Caminhos** (até 3) — ícone, título, descrição e destino de cada um. O
+  destino é um endereço do site, começando com `/`; os três levam ao
+  diagnóstico (`/diagnostico-maturidade`).
+- **Texto e destino do botão** — "Falar com um especialista", para `/contato`.
+- **Prova social** (até 5) — cada item tem um **destaque** ("140+", "5x") e um
+  **rótulo** ("especialistas", "GPTW"). Cabem numa linha só se forem curtos.
+  ⚠️ Os números institucionais também moram em Globais → Configurações do
+  site: mudou lá, confira aqui.
+- **Cases de cada aba** — até 3 por aba (Inovação & IA, Dados, Governança). Com
+  mais de um, eles se alternam a cada 5 segundos. Aba sem case escolhido
+  mostra os 3 mais recentes, e case despublicado some do painel sozinho.
 
 ## O que mais é editável
 

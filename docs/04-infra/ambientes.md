@@ -65,7 +65,8 @@ Levantado em 17/08/2026, por DNS e headers públicos:
 | `S3_ACCESS_KEY` / `S3_SECRET_KEY` | `.env.local` | gerenciador do host | **sim** |
 | `GEMINI_API_KEY` | `.env.local` | gerenciador do host | **sim** |
 | `RESEND_API_KEY` | vazio (loga no console) | gerenciador do host | **sim** |
-| `SENTRY_DSN` | vazio | gerenciador do host | não |
+| `SENTRY_DSN` | vazio (SDK inerte) | DSN do projeto no Sentry, lido pelo servidor e pelo edge (MIG-122, D-46). O `environment` sai de `NEXT_PUBLIC_SITE_URL` e o `release` é o SHA do deploy, gravado na imagem pelo `deploy.sh` | não — endereço de ingestão, não credencial |
+| `NEXT_PUBLIC_SENTRY_DSN` | vazio | o mesmo DSN para o navegador; entra no bundle, por isso é **build-arg** no `deploy.sh`, não variável do container | não |
 | `NEXT_PUBLIC_GTM_ID` | vazio | **reserva** desde a D-40: o id do container mora no admin (Sistema → Rastreamento), que vence. Só vale se o admin estiver vazio; o script continua esperando o aceite de estatística (D-30) | não — id público, aparece no HTML de qualquer site que use GTM |
 | `RDSTATION_CRM_TOKEN` | vazio (sincronização inerte, `crm.syncedAt` vazio no admin) | gerenciador do host — **produção só depois de P-14** (D-26/D-29) | **sim** |
 | `RDSTATION_CRM_DEAL_STAGE_ID` | vazio (a conta usa a etapa padrão) | id da etapa do funil onde a negociação nasce | não |

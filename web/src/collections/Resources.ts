@@ -49,7 +49,7 @@ export const Resources: CollectionConfig = {
         { value: 'ebook', label: { pt: 'E-book', en: 'Ebook' } },
       ],
       label: { pt: 'Tipo', en: 'Kind' },
-      admin: { description: { pt: 'Relatório aparece em /atra-na-midia ("ATRA na mídia"); e-book em /ebooks.', en: 'Reports list on /atra-in-the-media ("ATRA in the media"); ebooks on /ebooks.' } },
+      admin: { description: { pt: 'E-book aparece em /ebooks. Relatório não tem mais página no site desde 02/10 (D-49): fica guardado aqui.', en: 'Ebooks list on /ebooks. Reports have had no page on the site since 02/10 (D-49): they are kept here.' } },
     },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     slugField('title'),

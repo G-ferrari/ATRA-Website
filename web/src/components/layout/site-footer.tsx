@@ -13,8 +13,8 @@ import type { Contato, Image as Imagem, Rodape } from '@/types/content'
  * System", "Alternar tema".
  *
  * As redes sociais apontam para `#` no legado; as URLs reais estavam no CTA de
- * contato e entraram no global (P-26). Os 3 links legais continuam em `#` —
- * `/politicas-e-termos` existe no WordPress e entra em MIG-094. */
+ * contato e entraram no global (P-26). Os 3 links legais do protótipo, que
+ * apontavam para `#`, são desde 02/10 um só, para `/politicas-e-termos`. */
 
 export function SiteFooter({
   locale,

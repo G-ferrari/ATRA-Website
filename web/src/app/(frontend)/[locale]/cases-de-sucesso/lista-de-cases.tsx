@@ -109,7 +109,8 @@ export function ListaDeCases({
             <ContentCard
               key={c.slug}
               href={hrefDe('cases', locale, c.slug)}
-              eyebrow={c.client}
+              /* Sem cliente, a linha (e o ícone) some do cartão. */
+              eyebrow={c.client ?? undefined}
               eyebrowIcon={<Landmark size={15} aria-hidden />}
               title={c.title}
               summary={c.summary}
