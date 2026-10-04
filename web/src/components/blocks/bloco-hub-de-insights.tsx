@@ -74,13 +74,21 @@ function Cartao({ item, destaque }: { item: ItemDeInsight; destaque: boolean }) 
             </div>
           )}
 
+          {/* O cartão inteiro leva ao conteúdo (pedido de 04/10): até aqui só o
+              botão de baixo era link. O link fica no título, com `after:inset-0`
+              cobrindo o cartão — o conteúdo do `GlowCard` é a caixa posicionada
+              — e o botão vira só aparência. Mesmo desenho de /webinars. */}
           {destaque ? (
             <h3 className="text-base font-bold text-text-main mb-2.5 group-hover:text-primary transition-colors leading-snug line-clamp-2">
-              {item.title}
+              <Link href={item.href} className="after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:after:rounded-[6px] focus-visible:after:ring-2 focus-visible:after:ring-[#3C98FA]">
+                {item.title}
+              </Link>
             </h3>
           ) : (
             <h4 className="text-base font-bold text-text-main mb-2.5 group-hover:text-primary transition-colors leading-snug line-clamp-2">
-              {item.title}
+              <Link href={item.href} className="after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:after:rounded-[6px] focus-visible:after:ring-2 focus-visible:after:ring-[#3C98FA]">
+                {item.title}
+              </Link>
             </h4>
           )}
 
@@ -100,18 +108,20 @@ function Cartao({ item, destaque }: { item: ItemDeInsight; destaque: boolean }) 
           ))}
         </div>
 
+        {/* Aparência de botão, com o hover do cartão: o clique cai no link do
+            título, que cobre o cartão inteiro. */}
         {destaque ? (
-          <Link
-            href={item.href}
-            className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:text-primary-dark group-hover:translate-x-1 transition-all"
+          <span
+            aria-hidden
+            className="inline-flex items-center gap-2 text-xs font-bold text-primary group-hover:text-primary-dark group-hover:translate-x-1 transition-all"
           >
             <span>Acessar conteúdo</span>
-            <ArrowRight size={14} aria-hidden />
-          </Link>
+            <ArrowRight size={14} />
+          </span>
         ) : (
-          <Link
-            href={item.href}
-            className="w-full py-2.5 px-4 rounded-[6px] bg-surface-1 hover:bg-primary hover:text-white text-text-main  text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2 group/btn cursor-pointer"
+          <span
+            aria-hidden
+            className="w-full py-2.5 px-4 rounded-[6px] bg-surface-1 group-hover:bg-primary group-hover:text-white text-text-main  text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2"
           >
             <span>
               {item.format === 'ebook'
@@ -120,8 +130,8 @@ function Cartao({ item, destaque }: { item: ItemDeInsight; destaque: boolean }) 
                   ? 'Assistir Webinar'
                   : 'Acessar Conteúdo'}
             </span>
-            <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" aria-hidden />
-          </Link>
+            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+          </span>
         )}
       </div>
     </GlowCard>

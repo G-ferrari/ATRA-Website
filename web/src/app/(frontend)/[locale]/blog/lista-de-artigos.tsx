@@ -181,7 +181,7 @@ export function ListaDeArtigos({
             <EntradaAnimada
               key={p.slug}
               index={i}
-              className="group flex flex-col bg-surface-2  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 transition-all duration-300"
+              className="group relative flex flex-col bg-surface-2  hover:border-primary/50 dark:hover:border-primary/60 rounded-[6px] overflow-hidden shadow-sm hover:shadow-xl dark:shadow-black/60 hover:bg-surface-3 transition-all duration-300"
             >
               <div className="aspect-[16/10] overflow-hidden relative border-b border-slate-200 dark:border-white/10">
                 <Image
@@ -207,7 +207,13 @@ export function ListaDeArtigos({
                   </div>
 
                   <h3 className="text-lg md:text-xl font-bold font-display text-text-main mb-3 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                    {p.title}
+                    {/* O cartão inteiro leva ao artigo (pedido de 04/10): até aqui
+                        só o "Continuar lendo" era link. O link fica no título,
+                        com `after:inset-0` cobrindo o cartão — um link só, com o
+                        título como nome, o mesmo desenho de /webinars. */}
+                    <Link href={hrefDe('blog', locale, p.slug)} className="after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:after:rounded-[6px] focus-visible:after:ring-2 focus-visible:after:ring-[#3C98FA]">
+                      {p.title}
+                    </Link>
                   </h3>
 
                   <p className="text-text-muted text-xs sm:text-sm font-light leading-relaxed line-clamp-3 mb-6">
@@ -228,13 +234,14 @@ export function ListaDeArtigos({
                   </div>
 
                   <div className="pt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between">
-                    <Link
-                      href={hrefDe('blog', locale, p.slug)}
-                      className="inline-flex items-center gap-2 text-primary font-bold text-xs sm:text-sm group-hover:gap-3 transition-all"
-                    >
+                    {/* Só a aparência de botão: quem leva ao artigo é o link do
+                        título, que cobre o cartão. Dois links para o mesmo
+                        destino fariam o leitor de tela anunciar cada artigo duas
+                        vezes. */}
+                    <span aria-hidden className="inline-flex items-center gap-2 text-primary font-bold text-xs sm:text-sm group-hover:gap-3 transition-all">
                       <span>{t.cta}</span>
-                      <ArrowRight size={14} aria-hidden />
-                    </Link>
+                      <ArrowRight size={14} />
+                    </span>
                   </div>
                 </div>
               </div>
