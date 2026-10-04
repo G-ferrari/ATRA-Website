@@ -41,7 +41,11 @@ para você, é papel — não erro.
    o que não for obrigatório pode ficar para depois.
 3. O sistema salva **rascunho** automaticamente enquanto você edita. Rascunho
    **não aparece no site** — pode salvar pela metade sem medo.
-4. O seletor de idioma (canto superior) alterna entre **português e inglês**.
+4. O campo **Cliente** é opcional: se o cliente não autoriza ser identificado,
+   deixe vazio e o nome não aparece em lugar nenhum — cartão, destaque, página e
+   título no Google. ⚠️ Confira também os textos do case (subtítulo, resumo,
+   "Sobre o cliente"): o nome escrito neles continua aparecendo.
+5. O seletor de idioma (canto superior) alterna entre **português e inglês**.
    São dois conteúdos independentes da mesma página: preencher um não traduz o
    outro.
 

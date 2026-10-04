@@ -62,16 +62,15 @@ export async function generateMetadata(): Promise<Metadata> {
   })
 }
 
-/* Subtexto do destaque.
+/* Subtexto do destaque: o nome do cliente.
  *
- * ⚠️ Porte fiel de um defeito. O legado monta `${client} • ${date}`
- * (FeaturedHero.tsx:53) mas nenhum case tem `date`, então o site no ar mostra
- * "Banco XPTO • " com o marcador solto. Reproduzido aqui de propósito: MIG-030
- * compara pixel a pixel contra aquele build. A correção é passar `publishedAt`
- * — uma linha, prevista para depois do aceite visual. Ver debito-tecnico.md. */
-function subtitulo(caso: CaseCard): string {
-  const data = ''
-  return `${caso.client || ''} • ${data}`
+ * Até 03/10 era porte fiel de um defeito do legado: `${client} • ${date}`
+ * (FeaturedHero.tsx:53) sem `date` nenhum, e o destaque mostrava "Banco ABC • "
+ * com o marcador solto. Com o cliente opcional, o case sem cliente mostraria só
+ * o " • ". Sem o aceite contra o protótipo desde a D-39, o marcador saiu: a linha
+ * é o cliente, e some quando não há. */
+function subtitulo(caso: CaseCard): string | null {
+  return caso.client
 }
 
 function paraDestaque(caso: CaseCard, locale: Locale): FeaturedItem {

@@ -27,6 +27,7 @@ const TEXTOS = {
     solucao: 'Solução',
     resultados: 'Resultados',
     sobre: 'Sobre o',
+    sobreOCliente: 'Sobre o cliente',
     tecnologias: 'Tecnologias',
     parceiros: 'Parceiros',
     conector: ' e ',
@@ -40,6 +41,7 @@ const TEXTOS = {
     solucao: 'Solution',
     resultados: 'Results',
     sobre: 'About',
+    sobreOCliente: 'About the client',
     tecnologias: 'Technologies',
     parceiros: 'Partners',
     conector: ' and ',
@@ -97,11 +99,14 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/cases-de
   if (!r || !('doc' in r)) return {}
   const caso = r.doc
   /* O título do case leva o cliente junto ("… — Case Banco ABC"), que é o que
-     o legado mostra. Quem preencher o SEO no CMS sobrepõe isso. */
+     o legado mostra. Quem preencher o SEO no CMS sobrepõe isso. Case sem
+     cliente fica só com o título — nada de "Case de Sucesso" solto no fim. */
   return metadataDe({
     locale,
     local: { secao: 'cases', slug },
-    seo: { ...caso.seo, title: `${caso.seo.title} — ${TEXTOS[locale].prefixo} ${caso.client}` },
+    seo: caso.client
+      ? { ...caso.seo, title: `${caso.seo.title} — ${TEXTOS[locale].prefixo} ${caso.client}` }
+      : caso.seo,
   })
 }
 
@@ -155,7 +160,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
           </Link>
           <div className="max-w-4xl">
             <div className="text-secondary font-black uppercase tracking-[0.2em] text-xs md:text-sm mb-4">
-              {t.prefixo} — {caso.client}
+              {caso.client ? `${t.prefixo} — ${caso.client}` : t.prefixo}
             </div>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               {caso.title}
@@ -223,7 +228,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
               {caso.aboutClient && (
                 <>
                   <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">
-                    {t.sobre} {caso.client}
+                    {caso.client ? `${t.sobre} ${caso.client}` : t.sobreOCliente}
                   </h2>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-12">{caso.aboutClient}</p>
                 </>

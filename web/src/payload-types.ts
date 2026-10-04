@@ -322,9 +322,9 @@ export interface Case {
   id: number;
   title: string;
   /**
-   * E.g. Banco ABC.
+   * E.g. Banco ABC. Optional: when empty, the client name is not shown anywhere on the site.
    */
-  client: string;
+  client?: string | null;
   /**
    * Up to 220 characters. Used on the listing card and as the search description.
    */

@@ -43,7 +43,8 @@ export type Testimonial = {
 export type CaseCard = {
   slug: string
   title: string
-  client: string
+  /** `null` quando o case não identifica o cliente: o nome some da tela. */
+  client: string | null
   summary: string
   impact: string | null
   image: Image
