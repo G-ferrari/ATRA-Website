@@ -16598,12 +16598,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "title_end": {
-          "name": "title_end",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "description": {
           "name": "description",
           "type": "varchar",
@@ -30434,12 +30428,6 @@
         },
         "highlight": {
           "name": "highlight",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "title_end": {
-          "name": "title_end",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false

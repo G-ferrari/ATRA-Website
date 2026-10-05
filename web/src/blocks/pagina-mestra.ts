@@ -112,13 +112,22 @@ export const WebinarTeaser: Block = {
   fields: [
     { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Selo', en: 'Badge' } },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
-    { name: 'highlight', type: 'text', localized: true, label: { pt: 'Trecho em destaque', en: 'Highlight' } },
+    /* ⚠️ O trecho fica **dentro** do título, como no herói de página — e não
+     * "título + destaque + fim", que era o desenho do código. Com um campo de
+     * fim, o inglês ("Watch our technical Webinars") não tinha como deixá-lo
+     * vazio: o Payload preenche campo de texto vazio com o português, e o
+     * inglês saía "Webinars técnicos". */
     {
-      name: 'titleEnd',
+      name: 'highlight',
       type: 'text',
       localized: true,
-      label: { pt: 'Fim do título', en: 'Title end' },
-      admin: { description: { pt: 'Depois do trecho em destaque, na cor normal.', en: 'After the highlight, in the regular colour.' } },
+      label: { pt: 'Trecho em destaque', en: 'Highlight' },
+      admin: {
+        description: {
+          pt: 'Um trecho do título que aparece em azul. Precisa estar escrito igual no título.',
+          en: 'A slice of the title shown in blue. It must appear in the title exactly.',
+        },
+      },
     },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto', en: 'Text' } },
     { name: 'actionLabel', type: 'text', localized: true, label: { pt: 'Texto do botão', en: 'Button label' } },

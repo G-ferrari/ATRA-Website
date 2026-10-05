@@ -3772,11 +3772,10 @@ export interface Page {
     | {
         eyebrow?: string | null;
         title: string;
-        highlight?: string | null;
         /**
-         * After the highlight, in the regular colour.
+         * A slice of the title shown in blue. It must appear in the title exactly.
          */
-        titleEnd?: string | null;
+        highlight?: string | null;
         description?: string | null;
         actionLabel?: string | null;
         /**
@@ -8792,7 +8791,6 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               highlight?: T;
-              titleEnd?: T;
               description?: T;
               actionLabel?: T;
               anchor?: T;

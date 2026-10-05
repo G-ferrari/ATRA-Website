@@ -674,8 +674,8 @@ export type BlocoWebinarTeaser = Base & {
   tipo: 'webinarTeaser'
   eyebrow: string | null
   title: string
+  /** Trecho de `title` pintado de azul; o componente o localiza no texto. */
   highlight: string | null
-  titleEnd: string | null
   description: string | null
   actionLabel: string | null
   /** A capa do webinar mais recente, injetada pela página. */

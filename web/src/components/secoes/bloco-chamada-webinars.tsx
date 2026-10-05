@@ -2,6 +2,7 @@ import { Play, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { TextoDestacado } from '@/components/blocks/texto-destacado'
 import type { Locale } from '@/lib/locales'
 import { hrefDe } from '@/lib/routes'
 import type { BlocoWebinarTeaser } from '@/types/content'
@@ -40,14 +41,7 @@ export function BlocoChamadaWebinars({ bloco, locale }: { bloco: BlocoWebinarTea
               </div>
             )}
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold font-display mb-4 md:mb-6 leading-tight text-text-main dark:text-white">
-              {bloco.title}
-              {bloco.highlight && (
-                <>
-                  {' '}
-                  <span className="text-primary font-normal">{bloco.highlight}</span>
-                </>
-              )}
-              {bloco.titleEnd && <> {bloco.titleEnd}</>}
+              <TextoDestacado texto={bloco.title} destaque={bloco.highlight} />
             </h2>
             {bloco.description && (
               <p className="text-sm md:text-base text-text-muted dark:text-gray-300 mb-8 max-w-xl font-light leading-relaxed">

@@ -174,7 +174,6 @@ export function toBlocos(
           eyebrow: vazio(b.eyebrow),
           title: b.title,
           highlight: vazio(b.highlight),
-          titleEnd: vazio(b.titleEnd),
           description: vazio(b.description),
           actionLabel: vazio(b.actionLabel),
           capa: null,
