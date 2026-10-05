@@ -62,6 +62,7 @@ import * as migration_20260927_215331_add_image_grid from './20260927_215331_add
 import * as migration_20260927_215400_partner_showcase_source from './20260927_215400_partner_showcase_source';
 import * as migration_20260927_215500_locked_documents_press from './20260927_215500_locked_documents_press';
 import * as migration_20260927_215600_solutions_badge from './20260927_215600_solutions_badge';
+import * as migration_20260927_215800_paginas_mestras from './20260927_215800_paginas_mestras';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './20260928_001000_carrossel_da_home_com_rc18';
@@ -82,6 +83,7 @@ import * as migration_20261002_212500_solutions_tabs_and_badge from './20261002_
 import * as migration_20261002_213000_nova_estrutura_de_solucoes from './20261002_213000_nova_estrutura_de_solucoes';
 import * as migration_20261002_213100_rodape_com_as_abas_novas from './20261002_213100_rodape_com_as_abas_novas';
 import * as migration_20261003_120000_vagas_do_wordpress from './20261003_120000_vagas_do_wordpress';
+import * as migration_20261005_213516_paginas_mestras from './20261005_213516_paginas_mestras';
 
 export const migrations = [
   {
@@ -405,6 +407,11 @@ export const migrations = [
     name: '20260927_215600_solutions_badge',
   },
   {
+    up: migration_20260927_215800_paginas_mestras.up,
+    down: migration_20260927_215800_paginas_mestras.down,
+    name: '20260927_215800_paginas_mestras',
+  },
+  {
     up: migration_20260927_235900_solucoes_do_wordpress.up,
     down: migration_20260927_235900_solucoes_do_wordpress.down,
     name: '20260927_235900_solucoes_do_wordpress',
@@ -503,5 +510,10 @@ export const migrations = [
     up: migration_20261003_120000_vagas_do_wordpress.up,
     down: migration_20261003_120000_vagas_do_wordpress.down,
     name: '20261003_120000_vagas_do_wordpress',
+  },
+  {
+    up: migration_20261005_213516_paginas_mestras.up,
+    down: migration_20261005_213516_paginas_mestras.down,
+    name: '20261005_213516_paginas_mestras',
   },
 ];

@@ -2135,9 +2135,26 @@ export interface Page {
   id: number;
   title: string;
   /**
-   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   * Final part of the URL. Changing it after publishing breaks links. On section pages the address is fixed: ask the tech team to rename a section.
    */
   slug: string;
+  /**
+   * This is the section’s main page: it cannot be deleted and its address is fixed. If unpublished, the section goes offline while menu and footer still link to it.
+   */
+  masterOf?:
+    | (
+        | 'solucoes'
+        | 'segmentos'
+        | 'consultores'
+        | 'insights'
+        | 'blog'
+        | 'webinars'
+        | 'cases'
+        | 'midia'
+        | 'ebooks'
+        | 'carreiras'
+      )
+    | null;
   layout: (
     | {
         badge?: string | null;
@@ -3698,6 +3715,55 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'jobsList';
+      }
+    | {
+        eyebrow?: string | null;
+        /**
+         * Optional, above the listing. The listing itself is automatic: it shows what is published in the section.
+         */
+        title?: string | null;
+        /**
+         * Shown in blue, right after the title.
+         */
+        highlight?: string | null;
+        /**
+         * Optional. A blank line separates paragraphs.
+         */
+        description?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sectionListing';
+      }
+    | {
+        /**
+         * Each highlight’s button. Empty uses the section default.
+         */
+        actionLabel?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sectionFeatured';
       }
   )[];
   /**
@@ -7838,6 +7904,7 @@ export interface JobsSelect<T extends boolean = true> {
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  masterOf?: T;
   layout?:
     | T
     | {
@@ -8654,6 +8721,33 @@ export interface PagesSelect<T extends boolean = true> {
                     description?: T;
                     note?: T;
                   };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sectionListing?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sectionFeatured?:
+          | T
+          | {
+              actionLabel?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
