@@ -630,7 +630,62 @@ export type BlocoAccordionSteps = Base &
     steps: { title: string; description: string }[]
   }
 
+/* Páginas-mestras (feature paginas-mestras, D-55). A parte automática de cada
+ * seção, já resolvida pelo `resolverPaginaMestra` — o bloco não busca dado.
+ * Uma variante por seção: cada lista desenha o seu cartão. */
+export type ConteudoDaSecao =
+  | { secao: 'solucoes'; solucoes: SolutionCard[] }
+  | { secao: 'segmentos'; segmentos: SegmentCard[] }
+  | { secao: 'webinars'; webinars: Webinar[] }
+  | { secao: 'midia'; materias: MateriaDaImprensa[] }
+  | { secao: 'ebooks'; materiais: Resource[] }
+  | { secao: 'cases'; cases: CaseCard[]; incompletos: string[]; topicos: Topic[] }
+  | { secao: 'blog'; posts: PostCard[]; pagina: number; totalDePaginas: number }
+  | { secao: 'consultores'; perfis: ConsultantRole[]; contato: Contato }
+
+/** Cabeçalho de texto que a editora escreve acima de uma lista automática. */
+export type CabecalhoDaSecao = {
+  eyebrow: string | null
+  chip: string | null
+  title: string | null
+  highlight: string | null
+  /** O texto de abertura, já separado em parágrafos (linha em branco). */
+  paragrafos: string[]
+}
+
+export type BlocoSectionListing = Base & {
+  tipo: 'sectionListing'
+  cabecalho: CabecalhoDaSecao
+  /** `null` fora de uma página-mestra: o bloco não desenha nada. */
+  conteudo: ConteudoDaSecao | null
+  /** Nenhum bloco visível acima: a lista abre a página — o título vira `h1` e,
+   *  nas seções de lista, ganha o respiro sob o cabeçalho fixo. Calculado pelo
+   *  `resolverPaginaMestra`. */
+  abertura: boolean
+}
+
+export type BlocoSectionFeatured = Base & {
+  tipo: 'sectionFeatured'
+  actionLabel: string | null
+  conteudo: ConteudoDaSecao | null
+}
+
+export type BlocoWebinarTeaser = Base & {
+  tipo: 'webinarTeaser'
+  eyebrow: string | null
+  title: string
+  highlight: string | null
+  titleEnd: string | null
+  description: string | null
+  actionLabel: string | null
+  /** A capa do webinar mais recente, injetada pela página. */
+  capa: Image | null
+}
+
 export type Bloco =
+  | BlocoSectionListing
+  | BlocoSectionFeatured
+  | BlocoWebinarTeaser
   | BlocoPageHero
   | BlocoRichTextSection
   | BlocoIconCardGrid

@@ -84,6 +84,7 @@ import * as migration_20261002_213000_nova_estrutura_de_solucoes from './2026100
 import * as migration_20261002_213100_rodape_com_as_abas_novas from './20261002_213100_rodape_com_as_abas_novas';
 import * as migration_20261003_120000_vagas_do_wordpress from './20261003_120000_vagas_do_wordpress';
 import * as migration_20261005_213516_paginas_mestras from './20261005_213516_paginas_mestras';
+import * as migration_20261005_213758_paginas_mestras_etiqueta_e_chamada from './20261005_213758_paginas_mestras_etiqueta_e_chamada';
 
 export const migrations = [
   {
@@ -515,5 +516,10 @@ export const migrations = [
     up: migration_20261005_213516_paginas_mestras.up,
     down: migration_20261005_213516_paginas_mestras.down,
     name: '20261005_213516_paginas_mestras',
+  },
+  {
+    up: migration_20261005_213758_paginas_mestras_etiqueta_e_chamada.up,
+    down: migration_20261005_213758_paginas_mestras_etiqueta_e_chamada.down,
+    name: '20261005_213758_paginas_mestras_etiqueta_e_chamada',
   },
 ];

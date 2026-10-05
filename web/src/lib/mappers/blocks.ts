@@ -71,6 +71,14 @@ function cabecalho(b: {
   }
 }
 
+/** Texto de abertura → parágrafos: uma linha em branco separa um do outro. */
+export function paragrafosDe(texto: string | null | undefined): string[] {
+  return (texto ?? '')
+    .split(/\n\s*\n/)
+    .map((p) => p.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+}
+
 function base(b: BlocoDoPayload) {
   return {
     id: b.id ?? `${b.blockType}-sem-id`,
@@ -136,6 +144,40 @@ export function toBlocos(
           images: (b.images ?? [])
             .map((i) => toImageOpcional(i as never, 'pageHero.images'))
             .filter((i): i is NonNullable<typeof i> => i !== null),
+        })
+        break
+
+      case 'sectionListing':
+        blocos.push({
+          ...base(b),
+          tipo: 'sectionListing',
+          cabecalho: {
+            eyebrow: vazio(b.eyebrow),
+            chip: vazio(b.chip),
+            title: vazio(b.title),
+            highlight: vazio(b.highlight),
+            paragrafos: paragrafosDe(b.description),
+          },
+          conteudo: null,
+          abertura: false,
+        })
+        break
+
+      case 'sectionFeatured':
+        blocos.push({ ...base(b), tipo: 'sectionFeatured', actionLabel: vazio(b.actionLabel), conteudo: null })
+        break
+
+      case 'webinarTeaser':
+        blocos.push({
+          ...base(b),
+          tipo: 'webinarTeaser',
+          eyebrow: vazio(b.eyebrow),
+          title: b.title,
+          highlight: vazio(b.highlight),
+          titleEnd: vazio(b.titleEnd),
+          description: vazio(b.description),
+          actionLabel: vazio(b.actionLabel),
+          capa: null,
         })
         break
 

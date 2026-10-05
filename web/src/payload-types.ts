@@ -3719,6 +3719,10 @@ export interface Page {
     | {
         eyebrow?: string | null;
         /**
+         * The chip next to the badge. In Solutions and Segments it follows the automatic count ("8 verticals").
+         */
+        chip?: string | null;
+        /**
          * Optional, above the listing. The listing itself is automatic: it shows what is published in the section.
          */
         title?: string | null;
@@ -3764,6 +3768,31 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'sectionFeatured';
+      }
+    | {
+        eyebrow?: string | null;
+        title: string;
+        highlight?: string | null;
+        /**
+         * After the highlight, in the regular colour.
+         */
+        titleEnd?: string | null;
+        description?: string | null;
+        actionLabel?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'webinarTeaser';
       }
   )[];
   /**
@@ -8733,6 +8762,7 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               eyebrow?: T;
+              chip?: T;
               title?: T;
               highlight?: T;
               description?: T;
@@ -8747,6 +8777,23 @@ export interface PagesSelect<T extends boolean = true> {
         sectionFeatured?:
           | T
           | {
+              actionLabel?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        webinarTeaser?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              highlight?: T;
+              titleEnd?: T;
+              description?: T;
               actionLabel?: T;
               anchor?: T;
               navLabel?: T;

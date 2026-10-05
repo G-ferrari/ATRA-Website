@@ -20,7 +20,19 @@ export const SectionListing: Block = {
     group: { pt: 'Página-mestra', en: 'Section page' },
   },
   fields: [
-    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Selo', en: 'Badge' } },
+    {
+      name: 'chip',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Etiqueta', en: 'Chip' },
+      admin: {
+        description: {
+          pt: 'A etiqueta ao lado do selo. Em Soluções e Segmentos ela vem depois da contagem automática ("8 verticais").',
+          en: 'The chip next to the badge. In Solutions and Segments it follows the automatic count ("8 verticals").',
+        },
+      },
+    },
     {
       name: 'title',
       type: 'text',
@@ -87,7 +99,34 @@ export const SectionFeatured: Block = {
   ],
 }
 
-export const BLOCOS_DE_PAGINA_MESTRA: Block[] = [SectionListing, SectionFeatured].map((b) => ({
+/* A chamada para os webinars que fecha o Blog (`Blog.tsx:283` no legado): texto
+ * do admin, capa automática — a do webinar mais recente — e o botão leva a
+ * /webinars. Bloco próprio para a editora poder tirar, mover ou reescrever. */
+export const WebinarTeaser: Block = {
+  slug: 'webinarTeaser',
+  labels: {
+    singular: { pt: 'Chamada para os webinars', en: 'Webinars teaser' },
+    plural: { pt: 'Chamadas para os webinars', en: 'Webinars teasers' },
+  },
+  admin: { group: { pt: 'Página-mestra', en: 'Section page' } },
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Selo', en: 'Badge' } },
+    { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
+    { name: 'highlight', type: 'text', localized: true, label: { pt: 'Trecho em destaque', en: 'Highlight' } },
+    {
+      name: 'titleEnd',
+      type: 'text',
+      localized: true,
+      label: { pt: 'Fim do título', en: 'Title end' },
+      admin: { description: { pt: 'Depois do trecho em destaque, na cor normal.', en: 'After the highlight, in the regular colour.' } },
+    },
+    { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto', en: 'Text' } },
+    { name: 'actionLabel', type: 'text', localized: true, label: { pt: 'Texto do botão', en: 'Button label' } },
+    ...camposComuns,
+  ],
+}
+
+export const BLOCOS_DE_PAGINA_MESTRA: Block[] = [SectionListing, SectionFeatured, WebinarTeaser].map((b) => ({
   ...b,
   admin: {
     ...b.admin,

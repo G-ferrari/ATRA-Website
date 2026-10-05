@@ -2,10 +2,9 @@ import type { Metadata } from 'next'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
-import { RenderBlocks } from '@/components/blocks/render-blocks'
+import { PaginaMestra } from '@/components/secoes/pagina-mestra'
 import { isLocale, LOCALES } from '@/lib/locales'
-import { resolverPagina } from '@/lib/paginas'
-import { metadataDe } from '@/lib/seo'
+import { metadataDaPaginaMestra, resolverPaginaMestra } from '@/lib/paginas'
 
 /* /insights (MIG-060) — o hub central de conteúdo.
  *
@@ -18,22 +17,21 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale()
-  if (!isLocale(locale)) return {}
-  const pagina = await resolverPagina('insights', 'insights', locale)
-  return pagina ? metadataDe({ locale, local: { secao: 'insights' }, seo: pagina.seo }) : {}
+  return metadataDaPaginaMestra('insights')
 }
 
 export default async function Pagina() {
   const locale = await getLocale()
   if (!isLocale(locale)) notFound()
 
-  const pagina = await resolverPagina('insights', 'insights', locale)
+  const pagina = await resolverPaginaMestra('insights', locale)
   if (!pagina) notFound()
 
   return (
-    <main className="pt-24 md:pt-36 pb-20 bg-surface-1 min-h-screen text-text-main relative overflow-hidden">
-      <RenderBlocks blocos={pagina.blocos} locale={locale} />
-    </main>
+    <PaginaMestra
+      pagina={pagina}
+      locale={locale}
+      className="pb-20 bg-surface-1 min-h-screen text-text-main relative overflow-hidden"
+    />
   )
 }
