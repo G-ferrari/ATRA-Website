@@ -194,6 +194,8 @@ export type BlocoRichTextSection = Base & {
   image: Image | null
   imagePosition: 'left' | 'right' | 'none'
   ctas: { label: string; href: string }[]
+  /** Tamanho dos parágrafos, escolhido no admin. */
+  bodySize: 'normal' | 'large'
 }
 
 export type BlocoIconCardGrid = Base & {

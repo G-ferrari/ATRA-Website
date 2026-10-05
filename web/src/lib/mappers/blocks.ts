@@ -155,6 +155,7 @@ export function toBlocos(
           image: toImageOpcional(b.image, 'richTextSection.image'),
           imagePosition: b.imagePosition ?? 'right',
           ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
+          bodySize: b.bodySize === 'large' ? 'large' : 'normal',
         })
         break
 

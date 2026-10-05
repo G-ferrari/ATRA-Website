@@ -120,6 +120,9 @@ Três seções que mudaram de comportamento em 29/09:
   "Entre em contato", com "Fale conosco" (para /contato) e o botão da IA. Nas
   soluções e segmentos não há mais formulário no fim; quem quer falar vai para
   /contato.
+- **Texto com imagem** — tem o campo **"Tamanho do texto"**: *Normal* (o padrão)
+  ou *Grande*, 2 pontos acima, para o texto que precisa de mais presença. Vale
+  para todos os parágrafos daquela seção (desde 05/10).
 - **Grade de imagens** — é a dos selos (Google Cloud, na página do parceiro e
   em Data Analytics). Para trocar um selo, troque a imagem ali.
 

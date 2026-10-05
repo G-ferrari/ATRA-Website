@@ -70,6 +70,21 @@ describe('toBlocos', () => {
     aviso.mockRestore()
   })
 
+  /* 05/10: o tamanho do parágrafo da seção "Texto com imagem". Seção gravada
+     antes do campo (ou com valor inesperado) sai no tamanho normal. */
+  it('richTextSection leva o tamanho do texto, com "normal" como padrão', () => {
+    const [grande, semCampo, estranho] = toBlocos(
+      layout(
+        { id: '1', blockType: 'richTextSection', title: 'A', bodySize: 'large' },
+        { id: '2', blockType: 'richTextSection', title: 'B' },
+        { id: '3', blockType: 'richTextSection', title: 'C', bodySize: 'enorme' },
+      ),
+    )
+    expect(grande).toMatchObject({ tipo: 'richTextSection', bodySize: 'large' })
+    expect(semCampo).toMatchObject({ bodySize: 'normal' })
+    expect(estranho).toMatchObject({ bodySize: 'normal' })
+  })
+
   it('aceita layout vazio ou ausente', () => {
     expect(toBlocos(null)).toEqual([])
     expect(toBlocos([])).toEqual([])
