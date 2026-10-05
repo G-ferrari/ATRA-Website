@@ -10,6 +10,14 @@ import type { BlocoRichTextSection } from '@/types/content'
 /* Texto com imagem ao lado — porte de `legacy/src/pages/About.tsx:291` (o
  * cabeçalho dentro da coluna) e de `Careers.tsx:579` (o cabeçalho centralizado
  * acima das duas colunas, com a caixa de status do trainee). */
+
+/* Tamanho do parágrafo, escolhido no admin (05/10). O legado usava 12/14px, o
+ * menor parágrafo do site; "normal" subiu para 14/16px, o mesmo das descrições
+ * de topo e de seção, e "grande" fica 2 pontos acima. A entrelinha acompanha. */
+const TAMANHO_DO_TEXTO = {
+  normal: 'text-sm md:text-base leading-relaxed',
+  large: 'text-base md:text-lg leading-relaxed',
+} as const
 export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
   const temImagem = bloco.imagePosition !== 'none' && bloco.image !== null
   const centrado = bloco.headerLayout === 'centered'
@@ -82,7 +90,7 @@ export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
             )}
 
             {bloco.body ? (
-              <div className="space-y-4 text-xs sm:text-sm text-text-muted font-light leading-relaxed">
+              <div className={cn('space-y-4 text-text-muted font-light', TAMANHO_DO_TEXTO[bloco.bodySize])}>
                 {/* String vazia, não `undefined`: `undefined` aciona o valor
                     padrão do parâmetro e a tipografia do case voltaria a vazar. */}
                 <RichText data={bloco.body} className="space-y-4" classeDoParagrafo="" />
