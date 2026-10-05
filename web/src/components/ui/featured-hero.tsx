@@ -61,6 +61,12 @@ export type FeaturedHeroProps = {
   acaoSecundaria?: { label: string }
   /** Intervalo da rotação automática, em ms. */
   intervalo?: number
+  /** O carrossel abre a página (o normal): o título do item é o `h1` dela e o
+   *  respiro de cima é o de abertura, sob o cabeçalho fixo. Com outro bloco
+   *  acima (D-55, a editora decide a ordem), vira `h2` e respiro de seção. */
+  abertura?: boolean
+  /** Âncora da seção, quando o bloco tem uma. */
+  id?: string
 }
 
 export function FeaturedHero({
@@ -72,7 +78,10 @@ export function FeaturedHero({
   variante = 'wide',
   rotuloDaCapa,
   intervalo = 5000,
+  abertura = true,
+  id,
 }: FeaturedHeroProps) {
+  const Titulo = abertura ? 'h1' : 'h2'
   const [indiceAtivo, setIndiceAtivo] = useState(0)
 
   useEffect(() => {
@@ -87,7 +96,13 @@ export function FeaturedHero({
   if (!ativo) return null
 
   return (
-    <section className="bg-surface-1 text-text-main pt-28 sm:pt-36 md:pt-44 pb-10 sm:pb-14 relative overflow-hidden flex flex-col justify-center border-b border-border-main/40">
+    <section
+      id={id}
+      className={cn(
+        'bg-surface-1 text-text-main pb-10 sm:pb-14 relative overflow-hidden flex flex-col justify-center border-b border-border-main/40 scroll-mt-32',
+        abertura ? 'pt-28 sm:pt-36 md:pt-44' : 'pt-16 md:pt-20',
+      )}
+    >
       {/* Decoração: manchas de gradiente. Porte fiel — D-15. */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 bg-surface-1">
         <div
@@ -121,9 +136,9 @@ export function FeaturedHero({
                   <span>{ativo.eyebrow}</span>
                 </div>
               )}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-5 leading-tight tracking-tight text-text-main font-display">
+              <Titulo className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-5 leading-tight tracking-tight text-text-main font-display">
                 {ativo.title}
-              </h1>
+              </Titulo>
               {ativo.description && (
                 <p className="text-xs sm:text-base lg:text-lg text-text-muted mb-5 sm:mb-7 max-w-2xl leading-relaxed font-light">
                   {ativo.description}

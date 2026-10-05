@@ -43,7 +43,7 @@ export async function resolverPagina(slugPt: string, slugEn: string, locale: Loc
  * A página-mestra de uma seção (feature paginas-mestras, D-55), achada pela
  * marca da seção — e não pelo slug, que acompanha o idioma —, com a parte
  * automática da seção injetada nos blocos "Lista da seção" e "Destaques da
- * seção", e a capa do webinar mais recente na "Chamada para os webinars".
+ * seção".
  *
  * `null` quando a página não existe ou está despublicada: a rota responde 404,
  * que é o que despublicar quer dizer (decisão de 05/10). Também `null` para
@@ -75,22 +75,6 @@ export const resolverPaginaMestra = cache(async function resolverPaginaMestra(
     const lista = blocos.find((b) => b.tipo === 'sectionListing')
     const conteudo = lista?.tipo === 'sectionListing' ? lista.conteudo : null
     if (conteudo?.secao !== 'blog' || pagina > conteudo.totalDePaginas) return null
-  }
-
-  if (blocos.some((b) => b.tipo === 'webinarTeaser')) {
-    /* A capa da chamada vem do webinar mais recente: a seção fala de webinars e
-       leva para /webinars. Rascunho nunca vira capa. */
-    const payload = await getPayload()
-    const { docs: webinars } = await payload.find({
-      collection: 'webinars',
-      locale,
-      depth: 1,
-      limit: 1,
-      sort: 'order',
-      where: { _status: { equals: 'published' } },
-    })
-    const capa = webinars[0] ? toWebinar(webinars[0]).image : null
-    for (const b of blocos) if (b.tipo === 'webinarTeaser') b.capa = capa
   }
 
   return { ...resolvida, ...marcarAbertura(blocos) }
@@ -168,6 +152,23 @@ async function montar(filtro: Where, locale: Locale, rascunho: boolean): Promise
       where: { featured: { equals: true } },
     })
     comDepoimentos(blocos, depoimentos.map(toDepoimento))
+  }
+
+  /* A capa da "Chamada para os webinars" é a do primeiro webinar da página de
+     webinars (a ordem do admin): a seção fala de webinars e leva para lá. Aqui,
+     e não só na página-mestra, porque o bloco entra em qualquer página.
+     Rascunho nunca vira capa. */
+  if (blocos.some((b) => b.tipo === 'webinarTeaser')) {
+    const { docs: webinars } = await payload.find({
+      collection: 'webinars',
+      locale,
+      depth: 1,
+      limit: 1,
+      sort: 'order',
+      where: { _status: { equals: 'published' } },
+    })
+    const capa = webinars[0] ? toWebinar(webinars[0]).image : null
+    for (const b of blocos) if (b.tipo === 'webinarTeaser') b.capa = capa
   }
 
   /* A Insights se atualiza sozinha (D-55): as faixas com os primeiros de cada

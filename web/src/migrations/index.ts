@@ -87,6 +87,7 @@ import * as migration_20261005_213516_paginas_mestras from './20261005_213516_pa
 import * as migration_20261005_213758_paginas_mestras_etiqueta_e_chamada from './20261005_213758_paginas_mestras_etiqueta_e_chamada';
 import * as migration_20261005_223123_insights_automatica from './20261005_223123_insights_automatica';
 import * as migration_20261005_230000_paginas_mestras_conteudo from './20261005_230000_paginas_mestras_conteudo';
+import * as migration_20261005_232618_paginas_mestras_sem_tema from './20261005_232618_paginas_mestras_sem_tema';
 
 export const migrations = [
   {
@@ -532,6 +533,11 @@ export const migrations = [
   {
     up: migration_20261005_230000_paginas_mestras_conteudo.up,
     down: migration_20261005_230000_paginas_mestras_conteudo.down,
-    name: '20261005_230000_paginas_mestras_conteudo'
+    name: '20261005_230000_paginas_mestras_conteudo',
+  },
+  {
+    up: migration_20261005_232618_paginas_mestras_sem_tema.up,
+    down: migration_20261005_232618_paginas_mestras_sem_tema.down,
+    name: '20261005_232618_paginas_mestras_sem_tema'
   },
 ];

@@ -47,9 +47,20 @@ export function ListaDeSolucoes({
                 <MetricChip label={`${ABAS_DE_SOLUCOES.length} ${cabecalho.chip}`} variant="neutral" size="sm" />
               )}
             </div>
-            <Titulo className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display leading-tight">
-              <TituloComDestaque cabecalho={cabecalho} />
-            </Titulo>
+            {(cabecalho.title || cabecalho.highlight) && (
+              <Titulo className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display leading-tight">
+                <TituloComDestaque cabecalho={cabecalho} />
+              </Titulo>
+            )}
+            {/* O texto de abertura nasce vazio aqui (o topo de hoje não tem); se a
+                editora escrever, sai no tom da descrição do herói de página. */}
+            {cabecalho.paragrafos.length > 0 && (
+              <div className="mt-4 space-y-3 max-w-xl text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 font-light leading-relaxed">
+                {cabecalho.paragrafos.map((p) => (
+                  <p key={p}>{p}</p>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>

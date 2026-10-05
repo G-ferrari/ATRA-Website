@@ -162,8 +162,9 @@ Seção**):
   escolhe o texto do botão; vazio, vale o de sempre.
 - **Chamada para os webinars** — a faixa do fim do blog. O **trecho em
   destaque** precisa estar escrito igual dentro do título (ex.: título "Assista
-  aos nossos Webinars técnicos", trecho "Webinars"). A capa é a do webinar mais
-  recente.
+  aos nossos Webinars técnicos", trecho "Webinars"). A capa é a do primeiro
+  webinar da página de webinars (o de menor **Ordem**). Pode ser usada em
+  qualquer página.
 
 O que **não** dá para fazer, de propósito:
 
@@ -174,9 +175,11 @@ O que **não** dá para fazer, de propósito:
   (`/blog/<artigo>`). Renomear uma seção é pedido ao time técnico, como foi com
   "Relatórios" → "ATRA na mídia".
 
-A **Insights** não tem lista para manter: ela mostra sozinha os 3 conteúdos
-mais recentes de cada tipo (Cases, Blog, Webinars, ATRA na mídia, E-books), com
-"Ver todos" para a seção. Publicou um case, ele aparece lá. O topo, as pílulas,
+A **Insights** não tem lista para manter: ela mostra sozinha os 3 primeiros de
+cada tipo (Cases, Blog, Webinars, ATRA na mídia, E-books) — os mesmos que abrem
+a página de cada seção: os mais recentes em Cases, Blog e E-books, os de menor
+**Ordem** em Webinars e ATRA na mídia —, com "Ver todos" para a seção. Publicou
+um case, ele aparece lá. O topo, as pílulas,
 os canais, a caixa de inscrição e a chamada final continuam editáveis no bloco
 "Hub de insights".
 

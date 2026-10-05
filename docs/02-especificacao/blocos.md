@@ -38,7 +38,7 @@ corresponde a uma seção que **já existe** no legado — nenhum bloco foi inve
 | `accordionSteps` | `SolutionAI.tsx:685` | soluções | cabeçalho, `image → media`, `imageBadge{icon,title,subtitle}`, `steps[]{title (loc), description (loc)}` — a primeira abre expandida |
 | `sectionListing` | as rotas de índice (D-55) | páginas-mestras | `eyebrow`/`chip`/`title`/`highlight`/`description` (loc) — **a lista é automática**: a seção vem da página-mestra, e cada uma desenha a sua (`components/secoes/`). Em página comum, não desenha nada |
 | `sectionFeatured` | `FeaturedHero` das rotas de índice (D-55) | páginas-mestras | `actionLabel` (loc) — os itens são os primeiros da seção (`itensEmDestaque`) |
-| `webinarTeaser` | `Blog.tsx:283` (D-55) | blog | `eyebrow`/`title`/`highlight`/`description`/`actionLabel` (loc) — o destaque fica **dentro** do título; capa = webinar mais recente |
+| `webinarTeaser` | `Blog.tsx:283` (D-55) | blog | `eyebrow`/`title`/`highlight`/`description`/`actionLabel` (loc) — o destaque fica **dentro** do título; capa = o primeiro webinar de /webinars |
 
 ## Composição das páginas iniciais
 

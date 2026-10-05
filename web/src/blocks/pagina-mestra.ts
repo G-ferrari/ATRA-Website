@@ -2,6 +2,11 @@ import type { Block } from 'payload'
 
 import { camposComuns } from './shared'
 
+/* Só a âncora (e o rótulo dela no menu da página): tema, borda e espaçamento
+ * não valem aqui — cada bloco traz o fundo e o respiro que a rota tinha, e um
+ * campo que a editora muda sem nada mudar no site é pior que campo nenhum. */
+const camposDeAncora = camposComuns.filter((c) => 'name' in c && (c.name === 'anchor' || c.name === 'navLabel'))
+
 /* Os dois blocos das páginas-mestras (feature paginas-mestras, D-55).
  *
  * São a parte **automática** de cada seção — a lista e o carrossel de destaques
@@ -69,7 +74,7 @@ export const SectionListing: Block = {
         },
       },
     },
-    ...camposComuns,
+    ...camposDeAncora,
   ],
 }
 
@@ -95,12 +100,12 @@ export const SectionFeatured: Block = {
         },
       },
     },
-    ...camposComuns,
+    ...camposDeAncora,
   ],
 }
 
 /* A chamada para os webinars que fecha o Blog (`Blog.tsx:283` no legado): texto
- * do admin, capa automática — a do webinar mais recente — e o botão leva a
+ * do admin, capa automática — a do primeiro webinar de /webinars — e o botão leva a
  * /webinars. Bloco próprio para a editora poder tirar, mover ou reescrever. */
 export const WebinarTeaser: Block = {
   slug: 'webinarTeaser',
@@ -131,7 +136,7 @@ export const WebinarTeaser: Block = {
     },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto', en: 'Text' } },
     { name: 'actionLabel', type: 'text', localized: true, label: { pt: 'Texto do botão', en: 'Button label' } },
-    ...camposComuns,
+    ...camposDeAncora,
   ],
 }
 

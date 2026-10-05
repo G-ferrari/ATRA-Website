@@ -3694,9 +3694,6 @@ export interface Page {
          * Empty falls back to the section title.
          */
         navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'sectionListing';
@@ -3714,9 +3711,6 @@ export interface Page {
          * Empty falls back to the section title.
          */
         navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'sectionFeatured';
@@ -3738,9 +3732,6 @@ export interface Page {
          * Empty falls back to the section title.
          */
         navLabel?: string | null;
-        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
-        spacing?: ('normal' | 'roomy') | null;
-        theme?: ('surface-1' | 'surface-2') | null;
         id?: string | null;
         blockName?: string | null;
         blockType: 'webinarTeaser';
@@ -8648,9 +8639,6 @@ export interface PagesSelect<T extends boolean = true> {
               description?: T;
               anchor?: T;
               navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
               id?: T;
               blockName?: T;
             };
@@ -8660,9 +8648,6 @@ export interface PagesSelect<T extends boolean = true> {
               actionLabel?: T;
               anchor?: T;
               navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
               id?: T;
               blockName?: T;
             };
@@ -8676,9 +8661,6 @@ export interface PagesSelect<T extends boolean = true> {
               actionLabel?: T;
               anchor?: T;
               navLabel?: T;
-              borda?: T;
-              spacing?: T;
-              theme?: T;
               id?: T;
               blockName?: T;
             };

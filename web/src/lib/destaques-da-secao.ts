@@ -56,8 +56,9 @@ function visivel(b: Bloco): boolean {
 }
 
 /**
- * Marca a lista que abre a página e diz se a página cuida do próprio respiro
- * sob o cabeçalho fixo. Muta `abertura` nos blocos de lista.
+ * Marca o bloco de seção que abre a página — a lista ou o carrossel, que
+ * desenham `h1` só nesse caso — e diz se a página cuida do próprio respiro
+ * sob o cabeçalho fixo. Muta `abertura` nos blocos de seção.
  *
  * ⚠️ É o que deixa a página inteira ser montada por blocos sem a rota saber o
  * que vem primeiro: com o carrossel no topo, a `<main>` não pode ter respiro
@@ -65,7 +66,7 @@ function visivel(b: Bloco): boolean {
  */
 export function marcarAbertura(blocos: Bloco[]): { topoProprio: boolean } {
   const primeiro = blocos.find(visivel)
-  for (const b of blocos) if (b.tipo === 'sectionListing') b.abertura = b === primeiro
+  for (const b of blocos) if (b.tipo === 'sectionListing' || b.tipo === 'sectionFeatured') b.abertura = b === primeiro
   const topoProprio =
     primeiro?.tipo === 'sectionFeatured' || (primeiro?.tipo === 'sectionListing' && listaAberta(primeiro.conteudo))
   return { topoProprio }

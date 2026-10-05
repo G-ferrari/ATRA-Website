@@ -80,13 +80,16 @@ export function paragrafosDe(texto: string | null | undefined): string[] {
 }
 
 function base(b: BlocoDoPayload) {
+  /* Os blocos das páginas-mestras só têm a âncora (D-55): tema, borda e
+     espaçamento são os que a rota tinha, fixos no componente. */
+  const visual = 'theme' in b ? b : { theme: null, borda: null, spacing: null }
   return {
     id: b.id ?? `${b.blockType}-sem-id`,
     anchor: vazio(b.anchor),
     navLabel: vazio(b.navLabel),
-    theme: (b.theme ?? 'surface-1') as TemaDoBloco,
-    borda: (b.borda ?? 'nenhuma') as 'nenhuma' | 'topo' | 'ambas',
-    espaco: (b.spacing === 'roomy' ? 'amplo' : 'normal') as 'normal' | 'amplo',
+    theme: (visual.theme ?? 'surface-1') as TemaDoBloco,
+    borda: (visual.borda ?? 'nenhuma') as 'nenhuma' | 'topo' | 'ambas',
+    espaco: (visual.spacing === 'roomy' ? 'amplo' : 'normal') as 'normal' | 'amplo',
   }
 }
 
@@ -164,7 +167,7 @@ export function toBlocos(
         break
 
       case 'sectionFeatured':
-        blocos.push({ ...base(b), tipo: 'sectionFeatured', actionLabel: vazio(b.actionLabel), conteudo: null })
+        blocos.push({ ...base(b), tipo: 'sectionFeatured', actionLabel: vazio(b.actionLabel), conteudo: null, abertura: true })
         break
 
       case 'webinarTeaser':
@@ -172,7 +175,8 @@ export function toBlocos(
           ...base(b),
           tipo: 'webinarTeaser',
           eyebrow: vazio(b.eyebrow),
-          title: b.title,
+          /* Obrigatório só na publicação: rascunho no preview pode vir sem. */
+          title: b.title ?? '',
           highlight: vazio(b.highlight),
           description: vazio(b.description),
           actionLabel: vazio(b.actionLabel),

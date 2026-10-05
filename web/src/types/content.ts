@@ -682,6 +682,9 @@ export type BlocoSectionFeatured = Base & {
   tipo: 'sectionFeatured'
   actionLabel: string | null
   conteudo: ConteudoDaSecao | null
+  /** O carrossel é o primeiro bloco visível: `h1` e respiro de abertura.
+   *  Calculado pelo `resolverPaginaMestra`. */
+  abertura: boolean
 }
 
 export type BlocoWebinarTeaser = Base & {
@@ -692,7 +695,7 @@ export type BlocoWebinarTeaser = Base & {
   highlight: string | null
   description: string | null
   actionLabel: string | null
-  /** A capa do webinar mais recente, injetada pela página. */
+  /** A capa do primeiro webinar de /webinars (ordem do admin), injetada pela página. */
   capa: Image | null
 }
 

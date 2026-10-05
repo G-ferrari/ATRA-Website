@@ -10,8 +10,9 @@ import type { BlocoWebinarTeaser } from '@/types/content'
 /**
  * "Chamada para os webinars" (feature paginas-mestras, D-55) — a faixa que
  * fechava o blog (`Blog.tsx:283`), agora com os textos no admin e em qualquer
- * página. Os dois links levam a /webinars; a capa é a do webinar mais recente,
- * injetada pela página. No legado era um hotlink fixo do Unsplash.
+ * página. Os dois links levam a /webinars; a capa é a do primeiro webinar da
+ * página de webinars (a ordem do admin), injetada pela página. No legado era um
+ * hotlink fixo do Unsplash.
  */
 export function BlocoChamadaWebinars({ bloco, locale }: { bloco: BlocoWebinarTeaser; locale: Locale }) {
   const destino = hrefDe('webinars', locale)
@@ -60,8 +61,11 @@ export function BlocoChamadaWebinars({ bloco, locale }: { bloco: BlocoWebinarTea
           </div>
 
           <div className="flex-1 w-full max-w-2xl">
+            {/* Nome acessível próprio: sem capa (nenhum webinar publicado) o link
+                só teria o ícone, que é decorativo. */}
             <Link
               href={destino}
+              aria-label={bloco.actionLabel ?? bloco.title}
               className="block aspect-video rounded-[6px] overflow-hidden relative group shadow-2xl  cursor-pointer bg-surface-1 dark:bg-[#0e1015]"
             >
               {bloco.capa && (
