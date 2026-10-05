@@ -1223,6 +1223,10 @@ export interface Partner {
             };
             imagePosition?: ('left' | 'right' | 'none') | null;
             /**
+             * The size of this section’s paragraphs. "Large" is 2 points above normal.
+             */
+            bodySize?: ('normal' | 'large') | null;
+            /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
             anchor?: string | null;
@@ -2895,6 +2899,10 @@ export interface Page {
           text?: string | null;
         };
         imagePosition?: ('left' | 'right' | 'none') | null;
+        /**
+         * The size of this section’s paragraphs. "Large" is 2 points above normal.
+         */
+        bodySize?: ('normal' | 'large') | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -4849,6 +4857,10 @@ export interface Segment {
             };
             imagePosition?: ('left' | 'right' | 'none') | null;
             /**
+             * The size of this section’s paragraphs. "Large" is 2 points above normal.
+             */
+            bodySize?: ('normal' | 'large') | null;
+            /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
             anchor?: string | null;
@@ -6479,6 +6491,10 @@ export interface Solution {
               text?: string | null;
             };
             imagePosition?: ('left' | 'right' | 'none') | null;
+            /**
+             * The size of this section’s paragraphs. "Large" is 2 points above normal.
+             */
+            bodySize?: ('normal' | 'large') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -8164,6 +8180,7 @@ export interface PagesSelect<T extends boolean = true> {
                     text?: T;
                   };
               imagePosition?: T;
+              bodySize?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -9149,6 +9166,7 @@ export interface PartnersSelect<T extends boolean = true> {
                     text?: T;
                   };
               imagePosition?: T;
+              bodySize?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -9972,6 +9990,7 @@ export interface SegmentsSelect<T extends boolean = true> {
                     text?: T;
                   };
               imagePosition?: T;
+              bodySize?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10802,6 +10821,7 @@ export interface SolutionsSelect<T extends boolean = true> {
                     text?: T;
                   };
               imagePosition?: T;
+              bodySize?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;

@@ -221,6 +221,26 @@ export const RichTextSection: Block = {
       ],
       label: { pt: 'Posição da imagem', en: 'Image position' },
     },
+    {
+      /* 05/10: o parágrafo desta seção era o menor do site (12/14px). "Normal"
+       * subiu para o tamanho dos outros parágrafos de destaque, e "Grande" é a
+       * escolha do editor para texto que precisa de mais presença. */
+      name: 'bodySize',
+      type: 'radio',
+      defaultValue: 'normal',
+      options: [
+        { value: 'normal', label: { pt: 'Normal', en: 'Normal' } },
+        { value: 'large', label: { pt: 'Grande', en: 'Large' } },
+      ],
+      label: { pt: 'Tamanho do texto', en: 'Text size' },
+      admin: {
+        layout: 'horizontal',
+        description: {
+          pt: 'O tamanho dos parágrafos desta seção. "Grande" fica 2 pontos acima do normal.',
+          en: 'The size of this section’s paragraphs. "Large" is 2 points above normal.',
+        },
+      },
+    },
     ...camposComuns,
   ],
 }
