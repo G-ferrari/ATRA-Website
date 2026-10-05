@@ -357,11 +357,18 @@ com o protótipo, e o deploy voltou a esperar por ele (`needs: [verify, e2e]`).
 A primeira execução verde na `migracao` é o que fecha o pré-requisito do
 runbook de cutover.
 
-**D-29 (03/09, MIG-148–150)** ligou os leads ao **RD Station CRM**: hook
-`afterChange` em `form-submissions` (`hooks/sincronizar-crm.ts` + `lib/crm.ts`)
-sincroniza contato+negociação para os kinds comerciais — RH fica fora; sem
-`RDSTATION_CRM_TOKEN` é inerte e `crm.syncedAt` vazio denuncia no admin;
-qualquer edição do doc não sincronizado tenta de novo. E o chat ganhou convite
+**D-29 (03/09, MIG-148–150)** ligou os leads ao RD Station por hook
+`afterChange` em `form-submissions`, e a **D-54 (02/10, MIG-157)** trocou o alvo:
+é o **RD Station Marketing** (os formulários da ATRA vivem lá), não o CRM.
+`hooks/sincronizar-rd.ts` + `lib/rd-marketing.ts` mandam cada lead comercial
+como **conversão** — RH fica fora, newsletter só confirmada; sem
+`RDSTATION_MARKETING_API_KEY` é inerte e `rd.syncedAt` vazio denuncia no admin;
+qualquer edição do doc não sincronizado tenta de novo. Identificadores de
+conversão, liga/desliga e o opt-in de campos `cf_*` moram no global
+`integrations`; o id do monitoramento do RD, em `tracking`, atrás do aceite de
+marketing (consentimento v3). ⚠️ A chave certa é a **Chave de API** da App Store
+do RD, não o token público/privado da API 1.x; e `RDSTATION_CRM_TOKEN` nunca
+esteve na lista do compose de produção. E o chat ganhou convite
 de lead inline (kind `chat-lead`, `actions/chat-lead.ts`, cartão em
 `chat/convite-lead.tsx`): aparece após N mensagens **do visitante**, grava
 `chatContext` só com o que ele digitou (P-20 parcial), e são **três chaves**

@@ -7479,11 +7479,10 @@ export interface FormSubmission {
     term?: string | null;
     content?: string | null;
   };
-  crm?: {
-    contactId?: string | null;
-    dealId?: string | null;
+  rd?: {
+    eventUuid?: string | null;
     /**
-     * Empty means this lead has not reached RD Station CRM yet. Editing the submission (e.g. marking it read) retries.
+     * Empty means this lead has not reached RD Station Marketing yet. Editing the submission (e.g. marking it read) retries.
      */
     syncedAt?: string | null;
     error?: string | null;
@@ -11434,11 +11433,10 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
         term?: T;
         content?: T;
       };
-  crm?:
+  rd?:
     | T
     | {
-        contactId?: T;
-        dealId?: T;
+        eventUuid?: T;
         syncedAt?: T;
         error?: T;
       };
@@ -11540,7 +11538,7 @@ export interface AtraAi {
     inviteTitle?: string | null;
     inviteMessage?: string | null;
     /**
-     * Required for the invite to show: tells the visitor what happens to the data (it goes to RD Station CRM). Empty = invite off in this locale. The wording is ATRA’s call (P-14).
+     * Required for the invite to show: tells the visitor what happens to the data (it goes to RD Station Marketing). Empty = invite off in this locale. The wording is ATRA’s call (P-14).
      */
     consentNotice?: string | null;
     successMessage?: string | null;
@@ -11696,7 +11694,7 @@ export interface CookieConsent {
     description?: string | null;
   };
   /**
-   * This category enables UTM capture and Lusha, which identifies the company a visit comes from (System → Tracking). The description should mention both.
+   * This category enables UTM capture, Lusha, which identifies the company a visit comes from, and RD Station Marketing tracking (System → Tracking). The description should mention all three.
    */
   marketing?: {
     name?: string | null;
@@ -11776,7 +11774,7 @@ export interface Footer {
   createdAt?: string | null;
 }
 /**
- * ATRAIR (recruiting) integration. Admins only. The API key lives on the server — without it nothing syncs, even when enabled here.
+ * ATRAIR (recruiting) and RD Station Marketing (leads) integrations. Admins only. The API keys live on the server — without them nothing syncs, even when enabled here.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "integrations".
@@ -11796,6 +11794,27 @@ export interface Integration {
      * The base of the ATRAIR API, without the route — the site appends /api/public/vagas and /api/public/talent-pool. Pre-filled with this environment’s address; change it only if ATRAIR moves. Empty: both toggles above stay inert.
      */
     endpoint?: string | null;
+  };
+  rdStationMarketing?: {
+    /**
+     * On: every commercial form submission becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications and Talent Pool never go — they are HR data.
+     */
+    enabled?: boolean | null;
+    /**
+     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
+     */
+    customFields?: boolean | null;
+    /**
+     * The name each form shows up with in RD. Letters, digits, dot, hyphen and underscore. Empty: that form is not sent.
+     */
+    conversions?: {
+      contact?: string | null;
+      chatLead?: string | null;
+      newsletter?: string | null;
+      materialDownload?: string | null;
+      consultantRequest?: string | null;
+      dataMaturityDiagnostic?: string | null;
+    };
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -12042,7 +12061,7 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
- * Google Tag Manager and Lusha ids. Admins only. Nothing loads until the visitor accepts in the cookie notice.
+ * Google Tag Manager, Lusha and RD Station Marketing ids. Admins only. Nothing loads until the visitor accepts in the cookie notice.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tracking".
@@ -12057,6 +12076,10 @@ export interface Tracking {
    * The siteId from Lusha’s Website Visitors dashboard. Loads only for visitors who accept "marketing". Empty: Lusha stays off the site.
    */
   lushaSiteId?: string | null;
+  /**
+   * Only the code between "loader-scripts/" and "-loader.js" in the script RD provides. Loads only for visitors who accept "marketing". Empty: RD does not track visits (form leads are still sent).
+   */
+  rdStationLoaderId?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -12240,6 +12263,22 @@ export interface IntegrationsSelect<T extends boolean = true> {
         talentPool?: T;
         endpoint?: T;
       };
+  rdStationMarketing?:
+    | T
+    | {
+        enabled?: T;
+        customFields?: T;
+        conversions?:
+          | T
+          | {
+              contact?: T;
+              chatLead?: T;
+              newsletter?: T;
+              materialDownload?: T;
+              consultantRequest?: T;
+              dataMaturityDiagnostic?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -12329,6 +12368,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
 export interface TrackingSelect<T extends boolean = true> {
   gtmId?: T;
   lushaSiteId?: T;
+  rdStationLoaderId?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

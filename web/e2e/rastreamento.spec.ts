@@ -1,10 +1,11 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { NEXT_URL } from '../playwright.config'
-import { GTM_ID_DE_TESTE, LUSHA_SITE_ID_DE_TESTE } from '../scripts/seed/fixtures-de-rastreamento'
+import { GTM_ID_DE_TESTE, LUSHA_SITE_ID_DE_TESTE, RD_LOADER_ID_DE_TESTE } from '../scripts/seed/fixtures-de-rastreamento'
 import { COOKIE_DE_CONSENTIMENTO, EVENTO_CONSENTIMENTO, VERSAO_DE_CONSENTIMENTO } from '../src/lib/consentimento'
 
-/* D-40 — GTM e Lusha com o id vindo do admin, cada um atrás da sua categoria.
+/* D-40 — GTM e Lusha com o id vindo do admin, cada um atrás da sua categoria;
+ * D-54 acrescenta o monitoramento do RD Station Marketing, sob marketing.
  *
  * Exige os ids de teste do global `tracking`, que o seed só grava com
  * `SEED_FIXTURES=1` (`scripts/seed/rastreamento.ts`) — o CI liga a chave.
@@ -13,8 +14,8 @@ import { COOKIE_DE_CONSENTIMENTO, EVENTO_CONSENTIMENTO, VERSAO_DE_CONSENTIMENTO 
  * consentimento entra direto como cookie, no formato que o aviso grava.
  * E sem `?e2e=1`: sob a flag os dois componentes ficam inertes de propósito.
  *
- * Nenhum pedido sai para o Google ou para a Lusha: os dois scripts são
- * interceptados e trocados por um stub que só registra que rodou.
+ * Nenhum pedido sai para o Google, para a Lusha ou para o RD: os três scripts
+ * são interceptados e trocados por um stub que só registra que rodou.
  *
  * Só no desktop: é comportamento de script, não de layout, e a largura não
  * muda nada nele. */
@@ -26,13 +27,15 @@ type Janela = Window & {
 
 const GTM = 'https://www.googletagmanager.com/'
 const LUSHA = 'https://static-packages-prod.lusha.com/'
+const RD = 'https://d335luupugsy2.cloudfront.net/'
 
 async function prepararPagina(page: Page, consentimento?: { v?: number; analytics: boolean; marketing: boolean }) {
   const pedidos: string[] = []
   page.on('request', (r) => {
-    if (r.url().startsWith(GTM) || r.url().startsWith(LUSHA)) pedidos.push(r.url())
+    if (r.url().startsWith(GTM) || r.url().startsWith(LUSHA) || r.url().startsWith(RD)) pedidos.push(r.url())
   })
   await page.route(`${GTM}**`, (r) => r.fulfill({ contentType: 'text/javascript', body: '' }))
+  await page.route(`${RD}**`, (r) => r.fulfill({ contentType: 'text/javascript', body: '' }))
   await page.route(`${LUSHA}**`, (r) =>
     r.fulfill({
       contentType: 'text/javascript',
@@ -61,17 +64,19 @@ test.describe('rastreamento pelo admin (D-40)', () => {
     test.skip(info.project.name !== 'desktop', 'comportamento de script; ver o topo do arquivo')
   })
 
-  test('sem resposta ao aviso, nem GTM nem Lusha entram, e nenhum pedido sai', async ({ page }) => {
+  test('sem resposta ao aviso, nem GTM, nem Lusha, nem RD entram, e nenhum pedido sai', async ({ page }) => {
     const pedidos = await prepararPagina(page)
     await expect(page.locator('script#gtm')).toHaveCount(0)
     await expect(page.locator('script#lusha')).toHaveCount(0)
+    await expect(page.locator('script#rd-station')).toHaveCount(0)
     expect(pedidos).toEqual([])
   })
 
-  test('só estatística: o GTM entra com o id do admin, a Lusha não', async ({ page }) => {
+  test('só estatística: o GTM entra com o id do admin, a Lusha e o RD não', async ({ page }) => {
     const pedidos = await prepararPagina(page, { analytics: true, marketing: false })
     await expect(page.locator('script#gtm')).toHaveAttribute('src', new RegExp(`id=${GTM_ID_DE_TESTE}$`))
     await expect(page.locator('script#lusha')).toHaveCount(0)
+    await expect(page.locator('script#rd-station')).toHaveCount(0)
     expect(pedidos.every((url) => url.startsWith(GTM))).toBe(true)
   })
 
@@ -81,11 +86,22 @@ test.describe('rastreamento pelo admin (D-40)', () => {
     await expect(page.locator('script#gtm')).toHaveCount(0)
   })
 
-  test('aceite de marketing da versão anterior não vale para a Lusha', async ({ page }) => {
-    /* A v1 perguntava por marketing quando ele era só a UTM. Quem respondeu
-       aquilo não respondeu sobre identificar a empresa (D-40). */
+  test('só marketing: o monitoramento do RD entra com o id do admin na URL (D-54)', async ({ page }) => {
+    const pedidos = await prepararPagina(page, { analytics: false, marketing: true })
+    await expect(page.locator('script#rd-station')).toHaveAttribute(
+      'src',
+      `${RD}js/loader-scripts/${RD_LOADER_ID_DE_TESTE}-loader.js`,
+    )
+    await expect.poll(() => pedidos.some((url) => url.startsWith(RD))).toBe(true)
+  })
+
+  test('aceite de marketing da versão anterior não vale para a Lusha nem para o RD', async ({ page }) => {
+    /* A v2 perguntava por marketing quando ele era UTM + Lusha. Quem respondeu
+       aquilo não respondeu sobre o RD acompanhar a navegação (D-54) — e a v1,
+       sobre identificar a empresa (D-40). */
     await prepararPagina(page, { v: VERSAO_DE_CONSENTIMENTO - 1, analytics: true, marketing: true })
     await expect(page.locator('script#lusha')).toHaveCount(0)
+    await expect(page.locator('script#rd-station')).toHaveCount(0)
     await expect(page.locator('script#gtm')).toHaveCount(0)
   })
 

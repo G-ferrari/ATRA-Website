@@ -1587,3 +1587,80 @@ Três escolhas do G-ferrari, entre as alternativas apresentadas:
   banco de talentos não tem anexo. E os dados estruturados de vaga
   (`JobPosting`, para a busca de empregos do Google) só valem depois que der
   para se candidatar na própria página.
+
+## D-54 — Os leads vão para o RD Station **Marketing**, por conversão; o CRM sai
+
+*Em 02/10/2026, por resposta da ATRA via Leonardo: "é no Marketing, pois é nele
+que estão os forms". Corrige a [D-26](#d-26--os-leads-vão-para-o-rd-station-crm-o-payload-é-registro-de-passagem)
+no alvo e mantém tudo o mais dela e da D-29.*
+
+**Contexto.** A D-26 registrou "RD Station CRM — o produto de CRM, não o RD
+Station Marketing", e MIG-148 implementou contato + negociação na API do CRM.
+O token nunca foi provisionado, e o lead de ponta a ponta que confirmaria o
+formato nunca aconteceu. Ao pedir a chave para ligar, o que a ATRA mandou foi
+o **código de monitoramento do RD Station Marketing** (o `loader-scripts/
+<uuid>-loader.js`) e, depois, a tela "Dados de Integração (API)" com Token
+público e privado — e a explicação: os formulários da ATRA vivem no Marketing.
+Dois achados no caminho: (1) os tokens público/privado são da **API 1.x**, que
+o RD está descontinuando e cujo endpoint novo não aceita — a credencial certa é
+a "Chave de API" da App Store do RD (App Publisher → Gerar chave de API), que só
+registra conversões e não expira; (2) `RDSTATION_CRM_TOKEN` nunca esteve na
+lista de variáveis do `docker-compose.prod.yml` — mesmo provisionado no
+`.env.prod`, não chegaria ao contêiner. A D-26 nunca esteve ligada nem poderia.
+
+**Opções.** (a) Trocar o alvo para o Marketing e apagar o adaptador do CRM;
+(b) manter os dois adaptadores e escolher por variável; (c) usar os formulários
+nativos do RD no site. A (c) foi descartada na hora: joga fora o registro de
+passagem no Postgres, o anti-spam e o funcionamento sem JavaScript (MIG-100). A
+(b) é código morto com interruptor — "só precisa ser religado" volta sozinho
+(ver P-28).
+
+**Decisão: (a).** O que fica igual: grava no Postgres primeiro, sincroniza por
+hook de `form-submissions`, falha deixa `syncedAt` vazio e qualquer edição
+tenta de novo, RH fica fora, newsletter só confirmada. O que muda:
+
+- **Cada lead é uma conversão** (`POST /platform/conversions`, `lib/rd-marketing.ts`,
+  `hooks/sincronizar-rd.ts`). A API devolve só `event_uuid`; o grupo `crm`
+  (contato/negociação) vira `rd` (`eventUuid`, `syncedAt`, `error`). O retry não
+  precisa de id parcial: conversão é evento, e o RD deduplica o lead por e-mail.
+- **Os nomes são do marketing.** O `conversion_identifier` de cada formulário
+  mora no global `integrations` (Sistema → Integrações → RD Station Marketing),
+  nasce com os sugeridos em 02/10 (`site-contato`, `site-chat`, `site-newsletter`,
+  `site-download-material`, `site-solicitacao-consultores`,
+  `site-diagnostico-maturidade`) e o admin renomeia sem deploy. Vazio desliga
+  aquele formulário. Mesmo arranjo da D-41: liga/desliga no CMS,
+  `RDSTATION_MARKETING_API_KEY` no ambiente como segunda tranca — e desta vez
+  **na lista do compose de produção**.
+- **Campo personalizado é opt-in.** `cf_*` que não existe na conta derruba a
+  conversão inteira em 400, então mensagem, contexto do chat e o diagnóstico
+  só vão com a chave `customFields` ligada, depois de o marketing criar os
+  campos no RD. Os nomes do diagnóstico são **os do questionário do Roger**
+  (`cf_quiz_*`), que já os mandava ao RD — se a conta os tem, continuam valendo;
+  os dois novos são `cf_site_mensagem` e `cf_site_chat`. A lista está no
+  próprio campo do admin.
+- **Base legal só onde há opt-in provado.** `legal_bases: consent granted` e
+  `available_for_mailing` vão **só** na newsletter confirmada (MIG-103). Os
+  outros formulários ainda não têm o aviso de consentimento (P-14), e declarar
+  consentimento ao RD sem ele seria mentir a quem vai disparar e-mail.
+- **O código de monitoramento entra pelo admin**, como GTM e Lusha (D-40):
+  campo `rdStationLoaderId` em Sistema → Rastreamento, só o uuid, e o script
+  carrega **só com aceite de marketing**. É rastreamento de pessoa entre páginas
+  para nutrição e venda, não medição anônima — por isso a versão do
+  consentimento subiu para **3** e o aviso pergunta de novo a quem já tinha
+  aceitado marketing. A descrição provisória da categoria passou a citar o RD;
+  a redação final segue na P-14. ⚠️ Os leads **não** dependem do script: vão
+  pelo servidor. O que ele acrescenta é a atribuição de navegação do lado do RD.
+
+**Consequência.** A nutrição acontece no RD Station Marketing, com as
+automações do marketing sobre os identificadores acima. O CRM, se a ATRA o
+usa, recebe o lead pela integração nativa entre os dois produtos — não é mais
+responsabilidade do site. `lib/crm.ts`, seu teste e o hook saíram do
+repositório; a migração `20261002_190000_rd_station_marketing` troca as colunas
+(as `crm_*` estavam vazias em todo ambiente). Três chaves independentes seguem
+valendo: a chave de API no ambiente, o liga/desliga no CMS e, por formulário, o
+identificador. Em aberto, para a próxima task: mandar `client_tracking_id` e
+`traffic_source` lidos dos cookies do monitoramento (`rdtrk`, `__trf.src`) na
+conversão — exige o script no ar com aceite e as actions repassarem o cookie ao
+hook. **Produção segue esperando P-14** para a chave entrar no ambiente; em
+homologação pode entrar hoje, e o lead de ponta a ponta que a MIG-148 nunca
+teve é o que confirma o formato fino.

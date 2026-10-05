@@ -39,9 +39,9 @@ import type { Contato } from '@/types/content'
  * grava → avisa, com o aviso incapaz de derrubar a gravação. Aqui o "avisa" são
  * dois e-mails, nesta ordem: o **resultado ao lead** (o único lugar onde ele vê
  * o diagnóstico — decisão de 26/09) e o aviso à caixa de Diagnóstico. A
- * sincronização com o RD Station CRM não vem aqui: é o hook `afterChange` de
+ * sincronização com o RD Station não vem aqui: é o hook `afterChange` de
  * `form-submissions`, e `data-maturity-diagnostic` já está na lista comercial
- * de `lib/crm.ts` (task 023).
+ * de `lib/rd-marketing.ts` (task 023; alvo trocado pela D-54).
  *
  * ⚠️ **Nada do resultado vem do navegador** (MIG-142: Server Action é endpoint
  * público). O cliente manda só perfil e `{ perguntaId: índice }`; pergunta de
@@ -185,8 +185,8 @@ function caixaDoDiagnostico(contato: Contato): string {
 const rotuloDe = <V extends string>(lista: readonly { valor: V; rotulo: string }[], valor: V) =>
   lista.find((o) => o.valor === valor)?.rotulo ?? valor
 
-/** `message` curto: o que a anotação do CRM **não** tem. Nível, média, pilares
- * e maiores gaps já vão por `resumoDoDiagnostico` (`lib/crm.ts`), que lê o
+/** `message` curto: o que os campos do RD **não** têm. Nível, média, pilares
+ * e maiores gaps já vão como campos personalizados (`lib/rd-marketing.ts`), que lê o
  * grupo `diagnostic`; repetir aqui duplicaria as linhas na negociação. O perfil
  * sai em rótulo, que é o que o comercial lê. */
 function resumoDoEnvio(setor: Setor, porte: Porte, cargo: Cargo, respondidas: number): string {
@@ -258,7 +258,7 @@ export async function enviarDiagnosticoDeMaturidade(
   const primeiro = Object.values(campos)[0]
   if (primeiro) return recusa('contato', primeiro, campos)
 
-  /* Minúsculo como no `buildPayload` do HTML: é o e-mail que o CRM procura para
+  /* Minúsculo como no `buildPayload` do HTML: é o e-mail que o RD procura para
    * não duplicar contato, e "Ana@Banco" e "ana@banco" são a mesma pessoa. */
   const email = valores.email.toLowerCase()
 
@@ -324,7 +324,7 @@ export async function enviarDiagnosticoDeMaturidade(
           pillars: calculo.pilares,
           dama: calculo.damas,
           gaps: calculo.gaps,
-          /* O formato do `cf_quiz_gaps_top3` do HTML, que a nota do CRM repete. */
+          /* O formato do `cf_quiz_gaps_top3` do HTML, que o campo do RD repete. */
           topGaps: calculo.topGaps.join(' | '),
           answers: respondidas,
           roadmap: roadmapEmTexto(roadmap),
@@ -396,7 +396,7 @@ export async function enviarDiagnosticoDeMaturidade(
   }
 
   /* Uma escrita só para as duas marcas, e só com o que deu certo. Cada `update`
-   * dispara o hook do CRM de novo (é o retry dele): duas escritas seguidas
+   * dispara o hook do RD de novo (é o retry dele): duas escritas seguidas
    * seriam duas tentativas no mesmo segundo, falhando pelo mesmo motivo.
    *
    * ⚠️ Pelo **id que o `create` devolveu**, e não por e-mail + kind: dois envios

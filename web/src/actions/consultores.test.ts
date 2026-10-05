@@ -129,11 +129,11 @@ describe('solicitarConsultores — envio válido', () => {
     expect(gravado().message).toContain('Nenhum perfil do catálogo selecionado')
   })
 
-  /* A sincronização com o CRM é o hook `afterChange` (task 011, testado em
-     `lib/crm.test.ts`). A action não finge sincronizar. */
-  it('não preenche o grupo crm — quem sincroniza é o hook', async () => {
+  /* A sincronização com o RD é o hook `afterChange` (task 011, testado em
+     `lib/rd-marketing.test.ts`). A action não finge sincronizar. */
+  it('não preenche o grupo rd — quem sincroniza é o hook', async () => {
     await solicitarConsultores(valido({ perfis: perfis('12') }))
-    expect(gravado()).not.toHaveProperty('crm')
+    expect(gravado()).not.toHaveProperty('rd')
   })
 })
 

@@ -807,6 +807,8 @@ export type Rastreamento = {
   gtmId: string | null
   /** Lusha Website Visitors — categoria marketing. */
   lushaSiteId: string | null
+  /** Script de monitoramento do RD Station Marketing (D-54) — categoria marketing. */
+  rdStationLoaderId: string | null
 }
 
 /** As chaves da integração com o ATRAIR (D-41), do global `integrations`.
@@ -826,6 +828,29 @@ export type IntegracaoAtrair = {
   vagas: boolean
   /** O currículo do Banco de Talentos é criado no ATRAIR. */
   bancoDeTalentos: boolean
+}
+
+/** As chaves da integração com o RD Station Marketing (D-54), do global
+ * `integrations`. Quem lê é o hook de `form-submissions`.
+ *
+ * `ligado` é a chave do admin; a chave de API fica no ambiente e é a segunda
+ * tranca (mesmo arranjo do ATRAIR, D-41). Identificador `null` é "este
+ * formulário não vai ao RD" — vazio no admin ou fora do formato.
+ *
+ * ⚠️ `camposPersonalizados` nasce **desligado**: campo `cf_` que não existe na
+ * conta do RD derruba a conversão inteira, e os campos têm que ser criados lá
+ * antes de ligar aqui. */
+export type IntegracaoRd = {
+  ligado: boolean
+  camposPersonalizados: boolean
+  conversoes: {
+    contato: string | null
+    chat: string | null
+    newsletter: string | null
+    download: string | null
+    consultores: string | null
+    diagnostico: string | null
+  }
 }
 
 /** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global

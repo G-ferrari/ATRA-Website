@@ -1,7 +1,13 @@
 import type { GlobalConfig } from 'payload'
 
 import { isAdmin, isPublic } from '@/access'
-import { ehEndpointDeIntegracao, ENDPOINT_PADRAO_ATRAIR } from '@/lib/formatos-de-integracao'
+import {
+  CONVERSOES_PADRAO,
+  ehEndpointDeIntegracao,
+  ehIdentificadorDeConversao,
+  ENDPOINT_PADRAO_ATRAIR,
+} from '@/lib/formatos-de-integracao'
+import { CAMPOS_PERSONALIZADOS } from '@/lib/rd-marketing'
 
 /* As chaves da integração com o ATRAIR (D-41), o sistema de R&S da ATRA.
  *
@@ -39,8 +45,8 @@ export const Integrations: GlobalConfig = {
   admin: {
     group: { pt: 'Sistema', en: 'System' },
     description: {
-      pt: 'Integração com o ATRAIR (recrutamento). Só administradores editam. A chave de API fica no servidor — sem ela, nada sincroniza mesmo ligado aqui.',
-      en: 'ATRAIR (recruiting) integration. Admins only. The API key lives on the server — without it nothing syncs, even when enabled here.',
+      pt: 'Integrações com o ATRAIR (recrutamento) e com o RD Station Marketing (leads). Só administradores editam. As chaves de API ficam no servidor — sem elas, nada sincroniza mesmo ligado aqui.',
+      en: 'ATRAIR (recruiting) and RD Station Marketing (leads) integrations. Admins only. The API keys live on the server — without them nothing syncs, even when enabled here.',
     },
   },
   access: { read: isPublic, update: isAdmin },
@@ -109,6 +115,79 @@ export const Integrations: GlobalConfig = {
             !valor ||
             ehEndpointDeIntegracao(valor) ||
             'Use o endereço completo, com https:// e sem a rota (ex.: https://atrair.exemplo.com.br). http:// só é aceito para o ATRAIR local.',
+        },
+      ],
+    },
+    {
+      /* D-54 — os leads dos formulários viram conversões no RD Station
+       * Marketing. Mesmo arranjo do ATRAIR: liga/desliga e nomes são
+       * configuração e moram aqui; `RDSTATION_MARKETING_API_KEY` é credencial
+       * e fica no ambiente, como segunda tranca. */
+      name: 'rdStationMarketing',
+      type: 'group',
+      label: { pt: 'RD Station Marketing (leads)', en: 'RD Station Marketing (leads)' },
+      fields: [
+        {
+          name: 'enabled',
+          type: 'checkbox',
+          /* `true` por não mudar o que está no ar: sem a chave no ambiente a
+           * integração segue inerte, e com a chave é para sincronizar mesmo. */
+          defaultValue: true,
+          label: { pt: 'Enviar leads para o RD Station Marketing', en: 'Send leads to RD Station Marketing' },
+          admin: {
+            description: {
+              pt: 'Ligado: cada envio de formulário comercial vira uma conversão no RD (precisa da chave de API no servidor). Desligado: o lead fica só em Envios de formulário. Candidaturas e Banco de Talentos nunca vão — são RH.',
+              en: 'On: every commercial form submission becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications and Talent Pool never go — they are HR data.',
+            },
+          },
+        },
+        {
+          name: 'customFields',
+          type: 'checkbox',
+          /* ⚠️ Nasce desligado: `cf_` que não existe na conta derruba a
+           * conversão inteira em 400. Primeiro se criam os campos no RD. */
+          defaultValue: false,
+          label: { pt: 'Enviar campos personalizados', en: 'Send custom fields' },
+          admin: {
+            description: {
+              pt: `Só ligue depois de criar na conta do RD os campos personalizados com exatamente estes nomes: ${CAMPOS_PERSONALIZADOS.mensagem} (mensagem do contato), ${CAMPOS_PERSONALIZADOS.chat} (o que perguntou à ATRA AI) e, para o diagnóstico, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. Campo inexistente faz o RD recusar o lead inteiro — a falha aparece em Envios de formulário.`,
+              en: `Only enable after creating custom fields in the RD account with exactly these names: ${CAMPOS_PERSONALIZADOS.mensagem} (contact message), ${CAMPOS_PERSONALIZADOS.chat} (what they asked ATRA AI) and, for the diagnostic, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. A missing field makes RD reject the whole lead — the failure shows under Form submissions.`,
+            },
+          },
+        },
+        {
+          /* Um identificador por formulário. É o nome que o marketing vê nos
+           * relatórios e usa nas automações — deles, por isso editável aqui.
+           * Vazio = aquele formulário não vai ao RD. */
+          name: 'conversions',
+          type: 'group',
+          label: { pt: 'Identificadores de conversão', en: 'Conversion identifiers' },
+          admin: {
+            description: {
+              pt: 'O nome com que cada formulário aparece no RD. Letras, números, ponto, hífen e sublinhado. Vazio: aquele formulário não é enviado.',
+              en: 'The name each form shows up with in RD. Letters, digits, dot, hyphen and underscore. Empty: that form is not sent.',
+            },
+          },
+          fields: (
+            [
+              ['contact', 'Contato', 'Contact'],
+              ['chatLead', 'Lead do chat (ATRA AI)', 'Chat lead (ATRA AI)'],
+              ['newsletter', 'Newsletter (só confirmada)', 'Newsletter (confirmed only)'],
+              ['materialDownload', 'Download de material', 'Material download'],
+              ['consultantRequest', 'Solicitação de consultores', 'Consultant request'],
+              ['dataMaturityDiagnostic', 'Diagnóstico de maturidade de dados', 'Data maturity diagnostic'],
+            ] as const
+          ).map(([name, pt, en]) => ({
+            name,
+            type: 'text' as const,
+            defaultValue: CONVERSOES_PADRAO[name],
+            label: { pt, en },
+            hooks: { beforeValidate: [aparar] },
+            validate: (valor: string | null | undefined) =>
+              !valor ||
+              ehIdentificadorDeConversao(valor) ||
+              'Use letras, números, ponto, hífen ou sublinhado, sem espaço (ex.: site-contato).',
+          })),
         },
       ],
     },

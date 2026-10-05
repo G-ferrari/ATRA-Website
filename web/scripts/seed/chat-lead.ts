@@ -33,7 +33,7 @@ await payload.updateGlobal({
       inviteMessage:
         'Deixe seu contato e um especialista da ATRA retorna para continuar a conversa com você.',
       consentNotice:
-        'Ao enviar, você autoriza a ATRA a usar estes dados — e um resumo do que você digitou nesta conversa — para entrar em contato. Eles vão para o nosso CRM (RD Station) e não são usados para outra finalidade.',
+        'Ao enviar, você autoriza a ATRA a usar estes dados — e um resumo do que você digitou nesta conversa — para entrar em contato. Eles vão para a nossa ferramenta de marketing (RD Station) e não são usados para outra finalidade.',
       successMessage: 'Recebido! Um especialista da ATRA entra em contato em breve.',
     },
   },
@@ -49,7 +49,7 @@ await payload.updateGlobal({
       inviteMessage:
         'Leave your contact details and an ATRA specialist will get back to you to continue the conversation.',
       consentNotice:
-        'By sending, you authorize ATRA to use this data — and a summary of what you typed in this conversation — to get in touch. It goes to our CRM (RD Station) and is not used for any other purpose.',
+        'By sending, you authorize ATRA to use this data — and a summary of what you typed in this conversation — to get in touch. It goes to our marketing tool (RD Station) and is not used for any other purpose.',
       successMessage: 'Got it! An ATRA specialist will reach out shortly.',
     },
   },
