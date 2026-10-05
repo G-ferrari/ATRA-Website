@@ -1,7 +1,7 @@
 ---
 id: 038
 title: Montar /cases-de-sucesso e /blog (com /blog/pagina/N) pela página-mestra
-status: para implementar
+status: em revisão
 feature: paginas-mestras
 area: frontend
 priority: P0

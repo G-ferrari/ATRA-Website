@@ -1,7 +1,7 @@
 ---
 id: 041
 title: Criar as páginas-mestras por migração de dados e no seed
-status: para implementar
+status: em revisão
 feature: paginas-mestras
 area: backend
 priority: P0

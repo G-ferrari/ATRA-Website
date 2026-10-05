@@ -1,7 +1,7 @@
 ---
 id: 040
 title: Tornar a Insights automática: 3 mais recentes por tipo e "Ver todos"
-status: para implementar
+status: em revisão
 feature: paginas-mestras
 area: frontend
 priority: P0

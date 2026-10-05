@@ -141,6 +141,48 @@ ATRA aparece na imprensa. Para incluir uma:
 
 Não existe página interna por matéria: o visitante vai direto para o veículo.
 
+## As páginas de cada seção (páginas-mestras)
+
+A página que abre ao clicar numa seção — **Soluções, Segmentos, Consultores,
+Insights, Blog, Webinars, Cases, ATRA na mídia, E-books e Carreiras** — está em
+**Conteúdo → Páginas**. Na lista, a coluna **Página-mestra de** diz de que seção
+cada uma é.
+
+Cada uma é montada com seções, como qualquer página: dá para mudar o texto do
+topo, acrescentar seções antes ou depois da lista, trocar a ordem e escrever o
+SEO. Três seções são só destas páginas (grupo **Página-mestra** em **Adicionar
+Seção**):
+
+- **Lista da seção** — a lista automática: o que está publicado na seção, com a
+  busca e os filtros dela. Você escreve o selo, a etiqueta, o título, o trecho
+  em azul e o texto de abertura (uma linha em branco separa os parágrafos); a
+  lista se monta sozinha. Em Soluções e Segmentos a etiqueta vem depois da
+  contagem ("8 verticais").
+- **Destaques da seção** — o carrossel do topo, com os primeiros da seção. Você
+  escolhe o texto do botão; vazio, vale o de sempre.
+- **Chamada para os webinars** — a faixa do fim do blog. O **trecho em
+  destaque** precisa estar escrito igual dentro do título (ex.: título "Assista
+  aos nossos Webinars técnicos", trecho "Webinars"). A capa é a do webinar mais
+  recente.
+
+O que **não** dá para fazer, de propósito:
+
+- **Apagar** uma página-mestra. Para tirar uma seção do ar, use **Despublicar**:
+  a página da seção passa a responder "não encontrado" — o aviso está no campo
+  "Página-mestra de".
+- **Mudar o endereço**. Ele é o da seção, e as páginas de dentro dependem dele
+  (`/blog/<artigo>`). Renomear uma seção é pedido ao time técnico, como foi com
+  "Relatórios" → "ATRA na mídia".
+
+A **Insights** não tem lista para manter: ela mostra sozinha os 3 conteúdos
+mais recentes de cada tipo (Cases, Blog, Webinars, ATRA na mídia, E-books), com
+"Ver todos" para a seção. Publicou um case, ele aparece lá. O topo, as pílulas,
+os canais, a caixa de inscrição e a chamada final continuam editáveis no bloco
+"Hub de insights".
+
+Em **Consultores**, o topo é editável; os números, a lista de perfis e o
+formulário de pedido seguem com o time técnico.
+
 ## Escrever a página de uma solução
 
 As 18 soluções do menu estão em **Catálogos → Soluções**, em 4 abas. Cada uma

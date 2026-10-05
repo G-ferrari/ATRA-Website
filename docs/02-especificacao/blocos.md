@@ -36,6 +36,9 @@ corresponde a uma seção que **já existe** no legado — nenhum bloco foi inve
 | `bentoGrid` | `SolutionAI.tsx:395` | soluções, home | cabeçalho, `items[]{span: 5\|6\|7\|12, size: featured-wide\|featured\|supporting, accent, icon, badge, chip, title, description, metrics[], tags[], bullets[], footer}` |
 | `audienceSplit` | `SolutionAI.tsx:621` | soluções | cabeçalho, `cta{label,href}`, `items[]{icon, accent, title (loc), description (loc)}` |
 | `accordionSteps` | `SolutionAI.tsx:685` | soluções | cabeçalho, `image → media`, `imageBadge{icon,title,subtitle}`, `steps[]{title (loc), description (loc)}` — a primeira abre expandida |
+| `sectionListing` | as rotas de índice (D-55) | páginas-mestras | `eyebrow`/`chip`/`title`/`highlight`/`description` (loc) — **a lista é automática**: a seção vem da página-mestra, e cada uma desenha a sua (`components/secoes/`). Em página comum, não desenha nada |
+| `sectionFeatured` | `FeaturedHero` das rotas de índice (D-55) | páginas-mestras | `actionLabel` (loc) — os itens são os primeiros da seção (`itensEmDestaque`) |
+| `webinarTeaser` | `Blog.tsx:283` (D-55) | blog | `eyebrow`/`title`/`highlight`/`description`/`actionLabel` (loc) — o destaque fica **dentro** do título; capa = webinar mais recente |
 
 ## Composição das páginas iniciais
 
@@ -47,7 +50,7 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 | `sobre` | `pageHero` → `statsGrid` → `stickyPageNav` → `richTextSection` → `valueCards` → `partnerShowcase` → `iconCardGrid` → `iconCardGrid` → `ctaBanner` |
 | `carreiras` | `pageHero`(center) → `stickyPageNav` → `valueCards`(expanded) → `sealsBanner` → `processSteps` → `jobsList` → `iconCardGrid`(card-centered) → `richTextSection`(centered) — **corrigida em MIG-050a**, ver abaixo |
 | `contato` (nova, D-10) | `pageHero` → `ctaContact` |
-| `insights` | `insightsHub` — sete seções num bloco só, porque compartilham o estado do filtro |
+| `insights` | `insightsHub` — topo, faixas automáticas por tipo (D-55), canais, inscrição e chamada final |
 | `solucoes/[slug]` | `pageHero` → `stickyPageNav` → `methodCards` → `bentoGrid` → `audienceSplit` → `accordionSteps` → `ctaBanner`(dark) — **corrigida em MIG-056**, ver abaixo |
 | `parceiros/[slug]` | `partnerHero` → `partnerSplit`(image) → `partnerSplit`(checklist) → `partnerSplit`(specGrid) → `ctaBanner`(dark-centered) — **corrigida em MIG-054a**, ver abaixo |
 
@@ -123,6 +126,9 @@ Reproduz a ordem exata do legado — requisito de paridade visual (D-15).
 > Google Cloud" e em /cases-de-sucesso com outro nome. Agregar mudaria o texto
 > de sete cartões; trocar o texto do hub pelo das collections é decisão de
 > conteúdo (D-22). Virou o bloco `insightsHub`, com os itens em array.
+>
+> **Desde a D-55 (05/10) agrega**: foi decisão de conteúdo, tomada pelo dono.
+> Os itens à mão saíram, e as faixas mostram os 3 primeiros de cada tipo.
 
 > **Padrão que se repete.** Cinco composições previstas estavam erradas —
 > `solucoes/[slug]`, `carreiras`, `parceiros/[slug]`, `home`, `/insights` — e

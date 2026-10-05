@@ -1,7 +1,7 @@
 ---
 id: 036
 title: Montar /solucoes e /segmentos pela página-mestra
-status: para implementar
+status: em revisão
 feature: paginas-mestras
 area: frontend
 priority: P0
