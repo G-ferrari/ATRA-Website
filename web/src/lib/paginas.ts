@@ -10,7 +10,8 @@ import { comClientes, comContato, comDepoimentos, comVagas, toBlocos, toMetricas
 import { toDepoimento, toLogoDeCliente } from './mappers/client'
 import { toSeo } from './mappers/seo'
 import { lerContato } from './contato'
-import { buscarConteudoDaSecao } from './conteudo-da-secao'
+import { buscarConteudoDaSecao, buscarUltimosConteudos } from './conteudo-da-secao'
+import { faixasDeInsights, POR_FAIXA } from './mappers/insights'
 import { marcarAbertura } from './destaques-da-secao'
 import { toWebinar } from './mappers/webinar'
 import type { SecaoMestra } from './paginas-mestras'
@@ -167,6 +168,14 @@ async function montar(filtro: Where, locale: Locale, rascunho: boolean): Promise
       where: { featured: { equals: true } },
     })
     comDepoimentos(blocos, depoimentos.map(toDepoimento))
+  }
+
+  /* A Insights se atualiza sozinha (D-55): as faixas com os primeiros de cada
+     seção. Publicar um conteúdo revalida o site inteiro (`hooks/revalidar.ts`),
+     e com ele esta página. */
+  if (blocos.some((b) => b.tipo === 'insightsHub')) {
+    const faixas = faixasDeInsights(await buscarUltimosConteudos(locale, POR_FAIXA), locale)
+    for (const b of blocos) if (b.tipo === 'insightsHub') b.faixas = faixas
   }
 
   /* O CTA de contato desenha telefone, e-mail e redes — que agora vêm do

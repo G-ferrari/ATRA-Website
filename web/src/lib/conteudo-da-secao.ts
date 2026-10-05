@@ -3,7 +3,10 @@ import { buscarPostsDoBlog } from './blog'
 import { lerContato } from './contato'
 import { toCaseCard } from './mappers/case'
 import { toConsultantRole } from './mappers/consultant'
+import type { UltimosConteudos } from './mappers/insights'
 import { toMateriaDaImprensa } from './mappers/press'
+import { toPostCard } from './mappers/post'
+import { toResource } from './mappers/resource'
 import { toSegmentCard } from './mappers/segment'
 import { mapearOuFaltando, toTopics } from './mappers/shared'
 import { toSolutionCard } from './mappers/solution'
@@ -110,5 +113,59 @@ export async function buscarConteudoDaSecao(
     case 'insights':
     case 'carreiras':
       return null
+  }
+}
+
+/**
+ * Os primeiros de cada seção, para as faixas da Insights (D-55): na ordem em
+ * que a página da seção os mostra — data de publicação em Cases, Blog e
+ * E-books; a ordem do admin em Webinars e ATRA na mídia, que é a ordem das
+ * duas páginas.
+ *
+ * ⚠️ Só publicado, mesmo no modo rascunho: a Insights é vitrine do que está no
+ * ar, e o critério de aceite é que rascunho nunca aparece nela.
+ */
+export async function buscarUltimosConteudos(locale: Locale, limite: number): Promise<UltimosConteudos> {
+  const payload = await getPayload()
+  const publicado = { _status: { equals: 'published' as const } }
+
+  const [cases, posts, webinars, materias, ebooks] = await Promise.all([
+    payload.find({ collection: 'cases', locale, depth: 2, limit: limite, sort: '-publishedAt', where: publicado }),
+    payload.find({
+      collection: 'posts',
+      locale,
+      depth: 1,
+      limit: limite,
+      sort: '-publishedAt',
+      where: publicado,
+      /* Sem o `body`: JSONB de artigo inteiro só para desenhar cartão. */
+      select: { title: true, slug: true, description: true, coverImage: true, tags: true, publishedAt: true },
+    }),
+    payload.find({ collection: 'webinars', locale, depth: 1, limit: limite, sort: 'order', where: publicado }),
+    payload.find({ collection: 'press', locale, depth: 1, limit: limite, sort: 'order', where: publicado }),
+    payload.find({
+      collection: 'resources',
+      locale,
+      depth: 1,
+      limit: limite,
+      sort: '-publishedAt',
+      where: { kind: { equals: 'ebook' }, ...publicado },
+    }),
+  ])
+
+  /* Case publicado incompleto (rascunho antigo publicado à força) fica de fora
+     em vez de derrubar a página inteira. */
+  const casos: CaseCard[] = []
+  for (const doc of cases.docs) {
+    const r = mapearOuFaltando(() => toCaseCard(doc))
+    if ('doc' in r) casos.push(r.doc)
+  }
+
+  return {
+    cases: casos,
+    posts: posts.docs.map(toPostCard),
+    webinars: webinars.docs.map(toWebinar),
+    materias: materias.docs.map(toMateriaDaImprensa),
+    ebooks: ebooks.docs.map(toResource),
   }
 }

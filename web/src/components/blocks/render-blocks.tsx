@@ -158,7 +158,7 @@ export function RenderBlocks({
       case 'contentTeaser':
         return <BlocoVitrineDeConteudo key={b.id} bloco={b} />
       case 'insightsHub':
-        return <BlocoHubDeInsights key={b.id} bloco={b} />
+        return <BlocoHubDeInsights key={b.id} bloco={b} locale={locale} />
     }
   }
 

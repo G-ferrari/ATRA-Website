@@ -1,12 +1,13 @@
-import { APIError, type CollectionConfig, type Field } from 'payload'
+import type { CollectionConfig, Field } from 'payload'
 
 import { isAdminFieldLevel, isEditorOrAdmin } from '@/access'
 import { BLOCOS } from '@/blocks'
 import { BLOCOS_DE_PAGINA_MESTRA } from '@/blocks/pagina-mestra'
 import { seoField } from '@/fields/seo'
+import { impedirExclusaoDePaginaMestra } from '@/hooks/pagina-mestra'
 import { slugField } from '@/fields/slug'
 import { DEFAULT_LOCALE, isLocale } from '@/lib/locales'
-import { ehSecaoMestra, nomeDaSecao, PAGINAS_MESTRAS } from '@/lib/paginas-mestras'
+import { ehSecaoMestra, PAGINAS_MESTRAS } from '@/lib/paginas-mestras'
 import { urlDePreview } from '@/lib/preview'
 
 /* Onde a página aparece no site, para o Live Preview. A página-mestra é achada
@@ -54,22 +55,8 @@ export const Pages: CollectionConfig = {
   },
   versions: { drafts: true, maxPerDoc: 20 },
   hooks: {
-    /* Página-mestra não se apaga (decisão de 05/10): a rota da seção existe no
-     * código e depende dela. Despublicar continua possível — tira a seção do ar
-     * de propósito —, e o campo "Página-mestra de" avisa disso. */
-    beforeDelete: [
-      async ({ req, id }) => {
-        const doc = await req.payload.findByID({ collection: 'pages', id, depth: 0, req, draft: true })
-        if (ehSecaoMestra(doc?.masterOf)) {
-          throw new APIError(
-            `"${doc.title}" é a página-mestra da seção ${nomeDaSecao(doc.masterOf)} e não pode ser apagada. Para tirá-la do ar, despublique.`,
-            400,
-            undefined,
-            true,
-          )
-        }
-      },
-    ],
+    /* Página-mestra não se apaga; despublicar pode. Ver o hook. */
+    beforeDelete: [impedirExclusaoDePaginaMestra],
   },
   fields: [
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },

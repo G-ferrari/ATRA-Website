@@ -1804,31 +1804,7 @@ export interface Partner {
                 | 'server'
                 | 'code'
                 | 'headset';
-              count?: number | null;
               href?: string | null;
-              id?: string | null;
-            }[];
-            topics?: string[] | null;
-            items: {
-              /**
-               * One of the format keys above.
-               */
-              format: string;
-              title: string;
-              description: string;
-              category: string;
-              meta: string;
-              date: string;
-              author: string;
-              href: string;
-              image?: (number | null) | Media;
-              featured?: boolean | null;
-              tags?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
               id?: string | null;
             }[];
             portals?: {
@@ -3501,31 +3477,7 @@ export interface Page {
             | 'server'
             | 'code'
             | 'headset';
-          count?: number | null;
           href?: string | null;
-          id?: string | null;
-        }[];
-        topics?: string[] | null;
-        items: {
-          /**
-           * One of the format keys above.
-           */
-          format: string;
-          title: string;
-          description: string;
-          category: string;
-          meta: string;
-          date: string;
-          author: string;
-          href: string;
-          image?: (number | null) | Media;
-          featured?: boolean | null;
-          tags?:
-            | {
-                text: string;
-                id?: string | null;
-              }[]
-            | null;
           id?: string | null;
         }[];
         portals?: {
@@ -5487,31 +5439,7 @@ export interface Segment {
                 | 'server'
                 | 'code'
                 | 'headset';
-              count?: number | null;
               href?: string | null;
-              id?: string | null;
-            }[];
-            topics?: string[] | null;
-            items: {
-              /**
-               * One of the format keys above.
-               */
-              format: string;
-              title: string;
-              description: string;
-              category: string;
-              meta: string;
-              date: string;
-              author: string;
-              href: string;
-              image?: (number | null) | Media;
-              featured?: boolean | null;
-              tags?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
               id?: string | null;
             }[];
             portals?: {
@@ -7142,31 +7070,7 @@ export interface Solution {
                 | 'server'
                 | 'code'
                 | 'headset';
-              count?: number | null;
               href?: string | null;
-              id?: string | null;
-            }[];
-            topics?: string[] | null;
-            items: {
-              /**
-               * One of the format keys above.
-               */
-              format: string;
-              title: string;
-              description: string;
-              category: string;
-              meta: string;
-              date: string;
-              author: string;
-              href: string;
-              image?: (number | null) | Media;
-              featured?: boolean | null;
-              tags?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
               id?: string | null;
             }[];
             portals?: {
@@ -8592,30 +8496,7 @@ export interface PagesSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -9609,30 +9490,7 @@ export interface PartnersSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -10455,30 +10313,7 @@ export interface SegmentsSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -11308,30 +11143,7 @@ export interface SolutionsSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:

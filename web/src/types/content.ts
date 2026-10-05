@@ -383,22 +383,35 @@ export type FormatoDeInsight = {
   key: string
   label: string
   icon: string
-  count: number | null
   href: string | null
 }
 
-export type ItemDeInsight = {
-  format: string
+/** Os tipos de conteúdo que a Insights junta (D-55), na ordem das faixas. */
+export type TipoDeInsight = 'cases' | 'blog' | 'webinars' | 'midia' | 'ebooks'
+
+/** Um cartão da Insights, já normalizado: cada collection guarda data, autor e
+ *  duração num campo diferente, e o mapper das faixas é quem sabe disso. */
+export type CartaoDeInsight = {
+  id: string
   title: string
   description: string
-  category: string
-  meta: string
-  date: string
-  author: string
-  href: string
   image: Image | null
-  featured: boolean
+  href: string
+  /** Matéria da imprensa: abre no site do veículo, em outra aba. */
+  externo: boolean
+  /** Quem e quando: "Banco X • 3 de março de 2026", "Valor • …". */
+  origem: string | null
+  /** Duração do webinar ou páginas do e-book, no canto da capa. */
+  selo: string | null
   tags: string[]
+}
+
+export type FaixaDeInsights = {
+  tipo: TipoDeInsight
+  titulo: string
+  /** A página-mestra do tipo, no idioma da página. */
+  verTodos: string
+  itens: CartaoDeInsight[]
 }
 
 export type BlocoInsightsHub = Base & {
@@ -409,8 +422,9 @@ export type BlocoInsightsHub = Base & {
   highlight: string | null
   description: string | null
   formats: FormatoDeInsight[]
-  topics: string[]
-  items: ItemDeInsight[]
+  /** Os 3 mais recentes de cada tipo, injetados pela página (D-55). Tipo sem
+   *  conteúdo publicado não tem faixa. */
+  faixas: FaixaDeInsights[]
   portals: { title: string | null; description: string | null } | null
   newsletter: { eyebrow: string | null; title: string | null; description: string | null } | null
   closing: {
