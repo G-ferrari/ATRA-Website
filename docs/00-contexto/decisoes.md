@@ -1639,9 +1639,18 @@ não existia mais.
 - O fechamento de ATRA na mídia, que era a `ChamadaFinal` em código, é um bloco
   da página. ⚠️ No inglês o botão leva a `/contato` (destino de bloco não é
   localizado) — como nas outras páginas de blocos, até a tradução (P-08).
-- A Insights perde campos (`items`, `topics`, `formats.count`), e a migração
-  `20261005_223123_insights_automatica` apaga as tabelas. Os cartões passam a
-  ocupar a coluna inteira (eram 256px numa coluna de 390, herança do porte).
+- A Insights perde campos (`items`, `topics`, `formats.count`). Os cartões
+  passam a ocupar a coluna inteira (eram 256px numa coluna de 390, herança do
+  porte).
+- ⚠️ **A exclusão das tabelas desses campos foi adiada** (06/10, antes da
+  primeira publicação). O deploy migra antes de trocar a versão, e a volta —
+  automática ou manual — devolve o código antigo sem desfazer migração; o
+  código antigo lê essas tabelas em toda consulta a `pages`, `solutions`,
+  `segments` e `partners`. `20261005_223123_insights_automatica` ficou como
+  passo vazio, com a exclusão pronta em `EXCLUSAO_ADIADA`; ela entra numa
+  publicação seguinte, depois de esta se provar estável. Conferido: um banco
+  migrado com o código novo mantém as 930 tabelas e 6.863 colunas que a
+  versão anterior espera.
 - ⚠️ **Campo de texto vazio não fica vazio em inglês**: o Payload preenche
   texto vazio com o português (`afterRead`, `fallbackLocale`). Por isso a
   chamada dos webinars não tem "fim do título": o trecho em destaque fica

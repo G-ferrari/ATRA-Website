@@ -279,6 +279,7 @@ comparam; na suíte padrão, a mesma lista alimenta o contraste e o axe.
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
 | Campo do bloco em branco no inglês mostra o texto em português | O Payload preenche campo de **texto** vazio (`''` também) com o idioma de reserva, no `afterRead`. Não há como gravar "nada" em `en` com texto em `pt`. A chamada dos webinars tinha um "fim do título" e o inglês saía "Webinars técnicos" — o desenho certo é o trecho em destaque **dentro** do título, como o herói faz (D-55) |
 | Migração "só marca um campo" e a página sai despublicada, ou com texto que ninguém aprovou | `payload.update` numa collection com rascunho parte da **última versão**, não da publicada: com rascunho pendente no admin, o update publica o rascunho — ou leva o `_status: 'draft'` dele para a página. Campo de controle em página que já existe vai por SQL, na tabela e em `_<coleção>_v` (todas as versões, para restaurar versão antiga não apagar a marca). Ver a marca de Carreiras e Insights em `20261005_230000_paginas_mestras_conteudo` |
+| Deploy volta para a versão anterior e o site quebra em `relation "..." does not exist` | `deploy.sh` **migra antes de trocar** e a volta (healthcheck reprovado, ou revert) devolve o código antigo **sem desfazer migração**. Migração que apaga tabela ou coluna que o código antigo ainda lê torna a volta impossível — e basta ser tabela de bloco: o adapter faz JOIN em todas a cada consulta à collection. Exclusão vai numa publicação **depois** da que parou de ler (06/10: a das tabelas antigas da Insights foi adiada, `EXCLUSAO_ADIADA` em `20261005_223123_insights_automatica`). Para conferir, comparar o `.json` da última migração da `main` com o `information_schema` de um banco migrado com o código novo |
 
 ## Estado
 
@@ -390,7 +391,9 @@ pela seção e não pelo slug. As rotas são casca fina (`resolverPaginaMestra` 
 `PaginaMestra`); a parte automática é bloco (`components/secoes/`), com as
 consultas em `lib/conteudo-da-secao.ts`. Página-mestra **não se apaga**
 (despublicada, a rota dá 404) e o slug fica travado. A Insights se monta
-sozinha: os 3 primeiros de cada tipo e "Ver todos". ⚠️ A rota de seção que
+sozinha: os 3 primeiros de cada tipo e "Ver todos". ⚠️ **Pendente:** apagar do
+banco as tabelas dos cartões antigos da Insights (`EXCLUSAO_ADIADA`), numa
+publicação depois de esta se provar estável. ⚠️ A rota de seção que
 responder 404 de repente é página-mestra que não chegou ao banco — o conteúdo
 vem da migração `20261005_230000_paginas_mestras_conteudo`, e Carreiras e
 Insights só são marcadas depois do seed em banco novo.

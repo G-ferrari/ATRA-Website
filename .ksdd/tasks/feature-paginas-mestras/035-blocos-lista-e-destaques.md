@@ -1,7 +1,7 @@
 ---
 id: 035
 title: Criar os blocos "Lista da seção" e "Destaques da seção" e o resolvedor da página-mestra
-status: em revisão
+status: concluída
 feature: paginas-mestras
 area: backend
 priority: P0
