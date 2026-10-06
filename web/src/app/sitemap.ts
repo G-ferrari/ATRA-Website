@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 
+import { ehSecaoMestra } from '@/lib/paginas-mestras'
 import { getPayload } from '@/lib/payload'
 import { paraSitemap, temIngles, type Entrada } from '@/lib/sitemap'
 
@@ -48,7 +49,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     emDoisIdiomas('jobs'),
     emDoisIdiomas('segments'),
     emDoisIdiomas('solutions'),
-    payload.find({ collection: 'pages', limit: 100, depth: 0, locale: 'pt', where: PUBLICADO }),
+    /* `select`: sem ele a consulta a `pages` faz um JOIN por tipo de bloco. */
+    payload.find({
+      collection: 'pages',
+      limit: 100,
+      depth: 0,
+      locale: 'pt',
+      where: PUBLICADO,
+      select: { slug: true, masterOf: true },
+    }),
   ])
 
   /* Índices e páginas de rota: o texto **deles** é traduzido — título, descrição
@@ -117,17 +126,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const publicadas = new Set(paginas.docs.map((d) => d.slug))
   const rotaDePagina: Partial<Record<string, string>> = {
     sobre: 'sobre',
-    carreiras: 'carreiras',
     contato: 'contato',
-    insights: 'insights',
     politicas: 'politicas-e-termos',
   }
+  /* As seções com página-mestra (D-55): o índice delas responde 404 quando a
+     página é despublicada, e o sitemap não pode continuar a anunciá-lo. A
+     marca é da seção, não do slug. */
+  const mestrasPublicadas = new Set(paginas.docs.map((d) => d.masterOf).filter(Boolean))
 
   return paraSitemap(
     entradas.filter((e) => {
       if (!('secao' in e.local)) return true
+      if (e.local.slug !== undefined) return true
+      if (ehSecaoMestra(e.local.secao)) return mestrasPublicadas.has(e.local.secao)
       const slug = rotaDePagina[e.local.secao]
-      return slug === undefined || e.local.slug !== undefined || publicadas.has(slug)
+      return slug === undefined || publicadas.has(slug)
     }),
   )
 }

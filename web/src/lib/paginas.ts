@@ -1,10 +1,20 @@
 import { draftMode } from 'next/headers'
+import type { Metadata } from 'next'
+import { locale as getLocale } from 'next/root-params'
+import { cache } from 'react'
+import type { Where } from 'payload'
 
-import type { Locale } from './locales'
+import { isLocale, type Locale } from './locales'
+import { metadataDe } from './seo'
 import { comClientes, comContato, comDepoimentos, comVagas, toBlocos, toMetricas, toSelos } from './mappers/blocks'
 import { toDepoimento, toLogoDeCliente } from './mappers/client'
 import { toSeo } from './mappers/seo'
 import { lerContato } from './contato'
+import { buscarConteudoDaSecao, buscarUltimosConteudos } from './conteudo-da-secao'
+import { faixasDeInsights, POR_FAIXA } from './mappers/insights'
+import { marcarAbertura } from './destaques-da-secao'
+import { toWebinar } from './mappers/webinar'
+import type { SecaoMestra } from './paginas-mestras'
 import { toVaga } from './mappers/job'
 import { comParceirosCadastrados } from './parceiros'
 import { getPayload } from './payload'
@@ -16,15 +26,71 @@ import type { Bloco, Seo } from '@/types/content'
  * achar o documento pelo slug, ler o global institucional, ler as vagas, e
  * injetar os dados nos blocos que os pedem — sempre respeitando a regra de que
  * bloco não busca dado. */
-export async function resolverPagina(
-  slugPt: string,
-  slugEn: string,
-  locale: Locale,
-): Promise<{ title: string; seo: Seo; blocos: Bloco[] } | null> {
-  const { isEnabled: rascunho } = await draftMode()
-  const payload = await getPayload()
-  const slug = locale === 'pt' ? slugPt : slugEn
+type PaginaResolvida = { title: string; seo: Seo; blocos: Bloco[] }
 
+/** `topoProprio`: o primeiro bloco visível já dá o respiro sob o cabeçalho fixo
+ *  (o carrossel de destaques, ou uma lista aberta), e a `<main>` da rota não
+ *  pode somar o dela. Ver `marcarAbertura`. */
+export type PaginaMestraResolvida = PaginaResolvida & { topoProprio: boolean }
+
+export async function resolverPagina(slugPt: string, slugEn: string, locale: Locale): Promise<PaginaResolvida | null> {
+  const { isEnabled: rascunho } = await draftMode()
+  const slug = locale === 'pt' ? slugPt : slugEn
+  return montar({ slug: { equals: slug } }, locale, rascunho)
+}
+
+/**
+ * A página-mestra de uma seção (feature paginas-mestras, D-55), achada pela
+ * marca da seção — e não pelo slug, que acompanha o idioma —, com a parte
+ * automática da seção injetada nos blocos "Lista da seção" e "Destaques da
+ * seção".
+ *
+ * `null` quando a página não existe ou está despublicada: a rota responde 404,
+ * que é o que despublicar quer dizer (decisão de 05/10). Também `null` para
+ * página do blog além da última.
+ *
+ * Em `cache` porque a rota chama duas vezes, no `generateMetadata` e na página,
+ * e a consulta de Cases e a do Blog são as mais pesadas do site. Por isso os
+ * argumentos são primitivos: objeto novo a cada chamada nunca acertaria.
+ */
+export const resolverPaginaMestra = cache(async function resolverPaginaMestra(
+  secao: SecaoMestra,
+  locale: Locale,
+  pagina: number = 1,
+): Promise<PaginaMestraResolvida | null> {
+  const { isEnabled: rascunho } = await draftMode()
+  const resolvida = await montar({ masterOf: { equals: secao } }, locale, rascunho)
+  if (!resolvida) return null
+
+  const { blocos } = resolvida
+  if (blocos.some((b) => b.tipo === 'sectionListing' || b.tipo === 'sectionFeatured')) {
+    const conteudo = await buscarConteudoDaSecao(secao, locale, { rascunho, pagina })
+    for (const b of blocos) if (b.tipo === 'sectionListing' || b.tipo === 'sectionFeatured') b.conteudo = conteudo
+  }
+
+  /* Só o blog pagina, e pagina pela lista. Sem ela, /blog/pagina/2 repetiria a
+     página-mestra num segundo endereço; além da última página, seria uma lista
+     vazia com 200, que o Google indexaria como página magra. */
+  if (pagina > 1) {
+    const lista = blocos.find((b) => b.tipo === 'sectionListing')
+    const conteudo = lista?.tipo === 'sectionListing' ? lista.conteudo : null
+    if (conteudo?.secao !== 'blog' || pagina > conteudo.totalDePaginas) return null
+  }
+
+  return { ...resolvida, ...marcarAbertura(blocos) }
+})
+
+/** O `generateMetadata` de uma rota de página-mestra: o SEO escrito no admin,
+ *  com a canônica e os idiomas da seção. Despublicada, nada — a página dá 404. */
+export async function metadataDaPaginaMestra(secao: SecaoMestra): Promise<Metadata> {
+  const locale = await getLocale()
+  if (!isLocale(locale)) return {}
+  const pagina = await resolverPaginaMestra(secao, locale)
+  return pagina ? metadataDe({ locale, local: { secao }, seo: pagina.seo }) : {}
+}
+
+async function montar(filtro: Where, locale: Locale, rascunho: boolean): Promise<PaginaResolvida | null> {
+  const payload = await getPayload()
   const [{ docs }, global] = await Promise.all([
     payload.find({
       collection: 'pages',
@@ -32,9 +98,7 @@ export async function resolverPagina(
       depth: 2,
       limit: 1,
       draft: rascunho,
-      where: rascunho
-        ? { slug: { equals: slug } }
-        : { slug: { equals: slug }, _status: { equals: 'published' } },
+      where: rascunho ? filtro : { and: [filtro, { _status: { equals: 'published' } }] },
     }),
     payload.findGlobal({ slug: 'site-settings', locale, depth: 1 }),
   ])
@@ -88,6 +152,31 @@ export async function resolverPagina(
       where: { featured: { equals: true } },
     })
     comDepoimentos(blocos, depoimentos.map(toDepoimento))
+  }
+
+  /* A capa da "Chamada para os webinars" é a do primeiro webinar da página de
+     webinars (a ordem do admin): a seção fala de webinars e leva para lá. Aqui,
+     e não só na página-mestra, porque o bloco entra em qualquer página.
+     Rascunho nunca vira capa. */
+  if (blocos.some((b) => b.tipo === 'webinarTeaser')) {
+    const { docs: webinars } = await payload.find({
+      collection: 'webinars',
+      locale,
+      depth: 1,
+      limit: 1,
+      sort: 'order',
+      where: { _status: { equals: 'published' } },
+    })
+    const capa = webinars[0] ? toWebinar(webinars[0]).image : null
+    for (const b of blocos) if (b.tipo === 'webinarTeaser') b.capa = capa
+  }
+
+  /* A Insights se atualiza sozinha (D-55): as faixas com os primeiros de cada
+     seção. Publicar um conteúdo revalida o site inteiro (`hooks/revalidar.ts`),
+     e com ele esta página. */
+  if (blocos.some((b) => b.tipo === 'insightsHub')) {
+    const faixas = faixasDeInsights(await buscarUltimosConteudos(locale, POR_FAIXA), locale)
+    for (const b of blocos) if (b.tipo === 'insightsHub') b.faixas = faixas
   }
 
   /* O CTA de contato desenha telefone, e-mail e redes — que agora vêm do

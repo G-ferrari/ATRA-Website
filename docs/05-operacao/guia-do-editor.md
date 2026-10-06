@@ -120,6 +120,9 @@ Três seções que mudaram de comportamento em 29/09:
   "Entre em contato", com "Fale conosco" (para /contato) e o botão da IA. Nas
   soluções e segmentos não há mais formulário no fim; quem quer falar vai para
   /contato.
+- **Texto com imagem** — tem o campo **"Tamanho do texto"**: *Normal* (o padrão)
+  ou *Grande*, 2 pontos acima, para o texto que precisa de mais presença. Vale
+  para todos os parágrafos daquela seção (desde 05/10).
 - **Grade de imagens** — é a dos selos (Google Cloud, na página do parceiro e
   em Data Analytics). Para trocar um selo, troque a imagem ali.
 
@@ -140,6 +143,51 @@ ATRA aparece na imprensa. Para incluir uma:
    topo da página.
 
 Não existe página interna por matéria: o visitante vai direto para o veículo.
+
+## As páginas de cada seção (páginas-mestras)
+
+A página que abre ao clicar numa seção — **Soluções, Segmentos, Consultores,
+Insights, Blog, Webinars, Cases, ATRA na mídia, E-books e Carreiras** — está em
+**Conteúdo → Páginas**. Na lista, a coluna **Página-mestra de** diz de que seção
+cada uma é.
+
+Cada uma é montada com seções, como qualquer página: dá para mudar o texto do
+topo, acrescentar seções antes ou depois da lista, trocar a ordem e escrever o
+SEO. Três seções são só destas páginas (grupo **Página-mestra** em **Adicionar
+Seção**):
+
+- **Lista da seção** — a lista automática: o que está publicado na seção, com a
+  busca e os filtros dela. Você escreve o selo, a etiqueta, o título, o trecho
+  em azul e o texto de abertura (uma linha em branco separa os parágrafos); a
+  lista se monta sozinha. Em Soluções e Segmentos a etiqueta vem depois da
+  contagem ("8 verticais").
+- **Destaques da seção** — o carrossel do topo, com os primeiros da seção. Você
+  escolhe o texto do botão; vazio, vale o de sempre.
+- **Chamada para os webinars** — a faixa do fim do blog. O **trecho em
+  destaque** precisa estar escrito igual dentro do título (ex.: título "Assista
+  aos nossos Webinars técnicos", trecho "Webinars"). A capa é a do primeiro
+  webinar da página de webinars (o de menor **Ordem**). Pode ser usada em
+  qualquer página.
+
+O que **não** dá para fazer, de propósito:
+
+- **Apagar** uma página-mestra. Para tirar uma seção do ar, use **Despublicar**:
+  a página da seção passa a responder "não encontrado" — o aviso está no campo
+  "Página-mestra de".
+- **Mudar o endereço**. Ele é o da seção, e as páginas de dentro dependem dele
+  (`/blog/<artigo>`). Renomear uma seção é pedido ao time técnico, como foi com
+  "Relatórios" → "ATRA na mídia".
+
+A **Insights** não tem lista para manter: ela mostra sozinha os 3 primeiros de
+cada tipo (Cases, Blog, Webinars, ATRA na mídia, E-books) — os mesmos que abrem
+a página de cada seção: os mais recentes em Cases, Blog e E-books, os de menor
+**Ordem** em Webinars e ATRA na mídia —, com "Ver todos" para a seção. Publicou
+um case, ele aparece lá. O topo, as pílulas,
+os canais, a caixa de inscrição e a chamada final continuam editáveis no bloco
+"Hub de insights".
+
+Em **Consultores**, o topo é editável; os números, a lista de perfis e o
+formulário de pedido seguem com o time técnico.
 
 ## Escrever a página de uma solução
 

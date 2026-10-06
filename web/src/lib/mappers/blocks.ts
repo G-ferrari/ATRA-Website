@@ -71,14 +71,25 @@ function cabecalho(b: {
   }
 }
 
+/** Texto de abertura → parágrafos: uma linha em branco separa um do outro. */
+export function paragrafosDe(texto: string | null | undefined): string[] {
+  return (texto ?? '')
+    .split(/\n\s*\n/)
+    .map((p) => p.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+}
+
 function base(b: BlocoDoPayload) {
+  /* Os blocos das páginas-mestras só têm a âncora (D-55): tema, borda e
+     espaçamento são os que a rota tinha, fixos no componente. */
+  const visual = 'theme' in b ? b : { theme: null, borda: null, spacing: null }
   return {
     id: b.id ?? `${b.blockType}-sem-id`,
     anchor: vazio(b.anchor),
     navLabel: vazio(b.navLabel),
-    theme: (b.theme ?? 'surface-1') as TemaDoBloco,
-    borda: (b.borda ?? 'nenhuma') as 'nenhuma' | 'topo' | 'ambas',
-    espaco: (b.spacing === 'roomy' ? 'amplo' : 'normal') as 'normal' | 'amplo',
+    theme: (visual.theme ?? 'surface-1') as TemaDoBloco,
+    borda: (visual.borda ?? 'nenhuma') as 'nenhuma' | 'topo' | 'ambas',
+    espaco: (visual.spacing === 'roomy' ? 'amplo' : 'normal') as 'normal' | 'amplo',
   }
 }
 
@@ -139,6 +150,40 @@ export function toBlocos(
         })
         break
 
+      case 'sectionListing':
+        blocos.push({
+          ...base(b),
+          tipo: 'sectionListing',
+          cabecalho: {
+            eyebrow: vazio(b.eyebrow),
+            chip: vazio(b.chip),
+            title: vazio(b.title),
+            highlight: vazio(b.highlight),
+            paragrafos: paragrafosDe(b.description),
+          },
+          conteudo: null,
+          abertura: false,
+        })
+        break
+
+      case 'sectionFeatured':
+        blocos.push({ ...base(b), tipo: 'sectionFeatured', actionLabel: vazio(b.actionLabel), conteudo: null, abertura: true })
+        break
+
+      case 'webinarTeaser':
+        blocos.push({
+          ...base(b),
+          tipo: 'webinarTeaser',
+          eyebrow: vazio(b.eyebrow),
+          /* Obrigatório só na publicação: rascunho no preview pode vir sem. */
+          title: b.title ?? '',
+          highlight: vazio(b.highlight),
+          description: vazio(b.description),
+          actionLabel: vazio(b.actionLabel),
+          capa: null,
+        })
+        break
+
       case 'richTextSection':
         blocos.push({
           ...base(b),
@@ -155,6 +200,7 @@ export function toBlocos(
           image: toImageOpcional(b.image, 'richTextSection.image'),
           imagePosition: b.imagePosition ?? 'right',
           ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
+          bodySize: b.bodySize === 'large' ? 'large' : 'normal',
         })
         break
 
@@ -392,23 +438,9 @@ export function toBlocos(
             key: f.key,
             label: f.label,
             icon: f.icon,
-            count: f.count ?? null,
             href: vazio(f.href),
           })),
-          topics: (b.topics ?? []).filter((t): t is string => Boolean(t?.trim())),
-          items: (b.items ?? []).map((i) => ({
-            format: i.format,
-            title: i.title,
-            description: i.description,
-            category: i.category,
-            meta: i.meta,
-            date: i.date,
-            author: i.author,
-            href: i.href,
-            image: toImageOpcional(i.image, 'insightsHub.items.image'),
-            featured: Boolean(i.featured),
-            tags: (i.tags ?? []).map((t) => t.text),
-          })),
+          faixas: [],
           portals: b.portals?.title
             ? { title: vazio(b.portals.title), description: vazio(b.portals.description) }
             : null,

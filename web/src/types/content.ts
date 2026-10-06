@@ -194,6 +194,8 @@ export type BlocoRichTextSection = Base & {
   image: Image | null
   imagePosition: 'left' | 'right' | 'none'
   ctas: { label: string; href: string }[]
+  /** Tamanho dos parágrafos, escolhido no admin. */
+  bodySize: 'normal' | 'large'
 }
 
 export type BlocoIconCardGrid = Base & {
@@ -383,22 +385,35 @@ export type FormatoDeInsight = {
   key: string
   label: string
   icon: string
-  count: number | null
   href: string | null
 }
 
-export type ItemDeInsight = {
-  format: string
+/** Os tipos de conteúdo que a Insights junta (D-55), na ordem das faixas. */
+export type TipoDeInsight = 'cases' | 'blog' | 'webinars' | 'midia' | 'ebooks'
+
+/** Um cartão da Insights, já normalizado: cada collection guarda data, autor e
+ *  duração num campo diferente, e o mapper das faixas é quem sabe disso. */
+export type CartaoDeInsight = {
+  id: string
   title: string
   description: string
-  category: string
-  meta: string
-  date: string
-  author: string
-  href: string
   image: Image | null
-  featured: boolean
+  href: string
+  /** Matéria da imprensa: abre no site do veículo, em outra aba. */
+  externo: boolean
+  /** Quem e quando: "Banco X • 3 de março de 2026", "Valor • …". */
+  origem: string | null
+  /** Duração do webinar ou páginas do e-book, no canto da capa. */
+  selo: string | null
   tags: string[]
+}
+
+export type FaixaDeInsights = {
+  tipo: TipoDeInsight
+  titulo: string
+  /** A página-mestra do tipo, no idioma da página. */
+  verTodos: string
+  itens: CartaoDeInsight[]
 }
 
 export type BlocoInsightsHub = Base & {
@@ -409,8 +424,9 @@ export type BlocoInsightsHub = Base & {
   highlight: string | null
   description: string | null
   formats: FormatoDeInsight[]
-  topics: string[]
-  items: ItemDeInsight[]
+  /** Os 3 mais recentes de cada tipo, injetados pela página (D-55). Tipo sem
+   *  conteúdo publicado não tem faixa. */
+  faixas: FaixaDeInsights[]
   portals: { title: string | null; description: string | null } | null
   newsletter: { eyebrow: string | null; title: string | null; description: string | null } | null
   closing: {
@@ -630,7 +646,65 @@ export type BlocoAccordionSteps = Base &
     steps: { title: string; description: string }[]
   }
 
+/* Páginas-mestras (feature paginas-mestras, D-55). A parte automática de cada
+ * seção, já resolvida pelo `resolverPaginaMestra` — o bloco não busca dado.
+ * Uma variante por seção: cada lista desenha o seu cartão. */
+export type ConteudoDaSecao =
+  | { secao: 'solucoes'; solucoes: SolutionCard[] }
+  | { secao: 'segmentos'; segmentos: SegmentCard[] }
+  | { secao: 'webinars'; webinars: Webinar[] }
+  | { secao: 'midia'; materias: MateriaDaImprensa[] }
+  | { secao: 'ebooks'; materiais: Resource[] }
+  | { secao: 'cases'; cases: CaseCard[]; incompletos: string[]; topicos: Topic[] }
+  | { secao: 'blog'; posts: PostCard[]; pagina: number; totalDePaginas: number }
+  | { secao: 'consultores'; perfis: ConsultantRole[]; contato: Contato }
+
+/** Cabeçalho de texto que a editora escreve acima de uma lista automática. */
+export type CabecalhoDaSecao = {
+  eyebrow: string | null
+  chip: string | null
+  title: string | null
+  highlight: string | null
+  /** O texto de abertura, já separado em parágrafos (linha em branco). */
+  paragrafos: string[]
+}
+
+export type BlocoSectionListing = Base & {
+  tipo: 'sectionListing'
+  cabecalho: CabecalhoDaSecao
+  /** `null` fora de uma página-mestra: o bloco não desenha nada. */
+  conteudo: ConteudoDaSecao | null
+  /** Nenhum bloco visível acima: a lista abre a página — o título vira `h1` e,
+   *  nas seções de lista, ganha o respiro sob o cabeçalho fixo. Calculado pelo
+   *  `resolverPaginaMestra`. */
+  abertura: boolean
+}
+
+export type BlocoSectionFeatured = Base & {
+  tipo: 'sectionFeatured'
+  actionLabel: string | null
+  conteudo: ConteudoDaSecao | null
+  /** O carrossel é o primeiro bloco visível: `h1` e respiro de abertura.
+   *  Calculado pelo `resolverPaginaMestra`. */
+  abertura: boolean
+}
+
+export type BlocoWebinarTeaser = Base & {
+  tipo: 'webinarTeaser'
+  eyebrow: string | null
+  title: string
+  /** Trecho de `title` pintado de azul; o componente o localiza no texto. */
+  highlight: string | null
+  description: string | null
+  actionLabel: string | null
+  /** A capa do primeiro webinar de /webinars (ordem do admin), injetada pela página. */
+  capa: Image | null
+}
+
 export type Bloco =
+  | BlocoSectionListing
+  | BlocoSectionFeatured
+  | BlocoWebinarTeaser
   | BlocoPageHero
   | BlocoRichTextSection
   | BlocoIconCardGrid
