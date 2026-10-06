@@ -69,6 +69,10 @@ const PAGINA_DO_BLOCO: Record<string, string | null> = {
   // As soluções perderam o formulário em 29/09; /contato segue com ele.
   ctaContact: '/contato',
   jobsList: '/carreiras',
+  // Os blocos das páginas-mestras (D-55): a lista com filtro, o carrossel e a chamada do blog.
+  sectionListing: '/cases-de-sucesso',
+  sectionFeatured: '/webinars',
+  webinarTeaser: '/blog',
 }
 
 const LARGURA = 480

@@ -2,15 +2,15 @@ import type { Metadata } from 'next'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
-import { RenderBlocks } from '@/components/blocks/render-blocks'
+import { PaginaMestra } from '@/components/secoes/pagina-mestra'
 import { buscarVagasAbertas } from '@/lib/atrair'
 import { lerIntegracaoAtrair } from '@/lib/integracoes'
 import { isLocale, LOCALES } from '@/lib/locales'
-import { resolverPagina } from '@/lib/paginas'
-import { metadataDe } from '@/lib/seo'
+import { metadataDaPaginaMestra, resolverPaginaMestra } from '@/lib/paginas'
 
-/* /carreiras (MIG-050) — página montada por blocos. Casca fina: resolve e renderiza.
- * Toda a estrutura vive no CMS.
+/* /carreiras (MIG-050) — página montada por blocos, página-mestra da seção
+ * desde a D-55 (achada pela marca da seção, não pelo slug). Casca fina: resolve
+ * e renderiza. Toda a estrutura vive no CMS.
  *
  * As vagas ABERTAS vêm do ATRAIR **quando a integração está ligada no CMS**
  * (D-41, chave `integrations.atrair.jobsFeed`): é o sistema de R&S que sabe o
@@ -29,10 +29,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale()
-  if (!isLocale(locale)) return {}
-  const pagina = await resolverPagina('carreiras', 'careers', locale)
-  return pagina ? metadataDe({ locale, local: { secao: 'carreiras' }, seo: pagina.seo }) : {}
+  return metadataDaPaginaMestra('carreiras')
 }
 
 export default async function Pagina() {
@@ -44,18 +41,17 @@ export default async function Pagina() {
      consultas que sobram seguem em paralelo. */
   const integracao = await lerIntegracaoAtrair()
   const [pagina, vagas] = await Promise.all([
-    resolverPagina('carreiras', 'careers', locale),
+    resolverPaginaMestra('carreiras', locale),
     buscarVagasAbertas(integracao),
   ])
   if (!pagina) notFound()
 
   return (
-    <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
-      <RenderBlocks
-        blocos={pagina.blocos}
-        locale={locale}
-        vagasDoAtrair={vagas.fonte === 'atrair' ? vagas.vagas : null}
-      />
-    </main>
+    <PaginaMestra
+      pagina={pagina}
+      locale={locale}
+      className="pb-0 bg-surface-1 min-h-screen text-text-main"
+      vagasDoAtrair={vagas.fonte === 'atrair' ? vagas.vagas : null}
+    />
   )
 }

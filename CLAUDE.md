@@ -277,6 +277,8 @@ comparam; na suíte padrão, a mesma lista alimenta o contraste e o axe.
 | Link colado no LinkedIn ou WhatsApp sai sem imagem; `og:image` aponta para `http://localhost:3000` | A mídia do CMS chega como caminho (`/api/media/file/…`) e o Next completa metatag relativa com a `metadataBase`, que sem ninguém definir é `localhost:3000` — o `NEXT_PUBLIC_SITE_URL` do build não entra nisso. `metadataDe` manda a imagem absoluta (`absoluta()`, de `lib/seo.ts`) e o layout define `metadataBase`. ⚠️ O CI não pega: lá a origem do site **é** `localhost:3000`. Para ver, suba o dev com outra `NEXT_PUBLIC_SITE_URL` |
 | Página funciona no dev e dá 404 na homologação | O conteúdo dela nasce de **seed**, e o deploy roda migração, não seed. Foi o caso do carrossel da home e da página do RC18 (28/09): o banner e o botão de Bancos levavam a 404. Conteúdo novo que precisa chegar a um ambiente que já existe vem por **migração de dados com trava** (cria só se não existir, não toca no que foi editado no admin), com o texto num módulo que o seed também importa — ver `scripts/seed/rc18-conteudo.ts` |
 | Imagem do legado sai maior que a do app novo no gabarito | `stabilize()` troca mídia remota por um PNG 1×1, e a mídia **local** do legado (`/src/assets/images/`) precisa entrar na mesma lista. Só para requisição de imagem: o Vite serve o *import de módulo* pelo mesmo caminho, e stubar aquilo esvazia a página |
+| Campo do bloco em branco no inglês mostra o texto em português | O Payload preenche campo de **texto** vazio (`''` também) com o idioma de reserva, no `afterRead`. Não há como gravar "nada" em `en` com texto em `pt`. A chamada dos webinars tinha um "fim do título" e o inglês saía "Webinars técnicos" — o desenho certo é o trecho em destaque **dentro** do título, como o herói faz (D-55) |
+| Migração "só marca um campo" e a página sai despublicada, ou com texto que ninguém aprovou | `payload.update` numa collection com rascunho parte da **última versão**, não da publicada: com rascunho pendente no admin, o update publica o rascunho — ou leva o `_status: 'draft'` dele para a página. Campo de controle em página que já existe vai por SQL, na tabela e em `_<coleção>_v` (todas as versões, para restaurar versão antiga não apagar a marca). Ver a marca de Carreiras e Insights em `20261005_230000_paginas_mestras_conteudo` |
 
 ## Estado
 
@@ -380,6 +382,18 @@ Cookie `atra-consent` versionado guarda a escolha; ilhas conversam por
 CustomEvent (`atra:consentimento`). Vídeo de webinar é click-to-load, fora do
 banner. Mesmo gate de código de D-29: `bannerMessage` (global `cookie-consent`)
 nasce vazio até P-14, e sem ele nada renderiza — gabarito do gate intacto.
+
+**D-55 (05/10)** pôs as **páginas de cada seção** no CMS: Soluções, Segmentos,
+Consultores, Insights, Blog, Webinars, Cases, ATRA na mídia, E-books e Carreiras
+são páginas de Páginas marcadas por **Página-mestra de** (`masterOf`), achadas
+pela seção e não pelo slug. As rotas são casca fina (`resolverPaginaMestra` +
+`PaginaMestra`); a parte automática é bloco (`components/secoes/`), com as
+consultas em `lib/conteudo-da-secao.ts`. Página-mestra **não se apaga**
+(despublicada, a rota dá 404) e o slug fica travado. A Insights se monta
+sozinha: os 3 primeiros de cada tipo e "Ver todos". ⚠️ A rota de seção que
+responder 404 de repente é página-mestra que não chegou ao banco — o conteúdo
+vem da migração `20261005_230000_paginas_mestras_conteudo`, e Carreiras e
+Insights só são marcadas depois do seed em banco novo.
 
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),

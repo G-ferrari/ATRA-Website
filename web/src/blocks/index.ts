@@ -1526,46 +1526,7 @@ export const InsightsHub: Block = {
         { name: 'key', type: 'text', required: true, label: { pt: 'Chave', en: 'Key' } },
         { name: 'label', type: 'text', required: true, localized: true, label: { pt: 'Rótulo', en: 'Label' } },
         campoDeIcone,
-        { name: 'count', type: 'number', label: { pt: 'Contagem exibida', en: 'Displayed count' } },
         { name: 'href', type: 'text', label: { pt: 'Destino', en: 'Target' } },
-      ],
-    },
-    {
-      name: 'topics',
-      type: 'text',
-      hasMany: true,
-      localized: true,
-      label: { pt: 'Tópicos', en: 'Topics' },
-    },
-    {
-      /* ⚠️ Lista curada, e **não** as collections. O hub do legado tem texto
-       * próprio: dos 10 itens, só 3 repetem o título da página de origem — o
-       * mesmo case aparece aqui como "Processamento de Dados 51x Mais Rápido no
-       * Google Cloud" e em /cases-de-sucesso com outro nome. Agregar
-       * `cases`/`posts`/`resources`/`webinars`, como o plano previa, mudaria o
-       * texto de sete cartões. */
-      name: 'items',
-      type: 'array',
-      required: true,
-      minRows: 1,
-      label: { pt: 'Conteúdos', en: 'Items' },
-      fields: [
-        { name: 'format', type: 'text', required: true, label: { pt: 'Formato', en: 'Format' }, admin: { description: { pt: 'A chave de um dos formatos acima.', en: 'One of the format keys above.' } } },
-        { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
-        { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
-        { name: 'category', type: 'text', required: true, localized: true, label: { pt: 'Categoria', en: 'Category' } },
-        { name: 'meta', type: 'text', required: true, localized: true, label: { pt: 'Tempo ou duração', en: 'Read time or duration' } },
-        { name: 'date', type: 'text', required: true, localized: true, label: { pt: 'Data exibida', en: 'Displayed date' } },
-        { name: 'author', type: 'text', required: true, localized: true, label: { pt: 'Autor ou cliente', en: 'Author or client' } },
-        { name: 'href', type: 'text', required: true, label: { pt: 'Destino', en: 'Target' } },
-        { name: 'image', type: 'upload', relationTo: 'media', label: { pt: 'Capa', en: 'Cover' } },
-        { name: 'featured', type: 'checkbox', defaultValue: false, label: { pt: 'Destaque', en: 'Featured' } },
-        {
-          name: 'tags',
-          type: 'array',
-          label: { pt: 'Tópicos', en: 'Topics' },
-          fields: [{ name: 'text', type: 'text', required: true, localized: true, label: { pt: 'Tópico', en: 'Topic' } }],
-        },
       ],
     },
     {

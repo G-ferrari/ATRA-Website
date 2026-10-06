@@ -16,6 +16,7 @@ import { up as selosNaPaginaDoGoogleCloud } from '../../src/migrations/20260929_
 import { up as fimDasPaginasInternas } from '../../src/migrations/20260929_223200_fim_das_paginas_internas'
 import { criarMateriasDaImprensa } from '../../src/migrations/20261002_170000_materias_da_imprensa'
 import { preencherPainelDeConversao } from '../../src/migrations/20261002_203000_painel_de_conversao'
+import { criarPaginasMestras } from '../../src/migrations/20261005_230000_paginas_mestras_conteudo'
 
 const payload = await getPayload({ config })
 
@@ -32,5 +33,10 @@ await criarMateriasDaImprensa({ payload } as never, { exigirCarga: false })
 /* O painel de conversão do menu de Soluções (D-51): os textos já entraram no
  * `migrate`; aqui, com os cases criados, a migração liga os de cada aba. */
 await preencherPainelDeConversao({ payload } as never)
+
+/* As páginas-mestras (D-55): as 8 novas já nasceram no `migrate`; Carreiras e
+ * Insights, que o seed acabou de criar, ganham aqui a marca da seção — sem ela
+ * as duas rotas dariam 404 no e2e. */
+await criarPaginasMestras(payload)
 
 process.exit(0)

@@ -1,6 +1,6 @@
 ---
 status: revisado
-atualizado_em: 2026-09-27
+atualizado_em: 2026-10-05
 depende_de: [../01-descoberta/inventario-rotas.md, ../01-descoberta/inventario-conteudo.md, ../01-descoberta/inventario-assets.md, ../01-descoberta/debito-tecnico.md]
 ---
 
@@ -1587,3 +1587,65 @@ Três escolhas do G-ferrari, entre as alternativas apresentadas:
   banco de talentos não tem anexo. E os dados estruturados de vaga
   (`JobPosting`, para a busca de empregos do Google) só valem depois que der
   para se candidatar na própria página.
+
+## D-55 — As páginas de cada seção viram páginas do CMS (páginas-mestras)
+
+*Decidida em 05/10/2026 por G-ferrari, a partir da maior dor do time de
+conteúdo. Especificação: `.ksdd/features/FEATURE-paginas-mestras.md`.*
+
+**Contexto.** A página que abre ao clicar numa seção — Soluções, Segmentos,
+Consultores, Insights, Blog, Webinars, Cases, ATRA na mídia, E-books, Carreiras
+— era, em 8 dos 10 casos, código: os textos moravam em constantes `TEXTOS` e
+`META` das rotas, e o marketing não tinha como mudar uma vírgula sem deploy. As
+duas que já eram do CMS (Carreiras e Insights) eram achadas pelo slug, que o
+editor podia trocar e derrubar a rota. E a Insights era uma lista de 10 cartões
+escritos à mão em 21/08, que ninguém atualizava e já apontava para conteúdo que
+não existia mais.
+
+**Decisão.** Escolhas do G-ferrari:
+
+- **A página inteira em blocos.** Cada seção tem a sua página em Páginas,
+  marcada pelo campo **Página-mestra de** (só administrador muda). A parte
+  automática vira bloco — **Lista da seção**, **Destaques da seção** e
+  **Chamada para os webinars** —, e o editor monta o resto com os blocos de
+  sempre.
+- **A Insights só automática**: os 3 primeiros de cada tipo, na ordem da página
+  da seção, com "Ver todos". Saem os cartões à mão, os destaques, a busca e os
+  filtros.
+- **Consultores**: o topo e o SEO são do CMS; números, perfis, carrinho e
+  formulário seguem no código.
+- **Não se apaga, despublica.** Página-mestra despublicada responde 404 (é o
+  jeito de tirar uma seção do ar); apagar é recusado. O endereço fica travado:
+  renomear seção é pedido ao time técnico, como na D-43.
+- **Nada muda no visual no primeiro dia**: a migração cria as páginas com os
+  textos que estavam no código, literais (D-22).
+- **Live Preview** nas Páginas. **Entrega única.**
+
+**Consequências.**
+
+- As 10 rotas viram casca fina (`resolverPaginaMestra`, `PaginaMestra`); a
+  página é achada pela seção, não pelo slug, e as consultas que estavam nas
+  rotas moram em `lib/conteudo-da-secao.ts`, com o filtro de publicado escrito.
+  Quem decide o `h1` e o respiro sob o cabeçalho é o primeiro bloco visível
+  (`marcarAbertura`), não a rota: a página pode começar por qualquer bloco.
+- A migração `20261005_230000_paginas_mestras_conteudo` cria as 8, publicadas,
+  em PT e EN, e marca Carreiras e Insights sem tocar no conteúdo; a trava pula
+  seção que já tem página. Em banco novo Carreiras e Insights só existem depois
+  do seed, e é o `migracoes-de-dados.ts` que as marca.
+- Paridade medida antes/depois nas 10 seções, PT e EN, celular e desktop: igual
+  ao pixel, menos o ponto final do título de Consultores, que entrou no trecho
+  em destaque (sai azul) — único lugar em que a editora consegue escrevê-lo.
+  Metadados (título, descrição, canônica) idênticos nas 42 telas.
+- O fechamento de ATRA na mídia, que era a `ChamadaFinal` em código, é um bloco
+  da página. ⚠️ No inglês o botão leva a `/contato` (destino de bloco não é
+  localizado) — como nas outras páginas de blocos, até a tradução (P-08).
+- A Insights perde campos (`items`, `topics`, `formats.count`), e a migração
+  `20261005_223123_insights_automatica` apaga as tabelas. Os cartões passam a
+  ocupar a coluna inteira (eram 256px numa coluna de 390, herança do porte).
+- ⚠️ **Campo de texto vazio não fica vazio em inglês**: o Payload preenche
+  texto vazio com o português (`afterRead`, `fallbackLocale`). Por isso a
+  chamada dos webinars não tem "fim do título": o trecho em destaque fica
+  dentro do título, como no herói. Bloco novo que precise de "nada" em um
+  idioma e texto no outro tem que ser desenhado assim.
+- ⚠️ **Fica com o marketing (D-22):** avisar o time antes da publicação que a
+  Insights muda de cara.

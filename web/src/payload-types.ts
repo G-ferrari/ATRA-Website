@@ -1808,31 +1808,7 @@ export interface Partner {
                 | 'server'
                 | 'code'
                 | 'headset';
-              count?: number | null;
               href?: string | null;
-              id?: string | null;
-            }[];
-            topics?: string[] | null;
-            items: {
-              /**
-               * One of the format keys above.
-               */
-              format: string;
-              title: string;
-              description: string;
-              category: string;
-              meta: string;
-              date: string;
-              author: string;
-              href: string;
-              image?: (number | null) | Media;
-              featured?: boolean | null;
-              tags?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
               id?: string | null;
             }[];
             portals?: {
@@ -2139,9 +2115,26 @@ export interface Page {
   id: number;
   title: string;
   /**
-   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   * Final part of the URL. Changing it after publishing breaks links. On section pages the address is fixed: ask the tech team to rename a section.
    */
   slug: string;
+  /**
+   * This is the section’s main page: it cannot be deleted and its address is fixed. If unpublished, the section goes offline while menu and footer still link to it.
+   */
+  masterOf?:
+    | (
+        | 'solucoes'
+        | 'segmentos'
+        | 'consultores'
+        | 'insights'
+        | 'blog'
+        | 'webinars'
+        | 'cases'
+        | 'midia'
+        | 'ebooks'
+        | 'carreiras'
+      )
+    | null;
   layout: (
     | {
         badge?: string | null;
@@ -3492,31 +3485,7 @@ export interface Page {
             | 'server'
             | 'code'
             | 'headset';
-          count?: number | null;
           href?: string | null;
-          id?: string | null;
-        }[];
-        topics?: string[] | null;
-        items: {
-          /**
-           * One of the format keys above.
-           */
-          format: string;
-          title: string;
-          description: string;
-          category: string;
-          meta: string;
-          date: string;
-          author: string;
-          href: string;
-          image?: (number | null) | Media;
-          featured?: boolean | null;
-          tags?:
-            | {
-                text: string;
-                id?: string | null;
-              }[]
-            | null;
           id?: string | null;
         }[];
         portals?: {
@@ -3706,6 +3675,74 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'jobsList';
+      }
+    | {
+        eyebrow?: string | null;
+        /**
+         * The chip next to the badge. In Solutions and Segments it follows the automatic count ("8 verticals").
+         */
+        chip?: string | null;
+        /**
+         * Optional, above the listing. The listing itself is automatic: it shows what is published in the section.
+         */
+        title?: string | null;
+        /**
+         * Shown in blue, right after the title.
+         */
+        highlight?: string | null;
+        /**
+         * Optional. A blank line separates paragraphs.
+         */
+        description?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sectionListing';
+      }
+    | {
+        /**
+         * Each highlight’s button. Empty uses the section default.
+         */
+        actionLabel?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sectionFeatured';
+      }
+    | {
+        eyebrow?: string | null;
+        title: string;
+        /**
+         * A slice of the title shown in blue. It must appear in the title exactly.
+         */
+        highlight?: string | null;
+        description?: string | null;
+        actionLabel?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'webinarTeaser';
       }
   )[];
   /**
@@ -5405,31 +5442,7 @@ export interface Segment {
                 | 'server'
                 | 'code'
                 | 'headset';
-              count?: number | null;
               href?: string | null;
-              id?: string | null;
-            }[];
-            topics?: string[] | null;
-            items: {
-              /**
-               * One of the format keys above.
-               */
-              format: string;
-              title: string;
-              description: string;
-              category: string;
-              meta: string;
-              date: string;
-              author: string;
-              href: string;
-              image?: (number | null) | Media;
-              featured?: boolean | null;
-              tags?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
               id?: string | null;
             }[];
             portals?: {
@@ -7064,31 +7077,7 @@ export interface Solution {
                 | 'server'
                 | 'code'
                 | 'headset';
-              count?: number | null;
               href?: string | null;
-              id?: string | null;
-            }[];
-            topics?: string[] | null;
-            items: {
-              /**
-               * One of the format keys above.
-               */
-              format: string;
-              title: string;
-              description: string;
-              category: string;
-              meta: string;
-              date: string;
-              author: string;
-              href: string;
-              image?: (number | null) | Media;
-              featured?: boolean | null;
-              tags?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
               id?: string | null;
             }[];
             portals?: {
@@ -7854,6 +7843,7 @@ export interface JobsSelect<T extends boolean = true> {
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  masterOf?: T;
   layout?:
     | T
     | {
@@ -8514,30 +8504,7 @@ export interface PagesSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -8676,6 +8643,41 @@ export interface PagesSelect<T extends boolean = true> {
               borda?: T;
               spacing?: T;
               theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sectionListing?:
+          | T
+          | {
+              eyebrow?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              anchor?: T;
+              navLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sectionFeatured?:
+          | T
+          | {
+              actionLabel?: T;
+              anchor?: T;
+              navLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        webinarTeaser?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              actionLabel?: T;
+              anchor?: T;
+              navLabel?: T;
               id?: T;
               blockName?: T;
             };
@@ -9488,30 +9490,7 @@ export interface PartnersSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -10335,30 +10314,7 @@ export interface SegmentsSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -11189,30 +11145,7 @@ export interface SolutionsSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
