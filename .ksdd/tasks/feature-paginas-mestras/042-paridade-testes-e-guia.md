@@ -1,7 +1,7 @@
 ---
 id: 042
 title: Provar a paridade visual, atualizar testes e o guia do editor
-status: em revisão
+status: concluída
 feature: paginas-mestras
 area: qa
 priority: P0

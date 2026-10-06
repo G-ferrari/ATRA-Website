@@ -1,7 +1,7 @@
 ---
 id: 037
 title: Montar /webinars, /atra-na-midia e /ebooks pela página-mestra
-status: em revisão
+status: concluída
 feature: paginas-mestras
 area: frontend
 priority: P0

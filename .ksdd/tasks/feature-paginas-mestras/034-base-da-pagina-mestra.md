@@ -1,7 +1,7 @@
 ---
 id: 034
 title: Marcar e proteger as páginas-mestras em `pages`, com Live Preview
-status: em revisão
+status: concluída
 feature: paginas-mestras
 area: data-model
 priority: P0

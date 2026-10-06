@@ -1,7 +1,7 @@
 ---
 id: 039
 title: Montar /consultores pela página-mestra (topo, textos e SEO)
-status: em revisão
+status: concluída
 feature: paginas-mestras
 area: frontend
 priority: P1
