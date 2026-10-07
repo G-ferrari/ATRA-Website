@@ -95,6 +95,7 @@ import * as migration_20261005_232618_paginas_mestras_sem_tema from './20261005_
 import * as migration_20261007_010701_conversion_panel_secondary_cta from './20261007_010701_conversion_panel_secondary_cta';
 import * as migration_20261007_011000_painel_com_botao_de_diagnostico from './20261007_011000_painel_com_botao_de_diagnostico';
 import * as migration_20261007_012347_partner_mosaic from './20261007_012347_partner_mosaic';
+import * as migration_20261007_020000_assessoria_com_mosaico_de_parceiros from './20261007_020000_assessoria_com_mosaico_de_parceiros';
 
 export const migrations = [
   {
@@ -581,5 +582,10 @@ export const migrations = [
     up: migration_20261007_012347_partner_mosaic.up,
     down: migration_20261007_012347_partner_mosaic.down,
     name: '20261007_012347_partner_mosaic'
+  },
+  {
+    up: migration_20261007_020000_assessoria_com_mosaico_de_parceiros.up,
+    down: migration_20261007_020000_assessoria_com_mosaico_de_parceiros.down,
+    name: '20261007_020000_assessoria_com_mosaico_de_parceiros',
   },
 ];
