@@ -1,6 +1,6 @@
 /* MIG-102 / D-33 / D-41 — integração com o ATRAIR (sistema de R&S da ATRA).
  *
- * ⚠️ HTTP puro, sem SDK — a mesma escolha do `crm.ts`: duas chamadas `fetch`
+ * ⚠️ HTTP puro, sem SDK — a mesma escolha do `rd-marketing.ts`: duas chamadas `fetch`
  * não justificam dependência nova.
  *
  * ⚠️ **Nada aqui lê o ambiente para decidir se roda.** Desde a D-41 quem decide

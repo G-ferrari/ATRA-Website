@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-25
+atualizado_em: 2026-10-02
 depende_de: [decisoes.md]
 ---
 
@@ -13,31 +13,52 @@ Nenhuma bloqueia o desenvolvimento hoje. O que elas travam é o **seed** (valore
 reais no ar), a **priorização de redirects** e o **cutover**. Deixar todas para
 o fim concentra risco na semana da virada.
 
-Registro técnico completo em [decisoes.md](decisoes.md).
+Registro técnico completo em [decisoes.md](decisoes.md) e
+[pendencias.md](pendencias.md).
 
-## As duas urgentes
+## Urgente: travam o cutover
 
-Perdem valor a cada semana que passa. Ambas são baratas hoje.
+### P-14 — Política de privacidade e textos de consentimento
 
-### P-19 — Existe Google Analytics ou GTM no site atual?
+A `/politicas-e-termos` existe no site atual e **precisa ter destino** no site
+novo. Além disso, o site novo tem componentes prontos que dependem de texto
+jurídico que só a ATRA pode escrever ou aprovar:
 
-Precisamos saber se `atra.com.br` tem GA4 ou Google Tag Manager instalado, e ter
-acesso à conta.
+| O que espera | Onde fica no admin | Efeito de não ter |
+|---|---|---|
+| Mensagem do banner de cookies (`bannerMessage`) | Sistema → Aviso de Cookies | Banner não aparece → GA4, Lusha e captura de UTM ficam **desligados em produção** |
+| Texto do convite de lead no chat (`consentNotice`) | Sistema → ATRA AI | Formulário inline do chat não aparece → `ENABLE_CHAT_LEAD` não pode ser ligado |
+| Política de privacidade publicada em `/politicas-e-termos` | Página a criar no CMS | Formulários coletando dado pessoal sem política = **exposição de LGPD** |
 
-**Por que agora:** sem medição **antes** da virada, não há como provar se o site
-novo melhorou ou piorou tráfego, conversão ou posição. A comparação exige os dois
-lados. Se não houver analytics hoje, instalar **esta semana** é a única forma de
-ter histórico para comparar — cada semana sem isso é uma semana a menos de base.
+**Parcialmente avançada (27/09):** o texto da Karen sobre a Lusha entrou
+literal na descrição da categoria Marketing do aviso de cookies (D-40). O que
+ainda falta é da ATRA: a mensagem do banner, o aviso do chat, o consentimento
+dos formulários e a política em si — texto e aprovação.
 
-### P-13 — Export do Search Console
+> ⚠️ Enquanto `bannerMessage` estiver vazio, nenhum script de terceiro é
+> carregado — nem GA4, nem Lusha. O site está tecnicamente completo; o que falta
+> é a autorização jurídica para ligá-los.
 
-Precisamos do relatório de **URLs com impressões nos últimos 12 meses**
-(Desempenho → Páginas → exportar).
+### P-23 — Quem tem acesso à conta Cloudflare da ATRA?
 
-**Por que agora:** o site atual tem ~259 URLs e o novo precisa redirecionar cada
-uma. Sem esse dado, a prioridade de preservação é palpite. Com ele, sabemos
-exatamente quais páginas trazem gente do Google e não podem quebrar. É um clique
-e resolve de uma vez.
+O DNS do `atra.com.br` está na Cloudflare. A troca de domínio no cutover exige
+alterar os registros A lá. Sem resolver com antecedência, a virada **trava no
+passo mais crítico** — às 7h da manhã do dia marcado. Barato hoje, caro naquele
+momento.
+
+> ⚠️ **No dia da virada, não tocar nos registros MX.** O e-mail da ATRA é
+> Google Workspace e está no mesmo DNS. Mexer em MX é o erro clássico desse
+> tipo de migração — está no runbook, mas vale dizer em voz alta.
+
+### P-19 — Confirmar o container GTM com a Karen *(parcialmente respondida)*
+
+✅ **Descoberto em 27/09:** o HTML público do `atra.com.br` carrega o container
+`GTM-KR2VWNK` com o GA4 `G-619E22CJKE` dentro — **há baseline de tráfego**.
+O id já foi cadastrado no admin (Sistema → Rastreamento).
+
+**O que ainda falta:** a Karen confirmar que o container vale para o site novo e
+quem o administra — para que o marketing consiga criar tags e eventos sem
+precisar de acesso ao código.
 
 ## Marketing e conteúdo
 
@@ -48,15 +69,15 @@ e resolve de uma vez.
 | **P-09** | **Qual é o telefone oficial?** O site usa `+55 11 96305-2391`; o contato institucional registrado é `+55 11 96306-0267` | Dados de contato do site | Lead ligando para o número errado |
 | **P-10** | Um parceiro está cadastrado no protótipo apenas como **"Partner"**, sem nome. Qual é? | Página de parceiros | Card genérico em produção |
 | **P-11** | O **case "RD Saúde"**, que aparece no carrossel da home, existe? Hoje o link dele aponta para o case do Banco ABC | Publicação dos cases | Ou o case é real e precisa de conteúdo, ou sai — mas não pode continuar levando ao cliente errado |
-| ✅ **P-16** *(respondida: publicar)* | **As 13 soluções do site atual ainda valem, ou a lista de 6 do protótipo é a nova?** Os **segmentos** já voltaram — bancos, saúde, varejo e as outras 5 estão no ar no site novo. O que falta decidir são as soluções: o site atual lista 13 (Master Data Management, Customer 360, Data Discovery…), o protótipo consolidou em 6 (Engenharia de Dados & Cloud, Cultura de Dados…) | A lista de ofertas no menu | As 13 já estão no CMS, **em rascunho**: responder é publicar ou apagar, sem retrabalho. **Publicadas** — o menu lista as 18 e cada link antigo cai na página certa |
-| **P-26** | Quais as **URLs reais de LinkedIn, Instagram e YouTube**? No protótipo os três apontam para lugar nenhum | Rodapé | O rodapé agora aparece em **todas** as páginas — seriam três links mortos em 100% do site |
-| **P-07** | Quem escreve o conteúdo dos **9 materiais** (3 relatórios, 3 ebooks, 3 webinars) que existem só como capa no protótipo? | Publicação desses 9 itens | Ficam como rascunho, invisíveis no site, até alguém escrever |
+| ✅ **P-16** *(respondida: publicar)* | **As 13 soluções do site atual ainda valem, ou a lista de 6 do protótipo é a nova?** | A lista de ofertas no menu | **Publicadas** — o menu lista as 18 e cada link antigo cai na página certa |
+| **P-07** *(reduzida)* | Quem escreve o conteúdo dos **9 materiais** (3 relatórios, 3 ebooks, 3 webinars) que existem só como capa no protótipo? | Publicação desses 9 itens | Ficam como rascunho, invisíveis no site, até alguém escrever |
+| **P-13** | Export do **Search Console** com URLs com impressões nos últimos 12 meses (Desempenho → Páginas → exportar) | Priorização dos redirects | Sem esse dado, a prioridade de preservação de SEO é palpite. É um clique e resolve de uma vez |
 
 ## Jurídico e LGPD
 
 | # | Pergunta | O que trava | Custo de não decidir |
 |---|---|---|---|
-| **P-14** | A página **`/politicas-e-termos/`** continua no site novo? Hoje ela existe no site atual, mas os três links legais do rodapé do protótipo não levam a lugar nenhum | Rodapé e formulários | **Formulário coletando dado pessoal sem política de privacidade publicada é exposição de LGPD.** O site novo terá formulários funcionando — os atuais não enviam nada |
+| **P-14** | *(detalhada acima)* Textos de consentimento e política de privacidade | Banner de cookies, chat lead, CRM em produção | **Formulário coletando dado pessoal sem política = exposição de LGPD** |
 | **P-17** | Por **quanto tempo** guardamos os currículos recebidos, e **quem no RH** tem acesso? | Formulário de vagas | Exigência de LGPD, não preferência. Precisa estar definido antes do formulário entrar no ar |
 | **P-12** | O `robots.txt` atual autoriza **treinar modelos de IA** com o conteúdo da ATRA (`Content-Signal: ai-train=yes`). Mantemos? | Configuração do site novo | Decisão de negócio. Se ninguém decidir, replicamos o que está lá hoje |
 
@@ -64,25 +85,38 @@ e resolve de uma vez.
 
 | # | Pergunta | O que trava | Custo de não decidir |
 |---|---|---|---|
-| ✅ **P-18** *(respondida: **RD Station CRM**)* | A ATRA usa alguma ferramenta de **e-mail marketing ou CRM** (RD Station, HubSpot)? | Destino dos leads | Os formulários já **enviam** desde MIG-100 — o lead entra no CMS e um aviso vai por e-mail. Com a resposta, ele passa também para o **RD Station CRM**, e o CMS deixa de ser a única cópia. Falta uma coisa antes de ligar: mandar dado de visitante para outra ferramenta pede um **aviso de consentimento no formulário**, e o texto dele é decisão de vocês — ver P-14 |
+| ✅ **P-18** *(respondida: **RD Station Marketing**, corrigida em 02/10)* | A ATRA usa alguma ferramenta de **e-mail marketing ou CRM**? | Destino dos leads | Resolvida — em 21/08 a resposta foi "CRM"; em 02/10 a ATRA esclareceu que os formulários vivem no RD Station **Marketing**, e o site passou a mandar cada lead como conversão (D-54). Para ligar em homologação falta a **Chave de API** (App Store do RD → App Publisher → Gerar chave de API) — **não** os tokens público/privado de "Dados de Integração", que são da API antiga. Produção espera o consentimento (P-14) |
 | **P-24** | **Quem da ATRA vai editar o site** depois da virada, e quem é o ponto de contato nos 30 dias seguintes? | Treinamento e guia do editor | O objetivo declarado da migração é o marketing publicar sem depender de dev. Sem nome, o treinamento não tem convidado |
-| **P-02** | O RH quer manter as **vagas publicadas como páginas** do site (é como funciona hoje), ou adotar um sistema de recrutamento? | Modelagem de vagas | Nenhum — o modelo atual funciona. Vale confirmar antes de investir na tela |
-| **P-28** | **As 7 vagas do site estão na área certa?** O site novo mostra a área de atuação em cada vaga (Comercial, Analytics, Engenharia de Dados…), e o WordPress não guarda esse dado — a importação deduziu do título de cada uma | A ficha de cada vaga | Baixo, e fácil de arrumar: são 7 linhas para conferir no CMS. Uma vaga na área errada aparece no filtro errado para o candidato |
+| **P-29** | **Para qual caixa de e-mail vai o resultado do Diagnóstico de Maturidade de Dados?** O dono informaria qual endereço depois (20/09) | Destino do e-mail de resultado | O lead não se perde — cai no e-mail do global `contact` —, mas fica junto com os outros formulários. O campo está no admin (Contato → Destino dos formulários → Diagnóstico); só precisamos do endereço |
 
 ## TI e infraestrutura
 
 | # | Pergunta | O que trava | Custo de não decidir |
 |---|---|---|---|
-| **P-23** | **Quem tem acesso à conta Cloudflare da ATRA?** O DNS do domínio está lá | O cutover — e, desde 25/08, também o endereço amigável da homologação: `staging.atra.com.br` está pronto do lado do servidor, esperando **um registro A** | Sem resolver com antecedência, a virada **trava no passo mais crítico**. Barato agora, caro às 7h da manhã do dia marcado |
+| **P-23** | *(detalhado acima)* **Quem tem acesso à conta Cloudflare da ATRA?** | O cutover | Sem resolver, a virada **trava no passo mais crítico** |
+| **P-32** | **Com que imagem Docker o MinIO roda em produção?** Em set/2026 o MinIO removeu as imagens públicas do Docker Hub e do quay.io | `docker-compose.prod.yml` e o backup de mídia | O storage funciona hoje só porque as imagens estão no cache da VPS. Se ela for recriada ou limpa, o storage não sobe e o backup de mídia para — em silêncio. Dev e CI já foram para o fork `pgsty/minio`. **Exige acesso à VPS (Leonardo)** |
 
 > ⚠️ **No dia da virada, não tocar nos registros MX.** O e-mail da ATRA é Google
 > Workspace e está no mesmo DNS. Mexer em DNS e derrubar o e-mail da empresa é o
 > erro clássico desse tipo de migração — está registrado no runbook, mas vale
 > dizer em voz alta para quem tiver acesso.
 
+## Já respondidas
+
+| # | Pergunta | Resposta |
+|---|---|---|
+| ✅ **P-02** | Como as vagas chegam ao site? | Evidência (17/08): o WP publica vagas como páginas comuns — não há ATS. A collection `jobs` está correta |
+| ✅ **P-16** | As 13 soluções do WP ou as 6 do protótipo? | Publicar as 18 (21/08) — todas já estão no ar |
+| ✅ **P-18** | A ATRA usa CRM? | RD Station CRM (21/08 → D-26) — integração ativa, aguarda P-14 para produção |
+| ✅ **P-19** *(detalhe pendente)* | Existe GTM/GA4 no atra.com.br? | Sim: container `GTM-KR2VWNK`, GA4 `G-619E22CJKE` (27/09 → D-40). Falta Karen confirmar quem administra |
+| ✅ **P-26** | URLs reais das redes sociais? | Encontradas no código (19/08) — LinkedIn, Instagram e YouTube já aplicadas no rodapé |
+| ✅ **P-27** | Como classificar os 207 posts em tópicos? | Ficam sem assunto por ora — o WP tem 1 categoria e 0 tags (21/08) |
+| ✅ **P-28** | A área das vagas confere? | Ficam sem área — o WP não tem o campo; `jobs.area` virou opcional (21/08) |
+
 ## Como isso volta para o projeto
 
 Cada resposta vira uma linha em [decisoes.md](decisoes.md) com data, e destrava
-o que estiver esperando. As respostas de P-01, P-09, P-10, P-11 e P-26 entram
-direto no conteúdo do site; as de P-13 e P-19 mudam a prioridade dos redirects;
-as de P-14 e P-17 mudam o que os formulários podem fazer.
+o que estiver esperando. As respostas de P-01, P-09, P-10, P-11 entram direto
+no conteúdo do site; P-13 muda a prioridade dos redirects; P-14 e P-17 mudam o
+que os formulários podem fazer; P-23 e P-32 travam o cutover se não resolvidas
+antes do dia marcado.

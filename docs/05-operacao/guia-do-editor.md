@@ -267,8 +267,12 @@ cima). Ele é o mesmo nas três abas; só o case de baixo muda.
   compartilhamento. ⚠️ A **descrição da home está vazia** — preencher é
   provavelmente sua primeira tarefa real neste painel.
 - **Leads** — os envios do formulário de contato ficam em "Form submissions",
-  com a campanha de origem de cada um. Eles também vão para o RD Station CRM.
-- **Google Tag Manager e Lusha** — Sistema → Rastreamento (papel de
+  com a campanha de origem de cada um. Eles também vão para o RD Station
+  Marketing como conversões: o nome de cada conversão e o liga/desliga ficam em
+  Sistema → Integrações (papel de administrador), e "Sincronizado em" vazio
+  num envio quer dizer que ele ainda não chegou lá — editar o envio tenta de
+  novo.
+- **Google Tag Manager, Lusha e RD Station** — Sistema → Rastreamento (papel de
   administrador). O campo aceita só o formato certo: `GTM-XXXXXXX` para o
   Tag Manager e o `siteId` do painel Website Visitors para a Lusha. Salvar
   atualiza o site sem deploy. ⚠️ Preencher **não liga nada sozinho**: o GTM só

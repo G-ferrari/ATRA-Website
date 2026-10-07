@@ -150,8 +150,8 @@ export const AtraAi: GlobalConfig = {
           label: { pt: 'Aviso de consentimento', en: 'Consent notice' },
           admin: {
             description: {
-              pt: 'Obrigatório para o convite aparecer: diz ao visitante o que acontece com o dado (vai ao RD Station CRM). Vazio = convite desligado neste idioma. O texto é decisão da ATRA (P-14).',
-              en: 'Required for the invite to show: tells the visitor what happens to the data (it goes to RD Station CRM). Empty = invite off in this locale. The wording is ATRA’s call (P-14).',
+              pt: 'Obrigatório para o convite aparecer: diz ao visitante o que acontece com o dado (vai ao RD Station Marketing). Vazio = convite desligado neste idioma. O texto é decisão da ATRA (P-14).',
+              en: 'Required for the invite to show: tells the visitor what happens to the data (it goes to RD Station Marketing). Empty = invite off in this locale. The wording is ATRA’s call (P-14).',
             },
           },
         },

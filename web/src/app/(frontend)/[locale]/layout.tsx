@@ -7,6 +7,7 @@ import { AvisoDeCookies } from '@/components/layout/aviso-de-cookies'
 import { Casca } from '@/components/layout/casca'
 import { Gtm } from '@/components/layout/gtm'
 import { Lusha } from '@/components/layout/lusha'
+import { RdStation } from '@/components/layout/rd-station'
 import { RastreioDeSaida } from '@/components/layout/rastreio-de-saida'
 import { CapturaDeUtm } from '@/components/layout/captura-de-utm'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
@@ -194,6 +195,8 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
         <Gtm id={rastreamento.gtmId} />
         {/* D-40: a Lusha espera o aceite de marketing, não de estatística. */}
         <Lusha siteId={rastreamento.lushaSiteId} />
+        {/* D-54: o monitoramento do RD Station Marketing, também atrás de marketing. */}
+        <RdStation loaderId={rastreamento.rdStationLoaderId} />
         {/* MIG-156: outbound_click por listener delegado — inerte sem GTM ou
             sem consentimento, e não desenha nada. */}
         <RastreioDeSaida />

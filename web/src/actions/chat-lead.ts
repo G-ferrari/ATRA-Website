@@ -15,7 +15,7 @@ import { MAX_POR_VALOR } from '@/lib/utm'
  *
  * Mesmo contrato do formulário de contato (MIG-100/101): anti-spam → grava →
  * avisa, com o aviso incapaz de derrubar a gravação. A sincronização com o
- * RD Station CRM não aparece aqui de propósito — é o hook de MIG-148, que
+ * RD Station não aparece aqui de propósito — é o hook `sincronizar-rd` (D-54), que
  * dispara no `payload.create`.
  *
  * ⚠️ A guarda de flag fica **na action**, não só na UI: Server Action é
