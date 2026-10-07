@@ -75,6 +75,14 @@ describe('toPainelDeConversao', () => {
     expect(mapear(global({ ctaHref: null }))!.cta).toBeNull()
   })
 
+  /* 06/10: o diagnóstico virou o segundo botão, ao lado do primeiro. */
+  it('o segundo botão só existe com texto e destino, e ganha o prefixo do idioma', () => {
+    expect(mapear(global())!.ctaSecundario).toBeNull()
+    const comBotao = global({ secondaryCtaLabel: 'Faça seu diagnóstico agora', secondaryCtaHref: '/diagnostico-maturidade' })
+    expect(mapear(comBotao)!.ctaSecundario).toEqual({ label: 'Faça seu diagnóstico agora', href: '/diagnostico-maturidade' })
+    expect(mapear(global({ secondaryCtaLabel: 'Faça seu diagnóstico agora', secondaryCtaHref: null }))!.ctaSecundario).toBeNull()
+  })
+
   it('cada aba mostra os cases escolhidos para ela, na ordem do admin', () => {
     const painel = mapear(global())!
     expect(painel.cases['data-bi'].map((c) => c.slug)).toEqual(['case-2', 'case-4'])

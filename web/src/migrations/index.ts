@@ -79,6 +79,7 @@ import * as migration_20261002_165837_add_press from './20261002_165837_add_pres
 import * as migration_20261002_170000_materias_da_imprensa from './20261002_170000_materias_da_imprensa';
 import * as migration_20261002_180000_rodape_link_unico_de_politicas from './20261002_180000_rodape_link_unico_de_politicas';
 import * as migration_20261002_202832_conversion_panel from './20261002_202832_conversion_panel';
+import * as migration_20261002_202900_conversion_panel_secondary_cta from './20261002_202900_conversion_panel_secondary_cta';
 import * as migration_20261002_203000_painel_de_conversao from './20261002_203000_painel_de_conversao';
 import * as migration_20261002_212500_solutions_tabs_and_badge from './20261002_212500_solutions_tabs_and_badge';
 import * as migration_20261002_213000_nova_estrutura_de_solucoes from './20261002_213000_nova_estrutura_de_solucoes';
@@ -90,6 +91,8 @@ import * as migration_20261005_213758_paginas_mestras_etiqueta_e_chamada from '.
 import * as migration_20261005_223123_insights_automatica from './20261005_223123_insights_automatica';
 import * as migration_20261005_230000_paginas_mestras_conteudo from './20261005_230000_paginas_mestras_conteudo';
 import * as migration_20261005_232618_paginas_mestras_sem_tema from './20261005_232618_paginas_mestras_sem_tema';
+import * as migration_20261007_010701_conversion_panel_secondary_cta from './20261007_010701_conversion_panel_secondary_cta';
+import * as migration_20261007_011000_painel_com_botao_de_diagnostico from './20261007_011000_painel_com_botao_de_diagnostico';
 
 export const migrations = [
   {
@@ -498,6 +501,11 @@ export const migrations = [
     name: '20261002_202832_conversion_panel',
   },
   {
+    up: migration_20261002_202900_conversion_panel_secondary_cta.up,
+    down: migration_20261002_202900_conversion_panel_secondary_cta.down,
+    name: '20261002_202900_conversion_panel_secondary_cta',
+  },
+  {
     up: migration_20261002_203000_painel_de_conversao.up,
     down: migration_20261002_203000_painel_de_conversao.down,
     name: '20261002_203000_painel_de_conversao',
@@ -551,5 +559,15 @@ export const migrations = [
     up: migration_20261005_232618_paginas_mestras_sem_tema.up,
     down: migration_20261005_232618_paginas_mestras_sem_tema.down,
     name: '20261005_232618_paginas_mestras_sem_tema',
+  },
+  {
+    up: migration_20261007_010701_conversion_panel_secondary_cta.up,
+    down: migration_20261007_010701_conversion_panel_secondary_cta.down,
+    name: '20261007_010701_conversion_panel_secondary_cta'
+  },
+  {
+    up: migration_20261007_011000_painel_com_botao_de_diagnostico.up,
+    down: migration_20261007_011000_painel_com_botao_de_diagnostico.down,
+    name: '20261007_011000_painel_com_botao_de_diagnostico',
   },
 ];
