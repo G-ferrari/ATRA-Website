@@ -58,8 +58,9 @@ export const ConversionPanel: GlobalConfig = {
     {
       name: 'paths',
       type: 'array',
-      /* Três, como as abas: o painel tem altura fixa e o quarto empurraria o
-       * case para fora da tela num notebook. */
+      /* Três no máximo: o painel tem altura fixa e o quarto empurraria o case
+       * para fora da tela num notebook. Desde 06/10 são dois — o terceiro virou
+       * o segundo botão. */
       maxRows: 3,
       label: { pt: 'Caminhos', en: 'Paths' },
       fields: [
@@ -90,6 +91,33 @@ export const ConversionPanel: GlobalConfig = {
           type: 'text',
           defaultValue: '/contato',
           label: { pt: 'Destino do botão', en: 'Button target' },
+        },
+      ],
+    },
+    {
+      /* O segundo botão, ao lado do primeiro (06/10, pedido da Karen): "Faça seu
+       * diagnóstico agora". Era o terceiro caminho da lista acima, e virou botão
+       * para o diagnóstico ter o peso de uma ação, e não de mais uma opção.
+       * Vazio, só o primeiro botão aparece, na largura toda. */
+      type: 'row',
+      fields: [
+        {
+          name: 'secondaryCtaLabel',
+          type: 'text',
+          localized: true,
+          label: { pt: 'Texto do segundo botão', en: 'Second button label' },
+          admin: {
+            description: {
+              pt: 'Curto: os dois botões dividem a largura do painel. Vazio, o botão não aparece.',
+              en: 'Keep it short: the two buttons share the panel width. Empty hides the button.',
+            },
+          },
+        },
+        {
+          name: 'secondaryCtaHref',
+          type: 'text',
+          defaultValue: '/diagnostico-maturidade',
+          label: { pt: 'Destino do segundo botão', en: 'Second button target' },
         },
       ],
     },

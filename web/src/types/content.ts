@@ -969,6 +969,8 @@ export type PainelDeConversao = {
   caminhos: { icon: string; title: string; description: string | null; href: string }[]
   /** `null` sem texto ou sem destino: o botão não é desenhado. */
   cta: { label: string; href: string } | null
+  /** O segundo botão, ao lado do primeiro — "Faça seu diagnóstico agora". */
+  ctaSecundario: { label: string; href: string } | null
   provas: { value: string; label: string | null }[]
   /** O que cada aba mostra. Aba sem case escolhido recebe os mais recentes. */
   cases: Record<AbaDeSolucoes, MiniCase[]>

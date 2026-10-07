@@ -11602,6 +11602,11 @@ export interface ConversionPanel {
   ctaLabel?: string | null;
   ctaHref?: string | null;
   /**
+   * Keep it short: the two buttons share the panel width. Empty hides the button.
+   */
+  secondaryCtaLabel?: string | null;
+  secondaryCtaHref?: string | null;
+  /**
    * One line only: “140+ specialists · 15+ years · …”. Five short items is what fits.
    */
   proof?:
@@ -12086,6 +12091,8 @@ export interface ConversionPanelSelect<T extends boolean = true> {
       };
   ctaLabel?: T;
   ctaHref?: T;
+  secondaryCtaLabel?: T;
+  secondaryCtaHref?: T;
   proof?:
     | T
     | {

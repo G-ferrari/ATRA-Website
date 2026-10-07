@@ -1466,6 +1466,12 @@ menu.
   painel diz **5x GPTW**, e "Configurações do site" ainda diz 4x, marcado como
   número em disputa (P-01).
 - O inglês é tradução literal, à espera da revisão (P-08).
+- **06/10, revisão com a Karen:** o terceiro caminho ("Cortar custo e risco em
+  nuvem") virou o **segundo botão**, "Faça seu diagnóstico agora", ao lado de
+  "Falar com um especialista" — o diagnóstico ganha o peso de uma ação. A
+  prova social fica. Campos `secondaryCtaLabel`/`secondaryCtaHref` no global e
+  migração de dados `20261007_011000`, que só tira o caminho se ele ainda
+  tiver o título de 02/10. Os outros dois caminhos são do marketing (D-22).
 
 ## D-52 — Estrutura nova do menu de Soluções: 4 abas, 18 soluções
 
