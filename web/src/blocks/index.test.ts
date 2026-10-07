@@ -34,7 +34,8 @@ describe('seletor de seções', () => {
     const slugs = BLOCOS.map((b) => b.slug)
     expect(new Set(slugs).size).toBe(slugs.length)
     expect(slugs).toContain('highlightCarousel')
-    expect(slugs).toHaveLength(28)
+    expect(slugs).toContain('partnerMosaic')
+    expect(slugs).toHaveLength(29)
   })
 
   /* Task 033: sem miniatura o card volta para a montanha cinza do Payload, e o

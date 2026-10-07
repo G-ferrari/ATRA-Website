@@ -27,6 +27,7 @@ import { BlocoHomeHero } from './bloco-home-hero'
 import { BlocoHubDeInsights } from './bloco-hub-de-insights'
 import { BlocoParceiroHero } from './bloco-parceiro-hero'
 import { BlocoParceiroSecao } from './bloco-parceiro-secao'
+import { BlocoMosaicoDeParceiros } from './bloco-mosaico-de-parceiros'
 import { BlocoParceiros } from './bloco-parceiros'
 import { BlocoVagas } from './bloco-vagas'
 import { BlocoVitrineDeConteudo } from './bloco-vitrine-de-conteudo'
@@ -125,6 +126,8 @@ export function RenderBlocks({
         return <BlocoVagas key={b.id} bloco={b} locale={locale} vagasDoAtrair={vagasDoAtrair} />
       case 'partnerShowcase':
         return <BlocoParceiros key={b.id} bloco={b} />
+      case 'partnerMosaic':
+        return <BlocoMosaicoDeParceiros key={b.id} bloco={b} />
       case 'valueCards':
         return <BlocoValores key={b.id} bloco={b} />
       case 'stickyPageNav':

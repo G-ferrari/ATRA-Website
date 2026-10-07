@@ -701,7 +701,19 @@ export type BlocoWebinarTeaser = Base & {
   capa: Image | null
 }
 
+/** Mosaico de parceiros (07/10): cartões com imagem, nome e link, arrumados por
+ *  quantidade (`lib/mosaico.ts`). */
+export type BlocoPartnerMosaic = Base & {
+  tipo: 'partnerMosaic'
+  eyebrow: string | null
+  title: string | null
+  /** A descrição, já separada em parágrafos (linha em branco). */
+  paragrafos: string[]
+  items: { image: Image; name: string; linkLabel: string | null; href: string | null }[]
+}
+
 export type Bloco =
+  | BlocoPartnerMosaic
   | BlocoSectionListing
   | BlocoSectionFeatured
   | BlocoWebinarTeaser

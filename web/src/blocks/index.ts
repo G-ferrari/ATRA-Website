@@ -403,6 +403,90 @@ export const StatsGrid: Block = {
   ],
 }
 
+/* Mosaico de parceiros (07/10) — cartões com imagem, nome do parceiro e link,
+ * numa grade de tamanhos mistos que se arruma sozinha pela quantidade.
+ *
+ * Nasceu da página de Assessoria em Produtos: o marketing montou a seção com a
+ * vitrine de conteúdo da home, que distribui em colunas, e com 5 parceiros a
+ * terceira coluna ficava com um cartão só. Aqui o arranjo é fechado por
+ * quantidade (`lib/mosaico.ts`).
+ *
+ * Imagem, nome e destino são do cartão, e não do cadastro de Parceiros: a
+ * imagem é uma arte quadrada feita para esta seção (o logo do cadastro não
+ * serve), e o destino pode ser a página do parceiro ou o site dele. */
+export const PartnerMosaic: Block = {
+  slug: 'partnerMosaic',
+  labels: {
+    singular: { pt: 'Mosaico de parceiros', en: 'Partner mosaic' },
+    plural: { pt: 'Mosaicos de parceiros', en: 'Partner mosaics' },
+  },
+  fields: [
+    { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Linha de apoio', en: 'Eyebrow' } },
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      name: 'description',
+      type: 'textarea',
+      localized: true,
+      label: { pt: 'Descrição', en: 'Description' },
+      admin: {
+        description: {
+          pt: 'Opcional. Uma linha em branco separa os parágrafos.',
+          en: 'Optional. A blank line separates paragraphs.',
+        },
+      },
+    },
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      maxRows: 6,
+      label: { pt: 'Parceiros', en: 'Partners' },
+      admin: {
+        description: {
+          pt: 'De 4 a 6 é o ideal: o mosaico se arruma sozinho. Com 4 ou 5, o primeiro da lista é o cartão grande; com 6, o primeiro e o último são os largos. Arraste para mudar a ordem.',
+          en: 'Four to six is ideal: the mosaic arranges itself. With 4 or 5 the first one is the large card; with 6, the first and the last are the wide ones. Drag to reorder.',
+        },
+      },
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+          label: { pt: 'Imagem', en: 'Image' },
+          admin: {
+            description: {
+              pt: 'Quadrada, com pelo menos 1200px. No cartão largo ela é cortada em faixa pelo meio: deixe o principal no centro.',
+              en: 'Square, at least 1200px. The wide card crops it to a band through the middle: keep the subject centred.',
+            },
+          },
+        },
+        { name: 'name', type: 'text', required: true, label: { pt: 'Nome do parceiro', en: 'Partner name' } },
+        {
+          name: 'linkLabel',
+          type: 'text',
+          localized: true,
+          label: { pt: 'Texto do link', en: 'Link label' },
+          admin: { description: { pt: 'Ex.: “Ferramentas”.', en: 'E.g. “Tools”.' } },
+        },
+        {
+          name: 'href',
+          type: 'text',
+          label: { pt: 'Destino', en: 'Target' },
+          admin: {
+            description: {
+              pt: 'A página do parceiro no site (/parceiros/google-cloud) ou um endereço completo, com https://. Vazio, o cartão não é link.',
+              en: 'The partner page on the site (/parceiros/google-cloud) or a full address, with https://. Empty: the card is not a link.',
+            },
+          },
+        },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
 export const PartnerShowcase: Block = {
   slug: 'partnerShowcase',
   labels: { singular: { pt: 'Vitrine de parceiros', en: 'Partner showcase' }, plural: { pt: 'Vitrines', en: 'Partner showcases' } },
@@ -1675,6 +1759,7 @@ const GRUPO_DO_BLOCO = {
   sealsBanner: 'prova',
   imageGrid: 'prova',
   partnerShowcase: 'prova',
+  partnerMosaic: 'prova',
   logoMarquee: 'prova',
   partnerSplit: 'prova',
   highlightCarousel: 'vitrines',
@@ -1696,6 +1781,7 @@ const TODOS = [
   IconCardGrid,
   ValueCards,
   PartnerShowcase,
+  PartnerMosaic,
   SealsBanner,
   ImageGrid,
   ProcessSteps,

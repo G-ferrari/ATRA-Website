@@ -125,6 +125,14 @@ Três seções que mudaram de comportamento em 29/09:
   para todos os parágrafos daquela seção (desde 05/10).
 - **Grade de imagens** — é a dos selos (Google Cloud, na página do parceiro e
   em Data Analytics). Para trocar um selo, troque a imagem ali.
+- **Mosaico de parceiros** — cartões com imagem, nome do parceiro e link, em
+  tamanhos diferentes (feito para a página de Assessoria em Produtos). Use de
+  **4 a 6** parceiros; a grade se arruma sozinha: com 4 ou 5, o **primeiro** da
+  lista é o cartão grande; com 6, o primeiro e o último são os largos. Arraste
+  para mudar quem fica onde. A imagem deve ser **quadrada**, com o principal no
+  centro (no cartão largo ela é cortada em faixa). O destino pode ser a página
+  do parceiro no site (`/parceiros/google-cloud`) ou o site dele, com
+  `https://`.
 
 ## ATRA na mídia
 

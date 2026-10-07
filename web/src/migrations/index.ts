@@ -64,6 +64,7 @@ import * as migration_20260927_215500_locked_documents_press from './20260927_21
 import * as migration_20260927_215600_solutions_badge from './20260927_215600_solutions_badge';
 import * as migration_20260927_215700_rich_text_body_size from './20260927_215700_rich_text_body_size';
 import * as migration_20260927_215800_paginas_mestras from './20260927_215800_paginas_mestras';
+import * as migration_20260927_215900_partner_mosaic from './20260927_215900_partner_mosaic';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './20260928_001000_carrossel_da_home_com_rc18';
@@ -93,6 +94,7 @@ import * as migration_20261005_230000_paginas_mestras_conteudo from './20261005_
 import * as migration_20261005_232618_paginas_mestras_sem_tema from './20261005_232618_paginas_mestras_sem_tema';
 import * as migration_20261007_010701_conversion_panel_secondary_cta from './20261007_010701_conversion_panel_secondary_cta';
 import * as migration_20261007_011000_painel_com_botao_de_diagnostico from './20261007_011000_painel_com_botao_de_diagnostico';
+import * as migration_20261007_012347_partner_mosaic from './20261007_012347_partner_mosaic';
 
 export const migrations = [
   {
@@ -426,6 +428,11 @@ export const migrations = [
     name: '20260927_215800_paginas_mestras',
   },
   {
+    up: migration_20260927_215900_partner_mosaic.up,
+    down: migration_20260927_215900_partner_mosaic.down,
+    name: '20260927_215900_partner_mosaic',
+  },
+  {
     up: migration_20260927_235900_solucoes_do_wordpress.up,
     down: migration_20260927_235900_solucoes_do_wordpress.down,
     name: '20260927_235900_solucoes_do_wordpress',
@@ -563,11 +570,16 @@ export const migrations = [
   {
     up: migration_20261007_010701_conversion_panel_secondary_cta.up,
     down: migration_20261007_010701_conversion_panel_secondary_cta.down,
-    name: '20261007_010701_conversion_panel_secondary_cta'
+    name: '20261007_010701_conversion_panel_secondary_cta',
   },
   {
     up: migration_20261007_011000_painel_com_botao_de_diagnostico.up,
     down: migration_20261007_011000_painel_com_botao_de_diagnostico.down,
     name: '20261007_011000_painel_com_botao_de_diagnostico',
+  },
+  {
+    up: migration_20261007_012347_partner_mosaic.up,
+    down: migration_20261007_012347_partner_mosaic.down,
+    name: '20261007_012347_partner_mosaic'
   },
 ];
