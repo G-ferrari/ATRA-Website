@@ -1445,6 +1445,47 @@ export interface Partner {
             blockType: 'imageGrid';
           }
         | {
+            eyebrow?: string | null;
+            title?: string | null;
+            /**
+             * Optional. A blank line separates paragraphs.
+             */
+            description?: string | null;
+            /**
+             * Four to six is ideal: the mosaic arranges itself. With 4 or 5 the first one is the large card; with 6, the first and the last are the wide ones. Drag to reorder.
+             */
+            items: {
+              /**
+               * Square, at least 1200px. The wide card crops it to a band through the middle: keep the subject centred.
+               */
+              image: number | Media;
+              name: string;
+              /**
+               * E.g. “Tools”.
+               */
+              linkLabel?: string | null;
+              /**
+               * The partner page on the site (/parceiros/google-cloud) or a full address, with https://. Empty: the card is not a link.
+               */
+              href?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerMosaic';
+          }
+        | {
             source?: ('siteSettings' | 'custom') | null;
             customItems?:
               | {
@@ -3120,6 +3161,47 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'imageGrid';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        /**
+         * Optional. A blank line separates paragraphs.
+         */
+        description?: string | null;
+        /**
+         * Four to six is ideal: the mosaic arranges itself. With 4 or 5 the first one is the large card; with 6, the first and the last are the wide ones. Drag to reorder.
+         */
+        items: {
+          /**
+           * Square, at least 1200px. The wide card crops it to a band through the middle: keep the subject centred.
+           */
+          image: number | Media;
+          name: string;
+          /**
+           * E.g. “Tools”.
+           */
+          linkLabel?: string | null;
+          /**
+           * The partner page on the site (/parceiros/google-cloud) or a full address, with https://. Empty: the card is not a link.
+           */
+          href?: string | null;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'partnerMosaic';
       }
     | {
         source?: ('siteSettings' | 'custom') | null;
@@ -5079,6 +5161,47 @@ export interface Segment {
             blockType: 'imageGrid';
           }
         | {
+            eyebrow?: string | null;
+            title?: string | null;
+            /**
+             * Optional. A blank line separates paragraphs.
+             */
+            description?: string | null;
+            /**
+             * Four to six is ideal: the mosaic arranges itself. With 4 or 5 the first one is the large card; with 6, the first and the last are the wide ones. Drag to reorder.
+             */
+            items: {
+              /**
+               * Square, at least 1200px. The wide card crops it to a band through the middle: keep the subject centred.
+               */
+              image: number | Media;
+              name: string;
+              /**
+               * E.g. “Tools”.
+               */
+              linkLabel?: string | null;
+              /**
+               * The partner page on the site (/parceiros/google-cloud) or a full address, with https://. Empty: the card is not a link.
+               */
+              href?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerMosaic';
+          }
+        | {
             source?: ('siteSettings' | 'custom') | null;
             customItems?:
               | {
@@ -6714,6 +6837,47 @@ export interface Solution {
             blockType: 'imageGrid';
           }
         | {
+            eyebrow?: string | null;
+            title?: string | null;
+            /**
+             * Optional. A blank line separates paragraphs.
+             */
+            description?: string | null;
+            /**
+             * Four to six is ideal: the mosaic arranges itself. With 4 or 5 the first one is the large card; with 6, the first and the last are the wide ones. Drag to reorder.
+             */
+            items: {
+              /**
+               * Square, at least 1200px. The wide card crops it to a band through the middle: keep the subject centred.
+               */
+              image: number | Media;
+              name: string;
+              /**
+               * E.g. “Tools”.
+               */
+              linkLabel?: string | null;
+              /**
+               * The partner page on the site (/parceiros/google-cloud) or a full address, with https://. Empty: the card is not a link.
+               */
+              href?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerMosaic';
+          }
+        | {
             source?: ('siteSettings' | 'custom') | null;
             customItems?:
               | {
@@ -8293,6 +8457,29 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerMosaic?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    name?: T;
+                    linkLabel?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         statsGrid?:
           | T
           | {
@@ -9279,6 +9466,29 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerMosaic?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    name?: T;
+                    linkLabel?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         statsGrid?:
           | T
           | {
@@ -10095,6 +10305,29 @@ export interface SegmentsSelect<T extends boolean = true> {
                     id?: T;
                   };
               boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partnerMosaic?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    name?: T;
+                    linkLabel?: T;
+                    href?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10934,6 +11167,29 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        partnerMosaic?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    name?: T;
+                    linkLabel?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         statsGrid?:
           | T
           | {
@@ -11602,6 +11858,11 @@ export interface ConversionPanel {
   ctaLabel?: string | null;
   ctaHref?: string | null;
   /**
+   * Keep it short: the two buttons share the panel width. Empty hides the button.
+   */
+  secondaryCtaLabel?: string | null;
+  secondaryCtaHref?: string | null;
+  /**
    * One line only: “140+ specialists · 15+ years · …”. Five short items is what fits.
    */
   proof?:
@@ -12086,6 +12347,8 @@ export interface ConversionPanelSelect<T extends boolean = true> {
       };
   ctaLabel?: T;
   ctaHref?: T;
+  secondaryCtaLabel?: T;
+  secondaryCtaHref?: T;
   proof?:
     | T
     | {

@@ -701,7 +701,19 @@ export type BlocoWebinarTeaser = Base & {
   capa: Image | null
 }
 
+/** Mosaico de parceiros (07/10): cartões com imagem, nome e link, arrumados por
+ *  quantidade (`lib/mosaico.ts`). */
+export type BlocoPartnerMosaic = Base & {
+  tipo: 'partnerMosaic'
+  eyebrow: string | null
+  title: string | null
+  /** A descrição, já separada em parágrafos (linha em branco). */
+  paragrafos: string[]
+  items: { image: Image; name: string; linkLabel: string | null; href: string | null }[]
+}
+
 export type Bloco =
+  | BlocoPartnerMosaic
   | BlocoSectionListing
   | BlocoSectionFeatured
   | BlocoWebinarTeaser
@@ -969,6 +981,8 @@ export type PainelDeConversao = {
   caminhos: { icon: string; title: string; description: string | null; href: string }[]
   /** `null` sem texto ou sem destino: o botão não é desenhado. */
   cta: { label: string; href: string } | null
+  /** O segundo botão, ao lado do primeiro — "Faça seu diagnóstico agora". */
+  ctaSecundario: { label: string; href: string } | null
   provas: { value: string; label: string | null }[]
   /** O que cada aba mostra. Aba sem case escolhido recebe os mais recentes. */
   cases: Record<AbaDeSolucoes, MiniCase[]>

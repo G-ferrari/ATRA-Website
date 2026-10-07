@@ -125,6 +125,14 @@ Três seções que mudaram de comportamento em 29/09:
   para todos os parágrafos daquela seção (desde 05/10).
 - **Grade de imagens** — é a dos selos (Google Cloud, na página do parceiro e
   em Data Analytics). Para trocar um selo, troque a imagem ali.
+- **Mosaico de parceiros** — cartões com imagem, nome do parceiro e link, em
+  tamanhos diferentes (feito para a página de Assessoria em Produtos). Use de
+  **4 a 6** parceiros; a grade se arruma sozinha: com 4 ou 5, o **primeiro** da
+  lista é o cartão grande; com 6, o primeiro e o último são os largos. Arraste
+  para mudar quem fica onde. A imagem deve ser **quadrada**, com o principal no
+  centro (no cartão largo ela é cortada em faixa). O destino pode ser a página
+  do parceiro no site (`/parceiros/google-cloud`) ou o site dele, com
+  `https://`.
 
 ## ATRA na mídia
 
@@ -231,10 +239,14 @@ cima). Ele é o mesmo nas três abas; só o case de baixo muda.
 - **Título** — "Por onde começar?". ⚠️ Apagar o título **tira o painel do
   menu** inteiro: é o jeito de desligá-lo.
 - **Texto de abertura** — a frase sob o título.
-- **Caminhos** (até 3) — ícone, título, descrição e destino de cada um. O
-  destino é um endereço do site, começando com `/`; os três levam ao
-  diagnóstico (`/diagnostico-maturidade`).
+- **Caminhos** (até 3; hoje são 2) — ícone, título, descrição e destino de
+  cada um. O destino é um endereço do site, começando com `/`; os dois levam
+  ao diagnóstico (`/diagnostico-maturidade`).
 - **Texto e destino do botão** — "Falar com um especialista", para `/contato`.
+- **Texto e destino do segundo botão** — "Faça seu diagnóstico agora", para o
+  diagnóstico. Fica ao lado do primeiro (desde 06/10; era o terceiro caminho).
+  Os dois dividem a largura do painel: texto curto. ⚠️ Texto vazio tira o
+  botão, e o primeiro volta a ocupar a largura toda.
 - **Prova social** (até 5) — cada item tem um **destaque** ("140+", "5x") e um
   **rótulo** ("especialistas", "GPTW"). Cabem numa linha só se forem curtos.
   ⚠️ Os números institucionais também moram em Globais → Configurações do

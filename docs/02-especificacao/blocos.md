@@ -36,6 +36,7 @@ corresponde a uma seção que **já existe** no legado — nenhum bloco foi inve
 | `bentoGrid` | `SolutionAI.tsx:395` | soluções, home | cabeçalho, `items[]{span: 5\|6\|7\|12, size: featured-wide\|featured\|supporting, accent, icon, badge, chip, title, description, metrics[], tags[], bullets[], footer}` |
 | `audienceSplit` | `SolutionAI.tsx:621` | soluções | cabeçalho, `cta{label,href}`, `items[]{icon, accent, title (loc), description (loc)}` |
 | `accordionSteps` | `SolutionAI.tsx:685` | soluções | cabeçalho, `image → media`, `imageBadge{icon,title,subtitle}`, `steps[]{title (loc), description (loc)}` — a primeira abre expandida |
+| `partnerMosaic` | novo (07/10), para a página de Assessoria em Produtos | soluções | `eyebrow`/`title`/`description` (loc), `items[]{ image → media, name, linkLabel (loc), href }` (1 a 6) — o arranjo sai da quantidade (`lib/mosaico.ts`): um grande e os outros em volta com 4 e 5, dois largos espelhados com 6 |
 | `sectionListing` | as rotas de índice (D-55) | páginas-mestras | `eyebrow`/`chip`/`title`/`highlight`/`description` (loc) — **a lista é automática**: a seção vem da página-mestra, e cada uma desenha a sua (`components/secoes/`). Em página comum, não desenha nada |
 | `sectionFeatured` | `FeaturedHero` das rotas de índice (D-55) | páginas-mestras | `actionLabel` (loc) — os itens são os primeiros da seção (`itensEmDestaque`) |
 | `webinarTeaser` | `Blog.tsx:283` (D-55) | blog | `eyebrow`/`title`/`highlight`/`description`/`actionLabel` (loc) — o destaque fica **dentro** do título; capa = o primeiro webinar de /webinars |

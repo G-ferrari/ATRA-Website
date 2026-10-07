@@ -897,7 +897,10 @@ test.describe('app novo', () => {
       await passarNaCategoria(page, 'Soluções', () => expect(lateral).toBeVisible({ timeout: 2000 }))
 
       await expect(lateral.getByRole('heading', { name: 'Por onde começar?' })).toBeVisible()
-      await expect(lateral.locator('a[href="/diagnostico-maturidade"]')).toHaveCount(3)
+      /* 06/10: dois caminhos e dois botões. O diagnóstico, que era o terceiro
+         caminho, virou o botão ao lado de "Falar com um especialista". */
+      await expect(lateral.locator('li a[href="/diagnostico-maturidade"]')).toHaveCount(2)
+      await expect(lateral.getByRole('link', { name: 'Faça seu diagnóstico agora' })).toHaveAttribute('href', '/diagnostico-maturidade')
       await expect(lateral.getByRole('link', { name: /Falar com um especialista/ })).toHaveAttribute('href', '/contato')
       await expect(lateral.getByTestId('prova-social')).toHaveText(/140\+ especialistas.*15\+ anos.*Parceira Google Cloud.*5x GPTW.*4x LIPT/)
 
