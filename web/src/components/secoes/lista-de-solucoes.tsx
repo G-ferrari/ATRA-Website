@@ -97,8 +97,9 @@ export function ListaDeSolucoes({
  * é uma `<div>` — no índice, um link que não sai do lugar é pior que um card
  * estático, e `hasPage` já carrega essa informação (D-09). */
 function CartaoDeSolucao({ solucao, locale, icone: Icone }: { solucao: SolutionCard; locale: Locale; icone: LucideIcon }) {
-  /* Cartão com selo é o destaque da aba (D-52): ganha o contorno da marca. */
-  const classe = cn('relative flex flex-col p-5 rounded-md bg-surface-2  transition-all group', solucao.badge && 'ring-1 ring-primary/40')
+  /* O destaque da aba (D-52) é só o selo. Até 06/10 o cartão com selo tinha
+     também um contorno da marca, que lia como "já selecionado". */
+  const classe = 'relative flex flex-col p-5 rounded-md bg-surface-2  transition-all group'
 
   const conteudo = (
     <>
