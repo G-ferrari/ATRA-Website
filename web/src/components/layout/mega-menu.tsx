@@ -40,9 +40,6 @@ const COR_DO_DESTAQUE: Record<CorDeDestaque, string> = {
 const CARTAO =
   'flex flex-col p-4 rounded-[6px] bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all hover:shadow-md group'
 
-/* Solução com selo (D-52) — o "Diferencial ATRA" de Analytics Conversacional. */
-const CARTAO_EM_DESTAQUE = 'ring-1 ring-primary/40 bg-primary/[0.04] dark:bg-primary/[0.08]'
-
 const CELULA_DA_GRADE =
   'flex flex-col items-center text-center gap-2 p-4 rounded-[6px] bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all group shadow-sm'
 
@@ -306,11 +303,11 @@ function PainelDeSolucoes({
             /* Solução sem página não vira link, como no índice (D-09). No legado
              * todas são `<Link>`, inclusive as cinco que apontam para `#`. */
             return item.href ? (
-              <Link key={item.title} href={item.href} onClick={aoNavegar} className={cn(CARTAO, item.badge && CARTAO_EM_DESTAQUE)}>
+              <Link key={item.title} href={item.href} onClick={aoNavegar} className={CARTAO}>
                 {conteudo}
               </Link>
             ) : (
-              <div key={item.title} className={cn(CARTAO, item.badge && CARTAO_EM_DESTAQUE, 'cursor-default')}>
+              <div key={item.title} className={cn(CARTAO, 'cursor-default')}>
                 {conteudo}
               </div>
             )
@@ -388,14 +385,37 @@ function CamadaDeConversao({
         </ul>
       )}
 
-      {painel.cta && (
-        <Link
-          href={painel.cta.href}
-          onClick={aoNavegar}
-          className="flex items-center justify-center gap-2 w-full rounded-[6px] bg-primary text-white text-xs font-semibold py-2.5 shadow-md hover:bg-primary-dark active:scale-[0.99] transition-all"
-        >
-          {painel.cta.label} <ArrowRight size={14} aria-hidden />
-        </Link>
+      {/* Os dois botões, lado a lado (06/10, pedido da Karen): falar com um
+          especialista e o diagnóstico, que era o terceiro caminho da lista.
+          Com os dois, a letra desce um ponto e a seta sai, para caberem nos
+          25rem do painel; `flex-wrap` é a rede para um texto mais comprido
+          digitado no admin — o segundo desce para a linha de baixo em vez de
+          vazar. Com um só, o botão é o de sempre, na largura toda. */}
+      {(painel.cta || painel.ctaSecundario) && (
+        <div className="flex flex-wrap gap-2">
+          {painel.cta && (
+            <Link
+              href={painel.cta.href}
+              onClick={aoNavegar}
+              className={cn(
+                'flex-1 flex items-center justify-center gap-2 rounded-[6px] bg-primary text-white font-semibold py-2.5 px-3 whitespace-nowrap shadow-md hover:bg-primary-dark active:scale-[0.99] transition-all',
+                painel.ctaSecundario ? 'text-[11px]' : 'text-xs',
+              )}
+            >
+              {painel.cta.label}
+              {!painel.ctaSecundario && <ArrowRight size={14} aria-hidden />}
+            </Link>
+          )}
+          {painel.ctaSecundario && (
+            <Link
+              href={painel.ctaSecundario.href}
+              onClick={aoNavegar}
+              className="flex-1 flex items-center justify-center rounded-[6px] border border-primary text-primary text-[11px] font-semibold py-2.5 px-3 whitespace-nowrap hover:bg-primary hover:text-white active:scale-[0.99] transition-all"
+            >
+              {painel.ctaSecundario.label}
+            </Link>
+          )}
+        </div>
       )}
 
       {/* Uma linha só nos 25rem do painel, com os cinco itens da especificação

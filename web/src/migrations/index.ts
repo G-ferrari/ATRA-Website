@@ -62,6 +62,9 @@ import * as migration_20260927_215331_add_image_grid from './20260927_215331_add
 import * as migration_20260927_215400_partner_showcase_source from './20260927_215400_partner_showcase_source';
 import * as migration_20260927_215500_locked_documents_press from './20260927_215500_locked_documents_press';
 import * as migration_20260927_215600_solutions_badge from './20260927_215600_solutions_badge';
+import * as migration_20260927_215700_rich_text_body_size from './20260927_215700_rich_text_body_size';
+import * as migration_20260927_215800_paginas_mestras from './20260927_215800_paginas_mestras';
+import * as migration_20260927_215900_partner_mosaic from './20260927_215900_partner_mosaic';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './20260928_001000_carrossel_da_home_com_rc18';
@@ -77,12 +80,23 @@ import * as migration_20261002_165837_add_press from './20261002_165837_add_pres
 import * as migration_20261002_170000_materias_da_imprensa from './20261002_170000_materias_da_imprensa';
 import * as migration_20261002_180000_rodape_link_unico_de_politicas from './20261002_180000_rodape_link_unico_de_politicas';
 import * as migration_20261002_202832_conversion_panel from './20261002_202832_conversion_panel';
+import * as migration_20261002_202900_conversion_panel_secondary_cta from './20261002_202900_conversion_panel_secondary_cta';
 import * as migration_20261002_203000_painel_de_conversao from './20261002_203000_painel_de_conversao';
 import * as migration_20261002_212500_solutions_tabs_and_badge from './20261002_212500_solutions_tabs_and_badge';
 import * as migration_20261002_213000_nova_estrutura_de_solucoes from './20261002_213000_nova_estrutura_de_solucoes';
 import * as migration_20261002_213100_rodape_com_as_abas_novas from './20261002_213100_rodape_com_as_abas_novas';
 import * as migration_20261003_120000_vagas_do_wordpress from './20261003_120000_vagas_do_wordpress';
 import * as migration_20261002_190000_rd_station_marketing from './20261002_190000_rd_station_marketing';
+import * as migration_20261005_205500_rich_text_body_size from './20261005_205500_rich_text_body_size';
+import * as migration_20261005_213516_paginas_mestras from './20261005_213516_paginas_mestras';
+import * as migration_20261005_213758_paginas_mestras_etiqueta_e_chamada from './20261005_213758_paginas_mestras_etiqueta_e_chamada';
+import * as migration_20261005_223123_insights_automatica from './20261005_223123_insights_automatica';
+import * as migration_20261005_230000_paginas_mestras_conteudo from './20261005_230000_paginas_mestras_conteudo';
+import * as migration_20261005_232618_paginas_mestras_sem_tema from './20261005_232618_paginas_mestras_sem_tema';
+import * as migration_20261007_010701_conversion_panel_secondary_cta from './20261007_010701_conversion_panel_secondary_cta';
+import * as migration_20261007_011000_painel_com_botao_de_diagnostico from './20261007_011000_painel_com_botao_de_diagnostico';
+import * as migration_20261007_012347_partner_mosaic from './20261007_012347_partner_mosaic';
+import * as migration_20261007_020000_assessoria_com_mosaico_de_parceiros from './20261007_020000_assessoria_com_mosaico_de_parceiros';
 
 export const migrations = [
   {
@@ -406,6 +420,21 @@ export const migrations = [
     name: '20260927_215600_solutions_badge',
   },
   {
+    up: migration_20260927_215700_rich_text_body_size.up,
+    down: migration_20260927_215700_rich_text_body_size.down,
+    name: '20260927_215700_rich_text_body_size',
+  },
+  {
+    up: migration_20260927_215800_paginas_mestras.up,
+    down: migration_20260927_215800_paginas_mestras.down,
+    name: '20260927_215800_paginas_mestras',
+  },
+  {
+    up: migration_20260927_215900_partner_mosaic.up,
+    down: migration_20260927_215900_partner_mosaic.down,
+    name: '20260927_215900_partner_mosaic',
+  },
+  {
     up: migration_20260927_235900_solucoes_do_wordpress.up,
     down: migration_20260927_235900_solucoes_do_wordpress.down,
     name: '20260927_235900_solucoes_do_wordpress',
@@ -481,6 +510,11 @@ export const migrations = [
     name: '20261002_202832_conversion_panel',
   },
   {
+    up: migration_20261002_202900_conversion_panel_secondary_cta.up,
+    down: migration_20261002_202900_conversion_panel_secondary_cta.down,
+    name: '20261002_202900_conversion_panel_secondary_cta',
+  },
+  {
     up: migration_20261002_203000_painel_de_conversao.up,
     down: migration_20261002_203000_painel_de_conversao.down,
     name: '20261002_203000_painel_de_conversao',
@@ -509,5 +543,55 @@ export const migrations = [
     up: migration_20261002_190000_rd_station_marketing.up,
     down: migration_20261002_190000_rd_station_marketing.down,
     name: '20261002_190000_rd_station_marketing',
+  },
+  {
+    up: migration_20261005_205500_rich_text_body_size.up,
+    down: migration_20261005_205500_rich_text_body_size.down,
+    name: '20261005_205500_rich_text_body_size',
+  },
+  {
+    up: migration_20261005_213516_paginas_mestras.up,
+    down: migration_20261005_213516_paginas_mestras.down,
+    name: '20261005_213516_paginas_mestras',
+  },
+  {
+    up: migration_20261005_213758_paginas_mestras_etiqueta_e_chamada.up,
+    down: migration_20261005_213758_paginas_mestras_etiqueta_e_chamada.down,
+    name: '20261005_213758_paginas_mestras_etiqueta_e_chamada',
+  },
+  {
+    up: migration_20261005_223123_insights_automatica.up,
+    down: migration_20261005_223123_insights_automatica.down,
+    name: '20261005_223123_insights_automatica',
+  },
+  {
+    up: migration_20261005_230000_paginas_mestras_conteudo.up,
+    down: migration_20261005_230000_paginas_mestras_conteudo.down,
+    name: '20261005_230000_paginas_mestras_conteudo',
+  },
+  {
+    up: migration_20261005_232618_paginas_mestras_sem_tema.up,
+    down: migration_20261005_232618_paginas_mestras_sem_tema.down,
+    name: '20261005_232618_paginas_mestras_sem_tema',
+  },
+  {
+    up: migration_20261007_010701_conversion_panel_secondary_cta.up,
+    down: migration_20261007_010701_conversion_panel_secondary_cta.down,
+    name: '20261007_010701_conversion_panel_secondary_cta',
+  },
+  {
+    up: migration_20261007_011000_painel_com_botao_de_diagnostico.up,
+    down: migration_20261007_011000_painel_com_botao_de_diagnostico.down,
+    name: '20261007_011000_painel_com_botao_de_diagnostico',
+  },
+  {
+    up: migration_20261007_012347_partner_mosaic.up,
+    down: migration_20261007_012347_partner_mosaic.down,
+    name: '20261007_012347_partner_mosaic'
+  },
+  {
+    up: migration_20261007_020000_assessoria_com_mosaico_de_parceiros.up,
+    down: migration_20261007_020000_assessoria_com_mosaico_de_parceiros.down,
+    name: '20261007_020000_assessoria_com_mosaico_de_parceiros',
   },
 ];

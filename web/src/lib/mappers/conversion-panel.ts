@@ -71,6 +71,8 @@ export function toPainelDeConversao(args: {
 
   const ctaLabel = vazio(global.ctaLabel)
   const ctaHref = vazio(global.ctaHref)
+  const segundoLabel = vazio(global.secondaryCtaLabel)
+  const segundoHref = vazio(global.secondaryCtaHref)
 
   return {
     titulo,
@@ -82,6 +84,7 @@ export function toPainelDeConversao(args: {
       href: hrefLocal(p.href),
     })),
     cta: ctaLabel && ctaHref ? { label: ctaLabel, href: hrefLocal(ctaHref) } : null,
+    ctaSecundario: segundoLabel && segundoHref ? { label: segundoLabel, href: hrefLocal(segundoHref) } : null,
     provas: (global.proof ?? []).map((p) => ({ value: p.value, label: vazio(p.label) })),
     cases: Object.fromEntries(ABAS_DE_SOLUCOES.map((a) => [a.id, daAba(a.id)])) as Record<AbaDeSolucoes, MiniCase[]>,
   }

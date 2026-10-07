@@ -57,6 +57,8 @@ const PAGINA_DO_BLOCO: Record<string, string | null> = {
   sealsBanner: '/carreiras',
   imageGrid: '/parceiros/google-cloud',
   partnerShowcase: '/segmentos/varejo',
+  // 07/10: nasceu para esta página; até o marketing montá-la com o bloco, a miniatura versionada fica.
+  partnerMosaic: '/solucoes/assessoria-em-produtos',
   logoMarquee: '/',
   partnerSplit: '/parceiros/google-cloud',
   highlightCarousel: '/',
@@ -69,6 +71,10 @@ const PAGINA_DO_BLOCO: Record<string, string | null> = {
   // As soluções perderam o formulário em 29/09; /contato segue com ele.
   ctaContact: '/contato',
   jobsList: '/carreiras',
+  // Os blocos das páginas-mestras (D-55): a lista com filtro, o carrossel e a chamada do blog.
+  sectionListing: '/cases-de-sucesso',
+  sectionFeatured: '/webinars',
+  webinarTeaser: '/blog',
 }
 
 const LARGURA = 480

@@ -897,7 +897,10 @@ test.describe('app novo', () => {
       await passarNaCategoria(page, 'Soluções', () => expect(lateral).toBeVisible({ timeout: 2000 }))
 
       await expect(lateral.getByRole('heading', { name: 'Por onde começar?' })).toBeVisible()
-      await expect(lateral.locator('a[href="/diagnostico-maturidade"]')).toHaveCount(3)
+      /* 06/10: dois caminhos e dois botões. O diagnóstico, que era o terceiro
+         caminho, virou o botão ao lado de "Falar com um especialista". */
+      await expect(lateral.locator('li a[href="/diagnostico-maturidade"]')).toHaveCount(2)
+      await expect(lateral.getByRole('link', { name: 'Faça seu diagnóstico agora' })).toHaveAttribute('href', '/diagnostico-maturidade')
       await expect(lateral.getByRole('link', { name: /Falar com um especialista/ })).toHaveAttribute('href', '/contato')
       await expect(lateral.getByTestId('prova-social')).toHaveText(/140\+ especialistas.*15\+ anos.*Parceira Google Cloud.*5x GPTW.*4x LIPT/)
 
@@ -982,6 +985,54 @@ test.describe('app novo', () => {
 
       await page.mouse.move(640, 400, { steps: 12 })
       await expect(async () => expect(await desenho()).not.toBe(parado)).toPass({ timeout: 5000 })
+    })
+  })
+
+  /* D-55: a página-índice de cada uma das 10 seções é uma página do CMS (a
+     página-mestra), e a rota é casca fina — sem ela, 404. Este teste é o que
+     pega uma página-mestra que não chegou ao banco: confere as 10, nos dois
+     idiomas, e que cada uma tem um título de página só. */
+  test.describe('páginas-mestras (D-55)', () => {
+    const SECOES = [
+      ['/solucoes', '/en/solutions'],
+      ['/segmentos', '/en/segments'],
+      ['/consultores', '/en/consultants'],
+      ['/insights', '/en/insights'],
+      ['/blog', '/en/blog'],
+      ['/webinars', '/en/webinars'],
+      ['/cases-de-sucesso', '/en/success-stories'],
+      ['/atra-na-midia', '/en/atra-in-the-media'],
+      ['/ebooks', '/en/ebooks'],
+      ['/carreiras', '/en/careers'],
+    ]
+    for (const [pt, en] of SECOES) {
+      test(`${pt} e ${en} respondem com um h1`, async ({ page }) => {
+        for (const rota of [pt, en]) {
+          const r = await page.goto(`${NEXT_URL}${rota}?e2e=1`)
+          expect(r?.status(), rota).toBe(200)
+          await expect(page.locator('h1'), rota).toHaveCount(1)
+        }
+      })
+    }
+
+    /* A Insights deixou de ser lista escrita à mão: uma faixa por tipo, com os
+       primeiros da seção e o "Ver todos" para a página dela. */
+    test('a Insights tem uma faixa por tipo, com "Ver todos" para a seção certa', async ({ page }) => {
+      const DESTINOS = {
+        '': ['/cases-de-sucesso', '/blog', '/webinars', '/atra-na-midia', '/ebooks'],
+        '/en': ['/en/success-stories', '/en/blog', '/en/webinars', '/en/atra-in-the-media', '/en/ebooks'],
+      }
+      for (const [prefixo, destinos] of Object.entries(DESTINOS)) {
+        await page.goto(`${NEXT_URL}${prefixo}/insights`)
+        const verTodos = page.locator('#ultimos-conteudos h2 + a')
+        await expect(verTodos).toHaveCount(5)
+        expect(await verTodos.evaluateAll((as) => as.map((a) => a.getAttribute('href')))).toEqual(destinos)
+        for (const faixa of await page.locator('#ultimos-conteudos > div').all()) {
+          const cartoes = await faixa.locator('h3 a').count()
+          expect(cartoes).toBeGreaterThanOrEqual(1)
+          expect(cartoes).toBeLessThanOrEqual(3)
+        }
+      }
     })
   })
 

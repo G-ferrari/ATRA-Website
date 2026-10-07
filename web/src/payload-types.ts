@@ -1223,6 +1223,10 @@ export interface Partner {
             };
             imagePosition?: ('left' | 'right' | 'none') | null;
             /**
+             * The size of this section’s paragraphs. "Large" is 2 points above normal.
+             */
+            bodySize?: ('normal' | 'large') | null;
+            /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
             anchor?: string | null;
@@ -1439,6 +1443,47 @@ export interface Partner {
             id?: string | null;
             blockName?: string | null;
             blockType: 'imageGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            /**
+             * Optional. A blank line separates paragraphs.
+             */
+            description?: string | null;
+            /**
+             * Four to six is ideal: the mosaic arranges itself. With 4 or 5 the first one is the large card; with 6, the first and the last are the wide ones. Drag to reorder.
+             */
+            items: {
+              /**
+               * Square, at least 1200px. The wide card crops it to a band through the middle: keep the subject centred.
+               */
+              image: number | Media;
+              name: string;
+              /**
+               * E.g. “Tools”.
+               */
+              linkLabel?: string | null;
+              /**
+               * The partner page on the site (/parceiros/google-cloud) or a full address, with https://. Empty: the card is not a link.
+               */
+              href?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerMosaic';
           }
         | {
             source?: ('siteSettings' | 'custom') | null;
@@ -1804,31 +1849,7 @@ export interface Partner {
                 | 'server'
                 | 'code'
                 | 'headset';
-              count?: number | null;
               href?: string | null;
-              id?: string | null;
-            }[];
-            topics?: string[] | null;
-            items: {
-              /**
-               * One of the format keys above.
-               */
-              format: string;
-              title: string;
-              description: string;
-              category: string;
-              meta: string;
-              date: string;
-              author: string;
-              href: string;
-              image?: (number | null) | Media;
-              featured?: boolean | null;
-              tags?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
               id?: string | null;
             }[];
             portals?: {
@@ -2135,9 +2156,26 @@ export interface Page {
   id: number;
   title: string;
   /**
-   * Final part of the URL. Generated from the title when left empty. Changing it after publishing breaks existing links.
+   * Final part of the URL. Changing it after publishing breaks links. On section pages the address is fixed: ask the tech team to rename a section.
    */
   slug: string;
+  /**
+   * This is the section’s main page: it cannot be deleted and its address is fixed. If unpublished, the section goes offline while menu and footer still link to it.
+   */
+  masterOf?:
+    | (
+        | 'solucoes'
+        | 'segmentos'
+        | 'consultores'
+        | 'insights'
+        | 'blog'
+        | 'webinars'
+        | 'cases'
+        | 'midia'
+        | 'ebooks'
+        | 'carreiras'
+      )
+    | null;
   layout: (
     | {
         badge?: string | null;
@@ -2903,6 +2941,10 @@ export interface Page {
         };
         imagePosition?: ('left' | 'right' | 'none') | null;
         /**
+         * The size of this section’s paragraphs. "Large" is 2 points above normal.
+         */
+        bodySize?: ('normal' | 'large') | null;
+        /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
         anchor?: string | null;
@@ -3119,6 +3161,47 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'imageGrid';
+      }
+    | {
+        eyebrow?: string | null;
+        title?: string | null;
+        /**
+         * Optional. A blank line separates paragraphs.
+         */
+        description?: string | null;
+        /**
+         * Four to six is ideal: the mosaic arranges itself. With 4 or 5 the first one is the large card; with 6, the first and the last are the wide ones. Drag to reorder.
+         */
+        items: {
+          /**
+           * Square, at least 1200px. The wide card crops it to a band through the middle: keep the subject centred.
+           */
+          image: number | Media;
+          name: string;
+          /**
+           * E.g. “Tools”.
+           */
+          linkLabel?: string | null;
+          /**
+           * The partner page on the site (/parceiros/google-cloud) or a full address, with https://. Empty: the card is not a link.
+           */
+          href?: string | null;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'partnerMosaic';
       }
     | {
         source?: ('siteSettings' | 'custom') | null;
@@ -3484,31 +3567,7 @@ export interface Page {
             | 'server'
             | 'code'
             | 'headset';
-          count?: number | null;
           href?: string | null;
-          id?: string | null;
-        }[];
-        topics?: string[] | null;
-        items: {
-          /**
-           * One of the format keys above.
-           */
-          format: string;
-          title: string;
-          description: string;
-          category: string;
-          meta: string;
-          date: string;
-          author: string;
-          href: string;
-          image?: (number | null) | Media;
-          featured?: boolean | null;
-          tags?:
-            | {
-                text: string;
-                id?: string | null;
-              }[]
-            | null;
           id?: string | null;
         }[];
         portals?: {
@@ -3698,6 +3757,74 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'jobsList';
+      }
+    | {
+        eyebrow?: string | null;
+        /**
+         * The chip next to the badge. In Solutions and Segments it follows the automatic count ("8 verticals").
+         */
+        chip?: string | null;
+        /**
+         * Optional, above the listing. The listing itself is automatic: it shows what is published in the section.
+         */
+        title?: string | null;
+        /**
+         * Shown in blue, right after the title.
+         */
+        highlight?: string | null;
+        /**
+         * Optional. A blank line separates paragraphs.
+         */
+        description?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sectionListing';
+      }
+    | {
+        /**
+         * Each highlight’s button. Empty uses the section default.
+         */
+        actionLabel?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sectionFeatured';
+      }
+    | {
+        eyebrow?: string | null;
+        title: string;
+        /**
+         * A slice of the title shown in blue. It must appear in the title exactly.
+         */
+        highlight?: string | null;
+        description?: string | null;
+        actionLabel?: string | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'webinarTeaser';
       }
   )[];
   /**
@@ -4812,6 +4939,10 @@ export interface Segment {
             };
             imagePosition?: ('left' | 'right' | 'none') | null;
             /**
+             * The size of this section’s paragraphs. "Large" is 2 points above normal.
+             */
+            bodySize?: ('normal' | 'large') | null;
+            /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
             anchor?: string | null;
@@ -5028,6 +5159,47 @@ export interface Segment {
             id?: string | null;
             blockName?: string | null;
             blockType: 'imageGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            /**
+             * Optional. A blank line separates paragraphs.
+             */
+            description?: string | null;
+            /**
+             * Four to six is ideal: the mosaic arranges itself. With 4 or 5 the first one is the large card; with 6, the first and the last are the wide ones. Drag to reorder.
+             */
+            items: {
+              /**
+               * Square, at least 1200px. The wide card crops it to a band through the middle: keep the subject centred.
+               */
+              image: number | Media;
+              name: string;
+              /**
+               * E.g. “Tools”.
+               */
+              linkLabel?: string | null;
+              /**
+               * The partner page on the site (/parceiros/google-cloud) or a full address, with https://. Empty: the card is not a link.
+               */
+              href?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerMosaic';
           }
         | {
             source?: ('siteSettings' | 'custom') | null;
@@ -5393,31 +5565,7 @@ export interface Segment {
                 | 'server'
                 | 'code'
                 | 'headset';
-              count?: number | null;
               href?: string | null;
-              id?: string | null;
-            }[];
-            topics?: string[] | null;
-            items: {
-              /**
-               * One of the format keys above.
-               */
-              format: string;
-              title: string;
-              description: string;
-              category: string;
-              meta: string;
-              date: string;
-              author: string;
-              href: string;
-              image?: (number | null) | Media;
-              featured?: boolean | null;
-              tags?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
               id?: string | null;
             }[];
             portals?: {
@@ -6467,6 +6615,10 @@ export interface Solution {
             };
             imagePosition?: ('left' | 'right' | 'none') | null;
             /**
+             * The size of this section’s paragraphs. "Large" is 2 points above normal.
+             */
+            bodySize?: ('normal' | 'large') | null;
+            /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
             anchor?: string | null;
@@ -6683,6 +6835,47 @@ export interface Solution {
             id?: string | null;
             blockName?: string | null;
             blockType: 'imageGrid';
+          }
+        | {
+            eyebrow?: string | null;
+            title?: string | null;
+            /**
+             * Optional. A blank line separates paragraphs.
+             */
+            description?: string | null;
+            /**
+             * Four to six is ideal: the mosaic arranges itself. With 4 or 5 the first one is the large card; with 6, the first and the last are the wide ones. Drag to reorder.
+             */
+            items: {
+              /**
+               * Square, at least 1200px. The wide card crops it to a band through the middle: keep the subject centred.
+               */
+              image: number | Media;
+              name: string;
+              /**
+               * E.g. “Tools”.
+               */
+              linkLabel?: string | null;
+              /**
+               * The partner page on the site (/parceiros/google-cloud) or a full address, with https://. Empty: the card is not a link.
+               */
+              href?: string | null;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partnerMosaic';
           }
         | {
             source?: ('siteSettings' | 'custom') | null;
@@ -7048,31 +7241,7 @@ export interface Solution {
                 | 'server'
                 | 'code'
                 | 'headset';
-              count?: number | null;
               href?: string | null;
-              id?: string | null;
-            }[];
-            topics?: string[] | null;
-            items: {
-              /**
-               * One of the format keys above.
-               */
-              format: string;
-              title: string;
-              description: string;
-              category: string;
-              meta: string;
-              date: string;
-              author: string;
-              href: string;
-              image?: (number | null) | Media;
-              featured?: boolean | null;
-              tags?:
-                | {
-                    text: string;
-                    id?: string | null;
-                  }[]
-                | null;
               id?: string | null;
             }[];
             portals?: {
@@ -7837,6 +8006,7 @@ export interface JobsSelect<T extends boolean = true> {
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  masterOf?: T;
   layout?:
     | T
     | {
@@ -8173,6 +8343,7 @@ export interface PagesSelect<T extends boolean = true> {
                     text?: T;
                   };
               imagePosition?: T;
+              bodySize?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -8277,6 +8448,29 @@ export interface PagesSelect<T extends boolean = true> {
                     id?: T;
                   };
               boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partnerMosaic?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    name?: T;
+                    linkLabel?: T;
+                    href?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -8496,30 +8690,7 @@ export interface PagesSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -8658,6 +8829,41 @@ export interface PagesSelect<T extends boolean = true> {
               borda?: T;
               spacing?: T;
               theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sectionListing?:
+          | T
+          | {
+              eyebrow?: T;
+              chip?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              anchor?: T;
+              navLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sectionFeatured?:
+          | T
+          | {
+              actionLabel?: T;
+              anchor?: T;
+              navLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        webinarTeaser?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              highlight?: T;
+              description?: T;
+              actionLabel?: T;
+              anchor?: T;
+              navLabel?: T;
               id?: T;
               blockName?: T;
             };
@@ -9146,6 +9352,7 @@ export interface PartnersSelect<T extends boolean = true> {
                     text?: T;
                   };
               imagePosition?: T;
+              bodySize?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -9250,6 +9457,29 @@ export interface PartnersSelect<T extends boolean = true> {
                     id?: T;
                   };
               boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partnerMosaic?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    name?: T;
+                    linkLabel?: T;
+                    href?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -9469,30 +9699,7 @@ export interface PartnersSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -9992,6 +10199,7 @@ export interface SegmentsSelect<T extends boolean = true> {
                     text?: T;
                   };
               imagePosition?: T;
+              bodySize?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10096,6 +10304,29 @@ export interface SegmentsSelect<T extends boolean = true> {
                     id?: T;
                   };
               boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partnerMosaic?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    name?: T;
+                    linkLabel?: T;
+                    href?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10315,30 +10546,7 @@ export interface SegmentsSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -10845,6 +11053,7 @@ export interface SolutionsSelect<T extends boolean = true> {
                     text?: T;
                   };
               imagePosition?: T;
+              bodySize?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10949,6 +11158,29 @@ export interface SolutionsSelect<T extends boolean = true> {
                     id?: T;
                   };
               boxed?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partnerMosaic?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    name?: T;
+                    linkLabel?: T;
+                    href?: T;
+                    id?: T;
+                  };
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -11168,30 +11400,7 @@ export interface SolutionsSelect<T extends boolean = true> {
                     key?: T;
                     label?: T;
                     icon?: T;
-                    count?: T;
                     href?: T;
-                    id?: T;
-                  };
-              topics?: T;
-              items?:
-                | T
-                | {
-                    format?: T;
-                    title?: T;
-                    description?: T;
-                    category?: T;
-                    meta?: T;
-                    date?: T;
-                    author?: T;
-                    href?: T;
-                    image?: T;
-                    featured?: T;
-                    tags?:
-                      | T
-                      | {
-                          text?: T;
-                          id?: T;
-                        };
                     id?: T;
                   };
               portals?:
@@ -11646,6 +11855,11 @@ export interface ConversionPanel {
     | null;
   ctaLabel?: string | null;
   ctaHref?: string | null;
+  /**
+   * Keep it short: the two buttons share the panel width. Empty hides the button.
+   */
+  secondaryCtaLabel?: string | null;
+  secondaryCtaHref?: string | null;
   /**
    * One line only: “140+ specialists · 15+ years · …”. Five short items is what fits.
    */
@@ -12156,6 +12370,8 @@ export interface ConversionPanelSelect<T extends boolean = true> {
       };
   ctaLabel?: T;
   ctaHref?: T;
+  secondaryCtaLabel?: T;
+  secondaryCtaHref?: T;
   proof?:
     | T
     | {

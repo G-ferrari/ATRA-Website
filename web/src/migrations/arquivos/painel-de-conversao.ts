@@ -65,3 +65,24 @@ export const CASES_INICIAIS = {
   dataBi: ['dashboards-estrategicos', 'migracao-legado-gcp', 'eficiencia-processos-risco'],
   governanceCulture: ['marketplace-governanca-dados'],
 } as const satisfies Record<string, readonly string[]>
+
+/* 06/10 — pedido da Karen na revisão: o terceiro caminho vira um botão fino,
+ * ao lado de "Falar com um especialista". Os outros dois caminhos ficam com o
+ * marketing, que vai reescrevê-los (D-22). */
+export const SEGUNDO_BOTAO = {
+  pt: { secondaryCtaLabel: 'Faça seu diagnóstico agora' },
+  en: { secondaryCtaLabel: 'Take the assessment now' },
+  secondaryCtaHref: DIAGNOSTICO,
+} as const
+
+/** O caminho que vira botão — pelo título que a migração de 02/10 gravou. */
+export const CAMINHO_QUE_VIRA_BOTAO = PAINEL.pt.paths[2].title
+
+/**
+ * Os caminhos sem o terceiro. Só sai se ainda tiver o título original: caminho
+ * que o marketing já reescreveu é dele, e fica (`null` = não mexer).
+ */
+export function semOCaminhoQueViraBotao<T extends { title?: string | null }>(caminhos: T[]): T[] | null {
+  const restantes = caminhos.filter((c) => c.title !== CAMINHO_QUE_VIRA_BOTAO)
+  return restantes.length === caminhos.length ? null : restantes
+}

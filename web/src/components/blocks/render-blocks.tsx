@@ -1,6 +1,9 @@
 import type { VagaAberta } from '@/lib/atrair'
 import type { Locale } from '@/lib/locales'
 import type { Bloco } from '@/types/content'
+import { BlocoChamadaWebinars } from '@/components/secoes/bloco-chamada-webinars'
+import { BlocoDestaquesDaSecao } from '@/components/secoes/bloco-destaques-da-secao'
+import { BlocoListaDaSecao } from '@/components/secoes/bloco-lista-da-secao'
 
 import { BlocoAcordeao } from './bloco-acordeao'
 import { BlocoBento } from './bloco-bento'
@@ -24,6 +27,7 @@ import { BlocoHomeHero } from './bloco-home-hero'
 import { BlocoHubDeInsights } from './bloco-hub-de-insights'
 import { BlocoParceiroHero } from './bloco-parceiro-hero'
 import { BlocoParceiroSecao } from './bloco-parceiro-secao'
+import { BlocoMosaicoDeParceiros } from './bloco-mosaico-de-parceiros'
 import { BlocoParceiros } from './bloco-parceiros'
 import { BlocoVagas } from './bloco-vagas'
 import { BlocoVitrineDeConteudo } from './bloco-vitrine-de-conteudo'
@@ -47,8 +51,15 @@ import { BlocoValores } from './bloco-valores'
  * Ficam de fora o herói e o submenu, cujo respiro é o de abertura da página, e
  * as duas faixas compactas da home (carrossel de destaques e faixa de logos),
  * que já têm respiro menor que o padrão: emendar nelas deixava 56px entre a
- * faixa e a seção seguinte, menos que os 96px que a regra quer garantir. */
+ * faixa e a seção seguinte, menos que os 96px que a regra quer garantir.
+ *
+ * Os três blocos das páginas-mestras também: trazem o respiro que a rota tinha
+ * (D-55), e o bloco seguinte a eles não pode perder o dele — a faixa final de
+ * /atra-na-midia ficaria colada na grade. */
 const FORA_DA_EMENDA = new Set<Bloco['tipo']>([
+  'sectionListing',
+  'sectionFeatured',
+  'webinarTeaser',
   'pageHero',
   'homeHero',
   'partnerHero',
@@ -87,6 +98,12 @@ export function RenderBlocks({
 }) {
   const renderizar = (b: Bloco) => {
     switch (b.tipo) {
+      case 'sectionListing':
+        return <BlocoListaDaSecao key={b.id} bloco={b} locale={locale} />
+      case 'sectionFeatured':
+        return <BlocoDestaquesDaSecao key={b.id} bloco={b} locale={locale} />
+      case 'webinarTeaser':
+        return <BlocoChamadaWebinars key={b.id} bloco={b} locale={locale} />
       case 'pageHero':
         return <BlocoHero key={b.id} bloco={b} />
       case 'richTextSection':
@@ -109,6 +126,8 @@ export function RenderBlocks({
         return <BlocoVagas key={b.id} bloco={b} locale={locale} vagasDoAtrair={vagasDoAtrair} />
       case 'partnerShowcase':
         return <BlocoParceiros key={b.id} bloco={b} />
+      case 'partnerMosaic':
+        return <BlocoMosaicoDeParceiros key={b.id} bloco={b} />
       case 'valueCards':
         return <BlocoValores key={b.id} bloco={b} />
       case 'stickyPageNav':
@@ -142,7 +161,7 @@ export function RenderBlocks({
       case 'contentTeaser':
         return <BlocoVitrineDeConteudo key={b.id} bloco={b} />
       case 'insightsHub':
-        return <BlocoHubDeInsights key={b.id} bloco={b} />
+        return <BlocoHubDeInsights key={b.id} bloco={b} locale={locale} />
     }
   }
 
