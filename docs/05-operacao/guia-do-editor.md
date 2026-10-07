@@ -209,6 +209,19 @@ a faixa final de contato. Falta o meio.
 ⚠️ Não desmarque **"Tem página própria"**: sem isso a solução continua no menu,
 mas deixa de ser link e o endereço dela responde "não encontrado".
 
+**Trocar o endereço (slug) de uma solução.** Pode, pelo campo "Slug (URL)". Uma
+exceção: 14 endereços do site antigo — `cloud`, `data-analytics`,
+`cultura-de-dados`, `governanca-de-dados`, `treinamento` e outros — ainda
+redirecionam para a solução nova que ficou no lugar. Se você escolher um deles,
+o admin recusa ao salvar e diz para onde ele redireciona: escolha outro, ou peça
+ao time técnico para liberar aquele (foi feito para `customer-360` e
+`master-data-management` em 06/10).
+
+Na lista de Soluções do admin, as soluções vêm **por aba e, dentro da aba, pela
+Ordem** — a mesma sequência do menu. Se a sua lista estiver em outra ordem, é
+porque você clicou no título de uma coluna em algum momento; clique em
+"Categoria" para voltar.
+
 ## O painel do menu de Soluções
 
 Em **Sistema → Painel do menu de Soluções** fica o painel que aparece à direita

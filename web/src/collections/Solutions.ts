@@ -1,4 +1,5 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Field, TextFieldSingleValidation } from 'payload'
+import { text } from 'payload/shared'
 
 import { isEditorOrAdmin } from '@/access'
 import { BLOCOS } from '@/blocks'
@@ -6,6 +7,23 @@ import { campoDeIcone } from '@/blocks/shared'
 import { seoField } from '@/fields/seo'
 import { slugField } from '@/fields/slug'
 import { ABAS_DE_SOLUCOES } from '@/lib/abas-de-solucoes'
+import { enderecoReservado } from '@/lib/redirects'
+
+/* Endereço antigo de solução ainda preso a um redirect não pode virar o
+ * endereço de uma página: o redirect responde **antes** de a rota existir, e a
+ * página nunca abriria — o menu mostraria o endereço novo e o clique cairia em
+ * outro lugar. Foi o defeito de 06/10 com Customer 360 e Master Data
+ * Management (`ENDERECOS_REOCUPADOS`). A recusa aqui troca o defeito mudo por
+ * um aviso na hora de salvar; liberar um endereço é uma linha naquela lista. */
+const enderecoLivre: TextFieldSingleValidation = (valor, opcoes) => {
+  const destino = typeof valor === 'string' ? enderecoReservado(valor) : null
+  if (destino) {
+    return opcoes.req?.i18n?.language === 'en'
+      ? `"${valor}" was the address of an old page and still redirects to "${destino}". Pick another address, or ask the tech team to release this one.`
+      : `"${valor}" era o endereço de uma página antiga e ainda redireciona para "${destino}". Escolha outro endereço, ou peça ao time técnico para liberar este.`
+  }
+  return text(valor, opcoes)
+}
 
 /* Ofertas da ATRA (MIG-055).
  *
@@ -20,7 +38,7 @@ export const Solutions: CollectionConfig = {
   slug: 'solutions',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'hasPage', 'order'],
+    defaultColumns: ['title', 'category', 'order', 'hasPage'],
     listSearchableFields: ['title', 'shortDescription'],
     group: { pt: 'Catálogos', en: 'Catalogs' },
     description: {
@@ -40,10 +58,14 @@ export const Solutions: CollectionConfig = {
     delete: isEditorOrAdmin,
   },
   versions: { drafts: true, maxPerDoc: 20 },
-  defaultSort: 'order',
+  /* Por aba e, dentro dela, pela ordem — como o menu mostra. Só com `order`, a
+   * lista do admin intercalava as abas (todas as de ordem 0, depois as de 1…) e
+   * a numeração não batia com o que aparece no site. A categoria ordena pela
+   * declaração das opções, que é a ordem das abas. */
+  defaultSort: ['category', 'order'],
   fields: [
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
-    slugField(),
+    { ...slugField(), validate: enderecoLivre } as Field,
     {
       /* As categorias do mega-menu (`App.tsx:45`). `select` e não relacionamento
        * a `topics`: aquela taxonomia classifica conteúdo editorial (case, post,

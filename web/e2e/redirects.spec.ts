@@ -65,6 +65,13 @@ test.describe('redirects do WordPress', () => {
    */
   const DO_WP_IMPORT = /^\/(blog|carreiras)\//
 
+  /* Mesma divisão de trabalho, para soluções **criadas no admin** depois da
+   * estrutura de 02/10: em 06/10 o marketing dividiu "Master Data & Customer
+   * 360" em duas páginas, que existem na homologação e não no banco do CI (ele
+   * nasce da migração de 02/10). O redirect segue conferido — para onde aponta
+   * —, e que o destino existe é o gerador quem prova, contra o banco de verdade. */
+  const CRIADAS_NO_ADMIN = new Set(['/solucoes/customer-360', '/solucoes/master-data-management'])
+
   test('toda URL do WordPress leva a uma página que responde', async ({ request }) => {
     /* ⚠️ Em lotes, e não em série. São ~290 requisições; uma de cada vez
      * estourava os 90s de `timeout` da suíte, e a falha aparecia como
@@ -85,7 +92,7 @@ test.describe('redirects do WordPress', () => {
         return `${source} redireciona para ${destinoDito}, e o CSV diz ${destination}`
       }
 
-      if (DO_WP_IMPORT.test(destination)) return null
+      if (DO_WP_IMPORT.test(destination) || CRIADAS_NO_ADMIN.has(destination)) return null
 
       const destinoFinal = await request.get(`${NEXT_URL}${destination}`)
       return destinoFinal.status() === 200

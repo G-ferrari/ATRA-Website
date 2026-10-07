@@ -88,9 +88,13 @@ const CURADAS: Record<string, { to: string; status?: number; note: string }> = {
   cloud: { to: '/solucoes/migracao-e-modernizacao', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
   'data-integration': { to: '/solucoes/integracao-de-dados', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
   'data-analytics': { to: '/solucoes/bi-e-advanced-analytics', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
-  'master-data-management': { to: '/solucoes/master-data-e-customer-360', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  /* 06/10: o marketing dividiu "Master Data & Customer 360" em duas soluções,
+   * com os endereços do site antigo. Cada URL do WordPress volta a ter a sua
+   * página. ⚠️ As duas foram criadas no admin, não por migração: não existem
+   * no banco do CI (ver `CRIADAS_NO_ADMIN` em `e2e/redirects.spec.ts`). */
+  'master-data-management': { to: '/solucoes/master-data-management', note: 'solucao 1:1 - pagina propria desde 06/10 (criada no admin)' },
   'data-discovery': { to: '/solucoes/bi-e-advanced-analytics', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
-  'customer-360': { to: '/solucoes/master-data-e-customer-360', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
+  'customer-360': { to: '/solucoes/customer-360', note: 'solucao 1:1 - pagina propria desde 06/10 (criada no admin)' },
   'governanca-de-dados': { to: '/solucoes/governanca-e-qualidade-de-dados', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
   treinamento: { to: '/solucoes/cultura-de-dados-e-treinamentos', note: 'solucao N:1 - estrutura nova de 02/10 (D-52)' },
 
