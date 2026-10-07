@@ -40,9 +40,6 @@ const COR_DO_DESTAQUE: Record<CorDeDestaque, string> = {
 const CARTAO =
   'flex flex-col p-4 rounded-[6px] bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all hover:shadow-md group'
 
-/* Solução com selo (D-52) — o "Diferencial ATRA" de Analytics Conversacional. */
-const CARTAO_EM_DESTAQUE = 'ring-1 ring-primary/40 bg-primary/[0.04] dark:bg-primary/[0.08]'
-
 const CELULA_DA_GRADE =
   'flex flex-col items-center text-center gap-2 p-4 rounded-[6px] bg-surface-1 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-all group shadow-sm'
 
@@ -306,11 +303,11 @@ function PainelDeSolucoes({
             /* Solução sem página não vira link, como no índice (D-09). No legado
              * todas são `<Link>`, inclusive as cinco que apontam para `#`. */
             return item.href ? (
-              <Link key={item.title} href={item.href} onClick={aoNavegar} className={cn(CARTAO, item.badge && CARTAO_EM_DESTAQUE)}>
+              <Link key={item.title} href={item.href} onClick={aoNavegar} className={CARTAO}>
                 {conteudo}
               </Link>
             ) : (
-              <div key={item.title} className={cn(CARTAO, item.badge && CARTAO_EM_DESTAQUE, 'cursor-default')}>
+              <div key={item.title} className={cn(CARTAO, 'cursor-default')}>
                 {conteudo}
               </div>
             )

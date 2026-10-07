@@ -131,14 +131,39 @@ export const ROTAS_RENOMEADAS = [
  * Os endereços antigos nunca estiveram em produção — só na homologação —, mas
  * é por eles que o time revisou o site, e link salvo não deve dar 404. As URLs
  * do WordPress vão direto ao destino novo, pelo `redirects.csv`.
+ *
+ * ⚠️ Esta lista responde **antes** de a rota existir: um endereço que está
+ * aqui nunca chega à página, mesmo que uma solução publicada o use. Foi o
+ * defeito de 06/10 — ver `ENDERECOS_REOCUPADOS`.
  */
-export const SOLUCOES_QUE_MUDARAM = ENDERECOS_QUE_MUDARAM.flatMap(([antigo, novo]) =>
+
+/**
+ * Endereços antigos que **voltaram a ser página**. Em 06/10 o marketing dividiu
+ * "Master Data & Customer 360" em duas soluções e deu a elas os endereços do
+ * site antigo. O redirect fixo dos dois continuava levando à página combinada,
+ * que deixou de existir: o menu mostrava o endereço novo e o clique caía em 404.
+ *
+ * Endereço que entra aqui deixa de redirecionar e volta a abrir a página. Para
+ * a editora não cair no mesmo buraco sem aviso, o campo de endereço da solução
+ * recusa os que ainda redirecionam (`enderecoReservado`, em `Solutions.ts`).
+ */
+export const ENDERECOS_REOCUPADOS: readonly string[] = ['customer-360', 'master-data-management']
+
+const QUE_AINDA_REDIRECIONAM = ENDERECOS_QUE_MUDARAM.filter(([antigo]) => !ENDERECOS_REOCUPADOS.includes(antigo))
+
+export const SOLUCOES_QUE_MUDARAM = QUE_AINDA_REDIRECIONAM.flatMap(([antigo, novo]) =>
   LOCALES.map((locale) => ({
     source: hrefDe('solucoes', locale, antigo),
     destination: hrefDe('solucoes', locale, novo),
     permanent: true,
   })),
 )
+
+/** A solução para onde um endereço antigo ainda redireciona, ou `null` se ele
+ *  está livre para ser o endereço de uma página. */
+export function enderecoReservado(slug: string): string | null {
+  return QUE_AINDA_REDIRECIONAM.find(([antigo]) => antigo === slug)?.[1] ?? null
+}
 
 /**
  * A primeira página de uma listagem paginada é a própria seção (D-47):
