@@ -11947,6 +11947,48 @@ export interface DataMaturityDiagnostic {
    * The "Chat on WhatsApp" button on the page, the completion screen and the e-mail. Empty falls back to the default link: it is the way out when the e-mail does not arrive.
    */
   whatsappUrl?: string | null;
+  /**
+   * The "Impacts assessed" chips of each sector, in display order. LGPD, ANPD, Marco Legal da IA always come first, in every sector; "Reforma Tributária" is added automatically where the sector has a question about it. ⚠️ The choice also drives the chips on each question and the gaps in the result and the e-mail. Each sector only offers the regulations its questions assess; adding another requires a new question (tech team). Drag to reorder. A sector with none selected falls back to the default list.
+   */
+  regulations?: {
+    financeiro?:
+      | (
+          | 'rc18'
+          | 'bcb'
+          | 'cmn5274'
+          | 'bcbs239'
+          | 'openfinance'
+          | 'ifrs9'
+          | 'pld'
+          | 'ifrs17'
+          | 'cvm'
+          | 'susep'
+          | 'anatel'
+        )[]
+      | null;
+    capitais?: ('cvm' | 'cvm244' | 'anbima' | 'pld' | 'bcb' | 'ifrs9' | 'ifrs17' | 'susep' | 'anatel')[] | null;
+    seguros?: ('susep' | 'sro' | 'openinsurance' | 'ifrs17' | 'bcb' | 'ifrs9' | 'cvm' | 'anatel')[] | null;
+    saude?:
+      | (
+          | 'anvisa'
+          | 'cfm'
+          | 'ans'
+          | 'tiss'
+          | 'rnds'
+          | 'lgpd_saude'
+          | 'bcb'
+          | 'ifrs9'
+          | 'ifrs17'
+          | 'cvm'
+          | 'susep'
+          | 'anatel'
+        )[]
+      | null;
+    telecom?: ('anatel' | 'rgc' | 'eca' | 'marco_civil' | 'bcb' | 'ifrs9' | 'ifrs17' | 'cvm' | 'susep')[] | null;
+    educacao?: ('mec' | 'inep' | 'fies' | 'eca' | 'bcb' | 'ifrs9' | 'ifrs17' | 'cvm' | 'susep' | 'anatel')[] | null;
+    varejo?: ('cvm244' | 'bcb' | 'ifrs9' | 'ifrs17' | 'cvm' | 'susep' | 'anatel')[] | null;
+    outros?: ('cvm244' | 'bcb' | 'ifrs9' | 'ifrs17' | 'cvm' | 'susep' | 'anatel')[] | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -12415,6 +12457,18 @@ export interface DataMaturityDiagnosticSelect<T extends boolean = true> {
   emailIntro?: T;
   agendaUrl?: T;
   whatsappUrl?: T;
+  regulations?:
+    | T
+    | {
+        financeiro?: T;
+        capitais?: T;
+        seguros?: T;
+        saude?: T;
+        telecom?: T;
+        educacao?: T;
+        varejo?: T;
+        outros?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

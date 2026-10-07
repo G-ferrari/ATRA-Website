@@ -64,6 +64,8 @@ export {
   type Roadmap,
 } from './motor'
 
+export { REGULACOES_PADRAO, regulacoesAvaliaveis, resolverRegulacoes, type RegulacoesPorSetor } from './regulacoes'
+
 export {
   corDoPilar,
   escaparHtml,

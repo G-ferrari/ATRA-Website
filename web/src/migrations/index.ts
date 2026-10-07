@@ -96,6 +96,8 @@ import * as migration_20261007_010701_conversion_panel_secondary_cta from './202
 import * as migration_20261007_011000_painel_com_botao_de_diagnostico from './20261007_011000_painel_com_botao_de_diagnostico';
 import * as migration_20261007_012347_partner_mosaic from './20261007_012347_partner_mosaic';
 import * as migration_20261007_020000_assessoria_com_mosaico_de_parceiros from './20261007_020000_assessoria_com_mosaico_de_parceiros';
+import * as migration_20261007_205424_diagnostic_regulations from './20261007_205424_diagnostic_regulations';
+import * as migration_20261007_210000_regulacoes_do_diagnostico from './20261007_210000_regulacoes_do_diagnostico';
 
 export const migrations = [
   {
@@ -581,11 +583,21 @@ export const migrations = [
   {
     up: migration_20261007_012347_partner_mosaic.up,
     down: migration_20261007_012347_partner_mosaic.down,
-    name: '20261007_012347_partner_mosaic'
+    name: '20261007_012347_partner_mosaic',
   },
   {
     up: migration_20261007_020000_assessoria_com_mosaico_de_parceiros.up,
     down: migration_20261007_020000_assessoria_com_mosaico_de_parceiros.down,
     name: '20261007_020000_assessoria_com_mosaico_de_parceiros',
+  },
+  {
+    up: migration_20261007_205424_diagnostic_regulations.up,
+    down: migration_20261007_205424_diagnostic_regulations.down,
+    name: '20261007_205424_diagnostic_regulations'
+  },
+  {
+    up: migration_20261007_210000_regulacoes_do_diagnostico.up,
+    down: migration_20261007_210000_regulacoes_do_diagnostico.down,
+    name: '20261007_210000_regulacoes_do_diagnostico',
   },
 ];

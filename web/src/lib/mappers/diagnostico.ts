@@ -1,4 +1,5 @@
 import { PADRAO_DO_DIAGNOSTICO } from '@/globals/DiagnosticoDeMaturidade'
+import { resolverRegulacoes } from '@/lib/diagnostico-maturidade'
 import type { DataMaturityDiagnostic } from '@/payload-types'
 import type { DiagnosticoDeMaturidade } from '@/types/content'
 
@@ -35,5 +36,7 @@ export function toDiagnosticoDeMaturidade(doc: DataMaturityDiagnostic): Diagnost
     },
     agendaUrl: link(doc.agendaUrl),
     whatsappUrl: link(doc.whatsappUrl) ?? PADRAO_DO_DIAGNOSTICO.whatsapp,
+    /* Setor vazio no admin volta à lista do questionário; ver `regulacoes.ts`. */
+    regulacoes: resolverRegulacoes(doc.regulations),
   }
 }

@@ -158,7 +158,7 @@ export interface EntradaDoEmailDoResultado {
   calculo: Calculo
   roadmap: Roadmap
   /** Assunto e abertura, do global do CMS (já resolvidos pelo mapper). */
-  textos: Pick<DiagnosticoDeMaturidade, 'email'>
+  textos: Pick<DiagnosticoDeMaturidade, 'email' | 'regulacoes'>
   whatsappUrl: string
   /** Vazio = sem o botão de agenda. */
   agendaUrl?: string | null
@@ -186,7 +186,9 @@ function conteudoDoResultado(entrada: EntradaDoEmailDoResultado) {
     media: decimal(calculo.media),
     nivel: `Nível ${numero} · ${nivel.nome}`,
     leitura: `${nivel.descricao} ${leituraPeloPorte(calculo.media, entrada.porte)}`,
-    impactos: impactosDoSetor(entrada.setor).map((i) => i.rotulo),
+    /* A lista do admin, a mesma da tela: o e-mail não pode citar uma regulação
+       que o perfil não mostrou. */
+    impactos: impactosDoSetor(entrada.setor, entrada.textos.regulacoes).map((i) => i.rotulo),
     pilares: pilaresDoMaisForte(roadmap).map((x) => ({
       pilar: x.pilar,
       nota: decimal(x.nota),

@@ -1664,3 +1664,47 @@ não existia mais.
   idioma e texto no outro tem que ser desenhado assim.
 - ⚠️ **Fica com o marketing (D-22):** avisar o time antes da publicação que a
   Insights muda de cara.
+
+## D-56 — As regulações de cada setor do diagnóstico são escolhidas no admin
+
+*Decidida em 07/10/2026 por G-ferrari.*
+
+**Contexto.** No diagnóstico de maturidade, a tela de perfil mostra "Impactos
+avaliados" com as regulações do setor escolhido. A lista por setor vinha só do
+código — `TAGS_DO_SETOR`, gerado do HTML do Roger (v1.7) —, e o admin do
+diagnóstico tinha só os textos e os links. O marketing não conseguia ver nem
+mudar a lista.
+
+**O que a lista faz.** Não é só a etiqueta do perfil: a mesma lista decide as
+etiquetas "Impacta:" de cada pergunta e quais lacunas entram no resultado e no
+e-mail (`tagRelevante`).
+
+**Decisão.** A lista de cada setor é editável em Configuração → Diagnóstico de
+maturidade, e a escolha vale para as **três** coisas — tela, pergunta e
+resultado. Recusada a alternativa de mudar só a etiqueta do perfil: a tela
+passaria a prometer uma regulação que o resultado não mede, ou o contrário.
+
+**Consequências.**
+
+- Grupo `regulations` no global, um campo por setor, com as opções que as
+  perguntas **daquele** setor avaliam (`regulacoesAvaliaveis`): a lista do
+  Roger e o que alguma pergunta do setor carrega numa resposta. Regulação sem
+  pergunta não é opção — incluir uma é pergunta nova, na base do Roger.
+- LGPD, ANPD e Marco Legal da IA seguem sempre na frente, em todos os setores, e
+  "Reforma Tributária" segue entrando sozinha onde há pergunta sobre ela: são
+  universais na conta, e tirar a etiqueta sem tirar a lacuna seria a mesma
+  mentira ao contrário.
+- O motor ganhou um parâmetro (`regulacoes`), com a lista do Roger como padrão
+  — é com o padrão que `motor.test.ts` compara com o HTML original. O servidor
+  lê a lista do admin antes de calcular, e as lacunas **gravadas** no lead são
+  as dela.
+- A migração `20261007_210000_regulacoes_do_diagnostico` grava a lista do Roger
+  nos setores vazios, para a editora ver na tela o que está valendo. Setor
+  esvaziado no admin volta à lista do Roger.
+- ⚠️ A partir daqui o admin manda. Versão nova da base do Roger que mude a
+  lista de um setor não chega sozinha ao site; e regulação nova na base muda as
+  opções dos campos, o que pede migração (`migrate:create`).
+- ⚠️ **Achado, fica com o Roger:** em Mercado Financeiro a lista traz **PLD/FT**,
+  mas nenhuma pergunta do setor carrega essa regulação — ela aparece como
+  avaliada e nunca soma lacuna. É assim no HTML v1.7; não foi mexido (D-22).
+

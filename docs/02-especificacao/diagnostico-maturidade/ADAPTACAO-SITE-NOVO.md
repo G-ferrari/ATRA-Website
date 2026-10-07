@@ -23,6 +23,10 @@
 5. **Consentimento / privacidade:** checkbox + base legal alinhados ao banner/política do site novo (D-30 / P-14).
 6. **Analytics:** `quiz_maturidade_lead` no dataLayer só após consentimento analytics/marketing conforme regra do projeto.
 
+## O que o site decide por cima da base (07/10, D-56)
+- **Regulações por setor** (`SECTOR_TAGS` no HTML): editáveis no admin, em Configuração → Diagnóstico de maturidade. A lista do HTML é o padrão; a do admin vale para a etiqueta do perfil, as etiquetas das perguntas e as lacunas do resultado. Ao receber versão nova do HTML, **conferir a tela do admin**: ela não acompanha sozinha.
+- ⚠️ Para a próxima versão do Roger: em `financeiro`, `SECTOR_TAGS` traz `pld`, mas nenhuma pergunta desse setor carrega a tag — "PLD/FT" aparece como avaliado e nunca soma lacuna.
+
 ## Critérios mínimos para abrir a feature KSDD
 - [x] HTML + README no repo
 - [ ] FEATURE spec + tasks (`/ksdd:new:feature diagnostico maturidade dados`)

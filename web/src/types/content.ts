@@ -929,6 +929,9 @@ export type DiagnosticoDeMaturidade = {
   /** Vazio no CMS = sem botão "Agendar conversa" na conclusão e no e-mail. */
   agendaUrl: string | null
   whatsappUrl: string
+  /** Setor → os códigos das regulações que ele avalia, na ordem da tela. Já
+   *  resolvido: setor sem escolha no CMS vem com a lista padrão do questionário. */
+  regulacoes: Readonly<Record<string, readonly string[]>>
 }
 
 /** Dados de contato da ATRA, do global `contact` (MIG-072). */

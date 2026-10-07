@@ -399,6 +399,15 @@ responder 404 de repente é página-mestra que não chegou ao banco — o conte�
 vem da migração `20261005_230000_paginas_mestras_conteudo`, e Carreiras e
 Insights só são marcadas depois do seed em banco novo.
 
+**D-56 (07/10)**: no diagnóstico de maturidade, as **regulações de cada setor**
+são escolhidas no admin (grupo `regulations` do global), e não mais só no código
+gerado do HTML do Roger. A lista vale para a etiqueta do perfil, para as
+etiquetas de cada pergunta **e para as lacunas do resultado** — por isso o motor
+recebe `regulacoes` como parâmetro (`lib/diagnostico-maturidade/regulacoes.ts`),
+com a lista do Roger como padrão, que é o que `motor.test.ts` compara com o
+original. Cada setor só oferece o que as perguntas dele avaliam. ⚠️ Regenerar
+`dados.ts` com regulação nova muda as opções dos campos: pede `migrate:create`.
+
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
 containers logando no journald e o Caddy com log de acesso em arquivo.

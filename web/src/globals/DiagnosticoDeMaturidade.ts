@@ -1,4 +1,6 @@
-import type { GlobalConfig } from 'payload'
+import type { Field, GlobalConfig } from 'payload'
+
+import { REGULACOES_PADRAO, regulacoesAvaliaveis, ROTULOS_DAS_TAGS, SETORES, TAGS_UNIVERSAIS_DO_PERFIL } from '@/lib/diagnostico-maturidade'
 
 /* Textos e links do Diagnóstico de Maturidade de Dados (D-35, task 023).
  *
@@ -49,6 +51,33 @@ export const PADRAO_DO_DIAGNOSTICO = {
  * descarta o que escapar (e qualquer `javascript:`). */
 const exigirHttp = (valor: string | null | undefined): string | true =>
   !valor?.trim() || /^https?:\/\//i.test(valor.trim()) || 'Use o endereço completo, começando com https://'
+
+/* As regulações de cada setor (07/10) — um campo por setor, com as opções que
+ * as perguntas **daquele** setor avaliam (`regulacoesAvaliaveis`).
+ *
+ * ⚠️ Não é só a linha "Impactos avaliados" da tela de perfil. A mesma lista
+ * decide as etiquetas "Impacta:" de cada pergunta e as lacunas que entram no
+ * resultado e no e-mail — é o que impede a tela de prometer uma regulação que
+ * o diagnóstico não mede. Por isso o campo só oferece o que o setor consegue
+ * avaliar: regulação sem pergunta apareceria como "avaliada" e nunca somaria
+ * lacuna. Incluir uma dessas é pergunta nova, na base do Roger.
+ *
+ * A lista inicial é a do Roger (`TAGS_DO_SETOR`), e é ela que volta quando o
+ * campo fica vazio. Códigos e não texto: o nome exibido, a ação recomendada e
+ * as respostas que carregam cada regulação estão na base versionada.
+ *
+ * Sem `localized`: são códigos, os mesmos nos dois idiomas. */
+const SEMPRE = TAGS_UNIVERSAIS_DO_PERFIL.map((tag) => ROTULOS_DAS_TAGS[tag]).join(', ')
+
+const regulacoesDoSetor: Field[] = SETORES.map(({ valor: setor, rotulo }) => ({
+  name: setor,
+  type: 'select',
+  hasMany: true,
+  label: rotulo,
+  defaultValue: [...REGULACOES_PADRAO[setor]],
+  options: regulacoesAvaliaveis(setor).map((tag) => ({ value: tag, label: ROTULOS_DAS_TAGS[tag] })),
+  admin: { isSortable: true },
+}))
 
 export const DiagnosticoDeMaturidade: GlobalConfig = {
   slug: 'data-maturity-diagnostic',
@@ -133,6 +162,18 @@ export const DiagnosticoDeMaturidade: GlobalConfig = {
           en: 'The "Chat on WhatsApp" button on the page, the completion screen and the e-mail. Empty falls back to the default link: it is the way out when the e-mail does not arrive.',
         },
       },
+    },
+    {
+      name: 'regulations',
+      type: 'group',
+      label: { pt: 'Regulações avaliadas por setor', en: 'Regulations assessed per sector' },
+      admin: {
+        description: {
+          pt: `As etiquetas de "Impactos avaliados" de cada setor, na ordem em que aparecem. ${SEMPRE} aparecem sempre, antes destas, em todos os setores; "Reforma Tributária" entra sozinha nos setores que têm pergunta sobre ela. ⚠️ A escolha vale também para as etiquetas de cada pergunta e para as lacunas do resultado e do e-mail. Cada setor só oferece as regulações que as perguntas dele avaliam; incluir outra exige pergunta nova (time técnico). Arraste para mudar a ordem. Setor sem nenhuma escolhida volta à lista padrão.`,
+          en: `The "Impacts assessed" chips of each sector, in display order. ${SEMPRE} always come first, in every sector; "Reforma Tributária" is added automatically where the sector has a question about it. ⚠️ The choice also drives the chips on each question and the gaps in the result and the e-mail. Each sector only offers the regulations its questions assess; adding another requires a new question (tech team). Drag to reorder. A sector with none selected falls back to the default list.`,
+        },
+      },
+      fields: regulacoesDoSetor,
     },
   ],
 }

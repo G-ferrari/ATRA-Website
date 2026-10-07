@@ -230,6 +230,26 @@ Ordem** — a mesma sequência do menu. Se a sua lista estiver em outra ordem, �
 porque você clicou no título de uma coluna em algum momento; clique em
 "Categoria" para voltar.
 
+## Diagnóstico de maturidade: as regulações de cada setor
+
+Em **Configuração → Diagnóstico de maturidade**, além dos textos e dos links, há
+o grupo **Regulações avaliadas por setor**: um campo para cada setor do
+questionário, com as etiquetas que aparecem em "Impactos avaliados" quando o
+visitante escolhe aquele setor.
+
+- **LGPD, ANPD e Marco Legal da IA** aparecem sempre, antes das do setor, e não
+  estão nos campos. **Reforma Tributária** entra sozinha nos setores que têm
+  pergunta sobre ela.
+- Para tirar uma regulação de um setor, clique no ✕ dela; para incluir, escolha
+  na lista; para mudar a ordem, arraste.
+- ⚠️ **A escolha não muda só a etiqueta.** Ela também decide as etiquetas
+  "Impacta:" de cada pergunta e as lacunas que entram no resultado e no e-mail
+  do visitante. Tirar "ANBIMA" de um setor tira a ANBIMA do resultado dele.
+- Cada setor só oferece as regulações que as perguntas dele avaliam. Se a que
+  você procura não está na lista, é porque nenhuma pergunta daquele setor a
+  mede: incluir exige pergunta nova, com o time técnico e o Roger.
+- Setor sem nenhuma regulação escolhida volta à lista padrão do questionário.
+
 ## O painel do menu de Soluções
 
 Em **Sistema → Painel do menu de Soluções** fica o painel que aparece à direita

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { lerHtml } from '../../../scripts/diagnostico-maturidade/extrair-do-html.mjs'
 import {
   NIVEIS,
+  REGULACOES_PADRAO,
   calcular,
   corDoPilar,
   escaparHtml,
@@ -36,6 +37,8 @@ const TEXTOS = {
     assunto: 'Seu Diagnóstico de Maturidade de Dados — ATRA',
     abertura: 'Obrigado por responder ao diagnóstico.\n\nAbaixo está a leitura das suas respostas.',
   },
+  /* A lista do questionário: é com ela que os instantâneos foram gravados. */
+  regulacoes: REGULACOES_PADRAO,
 }
 const WHATSAPP = 'https://api.whatsapp.com/send/?phone=5511963060267&text=Oi'
 const AGENDA = 'https://agenda.exemplo.com.br/atra'
@@ -88,7 +91,7 @@ describe('textos fixos', () => {
   it('assunto vem do CMS, numa linha só', () => {
     expect(montar(PERFIS.baixo).assunto).toBe(TEXTOS.email.assunto)
     expect(
-      montar(PERFIS.baixo, { textos: { email: { assunto: 'Seu resultado\r\nBcc: x@y.com', abertura: null } } }).assunto,
+      montar(PERFIS.baixo, { textos: { ...TEXTOS, email: { assunto: 'Seu resultado\r\nBcc: x@y.com', abertura: null } } }).assunto,
     ).toBe('Seu resultado Bcc: x@y.com')
   })
 
@@ -97,7 +100,7 @@ describe('textos fixos', () => {
     expect(com.texto.startsWith(`Olá, Ana Souza,\n\n${TEXTOS.email.abertura}\n\nResultado do diagnóstico`)).toBe(true)
     expect(com.html).toContain('Abaixo está a leitura das suas respostas.')
 
-    const sem = montar(PERFIS.baixo, { textos: { email: { assunto: 'A', abertura: null } } })
+    const sem = montar(PERFIS.baixo, { textos: { ...TEXTOS, email: { assunto: 'A', abertura: null } } })
     expect(sem.texto.startsWith('Olá, Ana Souza,\n\nResultado do diagnóstico')).toBe(true)
     expect(sem.html).not.toContain('Obrigado por responder')
   })
@@ -238,7 +241,7 @@ describe('segurança do HTML', () => {
 
   it('texto do CMS sai escapado, com as quebras de linha preservadas', () => {
     const { html } = montar(PERFIS.baixo, {
-      textos: { email: { assunto: 'A <b>', abertura: 'Linha 1\nLinha <img src=x onerror=alert(1)>\n\nOutro parágrafo' } },
+      textos: { ...TEXTOS, email: { assunto: 'A <b>', abertura: 'Linha 1\nLinha <img src=x onerror=alert(1)>\n\nOutro parágrafo' } },
     })
     expect(html).not.toContain('<img')
     expect(html).not.toContain('<b>')

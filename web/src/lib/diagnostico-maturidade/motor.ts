@@ -28,7 +28,6 @@ import {
   PORTES,
   ROTULOS_DAS_TAGS,
   SETORES,
-  TAGS_DO_SETOR,
   TAGS_INTERNAS,
   TAGS_UNIVERSAIS,
   TAGS_UNIVERSAIS_DO_PERFIL,
@@ -42,6 +41,14 @@ import {
   type Setor,
   type Tag,
 } from './dados'
+import { REGULACOES_PADRAO, type RegulacoesPorSetor } from './regulacoes'
+
+/* ⚠️ `regulacoes` — o último parâmetro de `tagRelevante`, `impactosDaPergunta`,
+ * `impactosDoSetor` e `calcular` — é a única coisa aqui que **não** vem do HTML
+ * do Roger: desde 07/10 a lista de regulações de cada setor pode ser escolhida
+ * no admin (`regulacoes.ts`). O padrão é a lista do Roger, e é com ele que
+ * `motor.test.ts` compara com o original; quem serve o site passa a do admin.
+ * As três telas — perfil, pergunta e resultado — usam a mesma lista. */
 
 /** perguntaId → índice (0 a 3) da alternativa escolhida, na ordem da base.
  *
@@ -108,8 +115,8 @@ function rotuloDaTag(tag: string): string {
 
 /* `SECTOR_TAGS[state.sector] || []`. O `hasOwn` só evita que um setor forjado
  * como 'constructor' devolva uma função do protótipo — o original quebraria. */
-function tagsDoSetor(setor: string): readonly string[] {
-  return (Object.hasOwn(TAGS_DO_SETOR, setor) && TAGS_DO_SETOR[setor as Setor]) || []
+function tagsDoSetor(setor: string, regulacoes: RegulacoesPorSetor): readonly string[] {
+  return (Object.hasOwn(regulacoes, setor) && regulacoes[setor as Setor]) || []
 }
 
 /* ---------------------------------------------------------------------
@@ -123,20 +130,24 @@ export function perguntasDoSetor(setor: Setor): Pergunta[] {
 
 /** `tagRelevant`: pergunta transversal só exibe (e só pontua gap para) as tags
  * universais e os reguladores do setor escolhido. */
-export function tagRelevante(setor: Setor, tag: string): boolean {
-  return (TAGS_UNIVERSAIS as readonly string[]).includes(tag) || tagsDoSetor(setor).includes(tag)
+export function tagRelevante(setor: Setor, tag: string, regulacoes: RegulacoesPorSetor = REGULACOES_PADRAO): boolean {
+  return (TAGS_UNIVERSAIS as readonly string[]).includes(tag) || tagsDoSetor(setor, regulacoes).includes(tag)
 }
 
 /** `tagChips`: as etiquetas "Impacta:" de uma pergunta — união das tags das
  * alternativas, sem as internas, filtrada pelo setor.
  *
  * Lista vazia = o HTML mostra "Base para todas as regulações do setor". */
-export function impactosDaPergunta(pergunta: Pergunta, setor: Setor): Impacto[] {
+export function impactosDaPergunta(
+  pergunta: Pergunta,
+  setor: Setor,
+  regulacoes: RegulacoesPorSetor = REGULACOES_PADRAO,
+): Impacto[] {
   const vistas = new Set<string>()
   const saida: Impacto[] = []
   for (const alternativa of pergunta.alternativas) {
     for (const tag of alternativa.tags) {
-      if (!vistas.has(tag) && !(TAGS_INTERNAS as readonly string[]).includes(tag) && tagRelevante(setor, tag)) {
+      if (!vistas.has(tag) && !(TAGS_INTERNAS as readonly string[]).includes(tag) && tagRelevante(setor, tag, regulacoes)) {
         vistas.add(tag)
         saida.push({ tag, rotulo: rotuloDaTag(tag) })
       }
@@ -149,7 +160,7 @@ export function impactosDaPergunta(pergunta: Pergunta, setor: Setor): Impacto[] 
  * LGPD, ANPD e IA, os reguladores do setor e, se alguma pergunta **específica**
  * do setor carrega a tag, a Reforma Tributária. O HTML fecha a lista com
  * "entre outros". */
-export function impactosDoSetor(setor: Setor): Impacto[] {
+export function impactosDoSetor(setor: Setor, regulacoes: RegulacoesPorSetor = REGULACOES_PADRAO): Impacto[] {
   /* ⚠️ `q.sectors.indexOf(sector)`, e não o filtro com `'all'`: pergunta
    * transversal não conta. Hoje só `conf_ger_tributaria` decide isso. */
   const temReforma = PERGUNTAS.some(
@@ -159,7 +170,7 @@ export function impactosDoSetor(setor: Setor): Impacto[] {
   )
   const tags: readonly string[] = [
     ...TAGS_UNIVERSAIS_DO_PERFIL,
-    ...tagsDoSetor(setor),
+    ...tagsDoSetor(setor, regulacoes),
     ...(temReforma ? ['reforma_tributaria'] : []),
   ]
   return [...new Set(tags)].map((tag) => ({ tag, rotulo: rotuloDaTag(tag) }))
@@ -219,7 +230,7 @@ export function nivelDaMedia(media: number): string {
 
 /** `computeScores`: média, nível, médias por pilar e por área DAMA, gaps por tag
  * relevante (5 − nota, a distância até "Otimizado") e os três maiores. */
-export function calcular(setor: Setor, respostas: Respostas): Calculo {
+export function calcular(setor: Setor, respostas: Respostas, regulacoes: RegulacoesPorSetor = REGULACOES_PADRAO): Calculo {
   const porPilar: Partial<Record<NomeDoPilar, number[]>> = {}
   const porDama: Record<string, number[]> = {}
   const gaps: Record<string, number> = {}
@@ -234,7 +245,7 @@ export function calcular(setor: Setor, respostas: Respostas): Calculo {
     ;(porDama[pergunta.dama] ??= []).push(alternativa.nota)
     const gap = 5 - alternativa.nota
     for (const tag of alternativa.tags) {
-      if (tagRelevante(setor, tag)) gaps[tag] = (gaps[tag] || 0) + gap
+      if (tagRelevante(setor, tag, regulacoes)) gaps[tag] = (gaps[tag] || 0) + gap
     }
   }
 
