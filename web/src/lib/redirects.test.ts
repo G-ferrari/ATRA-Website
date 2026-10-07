@@ -6,6 +6,8 @@ import {
   ROTAS_APOSENTADAS,
   ROTAS_RENOMEADAS,
   SOLUCOES_QUE_MUDARAM,
+  ENDERECOS_REOCUPADOS,
+  enderecoReservado,
   caminhosGone,
   lerCsv,
   redirectsDoNext,
@@ -150,7 +152,26 @@ describe('SOLUCOES_QUE_MUDARAM', () => {
   it('leva o endereço antigo à solução nova, nos dois idiomas', () => {
     expect(destinoDe('/solucoes/inteligencia-artificial')).toBe('/solucoes/ia-generativa-e-agentes-conversacionais')
     expect(destinoDe('/en/solutions/inteligencia-artificial')).toBe('/en/solutions/ia-generativa-e-agentes-conversacionais')
-    expect(destinoDe('/solucoes/customer-360')).toBe('/solucoes/master-data-e-customer-360')
+    expect(destinoDe('/solucoes/cloud')).toBe('/solucoes/migracao-e-modernizacao')
+  })
+
+  /* 06/10: "Master Data & Customer 360" foi dividida em duas, com os endereços
+     do site antigo. O redirect fixo levava as duas à página que deixou de
+     existir — o menu mostrava o endereço novo e o clique dava 404. */
+  it('endereço antigo que voltou a ser página não redireciona, em nenhum idioma', () => {
+    for (const slug of ENDERECOS_REOCUPADOS) {
+      expect(destinoDe(`/solucoes/${slug}`), slug).toBeUndefined()
+      expect(destinoDe(`/en/solutions/${slug}`), slug).toBeUndefined()
+    }
+    expect(ENDERECOS_REOCUPADOS).toEqual(['customer-360', 'master-data-management'])
+  })
+
+  it('diz ao admin quais endereços ainda estão presos a um redirect', () => {
+    expect(enderecoReservado('cloud')).toBe('migracao-e-modernizacao')
+    expect(enderecoReservado('customer-360')).toBeNull()
+    expect(enderecoReservado('analytics-conversacional')).toBeNull()
+    /* Quem manteve o endereço nunca teve redirect. */
+    expect(enderecoReservado('assessoria-em-produtos')).toBeNull()
   })
 
   /* Estas duas nasceram de novo no mesmo endereço: redirect ali viraria laço. */
