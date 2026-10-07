@@ -509,6 +509,22 @@ export function toBlocos(
         })
         break
 
+      case 'partnerMosaic':
+        blocos.push({
+          ...base(b),
+          tipo: 'partnerMosaic',
+          eyebrow: vazio(b.eyebrow),
+          title: vazio(b.title),
+          paragrafos: paragrafosDe(b.description),
+          items: (b.items ?? []).map((i) => ({
+            image: toImage(i.image, 'partnerMosaic.items.image'),
+            name: i.name,
+            linkLabel: vazio(i.linkLabel),
+            href: vazio(i.href),
+          })),
+        })
+        break
+
       case 'imageGrid':
         blocos.push({
           ...base(b),

@@ -85,6 +85,34 @@ describe('toBlocos', () => {
     expect(estranho).toMatchObject({ bodySize: 'normal' })
   })
 
+  /* 07/10: cartões com imagem, nome e link, em mosaico. */
+  it('partnerMosaic separa a descrição em parágrafos e deixa link vazio como null', () => {
+    const imagem = { id: 1, url: '/api/media/file/gcp.webp', alt: 'Google Cloud', width: 1254, height: 1254 }
+    const [b] = toBlocos(
+      layout({
+        id: '1',
+        blockType: 'partnerMosaic',
+        eyebrow: 'Nossos Parceiros',
+        title: 'Soluções das principais empresas de tecnologia',
+        description: 'Primeiro parágrafo.\n\nSegundo parágrafo.',
+        items: [
+          { id: 'a', image: imagem, name: 'Google Cloud', linkLabel: 'Ferramentas', href: '/parceiros/google-cloud' },
+          { id: 'b', image: imagem, name: 'Denodo', linkLabel: '  ', href: '' },
+        ],
+      }),
+    )
+
+    expect(b).toMatchObject({
+      tipo: 'partnerMosaic',
+      eyebrow: 'Nossos Parceiros',
+      paragrafos: ['Primeiro parágrafo.', 'Segundo parágrafo.'],
+      items: [
+        { name: 'Google Cloud', linkLabel: 'Ferramentas', href: '/parceiros/google-cloud', image: { url: '/api/media/file/gcp.webp' } },
+        { name: 'Denodo', linkLabel: null, href: null },
+      ],
+    })
+  })
+
   it('aceita layout vazio ou ausente', () => {
     expect(toBlocos(null)).toEqual([])
     expect(toBlocos([])).toEqual([])

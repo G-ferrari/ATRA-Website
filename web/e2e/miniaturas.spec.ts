@@ -57,6 +57,8 @@ const PAGINA_DO_BLOCO: Record<string, string | null> = {
   sealsBanner: '/carreiras',
   imageGrid: '/parceiros/google-cloud',
   partnerShowcase: '/segmentos/varejo',
+  // 07/10: nasceu para esta página; até o marketing montá-la com o bloco, a miniatura versionada fica.
+  partnerMosaic: '/solucoes/assessoria-em-produtos',
   logoMarquee: '/',
   partnerSplit: '/parceiros/google-cloud',
   highlightCarousel: '/',
