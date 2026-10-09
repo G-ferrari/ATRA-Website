@@ -1,0 +1,63 @@
+name: Deploy
+
+# ⚠️ Este arquivo **só publica** (D-59, 09/10/2026). Lint, tipos, testes e a
+# suíte de ponta a ponta saíram do GitHub: a franquia de 2.000 minutos do mês
+# acabou em nove dias (D-58), e mesmo cortada pela metade a conta não fechava.
+# Quem confere agora é a máquina de quem publica — `pnpm check`, o hook de
+# `pre-push` e o `pnpm ship`, que é o único caminho para a `main`.
+#
+# E o que sobrou roda em **executor próprio**, instalado na VM do site: não
+# gasta minuto nenhum, e o deploy deixa de depender de SSH atravessando a
+# internet (as três tentativas, o keepalive e a chave de host fixada existiam
+# por causa disso). Como registrar: docs/04-infra/deploy-vps.md.
+#
+# ⚠️ Não acrescentar `pull_request` aqui. Executor próprio roda o que o workflow
+# mandar, com acesso ao Docker da VM: PR nunca pode chegar a ele.
+on:
+  push:
+    branches: [main]
+  # Para repetir o deploy do commit atual da `main` sem inventar um commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: deploy na VM
+    # Publicar é levar a `migracao` para a `main` (D-44), pelo `pnpm ship` — e
+    # só nesse sentido: push de uma `main` atrasada leva ao ar código velho
+    # sobre um banco já migrado.
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, atra-vm]
+    # O deploy leva ~14 min (o build pré-renderiza 563 páginas). O teto existe
+    # para um build pendurado não segurar a fila para sempre.
+    timeout-minutes: 45
+    # Um deploy de cada vez, sem cancelar o que está no meio: interromper entre
+    # a migração e a troca de imagem deixa o banco à frente do site.
+    concurrency:
+      group: deploy-vps
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Código para /opt/atra
+        # O mesmo conjunto que o Dockerfile consome (contexto = raiz do repo,
+        # por causa do redirects.csv — ver o topo do Dockerfile). `legacy/` fica
+        # de fora: o runtime não lê nada de lá, só o seed, que não roda aqui.
+        # ⚠️ `--exclude '.env*'` é o que protege o `.env.prod` do `--delete`.
+        run: |
+          rsync -a --delete \
+            --exclude node_modules --exclude .next --exclude .git \
+            --exclude legacy --exclude test-results --exclude playwright-report \
+            --exclude '.env*' \
+            Dockerfile docker-compose.prod.yml Caddyfile web docs infra \
+            /opt/atra/
+
+      - name: Migra, builda e troca
+        # O `deploy.sh` é a rotina provada: migração idempotente, build, troca
+        # com healthcheck e volta sozinha se reprovar. O job espera por ele — de
+        # graça, agora — e o veredito do job **é** o do deploy.
+        run: |
+          chmod +x /opt/atra/infra/deploy/*.sh /opt/atra/infra/backup/*.sh
+          /opt/atra/infra/deploy/deploy.sh "$GITHUB_SHA"

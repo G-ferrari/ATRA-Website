@@ -26,7 +26,11 @@
     "baseline": "PARIDADE_COM_PROTOTIPO=1 GRAVAR_GABARITO=1 playwright test e2e/baseline.spec.ts --update-snapshots",
     "typegen": "next typegen",
     "gate": "node scripts/gate.mjs",
-    "gate:baseline": "node scripts/gate.mjs --baseline"
+    "gate:baseline": "node scripts/gate.mjs --baseline",
+    "check": "node scripts/check.mjs",
+    "check:fast": "node scripts/check.mjs --rapido",
+    "ship": "node scripts/ship.mjs",
+    "prepare": "git config core.hooksPath .githooks 2>/dev/null || true"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1117.0",
