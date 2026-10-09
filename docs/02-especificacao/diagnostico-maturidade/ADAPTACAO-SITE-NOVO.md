@@ -23,6 +23,11 @@
 5. **Consentimento / privacidade:** checkbox + base legal alinhados ao banner/política do site novo (D-30 / P-14).
 6. **Analytics:** `quiz_maturidade_lead` no dataLayer só após consentimento analytics/marketing conforme regra do projeto.
 
+## O que o site decide por cima da base (07/10, D-56)
+- **Regulações por setor** (`SECTOR_TAGS` no HTML): editáveis no admin, em Configuração → Diagnóstico de maturidade. A lista do HTML é o padrão; a do admin vale para a etiqueta do perfil, as etiquetas das perguntas e as lacunas do resultado. Ao receber versão nova do HTML, **conferir a tela do admin**: ela não acompanha sozinha.
+- **Linha "Impactos avaliados"** (`sectorImpactChips` no HTML): desde 08/10 (D-57) o site mostra o **órgão**, não a norma — `impactosNoPerfil`, em `perfil.ts`. `rc18`, `cmn5274` e `bcbs239` aparecem como "BACEN (Banco Central)"; `cvm244` como "CVM"; `sro` como "SUSEP"; `tiss` como "ANS"; `rgc` como "Anatel"; `lgpd_saude` e `anpd` junto de "LGPD/ANPD"; `eca` sem o número da lei. As do setor vêm antes das universais. Vale para o perfil e para a mesma linha do e-mail; perguntas, lacunas e lead seguem norma por norma, e o HTML não foi editado. Tag nova numa versão do Roger aparece com o próprio nome até ganhar órgão em `perfil.ts`.
+- ⚠️ Para a próxima versão do Roger: em `financeiro`, `SECTOR_TAGS` traz `pld`, mas nenhuma pergunta desse setor carrega a tag — "PLD/FT" aparece como avaliado e nunca soma lacuna.
+
 ## Critérios mínimos para abrir a feature KSDD
 - [x] HTML + README no repo
 - [ ] FEATURE spec + tasks (`/ksdd:new:feature diagnostico maturidade dados`)

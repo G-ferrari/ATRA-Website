@@ -253,8 +253,10 @@ describe.each(SETORES.map((s, n) => ({ setor: s.valor, n })))('setor $setor', ({
     }
   })
 
+  /* Com `TAGS_DO_SETOR` explícito: a lista padrão do site tem as mesmas
+     regulações, mas a ordem da tela (`REGULACOES_PADRAO`, Saúde). */
   it('impactos do setor = sectorImpactChips', () => {
-    expect(impactosDoSetor(setor)).toStrictEqual(original.impactosDoSetor(setor))
+    expect(impactosDoSetor(setor, TAGS_DO_SETOR)).toStrictEqual(original.impactosDoSetor(setor))
   })
 
   it('impactos de cada pergunta = tagChips', () => {

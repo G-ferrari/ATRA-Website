@@ -65,7 +65,7 @@ export default async function Pagina({ searchParams }: PageProps<'/[locale]/diag
   const { setor } = await searchParams
   const setorInicial = ehSetor(setor) ? setor : null
 
-  const { titulo, abertura, conclusao, whatsappUrl, agendaUrl } = await lerDiagnosticoDeMaturidade(DEFAULT_LOCALE)
+  const { titulo, abertura, conclusao, whatsappUrl, agendaUrl, regulacoes } = await lerDiagnosticoDeMaturidade(DEFAULT_LOCALE)
 
   return (
     <main
@@ -86,7 +86,7 @@ export default async function Pagina({ searchParams }: PageProps<'/[locale]/diag
         />
         {/* A política no idioma da rota: é página do site, e existe nos dois. */}
         <Questionario
-          textos={{ titulo, abertura, conclusao, whatsappUrl, agendaUrl }}
+          textos={{ titulo, abertura, conclusao, whatsappUrl, agendaUrl, regulacoes }}
           setorInicial={setorInicial}
           privacidadeHref={hrefDe('politicas', locale)}
         />
