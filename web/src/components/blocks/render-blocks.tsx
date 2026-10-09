@@ -105,7 +105,7 @@ export function RenderBlocks({
       case 'webinarTeaser':
         return <BlocoChamadaWebinars key={b.id} bloco={b} locale={locale} />
       case 'pageHero':
-        return <BlocoHero key={b.id} bloco={b} />
+        return <BlocoHero key={b.id} bloco={b} locale={locale} />
       case 'richTextSection':
         return <BlocoTexto key={b.id} bloco={b} />
       case 'iconCardGrid':

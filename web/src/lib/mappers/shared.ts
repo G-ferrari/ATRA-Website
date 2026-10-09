@@ -57,6 +57,10 @@ export function mapearOuFaltando<T>(fn: () => T): { doc: T } | { faltando: strin
 
 export function toImage(valor: number | Media | null | undefined, campo: string): Image {
   const doc = exigirPopulado<Media>(valor, campo)
+  // Desde 09/10 a biblioteca aceita vídeo, que não tem largura nem altura.
+  if (doc.mimeType?.startsWith('video/')) {
+    throw new Error(`[mapper] "${campo}" recebeu um vídeo (mídia ${doc.id}) num campo de imagem. Troque por uma imagem no admin.`)
+  }
   if (!doc.url || !doc.width || !doc.height) {
     throw new Error(`[mapper] Media "${campo}" (id ${doc.id}) sem url/width/height.`)
   }
