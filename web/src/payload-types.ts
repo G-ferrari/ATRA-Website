@@ -472,7 +472,7 @@ export interface Partner {
             align?: ('left' | 'center') | null;
             mediaMode?: ('none' | 'image' | 'marquee' | 'video') | null;
             /**
-             * MP4 or WebM, up to 50 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
+             * MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
              */
             videoFile?: (number | null) | Media;
             /**
@@ -2198,7 +2198,7 @@ export interface Page {
         align?: ('left' | 'center') | null;
         mediaMode?: ('none' | 'image' | 'marquee' | 'video') | null;
         /**
-         * MP4 or WebM, up to 50 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
+         * MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
          */
         videoFile?: (number | null) | Media;
         /**
@@ -4204,7 +4204,7 @@ export interface Segment {
             align?: ('left' | 'center') | null;
             mediaMode?: ('none' | 'image' | 'marquee' | 'video') | null;
             /**
-             * MP4 or WebM, up to 50 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
+             * MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
              */
             videoFile?: (number | null) | Media;
             /**
@@ -5888,7 +5888,7 @@ export interface Solution {
             align?: ('left' | 'center') | null;
             mediaMode?: ('none' | 'image' | 'marquee' | 'video') | null;
             /**
-             * MP4 or WebM, up to 50 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
+             * MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
              */
             videoFile?: (number | null) | Media;
             /**

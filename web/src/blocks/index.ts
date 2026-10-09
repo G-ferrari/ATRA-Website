@@ -84,8 +84,8 @@ export const PageHero: Block = {
       admin: {
         condition: (_, irmaos) => irmaos?.mediaMode === 'video',
         description: {
-          pt: 'MP4 ou WebM, até 50 MB. O vídeo toca no próprio site, com os controles do navegador. Tendo arquivo e link, vale o arquivo.',
-          en: 'MP4 or WebM, up to 50 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.',
+          pt: 'MP4 ou WebM, até 300 MB. O vídeo toca no próprio site, com os controles do navegador. Tendo arquivo e link, vale o arquivo.',
+          en: 'MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.',
         },
       },
     },

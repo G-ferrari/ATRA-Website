@@ -3,7 +3,8 @@ import { APIError, type CollectionConfig } from 'payload'
 import { isEditorOrAdmin, isPublic } from '@/access'
 import { cabecalhosDoArquivoExterno } from '@/lib/arquivo-externo'
 
-const TETO_DO_VIDEO = 50 * 1024 * 1024
+// 300 MB: pedido do dono em 09/10 (nasceu em 50).
+const TETO_DO_VIDEO = 300 * 1024 * 1024
 
 const WEBP = { format: 'webp' as const, options: { quality: 82 } }
 
@@ -30,8 +31,10 @@ export const Media: CollectionConfig = {
     beforeOperation: [
       /* ⚠️ Teto só para vídeo. O arquivo é servido pelo próprio site
        * (`/api/media/file/`), saindo do mesmo servidor que builda e roda o
-       * banco: um vídeo de 500 MB na abertura de uma página é banda e disco de
-       * uma VM de 8 GB. Vídeo longo vai para o YouTube, pelo campo de link. */
+       * banco: vídeo sem teto na abertura de uma página é banda e disco de uma
+       * VM de 8 GB. ⚠️ O Payload segura o arquivo inteiro na memória durante o
+       * envio — a 300 MB isso já pesa numa VM que também builda. Vídeo longo
+       * vai para o YouTube, pelo campo de link. */
       ({ req, operation }) => {
         const arquivo = req.file
         if ((operation === 'create' || operation === 'update') && arquivo?.mimetype?.startsWith('video/') && arquivo.size > TETO_DO_VIDEO) {
