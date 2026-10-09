@@ -1,6 +1,6 @@
 ---
 status: rascunho
-atualizado_em: 2026-08-25
+atualizado_em: 2026-10-09
 depende_de: [docker.md, ambientes.md]
 ---
 
@@ -124,6 +124,70 @@ Regras:
 2. **Migração antes do healthcheck.** Container que não migrou não recebe tráfego.
 3. **Migração destrutiva exige backup verificado antes** — bloqueio manual.
 4. Reter as **5 imagens anteriores** para rollback imediato.
+
+### O executor do deploy, na VM (D-59)
+
+O deploy não roda mais em executor do GitHub: roda num **executor próprio**
+instalado na VM do site, que não gasta a franquia de minutos. O workflow
+(`.github/workflows/deploy.yml`) pede `runs-on: [self-hosted, atra-vm]`, copia o
+código para `/opt/atra` e chama o `infra/deploy/deploy.sh` — tudo local, sem SSH.
+
+⚠️ **Registrar o executor antes de o `deploy.yml` chegar à `main`.** Sem
+executor com a etiqueta `atra-vm`, o job fica na fila e nada publica.
+
+**Para registrar** — uma vez, por quem tem acesso de administrador ao
+repositório e à VM:
+
+1. No GitHub: **Settings → Actions → Runners → New self-hosted runner**, Linux,
+   x64. A página mostra a versão atual, o endereço do pacote e um **token de
+   registro**, que vale uma hora. O token não entra em arquivo nenhum do
+   repositório.
+2. Na VM, com o **mesmo usuário que hoje faz o deploy** — o dono de
+   `/opt/atra`, no grupo `docker` (`infra/provisionar/preparar-vm.sh`). Nunca
+   `root`: o `config.sh` recusa.
+
+   ```bash
+   mkdir -p ~/actions-runner && cd ~/actions-runner
+   # baixar e conferir o pacote com os dois comandos que a página do GitHub mostra
+   # (curl + shasum), e extrair com `tar xzf`
+   ./config.sh --url https://github.com/G-ferrari/ATRA-Website \
+     --token <token da página> \
+     --name atra-vm --labels atra-vm --unattended
+   ```
+
+3. Instalar como serviço, para sobreviver a reinício da VM. O `svc.sh` precisa
+   de `sudo` para criar a unidade do systemd, e o serviço roda com o usuário
+   informado, não como root:
+
+   ```bash
+   sudo ./svc.sh install "$USER"
+   sudo ./svc.sh start
+   sudo ./svc.sh status
+   ```
+
+4. Conferir que a VM tem `git` e `rsync` (o job usa os dois) e que o usuário
+   roda `docker ps` sem `sudo`.
+5. No GitHub, o executor aparece como **Idle** em Settings → Actions → Runners.
+   Para provar de ponta a ponta sem commit novo: **Actions → Deploy → Run
+   workflow**, na `main`.
+
+**Depois de o primeiro deploy pelo executor dar certo**, os segredos
+`VPS_SSH_KEY`, `VPS_HOST_KEY`, `VPS_HOST` e `VPS_USER` não são mais lidos por
+ninguém e podem ser apagados (Settings → Secrets and variables → Actions), e a
+chave pública correspondente pode sair do `authorized_keys` da VM.
+
+**Se o executor cair** (job parado em "Waiting for a runner"): na VM,
+`sudo ./svc.sh status` em `~/actions-runner` e `journalctl -u 'actions.runner.*'`.
+Enquanto não volta, o deploy à mão continua valendo — com o código já em
+`/opt/atra`, `/opt/atra/infra/deploy/deploy.sh <sha>`.
+
+⚠️ **O executor roda o que o workflow mandar, com acesso ao Docker da VM** — na
+prática, acesso total à máquina. Duas regras seguram isso: o repositório é
+privado, e o `deploy.yml` só tem `push` na `main` e disparo manual. Não
+acrescentar `pull_request` a workflow nenhum que use `self-hosted`.
+
+⚠️ O deploy divide CPU e memória com o site no ar, como sempre dividiu: o build
+já acontecia na VM. O `concurrency` do job garante um de cada vez.
 
 ## Storage de mídia
 

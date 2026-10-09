@@ -34,6 +34,10 @@ só depois de horas, ninguém quer descobrir no sábado.
       voltou a esperar por ele (`needs: [verify, e2e]`). Marcar só depois da
       **primeira execução verde** na `migracao` — religar no arquivo não é o
       mesmo que passar. **Nenhum cutover com o e2e desligado ou vermelho.**
+      ⚠️ Desde a D-59 (09/10) a suíte não roda mais no GitHub: o equivalente é
+      um `pnpm check` verde sobre o commit do cutover, que o `pnpm ship` exige
+      antes de publicar. No dia, publicar **só** pelo `ship` — `--no-verify`
+      na `main` é cutover com o e2e desligado.
 
 - [ ] Fase 4c concluída: **paridade de conteúdo** (D-17) — 207 posts, 13 soluções, 10 segmentos, 6 vagas, página legal
 - [ ] Fase 6 concluída: performance, backup **com restore testado**, Sentry, uptime

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Deploy na VPS, chamado pelo workflow depois de o CI passar e o código chegar
-# por rsync. Uso: /opt/atra/infra/deploy/deploy.sh <sha>
+# Deploy na VM, chamado pelo workflow (`deploy.yml`, no executor instalado na
+# própria VM) depois de o código chegar a /opt/atra. Quem confere o código antes
+# é o `pnpm ship`, na máquina de quem publica (D-59).
+# Uso: /opt/atra/infra/deploy/deploy.sh <sha>
 #
 # A ordem é a de deploy-vps.md, com um ajuste que a prática impôs:
 #

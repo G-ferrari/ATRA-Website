@@ -133,7 +133,8 @@ pnpm gate --baseline                     # regrava o gabarito a partir do legado
 pnpm gate --sem-build                    # reaproveita o .next existente
 pnpm gate --rota home --viewport desktop # 1 teste em vez de 207, para iterar
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 267 linhas
-git push origin main                     # deploy (D-44): CI valida e a VPS troca sozinha, com rollback; `main` só recebe merge da `migracao`
+pnpm check                               # o CI inteiro, local (D-59); `pnpm check:fast` é a parte sem banco
+pnpm ship                                # publica (D-44/D-59): da `migracao`, roda o check e avança a `main`
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
 ```
 
@@ -279,9 +280,9 @@ interna legível sem pôr foto de banco no ar. Os arquivos ficam em
 
 Desde 24/08 o site roda **em homologação numa VPS** (`srv1927832.hstgr.cloud`,
 Hostinger KVM2, com `noindex`; a senha saiu em 01/10, D-45), com o conteúdo real completo.
-**`git push` na `main` é o deploy** (D-44; até 01/10 era a `migracao`): CI valida (lint, types, gate) e a VPS
+**Push na `main` é o deploy** (D-44), e só o `pnpm ship` o faz, depois do `pnpm check` (D-59): a VM
 rebuilda, migra e troca com healthcheck e rollback — `infra/deploy/deploy.sh` e
-o job `deploy` do `ci.yml`. Backup diário com restore **verificado por
+o `deploy.yml`, num executor próprio na VM. Backup diário com restore **verificado por
 contagem** (`infra/backup/`). E **publicar no CMS atualiza o site sem deploy**
 (MIG-143, `hooks/revalidar.ts`): o hook chama `revalidatePath` em processo —
 a nota antiga de "estático não muda depois do seed" segue valendo só para o

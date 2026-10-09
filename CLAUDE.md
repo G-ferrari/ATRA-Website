@@ -141,13 +141,25 @@ PARIDADE_COM_PROTOTIPO=1 pnpm gate       # a suíte padrão mais a paridade inte
 # "Enable host networking" em Settings → Resources → Network.
 docker run --rm --network host -e NEXT_URL=http://localhost:3000 -e GERAR_MINIATURAS=1 -v "$PWD":/work -w /work mcr.microsoft.com/playwright:v1.62.1-noble npx playwright test e2e/miniaturas.spec.ts --project=desktop
 pnpm exec tsx --env-file-if-exists=.env.local scripts/wp-import/gerar-redirects.ts  # 273 linhas
-git push origin main                     # deploy (D-44): CI valida e a VPS troca sozinha, com rollback; `main` só recebe merge da `migracao`
+pnpm check:fast                          # o que era o job verify do CI: lint, tipos, unitários (~1 min) — o pre-push roda isto
+pnpm check                               # o CI inteiro, local (D-59): isso + banco zerado, migrações, seed com fixtures e o gate
+pnpm ship                                # publica (D-44/D-59): da `migracao`, roda o check e avança a `main`; a VM troca sozinha, com rollback
 ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backup em base limpa
 ```
 
 `pnpm gate` é o único caminho: build de produção em :3100, suíte dentro da imagem
 oficial do Playwright — a mesma no macOS e no CI, para uma falha valer nos dois.
 `pnpm test:e2e` é o executor cru, usado por dentro do container.
+
+⚠️ **O GitHub não confere mais nada (D-59, 09/10).** A franquia de 2.000
+minutos acabou em nove dias, e o workflow (`deploy.yml`) ficou só com o deploy,
+num executor próprio dentro da VM. PR não tem selo verde. O que confere é
+`pnpm check` — os mesmos passos dos antigos jobs `verify` e `e2e`, com banco e
+storage descartáveis em `docker-compose.check.yml` (:55432, :59000; o banco de
+dev não é tocado). O hook de `pre-push` (`.githooks/`, ligado pelo `pnpm
+install`) roda o `check:fast` e **recusa push direto na `main`**: o único
+caminho é o `pnpm ship`. `git push --no-verify` pula tudo isso — na `main`,
+publica sem teste.
 
 Regravar gabarito exige justificativa no PR: apaga a evidência de regressão.
 
@@ -161,9 +173,9 @@ Ver um subconjunto dos gabaritos mudar é o esperado, não sinal de captura velh
 ⚠️ **A paridade com o protótipo saiu do CI em 27/09 (D-39).** O gabarito é de
 21/08, e o site mudou de propósito desde então (D-31, passada de 13/09): ele
 reprovava as 11 rotas por decisão de design, não por regressão (P-30). O que o
-CI roda agora é o `pnpm gate` padrão — smoke, comportamento
+`pnpm check` roda (D-59; até 09/10 era o CI) é o `pnpm gate` padrão — smoke, comportamento
 (`consultores`, `diagnostico-maturidade`, `chat-lead`, `cookies`), contraste nos
-dois temas, o CSV inteiro de redirects e o axe —, e o deploy espera por ele.
+dois temas, o CSV inteiro de redirects e o axe —, e o `pnpm ship` não publica sem ele.
 `visual.spec.ts`, `baseline.spec.ts`, `paridade-ds.spec.ts` e o teste do legado
 no smoke **ficam no repositório**, fora pelo `testIgnore` do
 `playwright.config.ts`; `PARIDADE_COM_PROTOTIPO=1` os religa, e `--baseline` e
@@ -347,9 +359,9 @@ interna legível sem pôr foto de banco no ar. Os arquivos ficam em
 
 Desde 24/08 o site roda **em homologação numa VPS** (`srv1927832.hstgr.cloud`,
 Hostinger KVM2, com `noindex`; a senha saiu em 01/10, D-45), com o conteúdo real completo.
-**`git push` na `main` é o deploy** (D-44; até 01/10 era a `migracao`): CI valida (lint, types, gate) e a VPS
+**Push na `main` é o deploy** (D-44), e só o `pnpm ship` o faz, depois do `pnpm check` (D-59): a VM
 rebuilda, migra e troca com healthcheck e rollback — `infra/deploy/deploy.sh` e
-o job `deploy` do `ci.yml`. Backup diário com restore **verificado por
+o `deploy.yml`, num executor próprio na VM. Backup diário com restore **verificado por
 contagem** (`infra/backup/`). E **publicar no CMS atualiza o site sem deploy**
 (MIG-143, `hooks/revalidar.ts`): o hook chama `revalidatePath` em processo —
 a nota antiga de "estático não muda depois do seed" segue valendo só para o
@@ -359,7 +371,8 @@ O **e2e do CI foi religado em 27/09 (D-39)**, depois de desligado desde 26/08
 por decisão do Leonardo, para iterar em homologação. Voltou **sem** a paridade
 com o protótipo, e o deploy voltou a esperar por ele (`needs: [verify, e2e]`).
 A primeira execução verde na `migracao` é o que fecha o pré-requisito do
-runbook de cutover.
+runbook de cutover. ⚠️ Desde a D-59 (09/10) essa suíte não roda mais no GitHub:
+é o `pnpm check`, e quem a exige antes do deploy é o `pnpm ship`.
 
 **D-29 (03/09, MIG-148–150)** ligou os leads ao RD Station por hook
 `afterChange` em `form-submissions`, e a **D-54 (02/10, MIG-157)** trocou o alvo:
@@ -418,6 +431,11 @@ original. Cada setor só oferece o que as perguntas dele avaliam. ⚠️ Regener
 **órgão**, não a norma — `impactosNoPerfil`, em `perfil.ts`, pedido do Roger. É
 só o resumo: perguntas, lacunas e lead seguem norma por norma, e o HTML dele não
 foi editado.
+
+**D-59 (09/10)** tirou a verificação do GitHub (a D-58, do mesmo dia, só a
+cortara pela metade): `pnpm check` é o CI, `pnpm ship` publica, e o deploy roda
+num executor próprio na VM (`docs/04-infra/deploy-vps.md`). ⚠️ A trava da D-39 —
+deploy que espera a suíte — deixou de ser por construção: é o `ship` e o hook.
 
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),

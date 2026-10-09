@@ -1,6 +1,6 @@
 ---
 status: revisado
-atualizado_em: 2026-10-05
+atualizado_em: 2026-10-09
 depende_de: [../01-descoberta/inventario-rotas.md, ../01-descoberta/inventario-conteudo.md, ../01-descoberta/inventario-assets.md, ../01-descoberta/debito-tecnico.md]
 ---
 
@@ -1837,3 +1837,129 @@ do órgão. O que ele ditou:
   linha em `perfil.ts`.
 - **PLD/FT em Mercado Financeiro** ficou, como ele ditou. O achado da D-56
   continua: nenhuma pergunta do setor mede PLD/FT.
+
+## D-58 — O CI deixa de repetir trabalho
+
+*Decidida em 09/10/2026 por G-ferrari.*
+
+**Contexto.** A conta do GitHub tem 2.000 minutos de Actions por mês e chegou a
+90% em nove dias. Levantamento pela API (01/10 a 09/10): 1.887 minutos, 98% do
+CI — a suíte de ponta a ponta 67%, o job de lint e build 24%, o deploy 7%. O
+monitor de uptime, 2%. Não havia desperdício por falha (9% em rodada cancelada
+ou reprovada): o fluxo normal custava ~115 minutos por publicação, porque o CI
+inteiro rodava quatro vezes — no PR, no push da `migracao`, no PR para a `main`
+e no push da `main`.
+
+**Decisão.** Cinco cortes, nenhum deles no que o deploy espera.
+
+1. **Push na `migracao` não roda mais.** O PR já testa o resultado do merge
+   (`refs/pull/N/merge`); a rodada do push repetia a mesma árvore. Era 30%.
+2. **PR da `migracao` para a `main` não roda.** Quem vale é o push na `main`,
+   que roda tudo antes do deploy. PR de outra branch direto para a `main`
+   continua rodando.
+3. **Um build por rodada.** O primeiro job fazia `pnpm build` e o `pnpm gate`
+   do segundo fazia outro. O primeiro ficou sem build, sem migração e sem
+   banco: lint, geradores do Payload, tipos e testes unitários.
+4. **PR em um tamanho de tela** (desktop). Os três rodam na `main`.
+5. **Seed num processo só.** Eram 21, cada um pagando o arranque do Payload.
+   O banco que sai é o mesmo: comparado tabela a tabela em dois bancos zerados
+   (978 tabelas, sem os carimbos de tempo e os ids aleatórios).
+
+E um sexto, que **só liga com um token na VM**: o deploy em segundo plano
+(`infra/deploy/em-segundo-plano.sh`). O executor do GitHub passava os ~14
+minutos do deploy parado, de SSH aberto. Com `GITHUB_STATUS_TOKEN` no
+`.env.prod`, o CI dispara e sai, e a VM avisa o resultado — status "deploy" no
+commit, e issue se reprovar. Sem o token o job espera, como sempre: soltar o
+deploy sem ter quem avise seria um deploy que falha calado, com o CI verde.
+
+**O preço.**
+
+- Defeito só de celular ou de tablet deixa de aparecer no PR e aparece na
+  rodada da `main` — antes do deploy, mas depois do merge na `migracao`.
+- A `migracao` deixa de ter um selo verde próprio: o selo é o do PR que entrou.
+  Dois PRs verdes que se quebram **juntos** só são pegos na `main`.
+- O primeiro job não prova mais o build num banco **sem conteúdo**; o build que
+  roda é o do gate, com o banco semeado, que é o mais parecido com a produção.
+
+**Recusado.** Reaproveitar o banco semeado entre rodadas (cache): o cache do
+GitHub só é compartilhado a partir da `main`, a rodada que precede o deploy
+teria que semear do zero de qualquer forma, e banco velho num PR é um verde
+falso. O seed num processo só corta menos, mas corta em toda rodada e não mente.
+
+**Conta.** Uma publicação cai de ~115 para ~50 minutos (~35 com o token). No
+ritmo de outubro, o mês cai de ~6.300 para ~2.300 (~1.900 com o token) — ainda
+perto do teto. O que zera é um executor próprio, que continua em aberto.
+
+**Fora desta decisão.** O monitor de uptime: configurado para cada 5 minutos,
+rodou 18 vezes em cinco dias; se rodasse como configurado, gastaria sozinho
+mais de 8.000 minutos por mês.
+
+---
+
+## D-59 — O GitHub só publica; quem confere é a máquina de quem publica
+
+*Decidida em 09/10/2026 por G-ferrari.*
+
+**Contexto.** A D-58 cortou o CI pela metade e a conta ainda não fechava: no
+ritmo de outubro, ~2.300 minutos por mês contra uma franquia de 2.000 — e ela
+mesma registrou que "o que zera é um executor próprio". De 01 a 09/10 foram 76
+rodadas e ~2.330 minutos de relógio; 54% em PR de branch de trabalho, 24% em
+push na `migracao`, 16% na rodada da `main` (suíte e deploy) e 6% no PR da
+`migracao` para a `main`. O mesmo problema foi resolvido no GiraHub tirando os
+testes do GitHub, e o roteiro de lá foi aplicado aqui.
+
+**Decisão.**
+
+1. **O workflow só publica.** `ci.yml` virou `deploy.yml`, com um job: push na
+   `main` → código em `/opt/atra` → `infra/deploy/deploy.sh`. Os jobs `verify`
+   e `e2e` saíram.
+2. **O deploy roda em executor próprio, na VM do site** (`runs-on:
+   [self-hosted, atra-vm]`). Não gasta franquia, e o job volta a esperar o
+   `deploy.sh` — o veredito do job é o do deploy. O deploy em segundo plano da
+   D-58 (`em-segundo-plano.sh`, `GITHUB_STATUS_TOKEN`) perdeu a razão de
+   existir e foi apagado, junto com o rsync por SSH e as três tentativas.
+3. **`pnpm check` é o CI.** `web/scripts/check.mjs` roda, na ordem, o que os
+   dois jobs rodavam: segredo com `NEXT_PUBLIC_`, lint, tipos do Payload,
+   importMap, typecheck, testes unitários; depois banco **zerado**
+   (`docker-compose.check.yml`, portas próprias), migrações, seed com fixtures
+   e o `pnpm gate` nos três tamanhos de tela. `pnpm check:fast` é só a primeira
+   metade.
+4. **Hook de `pre-push`** versionado (`.githooks/`, ligado pelo `prepare` do
+   `pnpm install`): roda o `check:fast` em todo push e **recusa push direto na
+   `main`**.
+5. **`pnpm ship` é o único caminho para a `main`.** Exige estar na `migracao`,
+   limpa, igual à do GitHub e contendo a `main`; roda o `check` inteiro; e só
+   então avança a `main` para o mesmo commit. A árvore conferida é a que vai ao
+   ar. A D-44 segue valendo: a `main` só recebe o que veio da `migracao`.
+
+**O preço.**
+
+- **A trava virou convenção.** Desde a D-39 o deploy esperava a suíte por
+  construção (`needs: [verify, e2e]`), e isso era pré-requisito do runbook de
+  cutover. Agora `git push --no-verify origin main` publica sem conferir nada.
+  O que segura é o hook, o `ship` e esta regra escrita — não o GitHub.
+- **PR não tem mais selo.** Quem revisa um PR não vê verde nem vermelho; a
+  conferência é de quem abre (o hook) e de quem publica (o `ship`). Dois PRs
+  que se quebram juntos só aparecem no `ship`.
+- **Clone sem `pnpm install` não tem hook.** O `prepare` liga o hook; quem
+  clona e faz push sem instalar passa direto — mas não chega à `main` pelo
+  `ship` sem o check.
+- **Cada publicação ocupa a máquina de quem publica** pelo tempo do check
+  inteiro, com Docker de pé.
+- **Executor fora do ar = deploy na fila.** Se o serviço do executor cair na
+  VM, o job espera (até 24 h) e nada publica; não há mais caminho por SSH a
+  partir do GitHub. `deploy.sh <sha>` à mão, na VM, continua valendo.
+- **O executor roda com o usuário que controla o Docker da VM.** Só é
+  aceitável porque o repositório é privado e o workflow não tem gatilho de PR.
+
+**Recusado.** Rodar também a suíte em executor próprio, o que manteria a trava
+por construção: na VM ela disputaria CPU e memória com o site no ar (o build já
+custou 70 OOM kills ao Postgres), e na máquina de quem publica o custo é o
+mesmo do `ship`, com um serviço a mais para manter de pé.
+
+**Conta.** De ~2.300 minutos por mês (depois da D-58) para o que o monitor de
+uptime gasta: ~120, no ritmo em que o GitHub de fato o dispara.
+
+**Fora desta decisão.** O monitor de uptime continua no executor do GitHub —
+ele precisa olhar o site **de fora** da VM. O risco apontado na D-58 segue de
+pé: se o cron rodasse como configurado, gastaria mais de 8.000 minutos por mês.

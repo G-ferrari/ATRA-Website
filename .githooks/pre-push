@@ -1,0 +1,40 @@
+#!/bin/sh
+# Antes de todo push: o que era o job `verify` do CI (D-59) — lint, tipos do
+# Payload, importMap, typecheck e testes unitários, ~2 min.
+#
+# O GitHub não confere mais nada: o workflow só publica. Este hook e o
+# `pnpm ship` são a rede que sobrou.
+#
+# Ligado por `git config core.hooksPath .githooks`, que o `pnpm install` faz
+# sozinho (script `prepare` do web/package.json).
+#
+# Emergência: `git push --no-verify` pula o hook. Numa `main` isso publica sem
+# conferir nada — só com o site fora do ar e a correção na mão.
+
+# ⚠️ Push de exclusão de branch e de tag não tem o que conferir; e a `main` só
+# recebe push do `pnpm ship`, que já rodou o check inteiro e avisa por
+# `ATRA_SHIP` — repetir o rápido aqui seria conferir duas vezes a mesma árvore.
+conferir=0
+while read -r ref_local sha_local ref_remota sha_remoto; do
+  case "$sha_local" in *[!0]*) : ;; *) continue ;; esac
+  case "$ref_remota" in
+    refs/heads/main)
+      if [ "${ATRA_SHIP:-}" != 1 ]; then
+        echo "✖ push direto na main publica o site sem conferir nada." >&2
+        echo "  Use, de dentro de web/:  pnpm ship" >&2
+        exit 1
+      fi
+      ;;
+    refs/heads/*) conferir=1 ;;
+  esac
+done
+
+[ "$conferir" = 1 ] || exit 0
+
+cd "$(git rev-parse --show-toplevel)/web" || exit 1
+# O stdin do hook é a lista de refs; o pnpm não tem nada a ler dali.
+# Cliente gráfico de git costuma rodar o hook sem o PATH do terminal.
+if command -v pnpm >/dev/null 2>&1; then
+  exec pnpm check:fast </dev/null
+fi
+exec corepack pnpm check:fast </dev/null

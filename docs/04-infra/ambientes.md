@@ -83,8 +83,11 @@ Levantado em 17/08/2026, por DNS e headers públicos:
 - **Local:** `.env.local`, fora do git (o `.gitignore` da raiz já cobre `.env*`).
 - **Staging/Produção:** no gerenciador de variáveis da plataforma de deploy —
   ver [deploy-vps](deploy-vps.md). Nunca em arquivo no servidor, nunca no repo.
-- **CI:** GitHub Actions Secrets. O CI **não precisa** de `GEMINI_API_KEY` nem
-  `RESEND_API_KEY` — os testes não chamam serviço externo.
+- **Esteira de verificação:** nenhum. Desde a D-59 ela roda na máquina de quem
+  publica (`pnpm check`), com valores de teste escritos no próprio script, e não
+  precisa de `GEMINI_API_KEY` nem `RESEND_API_KEY` — os testes não chamam
+  serviço externo. O workflow de deploy também não lê segredo: roda dentro da
+  VM, onde o `.env.prod` já está.
 
 `.env.example` versionado com todas as chaves e valores vazios, para documentar o
 que existe sem vazar nada.

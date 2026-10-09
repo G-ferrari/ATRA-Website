@@ -2,6 +2,7 @@ import { spawn, spawnSync } from 'node:child_process'
 import { cpus } from 'node:os'
 import { setTimeout as esperar } from 'node:timers/promises'
 import path from 'node:path'
+import './pnpm-no-path.mjs'
 
 /* Gate da suíte e2e (MIG-035; paridade fora do padrão desde D-39).
  *
@@ -37,6 +38,8 @@ import path from 'node:path'
  * `pnpm gate` sem filtro custa ~9 min e a máquina inteira; conferir uma rota
  * enquanto se conserta um bloco custa ~1 min. Quem fecha a task roda o gate
  * completo — o filtro não pega regressão em rota vizinha.
+ * Desde a D-59 quem chama o gate completo é o `pnpm check`, que antes sobe um
+ * banco zerado e semeia as fixtures; o `pnpm ship` não publica sem ele.
  *
  * ⚠️ Página estática não muda com `--sem-build`. A home e as outras rotas de
  * conteúdo são pré-renderizadas no build: depois de mexer no **seed**, é
