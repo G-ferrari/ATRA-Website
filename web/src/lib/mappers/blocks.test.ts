@@ -33,6 +33,45 @@ describe('toBlocos', () => {
     })
   })
 
+  describe('vídeo na abertura de página', () => {
+    const hero = (campos: Record<string, unknown>) =>
+      toBlocos(layout({ id: '1', blockType: 'pageHero', title: 'Abertura', mediaMode: 'video', ...campos }))[0]
+    const arquivo = { id: 7, url: '/api/media/file/demo.mp4', mimeType: 'video/mp4', alt: 'Demonstração do produto' }
+
+    it('link do YouTube vira embed sem cookie, que só carrega no clique', () => {
+      expect(hero({ videoUrl: 'https://youtu.be/abc123' })).toMatchObject({
+        mediaMode: 'video',
+        video: { tipo: 'embed', src: 'https://www.youtube-nocookie.com/embed/abc123', provedor: 'YouTube' },
+      })
+    })
+
+    it('arquivo enviado toca no próprio site e vence o link', () => {
+      expect(hero({ videoFile: arquivo, videoUrl: 'https://youtu.be/abc123' })).toMatchObject({
+        video: { tipo: 'arquivo', url: '/api/media/file/demo.mp4', mimeType: 'video/mp4', titulo: 'Demonstração do produto' },
+      })
+    })
+
+    it('a primeira imagem é a capa', () => {
+      const capa = { id: 3, url: '/api/media/file/capa.webp', alt: 'Capa', width: 1600, height: 900, mimeType: 'image/webp' }
+      expect(hero({ videoUrl: 'https://youtu.be/abc123', images: [capa] })).toMatchObject({
+        images: [{ url: '/api/media/file/capa.webp' }],
+      })
+    })
+
+    /* Coluna vazia espremeria o texto em 7/12 ao lado de um buraco. */
+    it.each([
+      ['nada preenchido', {}],
+      ['link que não é YouTube nem Vimeo', { videoUrl: 'https://exemplo.com/video.mp4' }],
+      ['arquivo que não é vídeo', { videoFile: { ...arquivo, mimeType: 'application/pdf' } }],
+    ])('sem vídeo resolvido (%s) o herói sai sem mídia', (_, campos) => {
+      expect(hero(campos)).toMatchObject({ mediaMode: 'none', video: null })
+    })
+
+    it('fora do modo de vídeo, link preenchido é ignorado', () => {
+      expect(hero({ mediaMode: 'none', videoUrl: 'https://youtu.be/abc123' })).toMatchObject({ mediaMode: 'none', video: null })
+    })
+  })
+
   it('descarta o botão do ctaBanner quando falta rótulo ou destino', () => {
     const [so_label, completo] = toBlocos(
       layout(

@@ -8,7 +8,9 @@ import { rastrear } from '@/lib/rastreio'
 import type { Embed } from '@/lib/video'
 import type { Image as Imagem } from '@/types/content'
 
-/* MIG-155 (D-30) — o vídeo do webinar sob clique.
+/* MIG-155 (D-30) — vídeo de terceiro (YouTube/Vimeo) sob clique. Nasceu na
+ * página do webinar; desde 09/10 serve também a abertura de página, e por isso
+ * mora aqui e aceita ficar sem capa.
  *
  * ⚠️ Antes, o iframe montava com a página e a requisição ao YouTube/Vimeo saía
  * assim que ele entrava no viewport (`loading="lazy"` adia, não elimina) — IP
@@ -21,19 +23,24 @@ import type { Image as Imagem } from '@/types/content'
  * quer assistir, e gatear vídeo por categoria de cookie impediria de assistir
  * exatamente quem recusou tudo (D-30).
  *
- * A capa usa a imagem do próprio webinar (a mesma do herói da página), com o
- * play no gradiente padrão do site. `autoplay=1` no src: quem clicou no play
+ * A capa é a imagem que a página entrega (no webinar, a do herói), com o play
+ * no gradiente padrão do site. ⚠️ Sem capa fica o fundo escuro, e **não** a
+ * miniatura do YouTube: buscá-la seria a requisição a terceiro que o clique
+ * existe para evitar. `autoplay=1` no src: quem clicou no play
  * não deve precisar de um segundo clique dentro do iframe. */
 export function VideoSobClique({
   embed,
   imagem,
   titulo,
   rotuloAssistir,
+  sizes = '(max-width: 896px) 100vw, 896px',
 }: {
   embed: Embed
-  imagem: Imagem
+  imagem: Imagem | null
   titulo: string
   rotuloAssistir: string
+  /** A largura que a capa ocupa — a do webinar, se ninguém disser outra. */
+  sizes?: string
 }) {
   const [tocando, setTocando] = useState(false)
 
@@ -61,7 +68,9 @@ export function VideoSobClique({
       aria-label={`${rotuloAssistir}: ${titulo}`}
       className="relative block w-full aspect-video rounded-[6px] overflow-hidden  bg-slate-950 shadow-xl group cursor-pointer"
     >
-      <Image src={imagem.url} alt="" fill sizes="(max-width: 896px) 100vw, 896px" className="object-cover opacity-60 group-hover:opacity-70 transition-opacity" />
+      {imagem && (
+        <Image src={imagem.url} alt="" fill sizes={sizes} className="object-cover opacity-60 group-hover:opacity-70 transition-opacity" />
+      )}
       <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
 
       <span className="absolute inset-0 flex flex-col items-center justify-center gap-3">

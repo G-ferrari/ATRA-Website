@@ -150,6 +150,7 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
           descriptionWidth: 'wide',
           mediaMode: 'none',
           images: [],
+          video: null,
           metrics: [],
         }}
       />
