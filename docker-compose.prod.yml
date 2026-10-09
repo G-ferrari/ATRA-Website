@@ -74,6 +74,13 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      # D-54: os leads dos formulários viram conversões no RD Station
+      # Marketing. Liga/desliga e nomes moram no CMS (Sistema → Integrações);
+      # a chave é credencial e fica aqui, como segunda tranca — vazia, o lead
+      # fica só no admin (`rd.syncedAt` vazio). ⚠️ A `RDSTATION_CRM_TOKEN`
+      # da D-26 nunca esteve nesta lista: mesmo provisionada no `.env.prod`,
+      # não chegava ao contêiner.
+      RDSTATION_MARKETING_API_KEY: ${RDSTATION_MARKETING_API_KEY:-}
       # MIG-102: candidaturas do Banco de Talentos seguem para o ATRAIR (R&S),
       # e a grade de /carreiras lista as vagas de lá (D-33).
       #

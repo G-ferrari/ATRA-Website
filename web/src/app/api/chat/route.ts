@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai'
+import { GoogleGenAI, ThinkingLevel } from '@google/genai'
 import { NextResponse } from 'next/server'
 
 import { MAX_TOKENS_DE_SAIDA, validarConversa, type Mensagem } from '@/lib/chat'
@@ -154,8 +154,19 @@ export async function POST(req: Request) {
       model: 'gemini-3.6-flash',
       contents: mensagens.map((m) => ({ role: m.role, parts: [{ text: m.content }] })),
       /* `maxOutputTokens`: sem ele a resposta é custo sem teto — e o orçamento
-       * de MIG-110 conta requisições, não tokens. */
-      config: { systemInstruction: config?.systemPrompt ?? '', temperature: 0.7, maxOutputTokens: MAX_TOKENS_DE_SAIDA },
+       * de MIG-110 conta requisições, não tokens.
+       *
+       * ⚠️ `thinkingLevel: MINIMAL` é o que deixa o teto caber. O 3.6-flash
+       * raciocina por padrão, e o raciocínio conta **dentro** do
+       * `maxOutputTokens`: medido em 05/10, 744 a 836 dos 1024 iam para ele, e
+       * a resposta parava no meio da frase (`finishReason: MAX_TOKENS`). Subir
+       * o teto só empurra o corte; o raciocínio cresce junto. */
+      config: {
+        systemInstruction: config?.systemPrompt ?? '',
+        temperature: 0.7,
+        maxOutputTokens: MAX_TOKENS_DE_SAIDA,
+        thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
+      },
     })
     return NextResponse.json({ text: resposta.text ?? '' })
   } catch (e) {

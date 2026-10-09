@@ -57,3 +57,33 @@ export function ehEndpointDeIntegracao(valor: string): boolean {
  * validação acima recusaria o valor na primeira edição.
  */
 export const ENDPOINT_PADRAO_ATRAIR = process.env.ATRAIR_API_URL?.trim() || 'http://localhost:3300'
+
+/* ---------------------------------------------------------------------------
+ * RD Station Marketing (D-54)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * O identificador de conversão que o RD mostra nos relatórios e usa nas
+ * automações. O RD aceita qualquer texto; o formato fechado aqui é para o
+ * campo não guardar um snippet colado por engano — ele vai em JSON para fora.
+ */
+export function ehIdentificadorDeConversao(valor: string): boolean {
+  return /^[a-z0-9][a-z0-9_.-]{0,99}$/i.test(valor)
+}
+
+/**
+ * Os identificadores com que os campos do admin **nascem preenchidos**, um por
+ * formulário. São os sugeridos à ATRA em 02/10; o marketing renomeia no admin
+ * sem deploy — o nome é deles (D-22), e é o que aparece nas automações.
+ *
+ * ⚠️ Também é o que o mapper usa quando o global ainda não foi gravado: um
+ * global sem linha no banco devolve `undefined`, não o `defaultValue`.
+ */
+export const CONVERSOES_PADRAO = {
+  contact: 'site-contato',
+  chatLead: 'site-chat',
+  newsletter: 'site-newsletter',
+  materialDownload: 'site-download-material',
+  consultantRequest: 'site-solicitacao-consultores',
+  dataMaturityDiagnostic: 'site-diagnostico-maturidade',
+} as const

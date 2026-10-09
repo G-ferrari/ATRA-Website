@@ -122,7 +122,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   }
 
   /* MIG-102: currículo segue para o ATRAIR (sistema de R&S) — melhor esforço,
-   * como a sincronização com o CRM: `false` não muda o `Resultado`, porque a
+   * como a sincronização com o RD: `false` não muda o `Resultado`, porque a
    * candidatura já está gravada acima e visível no admin.
    *
    * ⚠️ Quem manda é a chave `talentPool` do global `integrations` (D-41), lida

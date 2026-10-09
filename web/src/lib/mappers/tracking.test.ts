@@ -9,6 +9,7 @@ import { toRastreamento } from './tracking'
  * pode chegar à página, e o vazio tem que desligar o script, não quebrá-lo. */
 
 const LUSHA = '6edbd0a7-0cda-4da6-83c4-6aad885fa31e'
+const RD = 'fbafbc60-8ad7-4b11-9cef-ac901f4481e3'
 
 describe('ehGtmId', () => {
   it.each(['GTM-KR2VWNK', 'GTM-TESTE', 'GTM-ABC123'])('aceita %s', (id) => {
@@ -44,15 +45,28 @@ describe('ehLushaSiteId', () => {
 
 describe('toRastreamento', () => {
   it('leva os ids do admin, aparados', () => {
-    expect(toRastreamento({ gtmId: ' GTM-KR2VWNK ', lushaSiteId: `${LUSHA}\n` })).toEqual({
+    expect(toRastreamento({ gtmId: ' GTM-KR2VWNK ', lushaSiteId: `${LUSHA}\n`, rdStationLoaderId: ` ${RD}` })).toEqual({
       gtmId: 'GTM-KR2VWNK',
       lushaSiteId: LUSHA,
+      rdStationLoaderId: RD,
     })
   })
 
   it('global vazio é "não configurado", não string vazia', () => {
-    expect(toRastreamento({ gtmId: null, lushaSiteId: null })).toEqual({ gtmId: null, lushaSiteId: null })
-    expect(toRastreamento({ gtmId: '', lushaSiteId: '  ' })).toEqual({ gtmId: null, lushaSiteId: null })
+    const vazio = { gtmId: null, lushaSiteId: null, rdStationLoaderId: null }
+    expect(toRastreamento({ gtmId: null, lushaSiteId: null, rdStationLoaderId: null })).toEqual(vazio)
+    expect(toRastreamento({ gtmId: '', lushaSiteId: '  ', rdStationLoaderId: '' })).toEqual(vazio)
+  })
+
+  /* D-54: o que o RD manda colar é a tag inteira; o campo guarda só o uuid. */
+  it('a tag <script> do RD colada inteira não chega à página', () => {
+    expect(
+      toRastreamento({
+        gtmId: null,
+        lushaSiteId: null,
+        rdStationLoaderId: `<script async src="https://d335luupugsy2.cloudfront.net/js/loader-scripts/${RD}-loader.js"></script>`,
+      }).rdStationLoaderId,
+    ).toBeNull()
   })
 
   it('o admin vence a reserva do ambiente', () => {
@@ -64,9 +78,10 @@ describe('toRastreamento', () => {
   })
 
   it('valor fora do formato não chega à página, venha de onde vier', () => {
-    expect(toRastreamento({ gtmId: 'G-619E22CJKE', lushaSiteId: 'lusha' })).toEqual({
+    expect(toRastreamento({ gtmId: 'G-619E22CJKE', lushaSiteId: 'lusha', rdStationLoaderId: 'rd' })).toEqual({
       gtmId: null,
       lushaSiteId: null,
+      rdStationLoaderId: null,
     })
     expect(toRastreamento({ gtmId: null }, { gtmId: 'gtm-errado' }).gtmId).toBeNull()
   })

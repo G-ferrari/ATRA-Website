@@ -150,7 +150,7 @@ describe('enviarDiagnosticoDeMaturidade — envio válido', () => {
     })
   })
 
-  it('message curto com o perfil em rótulo, sem repetir o que a nota do CRM já leva', async () => {
+  it('message curto com o perfil em rótulo, sem repetir o que os campos do RD já levam', async () => {
     await enviar(valido())
     const { message } = gravado()
     expect(message).toContain('Setor: Mercado Financeiro')
@@ -214,10 +214,10 @@ describe('enviarDiagnosticoDeMaturidade — envio válido', () => {
     expect(gravado().email).toBe('ana.souza@banco.com.br')
   })
 
-  /* A sincronização é o hook `afterChange` (task 023, `lib/crm.test.ts`). */
-  it('não preenche o grupo crm — quem sincroniza é o hook', async () => {
+  /* A sincronização é o hook `afterChange` (task 023, `lib/rd-marketing.test.ts`). */
+  it('não preenche o grupo rd — quem sincroniza é o hook', async () => {
     await enviar(valido())
-    expect(gravado()).not.toHaveProperty('crm')
+    expect(gravado()).not.toHaveProperty('rd')
   })
 
   it('resposta parcial grava, com a conta só sobre o que foi respondido', async () => {

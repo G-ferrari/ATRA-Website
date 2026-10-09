@@ -13,3 +13,8 @@ export const ehGtmId = (valor: string): boolean => /^GTM-[A-Z0-9]{4,12}$/.test(v
 /** O `siteId` do painel Website Visitors da Lusha é um UUID. */
 export const ehLushaSiteId = (valor: string): boolean =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(valor)
+
+/** O id do script de monitoramento do RD Station Marketing é o UUID que vai no
+ * nome do arquivo (`loader-scripts/<uuid>-loader.js`). Mesmo formato do
+ * `siteId` da Lusha; função própria porque o erro do admin nomeia o campo. */
+export const ehRdStationLoaderId = ehLushaSiteId
