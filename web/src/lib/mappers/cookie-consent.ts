@@ -29,9 +29,12 @@ const RESERVA = {
       nome: 'Marketing',
       /* D-40: o trecho da Lusha é o texto da Karen (22/09), **literal** — sem
          tirar nem pôr, por decisão de G-ferrari em 27/09. Não reescrever aqui:
-         a revisão do texto completo dos cookies é da ATRA (P-14). */
+         a revisão do texto completo dos cookies é da ATRA (P-14).
+         D-54: a frase inicial passou a citar o RD Station, porque o
+         monitoramento dele carrega sob esta categoria e o visitante precisa
+         ler isso antes de aceitar. Redação provisória, entra na mesma P-14. */
       descricao:
-        'Guarda de qual campanha você chegou (parâmetros UTM), enviada ao nosso CRM se você entrar em contato. ' +
+        'Guarda de qual campanha você chegou (parâmetros UTM) e permite ao RD Station, nossa ferramenta de marketing, acompanhar sua navegação no site; os dois são enviados a ele se você entrar em contato. ' +
         'Utilizamos tecnologia de identificação de visitantes para entender quais empresas visitam nosso site. Essa tecnologia associa seu endereço IP a informações públicas da empresa. Não identificamos visitantes individuais nem rastreamos o comportamento de navegação pessoal. Esse processamento é baseado no seu consentimento, que pode ser revogado a qualquer momento por meio das preferências de cookies.',
     },
   },
@@ -56,7 +59,7 @@ const RESERVA = {
       /* ⚠️ Tradução do texto da Karen, não texto dela: ela escreveu só em
          português. Entra na revisão do texto completo dos cookies (P-14). */
       descricao:
-        'Remembers which campaign brought you here (UTM parameters), sent to our CRM if you get in touch. ' +
+        'Remembers which campaign brought you here (UTM parameters) and lets RD Station, our marketing tool, follow your navigation on the site; both are sent to it if you get in touch. ' +
         'We use visitor identification technology to understand which companies visit our site. This technology matches your IP address to public company information. We do not identify individual visitors or track personal browsing behavior. This processing is based on your consent, which you can withdraw at any time through the cookie preferences.',
     },
   },

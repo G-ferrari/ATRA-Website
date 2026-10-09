@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { isAdmin, isEditorOrAdmin } from '@/access'
-import { sincronizarComCrm } from '@/hooks/sincronizar-crm'
+import { sincronizarComRd } from '@/hooks/sincronizar-rd'
 
 /* Envios de formulário (MIG-100).
  *
@@ -17,13 +17,13 @@ import { sincronizarComCrm } from '@/hooks/sincronizar-crm'
  *  - `delete` só para admin: apagar é o exercício do direito de exclusão, e
  *    precisa ser rastreável a alguém.
  *
- * ⚠️ Isto **não** é o CRM, e agora se sabe qual é: **D-26** respondeu P-18 —
- * a ATRA usa RD Station CRM, e o destino final dos leads é lá. Esta collection
- * é o registro de passagem, e continua sendo a **primeira** escrita: grava aqui,
- * sincroniza depois. A sincronização é o hook de MIG-148
- * (`hooks/sincronizar-crm.ts`): sem `RDSTATION_CRM_TOKEN` ela não roda, e o
- * backup diário volta a ser a única cópia — o RPO de 24h que P-22 questiona.
- * Lead perdido não volta.
+ * ⚠️ Isto **não** é a ferramenta de marketing, e agora se sabe qual é: **D-26**
+ * respondeu P-18 com o RD Station CRM, e a **D-54** corrigiu para o RD Station
+ * **Marketing** — é lá que os formulários da ATRA vivem. Esta collection é o
+ * registro de passagem, e continua sendo a **primeira** escrita: grava aqui,
+ * sincroniza depois. A sincronização é o hook `hooks/sincronizar-rd.ts`: sem
+ * `RDSTATION_MARKETING_API_KEY` ela não roda, e o backup diário volta a ser a
+ * única cópia — o RPO de 24h que P-22 questiona. Lead perdido não volta.
  */
 
 /* Os campos do diagnóstico de maturidade só aparecem nos envios desse kind:
@@ -52,7 +52,7 @@ export const FormSubmissions: CollectionConfig = {
   },
   /* ⚠️ Fora do `comRevalidacao` central (lead não desenha página), então o
    * hook entra aqui mesmo — MIG-148. */
-  hooks: { afterChange: [sincronizarComCrm] },
+  hooks: { afterChange: [sincronizarComRd] },
   defaultSort: '-createdAt',
   fields: [
     {
@@ -143,7 +143,7 @@ export const FormSubmissions: CollectionConfig = {
     },
     {
       /* D-35 — o resultado do diagnóstico de maturidade: a "visão dos
-       * clientes" que o comercial lê aqui e no RD Station CRM. Só o kind
+       * clientes" que o comercial lê aqui e no RD Station. Só o kind
        * `data-maturity-diagnostic` preenche (a action da task 025), sempre a
        * partir da conta refeita no servidor pelo motor
        * (`lib/diagnostico-maturidade`) — nunca do que o navegador mandou.
@@ -184,9 +184,10 @@ export const FormSubmissions: CollectionConfig = {
           },
         },
         {
-          /* No formato em que o questionário do Roger manda ao CRM
-           * (`cf_quiz_gaps_top3`): 'LGPD (12) | IA (9) | BCB (7)'. A nota da
-           * negociação no RD Station (`lib/crm.ts`) repete o texto como está. */
+          /* No formato em que o questionário do Roger manda ao RD
+           * (`cf_quiz_gaps_top3`): 'LGPD (12) | IA (9) | BCB (7)'. O campo
+           * personalizado da conversão (`lib/rd-marketing.ts`) repete o texto
+           * como está. */
           name: 'topGaps',
           type: 'textarea',
           label: { pt: 'Três maiores gaps', en: 'Top 3 gaps' },
@@ -216,7 +217,7 @@ export const FormSubmissions: CollectionConfig = {
       /* O resultado só chega ao lead por e-mail (decisão de 26/09), então um
        * envio que falhou é um lead que respondeu tudo e não recebeu nada. A
        * action preenche isto **só** quando o envio deu certo — mesmo espírito
-       * do `notified` e do `crm.syncedAt`: a falta fica visível no admin em vez
+       * do `notified` e do `rd.syncedAt`: a falta fica visível no admin em vez
        * de virar silêncio. */
       name: 'resultSentAt',
       type: 'date',
@@ -240,12 +241,12 @@ export const FormSubmissions: CollectionConfig = {
       admin: { readOnly: true, position: 'sidebar' },
     },
     {
-      /* Que campanha trouxe o visitante (D-26), para o RD Station CRM saber
-       * qual investimento pagou o lead.
+      /* Que campanha trouxe o visitante (D-26), para o RD Station saber qual
+       * investimento pagou o lead.
        *
        * ⚠️ **Não é o `source` acima.** Aquele é *onde* a pessoa converteu — o
        * caminho da página. Este é *de onde ela veio*. São duas perguntas
-       * diferentes e o CRM precisa das duas para fechar a conta.
+       * diferentes e o RD precisa das duas para fechar a conta.
        *
        * `group` e não cinco campos soltos: no admin vira um bloco só, ao lado
        * do lead, e no Postgres vira `utm_source`, `utm_medium`… na mesma tabela.
@@ -266,28 +267,27 @@ export const FormSubmissions: CollectionConfig = {
       ],
     },
     {
-      /* MIG-148 — o espelho da sincronização com o RD Station CRM (D-26).
+      /* D-54 — o espelho da sincronização com o RD Station Marketing (sucede o
+       * grupo `crm` de MIG-148).
        *
-       * ⚠️ `syncedAt` **vazio é o sinal**: sem token, ou depois de uma falha
-       * (aí `error` diz qual), o lead não está no CRM — visível no admin em
-       * vez de silêncio. Qualquer edição no doc (marcar como lido serve)
-       * dispara nova tentativa; os ids gravados impedem duplicar contato ou
-       * negociação no retry. */
-      name: 'crm',
+       * ⚠️ `syncedAt` **vazio é o sinal**: sem chave, ou depois de uma falha
+       * (aí `error` diz qual — inclusive o campo `cf_` que o RD recusou), o
+       * lead não está no RD — visível no admin em vez de silêncio. Qualquer
+       * edição no doc (marcar como lido serve) dispara nova tentativa. */
+      name: 'rd',
       type: 'group',
-      label: { pt: 'RD Station CRM', en: 'RD Station CRM' },
+      label: { pt: 'RD Station Marketing', en: 'RD Station Marketing' },
       admin: { readOnly: true },
       fields: [
-        { name: 'contactId', type: 'text', label: { pt: 'Contato (id)', en: 'Contact id' } },
-        { name: 'dealId', type: 'text', label: { pt: 'Negociação (id)', en: 'Deal id' } },
+        { name: 'eventUuid', type: 'text', label: { pt: 'Conversão (event_uuid)', en: 'Conversion (event_uuid)' } },
         {
           name: 'syncedAt',
           type: 'date',
           label: { pt: 'Sincronizado em', en: 'Synced at' },
           admin: {
             description: {
-              pt: 'Vazio significa que este lead ainda não chegou ao RD Station CRM. Editar o envio (por exemplo, marcar como lido) tenta de novo.',
-              en: 'Empty means this lead has not reached RD Station CRM yet. Editing the submission (e.g. marking it read) retries.',
+              pt: 'Vazio significa que este lead ainda não chegou ao RD Station Marketing. Editar o envio (por exemplo, marcar como lido) tenta de novo.',
+              en: 'Empty means this lead has not reached RD Station Marketing yet. Editing the submission (e.g. marking it read) retries.',
             },
           },
         },

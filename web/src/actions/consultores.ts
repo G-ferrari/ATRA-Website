@@ -21,7 +21,7 @@ import { MAX_POR_VALOR } from '@/lib/utm'
  *
  * Mesmo contrato dos outros formulários (`architecture.md` §4): anti-spam →
  * grava → avisa, com o aviso incapaz de derrubar a gravação. A sincronização com
- * o RD Station CRM não vem aqui: é o hook `afterChange` de `form-submissions`, e
+ * o RD Station não vem aqui: é o hook `afterChange` de `form-submissions`, e
  * `consultant-request` entrou na lista comercial na task 011.
  *
  * ⚠️ **Os perfis são revalidados no servidor.** Server Action é endpoint público

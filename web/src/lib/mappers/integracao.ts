@@ -1,6 +1,6 @@
-import { ehEndpointDeIntegracao } from '@/lib/formatos-de-integracao'
+import { CONVERSOES_PADRAO, ehEndpointDeIntegracao, ehIdentificadorDeConversao } from '@/lib/formatos-de-integracao'
 import type { Integration } from '@/payload-types'
-import type { IntegracaoAtrair } from '@/types/content'
+import type { IntegracaoAtrair, IntegracaoRd } from '@/types/content'
 
 /* Mapper do global `integrations` (D-41).
  *
@@ -31,5 +31,39 @@ export function toIntegracaoAtrair(
      * quem só fez o deploy — a D-41 não muda o que está no ar. */
     vagas: doc.atrair?.jobsFeed ?? true,
     bancoDeTalentos: doc.atrair?.talentPool ?? true,
+  }
+}
+
+/* D-54 — a parte do RD Station Marketing do mesmo global.
+ *
+ * ⚠️ Identificador fora do formato vira `null` **aqui** também: o campo vai em
+ * JSON para o RD, e um valor que entrou por outro caminho (banco editado à
+ * mão) não pode chegar à chamada. `null` desliga aquele formulário, não a
+ * integração.
+ *
+ * ⚠️ Global ainda não gravado devolve `undefined` em vez do `defaultValue`:
+ * `ligado` lê como ligado (a D-54 não muda o que está no ar — sem a chave no
+ * ambiente, segue inerte), `camposPersonalizados` como desligado (o seguro),
+ * e cada identificador cai no padrão com que o campo nasce. */
+export function toIntegracaoRd(doc: Pick<Integration, 'rdStationMarketing'>): IntegracaoRd {
+  const g = doc.rdStationMarketing
+  const c = g?.conversions
+  const identificador = (valor: string | null | undefined, padrao: string): string | null => {
+    /* `undefined` é "nunca gravado" → padrão; `''` é o admin apagando de
+     * propósito → aquele formulário não vai. */
+    const bruto = valor === undefined ? padrao : (valor ?? '').trim()
+    return bruto && ehIdentificadorDeConversao(bruto) ? bruto : null
+  }
+  return {
+    ligado: g?.enabled ?? true,
+    camposPersonalizados: g?.customFields ?? false,
+    conversoes: {
+      contato: identificador(c?.contact, CONVERSOES_PADRAO.contact),
+      chat: identificador(c?.chatLead, CONVERSOES_PADRAO.chatLead),
+      newsletter: identificador(c?.newsletter, CONVERSOES_PADRAO.newsletter),
+      download: identificador(c?.materialDownload, CONVERSOES_PADRAO.materialDownload),
+      consultores: identificador(c?.consultantRequest, CONVERSOES_PADRAO.consultantRequest),
+      diagnostico: identificador(c?.dataMaturityDiagnostic, CONVERSOES_PADRAO.dataMaturityDiagnostic),
+    },
   }
 }

@@ -79,10 +79,12 @@ bucket público de mídia) e URL assinada com expiração.
 
 Só e-mail + consentimento. Double opt-in.
 
-> [!NOTE] ✅ **P-18 respondida (21/08/2026) → [D-26](../00-contexto/decisoes.md).**
-> A ATRA usa **RD Station CRM**. A newsletter e o contato alimentam o CRM em vez
-> de virar lista isolada no Payload — mas a escrita no Payload continua sendo a
-> **primeira**, e a sincronização é o passo seguinte, com retry. Ver D-26.
+> [!NOTE] ✅ **P-18 respondida (21/08/2026) → [D-26](../00-contexto/decisoes.md),
+> corrigida em 02/10/2026 → [D-54](../00-contexto/decisoes.md).**
+> A ATRA usa **RD Station Marketing** (a D-26 dizia CRM; os formulários vivem no
+> Marketing). Cada envio comercial vira uma **conversão** lá, com o identificador
+> configurado no admin — mas a escrita no Payload continua sendo a **primeira**,
+> e a sincronização é o passo seguinte, com retry. Ver D-54.
 
 ### Download de material (`resources` com `gated: true`)
 

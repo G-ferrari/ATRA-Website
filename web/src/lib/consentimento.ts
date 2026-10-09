@@ -24,8 +24,11 @@
 export const COOKIE_DE_CONSENTIMENTO = 'atra-consent'
 /* 2 desde a D-40 (27/09): marketing passou a incluir a Lusha, que identifica
  * a empresa da visita. Quem aceitou marketing quando ela era só a UTM aceitou
- * outra coisa — o aviso pergunta de novo. */
-export const VERSAO_DE_CONSENTIMENTO = 2
+ * outra coisa — o aviso pergunta de novo.
+ * 3 desde a D-54 (02/10): marketing passou a incluir o monitoramento do RD
+ * Station Marketing, que acompanha a navegação do visitante entre páginas e a
+ * amarra ao lead. Mesmo raciocínio: pergunta de novo. */
+export const VERSAO_DE_CONSENTIMENTO = 3
 /** ~6 meses. Vencido, o banner volta a perguntar. */
 export const VALIDADE_EM_SEGUNDOS = 180 * 24 * 60 * 60
 

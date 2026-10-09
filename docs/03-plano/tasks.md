@@ -529,6 +529,7 @@ o `next/image` só otimiza origem própria e o lockout de login está no default
 | MIG-154 | `atra:utm` vira opt-in de marketing | 151 | Nada persiste sem consentimento; consentimento tardio efetiva a UTM da chegada (memória de módulo); revogação limpa | 2h | **done** — memória de módulo em `lib/utm.ts`; formulários intactos |
 | MIG-155 | Vídeo dos webinars click-to-load | 153 | Nenhuma requisição a YouTube/Vimeo antes do clique; capa no padrão do site; `video_play` no aceite de analytics | 2h | **done** — `webinars/[slug]/video-sob-clique.tsx`; fecha a brecha do Vimeo |
 | MIG-156 | Instrumentação dos eventos GA4 | 153, 155 | `form_submit`/`resource_download`/`chat_*`/`outbound_click` via `rastrear` (no-op sem consentimento); DOM inicial intacto | 2h | **done** — `use-rastrear-envio` + `rastreio-de-saida`; chat instrumentado em `conversa.tsx` |
+| MIG-157 | **Leads para o RD Station Marketing** (D-54) — substitui o alvo da MIG-148 | 148 | Lead comercial vira conversão (`event_uuid`); identificadores de conversão e liga/desliga no admin, `cf_*` opt-in; monitoramento do RD atrás do aceite de marketing (consentimento v3); `lib/crm.ts` e o hook do CRM saem; colunas `crm_*` → `rd_*` por migração | 4h | **done** — `lib/rd-marketing.ts` + `hooks/sincronizar-rd.ts` + `layout/rd-station.tsx`; 13 testes novos; formato fino se confirma no lead de ponta a ponta em homolog, com a chave de API; atribuição por cookie do monitoramento fica para a próxima task |
 
 ## Fase 7 — Cutover · Fase 8 — Limpeza
 

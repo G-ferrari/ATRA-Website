@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { toIntegracaoAtrair } from './integracao'
+import { toIntegracaoAtrair, toIntegracaoRd } from './integracao'
 import type { Integration } from '@/payload-types'
 
 /* Mapper do global `integrations` (D-41). Dois compromissos: o admin vence o
@@ -63,6 +63,53 @@ describe('toIntegracaoAtrair', () => {
     expect(toIntegracaoAtrair(doc({ jobsFeed: true, talentPool: false }))).toMatchObject({
       vagas: true,
       bancoDeTalentos: false,
+    })
+  })
+})
+
+describe('toIntegracaoRd (D-54)', () => {
+  const docRd = (rd?: Integration['rdStationMarketing']): Pick<Integration, 'rdStationMarketing'> => ({
+    rdStationMarketing: rd,
+  })
+
+  it('⚠️ global ainda não gravado lê como LIGADO, sem campos personalizados e com os identificadores padrão', () => {
+    /* Ligado por não mudar o que está no ar — sem a chave no ambiente segue
+       inerte. Campos personalizados desligados porque um `cf_` inexistente
+       derruba a conversão. */
+    const r = toIntegracaoRd(docRd(undefined))
+    expect(r.ligado).toBe(true)
+    expect(r.camposPersonalizados).toBe(false)
+    expect(r.conversoes).toEqual({
+      contato: 'site-contato',
+      chat: 'site-chat',
+      newsletter: 'site-newsletter',
+      download: 'site-download-material',
+      consultores: 'site-solicitacao-consultores',
+      diagnostico: 'site-diagnostico-maturidade',
+    })
+  })
+
+  it('o admin renomeia a conversão sem deploy', () => {
+    const r = toIntegracaoRd(docRd({ conversions: { contact: ' fale-conosco ' } }))
+    expect(r.conversoes.contato).toBe('fale-conosco')
+  })
+
+  it('campo apagado de propósito desliga aquele formulário; os outros seguem no padrão', () => {
+    const r = toIntegracaoRd(docRd({ conversions: { contact: '' } }))
+    expect(r.conversoes.contato).toBeNull()
+    expect(r.conversoes.chat).toBe('site-chat')
+  })
+
+  it('⚠️ identificador fora do formato vira null aqui, não só no admin', () => {
+    const r = toIntegracaoRd(docRd({ conversions: { contact: 'tem espaço', newsletter: '<script>' } }))
+    expect(r.conversoes.contato).toBeNull()
+    expect(r.conversoes.newsletter).toBeNull()
+  })
+
+  it('as duas chaves são lidas como estão', () => {
+    expect(toIntegracaoRd(docRd({ enabled: false, customFields: true }))).toMatchObject({
+      ligado: false,
+      camposPersonalizados: true,
     })
   })
 })

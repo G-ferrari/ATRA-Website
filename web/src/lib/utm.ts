@@ -1,8 +1,8 @@
-/* Atribuição de campanha, para o RD Station CRM (D-26) — **opt-in desde D-30**.
+/* Atribuição de campanha, para o RD Station (D-26; Marketing desde a D-54) — **opt-in desde D-30**.
  *
  * O formulário já grava `source` — o **caminho da página** onde o visitante
  * converteu. Isso responde "onde converteu", não "de onde veio", e é a segunda
- * pergunta que o CRM precisa para dizer qual campanha pagou o lead.
+ * pergunta que o RD precisa para dizer qual campanha pagou o lead.
  *
  * ⚠️ **Por que a sessão, e não a URL do envio.** Os parâmetros só existem na URL
  * de **chegada**: o visitante entra em `/?utm_source=linkedin`, navega, e

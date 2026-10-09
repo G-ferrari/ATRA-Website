@@ -1,4 +1,4 @@
-import { ehGtmId, ehLushaSiteId } from '@/lib/formatos-de-rastreamento'
+import { ehGtmId, ehLushaSiteId, ehRdStationLoaderId } from '@/lib/formatos-de-rastreamento'
 import type { Tracking } from '@/payload-types'
 import type { Rastreamento } from '@/types/content'
 
@@ -12,13 +12,15 @@ import type { Rastreamento } from '@/types/content'
  * admin — a reserva vem do ambiente, que o admin não valida, e o id acaba na
  * URL de um script. */
 export function toRastreamento(
-  doc: Pick<Tracking, 'gtmId' | 'lushaSiteId'>,
+  doc: Pick<Tracking, 'gtmId' | 'lushaSiteId' | 'rdStationLoaderId'>,
   reserva: { gtmId?: string } = {},
 ): Rastreamento {
   const gtmId = doc.gtmId?.trim() || reserva.gtmId?.trim() || ''
   const lushaSiteId = doc.lushaSiteId?.trim() || ''
+  const rdStationLoaderId = doc.rdStationLoaderId?.trim() || ''
   return {
     gtmId: ehGtmId(gtmId) ? gtmId : null,
     lushaSiteId: ehLushaSiteId(lushaSiteId) ? lushaSiteId : null,
+    rdStationLoaderId: ehRdStationLoaderId(rdStationLoaderId) ? rdStationLoaderId : null,
   }
 }
