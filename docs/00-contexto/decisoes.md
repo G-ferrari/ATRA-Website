@@ -1741,3 +1741,99 @@ não existia mais.
   idioma e texto no outro tem que ser desenhado assim.
 - ⚠️ **Fica com o marketing (D-22):** avisar o time antes da publicação que a
   Insights muda de cara.
+
+## D-56 — As regulações de cada setor do diagnóstico são escolhidas no admin
+
+*Decidida em 07/10/2026 por G-ferrari.*
+
+**Contexto.** No diagnóstico de maturidade, a tela de perfil mostra "Impactos
+avaliados" com as regulações do setor escolhido. A lista por setor vinha só do
+código — `TAGS_DO_SETOR`, gerado do HTML do Roger (v1.7) —, e o admin do
+diagnóstico tinha só os textos e os links. O marketing não conseguia ver nem
+mudar a lista.
+
+**O que a lista faz.** Não é só a etiqueta do perfil: a mesma lista decide as
+etiquetas "Impacta:" de cada pergunta e quais lacunas entram no resultado e no
+e-mail (`tagRelevante`).
+
+**Decisão.** A lista de cada setor é editável em Configuração → Diagnóstico de
+maturidade, e a escolha vale para as **três** coisas — tela, pergunta e
+resultado. Recusada a alternativa de mudar só a etiqueta do perfil: a tela
+passaria a prometer uma regulação que o resultado não mede, ou o contrário.
+
+**Consequências.**
+
+- Grupo `regulations` no global, um campo por setor, com as opções que as
+  perguntas **daquele** setor avaliam (`regulacoesAvaliaveis`): a lista do
+  Roger e o que alguma pergunta do setor carrega numa resposta. Regulação sem
+  pergunta não é opção — incluir uma é pergunta nova, na base do Roger.
+- LGPD, ANPD e Marco Legal da IA seguem sempre na frente, em todos os setores, e
+  "Reforma Tributária" segue entrando sozinha onde há pergunta sobre ela: são
+  universais na conta, e tirar a etiqueta sem tirar a lacuna seria a mesma
+  mentira ao contrário.
+- O motor ganhou um parâmetro (`regulacoes`), com a lista do Roger como padrão
+  — é com o padrão que `motor.test.ts` compara com o HTML original. O servidor
+  lê a lista do admin antes de calcular, e as lacunas **gravadas** no lead são
+  as dela.
+- A migração `20261007_210000_regulacoes_do_diagnostico` grava a lista do Roger
+  nos setores vazios, para a editora ver na tela o que está valendo. Setor
+  esvaziado no admin volta à lista do Roger.
+- ⚠️ A partir daqui o admin manda. Versão nova da base do Roger que mude a
+  lista de um setor não chega sozinha ao site; e regulação nova na base muda as
+  opções dos campos, o que pede migração (`migrate:create`).
+- ⚠️ **Achado, fica com o Roger:** em Mercado Financeiro a lista traz **PLD/FT**,
+  mas nenhuma pergunta do setor carrega essa regulação — ela aparece como
+  avaliada e nunca soma lacuna. É assim no HTML v1.7; não foi mexido (D-22).
+
+## D-57 — "Impactos avaliados" mostra o órgão, não a norma
+
+*Decidida em 08/10/2026 pelo Roger (oito áudios, um por setor), via G-ferrari.*
+
+**Contexto.** A linha "Impactos avaliados" listava norma por norma: um banco via
+dez etiquetas, entre elas "Resolução Conjunta CMN/BCB 18/2025", "Resolução CMN
+5.274/2025" e "BCBS 239". O Roger ditou, setor por setor, o que a linha deve
+mostrar, e fechou: "o ideal seria não estar com tanto detalhe" — "CVM" em vez do
+nome da resolução, "ECA Digital" em vez de "ECA Digital (Lei 15.211/2025)".
+
+**Decisão.** Na linha, normas do mesmo órgão viram **uma** etiqueta, com o nome
+do órgão. O que ele ditou:
+
+| Setor | Impactos avaliados |
+|---|---|
+| Mercado Financeiro | BACEN (Banco Central) · Open Finance · IFRS 9 · PLD/FT · LGPD/ANPD · Marco Legal da IA |
+| Mercado de Capitais | CVM · ANBIMA · PLD/FT · LGPD/ANPD · Marco Legal da IA |
+| Seguros e Previdência | SUSEP · Open Insurance · IFRS 17 · LGPD/ANPD · Marco Legal da IA |
+| Saúde | Anvisa · ANS · CFM · RNDS · LGPD/ANPD · Marco Legal da IA · Reforma Tributária |
+| Telecomunicações | Anatel · ECA Digital · Marco Civil da Internet · LGPD/ANPD · Marco Legal da IA · Reforma Tributária |
+| Educação | MEC · INEP · FIES / ProUni · ECA Digital · LGPD/ANPD · Marco Legal da IA · Reforma Tributária |
+| Varejo, Indústria e Serviços | CVM · LGPD/ANPD · Marco Legal da IA · Reforma Tributária |
+| Outros | o mesmo de Varejo |
+
+**O que muda e o que não muda.**
+
+- Muda **só a linha de resumo**: a tela de perfil e a mesma linha do e-mail do
+  resultado (`impactosNoPerfil`, em `lib/diagnostico-maturidade/perfil.ts`).
+- **Não muda** a conta, nem as etiquetas "Impacta:" de cada pergunta, nem as
+  lacunas do resultado e do lead: seguem norma por norma. É ali que o visitante
+  descobre **qual** resolução está em aberto, e é o que o comercial lê — a
+  página da RC18 leva ao diagnóstico justamente por causa dela. Recusado tirar
+  as normas da lista do setor (o que o admin da D-56 faria): as lacunas delas
+  sumiriam do resultado, e ele não pediu isso.
+- A ordem é a que ele ditou: o que é do setor, depois o que vale para todos, e a
+  Reforma Tributária por último. Na Saúde, ANS antes do CFM — a lista padrão do
+  site (`REGULACOES_PADRAO`) tem as regulações do HTML nessa ordem, e a ordem
+  não entra na conta.
+- O HTML do Roger **não foi editado**: a regra fica por cima dele, e
+  `impactosDoSetor` segue comparado com o original.
+- A D-56 continua valendo: a lista do admin decide o que o setor avalia, e a
+  linha agrupa o que estiver nela.
+
+**Lido dos áudios, a confirmar com ele.**
+
+- **"LGPD barra ANPD"** virou uma etiqueta só, "LGPD/ANPD". Ele falou assim nos
+  oito, do mesmo jeito que fala "PLD barra FT", que é uma etiqueta.
+- **Educação**: ele não citou "Marco Legal da IA". Ficou — é universal na conta
+  e a Educação é o setor com mais perguntas sobre IA. Se foi de propósito, é uma
+  linha em `perfil.ts`.
+- **PLD/FT em Mercado Financeiro** ficou, como ele ditou. O achado da D-56
+  continua: nenhuma pergunta do setor mede PLD/FT.

@@ -9,6 +9,7 @@ import { lerDiagnosticoDeMaturidade } from '@/lib/diagnostico'
 import {
   CARGOS,
   PORTES,
+  REGULACOES_PADRAO,
   SETORES,
   VERSAO,
   calcular,
@@ -24,6 +25,7 @@ import {
   validarRespostas,
   type Cargo,
   type Porte,
+  type RegulacoesPorSetor,
   type Setor,
 } from '@/lib/diagnostico-maturidade'
 import { enviarAviso } from '@/lib/email'
@@ -271,7 +273,20 @@ export async function enviarDiagnosticoDeMaturidade(
   }
   if (excedeuPorIp(ipDe(await headers()))) return { ok: true, email }
 
-  const calculo = calcular(setor, respostas)
+  /* As regulações do setor são as escolhidas no admin (07/10) — a mesma lista
+   * que a tela mostrou em "Impactos avaliados" e em cada pergunta. Lida aqui, e
+   * não junto com os textos do e-mail lá embaixo, porque decide as lacunas que
+   * são **gravadas** no lead. Se a leitura falhar, vale a lista do questionário:
+   * perder o lead por causa de uma etiqueta seria troca ruim, e banco fora do
+   * ar é tratado logo abaixo. `cache()` faz a leitura de baixo reaproveitar esta. */
+  let regulacoes: RegulacoesPorSetor = REGULACOES_PADRAO
+  try {
+    regulacoes = (await lerDiagnosticoDeMaturidade('pt')).regulacoes
+  } catch (e) {
+    console.error('[diagnostico-maturidade] não leu as regulações do admin; usando as do questionário:', semDadoPessoal(e))
+  }
+
+  const calculo = calcular(setor, respostas, regulacoes)
   const roadmap = montarRoadmap(calculo)
   /* Uma entrada por pergunta respondida, na ordem da base: legível no admin sem
    * abrir o HTML da versão que o lead respondeu. `validarRespostas` já garantiu

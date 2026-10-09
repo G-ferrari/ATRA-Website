@@ -29,7 +29,7 @@ import {
   PORTES,
   SETORES,
   impactosDaPergunta,
-  impactosDoSetor,
+  impactosNoPerfil,
   type OpcaoDoPerfil,
   type Setor,
 } from '@/lib/diagnostico-maturidade'
@@ -94,9 +94,12 @@ const CAMPOS: Record<CampoDoPerfil, { rotulo: string; erro: string; opcoes: read
 
 const movimentoReduzido = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+/* `regulacoes` vai junto com os textos: é a lista de cada setor escolhida no
+ * admin, e a tela de perfil e a de pergunta precisam mostrar a mesma que o
+ * servidor usa para calcular o resultado. */
 export type TextosDoQuestionario = Pick<
   DiagnosticoDeMaturidade,
-  'titulo' | 'abertura' | 'conclusao' | 'whatsappUrl' | 'agendaUrl'
+  'titulo' | 'abertura' | 'conclusao' | 'whatsappUrl' | 'agendaUrl' | 'regulacoes'
 >
 
 /* O contato antes de qualquer tecla. `ValoresEnviados` é o formato que a action
@@ -292,6 +295,7 @@ export function Questionario({
         {etapa.tipo === 'pergunta' && (
           <TelaDaPergunta
             etapa={etapa}
+            regulacoes={textos.regulacoes}
             idDoTitulo={ids.titulo}
             idDaInstrucao={ids.instrucao}
             refDoTitulo={titulo}
@@ -452,7 +456,7 @@ function TelaDoPerfil({
             onMudar={(valor) => onPreencher(campo, valor)}
             className={campo === 'setor' ? 'sm:col-span-2' : undefined}
           >
-            {campo === 'setor' && <ImpactosDoSetor setor={perfil.setor} />}
+            {campo === 'setor' && <ImpactosDoSetor setor={perfil.setor} regulacoes={textos.regulacoes} />}
           </CampoDeEscolha>
         ))}
       </div>
@@ -462,19 +466,21 @@ function TelaDoPerfil({
 
 function TelaDaPergunta({
   etapa,
+  regulacoes,
   idDoTitulo,
   idDaInstrucao,
   refDoTitulo,
   onEscolher,
 }: {
   etapa: Extract<Etapa, { tipo: 'pergunta' }>
+  regulacoes: TextosDoQuestionario['regulacoes']
   idDoTitulo: string
   idDaInstrucao: string
   refDoTitulo: Ref<HTMLHeadingElement>
   onEscolher: (indice: number) => void
 }) {
   const { setor, pergunta, numero, total, resposta } = etapa
-  const impactos = impactosDaPergunta(pergunta, setor)
+  const impactos = impactosDaPergunta(pergunta, setor, regulacoes)
 
   return (
     <>
@@ -1032,17 +1038,24 @@ function CampoDeTexto({
   )
 }
 
-/* "Impactos avaliados: … entre outros" (`sectorImpactChips`). Região viva e
-   atômica: ao escolher o setor, o leitor de tela lê a linha inteira, e não só
+/* "Impactos avaliados: … entre outros" (`sectorImpactChips`), na versão enxuta
+   que o Roger pediu em 08/10 — o órgão, não a norma (`impactosNoPerfil`). Região
+   viva e atômica: ao escolher o setor, o leitor de tela lê a linha inteira, e não só
    a etiqueta que mudou. Com o setor da URL ela já nasce preenchida no HTML do
    servidor. */
-function ImpactosDoSetor({ setor }: { setor: Setor | null }) {
+function ImpactosDoSetor({
+  setor,
+  regulacoes,
+}: {
+  setor: Setor | null
+  regulacoes: TextosDoQuestionario['regulacoes']
+}) {
   return (
     <div aria-live="polite" aria-atomic="true">
       {setor && (
         <p className="mt-1.5 flex flex-wrap items-center gap-1.5">
           <span className="text-[11px] font-medium text-text-muted">Impactos avaliados:</span>
-          {impactosDoSetor(setor).map((impacto) => (
+          {impactosNoPerfil(setor, regulacoes).map((impacto) => (
             <Etiqueta key={impacto.tag} tom="regulacao">
               {impacto.rotulo}
             </Etiqueta>

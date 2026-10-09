@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { PADRAO_DO_DIAGNOSTICO } from '@/globals/DiagnosticoDeMaturidade'
+import { REGULACOES_PADRAO } from '@/lib/diagnostico-maturidade'
 import type { DataMaturityDiagnostic } from '@/payload-types'
 
 import { toDiagnosticoDeMaturidade } from './diagnostico'
@@ -31,7 +32,18 @@ describe('toDiagnosticoDeMaturidade', () => {
       email: { assunto: 'Assunto do marketing', abertura: 'Abertura do e-mail do marketing' },
       agendaUrl: 'https://calendly.com/atra/diagnostico',
       whatsappUrl: 'https://wa.me/5511999999999',
+      /* Nenhum setor escolhido no admin: a lista do questionário. */
+      regulacoes: REGULACOES_PADRAO,
     })
+  })
+
+  /* 07/10: a lista de regulações de cada setor é do admin. O setor que o editor
+     mexeu sai como ele deixou; os outros seguem com a do questionário. */
+  it('leva as regulações que o admin escolheu, setor a setor', () => {
+    const d = toDiagnosticoDeMaturidade(global({ regulations: { capitais: ['anbima', 'cvm'], seguros: [] } }))
+    expect(d.regulacoes.capitais).toEqual(['anbima', 'cvm'])
+    expect(d.regulacoes.seguros).toEqual(REGULACOES_PADRAO.seguros)
+    expect(d.regulacoes.financeiro).toEqual(REGULACOES_PADRAO.financeiro)
   })
 
   /* Vazio é escolha: o componente não desenha o parágrafo, e sem agenda não há

@@ -127,9 +127,12 @@ test.describe('/diagnostico-maturidade — setor pela URL', () => {
     const c = cartao(page)
     await expect(c.getByLabel('Setor de atuação')).toHaveValue(SETOR)
     await expect(c.getByText('Impactos avaliados:')).toBeVisible()
-    /* Duas etiquetas que só a saúde tem (`TAGS_DO_SETOR.saude`). */
+    /* Duas etiquetas que só a saúde tem (`TAGS_DO_SETOR.saude`). A linha mostra
+       o órgão, não a norma (Roger, 08/10): a TISS aparece como "ANS". */
     await expect(c.getByText('Anvisa', { exact: true })).toBeVisible()
-    await expect(c.getByText('ANS RN 639/2025 (TISS)', { exact: true })).toBeVisible()
+    await expect(c.getByText('RNDS', { exact: true })).toBeVisible()
+    await expect(c.getByText('LGPD/ANPD', { exact: true })).toBeVisible()
+    await expect(c.getByText('ANS RN 639/2025 (TISS)', { exact: true })).toHaveCount(0)
 
     /* O setor da URL entra no estado da ilha, e não só no `<select>`: basta
        porte e cargo para começar, e as perguntas são as da saúde. */
