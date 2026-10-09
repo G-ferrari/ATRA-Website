@@ -37,6 +37,9 @@ import path from 'node:path'
  * `pnpm gate` sem filtro custa ~9 min e a máquina inteira; conferir uma rota
  * enquanto se conserta um bloco custa ~1 min. Quem fecha a task roda o gate
  * completo — o filtro não pega regressão em rota vizinha.
+ * A exceção é o CI do PR, que roda `--viewport desktop` para poupar a franquia
+ * de minutos (D-58): quem aprova os três tamanhos é a rodada da `main`, da
+ * qual o deploy depende.
  *
  * ⚠️ Página estática não muda com `--sem-build`. A home e as outras rotas de
  * conteúdo são pré-renderizadas no build: depois de mexer no **seed**, é

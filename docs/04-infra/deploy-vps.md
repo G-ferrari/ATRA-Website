@@ -125,6 +125,32 @@ Regras:
 3. **Migração destrutiva exige backup verificado antes** — bloqueio manual.
 4. Reter as **5 imagens anteriores** para rollback imediato.
 
+### Deploy em segundo plano (D-58)
+
+O `deploy.sh` leva ~14 minutos, e o executor do GitHub passava esse tempo
+parado, gastando a franquia de minutos. Com um token na VM, o CI dispara o
+deploy e sai; quem espera é a VM (`infra/deploy/em-segundo-plano.sh`).
+
+**Para ligar** — uma vez, por quem tem acesso à VM:
+
+1. No GitHub, criar um *fine-grained personal access token* restrito ao
+   repositório do site, com duas permissões de leitura e escrita: **Commit
+   statuses** e **Issues**. Nada além disso.
+2. Na VM, acrescentar ao `/opt/atra/.env.prod`, **por edição de texto**:
+   `GITHUB_STATUS_TOKEN=<o token>`.
+
+A partir do deploy seguinte, o job "deploy na VPS" termina em cerca de um
+minuto e o commit ganha um status **deploy**: pendente enquanto a VM trabalha,
+verde quando o site trocou, vermelho se reprovou — e a reprovação abre uma
+issue, que é o que manda e-mail. O que aconteceu fica em `/opt/atra/deploy.log`.
+
+**Para desligar**, apagar a linha do `.env.prod`: o job volta a esperar.
+
+⚠️ O job verde passa a dizer "deploy **disparado**", não "no ar". Quem diz "no
+ar" é o status do commit. ⚠️ O token expira: quando expirar, o deploy continua
+funcionando e para de avisar — o status fica sem aparecer. Renovar o token, ou
+apagar a linha.
+
 ## Storage de mídia
 
 Duas opções, e a escolha depende de P-21:

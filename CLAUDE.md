@@ -149,6 +149,13 @@ ssh root@2.25.131.197 /opt/atra/infra/backup/testar-restore.sh   # prova o backu
 oficial do Playwright — a mesma no macOS e no CI, para uma falha valer nos dois.
 `pnpm test:e2e` é o executor cru, usado por dentro do container.
 
+⚠️ **Cada rodada do CI custa minutos da franquia do GitHub** (2.000 por mês; em
+outubro foram embora em nove dias — D-58). Por isso: push na `migracao` **não
+roda** CI (o PR já rodou sobre o resultado do merge), PR da `migracao` para a
+`main` também não, e o PR roda a suíte **só no desktop** — celular e tablet só
+na rodada da `main`, antes do deploy. Cada `git push` num PR aberto é uma
+rodada de ~15 minutos: juntar os commits antes de enviar.
+
 Regravar gabarito exige justificativa no PR: apaga a evidência de regressão.
 
 ⚠️ `--baseline` **não reescreve o que passou dentro da tolerância.** Uma linha a
@@ -418,6 +425,12 @@ original. Cada setor só oferece o que as perguntas dele avaliam. ⚠️ Regener
 **órgão**, não a norma — `impactosNoPerfil`, em `perfil.ts`, pedido do Roger. É
 só o resumo: perguntas, lacunas e lead seguem norma por norma, e o HTML dele não
 foi editado.
+
+**D-58 (09/10)** cortou o CI pela metade sem tirar nada do que o deploy espera
+(gatilhos, um build por rodada, PR no desktop, seed num processo só). O deploy
+pode rodar em segundo plano na VM (`infra/deploy/em-segundo-plano.sh`), mas só
+com `GITHUB_STATUS_TOKEN` no `.env.prod` — sem ele o job espera, como sempre
+(`docs/04-infra/deploy-vps.md`).
 
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),

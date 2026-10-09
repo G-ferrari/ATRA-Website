@@ -1837,3 +1837,59 @@ do órgão. O que ele ditou:
   linha em `perfil.ts`.
 - **PLD/FT em Mercado Financeiro** ficou, como ele ditou. O achado da D-56
   continua: nenhuma pergunta do setor mede PLD/FT.
+
+## D-58 — O CI deixa de repetir trabalho
+
+*Decidida em 09/10/2026 por G-ferrari.*
+
+**Contexto.** A conta do GitHub tem 2.000 minutos de Actions por mês e chegou a
+90% em nove dias. Levantamento pela API (01/10 a 09/10): 1.887 minutos, 98% do
+CI — a suíte de ponta a ponta 67%, o job de lint e build 24%, o deploy 7%. O
+monitor de uptime, 2%. Não havia desperdício por falha (9% em rodada cancelada
+ou reprovada): o fluxo normal custava ~115 minutos por publicação, porque o CI
+inteiro rodava quatro vezes — no PR, no push da `migracao`, no PR para a `main`
+e no push da `main`.
+
+**Decisão.** Cinco cortes, nenhum deles no que o deploy espera.
+
+1. **Push na `migracao` não roda mais.** O PR já testa o resultado do merge
+   (`refs/pull/N/merge`); a rodada do push repetia a mesma árvore. Era 30%.
+2. **PR da `migracao` para a `main` não roda.** Quem vale é o push na `main`,
+   que roda tudo antes do deploy. PR de outra branch direto para a `main`
+   continua rodando.
+3. **Um build por rodada.** O primeiro job fazia `pnpm build` e o `pnpm gate`
+   do segundo fazia outro. O primeiro ficou sem build, sem migração e sem
+   banco: lint, geradores do Payload, tipos e testes unitários.
+4. **PR em um tamanho de tela** (desktop). Os três rodam na `main`.
+5. **Seed num processo só.** Eram 21, cada um pagando o arranque do Payload.
+   O banco que sai é o mesmo: comparado tabela a tabela em dois bancos zerados
+   (978 tabelas, sem os carimbos de tempo e os ids aleatórios).
+
+E um sexto, que **só liga com um token na VM**: o deploy em segundo plano
+(`infra/deploy/em-segundo-plano.sh`). O executor do GitHub passava os ~14
+minutos do deploy parado, de SSH aberto. Com `GITHUB_STATUS_TOKEN` no
+`.env.prod`, o CI dispara e sai, e a VM avisa o resultado — status "deploy" no
+commit, e issue se reprovar. Sem o token o job espera, como sempre: soltar o
+deploy sem ter quem avise seria um deploy que falha calado, com o CI verde.
+
+**O preço.**
+
+- Defeito só de celular ou de tablet deixa de aparecer no PR e aparece na
+  rodada da `main` — antes do deploy, mas depois do merge na `migracao`.
+- A `migracao` deixa de ter um selo verde próprio: o selo é o do PR que entrou.
+  Dois PRs verdes que se quebram **juntos** só são pegos na `main`.
+- O primeiro job não prova mais o build num banco **sem conteúdo**; o build que
+  roda é o do gate, com o banco semeado, que é o mais parecido com a produção.
+
+**Recusado.** Reaproveitar o banco semeado entre rodadas (cache): o cache do
+GitHub só é compartilhado a partir da `main`, a rodada que precede o deploy
+teria que semear do zero de qualquer forma, e banco velho num PR é um verde
+falso. O seed num processo só corta menos, mas corta em toda rodada e não mente.
+
+**Conta.** Uma publicação cai de ~115 para ~50 minutos (~35 com o token). No
+ritmo de outubro, o mês cai de ~6.300 para ~2.300 (~1.900 com o token) — ainda
+perto do teto. O que zera é um executor próprio, que continua em aberto.
+
+**Fora desta decisão.** O monitor de uptime: configurado para cada 5 minutos,
+rodou 18 vezes em cinco dias; se rodasse como configurado, gastaria sozinho
+mais de 8.000 minutos por mês.
