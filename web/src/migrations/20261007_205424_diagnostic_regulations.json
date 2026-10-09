@@ -100938,26 +100938,20 @@
           "primaryKey": false,
           "notNull": false
         },
-        "crm_contact_id": {
-          "name": "crm_contact_id",
+        "rd_event_uuid": {
+          "name": "rd_event_uuid",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
-        "crm_deal_id": {
-          "name": "crm_deal_id",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "crm_synced_at": {
-          "name": "crm_synced_at",
+        "rd_synced_at": {
+          "name": "rd_synced_at",
           "type": "timestamp(3) with time zone",
           "primaryKey": false,
           "notNull": false
         },
-        "crm_error": {
-          "name": "crm_error",
+        "rd_error": {
+          "name": "rd_error",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -104805,6 +104799,62 @@
           "primaryKey": false,
           "notNull": false
         },
+        "rd_station_marketing_enabled": {
+          "name": "rd_station_marketing_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "rd_station_marketing_custom_fields": {
+          "name": "rd_station_marketing_custom_fields",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "rd_station_marketing_conversions_contact": {
+          "name": "rd_station_marketing_conversions_contact",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'site-contato'"
+        },
+        "rd_station_marketing_conversions_chat_lead": {
+          "name": "rd_station_marketing_conversions_chat_lead",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'site-chat'"
+        },
+        "rd_station_marketing_conversions_newsletter": {
+          "name": "rd_station_marketing_conversions_newsletter",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'site-newsletter'"
+        },
+        "rd_station_marketing_conversions_material_download": {
+          "name": "rd_station_marketing_conversions_material_download",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'site-download-material'"
+        },
+        "rd_station_marketing_conversions_consultant_request": {
+          "name": "rd_station_marketing_conversions_consultant_request",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'site-solicitacao-consultores'"
+        },
+        "rd_station_marketing_conversions_data_maturity_diagnostic": {
+          "name": "rd_station_marketing_conversions_data_maturity_diagnostic",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'site-diagnostico-maturidade'"
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp(3) with time zone",
@@ -105927,6 +105977,12 @@
         },
         "lusha_site_id": {
           "name": "lusha_site_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rd_station_loader_id": {
+          "name": "rd_station_loader_id",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
