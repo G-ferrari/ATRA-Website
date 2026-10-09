@@ -4,6 +4,7 @@ import {
   PERGUNTAS,
   REGULACOES_PADRAO,
   SETORES,
+  TAGS_DO_SETOR,
   TAGS_UNIVERSAIS,
   calcular,
   impactosDaPergunta,
@@ -24,7 +25,7 @@ const todasAsPiores = (setor: Parameters<typeof perguntasDoSetor>[0]): Respostas
 describe('regulacoesAvaliaveis', () => {
   it('começa pela lista do questionário, na ordem dele', () => {
     for (const { valor } of SETORES) {
-      const padrao = REGULACOES_PADRAO[valor]
+      const padrao = TAGS_DO_SETOR[valor]
       expect(regulacoesAvaliaveis(valor).slice(0, padrao.length), valor).toEqual(padrao)
     }
   })

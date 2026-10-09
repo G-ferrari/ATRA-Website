@@ -46,9 +46,12 @@ import { REGULACOES_PADRAO, type RegulacoesPorSetor } from './regulacoes'
 /* ⚠️ `regulacoes` — o último parâmetro de `tagRelevante`, `impactosDaPergunta`,
  * `impactosDoSetor` e `calcular` — é a única coisa aqui que **não** vem do HTML
  * do Roger: desde 07/10 a lista de regulações de cada setor pode ser escolhida
- * no admin (`regulacoes.ts`). O padrão é a lista do Roger, e é com ele que
+ * no admin (`regulacoes.ts`). O padrão é a lista do Roger — as mesmas
+ * regulações do HTML, na ordem da tela —, e a conta com ele é a que
  * `motor.test.ts` compara com o original; quem serve o site passa a do admin.
- * As três telas — perfil, pergunta e resultado — usam a mesma lista. */
+ * As três telas — perfil, pergunta e resultado — usam a mesma lista. A linha
+ * "Impactos avaliados" que o visitante vê é `impactosNoPerfil` (`perfil.ts`),
+ * que agrupa por órgão o que `impactosDoSetor` devolve. */
 
 /** perguntaId → índice (0 a 3) da alternativa escolhida, na ordem da base.
  *

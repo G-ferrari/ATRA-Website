@@ -66,6 +66,8 @@ export {
 
 export { REGULACOES_PADRAO, regulacoesAvaliaveis, resolverRegulacoes, type RegulacoesPorSetor } from './regulacoes'
 
+export { impactosNoPerfil } from './perfil'
+
 export {
   corDoPilar,
   escaparHtml,

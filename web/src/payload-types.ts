@@ -11948,7 +11948,7 @@ export interface DataMaturityDiagnostic {
    */
   whatsappUrl?: string | null;
   /**
-   * The "Impacts assessed" chips of each sector, in display order. LGPD, ANPD, Marco Legal da IA always come first, in every sector; "Reforma Tributária" is added automatically where the sector has a question about it. ⚠️ The choice also drives the chips on each question and the gaps in the result and the e-mail. Each sector only offers the regulations its questions assess; adding another requires a new question (tech team). Drag to reorder. A sector with none selected falls back to the default list.
+   * The regulations the diagnostic assesses in each sector, in the order they show under "Impacts assessed". On the profile line, rules from the same regulator become a single chip named after it: Resolução Conjunta CMN/BCB 18/2025, Resolução CMN 5.274/2025 and BCBS 239 show as "BACEN (Banco Central)", and Resolução CVM 244/2026 as "CVM". LGPD, ANPD, Marco Legal da IA always come after these, in every sector (LGPD and ANPD together); "Reforma Tributária" is added automatically, last, where the sector has a question about it. ⚠️ The choice also drives the chips on each question and the gaps in the result and the e-mail, which stay rule by rule. Each sector only offers the regulations its questions assess; adding another requires a new question (tech team). Drag to reorder. A sector with none selected falls back to the default list.
    */
   regulations?: {
     financeiro?:

@@ -22,7 +22,6 @@ import { CARGOS, NIVEIS, PORTES, SETORES, type Cargo, type Porte, type Setor } f
 import {
   alternativaEscolhida,
   faixa,
-  impactosDoSetor,
   leituraPeloPorte,
   nivelNumerico,
   perguntasDoSetor,
@@ -32,6 +31,7 @@ import {
   type Respostas,
   type Roadmap,
 } from './motor'
+import { impactosNoPerfil } from './perfil'
 
 /* ---------------------------------------------------------------------
    Textos fixos — do HTML v1.7, não da engenharia
@@ -188,7 +188,7 @@ function conteudoDoResultado(entrada: EntradaDoEmailDoResultado) {
     leitura: `${nivel.descricao} ${leituraPeloPorte(calculo.media, entrada.porte)}`,
     /* A lista do admin, a mesma da tela: o e-mail não pode citar uma regulação
        que o perfil não mostrou. */
-    impactos: impactosDoSetor(entrada.setor, entrada.textos.regulacoes).map((i) => i.rotulo),
+    impactos: impactosNoPerfil(entrada.setor, entrada.textos.regulacoes).map((i) => i.rotulo),
     pilares: pilaresDoMaisForte(roadmap).map((x) => ({
       pilar: x.pilar,
       nota: decimal(x.nota),

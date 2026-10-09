@@ -13,8 +13,30 @@ import { PERGUNTAS, ROTULOS_DAS_TAGS, SETORES, TAGS_DO_SETOR, TAGS_UNIVERSAIS, t
 /** Setor → as regulações que ele avalia, na ordem em que aparecem na tela. */
 export type RegulacoesPorSetor = Readonly<Record<Setor, readonly string[]>>
 
-/** A lista do Roger: o que vale enquanto o admin não escolher outra. */
-export const REGULACOES_PADRAO: RegulacoesPorSetor = TAGS_DO_SETOR
+/* A ordem que o Roger pediu para a tela (08/10), onde ela não é a do HTML: na
+ * Saúde, ANS antes do CFM. Só a ordem — o que entra na lista segue vindo da
+ * base, e código que a base não tiver mais é ignorado aqui. */
+const ORDEM_NA_TELA: Partial<Record<Setor, readonly Tag[]>> = {
+  saude: ['anvisa', 'ans', 'tiss', 'cfm', 'rnds', 'lgpd_saude'],
+}
+
+function naOrdemDaTela(setor: Setor): readonly Tag[] {
+  const ordem = ORDEM_NA_TELA[setor]
+  if (!ordem) return TAGS_DO_SETOR[setor]
+  const posicao = (tag: Tag) => (ordem.includes(tag) ? ordem.indexOf(tag) : ordem.length)
+  return [...TAGS_DO_SETOR[setor]].sort((a, b) => posicao(a) - posicao(b))
+}
+
+/**
+ * A lista do Roger: o que vale enquanto o admin não escolher outra.
+ *
+ * ⚠️ As mesmas regulações de `TAGS_DO_SETOR`, mas **não na mesma ordem** em
+ * todo setor. A ordem não entra na conta — só na tela —, e por isso
+ * `motor.test.ts` compara `impactosDoSetor` com o HTML passando `TAGS_DO_SETOR`.
+ */
+export const REGULACOES_PADRAO: RegulacoesPorSetor = Object.fromEntries(
+  SETORES.map(({ valor }) => [valor, naOrdemDaTela(valor)]),
+) as Record<Setor, readonly Tag[]>
 
 const UNIVERSAIS = new Set<string>(TAGS_UNIVERSAIS)
 
@@ -28,7 +50,8 @@ const UNIVERSAIS = new Set<string>(TAGS_UNIVERSAIS)
  * base do Roger — por isso ela não é opção aqui. As universais (LGPD, ANPD, IA,
  * Reforma Tributária…) ficam de fora: valem para todos os setores, sempre.
  *
- * A ordem é a do Roger, e depois a do catálogo.
+ * A ordem é a do HTML do Roger, e depois a do catálogo — é a ordem das opções
+ * no enum do banco. A ordem **na tela** é a da escolha (`REGULACOES_PADRAO`).
  */
 export function regulacoesAvaliaveis(setor: Setor): Tag[] {
   const carregadas = new Set<string>()

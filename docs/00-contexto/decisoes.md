@@ -1708,3 +1708,55 @@ passaria a prometer uma regulação que o resultado não mede, ou o contrário.
   mas nenhuma pergunta do setor carrega essa regulação — ela aparece como
   avaliada e nunca soma lacuna. É assim no HTML v1.7; não foi mexido (D-22).
 
+## D-57 — "Impactos avaliados" mostra o órgão, não a norma
+
+*Decidida em 08/10/2026 pelo Roger (oito áudios, um por setor), via G-ferrari.*
+
+**Contexto.** A linha "Impactos avaliados" listava norma por norma: um banco via
+dez etiquetas, entre elas "Resolução Conjunta CMN/BCB 18/2025", "Resolução CMN
+5.274/2025" e "BCBS 239". O Roger ditou, setor por setor, o que a linha deve
+mostrar, e fechou: "o ideal seria não estar com tanto detalhe" — "CVM" em vez do
+nome da resolução, "ECA Digital" em vez de "ECA Digital (Lei 15.211/2025)".
+
+**Decisão.** Na linha, normas do mesmo órgão viram **uma** etiqueta, com o nome
+do órgão. O que ele ditou:
+
+| Setor | Impactos avaliados |
+|---|---|
+| Mercado Financeiro | BACEN (Banco Central) · Open Finance · IFRS 9 · PLD/FT · LGPD/ANPD · Marco Legal da IA |
+| Mercado de Capitais | CVM · ANBIMA · PLD/FT · LGPD/ANPD · Marco Legal da IA |
+| Seguros e Previdência | SUSEP · Open Insurance · IFRS 17 · LGPD/ANPD · Marco Legal da IA |
+| Saúde | Anvisa · ANS · CFM · RNDS · LGPD/ANPD · Marco Legal da IA · Reforma Tributária |
+| Telecomunicações | Anatel · ECA Digital · Marco Civil da Internet · LGPD/ANPD · Marco Legal da IA · Reforma Tributária |
+| Educação | MEC · INEP · FIES / ProUni · ECA Digital · LGPD/ANPD · Marco Legal da IA · Reforma Tributária |
+| Varejo, Indústria e Serviços | CVM · LGPD/ANPD · Marco Legal da IA · Reforma Tributária |
+| Outros | o mesmo de Varejo |
+
+**O que muda e o que não muda.**
+
+- Muda **só a linha de resumo**: a tela de perfil e a mesma linha do e-mail do
+  resultado (`impactosNoPerfil`, em `lib/diagnostico-maturidade/perfil.ts`).
+- **Não muda** a conta, nem as etiquetas "Impacta:" de cada pergunta, nem as
+  lacunas do resultado e do lead: seguem norma por norma. É ali que o visitante
+  descobre **qual** resolução está em aberto, e é o que o comercial lê — a
+  página da RC18 leva ao diagnóstico justamente por causa dela. Recusado tirar
+  as normas da lista do setor (o que o admin da D-56 faria): as lacunas delas
+  sumiriam do resultado, e ele não pediu isso.
+- A ordem é a que ele ditou: o que é do setor, depois o que vale para todos, e a
+  Reforma Tributária por último. Na Saúde, ANS antes do CFM — a lista padrão do
+  site (`REGULACOES_PADRAO`) tem as regulações do HTML nessa ordem, e a ordem
+  não entra na conta.
+- O HTML do Roger **não foi editado**: a regra fica por cima dele, e
+  `impactosDoSetor` segue comparado com o original.
+- A D-56 continua valendo: a lista do admin decide o que o setor avalia, e a
+  linha agrupa o que estiver nela.
+
+**Lido dos áudios, a confirmar com ele.**
+
+- **"LGPD barra ANPD"** virou uma etiqueta só, "LGPD/ANPD". Ele falou assim nos
+  oito, do mesmo jeito que fala "PLD barra FT", que é uma etiqueta.
+- **Educação**: ele não citou "Marco Legal da IA". Ficou — é universal na conta
+  e a Educação é o setor com mais perguntas sobre IA. Se foi de propósito, é uma
+  linha em `perfil.ts`.
+- **PLD/FT em Mercado Financeiro** ficou, como ele ditou. O achado da D-56
+  continua: nenhuma pergunta do setor mede PLD/FT.

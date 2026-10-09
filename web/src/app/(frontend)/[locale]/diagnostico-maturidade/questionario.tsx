@@ -29,7 +29,7 @@ import {
   PORTES,
   SETORES,
   impactosDaPergunta,
-  impactosDoSetor,
+  impactosNoPerfil,
   type OpcaoDoPerfil,
   type Setor,
 } from '@/lib/diagnostico-maturidade'
@@ -1038,8 +1038,9 @@ function CampoDeTexto({
   )
 }
 
-/* "Impactos avaliados: … entre outros" (`sectorImpactChips`). Região viva e
-   atômica: ao escolher o setor, o leitor de tela lê a linha inteira, e não só
+/* "Impactos avaliados: … entre outros" (`sectorImpactChips`), na versão enxuta
+   que o Roger pediu em 08/10 — o órgão, não a norma (`impactosNoPerfil`). Região
+   viva e atômica: ao escolher o setor, o leitor de tela lê a linha inteira, e não só
    a etiqueta que mudou. Com o setor da URL ela já nasce preenchida no HTML do
    servidor. */
 function ImpactosDoSetor({
@@ -1054,7 +1055,7 @@ function ImpactosDoSetor({
       {setor && (
         <p className="mt-1.5 flex flex-wrap items-center gap-1.5">
           <span className="text-[11px] font-medium text-text-muted">Impactos avaliados:</span>
-          {impactosDoSetor(setor, regulacoes).map((impacto) => (
+          {impactosNoPerfil(setor, regulacoes).map((impacto) => (
             <Etiqueta key={impacto.tag} tom="regulacao">
               {impacto.rotulo}
             </Etiqueta>

@@ -407,6 +407,10 @@ recebe `regulacoes` como parâmetro (`lib/diagnostico-maturidade/regulacoes.ts`)
 com a lista do Roger como padrão, que é o que `motor.test.ts` compara com o
 original. Cada setor só oferece o que as perguntas dele avaliam. ⚠️ Regenerar
 `dados.ts` com regulação nova muda as opções dos campos: pede `migrate:create`.
+**D-57 (08/10)**: a linha "Impactos avaliados" (perfil e e-mail) mostra o
+**órgão**, não a norma — `impactosNoPerfil`, em `perfil.ts`, pedido do Roger. É
+só o resumo: perguntas, lacunas e lead seguem norma por norma, e o HTML dele não
+foi editado.
 
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),

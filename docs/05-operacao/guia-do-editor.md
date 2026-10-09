@@ -234,12 +234,18 @@ porque você clicou no título de uma coluna em algum momento; clique em
 
 Em **Configuração → Diagnóstico de maturidade**, além dos textos e dos links, há
 o grupo **Regulações avaliadas por setor**: um campo para cada setor do
-questionário, com as etiquetas que aparecem em "Impactos avaliados" quando o
-visitante escolhe aquele setor.
+questionário, com as regulações que o diagnóstico avalia quando o visitante
+escolhe aquele setor.
 
-- **LGPD, ANPD e Marco Legal da IA** aparecem sempre, antes das do setor, e não
-  estão nos campos. **Reforma Tributária** entra sozinha nos setores que têm
-  pergunta sobre ela.
+- **Na linha "Impactos avaliados" aparece o órgão, não a norma** (pedido do
+  Roger, 08/10). As três normas do Banco Central que estão no campo de Mercado
+  Financeiro aparecem como uma etiqueta só, "BACEN (Banco Central)"; "Resolução
+  CVM 244/2026" aparece como "CVM"; "SRO (SUSEP)" como "SUSEP"; a TISS como
+  "ANS"; o RGC como "Anatel". Nas perguntas e no resultado, o nome completo de
+  cada norma continua.
+- **LGPD/ANPD e Marco Legal da IA** aparecem sempre, depois das do setor, e não
+  estão nos campos. **Reforma Tributária** entra sozinha, no fim, nos setores
+  que têm pergunta sobre ela.
 - Para tirar uma regulação de um setor, clique no ✕ dela; para incluir, escolha
   na lista; para mudar a ordem, arraste.
 - ⚠️ **A escolha não muda só a etiqueta.** Ela também decide as etiquetas
