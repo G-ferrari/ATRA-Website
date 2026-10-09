@@ -19,7 +19,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed": "node scripts/seed/run.mjs",
+    "seed": "node --import tsx --env-file-if-exists=.env.local scripts/seed/run.mjs",
     "migrate": "node scripts/migrar.mjs",
     "migrate:create": "payload migrate:create",
     "migrate:status": "payload migrate:status",
