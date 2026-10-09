@@ -134,6 +134,64 @@
   .animate-marquee-horizontal:hover {
     animation-play-state: paused;
   }
+
+  /* A moldura da caixa de conversa com a IA, na home (pedido de 09/10: a caixa
+   * "estava apagada" nos dois temas).
+   *
+   * Um anel de 1,5px nas duas cores da marca: azul constante, com um arco
+   * azul → laranja que dá a volta devagar. É o `padding` do invólucro que
+   * aparece como borda — a caixa de dentro cobre o resto.
+   *
+   * ⚠️ `@property` é o que deixa o ângulo animar; sem o registro o navegador
+   * trata `--giro` como texto e o gradiente salta em vez de girar. Onde não há
+   * suporte fica o anel parado, que já é a borda pedida. */
+  @property --giro {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  @keyframes giro-da-moldura {
+    to { --giro: 360deg; }
+  }
+
+  .moldura-do-prompt {
+    --anel: color-mix(in srgb, var(--color-primary) 55%, transparent);
+    padding: 1.5px;
+    border-radius: 13.5px;
+    background: conic-gradient(
+      from var(--giro),
+      var(--anel) 0%,
+      var(--anel) 62%,
+      var(--color-primary) 76%,
+      var(--color-secondary) 86%,
+      var(--color-primary) 94%,
+      var(--anel) 100%
+    );
+    box-shadow: 0 10px 40px -14px color-mix(in srgb, var(--color-primary) 45%, transparent);
+    animation: giro-da-moldura 7s linear infinite;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .moldura-do-prompt:hover {
+    box-shadow: 0 12px 48px -12px color-mix(in srgb, var(--color-primary) 60%, transparent);
+  }
+
+  /* Com o cursor dentro, o anel para e fica inteiro azul, com um halo: é o
+   * estado de foco do campo, e precisa ser inconfundível com o de repouso. */
+  .moldura-do-prompt:focus-within {
+    animation-play-state: paused;
+    background: var(--color-primary);
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--color-primary) 22%, transparent),
+      0 12px 48px -12px color-mix(in srgb, var(--color-primary) 60%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .moldura-do-prompt {
+      animation: none;
+    }
+  }
 }
 
 html {
