@@ -1837,3 +1837,67 @@ do órgão. O que ele ditou:
   linha em `perfil.ts`.
 - **PLD/FT em Mercado Financeiro** ficou, como ele ditou. O achado da D-56
   continua: nenhuma pergunta do setor mede PLD/FT.
+
+## D-60 — A ATRA AI recomenda o que está publicado, e não escreve endereço
+
+*Decidida em 09/10/2026 por G-ferrari. (D-58 e D-59 estão em PRs abertos, do CI.)*
+
+**Contexto.** O assistente de `/chat` só conhecia o texto fixo do admin —
+ainda o do protótipo, com a oferta antiga. Sem ler o site, ele **inventava** o
+nome e a descrição do que recomendava (`[UI_SERVICE:Arquitetura Lakehouse:…]`),
+o cartão "Conhecer solução →" era um `div` sem link, e endereço escrito no texto
+era o que o modelo imaginasse. O pedido: a IA conhecer o que está no site,
+inclusive o que mudou há pouco, e sugerir com o link certo.
+
+**Decisão.**
+
+- A cada conversa o servidor monta o **catálogo** do que está publicado
+  (`lib/catalogo-da-ia.ts`) e o entrega ao modelo depois do texto do admin
+  (`lib/instrucao-da-ia.ts`): soluções, segmentos, cases, webinars, e-books,
+  artigos do blog e as páginas de contato, sobre, consultores, diagnóstico e os
+  índices das seções. Título e resumo; dos artigos, só o título.
+- O modelo **não recebe nem escreve endereço**. Cita o item pelo código
+  (`[UI_CONTEUDO:S12]`), e o servidor confere a resposta contra o catálogo
+  (`lib/referencias-da-ia.ts`): cartão só de item que existe, link só para
+  endereço do catálogo, imagem nunca. O resto vira texto simples.
+- O time de conteúdo escolhe **no admin** quais tipos a IA recomenda
+  (Configuração → ATRA AI → "O que a IA pode recomendar"). Vazio é nada ligado.
+- As regras de recomendação e o formato da etiqueta saíram do campo editável e
+  moram no código: etiqueta fora do formato era descartada em silêncio, e o
+  manual vivia num texto que o marketing edita.
+- Atualização: cache em memória de 60 s, zerado a cada publicação pelo gancho
+  que já revalida o site (`hooks/revalidar.ts`).
+
+**Por que lista inteira, e não busca.** São ~50 itens com resumo e ~220 títulos
+de artigo: cerca de 6,5 mil tokens por mensagem, que cabem na instrução. Banco
+vetorial e busca semântica custariam um serviço a mais para decidir entre
+poucas centenas de linhas. O teto é `MAX_ARTIGOS` (400): passando disso, a
+saída é busca por assunto.
+
+**Recusado.** Deixar o modelo escrever o endereço com a lista de URLs na mão:
+ele erra uma letra do slug e o link quebra de novo, sem ninguém ver. Citar por
+código faz o erro virar "cartão que não aparece", e não "link que dá 404".
+
+**O preço.**
+
+- **Custo:** a lista vai junto a cada mensagem, e o custo de entrada sobe cerca
+  de seis vezes (de ~1 mil para ~7,5 mil tokens). O teto diário de conversas do
+  admin continua limitando o gasto; desligar "artigos do blog" corta metade.
+- **Alucinação:** links, títulos e resumos dos cartões não têm como ser
+  inventados. O **texto livre** ainda pode exagerar um detalhe, porque o modelo
+  só conhece o resumo de cada item; a instrução manda não afirmar o que não
+  está na lista e encaminhar à página ou a um especialista. Reduz, não elimina.
+- Em inglês só entra o que tem **slug em inglês**; o resto não é recomendado lá.
+- O catálogo não filtra página magra (segmento sem blocos, artigo sem corpo):
+  conferir custaria carregar os blocos e o corpo de todos os artigos.
+
+**O texto do admin.** A migração `20261010_000000_atra_ai_recomenda_conteudo`
+troca o item do cartão de serviço **só** se o campo ainda for o texto do
+protótipo, sem edição. O "Sobre a ATRA", com os três pilares antigos, fica:
+atualizar a oferta descrita ali é conteúdo (D-22). Se o texto contradisser a
+lista, as regras dizem que vale a lista.
+
+**Fica para depois.** O texto completo das páginas (respostas mais detalhadas),
+ATRA na mídia e vagas, e o teste com o modelo de verdade em desenvolvimento —
+não há `GEMINI_API_KEY` no ambiente local.
+

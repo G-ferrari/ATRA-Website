@@ -256,6 +256,30 @@ escolhe aquele setor.
   mede: incluir exige pergunta nova, com o time técnico e o Roger.
 - Setor sem nenhuma regulação escolhida volta à lista padrão do questionário.
 
+## ATRA AI: o que o assistente recomenda
+
+Em **Configuração → ATRA AI** ficam o texto de instrução da IA e, desde 09/10, o
+campo **O que a IA pode recomendar**.
+
+- A IA passou a **ler o que está publicado no site** a cada conversa. Publicar,
+  editar ou despublicar uma solução, um case, um artigo… vale já na conversa
+  seguinte, sem fazer mais nada.
+- Ela recomenda mostrando um **cartão com link**. O título, o resumo e o
+  endereço do cartão vêm do cadastro de cada item, e não do texto da IA: para
+  mudar o que aparece ali, edite o item (o resumo é a "descrição curta" da
+  solução ou do segmento, o "resumo" do case, a "descrição" do artigo, do
+  webinar e do e-book).
+- **O que a IA pode recomendar** liga e desliga cada tipo: soluções, segmentos,
+  cases, webinars, e-books, artigos do blog e páginas do site. Sem nenhum tipo
+  ligado, ela não recomenda conteúdo do site.
+- Os artigos do blog são metade da lista que a IA lê. Desligá-los reduz o custo
+  de cada conversa.
+- No **texto de instrução** não é preciso listar as soluções nem escrever
+  endereços: a lista entra sozinha. Use o texto para dizer quem a IA é e como
+  ela conduz a conversa. ⚠️ O trecho "Sobre a ATRA" ainda descreve a oferta
+  antiga, em três pilares: vale atualizar.
+- Em inglês, a IA só recomenda o que tem endereço em inglês.
+
 ## O painel do menu de Soluções
 
 Em **Sistema → Painel do menu de Soluções** fica o painel que aparece à direita

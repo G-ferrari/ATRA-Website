@@ -419,6 +419,18 @@ original. Cada setor só oferece o que as perguntas dele avaliam. ⚠️ Regener
 só o resumo: perguntas, lacunas e lead seguem norma por norma, e o HTML dele não
 foi editado.
 
+**D-60 (09/10)**: a ATRA AI recebe, a cada conversa, o **catálogo do que está
+publicado** (`lib/catalogo-da-ia.ts`: soluções, segmentos, cases, webinars,
+e-books, artigos e páginas) e recomenda por código — `[UI_CONTEUDO:S12]`. O
+modelo **não escreve endereço**: `lib/referencias-da-ia.ts` confere a resposta
+no servidor e só deixa passar cartão de item que existe e link do catálogo. As
+regras e o formato da etiqueta moram em `lib/instrucao-da-ia.ts`, não no texto
+do admin; os tipos recomendáveis, sim (`recommends`, no global `atra-ai`).
+⚠️ O cache do catálogo é zerado por `revalidarSite()`: collection nova que deva
+entrar no catálogo precisa estar no gancho (`payload.config.ts`). ⚠️ Não há
+`GEMINI_API_KEY` no ambiente local: a conversa de verdade só se testa em
+homologação.
+
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
 containers logando no journald e o Caddy com log de acesso em arquivo.

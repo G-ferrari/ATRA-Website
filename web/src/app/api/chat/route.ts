@@ -1,9 +1,14 @@
 import { GoogleGenAI, ThinkingLevel } from '@google/genai'
 import { NextResponse } from 'next/server'
 
+import { lerCatalogoDaIa } from '@/lib/catalogo-da-ia'
 import { MAX_TOKENS_DE_SAIDA, validarConversa, type Mensagem } from '@/lib/chat'
+import { montarInstrucao } from '@/lib/instrucao-da-ia'
 import { ipDe } from '@/lib/ip'
+import { tiposLigados } from '@/lib/mappers/catalogo-da-ia'
 import { getPayload } from '@/lib/payload'
+import { resolverReferencias } from '@/lib/referencias-da-ia'
+import type { ConteudoRecomendavel } from '@/types/content'
 
 /* POST /api/chat — porte de `legacy/server.ts:38`, com o que D-12 decidiu.
  *
@@ -119,8 +124,9 @@ export async function POST(req: Request) {
   }
   const mensagens = validado.mensagens
 
+  const locale = idiomaDe(corpo)
   const payload = await getPayload()
-  const config = await payload.findGlobal({ slug: 'atra-ai', depth: 0, locale: idiomaDe(corpo) })
+  const config = await payload.findGlobal({ slug: 'atra-ai', depth: 0, locale })
 
   const indisponivel =
     config?.unavailableMessage ??
@@ -148,6 +154,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: indisponivel }, { status: 503 })
   }
 
+  /* D-60 — o que o assistente pode recomendar: o que está publicado hoje, nos
+   * tipos que o admin ligou. Lido aqui, depois de todas as guardas: pedido
+   * recusado não consulta o catálogo.
+   *
+   * ⚠️ Falha aqui não derruba a conversa. Sem catálogo o modelo é instruído a
+   * não recomendar nem escrever endereço — responde pior, mas responde. */
+  let catalogo: ConteudoRecomendavel[] = []
+  try {
+    const ligados = tiposLigados(config?.recommends)
+    if (ligados.size > 0) catalogo = (await lerCatalogoDaIa(locale)).filter((item) => ligados.has(item.tipo))
+  } catch (e) {
+    console.error('ATRA AI: catálogo indisponível:', e)
+  }
+
   try {
     const ai = new GoogleGenAI({ apiKey })
     const resposta = await ai.models.generateContent({
@@ -162,13 +182,20 @@ export async function POST(req: Request) {
        * a resposta parava no meio da frase (`finishReason: MAX_TOKENS`). Subir
        * o teto só empurra o corte; o raciocínio cresce junto. */
       config: {
-        systemInstruction: config?.systemPrompt ?? '',
+        systemInstruction: montarInstrucao(config?.systemPrompt ?? '', catalogo, locale),
         temperature: 0.7,
         maxOutputTokens: MAX_TOKENS_DE_SAIDA,
         thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
       },
     })
-    return NextResponse.json({ text: resposta.text ?? '' })
+    /* A resposta sai conferida: cartão só de item que existe, link só para
+       endereço do catálogo. O host de produção entra na lista porque o modelo
+       às vezes escreve o endereço inteiro. */
+    const { texto, referencias } = resolverReferencias(resposta.text ?? '', catalogo, [
+      process.env.NEXT_PUBLIC_SITE_URL,
+      'atra.com.br',
+    ])
+    return NextResponse.json({ text: texto, referencias })
   } catch (e) {
     console.error('ATRA AI:', e)
     return NextResponse.json({ error: indisponivel }, { status: 502 })
