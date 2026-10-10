@@ -13,13 +13,30 @@ const CATALOGO: ConteudoRecomendavel[] = [
 describe('montarInstrucao', () => {
   const instrucao = montarInstrucao('Você é um consultor da ATRA.', CATALOGO, 'pt')
 
-  it('o texto do admin vem primeiro; as regras, depois; a lista, por último', () => {
+  it('o texto do admin vem primeiro; depois os limites, as regras e, por último, a lista', () => {
     const admin = instrucao.indexOf('Você é um consultor da ATRA.')
+    const limites = instrucao.indexOf('LIMITES DA CONVERSA')
     const regras = instrucao.indexOf('REGRAS PARA RECOMENDAR CONTEÚDO DO SITE')
     const lista = instrucao.indexOf('CONTEÚDO DO SITE DA ATRA')
     expect(admin).toBe(0)
-    expect(regras).toBeGreaterThan(admin)
+    expect(limites).toBeGreaterThan(admin)
+    expect(regras).toBeGreaterThan(limites)
     expect(lista).toBeGreaterThan(regras)
+  })
+
+  /* 10/10 — o assistente não define preço nem condição de contratação. É regra
+     de negócio: está no código para não sumir numa edição do texto do admin. */
+  it('os limites proíbem preço, condição de contratação e até dizer como a ATRA cobra', () => {
+    expect(instrucao).toContain('Você não define preço nem condição de contratação')
+    expect(instrucao).toContain('Também não descreva como a ATRA cobra ou negocia')
+    expect(instrucao).toContain('é tratado pelo time comercial da ATRA')
+    expect(instrucao).toContain('[UI_CONTACT]')
+  })
+
+  it('os limites valem sem catálogo, sem texto do admin e em inglês', () => {
+    expect(montarInstrucao('Você é um consultor da ATRA.', [], 'pt')).toContain('Você não define preço nem condição de contratação')
+    expect(montarInstrucao('', [], 'pt').startsWith('LIMITES DA CONVERSA')).toBe(true)
+    expect(montarInstrucao('You are an ATRA consultant.', CATALOGO, 'en')).toContain('You do not set prices or contracting terms')
   })
 
   it('cada item entra com o código; o resumo, só fora do blog', () => {
@@ -67,7 +84,10 @@ describe('montarInstrucao', () => {
     expect(vazio).not.toContain('Soluções:')
   })
 
-  it('sem texto do admin, sobram as regras e a lista', () => {
-    expect(montarInstrucao('  ', CATALOGO, 'pt').startsWith('REGRAS PARA RECOMENDAR')).toBe(true)
+  it('sem texto do admin, sobram os limites, as regras e a lista', () => {
+    const semAdmin = montarInstrucao('  ', CATALOGO, 'pt')
+    expect(semAdmin.startsWith('LIMITES DA CONVERSA')).toBe(true)
+    expect(semAdmin).toContain('REGRAS PARA RECOMENDAR')
+    expect(semAdmin).toContain('- S12 — Customer 360')
   })
 })

@@ -183,7 +183,14 @@ export async function POST(req: Request) {
        * o teto só empurra o corte; o raciocínio cresce junto. */
       config: {
         systemInstruction: montarInstrucao(config?.systemPrompt ?? '', catalogo, locale),
-        temperature: 0.7,
+        /* ⚠️ 0,3, e não o 0,7 do protótipo (10/10, decisão do G-ferrari). No
+         * primeiro teste com o catálogo os cartões saíram certos, mas o texto
+         * livre enfeitava: disse como a ATRA cobra e deu a um case qualidades
+         * que o resumo não tem. Temperatura baixa deixa a resposta mais
+         * contida e mais repetitiva — é a troca certa para quem fala em nome
+         * da empresa. Não é garantia: o que impede promessa de preço são os
+         * limites de `lib/instrucao-da-ia.ts`. */
+        temperature: 0.3,
         maxOutputTokens: MAX_TOKENS_DE_SAIDA,
         thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
       },
