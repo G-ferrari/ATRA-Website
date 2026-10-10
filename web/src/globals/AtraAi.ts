@@ -43,8 +43,40 @@ export const AtraAi: GlobalConfig = {
       label: { pt: 'Instrução do sistema', en: 'System prompt' },
       admin: {
         description: {
-          pt: 'Quem a IA é, o que sabe da ATRA e como deve conduzir a conversa.',
-          en: 'Who the AI is, what it knows about ATRA and how it should steer the conversation.',
+          pt: 'Quem a IA é e como deve conduzir a conversa. A lista do que está publicado no site (com os links) e as regras para recomendar conteúdo são acrescentadas sozinhas a cada conversa: não precisa descrever aqui as soluções nem escrever endereços.',
+          en: 'Who the AI is and how it should steer the conversation. The list of what is published on the site (with links) and the rules for recommending content are appended automatically to every conversation: there is no need to describe the solutions or write addresses here.',
+        },
+      },
+    },
+    {
+      /* D-60 — o que entra no catálogo que o assistente recebe a cada conversa
+       * (`lib/catalogo-da-ia.ts`). Escolher quais categorias aparecem é decisão
+       * do marketing (D-22), e por isso é campo, e não constante.
+       *
+       * ⚠️ Vazio é **nada ligado**, e não "o padrão": quem desmarca tudo quer o
+       * assistente sem recomendar conteúdo. Onde o global já existia, quem
+       * grava a lista inicial é a migração de dados — o `defaultValue` só vale
+       * para global que nunca foi salvo.
+       *
+       * Sem `localized`: são os nomes das collections, iguais nos dois idiomas. */
+      name: 'recommends',
+      type: 'select',
+      hasMany: true,
+      defaultValue: ['solutions', 'segments', 'cases', 'webinars', 'ebooks', 'posts', 'pages'],
+      options: [
+        { value: 'solutions', label: { pt: 'Soluções', en: 'Solutions' } },
+        { value: 'segments', label: { pt: 'Segmentos', en: 'Segments' } },
+        { value: 'cases', label: { pt: 'Cases de sucesso', en: 'Success stories' } },
+        { value: 'webinars', label: { pt: 'Webinars', en: 'Webinars' } },
+        { value: 'ebooks', label: { pt: 'E-books', en: 'E-books' } },
+        { value: 'posts', label: { pt: 'Artigos do blog', en: 'Blog articles' } },
+        { value: 'pages', label: { pt: 'Páginas do site (contato, consultores, diagnóstico, índices)', en: 'Site pages (contact, consultants, assessment, indexes)' } },
+      ],
+      label: { pt: 'O que a IA pode recomendar', en: 'What the AI may recommend' },
+      admin: {
+        description: {
+          pt: 'A IA só recomenda, com cartão e link, o que está publicado nos tipos ligados aqui. Publicar, editar ou despublicar um item vale já na conversa seguinte. Os artigos do blog são metade da lista que a IA lê: desligá-los reduz o custo de cada conversa. Sem nenhum tipo ligado, a IA não recomenda conteúdo do site.',
+          en: 'The AI only recommends, with a card and a link, what is published under the kinds enabled here. Publishing, editing or unpublishing an item takes effect in the very next conversation. Blog articles are half of the list the AI reads: turning them off lowers the cost of each conversation. With no kind enabled, the AI recommends no site content.',
         },
       },
     },

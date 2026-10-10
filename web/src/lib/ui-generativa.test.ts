@@ -52,6 +52,16 @@ describe('tokenizarUiGenerativa', () => {
     ])
   })
 
+  /* D-60 — o item do site vem pelo código; título e endereço são do servidor. */
+  it('conteúdo do site carrega só o código', () => {
+    expect(tokenizarUiGenerativa('Veja:\n[UI_CONTEUDO:S12]\nFaz sentido?')).toEqual([
+      { tipo: 'texto', texto: 'Veja:\n' },
+      { tipo: 'conteudo', codigo: 'S12' },
+      { tipo: 'texto', texto: '\nFaz sentido?' },
+    ])
+    expect(tokenizarUiGenerativa('[UI_CONTEUDO:P-CONTATO]')).toEqual([{ tipo: 'conteudo', codigo: 'P-CONTATO' }])
+  })
+
   it('duas tags adjacentes não geram token de texto vazio', () => {
     expect(tokenizarUiGenerativa('[UI_CONTACT][UI_CHART:BI]')).toEqual([
       { tipo: 'contato' },
