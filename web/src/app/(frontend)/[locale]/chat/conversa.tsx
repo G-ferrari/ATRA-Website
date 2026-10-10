@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Icone } from '@/components/blocks/icones'
 import { rastrear } from '@/lib/rastreio'
 import { cn } from '@/lib/utils'
-import type { ConviteDeLead } from '@/types/content'
+import type { ConviteDeLead, ReferenciasDaIa } from '@/types/content'
 
 import { ConviteLead } from './convite-lead'
 import { RespostaDoModelo } from './ui-generativa'
@@ -22,7 +22,11 @@ import { RespostaDoModelo } from './ui-generativa'
  * asteriscos. `ui-generativa.tsx` troca as tags por cartões e renderiza o
  * resto como markdown, como no gabarito. */
 
-type Mensagem = { role: 'user' | 'model'; content: string }
+/* `referencias` só existe na resposta do modelo: os itens do site que ela
+ * citou, já com título, resumo e endereço conferidos pelo servidor (D-60). Fica
+ * guardado na mensagem porque o catálogo muda — a resposta de dez minutos atrás
+ * continua mostrando o cartão que tinha quando chegou. */
+type Mensagem = { role: 'user' | 'model'; content: string; referencias?: ReferenciasDaIa }
 
 const SUGESTOES = [
   {
@@ -107,14 +111,16 @@ export function Conversa({
              tem como descobrir sozinha em qual das duas páginas o visitante
              está. Sem ele, a mensagem de indisponibilidade sai no idioma
              padrão, qualquer que seja a página. */
-          body: JSON.stringify({ messages: historico, locale }),
+          /* Só papel e texto voltam ao servidor: as referências são dele, e
+             ele as recalcula para a resposta nova. */
+          body: JSON.stringify({ messages: historico.map(({ role, content }) => ({ role, content })), locale }),
         })
-        const dados = (await r.json()) as { text?: string; error?: string }
+        const dados = (await r.json()) as { text?: string; referencias?: ReferenciasDaIa; error?: string }
         if (!r.ok || dados.error) {
           setErro(dados.error ?? ERRO_GERAL)
           return
         }
-        setMensagens([...historico, { role: 'model', content: dados.text ?? '' }])
+        setMensagens([...historico, { role: 'model', content: dados.text ?? '', referencias: dados.referencias }])
       } catch {
         setErro(ERRO_GERAL)
       } finally {
@@ -275,7 +281,7 @@ export function Conversa({
                 {m.role === 'user' ? (
                   <p className="whitespace-pre-wrap">{m.content}</p>
                 ) : (
-                  <RespostaDoModelo texto={m.content} whatsapp={whatsapp} />
+                  <RespostaDoModelo texto={m.content} whatsapp={whatsapp} referencias={m.referencias} locale={locale} />
                 )}
               </div>
 

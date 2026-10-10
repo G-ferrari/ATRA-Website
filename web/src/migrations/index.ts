@@ -79,6 +79,7 @@ import * as migration_20261002_120000_posts_novos_do_wordpress from './20261002_
 import * as migration_20261002_165837_add_press from './20261002_165837_add_press';
 import * as migration_20261002_170000_materias_da_imprensa from './20261002_170000_materias_da_imprensa';
 import * as migration_20261002_180000_rodape_link_unico_de_politicas from './20261002_180000_rodape_link_unico_de_politicas';
+import * as migration_20261002_190000_rd_station_marketing from './20261002_190000_rd_station_marketing';
 import * as migration_20261002_202832_conversion_panel from './20261002_202832_conversion_panel';
 import * as migration_20261002_202900_conversion_panel_secondary_cta from './20261002_202900_conversion_panel_secondary_cta';
 import * as migration_20261002_203000_painel_de_conversao from './20261002_203000_painel_de_conversao';
@@ -86,7 +87,6 @@ import * as migration_20261002_212500_solutions_tabs_and_badge from './20261002_
 import * as migration_20261002_213000_nova_estrutura_de_solucoes from './20261002_213000_nova_estrutura_de_solucoes';
 import * as migration_20261002_213100_rodape_com_as_abas_novas from './20261002_213100_rodape_com_as_abas_novas';
 import * as migration_20261003_120000_vagas_do_wordpress from './20261003_120000_vagas_do_wordpress';
-import * as migration_20261002_190000_rd_station_marketing from './20261002_190000_rd_station_marketing';
 import * as migration_20261005_205500_rich_text_body_size from './20261005_205500_rich_text_body_size';
 import * as migration_20261005_213516_paginas_mestras from './20261005_213516_paginas_mestras';
 import * as migration_20261005_213758_paginas_mestras_etiqueta_e_chamada from './20261005_213758_paginas_mestras_etiqueta_e_chamada';
@@ -99,6 +99,8 @@ import * as migration_20261007_012347_partner_mosaic from './20261007_012347_par
 import * as migration_20261007_020000_assessoria_com_mosaico_de_parceiros from './20261007_020000_assessoria_com_mosaico_de_parceiros';
 import * as migration_20261007_205424_diagnostic_regulations from './20261007_205424_diagnostic_regulations';
 import * as migration_20261007_210000_regulacoes_do_diagnostico from './20261007_210000_regulacoes_do_diagnostico';
+import * as migration_20261009_235921_atra_ai_recommends from './20261009_235921_atra_ai_recommends';
+import * as migration_20261010_000000_atra_ai_recomenda_conteudo from './20261010_000000_atra_ai_recomenda_conteudo';
 
 export const migrations = [
   {
@@ -507,6 +509,11 @@ export const migrations = [
     name: '20261002_180000_rodape_link_unico_de_politicas',
   },
   {
+    up: migration_20261002_190000_rd_station_marketing.up,
+    down: migration_20261002_190000_rd_station_marketing.down,
+    name: '20261002_190000_rd_station_marketing',
+  },
+  {
     up: migration_20261002_202832_conversion_panel.up,
     down: migration_20261002_202832_conversion_panel.down,
     name: '20261002_202832_conversion_panel',
@@ -540,11 +547,6 @@ export const migrations = [
     up: migration_20261003_120000_vagas_do_wordpress.up,
     down: migration_20261003_120000_vagas_do_wordpress.down,
     name: '20261003_120000_vagas_do_wordpress',
-  },
-  {
-    up: migration_20261002_190000_rd_station_marketing.up,
-    down: migration_20261002_190000_rd_station_marketing.down,
-    name: '20261002_190000_rd_station_marketing',
   },
   {
     up: migration_20261005_205500_rich_text_body_size.up,
@@ -599,11 +601,21 @@ export const migrations = [
   {
     up: migration_20261007_205424_diagnostic_regulations.up,
     down: migration_20261007_205424_diagnostic_regulations.down,
-    name: '20261007_205424_diagnostic_regulations'
+    name: '20261007_205424_diagnostic_regulations',
   },
   {
     up: migration_20261007_210000_regulacoes_do_diagnostico.up,
     down: migration_20261007_210000_regulacoes_do_diagnostico.down,
     name: '20261007_210000_regulacoes_do_diagnostico',
+  },
+  {
+    up: migration_20261009_235921_atra_ai_recommends.up,
+    down: migration_20261009_235921_atra_ai_recommends.down,
+    name: '20261009_235921_atra_ai_recommends',
+  },
+  {
+    up: migration_20261010_000000_atra_ai_recomenda_conteudo.up,
+    down: migration_20261010_000000_atra_ai_recomenda_conteudo.down,
+    name: '20261010_000000_atra_ai_recomenda_conteudo',
   },
 ];

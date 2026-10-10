@@ -851,6 +851,24 @@ export type SegmentCard = {
   shortDescription: string
 }
 
+/* ATRA AI — o que o assistente pode recomendar, com o endereço certo (D-60).
+ * O modelo nunca escreve endereço: cita o `codigo`, e o servidor devolve o
+ * resto junto da resposta. */
+export type TipoDeConteudoDaIa = 'solucao' | 'segmento' | 'case' | 'webinar' | 'ebook' | 'artigo' | 'pagina'
+
+export type ConteudoRecomendavel = {
+  /** O que o modelo cita (`[UI_CONTEUDO:S12]`): prefixo do tipo + id do documento. */
+  codigo: string
+  tipo: TipoDeConteudoDaIa
+  titulo: string
+  /** Uma linha. Vazio quando o CMS não tem resumo para o item. */
+  resumo: string
+  href: string
+}
+
+/** O que acompanha cada resposta do modelo: só os itens que ela citou, por código. */
+export type ReferenciasDaIa = Record<string, Omit<ConteudoRecomendavel, 'codigo'>>
+
 /** O convite de lead dentro do chat (MIG-150, D-29), do global `atra-ai`.
  * `null` quando qualquer uma das três chaves está fechada — env, toggle
  * editorial ou consentimento vazio no idioma. */

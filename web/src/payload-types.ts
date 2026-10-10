@@ -11723,9 +11723,13 @@ export interface AtraAi {
    */
   enabled?: boolean | null;
   /**
-   * Who the AI is, what it knows about ATRA and how it should steer the conversation.
+   * Who the AI is and how it should steer the conversation. The list of what is published on the site (with links) and the rules for recommending content are appended automatically to every conversation: there is no need to describe the solutions or write addresses here.
    */
   systemPrompt: string;
+  /**
+   * The AI only recommends, with a card and a link, what is published under the kinds enabled here. Publishing, editing or unpublishing an item takes effect in the very next conversation. Blog articles are half of the list the AI reads: turning them off lowers the cost of each conversation. With no kind enabled, the AI recommends no site content.
+   */
+  recommends?: ('solutions' | 'segments' | 'cases' | 'webinars' | 'ebooks' | 'posts' | 'pages')[] | null;
   /**
    * Provisional until P-04.
    */
@@ -12346,6 +12350,7 @@ export interface Tracking {
 export interface AtraAiSelect<T extends boolean = true> {
   enabled?: T;
   systemPrompt?: T;
+  recommends?: T;
   requestsPerHour?: T;
   dailyRequestCap?: T;
   unavailableMessage?: T;
