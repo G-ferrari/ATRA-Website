@@ -1901,3 +1901,21 @@ lista, as regras dizem que vale a lista.
 ATRA na mídia e vagas, e o teste com o modelo de verdade em desenvolvimento —
 não há `GEMINI_API_KEY` no ambiente local.
 
+**Ajuste de 10/10, depois do primeiro teste com o modelo de verdade.** Cinco
+perguntas em homologação: os doze cartões eram de itens publicados, todos os
+endereços abriram, e a página de preços que não existe não foi inventada. Mas o
+texto livre enfeitou — disse que a ATRA "não trabalha com tabela de preços
+fixa" e deu a um case qualidades que o resumo não tem. Duas decisões do
+G-ferrari:
+
+- **O assistente não define preço nem condição de contratação.** Não informa
+  valor, faixa, modelo de cobrança, desconto, prazo ou condição, e também não
+  descreve como a ATRA cobra; diz que isso é com o time comercial e oferece o
+  contato. É regra de negócio, e por isso mora no código
+  (`lib/instrucao-da-ia.ts`, "limites da conversa"), valendo com ou sem
+  catálogo — no texto do admin, sumiria numa edição.
+- **Temperatura de 0,7 para 0,3.** Respostas mais contidas e mais repetitivas.
+
+⚠️ As duas coisas reduzem o risco; nenhuma o elimina. O que o servidor
+**garante** continua sendo só o que ele confere: cartões e links.
+

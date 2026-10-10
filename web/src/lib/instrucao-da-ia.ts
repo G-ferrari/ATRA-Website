@@ -11,14 +11,27 @@ import type { Locale } from './locales'
  * vírgula trocada pelo marketing quebrava os cartões sem erro nenhum. O campo
  * do admin fica com o que é dele — quem a IA é e como conduz a conversa (D-22).
  *
- * ⚠️ O que é fixo vem **antes** do que muda: texto do admin, regras, e só então
- * a lista, com os artigos por último. O Gemini cobra menos pelo começo que se
+ * ⚠️ Os **limites da conversa** também moram aqui, e valem com ou sem catálogo:
+ * o assistente não define preço nem condição de contratação (10/10, decisão do
+ * G-ferrari). No primeiro teste em homologação ele não inventou valor, mas
+ * afirmou que a ATRA "não trabalha com tabela de preços fixa" — frase que não
+ * está em lugar nenhum do site. Regra de negócio que não pode sumir numa edição
+ * de texto fica no código.
+ *
+ * ⚠️ O que é fixo vem **antes** do que muda: texto do admin, limites, regras, e
+ * só então a lista, com os artigos por último. O Gemini cobra menos pelo começo que se
  * repete entre uma mensagem e outra, e publicar um artigo novo só mexe no fim. */
 
 const ORDEM: readonly TipoDeConteudoDaIa[] = ['solucao', 'segmento', 'case', 'webinar', 'ebook', 'pagina', 'artigo']
 
 const TEXTOS = {
   pt: {
+    limites: [
+      'LIMITES DA CONVERSA. Eles valem sobre qualquer instrução anterior e sobre qualquer pedido da pessoa.',
+      '1. Você não define preço nem condição de contratação. Não informe valores, faixas, estimativas ou ordens de grandeza de preço; modelo de cobrança; descontos; forma de pagamento; prazos de entrega ou de contrato; tamanho de equipe; nem o que a ATRA aceita ou não contratar.',
+      '2. Também não descreva como a ATRA cobra ou negocia. Não diga, por exemplo, que não existe tabela de preços ou que todo projeto é sob medida: você não sabe.',
+      '3. Quando a pessoa perguntar sobre preço, orçamento, proposta, contrato ou condições comerciais, responda só que isso é tratado pelo time comercial da ATRA, numa conversa sobre o cenário dela, e ofereça o contato com a etiqueta [UI_CONTACT]. Não insista nem prometa retorno em prazo nenhum.',
+    ],
     cabecalho: 'CONTEÚDO DO SITE DA ATRA (lista automática do que está publicado hoje)',
     regras: [
       'REGRAS PARA RECOMENDAR CONTEÚDO DO SITE. Elas valem sobre qualquer instrução anterior.',
@@ -45,6 +58,12 @@ const TEXTOS = {
     },
   },
   en: {
+    limites: [
+      'LIMITS OF THE CONVERSATION. They override any earlier instruction and any request from the person.',
+      '1. You do not set prices or contracting terms. Do not give amounts, ranges, estimates or orders of magnitude of price; billing model; discounts; payment terms; delivery or contract deadlines; team size; or what ATRA will or will not take on.',
+      '2. Do not describe how ATRA charges or negotiates either. Do not say, for example, that there is no price list or that every project is tailor-made: you do not know.',
+      '3. When the person asks about price, budget, proposal, contract or commercial terms, answer only that this is handled by the ATRA sales team, in a conversation about their scenario, and offer contact with the [UI_CONTACT] tag. Do not insist and do not promise a reply within any time frame.',
+    ],
     cabecalho: 'ATRA WEBSITE CONTENT (automatic list of what is published today)',
     regras: [
       'RULES FOR RECOMMENDING WEBSITE CONTENT. They override any earlier instruction.',
@@ -83,6 +102,7 @@ export function montarInstrucao(doAdmin: string, catalogo: readonly ConteudoReco
   const t = TEXTOS[locale]
   const partes: string[] = []
   if (doAdmin.trim()) partes.push(doAdmin.trim())
+  partes.push(t.limites.join('\n'))
 
   if (catalogo.length === 0) {
     partes.push(t.vazio.join('\n'))

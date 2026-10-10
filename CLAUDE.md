@@ -426,6 +426,8 @@ modelo **não escreve endereço**: `lib/referencias-da-ia.ts` confere a resposta
 no servidor e só deixa passar cartão de item que existe e link do catálogo. As
 regras e o formato da etiqueta moram em `lib/instrucao-da-ia.ts`, não no texto
 do admin; os tipos recomendáveis, sim (`recommends`, no global `atra-ai`).
+Os **limites da conversa** também são do código: o assistente não define preço
+nem condição de contratação (10/10), e a temperatura é 0,3.
 ⚠️ O cache do catálogo é zerado por `revalidarSite()`: collection nova que deva
 entrar no catálogo precisa estar no gancho (`payload.config.ts`). ⚠️ Não há
 `GEMINI_API_KEY` no ambiente local: a conversa de verdade só se testa em

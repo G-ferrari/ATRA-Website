@@ -279,6 +279,9 @@ campo **O que a IA pode recomendar**.
   ela conduz a conversa. ⚠️ O trecho "Sobre a ATRA" ainda descreve a oferta
   antiga, em três pilares: vale atualizar.
 - Em inglês, a IA só recomenda o que tem endereço em inglês.
+- A IA **não fala de preço nem de condição de contratação**: quando perguntam,
+  ela diz que isso é com o time comercial e oferece o contato. Essa regra é
+  fixa, não depende do texto de instrução.
 
 ## O painel do menu de Soluções
 
