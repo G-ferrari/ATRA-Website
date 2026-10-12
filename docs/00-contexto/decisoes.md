@@ -1919,3 +1919,12 @@ G-ferrari:
 ⚠️ As duas coisas reduzem o risco; nenhuma o elimina. O que o servidor
 **garante** continua sendo só o que ele confere: cartões e links.
 
+**Ajuste de 12/10.** No teste dos limites — três perguntas de preço e contrato,
+nenhum valor, prazo ou desconto na resposta —, a IA escreveu "para que um
+especialista entre em contato, confirme aqui comigo". Confirmar ali não dispara
+nada: o cartão de contato abre o WhatsApp, e quem chama é o visitante. Quarto
+limite: ela não agenda, não registra pedido, não diz que alguém vai entrar em
+contato, e explica que a conversa é iniciada pela própria pessoa. A frase
+"cada projeto é avaliado conforme o cenário", que também apareceu, fica: é o
+comportamento certo, por decisão do G-ferrari.
+

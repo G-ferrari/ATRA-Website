@@ -33,6 +33,15 @@ describe('montarInstrucao', () => {
     expect(instrucao).toContain('[UI_CONTACT]')
   })
 
+  /* 12/10 — o cartão de contato abre o WhatsApp; ninguém da ATRA é avisado. O
+     assistente não pode prometer um retorno que não dispara. */
+  it('os limites proíbem prometer que alguém da ATRA vai entrar em contato', () => {
+    expect(instrucao).toContain('Você não agenda conversa, não registra pedido e não avisa ninguém da ATRA')
+    expect(instrucao).toContain('Não diga que um especialista vai entrar em contato')
+    expect(instrucao).toContain('é a própria pessoa que inicia a conversa')
+    expect(montarInstrucao('', [], 'en')).toContain('Do not say a specialist will get in touch')
+  })
+
   it('os limites valem sem catálogo, sem texto do admin e em inglês', () => {
     expect(montarInstrucao('Você é um consultor da ATRA.', [], 'pt')).toContain('Você não define preço nem condição de contratação')
     expect(montarInstrucao('', [], 'pt').startsWith('LIMITES DA CONVERSA')).toBe(true)

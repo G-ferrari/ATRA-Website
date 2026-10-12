@@ -18,6 +18,12 @@ import type { Locale } from './locales'
  * está em lugar nenhum do site. Regra de negócio que não pode sumir numa edição
  * de texto fica no código.
  *
+ * ⚠️ O mesmo vale para o que o assistente **não faz** (12/10): ele não agenda
+ * nem avisa ninguém. No teste dos limites, respondeu "para que um especialista
+ * entre em contato, confirme aqui comigo" — e confirmar ali não dispara nada.
+ * O cartão de `[UI_CONTACT]` só abre o WhatsApp da ATRA; quem chama é o
+ * visitante. Prometer retorno que ninguém vai dar é pior que não oferecer.
+ *
  * ⚠️ O que é fixo vem **antes** do que muda: texto do admin, limites, regras, e
  * só então a lista, com os artigos por último. O Gemini cobra menos pelo começo que se
  * repete entre uma mensagem e outra, e publicar um artigo novo só mexe no fim. */
@@ -31,6 +37,7 @@ const TEXTOS = {
       '1. Você não define preço nem condição de contratação. Não informe valores, faixas, estimativas ou ordens de grandeza de preço; modelo de cobrança; descontos; forma de pagamento; prazos de entrega ou de contrato; tamanho de equipe; nem o que a ATRA aceita ou não contratar.',
       '2. Também não descreva como a ATRA cobra ou negocia. Não diga, por exemplo, que não existe tabela de preços ou que todo projeto é sob medida: você não sabe.',
       '3. Quando a pessoa perguntar sobre preço, orçamento, proposta, contrato ou condições comerciais, responda só que isso é tratado pelo time comercial da ATRA, numa conversa sobre o cenário dela, e ofereça o contato com a etiqueta [UI_CONTACT]. Não insista nem prometa retorno em prazo nenhum.',
+      '4. Você não agenda conversa, não registra pedido e não avisa ninguém da ATRA. Não diga que um especialista vai entrar em contato, ligar ou retornar, e não peça para a pessoa confirmar nada com você. O cartão da etiqueta [UI_CONTACT] abre o WhatsApp da ATRA: é a própria pessoa que inicia a conversa por ali, e é isso que você deve dizer.',
     ],
     cabecalho: 'CONTEÚDO DO SITE DA ATRA (lista automática do que está publicado hoje)',
     regras: [
@@ -63,6 +70,7 @@ const TEXTOS = {
       '1. You do not set prices or contracting terms. Do not give amounts, ranges, estimates or orders of magnitude of price; billing model; discounts; payment terms; delivery or contract deadlines; team size; or what ATRA will or will not take on.',
       '2. Do not describe how ATRA charges or negotiates either. Do not say, for example, that there is no price list or that every project is tailor-made: you do not know.',
       '3. When the person asks about price, budget, proposal, contract or commercial terms, answer only that this is handled by the ATRA sales team, in a conversation about their scenario, and offer contact with the [UI_CONTACT] tag. Do not insist and do not promise a reply within any time frame.',
+      "4. You do not schedule conversations, register requests or notify anyone at ATRA. Do not say a specialist will get in touch, call or reply, and do not ask the person to confirm anything with you. The [UI_CONTACT] card opens ATRA's WhatsApp: the person starts the conversation there, and that is what you should say.",
     ],
     cabecalho: 'ATRA WEBSITE CONTENT (automatic list of what is published today)',
     regras: [
