@@ -72,10 +72,15 @@ export function ListaDeEbooks({
                 </div>
               </div>
               {/* Era botão sem destino, agora leva à página do e-book, e o
-                  cartão inteiro clica. */}
+                  cartão inteiro clica: o `::after` do link cobre o card.
+                  ⚠️ Nada de transformar o próprio link (`active:scale-*`,
+                  `translate`). Transformado, ele vira o bloco de contenção do
+                  `::after`: no mousedown a camada encolhe para o tamanho do
+                  botão, o mouseup cai fora dela e o clique não dispara — o card
+                  clicava só no botão até 15/10 (e2e/cards-clicaveis.spec.ts). */}
               <Link
                 href={hrefDe('ebooks', locale, r.slug)}
-                className="w-full py-3 rounded-[6px] border border-primary/40 text-primary font-bold text-xs sm:text-sm hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2 shadow-xs active:scale-98 after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3C98FA]"
+                className="w-full py-3 rounded-[6px] border border-primary/40 text-primary font-bold text-xs sm:text-sm hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2 shadow-xs after:absolute after:inset-0 after:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3C98FA]"
               >
                 <Download size={16} aria-hidden /> <span>{t.cta}</span>
               </Link>
