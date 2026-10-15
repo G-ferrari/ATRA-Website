@@ -16102,6 +16102,12 @@ export interface Contact {
     careers?: string | null;
     chat?: string | null;
   };
+  jobApplications?: {
+    /**
+     * Shown on each job application form, above the submit button. Written by HR and legal: how long the CV is kept (the site deletes it after 6 months), who can access it and what it is used for. When empty, the application form is not shown.
+     */
+    privacyNotice?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -17022,6 +17028,11 @@ export interface ContactSelect<T extends boolean = true> {
         diagnostic?: T;
         careers?: T;
         chat?: T;
+      };
+  jobApplications?:
+    | T
+    | {
+        privacyNotice?: T;
       };
   updatedAt?: T;
   createdAt?: T;
