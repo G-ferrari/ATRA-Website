@@ -548,6 +548,7 @@ export function toBlocos(
           title: vazio(b.title),
           description: vazio(b.description),
           steps: (b.steps ?? []).map((e) => ({ title: e.title, description: e.description })),
+          layout: b.variant === 'timeline' ? 'timeline' : 'cards',
         })
         break
 

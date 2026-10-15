@@ -492,10 +492,10 @@ export type BlocoProcessSteps = Base & {
   title: string | null
   description: string | null
   steps: { title: string; description: string }[]
-  /** Apresentação-only, injetada pela página: `timeline` troca a grade de cards
-   *  por uma linha do tempo horizontal com círculos numerados (layout da jornada
-   *  da landing). Padrão `cards`. */
-  layout?: 'cards' | 'timeline'
+  /** O "Formato" do bloco no admin (desde 15/10): `timeline` troca a grade de
+   *  cards por uma linha do tempo com círculos numerados (a jornada da RC18).
+   *  Até ali era a rota da RC18 que ligava a linha, por código. */
+  layout: 'cards' | 'timeline'
 }
 
 export type BlocoPartnerShowcase = Base & {

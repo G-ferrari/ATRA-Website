@@ -1254,6 +1254,10 @@ export interface Partner {
               id?: string | null;
             }[];
             /**
+             * Numbered cards in a grid, or numbered circles joined by a line (as on the RC18 page). The timeline fits 3 to 8 steps.
+             */
+            variant?: ('cards' | 'timeline') | null;
+            /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
             anchor?: string | null;
@@ -2971,6 +2975,10 @@ export interface Page {
           description: string;
           id?: string | null;
         }[];
+        /**
+         * Numbered cards in a grid, or numbered circles joined by a line (as on the RC18 page). The timeline fits 3 to 8 steps.
+         */
+        variant?: ('cards' | 'timeline') | null;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -4970,6 +4978,10 @@ export interface Segment {
               id?: string | null;
             }[];
             /**
+             * Numbered cards in a grid, or numbered circles joined by a line (as on the RC18 page). The timeline fits 3 to 8 steps.
+             */
+            variant?: ('cards' | 'timeline') | null;
+            /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
             anchor?: string | null;
@@ -6645,6 +6657,10 @@ export interface Solution {
               description: string;
               id?: string | null;
             }[];
+            /**
+             * Numbered cards in a grid, or numbered circles joined by a line (as on the RC18 page). The timeline fits 3 to 8 steps.
+             */
+            variant?: ('cards' | 'timeline') | null;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -8365,6 +8381,7 @@ export interface PagesSelect<T extends boolean = true> {
                     description?: T;
                     id?: T;
                   };
+              variant?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -9374,6 +9391,7 @@ export interface PartnersSelect<T extends boolean = true> {
                     description?: T;
                     id?: T;
                   };
+              variant?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -10221,6 +10239,7 @@ export interface SegmentsSelect<T extends boolean = true> {
                     description?: T;
                     id?: T;
                   };
+              variant?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -11075,6 +11094,7 @@ export interface SolutionsSelect<T extends boolean = true> {
                     description?: T;
                     id?: T;
                   };
+              variant?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
