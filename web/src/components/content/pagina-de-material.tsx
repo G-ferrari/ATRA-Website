@@ -48,7 +48,9 @@ export function PaginaDeMaterial({
 
   return (
     <main className="min-h-screen bg-white dark:bg-[#0e1015]">
-      <section className="relative bg-primary overflow-hidden pt-32 md:pt-44 pb-16 md:pb-20">
+      {/* `data-heroi-azul`: o cabeçalho, transparente por cima, troca de cor
+          (variante `sobre-azul`, globals.css). */}
+      <section data-heroi-azul className="relative bg-primary overflow-hidden pt-32 md:pt-44 pb-16 md:pb-20">
         <div className="absolute inset-0">
           <Image
             src={material.image.url}
