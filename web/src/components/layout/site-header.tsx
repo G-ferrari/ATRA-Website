@@ -100,7 +100,14 @@ export function SiteHeader({
                     ? 'shadow-none rounded-t-[6px] rounded-b-none'
                     : 'shadow-md rounded-[6px]',
                 )
-              : 'bg-transparent py-3 md:py-3 text-text-main dark:text-white rounded-[6px]',
+              : cn(
+                  'bg-transparent py-3 md:py-3 text-text-main dark:text-white rounded-[6px]',
+                  /* Sobre o herói azul (15/10, pedido do G-ferrari): a barra ganha a
+                     cor do tema — clara ou escura — bem translúcida, e logo, menu e
+                     botões ficam como em qualquer página. A primeira versão trocava
+                     as cores de cada peça (logo preto, botão branco) e foi recusada. */
+                  'sobre-azul:bg-surface-1/25 sobre-azul:backdrop-blur-md',
+                ),
         )}
         onMouseLeave={fechar}
         /* Marca o estado transparente, o único em que o herói aparece atrás do
@@ -120,7 +127,7 @@ export function SiteHeader({
                 alt={t.logo}
                 decoding="async"
                 fetchPriority="high"
-                className="h-10 md:h-12 w-auto object-contain transition-all sobre-azul:brightness-0"
+                className="h-10 md:h-12 w-auto object-contain transition-all"
               />
             )}
           </Link>
@@ -141,12 +148,12 @@ export function SiteHeader({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 2 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="p-1.5 px-3.5 rounded-[6px] transition-all flex items-center gap-1.5 text-[13px] font-semibold tracking-normal cursor-pointer hover:scale-105 active:scale-95 bg-transparent text-text-main dark:text-white hover:opacity-80 sobre-azul:text-slate-900"
+                  className="p-1.5 px-3.5 rounded-[6px] transition-all flex items-center gap-1.5 text-[13px] font-semibold tracking-normal cursor-pointer hover:scale-105 active:scale-95 bg-transparent text-text-main dark:text-white hover:opacity-80"
                   onClick={() => setAberto(true)}
                   aria-expanded={false}
                   aria-label={t.abrirMenu}
                 >
-                  <span>{t.menu}</span> <Menu size={14} className="text-primary sobre-azul:text-slate-900" aria-hidden />
+                  <span>{t.menu}</span> <Menu size={14} className="text-primary" aria-hidden />
                 </motion.button>
               ) : (
                 <motion.div
@@ -212,10 +219,6 @@ export function SiteHeader({
                 /* `h-9`: menor que antes (28/09) e da altura do botão do
                    WhatsApp ao lado, para os dois alinharem. */
                 'items-center gap-1.5 rounded-[6px] text-[13px] font-normal transition-all shadow-md hover:shadow-lg capitalize border border-primary text-primary hover:bg-primary/10 bg-transparent h-9 px-4 active:scale-95 cursor-pointer',
-                /* Sobre o herói azul, botão branco com texto escuro. Cor fixa, e
-                   não `text-text-main`: no tema escuro o token vira quase branco,
-                   e o texto sumiria no botão branco. */
-                'sobre-azul:bg-white sobre-azul:border-white sobre-azul:text-slate-900 sobre-azul:font-medium sobre-azul:hover:bg-white/90',
                 aberto ? 'hidden' : 'hidden lg:flex',
               )}
             >
@@ -239,9 +242,6 @@ export function SiteHeader({
                 title={t.whatsapp}
                 className={cn(
                   'w-9 h-9 rounded-[6px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25 items-center justify-center shrink-0 transition-colors active:scale-95',
-                  /* Sobre o herói azul, o verde translúcido virava azul-esverdeado:
-                     fundo sólido, ícone branco. */
-                  'sobre-azul:bg-emerald-600 sobre-azul:text-white sobre-azul:hover:bg-emerald-700',
                   aberto ? 'flex md:hidden' : 'flex',
                 )}
               >

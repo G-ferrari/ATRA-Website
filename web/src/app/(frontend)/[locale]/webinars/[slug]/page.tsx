@@ -99,7 +99,7 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
 
   return (
     <main className="min-h-screen bg-white dark:bg-[#0e1015]">
-      {/* `data-heroi-azul`: o cabeçalho, transparente por cima, troca de cor
+      {/* `data-heroi-azul`: o cabeçalho, transparente por cima, ganha fundo
           (variante `sobre-azul`, globals.css). */}
       <section data-heroi-azul className="relative bg-primary overflow-hidden pt-32 md:pt-44 pb-12">
         <div className="absolute inset-0">
