@@ -103,6 +103,7 @@ import * as migration_20261007_210000_regulacoes_do_diagnostico from './20261007
 import * as migration_20261009_235921_atra_ai_recommends from './20261009_235921_atra_ai_recommends';
 import * as migration_20261010_000000_atra_ai_recomenda_conteudo from './20261010_000000_atra_ai_recomenda_conteudo';
 import * as migration_20261015_110440_process_steps_variant from './20261015_110440_process_steps_variant';
+import * as migration_20261015_111634_mais_icones from './20261015_111634_mais_icones';
 
 export const migrations = [
   {
@@ -629,5 +630,10 @@ export const migrations = [
     up: migration_20261015_110440_process_steps_variant.up,
     down: migration_20261015_110440_process_steps_variant.down,
     name: '20261015_110440_process_steps_variant',
+  },
+  {
+    up: migration_20261015_111634_mais_icones.up,
+    down: migration_20261015_111634_mais_icones.down,
+    name: '20261015_111634_mais_icones'
   },
 ];

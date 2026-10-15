@@ -1,7 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
 import { isEditorOrAdmin, isPublic } from '@/access'
-import { campoDeIcone, ICONES } from '@/blocks/shared'
+import { campoDeIcone, OPCOES_DE_ICONE, SELETOR_DE_ICONE } from '@/blocks/shared'
 
 /* Navegação do topo: as 7 categorias e o conteúdo dos painéis (MIG-072a).
  *
@@ -123,8 +123,9 @@ export const Navigation: GlobalConfig = {
             {
               name: 'icon',
               type: 'select',
-              options: ICONES.map((v) => ({ value: v, label: v })),
+              options: OPCOES_DE_ICONE,
               label: { pt: 'Ícone', en: 'Icon' },
+              admin: { components: { Field: SELETOR_DE_ICONE } },
             },
             { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
             {
