@@ -106,6 +106,7 @@ import * as migration_20261010_000000_atra_ai_recomenda_conteudo from './2026101
 import * as migration_20261015_110440_process_steps_variant from './20261015_110440_process_steps_variant';
 import * as migration_20261015_111634_mais_icones from './20261015_111634_mais_icones';
 import * as migration_20261015_113425_contact_job_applications_notice from './20261015_113425_contact_job_applications_notice';
+import * as migration_20261015_120000_insights_apaga_tabelas_antigas from './20261015_120000_insights_apaga_tabelas_antigas';
 
 export const migrations = [
   {
@@ -647,5 +648,10 @@ export const migrations = [
     up: migration_20261015_113425_contact_job_applications_notice.up,
     down: migration_20261015_113425_contact_job_applications_notice.down,
     name: '20261015_113425_contact_job_applications_notice',
+  },
+  {
+    up: migration_20261015_120000_insights_apaga_tabelas_antigas.up,
+    down: migration_20261015_120000_insights_apaga_tabelas_antigas.down,
+    name: '20261015_120000_insights_apaga_tabelas_antigas',
   },
 ];
