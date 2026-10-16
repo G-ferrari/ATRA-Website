@@ -135,7 +135,9 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
     <main className="min-h-screen bg-white dark:bg-[#0e1015]">
       {/* Invisível: vai num `<script type="application/ld+json">`. */}
       <DadosEstruturados dados={dadosDoArtigo} />
-      <section className="relative min-h-[50vh] md:min-h-[60vh] bg-primary overflow-hidden flex items-center pt-32 md:pt-48 pb-16">
+      {/* `data-heroi-azul`: o cabeçalho, transparente por cima, ganha fundo
+          (variante `sobre-azul`, globals.css). */}
+      <section data-heroi-azul className="relative min-h-[50vh] md:min-h-[60vh] bg-primary overflow-hidden flex items-center pt-32 md:pt-48 pb-16">
         <div className="absolute inset-0">
           <Image
             src={post.image.url}

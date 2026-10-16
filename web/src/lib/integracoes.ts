@@ -1,8 +1,8 @@
 import { cache } from 'react'
 
-import { toIntegracaoAtrair } from './mappers/integracao'
+import { toIntegracaoAtrair, toIntegracaoRd } from './mappers/integracao'
 import { getPayload } from './payload'
-import type { IntegracaoAtrair } from '@/types/content'
+import type { IntegracaoAtrair, IntegracaoRd } from '@/types/content'
 
 /* D-41 — as chaves da integração com o ATRAIR, para quem vai chamá-lo.
  *
@@ -24,4 +24,13 @@ export const lerIntegracaoAtrair = cache(async (): Promise<IntegracaoAtrair> => 
   const payload = await getPayload()
   const doc = await payload.findGlobal({ slug: 'integrations', depth: 0 })
   return toIntegracaoAtrair(doc, { endpoint: process.env.ATRAIR_API_URL })
+})
+
+/* D-62 — a parte do RD, para quem precisa do aviso ao candidato: a página de
+ * carreiras o mostra no formulário, e a action guarda no cadastro o aviso que
+ * estava valendo. Mesmo `cache()` por requisição. O gancho de sincronização não
+ * usa isto (ver `hooks/sincronizar-rd.ts`). */
+export const lerIntegracaoRd = cache(async (): Promise<IntegracaoRd> => {
+  const payload = await getPayload()
+  return toIntegracaoRd(await payload.findGlobal({ slug: 'integrations', depth: 0 }))
 })

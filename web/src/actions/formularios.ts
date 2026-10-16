@@ -6,12 +6,14 @@ import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
 import { enviarParaAtrair } from '@/lib/atrair'
-import { lerIntegracaoAtrair } from '@/lib/integracoes'
+import { areaEmPortugues, linkedinValido, senioridadeEmPortugues } from '@/lib/banco-de-talentos'
+import { lerIntegracaoAtrair, lerIntegracaoRd } from '@/lib/integracoes'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
 import { destinoDoAviso } from '@/lib/destino-do-aviso'
 import { enviarAviso } from '@/lib/email'
 import { getPayload } from '@/lib/payload'
+import { rdAceitou } from '@/lib/rd-marketing'
 import { MAX_POR_VALOR } from '@/lib/utm'
 
 /* MIG-100 — o envio dos formulários do site.
@@ -47,6 +49,15 @@ const campanha = (dados: FormData, campo: string): string | undefined =>
 /** Aceita o que parece e-mail. Validação de verdade é o e-mail chegar. */
 const pareceEmail = (v: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
 
+/** O que um erro pode deixar no log: o código do Postgres ou o nome.
+ *
+ * ⚠️ **Nunca `console.error(..., e)`.** A mensagem do erro do Drizzle leva
+ * `params:`, e o que o visitante digitou — e-mail, nome, telefone, mensagem —
+ * iria inteiro para o log do servidor (ver `consultores.ts`). */
+const semDadoPessoal = (e: unknown): string => {
+  const erro = e as { cause?: { code?: unknown }; code?: unknown; name?: unknown } | null
+  return String(erro?.cause?.code ?? erro?.code ?? erro?.name ?? 'erro desconhecido')
+}
 
 export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   const kind = texto(dados, 'kind')
@@ -87,8 +98,11 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
           .join('\n')
       : ''
 
+  /* O id do que foi gravado: é por ele que o `notified` volta ao documento
+     certo, e por ele que se relê o resultado do RD (task 045). */
+  let id: number | string
   try {
-    await payload.create({
+    const gravado = await payload.create({
       collection: 'form-submissions',
       data: {
         kind,
@@ -97,6 +111,22 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         phone: texto(dados, 'phone') || undefined,
         company: texto(dados, 'company') || undefined,
         message: (kind === 'talent-pool' ? extrasDeTalento : texto(dados, 'message', MAX_MENSAGEM)) || undefined,
+        /* D-62: os mesmos extras, cada um no seu campo — é daqui que o RD lê
+           (`lib/rd-marketing.ts`); a mensagem acima fica para o admin e o aviso.
+           Só opção da lista e endereço de LinkedIn (`lib/banco-de-talentos.ts`),
+           e a cópia do aviso que o formulário mostrava: sem ela o cadastro
+           não vai ao RD. Lido aqui, no servidor, e não de um campo do
+           formulário — o visitante não consegue dizer que viu um aviso. */
+        ...(kind === 'talent-pool'
+          ? {
+              talent: {
+                linkedin: linkedinValido(texto(dados, 'linkedin', 300)),
+                area: areaEmPortugues(texto(dados, 'area')),
+                seniority: senioridadeEmPortugues(texto(dados, 'senioridade')),
+                privacyNotice: (await lerIntegracaoRd()).avisoAoCandidato ?? undefined,
+              },
+            }
+          : {}),
         source: texto(dados, 'source') || undefined,
         /* ⚠️ Cortado **de novo** aqui. O cliente já limita, mas quem posta o
          * formulário não é obrigado a ser o nosso JavaScript — `curl` com um
@@ -116,8 +146,9 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         ...(kind === 'newsletter' ? { confirmationToken: gerarToken() } : {}),
       },
     })
+    id = gravado.id
   } catch (e) {
-    console.error('[formulario] não gravou:', e)
+    console.error('[formulario] não gravou:', semDadoPessoal(e))
     return { ok: false, erro: ERRO_GENERICO }
   }
 
@@ -129,50 +160,97 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
    * aqui e passada adiante: a action é o limite onde o dado é resolvido, não o
    * `lib/atrair.ts` (regra 4 — nem action nem componente deixam a decisão para
    * a camada de baixo). Desligada, `enviarParaAtrair` devolve `false` sem
-   * chamar ninguém, e a inscrição fica só no admin. */
+   * chamar ninguém, e a inscrição fica só no admin.
+   *
+   * ⚠️ Num `try` próprio: `lerIntegracaoAtrair` consulta o banco e pode lançar.
+   * O lead já está gravado, e o aviso ao RH abaixo ainda tem que sair. */
   if (kind === 'talent-pool') {
-    await enviarParaAtrair({
-      name: texto(dados, 'name'),
-      email,
-      phone: texto(dados, 'phone') || undefined,
-      linkedinUrl: texto(dados, 'linkedin', 300) || undefined,
-      area: texto(dados, 'area') || undefined,
-      senioridade: texto(dados, 'senioridade') || undefined,
-      source: texto(dados, 'source') || undefined,
-    }, await lerIntegracaoAtrair())
+    try {
+      await enviarParaAtrair({
+        name: texto(dados, 'name'),
+        email,
+        phone: texto(dados, 'phone') || undefined,
+        linkedinUrl: texto(dados, 'linkedin', 300) || undefined,
+        area: texto(dados, 'area') || undefined,
+        senioridade: texto(dados, 'senioridade') || undefined,
+        source: texto(dados, 'source') || undefined,
+      }, await lerIntegracaoAtrair())
+    } catch (e) {
+      console.error(`[formulario] lead ${id} gravado, mas não foi ao ATRAIR:`, semDadoPessoal(e))
+    }
   }
 
   /* O aviso é o **segundo** passo e não pode derrubar o primeiro. Sem chave de
-   * e-mail, `notified` fica falso e a falta aparece no admin. */
+   * e-mail, `notified` fica falso e a falta aparece no admin.
+   *
+   * ⚠️ Daqui em diante o lead está salvo: falha só vai para o log, e a resposta
+   * é sucesso. `lerContato` e a busca do token da newsletter consultam o banco e
+   * podem lançar; fora do `try`, a action respondia erro com o lead já gravado,
+   * o visitante tentava de novo e o comercial recebia duplicata — o defeito que
+   * `consultores.ts` e `chat-lead.ts` já evitam. */
   let enviou: boolean
-  if (kind === 'newsletter') {
-    /* MIG-103: quem recebe e-mail é o VISITANTE (o link de confirmação), não a
-     * empresa — aviso por inscrito seria ruído; a lista vive no admin. Sem a
-     * chave do Resend o e-mail não sai, o cadastro fica pendente e o admin
-     * mostra exatamente isso. */
-    enviou = await enviarConfirmacaoDeNewsletter(payload, email)
-  } else {
-    const contato = await lerContato()
-    enviou = await enviarAviso({
-      para: destinoDoAviso(contato, kind === 'talent-pool' ? 'carreiras' : 'contato'),
-      assunto: `[site] ${ASSUNTO[kind]}${texto(dados, 'company') ? ` — ${texto(dados, 'company')}` : ''}`,
-      responderPara: email,
-      texto: resumo(dados, email),
-    })
+  try {
+    if (kind === 'newsletter') {
+      /* MIG-103: quem recebe e-mail é o VISITANTE (o link de confirmação), não a
+       * empresa — aviso por inscrito seria ruído; a lista vive no admin. Sem a
+       * chave do Resend o e-mail não sai, o cadastro fica pendente e o admin
+       * mostra exatamente isso. */
+      enviou = await enviarConfirmacaoDeNewsletter(payload, email)
+    } else if (await rdJaAvisou(payload, id)) {
+      /* Task 045 (decidido em 15/10): o RD aceitou o lead, e quem avisa o time é
+         a automação dele — como no site atual. Mandar o aviso do site também
+         daria dois e-mails por lead. `notified` fica falso: ele diz "o site
+         mandou o aviso dele", e o `rd.syncedAt` no admin diz por que não. */
+      return { ok: true }
+    } else {
+      const contato = await lerContato()
+      enviou = await enviarAviso({
+        para: destinoDoAviso(contato, kind === 'talent-pool' ? 'carreiras' : 'contato'),
+        assunto: `[site] ${ASSUNTO[kind]}${texto(dados, 'company') ? ` — ${texto(dados, 'company')}` : ''}`,
+        responderPara: email,
+        texto: resumo(dados, email),
+      })
+    }
+  } catch (e) {
+    console.error(`[formulario] lead ${id} gravado, mas o aviso falhou:`, semDadoPessoal(e))
+    return { ok: true }
   }
 
+  /* Pelo id do que acabou de ser gravado. Antes a action procurava "o último
+     envio daquele e-mail", e podia marcar um envio antigo da mesma pessoa.
+     ⚠️ Com `skipRdSync`: este caminho só roda quando o RD não aceitou e o site
+     já avisou o time. Deixar o gancho tentar de novo aqui faria o RD também
+     avisar, se a nova tentativa passasse — dois avisos — e dobraria a espera do
+     visitante com o RD fora do ar. A nova tentativa fica para a edição no
+     admin. E sem derrubar nada: o lead já está gravado e avisado. */
   if (enviou) {
-    const { docs } = await payload.find({
-      collection: 'form-submissions',
-      where: { email: { equals: email } },
-      sort: '-createdAt',
-      limit: 1,
-      depth: 0,
-    })
-    if (docs[0]) await payload.update({ collection: 'form-submissions', id: docs[0].id, data: { notified: true } })
+    try {
+      await payload.update({
+        collection: 'form-submissions',
+        id,
+        data: { notified: true },
+        context: { skipRdSync: true },
+      })
+    } catch (e) {
+      console.error('[formulario] não marcou o aviso como enviado:', semDadoPessoal(e))
+    }
   }
 
   return { ok: true }
+}
+
+/** Se o RD aceitou o envio recém-gravado. O gancho de `form-submissions` grava
+ *  o resultado dentro do `create`, mas o documento que o `create` devolve é o
+ *  de antes disso — daí a releitura. Falhar ao reler conta como "não aceitou":
+ *  na dúvida, o site avisa, e o pior caso é um aviso a mais, nunca um a menos. */
+async function rdJaAvisou(payload: Awaited<ReturnType<typeof getPayload>>, id: number | string): Promise<boolean> {
+  try {
+    const gravado = await payload.findByID({ collection: 'form-submissions', id, depth: 0, select: { rd: true } })
+    return rdAceitou(gravado)
+  } catch (e) {
+    console.error('[formulario] não releu o resultado do RD:', semDadoPessoal(e))
+    return false
+  }
 }
 
 function gerarToken(): string {

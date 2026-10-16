@@ -103,9 +103,14 @@ import * as migration_20261007_205424_diagnostic_regulations from './20261007_20
 import * as migration_20261007_210000_regulacoes_do_diagnostico from './20261007_210000_regulacoes_do_diagnostico';
 import * as migration_20261009_235921_atra_ai_recommends from './20261009_235921_atra_ai_recommends';
 import * as migration_20261010_000000_atra_ai_recomenda_conteudo from './20261010_000000_atra_ai_recomenda_conteudo';
-import * as migration_20261015_110440_process_steps_variant from './20261015_110440_process_steps_variant';
-import * as migration_20261015_111634_mais_icones from './20261015_111634_mais_icones';
-import * as migration_20261015_113425_contact_job_applications_notice from './20261015_113425_contact_job_applications_notice';
+import * as migration_20261016_001637_rd_tags_e_trabalhe_conosco from './20261016_001637_rd_tags_e_trabalhe_conosco';
+import * as migration_20261016_001700_rd_tag_da_newsletter from './20261016_001700_rd_tag_da_newsletter';
+import * as migration_20261016_003419_form_submissions_talent from './20261016_003419_form_submissions_talent';
+import * as migration_20261016_005120_rd_aviso_ao_candidato from './20261016_005120_rd_aviso_ao_candidato';
+import * as migration_20261016_012747_ebook_rd_identifier from './20261016_012747_ebook_rd_identifier';
+import * as migration_20261016_201318_process_steps_variant from './20261016_201318_process_steps_variant';
+import * as migration_20261016_201604_mais_icones from './20261016_201604_mais_icones';
+import * as migration_20261016_201812_contact_job_applications_notice from './20261016_201812_contact_job_applications_notice';
 
 export const migrations = [
   {
@@ -634,18 +639,43 @@ export const migrations = [
     name: '20261010_000000_atra_ai_recomenda_conteudo',
   },
   {
-    up: migration_20261015_110440_process_steps_variant.up,
-    down: migration_20261015_110440_process_steps_variant.down,
-    name: '20261015_110440_process_steps_variant',
+    up: migration_20261016_001637_rd_tags_e_trabalhe_conosco.up,
+    down: migration_20261016_001637_rd_tags_e_trabalhe_conosco.down,
+    name: '20261016_001637_rd_tags_e_trabalhe_conosco',
   },
   {
-    up: migration_20261015_111634_mais_icones.up,
-    down: migration_20261015_111634_mais_icones.down,
-    name: '20261015_111634_mais_icones',
+    up: migration_20261016_001700_rd_tag_da_newsletter.up,
+    down: migration_20261016_001700_rd_tag_da_newsletter.down,
+    name: '20261016_001700_rd_tag_da_newsletter',
   },
   {
-    up: migration_20261015_113425_contact_job_applications_notice.up,
-    down: migration_20261015_113425_contact_job_applications_notice.down,
-    name: '20261015_113425_contact_job_applications_notice',
+    up: migration_20261016_003419_form_submissions_talent.up,
+    down: migration_20261016_003419_form_submissions_talent.down,
+    name: '20261016_003419_form_submissions_talent',
+  },
+  {
+    up: migration_20261016_005120_rd_aviso_ao_candidato.up,
+    down: migration_20261016_005120_rd_aviso_ao_candidato.down,
+    name: '20261016_005120_rd_aviso_ao_candidato',
+  },
+  {
+    up: migration_20261016_012747_ebook_rd_identifier.up,
+    down: migration_20261016_012747_ebook_rd_identifier.down,
+    name: '20261016_012747_ebook_rd_identifier',
+  },
+  {
+    up: migration_20261016_201318_process_steps_variant.up,
+    down: migration_20261016_201318_process_steps_variant.down,
+    name: '20261016_201318_process_steps_variant',
+  },
+  {
+    up: migration_20261016_201604_mais_icones.up,
+    down: migration_20261016_201604_mais_icones.down,
+    name: '20261016_201604_mais_icones',
+  },
+  {
+    up: migration_20261016_201812_contact_job_applications_notice.up,
+    down: migration_20261016_201812_contact_job_applications_notice.down,
+    name: '20261016_201812_contact_job_applications_notice'
   },
 ];

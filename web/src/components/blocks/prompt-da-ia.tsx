@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -59,15 +59,6 @@ export function PromptDaIa({
         <TechVerticalLine color="blue" align="left" alignY="bottom" delay={0.3} />
 
         <div className="container mx-auto px-4 sm:px-6 max-w-4xl text-center mb-8">
-          {prompt.title && (
-            /* `min-h-[50px] sm:h-[90px]` com `flex items-center`: a altura é
-               fixa e o título centraliza dentro dela, quebre em uma linha ou
-               em duas. */
-            <h2 className="text-xl sm:text-2xl md:text-[28px] font-normal font-display text-text-main mb-6 min-h-[50px] sm:h-[90px] flex items-center justify-center tracking-tight leading-tight">
-              {prompt.title}
-            </h2>
-          )}
-
           <div className="w-full max-w-2xl mx-auto">
             <form
               onSubmit={(e) => {
@@ -76,7 +67,11 @@ export function PromptDaIa({
               }}
               className="w-full"
             >
-              <div className="bg-surface-2 dark:bg-[#141720] rounded-[12px] p-3 sm:p-4 flex flex-col gap-2 shadow-lg focus-within:ring-1 focus-within:ring-primary/50 transition-all text-left">
+              {/* A moldura (anel nas cores da marca, halo no foco) mora em
+                  `globals.css`, `.moldura-do-prompt`. O `ring` de foco que
+                  havia aqui saiu: quem marca o foco agora é ela. */}
+              <div className="moldura-do-prompt">
+              <div className="bg-surface-2 dark:bg-[#141720] rounded-[12px] p-3 sm:p-4 flex flex-col gap-2 text-left">
                 <div className="w-full px-1">
                   <textarea
                     value={texto}
@@ -95,7 +90,8 @@ export function PromptDaIa({
                 </div>
 
                 <div className="flex items-center justify-between pt-1 border-t border-slate-200/50 dark:border-white/5">
-                  <span className="text-[11px] sm:text-xs font-semibold text-text-muted select-none pl-1">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-text-subtle select-none pl-1">
+                    <Sparkles size={13} className="text-primary" aria-hidden />
                     ATRA AI
                   </span>
                   <button
@@ -109,6 +105,7 @@ export function PromptDaIa({
                   </button>
                 </div>
               </div>
+              </div>
             </form>
 
             {prompt.disclaimer && (
@@ -117,6 +114,17 @@ export function PromptDaIa({
               </p>
             )}
           </div>
+
+          {prompt.title && (
+            /* Abaixo da caixa desde 09/10 (pedido do dono): a frase fala dos
+               clientes, e assim ela abre a esteira de logos logo adiante em
+               vez de separar o herói da caixa. `min-h-[50px] sm:h-[90px]` com
+               `flex items-center`: a altura é fixa e o título centraliza
+               dentro dela, quebre em uma linha ou em duas. */
+            <h2 className="text-xl sm:text-2xl md:text-[28px] font-normal font-display text-text-main mt-6 min-h-[50px] sm:h-[90px] flex items-center justify-center tracking-tight leading-tight">
+              {prompt.title}
+            </h2>
+          )}
         </div>
 
         {clientes.length > 0 && (

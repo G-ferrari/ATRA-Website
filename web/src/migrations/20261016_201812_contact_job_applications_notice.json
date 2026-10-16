@@ -32867,6 +32867,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "rd_conversion_identifier": {
+          "name": "rd_conversion_identifier",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "seo_og_image_id": {
           "name": "seo_og_image_id",
           "type": "integer",
@@ -33336,6 +33342,12 @@
         "version_published_at": {
           "name": "version_published_at",
           "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_rd_conversion_identifier": {
+          "name": "version_rd_conversion_identifier",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -100868,6 +100880,30 @@
           "primaryKey": false,
           "notNull": false
         },
+        "talent_linkedin": {
+          "name": "talent_linkedin",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "talent_area": {
+          "name": "talent_area",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "talent_seniority": {
+          "name": "talent_seniority",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "talent_privacy_notice": {
+          "name": "talent_privacy_notice",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "chat_context": {
           "name": "chat_context",
           "type": "varchar",
@@ -105000,6 +105036,19 @@
           "notNull": false,
           "default": "'site-diagnostico-maturidade'"
         },
+        "rd_station_marketing_conversions_talent_pool": {
+          "name": "rd_station_marketing_conversions_talent_pool",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'site-trabalhe-conosco'"
+        },
+        "rd_station_marketing_talent_pool_notice": {
+          "name": "rd_station_marketing_talent_pool_notice",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp(3) with time zone",
@@ -105015,6 +105064,85 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.integrations_texts": {
+      "name": "integrations_texts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "integrations_texts_order_parent": {
+          "name": "integrations_texts_order_parent",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "integrations_texts_parent_fk": {
+          "name": "integrations_texts_parent_fk",
+          "tableFrom": "integrations_texts",
+          "tableTo": "integrations",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -126326,6 +126454,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "26ba7c03-98ec-4d18-9ff5-9a30244c5f10",
+  "id": "73b8045e-1812-44e3-a304-9742a9d8e5ec",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
