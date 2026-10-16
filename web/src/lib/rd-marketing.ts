@@ -129,6 +129,18 @@ export function deveSincronizar(doc: LeadParaRd): boolean {
   return true
 }
 
+/**
+ * Se o RD já aceitou este lead — e então quem avisa o time é a automação do
+ * RD, não o site (task 045, decidido em 15/10). Pura, para a matriz de teste.
+ *
+ * Não aceitou cobre todo o resto: integração desligada, chave ausente,
+ * formulário sem identificador, RD recusou, rede caiu, ou o kind nem vai ao
+ * RD. Em todos, o site manda o aviso dele — nenhum lead fica sem aviso.
+ */
+export function rdAceitou(doc: Pick<LeadParaRd, 'rd'> | null | undefined): boolean {
+  return Boolean(doc?.rd?.syncedAt)
+}
+
 /** De qual formulário do admin o kind é — a fonte única do mapeamento, que vale
  * para o identificador e para as tags. `rc18-diagnostic` é o kind antigo (D-35)
  * e entra pelo do diagnóstico de maturidade, que o substituiu — ninguém grava

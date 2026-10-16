@@ -9,6 +9,7 @@ import {
   identificadorDe,
   KINDS_PARA_O_RD,
   formularioDoRd,
+  rdAceitou,
   montarPayload,
   type LeadParaRd,
 } from './rd-marketing'
@@ -37,6 +38,16 @@ const config = (extra: Partial<IntegracaoRd> = {}): IntegracaoRd => ({
   tags: { contato: [], chat: [], newsletter: ['newsletter'], download: [], consultores: [], diagnostico: [], talentos: [] },
   avisoAoCandidato: null,
   ...extra,
+})
+
+/* Task 045: quem avisa o time é o RD quando ele aceitou; senão, o site. */
+describe('rdAceitou', () => {
+  it('só com syncedAt gravado', () => {
+    expect(rdAceitou({ rd: { syncedAt: '2026-10-16T12:00:00Z' } })).toBe(true)
+    expect(rdAceitou({ rd: { syncedAt: null, error: 'RD Station respondeu 400' } })).toBe(false)
+    expect(rdAceitou({ rd: null })).toBe(false)
+    expect(rdAceitou(null)).toBe(false)
+  })
 })
 
 /* 15/10: o admin mostra se a chave está no servidor — e só isso. */
