@@ -5,7 +5,9 @@ import {
   CONVERSOES_PADRAO,
   ehEndpointDeIntegracao,
   ehIdentificadorDeConversao,
+  ehTagDoRd,
   ENDPOINT_PADRAO_ATRAIR,
+  TAGS_PADRAO,
 } from '@/lib/formatos-de-integracao'
 import { CAMPOS_PERSONALIZADOS } from '@/lib/rd-marketing'
 
@@ -38,6 +40,24 @@ import { CAMPOS_PERSONALIZADOS } from '@/lib/rd-marketing'
 /* Colar do painel costuma trazer espaço nas pontas; aparado antes de validar,
  * o que se grava é o endereço limpo. */
 const aparar = ({ value }: { value?: unknown }) => (typeof value === 'string' ? value.trim() : value)
+
+/* Idem para as listas de tags: cada uma aparada, e as vazias fora. */
+const apararLista = ({ value }: { value?: unknown }) =>
+  Array.isArray(value)
+    ? value.map((v) => (typeof v === 'string' ? v.trim() : v)).filter((v) => v !== '')
+    : value
+
+/* Os formulários que vão ao RD, na ordem do admin. A mesma lista monta os
+ * identificadores e as tags, para os dois grupos não divergirem. */
+const FORMULARIOS_DO_RD = [
+  ['contact', 'Contato', 'Contact'],
+  ['chatLead', 'Lead do chat (ATRA AI)', 'Chat lead (ATRA AI)'],
+  ['newsletter', 'Newsletter (só confirmada)', 'Newsletter (confirmed only)'],
+  ['materialDownload', 'Download de material', 'Material download'],
+  ['consultantRequest', 'Solicitação de consultores', 'Consultant request'],
+  ['dataMaturityDiagnostic', 'Diagnóstico de maturidade de dados', 'Data maturity diagnostic'],
+  ['talentPool', 'Trabalhe Conosco (banco de talentos)', 'Work with us (talent pool)'],
+] as const
 
 export const Integrations: GlobalConfig = {
   slug: 'integrations',
@@ -128,6 +148,17 @@ export const Integrations: GlobalConfig = {
       label: { pt: 'RD Station Marketing (leads)', en: 'RD Station Marketing (leads)' },
       fields: [
         {
+          /* 15/10: o marketing vê se a chave está no servidor sem depender de
+           * ninguém. Campo `ui`: não tem coluna, não sai na API (o global é de
+           * leitura pública) e o componente é de servidor — só o "configurada
+           * / ausente" chega ao navegador, nunca a chave. */
+          name: 'keyStatus',
+          type: 'ui',
+          admin: {
+            components: { Field: '/components/admin/situacao-da-chave-rd#SituacaoDaChaveRd' },
+          },
+        },
+        {
           name: 'enabled',
           type: 'checkbox',
           /* `true` por não mudar o que está no ar: sem a chave no ambiente a
@@ -136,8 +167,8 @@ export const Integrations: GlobalConfig = {
           label: { pt: 'Enviar leads para o RD Station Marketing', en: 'Send leads to RD Station Marketing' },
           admin: {
             description: {
-              pt: 'Ligado: cada envio de formulário comercial vira uma conversão no RD (precisa da chave de API no servidor). Desligado: o lead fica só em Envios de formulário. Candidaturas e Banco de Talentos nunca vão — são RH.',
-              en: 'On: every commercial form submission becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications and Talent Pool never go — they are HR data.',
+              pt: 'Ligado: cada envio dos formulários abaixo vira uma conversão no RD (precisa da chave de API no servidor). Desligado: o lead fica só em Envios de formulário. A candidatura com currículo nunca vai; do Trabalhe Conosco vão só os dados de contato e perfil, nunca o currículo.',
+              en: 'On: every submission of the forms below becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications with a CV never go; from Work with us only contact and profile data go, never the CV.',
             },
           },
         },
@@ -164,20 +195,11 @@ export const Integrations: GlobalConfig = {
           label: { pt: 'Identificadores de conversão', en: 'Conversion identifiers' },
           admin: {
             description: {
-              pt: 'O nome com que cada formulário aparece no RD. Letras, números, ponto, hífen e sublinhado. Vazio: aquele formulário não é enviado.',
-              en: 'The name each form shows up with in RD. Letters, digits, dot, hyphen and underscore. Empty: that form is not sent.',
+              pt: 'O nome com que cada formulário aparece no RD — escreva exatamente como está lá, com espaço e acento se tiver: é por ele que as automações do RD disparam. Vazio: aquele formulário não é enviado.',
+              en: 'The name each form shows up with in RD — type it exactly as it is there, spaces and accents included: RD automations fire on it. Empty: that form is not sent.',
             },
           },
-          fields: (
-            [
-              ['contact', 'Contato', 'Contact'],
-              ['chatLead', 'Lead do chat (ATRA AI)', 'Chat lead (ATRA AI)'],
-              ['newsletter', 'Newsletter (só confirmada)', 'Newsletter (confirmed only)'],
-              ['materialDownload', 'Download de material', 'Material download'],
-              ['consultantRequest', 'Solicitação de consultores', 'Consultant request'],
-              ['dataMaturityDiagnostic', 'Diagnóstico de maturidade de dados', 'Data maturity diagnostic'],
-            ] as const
-          ).map(([name, pt, en]) => ({
+          fields: FORMULARIOS_DO_RD.map(([name, pt, en]) => ({
             name,
             type: 'text' as const,
             defaultValue: CONVERSOES_PADRAO[name],
@@ -186,7 +208,36 @@ export const Integrations: GlobalConfig = {
             validate: (valor: string | null | undefined) =>
               !valor ||
               ehIdentificadorDeConversao(valor) ||
-              'Use letras, números, ponto, hífen ou sublinhado, sem espaço (ex.: site-contato).',
+              'Use o nome como está no RD, com até 100 caracteres, sem quebra de linha e sem < > { } " \\ (ex.: Formulário Home).',
+          })),
+        },
+        {
+          /* 15/10: as tags com que o lead chega ao RD. A newsletter nasce com
+           * `newsletter` — é por ela que o marketing segmenta os envios. */
+          name: 'tags',
+          type: 'group',
+          label: { pt: 'Tags', en: 'Tags' },
+          admin: {
+            description: {
+              pt: 'As tags que o lead recebe no RD, por formulário. Digite e tecle Enter para cada uma; use os mesmos nomes do RD. Vazio: o lead chega sem tag.',
+              en: 'The tags the lead gets in RD, per form. Type and press Enter for each; use the same names as in RD. Empty: the lead arrives untagged.',
+            },
+          },
+          fields: FORMULARIOS_DO_RD.map(([name, pt, en]) => ({
+            name,
+            type: 'text' as const,
+            hasMany: true,
+            maxRows: 10,
+            defaultValue: [...TAGS_PADRAO[name]],
+            label: { pt, en },
+            /* O padrão do Payload ("Selecione um valor") sugere uma lista para
+               escolher; aqui a tag é digitada. */
+            admin: { placeholder: { pt: 'Digite a tag e tecle Enter', en: 'Type a tag and press Enter' } },
+            hooks: { beforeValidate: [apararLista] },
+            validate: (valores: string[] | null | undefined) =>
+              !valores?.length ||
+              valores.every(ehTagDoRd) ||
+              'Cada tag com até 50 caracteres, sem quebra de linha e sem < > { } " \\.',
           })),
         },
       ],

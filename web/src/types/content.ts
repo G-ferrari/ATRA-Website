@@ -944,17 +944,17 @@ export type IntegracaoAtrair = {
  * ⚠️ `camposPersonalizados` nasce **desligado**: campo `cf_` que não existe na
  * conta do RD derruba a conversão inteira, e os campos têm que ser criados lá
  * antes de ligar aqui. */
+/** Os formulários que vão ao RD (D-54; Trabalhe Conosco desde 15/10). */
+export type FormularioDoRd = 'contato' | 'chat' | 'newsletter' | 'download' | 'consultores' | 'diagnostico' | 'talentos'
+
 export type IntegracaoRd = {
   ligado: boolean
   camposPersonalizados: boolean
-  conversoes: {
-    contato: string | null
-    chat: string | null
-    newsletter: string | null
-    download: string | null
-    consultores: string | null
-    diagnostico: string | null
-  }
+  /** `null` desliga aquele formulário, não a integração. */
+  conversoes: Record<FormularioDoRd, string | null>
+  /** As tags com que o lead chega ao RD, por formulário — já aparadas, sem
+   *  vazias e sem repetição. */
+  tags: Record<FormularioDoRd, string[]>
 }
 
 /** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global

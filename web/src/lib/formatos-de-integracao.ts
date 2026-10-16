@@ -62,13 +62,40 @@ export const ENDPOINT_PADRAO_ATRAIR = process.env.ATRAIR_API_URL?.trim() || 'htt
  * RD Station Marketing (D-54)
  * ------------------------------------------------------------------------- */
 
+/* Marca de código colado por engano: o valor vai em JSON para fora, e um
+ * pedaço de HTML ou de script no campo nunca é um nome de verdade. */
+const CARACTERES_DE_CODIGO = /[<>{}`"\\]/
+/* Controle (quebra de linha, tabulação...) não existe num nome digitado. */
+const CARACTERE_DE_CONTROLE = /\p{Cc}/u
+const TEM_LETRA_OU_DIGITO = /[\p{L}\p{N}]/u
+
+const ehNomeLivre = (valor: string, max: number): boolean =>
+  valor.length > 0 &&
+  valor.length <= max &&
+  valor === valor.trim() &&
+  TEM_LETRA_OU_DIGITO.test(valor) &&
+  !CARACTERE_DE_CONTROLE.test(valor) &&
+  !CARACTERES_DE_CODIGO.test(valor)
+
 /**
  * O identificador de conversão que o RD mostra nos relatórios e usa nas
- * automações. O RD aceita qualquer texto; o formato fechado aqui é para o
- * campo não guardar um snippet colado por engano — ele vai em JSON para fora.
+ * automações.
+ *
+ * ⚠️ Aceita espaço e acento (15/10). O site novo precisa mandar **o mesmo
+ * nome** que o site atual manda, porque é por ele que as automações do RD
+ * disparam — e o formulário de contato do WordPress se chama "Formulário
+ * Home". O formato fechado anterior (`site-contato`) recusava esse nome, e o
+ * marketing teria de refazer as automações. O RD aceita qualquer texto; o que
+ * fica recusado aqui é só o que nunca é nome: vazio, quebra de linha e código
+ * colado por engano.
  */
 export function ehIdentificadorDeConversao(valor: string): boolean {
-  return /^[a-z0-9][a-z0-9_.-]{0,99}$/i.test(valor)
+  return ehNomeLivre(valor, 100)
+}
+
+/** Uma tag do RD (ex.: `newsletter`), pela mesma regra, mais curta. */
+export function ehTagDoRd(valor: string): boolean {
+  return ehNomeLivre(valor, 50)
 }
 
 /**
@@ -86,4 +113,22 @@ export const CONVERSOES_PADRAO = {
   materialDownload: 'site-download-material',
   consultantRequest: 'site-solicitacao-consultores',
   dataMaturityDiagnostic: 'site-diagnostico-maturidade',
+  /* 15/10: o Trabalhe Conosco passa a ir ao RD (sem currículo), pedido da
+   * ATRA que revê a D-29. */
+  talentPool: 'site-trabalhe-conosco',
 } as const
+
+/**
+ * As tags com que cada formulário nasce. Só a newsletter tem: é pela tag
+ * `newsletter` que o marketing segmenta os envios no RD (Taci, 14/10). As
+ * outras o marketing põe no admin, com os nomes que já usa.
+ */
+export const TAGS_PADRAO: Record<keyof typeof CONVERSOES_PADRAO, readonly string[]> = {
+  contact: [],
+  chatLead: [],
+  newsletter: ['newsletter'],
+  materialDownload: [],
+  consultantRequest: [],
+  dataMaturityDiagnostic: [],
+  talentPool: [],
+}

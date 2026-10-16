@@ -122,6 +122,18 @@ export function identificadorDe(kind: string, conversoes: IntegracaoRd['converso
   return mapa[kind] ?? null
 }
 
+/**
+ * Se a chave do RD está no servidor (15/10) — é o que o admin mostra em
+ * Sistema → Integrações, como "configurada" ou "ausente".
+ *
+ * ⚠️ Só o booleano sai daqui. A chave fica no ambiente de propósito (D-41,
+ * D-54): no banco ela iria junto em todo backup e ficaria à vista de qualquer
+ * administrador. Quem chama nunca recebe o valor, nem um pedaço dele.
+ */
+export function chaveDoRdConfigurada(env: Record<string, string | undefined> = process.env): boolean {
+  return Boolean(env.RDSTATION_MARKETING_API_KEY?.trim())
+}
+
 export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Promise<ResultadoDaConversao> {
   if (!config.ligado) return { ok: false, motivo: 'integração desligada no admin' }
   const chave = process.env.RDSTATION_MARKETING_API_KEY
