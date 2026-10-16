@@ -40,6 +40,16 @@ const texto = (dados: FormData, campo: string, max = MAX_CAMPO): string =>
 const campanha = (dados: FormData, campo: string): string | undefined =>
   texto(dados, campo).slice(0, MAX_POR_VALOR) || undefined
 
+/** O que um erro pode deixar no log: o código do Postgres ou o nome.
+ *
+ * ⚠️ **Nunca `console.error(..., e)`.** A mensagem do erro do Drizzle leva
+ * `params:`, e o que o visitante digitou iria inteiro para o log (ver
+ * `consultores.ts`). */
+const semDadoPessoal = (e: unknown): string => {
+  const erro = e as { cause?: { code?: unknown }; code?: unknown; name?: unknown } | null
+  return String(erro?.cause?.code ?? erro?.code ?? erro?.name ?? 'erro desconhecido')
+}
+
 export async function enviarLeadDoChat(dados: FormData): Promise<ResultadoLeadDoChat> {
   if (process.env.ENABLE_CHAT_LEAD !== '1') return { ok: false, erro: ERRO }
 
@@ -96,23 +106,34 @@ export async function enviarLeadDoChat(dados: FormData): Promise<ResultadoLeadDo
     return { ok: false, erro: ERRO }
   }
 
-  const contato = await lerContato()
-  const empresa = texto(dados, 'company')
-  const enviou = await enviarAviso({
-    para: destinoDoAviso(contato, 'chat'),
-    assunto: `[site] novo lead do chat${empresa ? ` — ${empresa}` : ''}`,
-    responderPara: email,
-    texto: [
-      `E-mail: ${email}`,
-      texto(dados, 'name') && `Nome: ${texto(dados, 'name')}`,
-      texto(dados, 'phone') && `Telefone: ${texto(dados, 'phone')}`,
-      empresa && `Empresa: ${empresa}`,
-      texto(dados, 'chatContext', MAX_CONTEXTO) &&
-        `\nO que perguntou à ATRA AI:\n${texto(dados, 'chatContext', MAX_CONTEXTO)}`,
-    ]
-      .filter(Boolean)
-      .join('\n'),
-  })
+  /* Daqui em diante o lead está salvo: falha só vai para o log.
+     ⚠️ `lerContato` consulta o banco e pode lançar. Fora do `try`, a action
+     respondia erro com o lead já gravado: o visitante tentava de novo, e o
+     comercial recebia duplicata — o defeito que o diagnóstico RC18 tinha e
+     `consultores.ts` já evita. */
+  let enviou: boolean
+  try {
+    const contato = await lerContato()
+    const empresa = texto(dados, 'company')
+    enviou = await enviarAviso({
+      para: destinoDoAviso(contato, 'chat'),
+      assunto: `[site] novo lead do chat${empresa ? ` — ${empresa}` : ''}`,
+      responderPara: email,
+      texto: [
+        `E-mail: ${email}`,
+        texto(dados, 'name') && `Nome: ${texto(dados, 'name')}`,
+        texto(dados, 'phone') && `Telefone: ${texto(dados, 'phone')}`,
+        empresa && `Empresa: ${empresa}`,
+        texto(dados, 'chatContext', MAX_CONTEXTO) &&
+          `\nO que perguntou à ATRA AI:\n${texto(dados, 'chatContext', MAX_CONTEXTO)}`,
+      ]
+        .filter(Boolean)
+        .join('\n'),
+    })
+  } catch (e) {
+    console.error(`[chat-lead] lead ${id} gravado, mas o aviso falhou:`, semDadoPessoal(e))
+    return { ok: true }
+  }
 
   /* Pelo id do que acabou de ser gravado. Antes a action procurava "o último
      lead do chat daquele e-mail", e podia marcar um envio antigo da mesma
