@@ -103,6 +103,8 @@ import * as migration_20261009_235921_atra_ai_recommends from './20261009_235921
 import * as migration_20261010_000000_atra_ai_recomenda_conteudo from './20261010_000000_atra_ai_recomenda_conteudo';
 import * as migration_20261016_001637_rd_tags_e_trabalhe_conosco from './20261016_001637_rd_tags_e_trabalhe_conosco';
 import * as migration_20261016_001700_rd_tag_da_newsletter from './20261016_001700_rd_tag_da_newsletter';
+import * as migration_20261016_003419_form_submissions_talent from './20261016_003419_form_submissions_talent';
+import * as migration_20261016_005120_rd_aviso_ao_candidato from './20261016_005120_rd_aviso_ao_candidato';
 
 export const migrations = [
   {
@@ -629,5 +631,15 @@ export const migrations = [
     up: migration_20261016_001700_rd_tag_da_newsletter.up,
     down: migration_20261016_001700_rd_tag_da_newsletter.down,
     name: '20261016_001700_rd_tag_da_newsletter',
+  },
+  {
+    up: migration_20261016_003419_form_submissions_talent.up,
+    down: migration_20261016_003419_form_submissions_talent.down,
+    name: '20261016_003419_form_submissions_talent',
+  },
+  {
+    up: migration_20261016_005120_rd_aviso_ao_candidato.up,
+    down: migration_20261016_005120_rd_aviso_ao_candidato.down,
+    name: '20261016_005120_rd_aviso_ao_candidato',
   },
 ];

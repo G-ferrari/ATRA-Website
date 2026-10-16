@@ -1,7 +1,7 @@
 ---
 id: 044
 title: Mandar tags, LinkedIn e dados de candidato na conversão; Trabalhe Conosco no RD
-status: para implementar
+status: em revisão
 feature: rd-station-formularios
 area: backend
 priority: P0

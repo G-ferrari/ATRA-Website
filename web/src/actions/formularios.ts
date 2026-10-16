@@ -6,7 +6,8 @@ import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
 import { enviarParaAtrair } from '@/lib/atrair'
-import { lerIntegracaoAtrair } from '@/lib/integracoes'
+import { areaEmPortugues, linkedinValido, senioridadeEmPortugues } from '@/lib/banco-de-talentos'
+import { lerIntegracaoAtrair, lerIntegracaoRd } from '@/lib/integracoes'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
 import { destinoDoAviso } from '@/lib/destino-do-aviso'
@@ -97,6 +98,22 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         phone: texto(dados, 'phone') || undefined,
         company: texto(dados, 'company') || undefined,
         message: (kind === 'talent-pool' ? extrasDeTalento : texto(dados, 'message', MAX_MENSAGEM)) || undefined,
+        /* D-62: os mesmos extras, cada um no seu campo — é daqui que o RD lê
+           (`lib/rd-marketing.ts`); a mensagem acima fica para o admin e o aviso.
+           Só opção da lista e endereço de LinkedIn (`lib/banco-de-talentos.ts`),
+           e a cópia do aviso que o formulário mostrava: sem ela o cadastro
+           não vai ao RD. Lido aqui, no servidor, e não de um campo do
+           formulário — o visitante não consegue dizer que viu um aviso. */
+        ...(kind === 'talent-pool'
+          ? {
+              talent: {
+                linkedin: linkedinValido(texto(dados, 'linkedin', 300)),
+                area: areaEmPortugues(texto(dados, 'area')),
+                seniority: senioridadeEmPortugues(texto(dados, 'senioridade')),
+                privacyNotice: (await lerIntegracaoRd()).avisoAoCandidato ?? undefined,
+              },
+            }
+          : {}),
         source: texto(dados, 'source') || undefined,
         /* ⚠️ Cortado **de novo** aqui. O cliente já limita, mas quem posta o
          * formulário não é obrigado a ser o nosso JavaScript — `curl` com um

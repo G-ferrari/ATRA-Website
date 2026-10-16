@@ -329,6 +329,13 @@ fica o que o site manda ao RD a cada formulário:
 - **Trabalhe Conosco** — o cadastro no banco de talentos de /carreiras também
   tem identificador e tags. Vão ao RD só os dados de contato e de perfil;
   **o currículo nunca vai**.
+- **Aviso ao candidato (Trabalhe Conosco)** — o texto que aparece no
+  formulário do banco de talentos, logo acima do botão. É do RH e do jurídico:
+  diz que o cadastro também vai ao RD Station, para quê, e como pedir a
+  exclusão. **Vazio, o Trabalhe Conosco não vai ao RD** (o cadastro continua
+  chegando ao admin e ao ATRAIR). Cada cadastro guarda uma cópia do aviso que a
+  pessoa viu ("Aviso exibido no cadastro", no envio do formulário): só os que
+  têm essa cópia vão ao RD, e trocar o texto não muda os cadastros antigos.
 
 ## O que mais é editável
 

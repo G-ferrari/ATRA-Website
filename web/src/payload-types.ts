@@ -7585,6 +7585,12 @@ export interface FormSubmission {
   phone?: string | null;
   company?: string | null;
   message?: string | null;
+  talent?: {
+    linkedin?: string | null;
+    area?: string | null;
+    seniority?: string | null;
+    privacyNotice?: string | null;
+  };
   chatContext?: string | null;
   diagnostic?: {
     sector?: string | null;
@@ -11613,6 +11619,14 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   phone?: T;
   company?: T;
   message?: T;
+  talent?:
+    | T
+    | {
+        linkedin?: T;
+        area?: T;
+        seniority?: T;
+        privacyNotice?: T;
+      };
   chatContext?: T;
   diagnostic?:
     | T
@@ -12061,7 +12075,7 @@ export interface Integration {
      */
     enabled?: boolean | null;
     /**
-     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
+     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI), cf_area_de_atuacao and cf_nivel (field and seniority from Work with us) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
      */
     customFields?: boolean | null;
     /**
@@ -12088,6 +12102,10 @@ export interface Integration {
       dataMaturityDiagnostic?: string[] | null;
       talentPool?: string[] | null;
     };
+    /**
+     * Shown on the talent pool form, above the submit button. Written by HR and legal: say the sign-up also goes to RD Station (a marketing tool), what for, and how to ask for deletion. Empty: Work with us does not go to RD — sign-ups are still stored in the admin and sent to ATRAIR.
+     */
+    talentPoolNotice?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -12578,6 +12596,7 @@ export interface IntegrationsSelect<T extends boolean = true> {
               dataMaturityDiagnostic?: T;
               talentPool?: T;
             };
+        talentPoolNotice?: T;
       };
   updatedAt?: T;
   createdAt?: T;
