@@ -1,7 +1,7 @@
 ---
 id: 045
 title: Avisar o time pelo site só quando a conversão não chegou ao RD
-status: para implementar
+status: em revisão
 feature: rd-station-formularios
 area: backend
 priority: P0
