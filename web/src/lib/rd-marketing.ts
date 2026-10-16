@@ -27,7 +27,8 @@
  * `customFields` do admin ligada, e os nomes estão documentados lá.
  */
 
-import type { IntegracaoRd } from '@/types/content'
+import { identificadorPadraoDoEbook } from '@/lib/formatos-de-integracao'
+import type { FormularioDoRd, IntegracaoRd } from '@/types/content'
 
 const ENDPOINT = 'https://api.rd.services/platform/conversions'
 const TIMEOUT_MS = 8_000
@@ -44,6 +45,14 @@ export type LeadParaRd = {
   source?: string | null
   /** Só o kind `chat-lead` (MIG-149) preenche. */
   chatContext?: string | null
+  /** Só o kind `talent-pool` (D-62) preenche: o perfil, cada um no seu campo,
+   *  e a cópia do aviso que o formulário mostrava. */
+  talent?: {
+    linkedin?: string | null
+    area?: string | null
+    seniority?: string | null
+    privacyNotice?: string | null
+  } | null
   /** Só o kind `data-maturity-diagnostic` (D-35) preenche. Os JSON chegam
    * como `unknown` e a montagem confere o formato. */
   diagnostic?: {
@@ -62,6 +71,13 @@ export type LeadParaRd = {
     durationSeconds?: number | null
   } | null
   confirmedAt?: string | null
+  /** Só o kind `material-download` (task 046): o e-book baixado. **Não** é
+   *  campo de `form-submissions` — o cadastro guarda só o id em `resource`, e
+   *  o gancho lê o resto do material antes de enviar. */
+  material?: {
+    slug?: string | null
+    identificador?: string | null
+  } | null
   utm?: {
     source?: string | null
     medium?: string | null
@@ -78,55 +94,124 @@ export type LeadParaRd = {
 
 export type ResultadoDaConversao = { ok: true; eventUuid: string } | { ok: false; motivo: string }
 
-/* ⚠️ Só lead de **marketing/vendas** vai ao RD. `job-application` e
- * `talent-pool` são dado de RH — currículo dentro de base de marketing seria
- * desvio de finalidade (LGPD), não integração. Se a ATRA quiser o banco de
- * talentos lá, é decisão dela, não default nosso (D-29, mantido na D-54). */
-export const KINDS_COMERCIAIS = new Set([
+/* Os kinds que vão ao RD.
+ *
+ * ⚠️ `job-application` **nunca**: é a candidatura com currículo, e currículo
+ * dentro de base de marketing seria desvio de finalidade (LGPD) — D-29, mantido.
+ *
+ * `talent-pool` **vai desde a D-62** (15/10): a ATRA pediu (Taci, 14/10) que o
+ * Trabalhe Conosco chegue ao RD como no site atual, para o agradecimento
+ * automático. Vão só dados de contato e de perfil — nunca o currículo, que o
+ * banco de talentos nem coleta, nem a mensagem em texto livre
+ * (`camposPersonalizados` a deixa de fora). */
+export const KINDS_PARA_O_RD = new Set([
   'contact',
   'chat-lead',
   'material-download',
   'rc18-diagnostic',
   'consultant-request',
   'data-maturity-diagnostic',
+  'talent-pool',
 ])
 
 /**
  * Se este doc deve ir ao RD **agora**. Pura, para a matriz de teste.
  *
- * A regra de retry mora aqui: `syncedAt` vazio deixa qualquer escrita
- * posterior — o `notified` da action, um "lido" no admin — tentar de novo.
+ * A regra de retry mora aqui: `syncedAt` vazio deixa a próxima escrita no
+ * doc — um "lido" no admin — tentar de novo. O `notified` da action grava com
+ * `skipRdSync` (task 045): só acontece quando o site já avisou o time.
  * Newsletter só entra confirmada (MIG-103): pendente não é inscrito, muito
  * menos lead.
  */
 export function deveSincronizar(doc: LeadParaRd): boolean {
   if (doc.rd?.syncedAt) return false
+  if (!KINDS_PARA_O_RD.has(doc.kind) && doc.kind !== 'newsletter') return false
   if (doc.kind === 'newsletter') return Boolean(doc.confirmedAt)
-  return KINDS_COMERCIAIS.has(doc.kind)
+  /* ⚠️ O banco de talentos só vai ao RD com o aviso ao candidato registrado
+   * no próprio cadastro (D-62): a cópia do aviso que o formulário mostrava,
+   * gravada pela action no servidor. Sem ela a pessoa não foi avisada de que o
+   * dado iria a uma base de marketing — vale para quem se cadastrou antes do
+   * aviso existir e para quem se cadastrar enquanto ele estiver vazio no
+   * admin. É o que impede o retry por edição de mandar um cadastro antigo ao
+   * RD quando o RH o marca como lido. */
+  if (doc.kind === 'talent-pool') return Boolean(doc.talent?.privacyNotice?.trim())
+  return true
 }
 
-/** Qual identificador de conversão vale para o kind. `rc18-diagnostic` é o
- * kind antigo (D-35) e entra pelo do diagnóstico de maturidade, que o
- * substituiu — ninguém grava mais aquele kind, mas o retry de um envio velho
- * ainda pode passar por aqui. */
-export function identificadorDe(kind: string, conversoes: IntegracaoRd['conversoes']): string | null {
-  const mapa: Record<string, string | null> = {
-    contact: conversoes.contato,
-    'chat-lead': conversoes.chat,
-    newsletter: conversoes.newsletter,
-    'material-download': conversoes.download,
-    'consultant-request': conversoes.consultores,
-    'data-maturity-diagnostic': conversoes.diagnostico,
-    'rc18-diagnostic': conversoes.diagnostico,
+/**
+ * Se o RD já aceitou este lead — e então quem avisa o time é a automação do
+ * RD, não o site (task 045, decidido em 15/10). Pura, para a matriz de teste.
+ *
+ * Não aceitou cobre todo o resto: integração desligada, chave ausente,
+ * formulário sem identificador, RD recusou, rede caiu, ou o kind nem vai ao
+ * RD. Em todos, o site manda o aviso dele — nenhum lead fica sem aviso.
+ */
+export function rdAceitou(doc: Pick<LeadParaRd, 'rd'> | null | undefined): boolean {
+  return Boolean(doc?.rd?.syncedAt)
+}
+
+/** De qual formulário do admin o kind é — a fonte única do mapeamento, que vale
+ * para o identificador e para as tags. `rc18-diagnostic` é o kind antigo (D-35)
+ * e entra pelo do diagnóstico de maturidade, que o substituiu — ninguém grava
+ * mais aquele kind, mas o retry de um envio velho ainda pode passar por aqui. */
+export function formularioDoRd(kind: string): FormularioDoRd | null {
+  const mapa: Record<string, FormularioDoRd> = {
+    contact: 'contato',
+    'chat-lead': 'chat',
+    newsletter: 'newsletter',
+    'material-download': 'download',
+    'consultant-request': 'consultores',
+    'data-maturity-diagnostic': 'diagnostico',
+    'rc18-diagnostic': 'diagnostico',
+    'talent-pool': 'talentos',
   }
   return mapa[kind] ?? null
 }
 
+/**
+ * Qual identificador de conversão vale para o lead. Pura, para a matriz de
+ * teste.
+ *
+ * O download de e-book vai com o identificador **do e-book** (task 046,
+ * decidido em 15/10): o do campo "Identificador no RD" do material, ou
+ * `ebook-<slug>` com ele vazio. O identificador do formulário "Download de
+ * material", em Sistema → Integrações, continua sendo o liga/desliga — vazio,
+ * nenhum download vai, como em todo formulário — e só vira o nome da conversão
+ * quando o e-book não pôde ser lido (apagado depois do envio, por exemplo):
+ * melhor chegar ao RD com o nome genérico do que não chegar.
+ */
+export function identificadorDe(
+  doc: Pick<LeadParaRd, 'kind' | 'material'>,
+  conversoes: IntegracaoRd['conversoes'],
+): string | null {
+  const formulario = formularioDoRd(doc.kind)
+  const doFormulario = formulario ? conversoes[formulario] : null
+  if (!doFormulario || doc.kind !== 'material-download') return doFormulario
+  const proprio = doc.material?.identificador?.trim()
+  if (proprio) return proprio
+  const slug = doc.material?.slug?.trim()
+  return slug ? identificadorPadraoDoEbook(slug) : doFormulario
+}
+
+/**
+ * Se a chave do RD está no servidor (15/10) — é o que o admin mostra em
+ * Sistema → Integrações, como "configurada" ou "ausente".
+ *
+ * ⚠️ Só o booleano sai daqui. A chave fica no ambiente de propósito (D-41,
+ * D-54): no banco ela iria junto em todo backup e ficaria à vista de qualquer
+ * administrador. Quem chama nunca recebe o valor, nem um pedaço dele.
+ */
+export function chaveDoRdConfigurada(env: Record<string, string | undefined> = process.env): boolean {
+  return Boolean(env.RDSTATION_MARKETING_API_KEY?.trim())
+}
+
 export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Promise<ResultadoDaConversao> {
   if (!config.ligado) return { ok: false, motivo: 'integração desligada no admin' }
-  const chave = process.env.RDSTATION_MARKETING_API_KEY
+  /* Aparada, pela mesma regra de `chaveDoRdConfigurada`: o que o admin chama de
+     "ausente" não pode virar tentativa de envio aqui. */
+  const chave = process.env.RDSTATION_MARKETING_API_KEY?.trim()
   if (!chave) return { ok: false, motivo: 'RDSTATION_MARKETING_API_KEY ausente' }
-  const identificador = identificadorDe(doc.kind, config.conversoes)
+  const identificador = identificadorDe(doc, config.conversoes)
   if (!identificador) return { ok: false, motivo: `sem identificador de conversão para o kind "${doc.kind}"` }
 
   const corpo = { event_type: 'CONVERSION', event_family: 'CDP', payload: montarPayload(doc, identificador, config) }
@@ -169,6 +254,11 @@ export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Pr
 export const CAMPOS_PERSONALIZADOS = {
   mensagem: 'cf_site_mensagem',
   chat: 'cf_site_chat',
+  /* D-62 — o perfil do Trabalhe Conosco. Os nomes seguem os campos do
+   * formulário do WordPress (`area-de-atuacao`, `nivel`), que é o que o plugin
+   * do RD mapeava. ⚠️ A confirmar com a lista do RD (task 047): campo que não
+   * existe na conta derruba a conversão inteira. */
+  talentos: { area: 'cf_area_de_atuacao', senioridade: 'cf_nivel' },
   diagnostico: [
     'cf_quiz_setor_codigo',
     'cf_quiz_porte',
@@ -195,7 +285,7 @@ export const CAMPOS_PERSONALIZADOS = {
 export function montarPayload(
   doc: LeadParaRd,
   identificador: string,
-  config: Pick<IntegracaoRd, 'camposPersonalizados'>,
+  config: Pick<IntegracaoRd, 'camposPersonalizados'> & Partial<Pick<IntegracaoRd, 'tags'>>,
 ): Record<string, unknown> {
   const payload: Record<string, unknown> = {
     conversion_identifier: identificador,
@@ -209,6 +299,17 @@ export function montarPayload(
   if (telefone) payload.personal_phone = telefone
   const empresa = doc.company?.trim()
   if (empresa) payload.company_name = empresa
+  /* `linkedin` é campo padrão do RD, não `cf_`: vai sempre, sem depender da
+     chave de campos personalizados. Só o banco de talentos tem (D-62). */
+  const linkedin = doc.talent?.linkedin?.trim()
+  if (linkedin) payload.linkedin = linkedin
+
+  /* As tags do formulário, como o marketing configurou (task 043) — a
+     newsletter chega com `newsletter`, que é como os envios são segmentados.
+     Sem tag configurada, o campo nem vai. */
+  const formulario = formularioDoRd(doc.kind)
+  const tags = formulario ? (config.tags?.[formulario] ?? []) : []
+  if (tags.length) payload.tags = [...tags]
 
   /* Atribuição (D-26, mantida): de onde o visitante veio, pela UTM que a
    * chegada guardou. `traffic_value` é onde o RD guarda o `utm_term`. */
@@ -237,11 +338,20 @@ export function montarPayload(
  * (`rd.error`) com o nome do campo recusado. */
 function camposPersonalizados(doc: LeadParaRd): Record<string, unknown> {
   const campos: Record<string, unknown> = {}
-  const mensagem = doc.message?.trim()
+  /* ⚠️ A mensagem do banco de talentos **não** vai (D-62): ali ela é o perfil
+     serializado para o admin, e texto livre de candidato não entra na base de
+     marketing. O perfil vai pelos campos próprios, logo abaixo. */
+  const mensagem = doc.kind === 'talent-pool' ? undefined : doc.message?.trim()
   if (mensagem) campos[CAMPOS_PERSONALIZADOS.mensagem] = mensagem
+  const area = doc.talent?.area?.trim()
+  if (area) campos[CAMPOS_PERSONALIZADOS.talentos.area] = area
+  const senioridade = doc.talent?.seniority?.trim()
+  if (senioridade) campos[CAMPOS_PERSONALIZADOS.talentos.senioridade] = senioridade
   const chat = doc.chatContext?.trim()
   if (chat) campos[CAMPOS_PERSONALIZADOS.chat] = chat
-  if (doc.source) campos.cf_quiz_url = doc.source
+  /* Do candidato vai só o que a D-62 lista: a página de origem não está nela
+     (e cairia num campo do questionário). */
+  if (doc.source && doc.kind !== 'talent-pool') campos.cf_quiz_url = doc.source
 
   const d = doc.diagnostic
   if (!d) return campos

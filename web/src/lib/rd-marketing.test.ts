@@ -3,10 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CONVERSOES_PADRAO } from './formatos-de-integracao'
 import {
   CAMPOS_PERSONALIZADOS,
+  chaveDoRdConfigurada,
   deveSincronizar,
   enviarConversao,
   identificadorDe,
-  KINDS_COMERCIAIS,
+  KINDS_PARA_O_RD,
+  formularioDoRd,
+  rdAceitou,
   montarPayload,
   type LeadParaRd,
 } from './rd-marketing'
@@ -30,11 +33,36 @@ const config = (extra: Partial<IntegracaoRd> = {}): IntegracaoRd => ({
     download: CONVERSOES_PADRAO.materialDownload,
     consultores: CONVERSOES_PADRAO.consultantRequest,
     diagnostico: CONVERSOES_PADRAO.dataMaturityDiagnostic,
+    talentos: CONVERSOES_PADRAO.talentPool,
   },
+  tags: { contato: [], chat: [], newsletter: ['newsletter'], download: [], consultores: [], diagnostico: [], talentos: [] },
+  avisoAoCandidato: null,
   ...extra,
 })
 
-/* Espelho declarado de `KINDS_COMERCIAIS`, conferido pelo teste logo abaixo. */
+/* Task 045: quem avisa o time é o RD quando ele aceitou; senão, o site. */
+describe('rdAceitou', () => {
+  it('só com syncedAt gravado', () => {
+    expect(rdAceitou({ rd: { syncedAt: '2026-10-16T12:00:00Z' } })).toBe(true)
+    expect(rdAceitou({ rd: { syncedAt: null, error: 'RD Station respondeu 400' } })).toBe(false)
+    expect(rdAceitou({ rd: null })).toBe(false)
+    expect(rdAceitou(null)).toBe(false)
+  })
+})
+
+/* 15/10: o admin mostra se a chave está no servidor — e só isso. */
+describe('chaveDoRdConfigurada', () => {
+  it('diz se a chave existe, sem devolver nada dela', () => {
+    expect(chaveDoRdConfigurada({ RDSTATION_MARKETING_API_KEY: 'abc123' })).toBe(true)
+    expect(chaveDoRdConfigurada({})).toBe(false)
+  })
+
+  it('chave só com espaço conta como ausente', () => {
+    expect(chaveDoRdConfigurada({ RDSTATION_MARKETING_API_KEY: '   ' })).toBe(false)
+  })
+})
+
+/* Espelho declarado de `KINDS_PARA_O_RD`, conferido pelo teste logo abaixo. */
 const COMERCIAIS = [
   'contact',
   'chat-lead',
@@ -42,6 +70,7 @@ const COMERCIAIS = [
   'rc18-diagnostic',
   'consultant-request',
   'data-maturity-diagnostic',
+  'talent-pool',
 ]
 
 /* O grupo como a action do diagnóstico grava: números do motor, top 3 no
@@ -63,22 +92,39 @@ const diagnostico: NonNullable<LeadParaRd['diagnostic']> = {
 }
 
 describe('deveSincronizar', () => {
-  it('manda os kinds comerciais', () => {
-    for (const kind of COMERCIAIS) expect(deveSincronizar(lead({ kind }))).toBe(true)
+  it('manda os kinds da lista', () => {
+    /* Com o aviso registrado: o banco de talentos só vai assim (D-62). */
+    const aviso = { privacyNotice: 'Seu cadastro também vai ao RD Station.' }
+    for (const kind of COMERCIAIS) expect(deveSincronizar(lead({ kind, talent: aviso }))).toBe(true)
   })
 
   /* ⚠️ É este teste que impede a próxima pessoa de repetir o que aconteceu com
      `rc18-diagnostic` no `crm.ts`: ele entrou na lista e ficou sete dias sem
      cobertura, porque a lista acima é escrita à mão. */
-  it('a lista deste arquivo ainda espelha KINDS_COMERCIAIS', () => {
-    expect([...COMERCIAIS].sort()).toEqual([...KINDS_COMERCIAIS].sort())
+  it('a lista deste arquivo ainda espelha KINDS_PARA_O_RD', () => {
+    expect([...COMERCIAIS].sort()).toEqual([...KINDS_PARA_O_RD].sort())
   })
 
-  /* Candidatura e banco de talentos são RH: currículo em base de marketing
-     seria desvio de finalidade, não integração (D-29, mantido na D-54). */
-  it('segura os kinds de RH', () => {
-    expect(deveSincronizar(lead({ kind: 'job-application' }))).toBe(false)
+  /* A candidatura com currículo é RH: currículo em base de marketing seria
+     desvio de finalidade (D-29, mantido). O banco de talentos vai desde a
+     D-62, sem currículo e sem a mensagem em texto livre. */
+  it('segura a candidatura com currículo e deixa passar o banco de talentos com aviso', () => {
+    const aviso = { privacyNotice: 'Seu cadastro também vai ao RD Station.' }
+    expect(deveSincronizar(lead({ kind: 'job-application', talent: aviso }))).toBe(false)
+    expect(deveSincronizar(lead({ kind: 'talent-pool', talent: aviso }))).toBe(true)
+  })
+
+  /* ⚠️ D-62: sem a cópia do aviso no cadastro, a pessoa não foi avisada de que
+     iria a uma base de marketing — cadastro de antes do aviso existir, ou de
+     quando ele estava vazio no admin. Editar no admin não pode mandá-lo. */
+  it('banco de talentos sem o aviso registrado não vai', () => {
     expect(deveSincronizar(lead({ kind: 'talent-pool' }))).toBe(false)
+    expect(deveSincronizar(lead({ kind: 'talent-pool', talent: { privacyNotice: '   ' } }))).toBe(false)
+    expect(deveSincronizar(lead({ kind: 'talent-pool', talent: { linkedin: 'https://linkedin.com/in/x' } }))).toBe(false)
+  })
+
+  it('kind fora da lista não vai, mesmo com aviso', () => {
+    expect(deveSincronizar(lead({ kind: 'qualquer-outro', talent: { privacyNotice: 'aviso' } }))).toBe(false)
   })
 
   /* MIG-103: sem o clique de confirmação a pessoa NÃO está inscrita. */
@@ -101,18 +147,79 @@ describe('deveSincronizar', () => {
 describe('identificadorDe', () => {
   it('cada kind comercial tem o seu, e o da RC 18 cai no do diagnóstico que o substituiu', () => {
     const c = config().conversoes
-    expect(identificadorDe('contact', c)).toBe('site-contato')
-    expect(identificadorDe('chat-lead', c)).toBe('site-chat')
-    expect(identificadorDe('newsletter', c)).toBe('site-newsletter')
-    expect(identificadorDe('material-download', c)).toBe('site-download-material')
-    expect(identificadorDe('consultant-request', c)).toBe('site-solicitacao-consultores')
-    expect(identificadorDe('data-maturity-diagnostic', c)).toBe('site-diagnostico-maturidade')
-    expect(identificadorDe('rc18-diagnostic', c)).toBe('site-diagnostico-maturidade')
+    expect(identificadorDe({ kind: 'contact' }, c)).toBe('site-contato')
+    expect(identificadorDe({ kind: 'chat-lead' }, c)).toBe('site-chat')
+    expect(identificadorDe({ kind: 'newsletter' }, c)).toBe('site-newsletter')
+    expect(identificadorDe({ kind: 'material-download' }, c)).toBe('site-download-material')
+    expect(identificadorDe({ kind: 'consultant-request' }, c)).toBe('site-solicitacao-consultores')
+    expect(identificadorDe({ kind: 'data-maturity-diagnostic' }, c)).toBe('site-diagnostico-maturidade')
+    expect(identificadorDe({ kind: 'rc18-diagnostic' }, c)).toBe('site-diagnostico-maturidade')
+    expect(identificadorDe({ kind: 'talent-pool' }, c)).toBe('site-trabalhe-conosco')
   })
 
   it('kind sem identificador (apagado no admin, ou RH) é null', () => {
-    expect(identificadorDe('contact', { ...config().conversoes, contato: null })).toBeNull()
-    expect(identificadorDe('job-application', config().conversoes)).toBeNull()
+    expect(identificadorDe({ kind: 'contact' }, { ...config().conversoes, contato: null })).toBeNull()
+    expect(identificadorDe({ kind: 'job-application' }, config().conversoes)).toBeNull()
+  })
+
+  /* Task 046: cada e-book chega ao RD com o próprio identificador. */
+  describe('download de e-book', () => {
+    const download = (material: LeadParaRd['material']) => ({ kind: 'material-download', material })
+
+    it('vai com o identificador do e-book, quando ele tem', () => {
+      const c = config().conversoes
+      expect(identificadorDe(download({ slug: 'guia', identificador: 'E-book Guia de Governança' }), c)).toBe(
+        'E-book Guia de Governança',
+      )
+    })
+
+    it('sem identificador próprio, vai como ebook-<slug>', () => {
+      const c = config().conversoes
+      expect(identificadorDe(download({ slug: 'guia-de-governanca', identificador: null }), c)).toBe(
+        'ebook-guia-de-governanca',
+      )
+      expect(identificadorDe(download({ slug: 'guia-de-governanca', identificador: '   ' }), c)).toBe(
+        'ebook-guia-de-governanca',
+      )
+    })
+
+    it('e-book que não pôde ser lido cai no identificador do formulário', () => {
+      expect(identificadorDe(download(null), config().conversoes)).toBe('site-download-material')
+      expect(identificadorDe(download({ slug: null, identificador: null }), config().conversoes)).toBe(
+        'site-download-material',
+      )
+    })
+
+    /* O do formulário continua sendo o liga/desliga, como em todo formulário. */
+    it('formulário de download vazio no admin: nenhum e-book vai, nem com identificador próprio', () => {
+      const c = { ...config().conversoes, download: null }
+      expect(identificadorDe(download({ slug: 'guia', identificador: 'E-book Guia' }), c)).toBeNull()
+      expect(identificadorDe(download({ slug: 'guia', identificador: null }), c)).toBeNull()
+    })
+
+    it('o material só vale para o download', () => {
+      expect(identificadorDe({ kind: 'contact', material: { slug: 'guia', identificador: 'X' } }, config().conversoes)).toBe(
+        'site-contato',
+      )
+    })
+
+    it('a conversão sai com o identificador do e-book', async () => {
+      vi.stubEnv('RDSTATION_MARKETING_API_KEY', 'chave-falsa-de-teste')
+      const fetch = vi.fn(async () => new Response(JSON.stringify({ event_uuid: 'uuid-9' }), { status: 200 }))
+      vi.stubGlobal('fetch', fetch)
+      try {
+        const r = await enviarConversao(
+          lead({ kind: 'material-download', material: { slug: 'guia-de-governanca', identificador: null } }),
+          config(),
+        )
+        expect(r).toEqual({ ok: true, eventUuid: 'uuid-9' })
+        const corpo = JSON.parse(String((fetch.mock.calls[0] as unknown as [string, RequestInit])[1].body))
+        expect(corpo.payload.conversion_identifier).toBe('ebook-guia-de-governanca')
+      } finally {
+        vi.unstubAllEnvs()
+        vi.unstubAllGlobals()
+      }
+    })
   })
 })
 
@@ -126,6 +233,18 @@ describe('montarPayload', () => {
       personal_phone: '11 99999-0000',
       company_name: 'Empresa X',
     })
+  })
+
+  /* Task 044: as tags que o marketing configurou no admin (043). */
+  it('leva as tags do formulário — a newsletter com `newsletter`', () => {
+    const cfg = config({ tags: { ...config().tags, contato: ['lead site', 'comercial'] } })
+    expect(montarPayload(lead(), 'site-contato', cfg).tags).toEqual(['lead site', 'comercial'])
+    const inscrito = lead({ kind: 'newsletter', confirmedAt: '2026-10-02T10:00:00Z' })
+    expect(montarPayload(inscrito, 'site-newsletter', config()).tags).toEqual(['newsletter'])
+  })
+
+  it('sem tag configurada, o campo nem vai', () => {
+    expect(montarPayload(lead(), 'site-contato', config())).not.toHaveProperty('tags')
   })
 
   /* De onde o visitante veio (D-26): a UTM da chegada vira os campos de
@@ -222,6 +341,87 @@ describe('montarPayload', () => {
     )
     expect(p).not.toHaveProperty('cf_quiz_governanca')
     expect(p.cf_quiz_qualidade).toBe(2)
+  })
+})
+
+/* D-62 (15/10): o Trabalhe Conosco vai ao RD — só contato e perfil. */
+describe('banco de talentos no RD', () => {
+  const candidato = (extra: Partial<LeadParaRd> = {}): LeadParaRd =>
+    lead({
+      kind: 'talent-pool',
+      company: null,
+      phone: '11 98888-0000',
+      /* A mensagem do banco de talentos é o perfil serializado para o admin
+         (`actions/formularios.ts`) — o que NÃO pode ir. */
+      message: 'LinkedIn: https://linkedin.com/in/maria\nÁrea: Engenharia de Dados\nSenioridade: Sênior',
+      talent: {
+        linkedin: 'https://linkedin.com/in/maria',
+        area: 'Engenharia de Dados',
+        seniority: 'Sênior',
+        privacyNotice: 'Seu cadastro também vai ao RD Station, para o agradecimento.',
+      },
+      ...extra,
+    })
+
+  it('é do formulário Trabalhe Conosco, com identificador e tags próprios', () => {
+    expect(formularioDoRd('talent-pool')).toBe('talentos')
+    const cfg = config({ tags: { ...config().tags, talentos: ['candidato'] } })
+    const p = montarPayload(candidato(), identificadorDe({ kind: 'talent-pool' }, cfg.conversoes)!, cfg)
+    expect(p).toMatchObject({
+      conversion_identifier: 'site-trabalhe-conosco',
+      email: 'lead@empresa.com.br',
+      name: 'Maria',
+      personal_phone: '11 98888-0000',
+      linkedin: 'https://linkedin.com/in/maria',
+      tags: ['candidato'],
+    })
+  })
+
+  it('área e senioridade só com os campos personalizados ligados', () => {
+    const desligado = montarPayload(candidato(), 'site-trabalhe-conosco', config())
+    expect(desligado).not.toHaveProperty(CAMPOS_PERSONALIZADOS.talentos.area)
+    const ligado = montarPayload(candidato(), 'site-trabalhe-conosco', config({ camposPersonalizados: true }))
+    expect(ligado).toMatchObject({
+      [CAMPOS_PERSONALIZADOS.talentos.area]: 'Engenharia de Dados',
+      [CAMPOS_PERSONALIZADOS.talentos.senioridade]: 'Sênior',
+    })
+  })
+
+  it('⚠️ nunca leva a mensagem em texto livre, nem com os campos personalizados ligados', () => {
+    const p = montarPayload(candidato(), 'site-trabalhe-conosco', config({ camposPersonalizados: true }))
+    expect(p).not.toHaveProperty(CAMPOS_PERSONALIZADOS.mensagem)
+    expect(JSON.stringify(p)).not.toContain('Senioridade: Sênior')
+  })
+
+  it('⚠️ nenhum corpo de candidato leva currículo, arquivo ou link de arquivo privado', () => {
+    const comCv = { ...candidato(), cv: 42, cvFilename: 'cv-maria.pdf' } as LeadParaRd
+    const corpo = JSON.stringify(montarPayload(comCv, 'site-trabalhe-conosco', config({ camposPersonalizados: true })))
+    expect(corpo).not.toMatch(/\bcv\b|curr[ií]culo|\.pdf|private-files|\/api\/private-files/i)
+  })
+
+  it('⚠️ leva exatamente estes campos — nem a página de origem, nem o aviso', () => {
+    const p = montarPayload(
+      candidato({ source: '/carreiras', utm: null }),
+      'site-trabalhe-conosco',
+      config({ camposPersonalizados: true }),
+    )
+    expect(Object.keys(p).sort()).toEqual(
+      [
+        'conversion_identifier',
+        'email',
+        'name',
+        'personal_phone',
+        'linkedin',
+        CAMPOS_PERSONALIZADOS.talentos.area,
+        CAMPOS_PERSONALIZADOS.talentos.senioridade,
+      ].sort(),
+    )
+  })
+
+  it('sem base legal declarada — consentimento provado só na newsletter (P-14)', () => {
+    const p = montarPayload(candidato(), 'site-trabalhe-conosco', config())
+    expect(p).not.toHaveProperty('legal_bases')
+    expect(p).not.toHaveProperty('available_for_mailing')
   })
 })
 

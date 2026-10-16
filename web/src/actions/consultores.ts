@@ -100,7 +100,7 @@ const campanha = (dados: FormData, campo: string): string | undefined =>
  * ⚠️ **Nunca `console.error(..., e)`.** A mensagem do erro do Drizzle leva
  * `params:` — e-mail, nome, telefone e a mensagem do visitante vão
  * inteiros para o log do servidor. Bastava mandar um caractere NUL no nome para
- * o `create` falhar e gravar o lead no log. `formularios.ts` tem o mesmo
+ * o `create` falhar e gravar o lead no log. `formularios.ts` tinha o mesmo
  * defeito (o modelo, o diagnóstico RC18, também tinha, e saiu na D-35);
  * `actions/diagnostico-maturidade.ts` já nasceu com esta função. */
 const semDadoPessoal = (e: unknown): string => {

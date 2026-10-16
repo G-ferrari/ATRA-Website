@@ -6,7 +6,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
  * ⚠️ O bloco está no catálogo de `pages`, `solutions`, `segments` e `partners`,
  * e as migrações de dados antigas leem essas collections pela Local API com o
  * config de hoje — que põe `variant` no SELECT da tabela do bloco. Em banco novo
- * elas rodam antes de `20261015_110440`, e morreriam em "column does not exist"
+ * elas rodam antes de `20261016_201318`, e morreriam em "column does not exist"
  * (a armadilha do CLAUDE.md). A de 15/10 repete tudo com `IF NOT EXISTS`. */
 export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`

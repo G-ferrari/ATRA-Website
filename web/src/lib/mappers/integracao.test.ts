@@ -86,7 +86,53 @@ describe('toIntegracaoRd (D-54)', () => {
       download: 'site-download-material',
       consultores: 'site-solicitacao-consultores',
       diagnostico: 'site-diagnostico-maturidade',
+      talentos: 'site-trabalhe-conosco',
     })
+    /* Só a newsletter nasce com tag: é por ela que o marketing segmenta. */
+    expect(r.tags).toEqual({
+      contato: [],
+      chat: [],
+      newsletter: ['newsletter'],
+      download: [],
+      consultores: [],
+      diagnostico: [],
+      talentos: [],
+    })
+  })
+
+  it('15/10: aceita o nome que o RD já usa, com espaço e acento', () => {
+    const r = toIntegracaoRd(docRd({ conversions: { contact: 'Formulário Home', talentPool: 'Trabalhe Conosco' } }))
+    expect(r.conversoes.contato).toBe('Formulário Home')
+    expect(r.conversoes.talentos).toBe('Trabalhe Conosco')
+  })
+
+  it('tags gravadas valem como estão, aparadas, sem vazias e sem repetir (ignorando caixa)', () => {
+    const r = toIntegracaoRd(
+      docRd({ tags: { contact: [' lead site ', '', 'Lead Site', 'comercial'], newsletter: [] } }),
+    )
+    expect(r.tags.contato).toEqual(['lead site', 'comercial'])
+    /* Lista gravada vazia é o admin tirando a tag — não volta ao padrão. */
+    expect(r.tags.newsletter).toEqual([])
+    /* Formulário cuja lista nunca foi gravada cai no padrão. */
+    expect(r.tags.talentos).toEqual([])
+  })
+
+  it('⚠️ tag fora do formato sai sozinha, sem levar as outras', () => {
+    const r = toIntegracaoRd(docRd({ tags: { contact: ['ok', '<script>', 'outra'] } }))
+    expect(r.tags.contato).toEqual(['ok', 'outra'])
+  })
+
+  it('D-62: o aviso ao candidato chega aparado, e vazio vira null', () => {
+    expect(toIntegracaoRd(docRd({ talentPoolNotice: '  Seu cadastro vai ao RD.  ' })).avisoAoCandidato).toBe(
+      'Seu cadastro vai ao RD.',
+    )
+    expect(toIntegracaoRd(docRd({ talentPoolNotice: '   ' })).avisoAoCandidato).toBeNull()
+    expect(toIntegracaoRd(docRd(undefined)).avisoAoCandidato).toBeNull()
+  })
+
+  it('lista `null` (como o banco devolve) é lida como vazia', () => {
+    const r = toIntegracaoRd(docRd({ tags: { newsletter: null } }))
+    expect(r.tags.newsletter).toEqual([])
   })
 
   it('o admin renomeia a conversão sem deploy', () => {
@@ -101,7 +147,7 @@ describe('toIntegracaoRd (D-54)', () => {
   })
 
   it('⚠️ identificador fora do formato vira null aqui, não só no admin', () => {
-    const r = toIntegracaoRd(docRd({ conversions: { contact: 'tem espaço', newsletter: '<script>' } }))
+    const r = toIntegracaoRd(docRd({ conversions: { contact: 'linha\nquebrada', newsletter: '<script>' } }))
     expect(r.conversoes.contato).toBeNull()
     expect(r.conversoes.newsletter).toBeNull()
   })

@@ -1,5 +1,5 @@
 import { LEGACY_URL, NEXT_URL, PARIDADE_COM_PROTOTIPO } from '../../playwright.config'
-import { ROTAS_COM_GABARITO } from './rotas'
+import { ROTAS_COM_GABARITO, ROTAS_SEM_GABARITO } from './rotas'
 
 /* Aquecimento das rotas antes da suíte.
  *
@@ -54,6 +54,7 @@ export default async function aquecer() {
    * restart. Manter em dia ao portar rotas novas. */
   const alvos = [
     ...ROTAS_COM_GABARITO.map((r) => `${NEXT_URL}${r.caminho}`),
+    ...ROTAS_SEM_GABARITO.map((r) => `${NEXT_URL}${r.caminho}`),
     ...legado.flatMap((origem) => ROTAS_COM_GABARITO.map((r) => `${origem}${r.caminho}`)),
     `${NEXT_URL}/`,
     `${NEXT_URL}/en`,

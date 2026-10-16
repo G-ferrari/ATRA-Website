@@ -52,6 +52,15 @@ export const ROTAS_COM_GABARITO = [
   { nome: 'chat', caminho: '/chat' },
 ] as const
 
+/** O e-book a que o seed de teste (`SEED_FIXTURES=1`) dá um PDF: sem PDF a
+ * página não mostra o formulário de download (task 046). */
+export const EBOOK_COM_PDF = '/ebooks/governanca-de-dados-na-era-da-ia-generativa'
+
+/** Rotas **sem** gabarito no legado que o contraste e o axe medem também. Fora
+ * de `ROTAS_COM_GABARITO` de propósito: lá elas entrariam na paridade com o
+ * protótipo, que não tem estas páginas. */
+export const ROTAS_SEM_GABARITO = [{ nome: 'ebook-detalhe', caminho: EBOOK_COM_PDF }] as const
+
 /* Imagens entram mascaradas na comparação.
  *
  * O legado serve o JPEG original; o app novo serve variante responsiva

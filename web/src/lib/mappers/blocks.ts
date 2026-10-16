@@ -580,6 +580,8 @@ export function toBlocos(
                 highlight: vazio(b.talentBank.highlight),
                 description: vazio(b.talentBank.description),
                 note: vazio(b.talentBank.note),
+                // Preenchido pela página, de Sistema → Integrações (D-62).
+                aviso: null,
               }
             : null,
           // Preenchido pela página, que tem as vagas publicadas.
@@ -734,6 +736,12 @@ export function toBlocos(
 /** Injeta as vagas resolvidas nos blocos `jobsList` (bloco não busca dado). */
 export function comVagas(blocos: Bloco[], vagas: Vaga[]): Bloco[] {
   for (const b of blocos) if (b.tipo === 'jobsList') b.vagas = vagas
+  return blocos
+}
+
+/** Injeta o aviso ao candidato no banco de talentos (D-62). */
+export function comAvisoAoCandidato(blocos: Bloco[], aviso: string | null): Bloco[] {
+  for (const b of blocos) if (b.tipo === 'jobsList' && b.talentBank) b.talentBank.aviso = aviso
   return blocos
 }
 

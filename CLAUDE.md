@@ -365,11 +365,21 @@ runbook de cutover.
 `afterChange` em `form-submissions`, e a **D-54 (02/10, MIG-157)** trocou o alvo:
 é o **RD Station Marketing** (os formulários da ATRA vivem lá), não o CRM.
 `hooks/sincronizar-rd.ts` + `lib/rd-marketing.ts` mandam cada lead comercial
-como **conversão** — RH fica fora, newsletter só confirmada; sem
-`RDSTATION_MARKETING_API_KEY` é inerte e `rd.syncedAt` vazio denuncia no admin;
-qualquer edição do doc não sincronizado tenta de novo. Identificadores de
-conversão, liga/desliga e o opt-in de campos `cf_*` moram no global
-`integrations`; o id do monitoramento do RD, em `tracking`, atrás do aceite de
+como **conversão**, com as tags do formulário — a candidatura com currículo
+fica fora; o Trabalhe Conosco vai desde a **D-62** (15/10), sem currículo, sem
+mensagem livre e só com o aviso ao candidato registrado no cadastro (o texto
+vem do RH, em Sistema → Integrações; vazio, não vai); newsletter só
+confirmada; sem `RDSTATION_MARKETING_API_KEY` é inerte (o admin mostra "Chave
+do RD: Ausente") e `rd.syncedAt` vazio denuncia no admin; qualquer edição do doc
+não sincronizado tenta de novo. ⚠️ O resultado é gravado com `db.updateOne` e o
+`req`: sem o `req` roda fora da transação do `create` e morre em "NotFound";
+com `payload.update`, uma falha desfaria a transação do próprio lead (achado
+na D-62). Identificadores de conversão (com espaço e acento, como no RD), tags,
+liga/desliga e o opt-in de campos `cf_*` moram no global `integrations` — menos
+o do e-book: desde a **D-63** cada um vai com o próprio (campo do material;
+vazio, `ebook-<slug>`), e o de "Download de material" virou só o liga/desliga;
+o id
+do monitoramento do RD, em `tracking`, atrás do aceite de
 marketing (consentimento v3). ⚠️ A chave certa é a **Chave de API** da App Store
 do RD, não o token público/privado da API 1.x; e `RDSTATION_CRM_TOKEN` nunca
 esteve na lista do compose de produção. E o chat ganhou convite

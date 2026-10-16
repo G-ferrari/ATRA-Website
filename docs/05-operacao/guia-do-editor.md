@@ -313,6 +313,56 @@ cima). Ele é o mesmo nas três abas; só o case de baixo muda.
   mais de um, eles se alternam a cada 5 segundos. Aba sem case escolhido
   mostra os 3 mais recentes, e case despublicado some do painel sozinho.
 
+## Leads no RD Station: identificadores, tags e a chave
+
+Em **Sistema → Integrações → RD Station Marketing** (papel de administrador)
+fica o que o site manda ao RD a cada formulário:
+
+- **Chave do RD** — o quadro do topo diz **Configurada** ou **Ausente**. A
+  chave em si não aparece em lugar nenhum do painel, de propósito: ela fica no
+  servidor (variável `RDSTATION_MARKETING_API_KEY`), e quem a põe é quem cuida
+  do servidor. **Ausente** quer dizer que nada vai ao RD, mesmo com a
+  integração ligada.
+- **Identificadores de conversão** — o nome com que cada formulário chega ao
+  RD. Escreva **exatamente** como está no RD, com espaço e acento se tiver
+  (ex.: "Formulário Home"): é por esse nome que as automações do RD (o e-mail
+  de agradecimento e o aviso ao time) disparam. Vazio: aquele formulário não
+  vai ao RD.
+- **Tags** — as tags que o lead recebe no RD, por formulário: digite e tecle
+  Enter para cada uma. A newsletter já vem com `newsletter`, que é como os
+  envios são segmentados.
+- **E-books** — cada e-book chega ao RD com o **identificador dele**, para o
+  RD saber qual material foi baixado e o marketing montar uma automação por
+  e-book. Ele fica no próprio e-book, em **Conteúdo → Materiais**, no campo
+  **Identificador no RD** da lateral (mesma regra: escreva como está no RD).
+  Vazio, o e-book vai como `ebook-` seguido do endereço dele em português (ex.:
+  `ebook-governanca-de-dados-na-era-da-ia-generativa`). ⚠️ Esse nome muda se o
+  endereço do e-book mudar, e a automação do RD para de disparar sem aviso:
+  preencha o campo antes de montar a automação. E o campo vale **depois de
+  publicar** — "Salvar rascunho" não muda o que vai ao RD. O identificador
+  "Download de material" daqui virou o **liga/desliga** dos downloads: vazio,
+  nenhum e-book vai ao RD; preenchido, cada um vai com o seu. As tags do
+  "Download de material" valem para todos os e-books. Na página do e-book, o
+  formulário fica depois do texto, antes de "Entre em contato", e o botão do
+  topo leva até ele; o formulário só aparece quando o e-book tem o PDF.
+- **Trabalhe Conosco** — o cadastro no banco de talentos de /carreiras também
+  tem identificador e tags. Vão ao RD só os dados de contato e de perfil;
+  **o currículo nunca vai**.
+- **Quem avisa o time a cada contato ou cadastro** — se o lead chegou ao RD
+  ("Sincronizado em" preenchido no envio), quem avisa é a automação do RD, como
+  no site antigo, e o site não manda e-mail. Se não chegou (integração
+  desligada, chave ausente, nome recusado pelo RD), o site manda o aviso dele,
+  e o envio fica com "Aviso por e-mail enviado" marcado. Um aviso por lead, nunca dois.
+  ⚠️ Vale para Contato e Trabalhe Conosco: confira no RD que a automação de
+  aviso ao time existe para cada um, senão o lead aceito fica sem aviso.
+- **Aviso ao candidato (Trabalhe Conosco)** — o texto que aparece no
+  formulário do banco de talentos, logo acima do botão. É do RH e do jurídico:
+  diz que o cadastro também vai ao RD Station, para quê, e como pedir a
+  exclusão. **Vazio, o Trabalhe Conosco não vai ao RD** (o cadastro continua
+  chegando ao admin e ao ATRAIR). Cada cadastro guarda uma cópia do aviso que a
+  pessoa viu ("Aviso exibido no cadastro", no envio do formulário): só os que
+  têm essa cópia vão ao RD, e trocar o texto não muda os cadastros antigos.
+
 ## O que mais é editável
 
 - **Depoimentos e clientes** — Catálogos. Depoimento sem foto mostra
@@ -326,8 +376,8 @@ cima). Ele é o mesmo nas três abas; só o case de baixo muda.
   provavelmente sua primeira tarefa real neste painel.
 - **Leads** — os envios do formulário de contato ficam em "Form submissions",
   com a campanha de origem de cada um. Eles também vão para o RD Station
-  Marketing como conversões: o nome de cada conversão e o liga/desliga ficam em
-  Sistema → Integrações (papel de administrador), e "Sincronizado em" vazio
+  Marketing como conversões: o nome de cada conversão, as tags e o liga/desliga
+  ficam em Sistema → Integrações (ver "Leads no RD Station", acima), e "Sincronizado em" vazio
   num envio quer dizer que ele ainda não chegou lá — editar o envio tenta de
   novo.
 - **Google Tag Manager, Lusha e RD Station** — Sistema → Rastreamento (papel de
