@@ -147,6 +147,16 @@ export const FormSubmissions: CollectionConfig = {
         { name: 'linkedin', type: 'text', label: { pt: 'LinkedIn', en: 'LinkedIn' } },
         { name: 'area', type: 'text', label: { pt: 'Área de atuação', en: 'Field' } },
         { name: 'seniority', type: 'text', label: { pt: 'Senioridade', en: 'Seniority' } },
+        {
+          /* D-62: o aviso de privacidade que o formulário mostrava quando a
+           * pessoa se cadastrou (Sistema → Integrações), copiado no servidor
+           * no momento da gravação. É o registro de que ela foi avisada de
+           * que o cadastro iria ao RD — e o que libera o envio. Vazio: não
+           * havia aviso, e o cadastro não vai ao RD. */
+          name: 'privacyNotice',
+          type: 'textarea',
+          label: { pt: 'Aviso exibido no cadastro', en: 'Notice shown at sign-up' },
+        },
       ],
     },
     {

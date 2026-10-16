@@ -35,6 +35,7 @@ const config = (extra: Partial<IntegracaoRd> = {}): IntegracaoRd => ({
     talentos: CONVERSOES_PADRAO.talentPool,
   },
   tags: { contato: [], chat: [], newsletter: ['newsletter'], download: [], consultores: [], diagnostico: [], talentos: [] },
+  avisoAoCandidato: null,
   ...extra,
 })
 
@@ -81,8 +82,9 @@ const diagnostico: NonNullable<LeadParaRd['diagnostic']> = {
 
 describe('deveSincronizar', () => {
   it('manda os kinds da lista', () => {
-    /* Com data recente: o banco de talentos só vai depois do corte da D-62. */
-    for (const kind of COMERCIAIS) expect(deveSincronizar(lead({ kind, createdAt: '2026-11-01T10:00:00Z' }))).toBe(true)
+    /* Com o aviso registrado: o banco de talentos só vai assim (D-62). */
+    const aviso = { privacyNotice: 'Seu cadastro também vai ao RD Station.' }
+    for (const kind of COMERCIAIS) expect(deveSincronizar(lead({ kind, talent: aviso }))).toBe(true)
   })
 
   /* ⚠️ É este teste que impede a próxima pessoa de repetir o que aconteceu com
@@ -95,17 +97,23 @@ describe('deveSincronizar', () => {
   /* A candidatura com currículo é RH: currículo em base de marketing seria
      desvio de finalidade (D-29, mantido). O banco de talentos vai desde a
      D-62, sem currículo e sem a mensagem em texto livre. */
-  it('segura a candidatura com currículo e deixa passar o banco de talentos', () => {
-    expect(deveSincronizar(lead({ kind: 'job-application', createdAt: '2026-11-01T10:00:00Z' }))).toBe(false)
-    expect(deveSincronizar(lead({ kind: 'talent-pool', createdAt: '2026-11-01T10:00:00Z' }))).toBe(true)
+  it('segura a candidatura com currículo e deixa passar o banco de talentos com aviso', () => {
+    const aviso = { privacyNotice: 'Seu cadastro também vai ao RD Station.' }
+    expect(deveSincronizar(lead({ kind: 'job-application', talent: aviso }))).toBe(false)
+    expect(deveSincronizar(lead({ kind: 'talent-pool', talent: aviso }))).toBe(true)
   })
 
-  /* ⚠️ Quem se cadastrou antes da D-62 não foi avisado de que iria a uma base
-     de marketing: editar o cadastro antigo no admin não pode mandá-lo. */
-  it('banco de talentos de antes da D-62 (15/10) não vai, nem sem data', () => {
-    expect(deveSincronizar(lead({ kind: 'talent-pool', createdAt: '2026-10-14T23:59:00-03:00' }))).toBe(false)
-    expect(deveSincronizar(lead({ kind: 'talent-pool', createdAt: '2026-10-15T00:00:00-03:00' }))).toBe(true)
+  /* ⚠️ D-62: sem a cópia do aviso no cadastro, a pessoa não foi avisada de que
+     iria a uma base de marketing — cadastro de antes do aviso existir, ou de
+     quando ele estava vazio no admin. Editar no admin não pode mandá-lo. */
+  it('banco de talentos sem o aviso registrado não vai', () => {
     expect(deveSincronizar(lead({ kind: 'talent-pool' }))).toBe(false)
+    expect(deveSincronizar(lead({ kind: 'talent-pool', talent: { privacyNotice: '   ' } }))).toBe(false)
+    expect(deveSincronizar(lead({ kind: 'talent-pool', talent: { linkedin: 'https://linkedin.com/in/x' } }))).toBe(false)
+  })
+
+  it('kind fora da lista não vai, mesmo com aviso', () => {
+    expect(deveSincronizar(lead({ kind: 'qualquer-outro', talent: { privacyNotice: 'aviso' } }))).toBe(false)
   })
 
   /* MIG-103: sem o clique de confirmação a pessoa NÃO está inscrita. */
@@ -275,7 +283,12 @@ describe('banco de talentos no RD', () => {
       /* A mensagem do banco de talentos é o perfil serializado para o admin
          (`actions/formularios.ts`) — o que NÃO pode ir. */
       message: 'LinkedIn: https://linkedin.com/in/maria\nÁrea: Engenharia de Dados\nSenioridade: Sênior',
-      talent: { linkedin: 'https://linkedin.com/in/maria', area: 'Engenharia de Dados', seniority: 'Sênior' },
+      talent: {
+        linkedin: 'https://linkedin.com/in/maria',
+        area: 'Engenharia de Dados',
+        seniority: 'Sênior',
+        privacyNotice: 'Seu cadastro também vai ao RD Station, para o agradecimento.',
+      },
       ...extra,
     })
 
@@ -313,6 +326,25 @@ describe('banco de talentos no RD', () => {
     const comCv = { ...candidato(), cv: 42, cvFilename: 'cv-maria.pdf' } as LeadParaRd
     const corpo = JSON.stringify(montarPayload(comCv, 'site-trabalhe-conosco', config({ camposPersonalizados: true })))
     expect(corpo).not.toMatch(/\bcv\b|curr[ií]culo|\.pdf|private-files|\/api\/private-files/i)
+  })
+
+  it('⚠️ leva exatamente estes campos — nem a página de origem, nem o aviso', () => {
+    const p = montarPayload(
+      candidato({ source: '/carreiras', utm: null }),
+      'site-trabalhe-conosco',
+      config({ camposPersonalizados: true }),
+    )
+    expect(Object.keys(p).sort()).toEqual(
+      [
+        'conversion_identifier',
+        'email',
+        'name',
+        'personal_phone',
+        'linkedin',
+        CAMPOS_PERSONALIZADOS.talentos.area,
+        CAMPOS_PERSONALIZADOS.talentos.senioridade,
+      ].sort(),
+    )
   })
 
   it('sem base legal declarada — consentimento provado só na newsletter (P-14)', () => {

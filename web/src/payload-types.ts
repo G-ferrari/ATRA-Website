@@ -7589,6 +7589,7 @@ export interface FormSubmission {
     linkedin?: string | null;
     area?: string | null;
     seniority?: string | null;
+    privacyNotice?: string | null;
   };
   chatContext?: string | null;
   diagnostic?: {
@@ -11624,6 +11625,7 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
         linkedin?: T;
         area?: T;
         seniority?: T;
+        privacyNotice?: T;
       };
   chatContext?: T;
   diagnostic?:
@@ -12100,6 +12102,10 @@ export interface Integration {
       dataMaturityDiagnostic?: string[] | null;
       talentPool?: string[] | null;
     };
+    /**
+     * Shown on the talent pool form, above the submit button. Written by HR and legal: say the sign-up also goes to RD Station (a marketing tool), what for, and how to ask for deletion. Empty: Work with us does not go to RD — sign-ups are still stored in the admin and sent to ATRAIR.
+     */
+    talentPoolNotice?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -12590,6 +12596,7 @@ export interface IntegrationsSelect<T extends boolean = true> {
               dataMaturityDiagnostic?: T;
               talentPool?: T;
             };
+        talentPoolNotice?: T;
       };
   updatedAt?: T;
   createdAt?: T;

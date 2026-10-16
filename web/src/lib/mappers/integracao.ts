@@ -99,5 +99,6 @@ export function toIntegracaoRd(doc: Pick<Integration, 'rdStationMarketing'>): In
       diagnostico: tags(tg?.dataMaturityDiagnostic, TAGS_PADRAO.dataMaturityDiagnostic),
       talentos: tags(tg?.talentPool, TAGS_PADRAO.talentPool),
     },
+    avisoAoCandidato: g?.talentPoolNotice?.trim() || null,
   }
 }

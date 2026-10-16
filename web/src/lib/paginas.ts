@@ -6,7 +6,17 @@ import type { Where } from 'payload'
 
 import { isLocale, type Locale } from './locales'
 import { metadataDe } from './seo'
-import { comClientes, comContato, comDepoimentos, comVagas, toBlocos, toMetricas, toSelos } from './mappers/blocks'
+import {
+  comAvisoAoCandidato,
+  comClientes,
+  comContato,
+  comDepoimentos,
+  comVagas,
+  toBlocos,
+  toMetricas,
+  toSelos,
+} from './mappers/blocks'
+import { lerIntegracaoRd } from './integracoes'
 import { toDepoimento, toLogoDeCliente } from './mappers/client'
 import { toSeo } from './mappers/seo'
 import { lerContato } from './contato'
@@ -121,6 +131,9 @@ async function montar(filtro: Where, locale: Locale, rascunho: boolean): Promise
       where: rascunho ? {} : { _status: { equals: 'published' } },
     })
     comVagas(blocos, vagas.map((v) => toVaga(v, locale)))
+    /* D-62: o aviso do banco de talentos vem de Sistema → Integrações, ao lado
+       das regras do envio ao RD que ele condiciona. */
+    comAvisoAoCandidato(blocos, (await lerIntegracaoRd()).avisoAoCandidato)
   }
 
   /* Idem para a home: os logos de cliente e os depoimentos em destaque saem das

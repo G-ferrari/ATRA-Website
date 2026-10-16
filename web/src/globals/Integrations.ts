@@ -251,6 +251,25 @@ export const Integrations: GlobalConfig = {
               'Até 10 tags, cada uma com até 50 caracteres, sem quebra de linha e sem < > { } " ` \\.',
           })),
         },
+        {
+          /* D-62 (15/10): o Trabalhe Conosco só vai ao RD com este aviso
+           * exibido no formulário. O texto é do RH e do jurídico (D-22) e nasce
+           * vazio; cada cadastro guarda uma cópia do aviso que viu
+           * (`form-submissions.talent.privacyNotice`), e só esses vão ao RD.
+           * Mora aqui, e não em Contato, porque é a condição do envio ao RD:
+           * quem liga a integração vê, no mesmo lugar, o que falta. Sem
+           * `localized`: o aviso legal sai em português nos dois idiomas. */
+          name: 'talentPoolNotice',
+          type: 'textarea',
+          maxLength: 1500,
+          label: { pt: 'Aviso ao candidato (Trabalhe Conosco)', en: 'Candidate notice (Work with us)' },
+          admin: {
+            description: {
+              pt: 'Aparece no formulário do banco de talentos, acima do botão de enviar. Texto do RH e do jurídico: diga que o cadastro vai também ao RD Station (ferramenta de marketing), para quê, e como pedir a exclusão. Vazio: o Trabalhe Conosco não vai ao RD — o cadastro continua sendo gravado no admin e enviado ao ATRAIR.',
+              en: 'Shown on the talent pool form, above the submit button. Written by HR and legal: say the sign-up also goes to RD Station (a marketing tool), what for, and how to ask for deletion. Empty: Work with us does not go to RD — sign-ups are still stored in the admin and sent to ATRAIR.',
+            },
+          },
+        },
       ],
     },
   ],

@@ -122,6 +122,14 @@ describe('toIntegracaoRd (D-54)', () => {
     expect(r.tags.contato).toEqual(['ok', 'outra'])
   })
 
+  it('D-62: o aviso ao candidato chega aparado, e vazio vira null', () => {
+    expect(toIntegracaoRd(docRd({ talentPoolNotice: '  Seu cadastro vai ao RD.  ' })).avisoAoCandidato).toBe(
+      'Seu cadastro vai ao RD.',
+    )
+    expect(toIntegracaoRd(docRd({ talentPoolNotice: '   ' })).avisoAoCandidato).toBeNull()
+    expect(toIntegracaoRd(docRd(undefined)).avisoAoCandidato).toBeNull()
+  })
+
   it('lista `null` (como o banco devolve) é lida como vazia', () => {
     const r = toIntegracaoRd(docRd({ tags: { newsletter: null } }))
     expect(r.tags.newsletter).toEqual([])

@@ -44,11 +44,13 @@ export type LeadParaRd = {
   source?: string | null
   /** Só o kind `chat-lead` (MIG-149) preenche. */
   chatContext?: string | null
-  /** Só o kind `talent-pool` (D-62) preenche: o perfil, cada um no seu campo. */
+  /** Só o kind `talent-pool` (D-62) preenche: o perfil, cada um no seu campo,
+   *  e a cópia do aviso que o formulário mostrava. */
   talent?: {
     linkedin?: string | null
     area?: string | null
     seniority?: string | null
+    privacyNotice?: string | null
   } | null
   /** Só o kind `data-maturity-diagnostic` (D-35) preenche. Os JSON chegam
    * como `unknown` e a montagem confere o formato. */
@@ -68,8 +70,6 @@ export type LeadParaRd = {
     durationSeconds?: number | null
   } | null
   confirmedAt?: string | null
-  /** Quando o envio foi gravado — o corte da D-62 lê daqui. */
-  createdAt?: string | null
   utm?: {
     source?: string | null
     medium?: string | null
@@ -116,23 +116,17 @@ export const KINDS_PARA_O_RD = new Set([
  */
 export function deveSincronizar(doc: LeadParaRd): boolean {
   if (doc.rd?.syncedAt) return false
+  if (!KINDS_PARA_O_RD.has(doc.kind) && doc.kind !== 'newsletter') return false
   if (doc.kind === 'newsletter') return Boolean(doc.confirmedAt)
-  if (doc.kind === 'talent-pool') return cadastradoDepoisDaD62(doc.createdAt)
-  return KINDS_PARA_O_RD.has(doc.kind)
-}
-
-/* ⚠️ O banco de talentos só vai ao RD para quem se cadastrou **depois** da
- * D-62. Antes, ninguém foi avisado de que o cadastro iria a uma base de
- * marketing, e mudar a finalidade de um dado já coletado não é o mesmo que
- * coletar com a finalidade nova (LGPD). Sem o corte, o retry por edição faria
- * o estrago: o RH marca um cadastro antigo como lido no admin, o gancho roda,
- * e a pessoa entra no RD — e recebe um "obrigado" semanas depois. Sem data
- * (não acontece com documento gravado), não vai. */
-const INICIO_DA_D62 = Date.parse('2026-10-15T00:00:00-03:00')
-
-function cadastradoDepoisDaD62(criadoEm: string | null | undefined): boolean {
-  const quando = criadoEm ? Date.parse(criadoEm) : NaN
-  return Number.isFinite(quando) && quando >= INICIO_DA_D62
+  /* ⚠️ O banco de talentos só vai ao RD com o aviso ao candidato registrado
+   * no próprio cadastro (D-62): a cópia do aviso que o formulário mostrava,
+   * gravada pela action no servidor. Sem ela a pessoa não foi avisada de que o
+   * dado iria a uma base de marketing — vale para quem se cadastrou antes do
+   * aviso existir e para quem se cadastrar enquanto ele estiver vazio no
+   * admin. É o que impede o retry por edição de mandar um cadastro antigo ao
+   * RD quando o RH o marca como lido. */
+  if (doc.kind === 'talent-pool') return Boolean(doc.talent?.privacyNotice?.trim())
+  return true
 }
 
 /** De qual formulário do admin o kind é — a fonte única do mapeamento, que vale
@@ -315,7 +309,9 @@ function camposPersonalizados(doc: LeadParaRd): Record<string, unknown> {
   if (senioridade) campos[CAMPOS_PERSONALIZADOS.talentos.senioridade] = senioridade
   const chat = doc.chatContext?.trim()
   if (chat) campos[CAMPOS_PERSONALIZADOS.chat] = chat
-  if (doc.source) campos.cf_quiz_url = doc.source
+  /* Do candidato vai só o que a D-62 lista: a página de origem não está nela
+     (e cairia num campo do questionário). */
+  if (doc.source && doc.kind !== 'talent-pool') campos.cf_quiz_url = doc.source
 
   const d = doc.diagnostic
   if (!d) return campos
