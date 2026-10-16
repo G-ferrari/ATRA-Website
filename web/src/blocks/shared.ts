@@ -1,5 +1,7 @@
 import type { Field } from 'payload'
 
+import { OPCOES_DE_ICONE } from './icones'
+
 /* Campos que **todo** bloco aceita (blocos.md, regra 2).
  *
  * `anchor` alimenta o `stickyPageNav` das páginas longas; `theme` reproduz a
@@ -82,59 +84,23 @@ export const camposComuns: Field[] = [
   },
 ]
 
-/* Ícones disponíveis para os blocos.
- *
- * Lista fechada, e não texto livre: o valor vira um componente React, e nome
- * inválido só apareceria como buraco na página em produção. Crescer a lista é
- * uma linha aqui e uma no registro de `components/blocks/icones.ts` — os dois
- * ficam juntos de propósito, para não divergirem. */
-export const ICONES = [
-  'sparkles',
-  'target',
-  'shield',
-  'rocket',
-  'users',
-  'database',
-  'cloud',
-  'brain',
-  'chart',
-  'lock',
-  'workflow',
-  'award',
-  'app',
-  // MIG-056: os seis que `SolutionAI.tsx` usa e não existiam no registro.
-  'search',
-  'settings',
-  'zap',
-  'cpu',
-  'shield-check',
-  'trending-up',
-  'arrow-up-right',
-  // MIG-072a: os glifos que os painéis do megamenu usam.
-  'star',
-  'file-text',
-  'newspaper',
-  'video',
-  'book',
-  'briefcase',
-  'graduation-cap',
-  'heart',
-  'info',
-  'user-check',
-  'building',
-  // MIG-050a: o glifo de "Flexibilidade & Bem-estar" (`Careers.tsx:564`).
-  'coffee',
-  // MIG-054a: os glifos de `getSpecIcon` (`PartnerPageBase.tsx:20`).
-  'server',
-  'code',
-  'headset',
-] as const
+/* A lista de ícones mora em `./icones` (sem import nenhum, para o seletor do
+ * admin, que é componente de cliente, poder ler). Reexportada aqui porque é
+ * daqui que os blocos e as collections sempre a importaram. */
+export { ICONES, OPCOES_DE_ICONE } from './icones'
+
+/* O seletor visual: desenho de cada ícone, nome em português e busca, no lugar
+ * da lista de nomes em inglês. Caminho relativo a `src/` (o `importMap.baseDir`
+ * de `payload.config.ts`); mudar o arquivo de lugar pede
+ * `pnpm payload generate:importmap`. */
+export const SELETOR_DE_ICONE = '/components/admin/campo-de-icone#CampoDeIcone'
 
 export const campoDeIcone: Field = {
   name: 'icon',
   type: 'select',
   required: true,
   defaultValue: 'sparkles',
-  options: ICONES.map((v) => ({ value: v, label: v })),
+  options: OPCOES_DE_ICONE,
   label: { pt: 'Ícone', en: 'Icon' },
+  admin: { components: { Field: SELETOR_DE_ICONE } },
 }

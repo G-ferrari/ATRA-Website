@@ -33,6 +33,22 @@ describe('toBlocos', () => {
     })
   })
 
+  /* 15/10: o formato era decidido pela rota da RC18, por código. Bloco gravado
+   * antes do campo existir chega sem `variant` e continua em cartões. */
+  it('leva o formato das etapas, com cartões quando o campo está vazio', () => {
+    const [linha, cartoes, antigo] = toBlocos(
+      layout(
+        { id: '1', blockType: 'processSteps', title: 'A', variant: 'timeline', steps: [] },
+        { id: '2', blockType: 'processSteps', title: 'B', variant: 'cards', steps: [] },
+        { id: '3', blockType: 'processSteps', title: 'C', variant: null, steps: [] },
+      ),
+    )
+
+    expect(linha).toMatchObject({ tipo: 'processSteps', layout: 'timeline' })
+    expect(cartoes).toMatchObject({ tipo: 'processSteps', layout: 'cards' })
+    expect(antigo).toMatchObject({ tipo: 'processSteps', layout: 'cards' })
+  })
+
   it('descarta o botão do ctaBanner quando falta rótulo ou destino', () => {
     const [so_label, completo] = toBlocos(
       layout(
