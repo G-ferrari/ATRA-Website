@@ -104,6 +104,35 @@ describe('enviarLeadDoChat — depois de gravar, é sucesso', () => {
     expect(console.error).toHaveBeenCalledWith('[chat-lead] não marcou o aviso como enviado:', expect.any(Error))
   })
 
+  /* ⚠️ `lerContato` ficava fora de qualquer `try`: o banco falhando aqui
+     derrubava a resposta com o lead já salvo. */
+  it('falha ao ler o contato depois de gravar: continua sucesso', async () => {
+    lerContato.mockRejectedValue(new Error('banco caiu'))
+    const r = await enviarLeadDoChat(valido())
+    expect(r).toEqual({ ok: true })
+    expect(payload.create).toHaveBeenCalledTimes(1)
+    expect(enviarAviso).not.toHaveBeenCalled()
+    expect(payload.update).not.toHaveBeenCalled()
+  })
+
+  /* `enviarAviso` promete não lançar; se um dia lançar, o lead segue gravado. */
+  it('aviso lança depois de gravar: continua sucesso, sem marcar notified', async () => {
+    enviarAviso.mockRejectedValue(new Error('rede'))
+    const r = await enviarLeadDoChat(valido())
+    expect(r).toEqual({ ok: true })
+    expect(payload.update).not.toHaveBeenCalled()
+  })
+
+  it('o log da falha depois de gravar não leva o que o visitante digitou', async () => {
+    /* O formato do erro do Drizzle: a mensagem carrega os `params` da consulta. */
+    lerContato.mockRejectedValue(
+      Object.assign(new Error('Failed query: … params: gestora@banco.com.br,Ana'), { cause: { code: '57P01' } }),
+    )
+    await enviarLeadDoChat(valido())
+    expect(console.error).toHaveBeenCalledWith('[chat-lead] lead 501 gravado, mas o aviso falhou:', '57P01')
+    expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain('gestora@banco.com.br')
+  })
+
   it('falha ao GRAVAR: aí sim é erro — e nem avisa', async () => {
     payload.create.mockRejectedValue(new Error('constraint'))
     const r = await enviarLeadDoChat(valido())
