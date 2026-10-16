@@ -1928,3 +1928,48 @@ contato, e explica que a conversa é iniciada pela própria pessoa. A frase
 "cada projeto é avaliado conforme o cenário", que também apareceu, fica: é o
 comportamento certo, por decisão do G-ferrari.
 
+
+## D-62 — O Trabalhe Conosco vai ao RD, sem currículo e só para quem se cadastrar daqui em diante
+
+*Decidida em 15/10/2026 por G-ferrari, a pedido da ATRA (Taci, reunião de 14/10). Revê em parte a D-29. (D-58, D-59 e D-61 estão em PRs abertos.)*
+
+**Contexto.** A D-29 deixou dado de candidato fora do RD Station: currículo
+dentro de base de marketing seria desvio de finalidade (LGPD). O site atual
+(WordPress) manda o formulário Trabalhe Conosco ao RD, pelo plugin oficial, e
+é o RD que agradece a pessoa por e-mail. Para desligar o WordPress sem perder
+esse agradecimento, a ATRA pediu o mesmo no site novo (feature
+`rd-station-formularios`).
+
+**Decisão.**
+
+- O **banco de talentos** (`talent-pool`, o Trabalhe Conosco de `/carreiras`)
+  passa a ir ao RD como conversão, com identificador e tags próprios
+  (Sistema → Integrações).
+- Vão **só dados de contato e de perfil**: nome, e-mail, telefone, LinkedIn
+  (campo padrão do RD) e, com os campos personalizados ligados, área
+  (`cf_area_de_atuacao`) e senioridade (`cf_nivel`). O perfil passou a ter
+  campos próprios em `form-submissions` (grupo `talent`).
+- **Nunca o currículo**, que o banco de talentos nem coleta, e **nunca a
+  mensagem em texto livre**.
+- **Só para quem se cadastrar a partir de 15/10.** Quem se cadastrou antes não
+  foi avisado de que o dado iria a uma base de marketing. Mudar a finalidade
+  de um dado já coletado não é o mesmo que coletar com a finalidade nova, e o
+  retry por edição mandaria o cadastro antigo ao RD quando o RH o marcasse
+  como lido.
+- **A candidatura com currículo** (`job-application`, P-17) **continua fora**
+  — a D-29 vale para ela.
+- O envio ao ATRAIR (D-41) não muda.
+
+**Achado junto.** A prova desta decisão, com `fetch` falso, mostrou um defeito
+da D-54 que nunca tinha aparecido, porque a chave do RD nunca esteve no
+servidor. O gancho gravava o resultado do envio (`rd.syncedAt`) fora da
+transação do `create` e morria em "NotFound". Sem `syncedAt`, cada edição no
+admin reenviaria o lead ao RD. Corrigido passando o `req` ao `update`
+(`hooks/sincronizar-rd.ts`).
+
+**O que ainda falta.**
+
+- Os nomes dos campos personalizados de candidato e o identificador que o RD
+  já usa vêm da lista que a Taci vai passar (task 047).
+- A base legal desses leads segue a regra da P-14: hoje só a newsletter
+  confirmada declara consentimento.
