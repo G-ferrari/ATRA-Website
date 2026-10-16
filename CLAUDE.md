@@ -367,11 +367,13 @@ runbook de cutover.
 `hooks/sincronizar-rd.ts` + `lib/rd-marketing.ts` mandam cada lead comercial
 como **conversão**, com as tags do formulário — a candidatura com currículo
 fica fora; o Trabalhe Conosco vai desde a **D-62** (15/10), sem currículo, sem
-mensagem livre e só para quem se cadastrou a partir dali; newsletter só
+mensagem livre e só com o aviso ao candidato registrado no cadastro (o texto
+vem do RH, em Sistema → Integrações; vazio, não vai); newsletter só
 confirmada; sem `RDSTATION_MARKETING_API_KEY` é inerte (o admin mostra "Chave
 do RD: Ausente") e `rd.syncedAt` vazio denuncia no admin; qualquer edição do doc
-não sincronizado tenta de novo. ⚠️ O `update` que grava o resultado precisa do
-`req` — sem ele roda fora da transação do `create` e morre em "NotFound" (achado
+não sincronizado tenta de novo. ⚠️ O resultado é gravado com `db.updateOne` e o
+`req`: sem o `req` roda fora da transação do `create` e morre em "NotFound";
+com `payload.update`, uma falha desfaria a transação do próprio lead (achado
 na D-62). Identificadores de conversão (com espaço e acento, como no RD), tags,
 liga/desliga e o opt-in de campos `cf_*` moram no global `integrations`; o id
 do monitoramento do RD, em `tracking`, atrás do aceite de

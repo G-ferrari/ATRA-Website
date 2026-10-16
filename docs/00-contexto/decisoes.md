@@ -1929,7 +1929,7 @@ contato, e explica que a conversa é iniciada pela própria pessoa. A frase
 comportamento certo, por decisão do G-ferrari.
 
 
-## D-62 — O Trabalhe Conosco vai ao RD, sem currículo e só para quem se cadastrar daqui em diante
+## D-62 — O Trabalhe Conosco vai ao RD, sem currículo e só com o aviso ao candidato registrado
 
 *Decidida em 15/10/2026 por G-ferrari, a pedido da ATRA (Taci, reunião de 14/10). Revê em parte a D-29. (D-58, D-59 e D-61 estão em PRs abertos.)*
 
@@ -1951,11 +1951,20 @@ esse agradecimento, a ATRA pediu o mesmo no site novo (feature
   campos próprios em `form-submissions` (grupo `talent`).
 - **Nunca o currículo**, que o banco de talentos nem coleta, e **nunca a
   mensagem em texto livre**.
-- **Só para quem se cadastrar a partir de 15/10.** Quem se cadastrou antes não
-  foi avisado de que o dado iria a uma base de marketing. Mudar a finalidade
-  de um dado já coletado não é o mesmo que coletar com a finalidade nova, e o
-  retry por edição mandaria o cadastro antigo ao RD quando o RH o marcasse
-  como lido.
+- **Só com o aviso ao candidato registrado no cadastro** (decidido por
+  G-ferrari em 15/10, depois da revisão de LGPD). O RH e o jurídico escrevem o
+  aviso em Sistema → Integrações → "Aviso ao candidato (Trabalhe Conosco)". O
+  formulário o mostra antes do botão, e a action grava, no servidor, uma cópia
+  do aviso que estava valendo (`talent.privacyNotice`). Só cadastro com essa
+  cópia vai ao RD. Assim, ninguém vai sem ter sido avisado: nem quem se
+  cadastrou antes do aviso existir (o retry por edição mandaria quando o RH o
+  marcasse como lido), nem quem se cadastrar enquanto ele estiver vazio. Um
+  corte por data foi a primeira versão e saiu: quem se cadastrasse depois dele
+  também não teria sido avisado.
+- **Só opções da lista.** Área e senioridade são conferidas no servidor e
+  gravadas em português (`lib/banco-de-talentos.ts`). O LinkedIn só é aceito
+  como endereço. Um POST forjado não põe texto livre no RD, no perfil de
+  ninguém.
 - **A candidatura com currículo** (`job-application`, P-17) **continua fora**
   — a D-29 vale para ela.
 - O envio ao ATRAIR (D-41) não muda.
@@ -1964,12 +1973,19 @@ esse agradecimento, a ATRA pediu o mesmo no site novo (feature
 da D-54 que nunca tinha aparecido, porque a chave do RD nunca esteve no
 servidor. O gancho gravava o resultado do envio (`rd.syncedAt`) fora da
 transação do `create` e morria em "NotFound". Sem `syncedAt`, cada edição no
-admin reenviaria o lead ao RD. Corrigido passando o `req` ao `update`
-(`hooks/sincronizar-rd.ts`).
+admin reenviaria o lead ao RD. Agora a gravação vai direto ao adaptador
+(`db.updateOne`), com o `req`, na mesma transação. Um `payload.update` com o
+`req` também resolveria o NotFound, mas, se falhasse, desfaria a transação do
+próprio lead (`hooks/sincronizar-rd.ts`).
 
 **O que ainda falta.**
 
+- **O texto do aviso ao candidato** (RH e jurídico). Sem ele o Trabalhe
+  Conosco não vai ao RD, e o resto do formulário funciona como antes.
 - Os nomes dos campos personalizados de candidato e o identificador que o RD
-  já usa vêm da lista que a Taci vai passar (task 047).
+  já usa vêm da lista que a Taci vai passar (task 047). As opções de área e
+  nível do site novo não são as do WordPress (31 cargos; nível com
+  "Especialista"). Se esses campos forem listas fechadas no RD, as opções
+  precisam casar — escolher é do marketing e do RH (D-22).
 - A base legal desses leads segue a regra da P-14: hoje só a newsletter
   confirmada declara consentimento.
