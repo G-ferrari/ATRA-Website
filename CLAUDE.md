@@ -409,9 +409,10 @@ pela seção e não pelo slug. As rotas são casca fina (`resolverPaginaMestra` 
 `PaginaMestra`); a parte automática é bloco (`components/secoes/`), com as
 consultas em `lib/conteudo-da-secao.ts`. Página-mestra **não se apaga**
 (despublicada, a rota dá 404) e o slug fica travado. A Insights se monta
-sozinha: os 3 primeiros de cada tipo e "Ver todos". ⚠️ **Pendente:** apagar do
-banco as tabelas dos cartões antigos da Insights (`EXCLUSAO_ADIADA`), numa
-publicação depois de esta se provar estável. ⚠️ A rota de seção que
+sozinha: os 3 primeiros de cada tipo e "Ver todos". As tabelas dos cartões
+antigos da Insights (`EXCLUSAO_ADIADA`) saem em
+`20261015_120000_insights_apaga_tabelas_antigas`, depois de seis publicações
+sem ler. ⚠️ A rota de seção que
 responder 404 de repente é página-mestra que não chegou ao banco — o conteúdo
 vem da migração `20261005_230000_paginas_mestras_conteudo`, e Carreiras e
 Insights só são marcadas depois do seed em banco novo.

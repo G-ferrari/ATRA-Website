@@ -1733,7 +1733,9 @@ não existia mais.
   passo vazio, com a exclusão pronta em `EXCLUSAO_ADIADA`; ela entra numa
   publicação seguinte, depois de esta se provar estável. Conferido: um banco
   migrado com o código novo mantém as 930 tabelas e 6.863 colunas que a
-  versão anterior espera.
+  versão anterior espera. ✅ **15/10:** a exclusão entrou em
+  `20261015_120000_insights_apaga_tabelas_antigas` — 28 tabelas e 7 colunas,
+  depois de seis publicações (#120 a #125) com o código que não as lê.
 - ⚠️ **Campo de texto vazio não fica vazio em inglês**: o Payload preenche
   texto vazio com o português (`afterRead`, `fallbackLocale`). Por isso a
   chamada dos webinars não tem "fim do título": o trecho em destaque fica
@@ -1928,6 +1930,44 @@ contato, e explica que a conversa é iniciada pela própria pessoa. A frase
 "cada projeto é avaliado conforme o cenário", que também apareceu, fica: é o
 comportamento certo, por decisão do G-ferrari.
 
+## D-61 — O currículo vence em 6 meses, e a candidatura só liga com o aviso escrito
+
+*Decidida em 14/10/2026 pela ATRA (o prazo), via G-ferrari; a forma, em 15/10.*
+
+**Contexto.** A candidatura com currículo (MIG-102) está pronta e desligada
+desde agosto, esperando a P-17: por quanto tempo o currículo fica guardado e
+quem no RH tem acesso. Em 14/10 a ATRA respondeu a primeira metade: **até 6
+meses**. Nada no sistema apagava currículo, e o formulário não dizia nada ao
+candidato sobre o que acontece com o arquivo.
+
+**Decisão.**
+
+- **O prazo é regra do sistema.** Uma varredura apaga, a cada 12 horas, as
+  candidaturas (`form-submissions` de tipo `job-application`: nome, e-mail,
+  telefone, mensagem, vaga) e os currículos (`private-files` de tipo `cv`, com
+  o PDF do bucket privado) com mais de 6 meses — `lib/retencao-de-candidaturas.ts`.
+  O currículo é apagado pelo tipo e pela data, não pelo vínculo: o arquivo é
+  gravado antes da candidatura, e o que ficou órfão de uma gravação que falhou
+  também é dado pessoal. O material rico não entra.
+- **Quem dispara é o próprio servidor**, um temporizador ligado por
+  `instrumentation.ts` (`lib/agendar-retencao.ts`), 2 minutos depois de subir e a
+  cada 12 horas. Recusados: a fila de jobs do Payload (tabela e migração para uma
+  tarefa só) e um cron na VPS (fora do deploy, ninguém veria parar). Falha vai
+  para o Sentry; o log guarda só a contagem, nunca quem foi apagado.
+- **O prazo mora no código**, não no admin: é o que o aviso promete, e mudar um
+  sem o outro quebra a promessa.
+- **O aviso de privacidade é do RH e do jurídico** (D-22), em Contato →
+  Candidaturas, e nasce vazio. **Sem ele o formulário não aparece**, mesmo com
+  `ENABLE_JOB_APPLICATIONS=1` — a mesma trava do convite do chat (D-29). Ele fica
+  logo acima do botão de enviar, ligado ao botão por `aria-describedby`.
+
+**O que a limpeza não alcança.** O e-mail de aviso que o RH recebe a cada
+candidatura (nome, e-mail e vaga, sem o PDF) e os backups diários do banco, que
+guardam o que existia no dia. O aviso de privacidade deve dizer isso, ou o RH
+apagar os e-mails no mesmo prazo.
+
+**O que ainda falta para ligar.** A outra metade da P-17 (quem no RH acessa), o
+texto do aviso no admin e `ENABLE_JOB_APPLICATIONS=1` no servidor de produção.
 
 ## D-62 — O Trabalhe Conosco vai ao RD, sem currículo e só com o aviso ao candidato registrado
 

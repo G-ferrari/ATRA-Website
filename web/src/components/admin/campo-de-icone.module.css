@@ -1,0 +1,150 @@
+/* Seletor de ícone do admin. Só variáveis do tema do Payload, para acompanhar
+ * o claro e o escuro do admin sem regra própria. O gatilho copia a caixa do
+ * `select` padrão (`.react-select .rs__control`), para o campo não destoar
+ * dos vizinhos. */
+
+.gatilho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 12px 6px 6px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  background: var(--theme-input-bg);
+  color: var(--theme-elevation-800);
+  box-shadow: 0 2px 2px -1px #0000001a;
+  font: inherit;
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gatilho:hover:not(:disabled) {
+  border-color: var(--theme-elevation-250);
+}
+
+.gatilho:focus-visible,
+.opcao:focus-visible,
+.semIcone:focus-visible {
+  outline: var(--accessibility-outline);
+  outline-offset: 1px;
+}
+
+.gatilho:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.amostra {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--style-radius-s);
+  background: var(--theme-elevation-50);
+  color: var(--theme-elevation-800);
+}
+
+.nome {
+  flex: 1;
+  min-width: 0;
+}
+
+.acao {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-500);
+}
+
+.painel {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-elevation-0);
+}
+
+.topo {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.busca {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  background: var(--theme-input-bg);
+  color: var(--theme-elevation-800);
+  font: inherit;
+}
+
+.semIcone {
+  flex-shrink: 0;
+  padding: 0 12px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  background: transparent;
+  color: var(--theme-elevation-800);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.grupo {
+  margin: 14px 0 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-500);
+}
+
+/* A lista rola dentro do painel: com quase 100 ícones abertos de uma vez, o
+ * painel empurraria o resto do formulário várias telas para baixo. */
+.lista {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 6px;
+}
+
+.opcao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 4px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--style-radius-s);
+  background: var(--theme-elevation-50);
+  color: var(--theme-elevation-800);
+  font: inherit;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+}
+
+.opcao:hover {
+  border-color: var(--theme-elevation-250);
+}
+
+.opcao[aria-pressed='true'] {
+  border-color: var(--theme-success-500);
+  background: var(--theme-success-50);
+}
+
+.vazio {
+  margin: 12px 0 0;
+  color: var(--theme-elevation-500);
+}
