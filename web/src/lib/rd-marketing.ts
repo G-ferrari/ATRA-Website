@@ -109,8 +109,9 @@ export const KINDS_PARA_O_RD = new Set([
 /**
  * Se este doc deve ir ao RD **agora**. Pura, para a matriz de teste.
  *
- * A regra de retry mora aqui: `syncedAt` vazio deixa qualquer escrita
- * posterior — o `notified` da action, um "lido" no admin — tentar de novo.
+ * A regra de retry mora aqui: `syncedAt` vazio deixa a próxima escrita no
+ * doc — um "lido" no admin — tentar de novo. O `notified` da action grava com
+ * `skipRdSync` (task 045): só acontece quando o site já avisou o time.
  * Newsletter só entra confirmada (MIG-103): pendente não é inscrito, muito
  * menos lead.
  */
@@ -127,6 +128,18 @@ export function deveSincronizar(doc: LeadParaRd): boolean {
    * RD quando o RH o marca como lido. */
   if (doc.kind === 'talent-pool') return Boolean(doc.talent?.privacyNotice?.trim())
   return true
+}
+
+/**
+ * Se o RD já aceitou este lead — e então quem avisa o time é a automação do
+ * RD, não o site (task 045, decidido em 15/10). Pura, para a matriz de teste.
+ *
+ * Não aceitou cobre todo o resto: integração desligada, chave ausente,
+ * formulário sem identificador, RD recusou, rede caiu, ou o kind nem vai ao
+ * RD. Em todos, o site manda o aviso dele — nenhum lead fica sem aviso.
+ */
+export function rdAceitou(doc: Pick<LeadParaRd, 'rd'> | null | undefined): boolean {
+  return Boolean(doc?.rd?.syncedAt)
 }
 
 /** De qual formulário do admin o kind é — a fonte única do mapeamento, que vale
