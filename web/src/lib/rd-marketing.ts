@@ -27,6 +27,7 @@
  * `customFields` do admin ligada, e os nomes estão documentados lá.
  */
 
+import { identificadorPadraoDoEbook } from '@/lib/formatos-de-integracao'
 import type { FormularioDoRd, IntegracaoRd } from '@/types/content'
 
 const ENDPOINT = 'https://api.rd.services/platform/conversions'
@@ -70,6 +71,13 @@ export type LeadParaRd = {
     durationSeconds?: number | null
   } | null
   confirmedAt?: string | null
+  /** Só o kind `material-download` (task 046): o e-book baixado. **Não** é
+   *  campo de `form-submissions` — o cadastro guarda só o id em `resource`, e
+   *  o gancho lê o resto do material antes de enviar. */
+  material?: {
+    slug?: string | null
+    identificador?: string | null
+  } | null
   utm?: {
     source?: string | null
     medium?: string | null
@@ -160,10 +168,29 @@ export function formularioDoRd(kind: string): FormularioDoRd | null {
   return mapa[kind] ?? null
 }
 
-/** Qual identificador de conversão vale para o kind. */
-export function identificadorDe(kind: string, conversoes: IntegracaoRd['conversoes']): string | null {
-  const formulario = formularioDoRd(kind)
-  return formulario ? conversoes[formulario] : null
+/**
+ * Qual identificador de conversão vale para o lead. Pura, para a matriz de
+ * teste.
+ *
+ * O download de e-book vai com o identificador **do e-book** (task 046,
+ * decidido em 15/10): o do campo "Identificador no RD" do material, ou
+ * `ebook-<slug>` com ele vazio. O identificador do formulário "Download de
+ * material", em Sistema → Integrações, continua sendo o liga/desliga — vazio,
+ * nenhum download vai, como em todo formulário — e só vira o nome da conversão
+ * quando o e-book não pôde ser lido (apagado depois do envio, por exemplo):
+ * melhor chegar ao RD com o nome genérico do que não chegar.
+ */
+export function identificadorDe(
+  doc: Pick<LeadParaRd, 'kind' | 'material'>,
+  conversoes: IntegracaoRd['conversoes'],
+): string | null {
+  const formulario = formularioDoRd(doc.kind)
+  const doFormulario = formulario ? conversoes[formulario] : null
+  if (!doFormulario || doc.kind !== 'material-download') return doFormulario
+  const proprio = doc.material?.identificador?.trim()
+  if (proprio) return proprio
+  const slug = doc.material?.slug?.trim()
+  return slug ? identificadorPadraoDoEbook(slug) : doFormulario
 }
 
 /**
@@ -184,7 +211,7 @@ export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Pr
      "ausente" não pode virar tentativa de envio aqui. */
   const chave = process.env.RDSTATION_MARKETING_API_KEY?.trim()
   if (!chave) return { ok: false, motivo: 'RDSTATION_MARKETING_API_KEY ausente' }
-  const identificador = identificadorDe(doc.kind, config.conversoes)
+  const identificador = identificadorDe(doc, config.conversoes)
   if (!identificador) return { ok: false, motivo: `sem identificador de conversão para o kind "${doc.kind}"` }
 
   const corpo = { event_type: 'CONVERSION', event_family: 'CDP', payload: montarPayload(doc, identificador, config) }

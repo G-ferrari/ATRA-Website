@@ -3993,6 +3993,10 @@ export interface Resource {
   } | null;
   publishedAt: string;
   /**
+   * The name this ebook’s download reaches RD Station with — RD automations fire and segment on it. Type it exactly as it is in RD. Empty: it goes as "ebook-" followed by the ebook’s Portuguese address (e.g. ebook-guia-de-governanca).
+   */
+  rdConversionIdentifier?: string | null;
+  /**
    * Optional. When empty, the site falls back to the page title and summary.
    */
   seo?: {
@@ -8952,6 +8956,7 @@ export interface ResourcesSelect<T extends boolean = true> {
   pages?: T;
   body?: T;
   publishedAt?: T;
+  rdConversionIdentifier?: T;
   seo?:
     | T
     | {
@@ -12085,6 +12090,9 @@ export interface Integration {
       contact?: string | null;
       chatLead?: string | null;
       newsletter?: string | null;
+      /**
+       * Each ebook reaches RD with its own identifier (Content → Resources → RD identifier) or, when that is empty, as "ebook-" followed by its address. This field turns download sending on — empty, none go — and is only used as the name when the ebook cannot be found.
+       */
       materialDownload?: string | null;
       consultantRequest?: string | null;
       dataMaturityDiagnostic?: string | null;

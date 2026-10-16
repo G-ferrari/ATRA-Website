@@ -147,19 +147,79 @@ describe('deveSincronizar', () => {
 describe('identificadorDe', () => {
   it('cada kind comercial tem o seu, e o da RC 18 cai no do diagnóstico que o substituiu', () => {
     const c = config().conversoes
-    expect(identificadorDe('contact', c)).toBe('site-contato')
-    expect(identificadorDe('chat-lead', c)).toBe('site-chat')
-    expect(identificadorDe('newsletter', c)).toBe('site-newsletter')
-    expect(identificadorDe('material-download', c)).toBe('site-download-material')
-    expect(identificadorDe('consultant-request', c)).toBe('site-solicitacao-consultores')
-    expect(identificadorDe('data-maturity-diagnostic', c)).toBe('site-diagnostico-maturidade')
-    expect(identificadorDe('rc18-diagnostic', c)).toBe('site-diagnostico-maturidade')
-    expect(identificadorDe('talent-pool', c)).toBe('site-trabalhe-conosco')
+    expect(identificadorDe({ kind: 'contact' }, c)).toBe('site-contato')
+    expect(identificadorDe({ kind: 'chat-lead' }, c)).toBe('site-chat')
+    expect(identificadorDe({ kind: 'newsletter' }, c)).toBe('site-newsletter')
+    expect(identificadorDe({ kind: 'material-download' }, c)).toBe('site-download-material')
+    expect(identificadorDe({ kind: 'consultant-request' }, c)).toBe('site-solicitacao-consultores')
+    expect(identificadorDe({ kind: 'data-maturity-diagnostic' }, c)).toBe('site-diagnostico-maturidade')
+    expect(identificadorDe({ kind: 'rc18-diagnostic' }, c)).toBe('site-diagnostico-maturidade')
+    expect(identificadorDe({ kind: 'talent-pool' }, c)).toBe('site-trabalhe-conosco')
   })
 
   it('kind sem identificador (apagado no admin, ou RH) é null', () => {
-    expect(identificadorDe('contact', { ...config().conversoes, contato: null })).toBeNull()
-    expect(identificadorDe('job-application', config().conversoes)).toBeNull()
+    expect(identificadorDe({ kind: 'contact' }, { ...config().conversoes, contato: null })).toBeNull()
+    expect(identificadorDe({ kind: 'job-application' }, config().conversoes)).toBeNull()
+  })
+
+  /* Task 046: cada e-book chega ao RD com o próprio identificador. */
+  describe('download de e-book', () => {
+    const download = (material: LeadParaRd['material']) => ({ kind: 'material-download', material })
+
+    it('vai com o identificador do e-book, quando ele tem', () => {
+      const c = config().conversoes
+      expect(identificadorDe(download({ slug: 'guia', identificador: 'E-book Guia de Governança' }), c)).toBe(
+        'E-book Guia de Governança',
+      )
+    })
+
+    it('sem identificador próprio, vai como ebook-<slug>', () => {
+      const c = config().conversoes
+      expect(identificadorDe(download({ slug: 'guia-de-governanca', identificador: null }), c)).toBe(
+        'ebook-guia-de-governanca',
+      )
+      expect(identificadorDe(download({ slug: 'guia-de-governanca', identificador: '   ' }), c)).toBe(
+        'ebook-guia-de-governanca',
+      )
+    })
+
+    it('e-book que não pôde ser lido cai no identificador do formulário', () => {
+      expect(identificadorDe(download(null), config().conversoes)).toBe('site-download-material')
+      expect(identificadorDe(download({ slug: null, identificador: null }), config().conversoes)).toBe(
+        'site-download-material',
+      )
+    })
+
+    /* O do formulário continua sendo o liga/desliga, como em todo formulário. */
+    it('formulário de download vazio no admin: nenhum e-book vai, nem com identificador próprio', () => {
+      const c = { ...config().conversoes, download: null }
+      expect(identificadorDe(download({ slug: 'guia', identificador: 'E-book Guia' }), c)).toBeNull()
+      expect(identificadorDe(download({ slug: 'guia', identificador: null }), c)).toBeNull()
+    })
+
+    it('o material só vale para o download', () => {
+      expect(identificadorDe({ kind: 'contact', material: { slug: 'guia', identificador: 'X' } }, config().conversoes)).toBe(
+        'site-contato',
+      )
+    })
+
+    it('a conversão sai com o identificador do e-book', async () => {
+      vi.stubEnv('RDSTATION_MARKETING_API_KEY', 'chave-falsa-de-teste')
+      const fetch = vi.fn(async () => new Response(JSON.stringify({ event_uuid: 'uuid-9' }), { status: 200 }))
+      vi.stubGlobal('fetch', fetch)
+      try {
+        const r = await enviarConversao(
+          lead({ kind: 'material-download', material: { slug: 'guia-de-governanca', identificador: null } }),
+          config(),
+        )
+        expect(r).toEqual({ ok: true, eventUuid: 'uuid-9' })
+        const corpo = JSON.parse(String((fetch.mock.calls[0] as unknown as [string, RequestInit])[1].body))
+        expect(corpo.payload.conversion_identifier).toBe('ebook-guia-de-governanca')
+      } finally {
+        vi.unstubAllEnvs()
+        vi.unstubAllGlobals()
+      }
+    })
   })
 })
 
@@ -306,7 +366,7 @@ describe('banco de talentos no RD', () => {
   it('é do formulário Trabalhe Conosco, com identificador e tags próprios', () => {
     expect(formularioDoRd('talent-pool')).toBe('talentos')
     const cfg = config({ tags: { ...config().tags, talentos: ['candidato'] } })
-    const p = montarPayload(candidato(), identificadorDe('talent-pool', cfg.conversoes)!, cfg)
+    const p = montarPayload(candidato(), identificadorDe({ kind: 'talent-pool' }, cfg.conversoes)!, cfg)
     expect(p).toMatchObject({
       conversion_identifier: 'site-trabalhe-conosco',
       email: 'lead@empresa.com.br',

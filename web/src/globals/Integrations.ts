@@ -62,6 +62,14 @@ const FORMULARIOS_DO_RD = [
   ['talentPool', 'Trabalhe Conosco (banco de talentos)', 'Work with us (talent pool)'],
 ] as const
 
+/* Task 046: o download de e-book vai com o identificador de cada e-book, e o
+ * campo daqui ficou com outro papel — o de liga/desliga. Sem dizer isso, o
+ * marketing renomearia este campo e não veria o nome mudar no RD. */
+const DESCRICAO_DO_DOWNLOAD = {
+  pt: 'Cada e-book vai ao RD com o identificador dele (Conteúdo → Materiais → Identificador no RD) ou, se estiver vazio lá, como "ebook-" seguido do endereço. Este campo liga o envio dos downloads — vazio, nenhum vai — e só é usado como nome se o e-book não for encontrado.',
+  en: 'Each ebook reaches RD with its own identifier (Content → Resources → RD identifier) or, when that is empty, as "ebook-" followed by its address. This field turns download sending on — empty, none go — and is only used as the name when the ebook cannot be found.',
+}
+
 export const Integrations: GlobalConfig = {
   slug: 'integrations',
   label: { pt: 'Integrações', en: 'Integrations' },
@@ -212,6 +220,7 @@ export const Integrations: GlobalConfig = {
             type: 'text' as const,
             defaultValue: CONVERSOES_PADRAO[name],
             label: { pt, en },
+            ...(name === 'materialDownload' && { admin: { description: DESCRICAO_DO_DOWNLOAD } }),
             hooks: { beforeValidate: [normalizar] },
             validate: (valor: string | null | undefined) =>
               !valor ||
