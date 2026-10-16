@@ -65,8 +65,11 @@ export async function enviarLeadDoChat(dados: FormData): Promise<ResultadoLeadDo
   const ai = await payload.findGlobal({ slug: 'atra-ai', depth: 0 })
   if (!ai.leadCapture?.enabled) return { ok: false, erro: ERRO }
 
+  /* O id do que foi gravado: é por ele que o `notified` volta ao documento
+     certo. */
+  let id: number | string
   try {
-    await payload.create({
+    const gravado = await payload.create({
       collection: 'form-submissions',
       data: {
         kind: 'chat-lead',
@@ -87,6 +90,7 @@ export async function enviarLeadDoChat(dados: FormData): Promise<ResultadoLeadDo
         notified: false,
       },
     })
+    id = gravado.id
   } catch (e) {
     console.error('[chat-lead] não gravou:', e)
     return { ok: false, erro: ERRO }
@@ -110,16 +114,24 @@ export async function enviarLeadDoChat(dados: FormData): Promise<ResultadoLeadDo
       .join('\n'),
   })
 
+  /* Pelo id do que acabou de ser gravado. Antes a action procurava "o último
+     lead do chat daquele e-mail", e podia marcar um envio antigo da mesma
+     pessoa — o mesmo defeito que a task 045 tirou de `formularios.ts`.
+     ⚠️ Com `skipRdSync`: o site já avisou o time, e deixar o gancho tentar o RD
+     de novo aqui faria o RD também avisar, se a nova tentativa passasse — dois
+     avisos —, e dobraria a espera do visitante com o RD fora do ar. A nova
+     tentativa fica para a edição no admin. E sem derrubar nada: o lead já está
+     gravado e avisado. */
   if (enviou) {
-    const { docs } = await payload.find({
-      collection: 'form-submissions',
-      where: { email: { equals: email }, kind: { equals: 'chat-lead' } },
-      sort: '-createdAt',
-      limit: 1,
-      depth: 0,
-    })
-    if (docs[0]) {
-      await payload.update({ collection: 'form-submissions', id: docs[0].id, data: { notified: true } })
+    try {
+      await payload.update({
+        collection: 'form-submissions',
+        id,
+        data: { notified: true },
+        context: { skipRdSync: true },
+      })
+    } catch (e) {
+      console.error('[chat-lead] não marcou o aviso como enviado:', e)
     }
   }
 
