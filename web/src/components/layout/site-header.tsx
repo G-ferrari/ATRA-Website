@@ -100,9 +100,19 @@ export function SiteHeader({
                     ? 'shadow-none rounded-t-[6px] rounded-b-none'
                     : 'shadow-md rounded-[6px]',
                 )
-              : 'bg-transparent py-3 md:py-3 text-text-main dark:text-white rounded-[6px]',
+              : cn(
+                  'bg-transparent py-3 md:py-3 text-text-main dark:text-white rounded-[6px]',
+                  /* Sobre o herói azul (15/10, pedido do G-ferrari): a barra ganha a
+                     cor do tema — clara ou escura — bem translúcida, e logo, menu e
+                     botões ficam como em qualquer página. A primeira versão trocava
+                     as cores de cada peça (logo preto, botão branco) e foi recusada. */
+                  'sobre-azul:bg-surface-1/25 sobre-azul:backdrop-blur-md',
+                ),
         )}
         onMouseLeave={fechar}
+        /* Marca o estado transparente, o único em que o herói aparece atrás do
+           cabeçalho. A variante `sobre-azul` (globals.css) só age com ela. */
+        data-topo={!rolou && !aberto ? '' : undefined}
       >
         <div className="w-full flex items-center justify-between relative">
           <Link href={prefixo || '/'} className="flex items-center gap-2" onClick={() => setAberto(false)}>
