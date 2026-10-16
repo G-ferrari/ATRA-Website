@@ -20,8 +20,10 @@ import { chaveDoRdConfigurada, deveSincronizar, enviarConversao, type LeadParaRd
  *
  * ⚠️ Falha aqui nunca derruba a gravação do lead — mesmo contrato do
  * `enviarAviso`. O que falha fica legível no admin (`rd.error`), com
- * `syncedAt` vazio, e **qualquer** escrita posterior no doc (o `notified` da
- * action, um "lido" no admin) tenta de novo. O retry é de graça, de propósito:
+ * `syncedAt` vazio, e a próxima edição no admin (um "lido", por exemplo)
+ * tenta de novo. O `notified` da action **não** tenta (task 045): ele só é
+ * gravado quando o site já avisou o time, e uma nova tentativa que passasse
+ * faria o RD avisar também. O retry é de graça, de propósito:
  * conversão no RD é evento, e o lead é deduplicado por e-mail do lado de lá,
  * então repetir não cria lead duplo.
  */

@@ -93,7 +93,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
      certo, e por ele que se relê o resultado do RD (task 045). */
   let id: number | string
   try {
-    ;({ id } = await payload.create({
+    const gravado = await payload.create({
       collection: 'form-submissions',
       data: {
         kind,
@@ -136,7 +136,8 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
          * inscrito — está pendente, visível no admin. */
         ...(kind === 'newsletter' ? { confirmationToken: gerarToken() } : {}),
       },
-    }))
+    })
+    id = gravado.id
   } catch (e) {
     console.error('[formulario] não gravou:', e)
     return { ok: false, erro: ERRO_GENERICO }
@@ -189,8 +190,24 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   }
 
   /* Pelo id do que acabou de ser gravado. Antes a action procurava "o último
-     envio daquele e-mail", e podia marcar um envio antigo da mesma pessoa. */
-  if (enviou) await payload.update({ collection: 'form-submissions', id, data: { notified: true } })
+     envio daquele e-mail", e podia marcar um envio antigo da mesma pessoa.
+     ⚠️ Com `skipRdSync`: este caminho só roda quando o RD não aceitou e o site
+     já avisou o time. Deixar o gancho tentar de novo aqui faria o RD também
+     avisar, se a nova tentativa passasse — dois avisos — e dobraria a espera do
+     visitante com o RD fora do ar. A nova tentativa fica para a edição no
+     admin. E sem derrubar nada: o lead já está gravado e avisado. */
+  if (enviou) {
+    try {
+      await payload.update({
+        collection: 'form-submissions',
+        id,
+        data: { notified: true },
+        context: { skipRdSync: true },
+      })
+    } catch (e) {
+      console.error('[formulario] não marcou o aviso como enviado:', e)
+    }
+  }
 
   return { ok: true }
 }

@@ -109,8 +109,9 @@ export const KINDS_PARA_O_RD = new Set([
 /**
  * Se este doc deve ir ao RD **agora**. Pura, para a matriz de teste.
  *
- * A regra de retry mora aqui: `syncedAt` vazio deixa qualquer escrita
- * posterior — o `notified` da action, um "lido" no admin — tentar de novo.
+ * A regra de retry mora aqui: `syncedAt` vazio deixa a próxima escrita no
+ * doc — um "lido" no admin — tentar de novo. O `notified` da action grava com
+ * `skipRdSync` (task 045): só acontece quando o site já avisou o time.
  * Newsletter só entra confirmada (MIG-103): pendente não é inscrito, muito
  * menos lead.
  */

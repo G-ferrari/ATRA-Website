@@ -58,8 +58,14 @@ describe('aviso ao time (task 045)', () => {
   it('RD aceitou o contato → o site não manda aviso (quem avisa é o RD)', async () => {
     rdGravou({ syncedAt: '2026-10-16T12:00:00Z', eventUuid: 'uuid-1', error: null })
     expect(await enviarFormulario(contato())).toEqual({ ok: true })
+    /* Relê o documento que acabou de gravar, e só o `rd`. */
+    expect(payload.findByID).toHaveBeenCalledWith(
+      expect.objectContaining({ collection: 'form-submissions', id: 501, select: { rd: true } }),
+    )
     expect(enviarAviso).not.toHaveBeenCalled()
     expect(payload.update).not.toHaveBeenCalled()
+    /* O `find` por e-mail, que podia marcar um envio antigo, saiu. */
+    expect(payload.find).not.toHaveBeenCalled()
   })
 
   it.each([
@@ -71,7 +77,20 @@ describe('aviso ao time (task 045)', () => {
     expect(await enviarFormulario(contato())).toEqual({ ok: true })
     expect(enviarAviso).toHaveBeenCalledTimes(1)
     expect(enviarAviso).toHaveBeenCalledWith(expect.objectContaining({ para: 'negocios@atra.com.br' }))
-    expect(payload.update).toHaveBeenCalledWith({ collection: 'form-submissions', id: 501, data: { notified: true } })
+    /* ⚠️ Sem o gancho do RD: o site já avisou, e uma nova tentativa que
+       passasse faria o RD avisar também. */
+    expect(payload.update).toHaveBeenCalledWith({
+      collection: 'form-submissions',
+      id: 501,
+      data: { notified: true },
+      context: { skipRdSync: true },
+    })
+  })
+
+  it('falha ao marcar o aviso como enviado não vira erro para o visitante', async () => {
+    payload.update.mockRejectedValue(new Error('banco piscou'))
+    expect(await enviarFormulario(contato())).toEqual({ ok: true })
+    expect(enviarAviso).toHaveBeenCalledTimes(1)
   })
 
   it('banco de talentos segue a mesma regra, com o aviso indo para o RH', async () => {
@@ -81,9 +100,11 @@ describe('aviso ao time (task 045)', () => {
     vi.clearAllMocks()
     getPayload.mockResolvedValue(payload)
     payload.create.mockResolvedValue({ id: 502 })
+    payload.update.mockResolvedValue({})
     rdGravou({ syncedAt: '2026-10-16T12:00:00Z' })
     await enviarFormulario(talento())
     expect(enviarAviso).not.toHaveBeenCalled()
+    expect(payload.update).not.toHaveBeenCalled()
   })
 
   it('não conseguir reler o resultado do RD conta como "não aceitou": avisa', async () => {
