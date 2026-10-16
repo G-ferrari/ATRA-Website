@@ -135,6 +135,15 @@ export const CONVERSOES_PADRAO = {
 } as const
 
 /**
+ * O identificador do download de um e-book que não tem o próprio (task 046).
+ * Derivado do endereço em português, que é estável e único: o marketing acha o
+ * e-book no RD pelo mesmo nome que vê na barra do navegador.
+ */
+export function identificadorPadraoDoEbook(slug: string): string {
+  return `ebook-${slug}`
+}
+
+/**
  * As tags com que cada formulário nasce. Só a newsletter tem: é pela tag
  * `newsletter` que o marketing segmenta os envios no RD (Taci, 14/10). As
  * outras o marketing põe no admin, com os nomes que já usa.

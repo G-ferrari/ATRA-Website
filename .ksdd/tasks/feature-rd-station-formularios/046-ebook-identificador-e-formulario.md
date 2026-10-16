@@ -1,7 +1,7 @@
 ---
 id: 046
 title: E-book — identificador no RD por material e formulário depois do texto
-status: para implementar
+status: em revisão
 feature: rd-station-formularios
 area: frontend
 priority: P0

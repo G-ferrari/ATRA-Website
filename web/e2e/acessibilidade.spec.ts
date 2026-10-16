@@ -5,7 +5,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { test } from '@playwright/test'
 
 import { NEXT_URL } from '../playwright.config'
-import { ROTAS_COM_GABARITO } from './support/rotas'
+import { ROTAS_COM_GABARITO, ROTAS_SEM_GABARITO } from './support/rotas'
 import { visit } from './support/stability'
 
 /* MIG-121 — axe medindo, sem reprovar (D-13).
@@ -26,6 +26,7 @@ type Achado = { rota: string; regra: string; impacto: string; ocorrencias: numbe
 
 const ROTAS = [
   ...ROTAS_COM_GABARITO.map((r) => ({ nome: r.nome, caminho: r.caminho })),
+  ...ROTAS_SEM_GABARITO.map((r) => ({ nome: r.nome, caminho: r.caminho })),
   /* Fora do gate visual, mas com conteúdo real — e é onde o visitante passa. */
   { nome: 'blog', caminho: '/blog' },
   { nome: 'carreiras', caminho: '/carreiras' },

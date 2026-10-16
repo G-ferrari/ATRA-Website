@@ -105,6 +105,7 @@ import * as migration_20261016_001637_rd_tags_e_trabalhe_conosco from './2026101
 import * as migration_20261016_001700_rd_tag_da_newsletter from './20261016_001700_rd_tag_da_newsletter';
 import * as migration_20261016_003419_form_submissions_talent from './20261016_003419_form_submissions_talent';
 import * as migration_20261016_005120_rd_aviso_ao_candidato from './20261016_005120_rd_aviso_ao_candidato';
+import * as migration_20261016_012747_ebook_rd_identifier from './20261016_012747_ebook_rd_identifier';
 
 export const migrations = [
   {
@@ -641,5 +642,10 @@ export const migrations = [
     up: migration_20261016_005120_rd_aviso_ao_candidato.up,
     down: migration_20261016_005120_rd_aviso_ao_candidato.down,
     name: '20261016_005120_rd_aviso_ao_candidato',
+  },
+  {
+    up: migration_20261016_012747_ebook_rd_identifier.up,
+    down: migration_20261016_012747_ebook_rd_identifier.down,
+    name: '20261016_012747_ebook_rd_identifier'
   },
 ];

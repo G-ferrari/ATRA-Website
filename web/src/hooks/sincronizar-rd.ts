@@ -1,4 +1,4 @@
-import type { CollectionAfterChangeHook } from 'payload'
+import type { CollectionAfterChangeHook, Payload } from 'payload'
 
 import { toIntegracaoRd } from '@/lib/mappers/integracao'
 import { chaveDoRdConfigurada, deveSincronizar, enviarConversao, type LeadParaRd } from '@/lib/rd-marketing'
@@ -45,7 +45,7 @@ export const sincronizarComRd: CollectionAfterChangeHook = async ({ doc, req, co
    * config sem o alias. O global é lido a cada lead, de propósito: o hook roda
    * fora de requisição de página, onde o `cache()` do React não vale. */
   const config = toIntegracaoRd(await req.payload.findGlobal({ slug: 'integrations', depth: 0 }))
-  const resultado = await enviarConversao(lead, config)
+  const resultado = await enviarConversao(await comMaterial(lead, req.payload), config)
 
   try {
     /* ⚠️ Direto no adaptador (`db.updateOne`), com o `req` (15/10). Duas
@@ -81,4 +81,42 @@ export const sincronizarComRd: CollectionAfterChangeHook = async ({ doc, req, co
   }
 
   return doc
+}
+
+/* Task 046 — o download vai ao RD com o identificador do e-book baixado, e o
+ * cadastro só guarda o id dele (`resource`). Lido aqui, e não gravado no
+ * cadastro pela action: o identificador é do marketing e pode mudar até o
+ * envio, e o retry por edição deve usar o nome de hoje.
+ *
+ * Só o slug em português e o identificador (`select`): a consulta é a cada
+ * download. E sem `draft`: vale o que está publicado. Falhar ao ler não
+ * derruba nada — `identificadorDe` cai no identificador do formulário.
+ *
+ * ⚠️ **Sem o `req`** do lead, ao contrário do `db.updateOne` acima. O
+ * `findByID` do Payload chama `killTransaction(req)` quando falha: com o `req`
+ * do `create`, um material apagado desfaria a gravação do **lead**, e o
+ * `create` ainda responderia sucesso. O material não está na transação do
+ * lead, e outra conexão o enxerga igual. */
+async function comMaterial(lead: LeadParaRd & { resource?: unknown }, payload: Payload): Promise<LeadParaRd> {
+  if (lead.kind !== 'material-download') return lead
+  /* O `create` pode devolver o material populado ou só o id, conforme a
+     profundidade; o que importa aqui é o id. */
+  const ref = lead.resource
+  const id = typeof ref === 'object' && ref !== null ? (ref as { id?: unknown }).id : ref
+  if (typeof id !== 'number' && typeof id !== 'string') return lead
+  try {
+    const material = await payload.findByID({
+      collection: 'resources',
+      id,
+      locale: 'pt',
+      depth: 0,
+      select: { slug: true, rdConversionIdentifier: true },
+      disableErrors: true,
+    })
+    if (!material) return lead
+    return { ...lead, material: { slug: material.slug, identificador: material.rdConversionIdentifier } }
+  } catch (e) {
+    console.error('[rd] não leu o material do download:', e)
+    return lead
+  }
 }

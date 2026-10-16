@@ -32,7 +32,7 @@ import { getPayload } from 'payload'
 import config from '../../src/payload.config'
 import { slugify as paraSlug } from '../../src/fields/slug'
 import { capaPendente } from './midia'
-import { type ChaveDoPrototipo, imagemDoPrototipo } from './imagens-do-prototipo'
+import { type ChaveDoPrototipo, comFixtures, imagemDoPrototipo } from './imagens-do-prototipo'
 
 type Material = {
   kind: 'report' | 'ebook'
@@ -44,6 +44,9 @@ type Material = {
   /* A capa que o protótipo desenha, usada só com `SEED_FIXTURES=1`. Ausente
    * quando o hotlink do legado responde 404 — aí não há imagem a trazer. */
   prototipo?: ChaveDoPrototipo
+  /* Task 046: o e-book que ganha um PDF de teste, só com `SEED_FIXTURES=1` —
+   * sem PDF a página não mostra o formulário, e o e2e não teria o que medir. */
+  pdfDeTeste?: true
 }
 
 const MATERIAIS: Material[] = [
@@ -91,6 +94,7 @@ const MATERIAIS: Material[] = [
       'Políticas essenciais para garantir segurança e qualidade nos seus modelos de linguagem.',
     tags: ['Governance', 'Security', 'IA'],
     pages: 32,
+    pdfDeTeste: true,
     publishedAt: '2025-08-01',
   },
   {
@@ -108,6 +112,49 @@ const MATERIAIS: Material[] = [
 
 
 const payload = await getPayload({ config })
+
+/* Um PDF de uma página em branco, montado aqui para o seed não depender de
+ * arquivo binário no repositório. O Payload recusa upload que não comece por
+ * `%PDF-` ou que não tenha `xref` e `%%EOF` no fim (`validatePDF`); os
+ * deslocamentos da tabela são os de verdade, para leitor nenhum reclamar. */
+function pdfMinimo(): Buffer {
+  const objetos = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] >>',
+  ]
+  let pdf = '%PDF-1.4\n'
+  const deslocamentos = objetos.map((objeto, i) => {
+    const inicio = pdf.length
+    pdf += `${i + 1} 0 obj ${objeto} endobj\n`
+    return inicio
+  })
+  const xref = pdf.length
+  pdf += `xref\n0 ${objetos.length + 1}\n0000000000 65535 f \n`
+  pdf += deslocamentos.map((d) => `${String(d).padStart(10, '0')} 00000 n \n`).join('')
+  pdf += `trailer << /Size ${objetos.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`
+  return Buffer.from(pdf, 'latin1')
+}
+
+/* Idempotente pelo rótulo, como as mídias do seed. Vai para o bucket privado,
+ * o mesmo dos PDFs de verdade. */
+async function pdfDeTeste(): Promise<number> {
+  const label = 'PDF — fixture de teste do e2e (task 046)'
+  const { docs } = await payload.find({
+    collection: 'private-files',
+    where: { label: { equals: label } },
+    limit: 1,
+    depth: 0,
+  })
+  if (docs[0]) return docs[0].id
+  const data = pdfMinimo()
+  const doc = await payload.create({
+    collection: 'private-files',
+    data: { label, kind: 'material' },
+    file: { data, mimetype: 'application/pdf', name: 'fixture-e2e.pdf', size: data.length },
+  })
+  return doc.id
+}
 
 
 console.log('→ materiais')
@@ -131,6 +178,8 @@ for (const m of MATERIAIS) {
     coverImage: (m.prototipo && (await imagemDoPrototipo(payload, m.prototipo, m.title))) || capa,
     tags: m.tags.map((name) => ({ name })),
     pages: m.pages,
+    /* `undefined` deixa o campo como está: sem fixtures, nada muda. */
+    file: m.pdfDeTeste && comFixtures() ? await pdfDeTeste() : undefined,
     publishedAt: new Date(m.publishedAt).toISOString(),
     _status: 'published' as const,
   }
