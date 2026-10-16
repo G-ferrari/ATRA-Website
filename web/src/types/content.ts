@@ -574,6 +574,9 @@ export type BlocoJobsList = Base & {
     highlight: string | null
     description: string | null
     note: string | null
+    /** O aviso de privacidade do formulário (D-62), resolvido pela página a
+     *  partir de Sistema → Integrações. `null`: o formulário sai sem aviso. */
+    aviso: string | null
   } | null
   /** Resolvido pela página, das vagas publicadas. */
   vagas: Vaga[]
@@ -934,6 +937,9 @@ export type IntegracaoAtrair = {
   bancoDeTalentos: boolean
 }
 
+/** Os formulários que vão ao RD (D-54; Trabalhe Conosco desde 15/10). */
+export type FormularioDoRd = 'contato' | 'chat' | 'newsletter' | 'download' | 'consultores' | 'diagnostico' | 'talentos'
+
 /** As chaves da integração com o RD Station Marketing (D-54), do global
  * `integrations`. Quem lê é o hook de `form-submissions`.
  *
@@ -947,14 +953,14 @@ export type IntegracaoAtrair = {
 export type IntegracaoRd = {
   ligado: boolean
   camposPersonalizados: boolean
-  conversoes: {
-    contato: string | null
-    chat: string | null
-    newsletter: string | null
-    download: string | null
-    consultores: string | null
-    diagnostico: string | null
-  }
+  /** `null` desliga aquele formulário, não a integração. */
+  conversoes: Record<FormularioDoRd, string | null>
+  /** As tags com que o lead chega ao RD, por formulário — já aparadas, sem
+   *  vazias e sem repetição. */
+  tags: Record<FormularioDoRd, string[]>
+  /** O aviso que o formulário do banco de talentos mostra (D-62). `null`
+   *  enquanto o RH não escreve — e sem ele o Trabalhe Conosco não vai ao RD. */
+  avisoAoCandidato: string | null
 }
 
 /** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global

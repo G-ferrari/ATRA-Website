@@ -1,4 +1,11 @@
-import { CONVERSOES_PADRAO, ehEndpointDeIntegracao, ehIdentificadorDeConversao } from '@/lib/formatos-de-integracao'
+import {
+  CONVERSOES_PADRAO,
+  ehEndpointDeIntegracao,
+  ehIdentificadorDeConversao,
+  ehTagDoRd,
+  normalizarNome,
+  TAGS_PADRAO,
+} from '@/lib/formatos-de-integracao'
 import type { Integration } from '@/payload-types'
 import type { IntegracaoAtrair, IntegracaoRd } from '@/types/content'
 
@@ -48,11 +55,28 @@ export function toIntegracaoAtrair(
 export function toIntegracaoRd(doc: Pick<Integration, 'rdStationMarketing'>): IntegracaoRd {
   const g = doc.rdStationMarketing
   const c = g?.conversions
+  const tg = g?.tags
   const identificador = (valor: string | null | undefined, padrao: string): string | null => {
     /* `undefined` é "nunca gravado" → padrão; `''` é o admin apagando de
      * propósito → aquele formulário não vai. */
-    const bruto = valor === undefined ? padrao : (valor ?? '').trim()
+    const bruto = normalizarNome(valor === undefined ? padrao : (valor ?? ''))
     return bruto && ehIdentificadorDeConversao(bruto) ? bruto : null
+  }
+  /* Mesma regra para as tags: `undefined` → padrão; lista gravada vale como
+   * está, inclusive vazia. A repetição sai ignorando caixa (o RD trata `News`
+   * e `news` como a mesma tag), e o que não passa no formato é descartado
+   * sozinho, sem levar as outras junto. */
+  const tags = (valores: (string | null)[] | null | undefined, padrao: readonly string[]): string[] => {
+    const lista = valores === undefined ? padrao : (valores ?? [])
+    const vistas = new Set<string>()
+    const saida: string[] = []
+    for (const v of lista) {
+      const tag = normalizarNome(v ?? '')
+      if (!tag || !ehTagDoRd(tag) || vistas.has(tag.toLowerCase())) continue
+      vistas.add(tag.toLowerCase())
+      saida.push(tag)
+    }
+    return saida
   }
   return {
     ligado: g?.enabled ?? true,
@@ -64,6 +88,17 @@ export function toIntegracaoRd(doc: Pick<Integration, 'rdStationMarketing'>): In
       download: identificador(c?.materialDownload, CONVERSOES_PADRAO.materialDownload),
       consultores: identificador(c?.consultantRequest, CONVERSOES_PADRAO.consultantRequest),
       diagnostico: identificador(c?.dataMaturityDiagnostic, CONVERSOES_PADRAO.dataMaturityDiagnostic),
+      talentos: identificador(c?.talentPool, CONVERSOES_PADRAO.talentPool),
     },
+    tags: {
+      contato: tags(tg?.contact, TAGS_PADRAO.contact),
+      chat: tags(tg?.chatLead, TAGS_PADRAO.chatLead),
+      newsletter: tags(tg?.newsletter, TAGS_PADRAO.newsletter),
+      download: tags(tg?.materialDownload, TAGS_PADRAO.materialDownload),
+      consultores: tags(tg?.consultantRequest, TAGS_PADRAO.consultantRequest),
+      diagnostico: tags(tg?.dataMaturityDiagnostic, TAGS_PADRAO.dataMaturityDiagnostic),
+      talentos: tags(tg?.talentPool, TAGS_PADRAO.talentPool),
+    },
+    avisoAoCandidato: g?.talentPoolNotice?.trim() || null,
   }
 }

@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { isEditorOrAdmin } from '@/access'
 import { seoField } from '@/fields/seo'
 import { slugField } from '@/fields/slug'
+import { ehIdentificadorDeConversao, normalizarNome } from '@/lib/formatos-de-integracao'
 
 /* Materiais ricos: relatórios e e-books (MIG-041).
  *
@@ -116,6 +117,39 @@ export const Resources: CollectionConfig = {
       required: true,
       label: { pt: 'Data de publicação', en: 'Published at' },
       admin: { position: 'sidebar', date: { pickerAppearance: 'dayOnly' } },
+    },
+    {
+      /* Task 046 (decidido em 15/10): cada e-book chega ao RD com o próprio
+       * identificador de conversão, para o marketing montar uma automação e
+       * uma segmentação por material. Antes todo download ia com o mesmo nome
+       * e o RD não sabia qual e-book foi baixado. Vazio, vale `ebook-<slug>`
+       * (`lib/rd-marketing.ts`). Sem `localized`: o RD não sabe de idioma, e o
+       * download do inglês é o mesmo lead. */
+      name: 'rdConversionIdentifier',
+      type: 'text',
+      label: { pt: 'Identificador no RD', en: 'RD identifier' },
+      admin: {
+        position: 'sidebar',
+        /* Só e-book tem página e formulário (relatório saiu do site, D-49). */
+        condition: (_, irmaos) => irmaos?.kind === 'ebook',
+        /* Dois avisos, porque os dois falham calados: o padrão muda com o
+         * endereço (renomear o e-book desligaria a automação do RD sem erro
+         * nenhum), e o gancho lê a versão publicada — "Salvar rascunho" não
+         * muda o que vai ao RD. */
+        description: {
+          pt: 'O nome com que o download deste e-book chega ao RD Station — é por ele que a automação do RD manda o e-mail e segmenta. Escreva exatamente como está no RD; vale depois de publicar. Vazio: vai como "ebook-" seguido do endereço do e-book em português (ex.: ebook-guia-de-governanca) — e muda se o endereço mudar, por isso preencha antes de montar a automação no RD.',
+          en: 'The name this ebook’s download reaches RD Station with — RD automations fire and segment on it. Type it exactly as it is in RD; it applies once published. Empty: it goes as "ebook-" followed by the ebook’s Portuguese address (e.g. ebook-guia-de-governanca) — and changes if the address changes, so fill it in before building the RD automation.',
+        },
+      },
+      /* As mesmas regras dos identificadores de Sistema → Integrações (task
+       * 043): aceita espaço e acento, como os nomes do RD. */
+      hooks: {
+        beforeValidate: [({ value }) => (typeof value === 'string' ? normalizarNome(value) : value)],
+      },
+      validate: (valor: string | null | undefined) =>
+        !valor ||
+        ehIdentificadorDeConversao(valor) ||
+        'Use o nome como está no RD, com até 100 caracteres, sem quebra de linha e sem < > { } " ` \\ (ex.: E-book Governança de Dados).',
     },
     seoField,
   ],
