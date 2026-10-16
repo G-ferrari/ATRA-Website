@@ -10,6 +10,19 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+/* Cabeçalho sobre herói azul (15/10). No topo das páginas de e-book, webinar,
+ * artigo e case, o herói é `bg-primary` e o cabeçalho ainda transparente
+ * (`data-topo`) desenhava logo, "Fale Conosco" e WhatsApp em azul e verde sobre
+ * azul — sumiam. Sobre ele a barra ganha a cor do tema, translúcida e com
+ * desfoque, e as peças ficam com as cores de sempre. (A primeira versão
+ * escurecia cada peça — logo preto, botão branco — e foi recusada.) A variante
+ * vale só enquanto a página tem o herói (`data-heroi-azul`) **e** o cabeçalho
+ * está no topo; rolou, ele ganha o fundo sólido de sempre. `&[data-topo]`, e
+ * não `[data-topo] &`: quem usa a variante é a própria barra, não os filhos.
+ * ⚠️ Em CSS, e não em estado do React: o HTML do servidor já sai certo (sem
+ * piscar), e a navegação entre páginas troca sozinha, porque o seletor lê o DOM. */
+@variant sobre-azul (body:has([data-heroi-azul]) &[data-topo]);
+
 @theme {
   --color-surface-1: #f8fafc;
   --color-surface-2: #ffffff;
