@@ -97,6 +97,17 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         phone: texto(dados, 'phone') || undefined,
         company: texto(dados, 'company') || undefined,
         message: (kind === 'talent-pool' ? extrasDeTalento : texto(dados, 'message', MAX_MENSAGEM)) || undefined,
+        /* D-62: os mesmos extras, cada um no seu campo — é daqui que o RD lê
+           (`lib/rd-marketing.ts`); a mensagem acima fica para o admin e o aviso. */
+        ...(kind === 'talent-pool'
+          ? {
+              talent: {
+                linkedin: texto(dados, 'linkedin', 300) || undefined,
+                area: texto(dados, 'area') || undefined,
+                seniority: texto(dados, 'senioridade') || undefined,
+              },
+            }
+          : {}),
         source: texto(dados, 'source') || undefined,
         /* ⚠️ Cortado **de novo** aqui. O cliente já limita, mas quem posta o
          * formulário não é obrigado a ser o nosso JavaScript — `curl` com um

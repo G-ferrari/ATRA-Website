@@ -7585,6 +7585,11 @@ export interface FormSubmission {
   phone?: string | null;
   company?: string | null;
   message?: string | null;
+  talent?: {
+    linkedin?: string | null;
+    area?: string | null;
+    seniority?: string | null;
+  };
   chatContext?: string | null;
   diagnostic?: {
     sector?: string | null;
@@ -11613,6 +11618,13 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   phone?: T;
   company?: T;
   message?: T;
+  talent?:
+    | T
+    | {
+        linkedin?: T;
+        area?: T;
+        seniority?: T;
+      };
   chatContext?: T;
   diagnostic?:
     | T
@@ -12061,7 +12073,7 @@ export interface Integration {
      */
     enabled?: boolean | null;
     /**
-     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
+     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI), cf_area_de_atuacao and cf_nivel (field and seniority from Work with us) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
      */
     customFields?: boolean | null;
     /**

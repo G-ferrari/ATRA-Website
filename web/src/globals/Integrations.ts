@@ -189,8 +189,8 @@ export const Integrations: GlobalConfig = {
           label: { pt: 'Enviar campos personalizados', en: 'Send custom fields' },
           admin: {
             description: {
-              pt: `Só ligue depois de criar na conta do RD os campos personalizados com exatamente estes nomes: ${CAMPOS_PERSONALIZADOS.mensagem} (mensagem do contato), ${CAMPOS_PERSONALIZADOS.chat} (o que perguntou à ATRA AI) e, para o diagnóstico, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. Campo inexistente faz o RD recusar o lead inteiro — a falha aparece em Envios de formulário.`,
-              en: `Only enable after creating custom fields in the RD account with exactly these names: ${CAMPOS_PERSONALIZADOS.mensagem} (contact message), ${CAMPOS_PERSONALIZADOS.chat} (what they asked ATRA AI) and, for the diagnostic, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. A missing field makes RD reject the whole lead — the failure shows under Form submissions.`,
+              pt: `Só ligue depois de criar na conta do RD os campos personalizados com exatamente estes nomes: ${CAMPOS_PERSONALIZADOS.mensagem} (mensagem do contato), ${CAMPOS_PERSONALIZADOS.chat} (o que perguntou à ATRA AI), ${CAMPOS_PERSONALIZADOS.talentos.area} e ${CAMPOS_PERSONALIZADOS.talentos.senioridade} (área e senioridade do Trabalhe Conosco) e, para o diagnóstico, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. Campo inexistente faz o RD recusar o lead inteiro — a falha aparece em Envios de formulário.`,
+              en: `Only enable after creating custom fields in the RD account with exactly these names: ${CAMPOS_PERSONALIZADOS.mensagem} (contact message), ${CAMPOS_PERSONALIZADOS.chat} (what they asked ATRA AI), ${CAMPOS_PERSONALIZADOS.talentos.area} and ${CAMPOS_PERSONALIZADOS.talentos.senioridade} (field and seniority from Work with us) and, for the diagnostic, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. A missing field makes RD reject the whole lead — the failure shows under Form submissions.`,
             },
           },
         },

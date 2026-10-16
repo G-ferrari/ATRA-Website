@@ -27,7 +27,7 @@
  * `customFields` do admin ligada, e os nomes estão documentados lá.
  */
 
-import type { IntegracaoRd } from '@/types/content'
+import type { FormularioDoRd, IntegracaoRd } from '@/types/content'
 
 const ENDPOINT = 'https://api.rd.services/platform/conversions'
 const TIMEOUT_MS = 8_000
@@ -44,6 +44,12 @@ export type LeadParaRd = {
   source?: string | null
   /** Só o kind `chat-lead` (MIG-149) preenche. */
   chatContext?: string | null
+  /** Só o kind `talent-pool` (D-62) preenche: o perfil, cada um no seu campo. */
+  talent?: {
+    linkedin?: string | null
+    area?: string | null
+    seniority?: string | null
+  } | null
   /** Só o kind `data-maturity-diagnostic` (D-35) preenche. Os JSON chegam
    * como `unknown` e a montagem confere o formato. */
   diagnostic?: {
@@ -62,6 +68,8 @@ export type LeadParaRd = {
     durationSeconds?: number | null
   } | null
   confirmedAt?: string | null
+  /** Quando o envio foi gravado — o corte da D-62 lê daqui. */
+  createdAt?: string | null
   utm?: {
     source?: string | null
     medium?: string | null
@@ -78,17 +86,24 @@ export type LeadParaRd = {
 
 export type ResultadoDaConversao = { ok: true; eventUuid: string } | { ok: false; motivo: string }
 
-/* ⚠️ Só lead de **marketing/vendas** vai ao RD. `job-application` e
- * `talent-pool` são dado de RH — currículo dentro de base de marketing seria
- * desvio de finalidade (LGPD), não integração. Se a ATRA quiser o banco de
- * talentos lá, é decisão dela, não default nosso (D-29, mantido na D-54). */
-export const KINDS_COMERCIAIS = new Set([
+/* Os kinds que vão ao RD.
+ *
+ * ⚠️ `job-application` **nunca**: é a candidatura com currículo, e currículo
+ * dentro de base de marketing seria desvio de finalidade (LGPD) — D-29, mantido.
+ *
+ * `talent-pool` **vai desde a D-62** (15/10): a ATRA pediu (Taci, 14/10) que o
+ * Trabalhe Conosco chegue ao RD como no site atual, para o agradecimento
+ * automático. Vão só dados de contato e de perfil — nunca o currículo, que o
+ * banco de talentos nem coleta, nem a mensagem em texto livre
+ * (`camposPersonalizados` a deixa de fora). */
+export const KINDS_PARA_O_RD = new Set([
   'contact',
   'chat-lead',
   'material-download',
   'rc18-diagnostic',
   'consultant-request',
   'data-maturity-diagnostic',
+  'talent-pool',
 ])
 
 /**
@@ -102,24 +117,46 @@ export const KINDS_COMERCIAIS = new Set([
 export function deveSincronizar(doc: LeadParaRd): boolean {
   if (doc.rd?.syncedAt) return false
   if (doc.kind === 'newsletter') return Boolean(doc.confirmedAt)
-  return KINDS_COMERCIAIS.has(doc.kind)
+  if (doc.kind === 'talent-pool') return cadastradoDepoisDaD62(doc.createdAt)
+  return KINDS_PARA_O_RD.has(doc.kind)
 }
 
-/** Qual identificador de conversão vale para o kind. `rc18-diagnostic` é o
- * kind antigo (D-35) e entra pelo do diagnóstico de maturidade, que o
- * substituiu — ninguém grava mais aquele kind, mas o retry de um envio velho
- * ainda pode passar por aqui. */
-export function identificadorDe(kind: string, conversoes: IntegracaoRd['conversoes']): string | null {
-  const mapa: Record<string, string | null> = {
-    contact: conversoes.contato,
-    'chat-lead': conversoes.chat,
-    newsletter: conversoes.newsletter,
-    'material-download': conversoes.download,
-    'consultant-request': conversoes.consultores,
-    'data-maturity-diagnostic': conversoes.diagnostico,
-    'rc18-diagnostic': conversoes.diagnostico,
+/* ⚠️ O banco de talentos só vai ao RD para quem se cadastrou **depois** da
+ * D-62. Antes, ninguém foi avisado de que o cadastro iria a uma base de
+ * marketing, e mudar a finalidade de um dado já coletado não é o mesmo que
+ * coletar com a finalidade nova (LGPD). Sem o corte, o retry por edição faria
+ * o estrago: o RH marca um cadastro antigo como lido no admin, o gancho roda,
+ * e a pessoa entra no RD — e recebe um "obrigado" semanas depois. Sem data
+ * (não acontece com documento gravado), não vai. */
+const INICIO_DA_D62 = Date.parse('2026-10-15T00:00:00-03:00')
+
+function cadastradoDepoisDaD62(criadoEm: string | null | undefined): boolean {
+  const quando = criadoEm ? Date.parse(criadoEm) : NaN
+  return Number.isFinite(quando) && quando >= INICIO_DA_D62
+}
+
+/** De qual formulário do admin o kind é — a fonte única do mapeamento, que vale
+ * para o identificador e para as tags. `rc18-diagnostic` é o kind antigo (D-35)
+ * e entra pelo do diagnóstico de maturidade, que o substituiu — ninguém grava
+ * mais aquele kind, mas o retry de um envio velho ainda pode passar por aqui. */
+export function formularioDoRd(kind: string): FormularioDoRd | null {
+  const mapa: Record<string, FormularioDoRd> = {
+    contact: 'contato',
+    'chat-lead': 'chat',
+    newsletter: 'newsletter',
+    'material-download': 'download',
+    'consultant-request': 'consultores',
+    'data-maturity-diagnostic': 'diagnostico',
+    'rc18-diagnostic': 'diagnostico',
+    'talent-pool': 'talentos',
   }
   return mapa[kind] ?? null
+}
+
+/** Qual identificador de conversão vale para o kind. */
+export function identificadorDe(kind: string, conversoes: IntegracaoRd['conversoes']): string | null {
+  const formulario = formularioDoRd(kind)
+  return formulario ? conversoes[formulario] : null
 }
 
 /**
@@ -183,6 +220,11 @@ export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Pr
 export const CAMPOS_PERSONALIZADOS = {
   mensagem: 'cf_site_mensagem',
   chat: 'cf_site_chat',
+  /* D-62 — o perfil do Trabalhe Conosco. Os nomes seguem os campos do
+   * formulário do WordPress (`area-de-atuacao`, `nivel`), que é o que o plugin
+   * do RD mapeava. ⚠️ A confirmar com a lista do RD (task 047): campo que não
+   * existe na conta derruba a conversão inteira. */
+  talentos: { area: 'cf_area_de_atuacao', senioridade: 'cf_nivel' },
   diagnostico: [
     'cf_quiz_setor_codigo',
     'cf_quiz_porte',
@@ -209,7 +251,7 @@ export const CAMPOS_PERSONALIZADOS = {
 export function montarPayload(
   doc: LeadParaRd,
   identificador: string,
-  config: Pick<IntegracaoRd, 'camposPersonalizados'>,
+  config: Pick<IntegracaoRd, 'camposPersonalizados'> & Partial<Pick<IntegracaoRd, 'tags'>>,
 ): Record<string, unknown> {
   const payload: Record<string, unknown> = {
     conversion_identifier: identificador,
@@ -223,6 +265,17 @@ export function montarPayload(
   if (telefone) payload.personal_phone = telefone
   const empresa = doc.company?.trim()
   if (empresa) payload.company_name = empresa
+  /* `linkedin` é campo padrão do RD, não `cf_`: vai sempre, sem depender da
+     chave de campos personalizados. Só o banco de talentos tem (D-62). */
+  const linkedin = doc.talent?.linkedin?.trim()
+  if (linkedin) payload.linkedin = linkedin
+
+  /* As tags do formulário, como o marketing configurou (task 043) — a
+     newsletter chega com `newsletter`, que é como os envios são segmentados.
+     Sem tag configurada, o campo nem vai. */
+  const formulario = formularioDoRd(doc.kind)
+  const tags = formulario ? (config.tags?.[formulario] ?? []) : []
+  if (tags.length) payload.tags = [...tags]
 
   /* Atribuição (D-26, mantida): de onde o visitante veio, pela UTM que a
    * chegada guardou. `traffic_value` é onde o RD guarda o `utm_term`. */
@@ -251,8 +304,15 @@ export function montarPayload(
  * (`rd.error`) com o nome do campo recusado. */
 function camposPersonalizados(doc: LeadParaRd): Record<string, unknown> {
   const campos: Record<string, unknown> = {}
-  const mensagem = doc.message?.trim()
+  /* ⚠️ A mensagem do banco de talentos **não** vai (D-62): ali ela é o perfil
+     serializado para o admin, e texto livre de candidato não entra na base de
+     marketing. O perfil vai pelos campos próprios, logo abaixo. */
+  const mensagem = doc.kind === 'talent-pool' ? undefined : doc.message?.trim()
   if (mensagem) campos[CAMPOS_PERSONALIZADOS.mensagem] = mensagem
+  const area = doc.talent?.area?.trim()
+  if (area) campos[CAMPOS_PERSONALIZADOS.talentos.area] = area
+  const senioridade = doc.talent?.seniority?.trim()
+  if (senioridade) campos[CAMPOS_PERSONALIZADOS.talentos.senioridade] = senioridade
   const chat = doc.chatContext?.trim()
   if (chat) campos[CAMPOS_PERSONALIZADOS.chat] = chat
   if (doc.source) campos.cf_quiz_url = doc.source
