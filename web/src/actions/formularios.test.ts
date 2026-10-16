@@ -10,18 +10,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const payload = { create: vi.fn(), findByID: vi.fn(), update: vi.fn(), find: vi.fn() }
 const enviarAviso = vi.fn()
 const getPayload = vi.fn()
+const lerContato = vi.fn()
+const lerIntegracaoAtrair = vi.fn()
 
 vi.mock('next/headers', () => ({ headers: async () => new Headers({ 'x-real-ip': '203.0.113.7' }) }))
 vi.mock('@/lib/payload', () => ({ getPayload: () => getPayload() }))
 vi.mock('@/lib/email', () => ({ enviarAviso: (...a: unknown[]) => enviarAviso(...a) }))
-vi.mock('@/lib/contato', () => ({
-  lerContato: async () => ({
-    email: 'negocios@atra.com.br',
-    destinos: { contato: null, consultores: null, diagnostico: null, carreiras: 'rh@atra.com.br', chat: null },
-  }),
-}))
+vi.mock('@/lib/contato', () => ({ lerContato: () => lerContato() }))
 vi.mock('@/lib/integracoes', () => ({
-  lerIntegracaoAtrair: async () => ({ endpoint: null, vagas: false, bancoDeTalentos: false }),
+  lerIntegracaoAtrair: () => lerIntegracaoAtrair(),
   lerIntegracaoRd: async () => ({ avisoAoCandidato: 'Aviso de teste.' }),
 }))
 vi.mock('@/lib/atrair', () => ({ enviarParaAtrair: async () => false }))
@@ -51,6 +48,11 @@ beforeEach(() => {
   payload.create.mockResolvedValue({ id: 501 })
   payload.update.mockResolvedValue({})
   enviarAviso.mockResolvedValue(true)
+  lerContato.mockResolvedValue({
+    email: 'negocios@atra.com.br',
+    destinos: { contato: null, consultores: null, diagnostico: null, carreiras: 'rh@atra.com.br', chat: null },
+  })
+  lerIntegracaoAtrair.mockResolvedValue({ endpoint: null, vagas: false, bancoDeTalentos: false })
   rdGravou(null)
 })
 
@@ -124,6 +126,54 @@ describe('aviso ao time (task 045)', () => {
     await enviarFormulario(form({ kind: 'newsletter', email: 'leitor@exemplo.com' }))
     expect(payload.findByID).not.toHaveBeenCalled()
     expect(enviarAviso).toHaveBeenCalledWith(expect.objectContaining({ para: 'leitor@exemplo.com' }))
+  })
+})
+
+/* Gravado o lead, a resposta é sucesso, aconteça o que acontecer: erro ali faz
+ * o visitante reenviar, e o comercial recebe duplicata. */
+describe('depois de gravar, é sucesso', () => {
+  /* ⚠️ `lerContato` ficava fora de qualquer `try`: o banco falhando aqui
+     derrubava a resposta com o lead já salvo. */
+  it('falha ao ler o contato depois de gravar: continua sucesso', async () => {
+    lerContato.mockRejectedValue(new Error('banco caiu'))
+    expect(await enviarFormulario(contato())).toEqual({ ok: true })
+    expect(payload.create).toHaveBeenCalledTimes(1)
+    expect(enviarAviso).not.toHaveBeenCalled()
+    expect(payload.update).not.toHaveBeenCalled()
+  })
+
+  it('newsletter: falha ao buscar o token depois de gravar: continua sucesso', async () => {
+    payload.find.mockRejectedValue(new Error('banco caiu'))
+    expect(await enviarFormulario(form({ kind: 'newsletter', email: 'leitor@exemplo.com' }))).toEqual({ ok: true })
+    expect(enviarAviso).not.toHaveBeenCalled()
+    expect(payload.update).not.toHaveBeenCalled()
+  })
+
+  /* O ATRAIR é melhor esforço: não ler a integração não pode calar o aviso ao RH. */
+  it('banco de talentos: falha ao ler a integração do ATRAIR não impede o aviso', async () => {
+    lerIntegracaoAtrair.mockRejectedValue(new Error('banco caiu'))
+    expect(await enviarFormulario(talento())).toEqual({ ok: true })
+    expect(enviarAviso).toHaveBeenCalledWith(expect.objectContaining({ para: 'rh@atra.com.br' }))
+  })
+
+  it('o log da falha depois de gravar não leva o que o visitante digitou', async () => {
+    /* O formato do erro do Drizzle: a mensagem carrega os `params` da consulta. */
+    lerContato.mockRejectedValue(
+      Object.assign(new Error('Failed query: … params: lead@empresa.com.br,Maria'), { cause: { code: '57P01' } }),
+    )
+    await enviarFormulario(contato())
+    expect(console.error).toHaveBeenCalledWith('[formulario] lead 501 gravado, mas o aviso falhou:', '57P01')
+    expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain('lead@empresa.com.br')
+  })
+
+  it('falha ao GRAVAR: aí sim é erro — e o log também não leva o e-mail', async () => {
+    payload.create.mockRejectedValue(
+      Object.assign(new Error('Failed query: insert … params: lead@empresa.com.br,Maria'), { cause: { code: '22021' } }),
+    )
+    expect(await enviarFormulario(contato())).toEqual({ ok: false, erro: expect.any(String) })
+    expect(enviarAviso).not.toHaveBeenCalled()
+    expect(console.error).toHaveBeenCalledWith('[formulario] não gravou:', '22021')
+    expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain('lead@empresa.com.br')
   })
 })
 
