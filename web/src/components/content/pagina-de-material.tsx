@@ -17,11 +17,15 @@ import type { ResourceDetail } from '@/types/content'
  * ⚠️ **Rota sem gabarito**: não existe no protótipo. Ver a nota em
  * estrategia-de-testes.md sobre o que verifica essas páginas.
  *
- * ⚠️ O botão não baixa nada, de propósito. O download é **MIG-104**, que
- * depende do formulário (MIG-100) e de duas pendências: publicar a política de
- * privacidade (P-14) — coletar dado pessoal sem ela é exposição de LGPD — e
- * decidir para onde vão os leads (P-18). Até lá o botão fica inerte, como está
- * no protótipo hoje. */
+ * O download é **MIG-104** e liga sozinho, material a material: com PDF, o
+ * formulário; sem, o botão inerte do protótipo (P-07).
+ *
+ * Desde a task 046 (pedido da Taci, 14/10) o formulário fica **depois do
+ * texto**, antes de "Entre em contato": quem chega lê sobre o e-book antes de
+ * deixar o contato. O herói mantém o botão, que agora leva até ele (`#baixar`). */
+
+/** A âncora do formulário — o botão do herói aponta para ela. */
+const ANCORA_DO_FORMULARIO = 'baixar'
 
 export type TextosDoMaterial = {
   voltar: string
@@ -98,11 +102,17 @@ export function PaginaDeMaterial({
                 </div>
               )}
 
-              {/* MIG-104: com PDF no material, o formulário gated; sem, o
-               * botão inerte de sempre. Subir o arquivo no admin é o que troca
-               * um pelo outro — ver `actions/materiais.ts`. */}
+              {/* MIG-104: com PDF no material, o botão leva ao formulário, no
+               * fim da página; sem, o botão inerte de sempre. Subir o arquivo
+               * no admin é o que troca um pelo outro — ver
+               * `actions/materiais.ts`. */}
               {material.temDownload ? (
-                <DownloadGate resourceId={material.id} />
+                <a
+                  href={`#${ANCORA_DO_FORMULARIO}`}
+                  className="inline-flex items-center gap-3 bg-secondary hover:bg-secondary-dark text-white px-10 py-5 rounded-[6px] font-bold text-lg transition-colors"
+                >
+                  <Download size={20} aria-hidden /> {t.cta}
+                </a>
               ) : (
                 <>
                   <button
@@ -149,6 +159,36 @@ export function PaginaDeMaterial({
           </div>
         </div>
       </section>
+
+      {/* ⚠️ `scroll-mt`: o cabeçalho é fixo, e sem a margem o botão do herói
+       * pararia com o título do painel embaixo dele. */}
+      {material.temDownload && (
+        <section
+          id={ANCORA_DO_FORMULARIO}
+          aria-labelledby={`${ANCORA_DO_FORMULARIO}-titulo`}
+          className="pb-24 scroll-mt-28"
+        >
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="max-w-3xl mx-auto rounded-[6px] bg-slate-50 dark:bg-[#181b22] shadow-xl p-8 md:p-10 flex flex-col md:flex-row gap-8 md:gap-10">
+              <div className="md:w-5/12">
+                <div className="text-primary-dark dark:text-primary font-bold uppercase tracking-wider text-xs mb-3 flex items-center gap-2">
+                  <FileText size={14} aria-hidden /> {t.prefixo}
+                </div>
+                <h2
+                  id={`${ANCORA_DO_FORMULARIO}-titulo`}
+                  className="text-2xl font-bold text-slate-900 dark:text-white leading-tight mb-3"
+                >
+                  {t.cta}
+                </h2>
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{material.title}</p>
+              </div>
+              <div className="md:w-7/12">
+                <DownloadGate resourceId={material.id} />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <ChamadaFinal locale={locale} />
     </main>

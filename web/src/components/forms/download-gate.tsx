@@ -7,7 +7,8 @@ import { baixarMaterial, type ResultadoDownload } from '@/actions/materiais'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
 import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 
-/* MIG-104 — o formulário que troca contato por download, na página do material.
+/* MIG-104 — o formulário que troca contato por download, na página do material,
+ * depois do texto (task 046).
  *
  * Só é montado quando o material tem PDF (`resources.file`), decisão da página.
  * O sucesso mostra o botão com a URL pré-assinada — que expira em 15 minutos,
@@ -58,7 +59,9 @@ export function DownloadGate({ resourceId }: { resourceId: number }) {
       <input name="company" placeholder="Empresa (opcional)" aria-label="Empresa" className={CAMPO} />
 
       {estado && !estado.ok && (
-        <p role="alert" className="text-sm font-light text-red-400">
+        /* O par claro: o `red-400` foi escolhido para o herói azul, e no painel
+           claro do fim da página (task 046) ficava abaixo de 3:1. */
+        <p role="alert" className="text-sm font-light text-red-600 dark:text-red-400">
           {estado.erro}
         </p>
       )}
