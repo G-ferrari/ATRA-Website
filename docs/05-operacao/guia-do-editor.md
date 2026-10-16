@@ -329,6 +329,13 @@ fica o que o site manda ao RD a cada formulário:
 - **Trabalhe Conosco** — o cadastro no banco de talentos de /carreiras também
   tem identificador e tags. Vão ao RD só os dados de contato e de perfil;
   **o currículo nunca vai**.
+- **Quem avisa o time a cada contato ou cadastro** — se o lead chegou ao RD
+  ("Sincronizado em" preenchido no envio), quem avisa é a automação do RD, como
+  no site antigo, e o site não manda e-mail. Se não chegou (integração
+  desligada, chave ausente, nome recusado pelo RD), o site manda o aviso dele,
+  e o envio fica com "Aviso por e-mail enviado" marcado. Um aviso por lead, nunca dois.
+  ⚠️ Vale para Contato e Trabalhe Conosco: confira no RD que a automação de
+  aviso ao time existe para cada um, senão o lead aceito fica sem aviso.
 - **Aviso ao candidato (Trabalhe Conosco)** — o texto que aparece no
   formulário do banco de talentos, logo acima do botão. É do RH e do jurídico:
   diz que o cadastro também vai ao RD Station, para quê, e como pedir a
