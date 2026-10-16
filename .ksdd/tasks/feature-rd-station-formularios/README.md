@@ -7,7 +7,7 @@
 
 | ID | Título | Área | Prioridade | Estimativa | Status | Depende de |
 |----|--------|------|------------|------------|--------|------------|
-| 043 | Configurar o RD no admin — identificadores livres, tags, Trabalhe Conosco e situação da chave | data-model | P0 | M | para implementar | — |
+| 043 | Configurar o RD no admin — identificadores livres, tags, Trabalhe Conosco e situação da chave | data-model | P0 | M | em revisão | — |
 | 044 | Mandar tags, LinkedIn e dados de candidato na conversão; Trabalhe Conosco no RD | backend | P0 | M | para implementar | 043 |
 | 045 | Avisar o time pelo site só quando a conversão não chegou ao RD | backend | P0 | M | para implementar | 044 |
 | 046 | E-book — identificador no RD por material e formulário depois do texto | frontend | P0 | M | para implementar | 044 |

@@ -1,7 +1,7 @@
 ---
 id: 043
 title: Configurar o RD no admin — identificadores livres, tags, Trabalhe Conosco e situação da chave
-status: para implementar
+status: em revisão
 feature: rd-station-formularios
 area: data-model
 priority: P0
