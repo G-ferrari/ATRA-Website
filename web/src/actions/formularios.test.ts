@@ -121,11 +121,20 @@ describe('aviso ao time (task 045)', () => {
     expect(payload.update).not.toHaveBeenCalled()
   })
 
-  it('newsletter continua mandando a confirmação ao visitante, sem olhar o RD', async () => {
-    payload.find.mockResolvedValue({ docs: [{ confirmationToken: 'tok' }] })
-    await enviarFormulario(form({ kind: 'newsletter', email: 'leitor@exemplo.com' }))
+  /* D-64 (16/10): a inscrição vale no envio. `confirmedAt` carimbado no
+     `create` é o que deixa o gancho levá-la ao RD na hora; e-mail nenhum sai,
+     nem a confirmação ao visitante nem aviso ao time. */
+  it('newsletter: grava já confirmada, sem token, e não manda e-mail nenhum', async () => {
+    const antes = Date.now()
+    expect(await enviarFormulario(form({ kind: 'newsletter', email: 'leitor@exemplo.com' }))).toEqual({ ok: true })
+    const data = payload.create.mock.calls[0][0].data
+    expect(data).toMatchObject({ kind: 'newsletter', email: 'leitor@exemplo.com' })
+    expect(Date.parse(data.confirmedAt)).toBeGreaterThanOrEqual(antes)
+    expect(data).not.toHaveProperty('confirmationToken')
+    expect(enviarAviso).not.toHaveBeenCalled()
+    expect(payload.find).not.toHaveBeenCalled()
     expect(payload.findByID).not.toHaveBeenCalled()
-    expect(enviarAviso).toHaveBeenCalledWith(expect.objectContaining({ para: 'leitor@exemplo.com' }))
+    expect(payload.update).not.toHaveBeenCalled()
   })
 })
 
@@ -138,13 +147,6 @@ describe('depois de gravar, é sucesso', () => {
     lerContato.mockRejectedValue(new Error('banco caiu'))
     expect(await enviarFormulario(contato())).toEqual({ ok: true })
     expect(payload.create).toHaveBeenCalledTimes(1)
-    expect(enviarAviso).not.toHaveBeenCalled()
-    expect(payload.update).not.toHaveBeenCalled()
-  })
-
-  it('newsletter: falha ao buscar o token depois de gravar: continua sucesso', async () => {
-    payload.find.mockRejectedValue(new Error('banco caiu'))
-    expect(await enviarFormulario(form({ kind: 'newsletter', email: 'leitor@exemplo.com' }))).toEqual({ ok: true })
     expect(enviarAviso).not.toHaveBeenCalled()
     expect(payload.update).not.toHaveBeenCalled()
   })

@@ -120,8 +120,9 @@ export const KINDS_PARA_O_RD = new Set([
  * A regra de retry mora aqui: `syncedAt` vazio deixa a próxima escrita no
  * doc — um "lido" no admin — tentar de novo. O `notified` da action grava com
  * `skipRdSync` (task 045): só acontece quando o site já avisou o time.
- * Newsletter só entra confirmada (MIG-103): pendente não é inscrito, muito
- * menos lead.
+ * Newsletter só entra com `confirmedAt`. Desde a D-64 (16/10) a action carimba
+ * a data no envio; vazia só fica a inscrição antiga que nunca confirmou pelo
+ * link de MIG-103 — essa pediu uma confirmação que não deu, e não vai.
  */
 export function deveSincronizar(doc: LeadParaRd): boolean {
   if (doc.rd?.syncedAt) return false
@@ -318,11 +319,14 @@ export function montarPayload(
   if (doc.utm?.campaign) payload.traffic_campaign = doc.utm.campaign
   if (doc.utm?.term) payload.traffic_value = doc.utm.term
 
-  /* ⚠️ Base legal só onde há opt-in **provado**: a newsletter confirmada pelo
-   * link (MIG-103). Os outros formulários ainda não têm o aviso de
-   * consentimento (P-14), e declarar "consentimento concedido" sem ele seria
-   * mentir ao RD — que trata o lead como contatável. Quando a P-14 puser o
-   * aviso nos formulários, estende-se aqui. */
+  /* ⚠️ Base legal só onde há opt-in: a newsletter, que a pessoa pede ao
+   * digitar o e-mail e clicar em "Inscrever-se". Até 16/10 o opt-in era
+   * **provado** pelo clique no link do e-mail (MIG-103); a D-64 tirou a
+   * confirmação, e com ela a prova — qualquer um pode inscrever o e-mail de
+   * outra pessoa. A ATRA aceitou isso; o jurídico revê a base legal com o texto
+   * de consentimento do formulário (P-14). Os outros formulários não declaram
+   * consentimento: sem o aviso da P-14, seria mentir ao RD, que trata o lead
+   * como contatável. */
   if (doc.kind === 'newsletter' && doc.confirmedAt) {
     payload.legal_bases = [{ category: 'communications', type: 'consent', status: 'granted' }]
     payload.available_for_mailing = true

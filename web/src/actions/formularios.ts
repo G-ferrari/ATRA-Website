@@ -1,7 +1,5 @@
 'use server'
 
-import { randomBytes } from 'node:crypto'
-
 import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
@@ -140,10 +138,12 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         },
         status: 'new',
         notified: false,
-        /* MIG-103: newsletter é dupla confirmação. O token vai no e-mail; sem
-         * o clique, `confirmedAt` fica vazio e o cadastro NÃO conta como
-         * inscrito — está pendente, visível no admin. */
-        ...(kind === 'newsletter' ? { confirmationToken: gerarToken() } : {}),
+        /* D-64 (16/10): a inscrição na newsletter vale no envio — saiu a dupla
+         * confirmação por e-mail de MIG-103. `confirmedAt` é carimbado aqui, e
+         * é ele que deixa o gancho levar a inscrição ao RD já no `create`.
+         * Inscrição antiga que nunca confirmou continua sem a data e fora do
+         * RD: ela pediu uma confirmação que não deu. */
+        ...(kind === 'newsletter' ? { confirmedAt: new Date().toISOString() } : {}),
       },
     })
     id = gravado.id
@@ -180,23 +180,22 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
     }
   }
 
+  /* Newsletter não manda e-mail nenhum: aviso ao time por inscrito seria ruído
+   * (a lista vive no RD e no admin), e o e-mail de confirmação ao visitante saiu
+   * com a D-64. O que o RD manda depois é automação do marketing. */
+  if (kind === 'newsletter') return { ok: true }
+
   /* O aviso é o **segundo** passo e não pode derrubar o primeiro. Sem chave de
    * e-mail, `notified` fica falso e a falta aparece no admin.
    *
    * ⚠️ Daqui em diante o lead está salvo: falha só vai para o log, e a resposta
-   * é sucesso. `lerContato` e a busca do token da newsletter consultam o banco e
-   * podem lançar; fora do `try`, a action respondia erro com o lead já gravado,
-   * o visitante tentava de novo e o comercial recebia duplicata — o defeito que
-   * `consultores.ts` e `chat-lead.ts` já evitam. */
+   * é sucesso. `lerContato` consulta o banco e pode lançar; fora do `try`, a
+   * action respondia erro com o lead já gravado, o visitante tentava de novo e o
+   * comercial recebia duplicata — o defeito que `consultores.ts` e
+   * `chat-lead.ts` já evitam. */
   let enviou: boolean
   try {
-    if (kind === 'newsletter') {
-      /* MIG-103: quem recebe e-mail é o VISITANTE (o link de confirmação), não a
-       * empresa — aviso por inscrito seria ruído; a lista vive no admin. Sem a
-       * chave do Resend o e-mail não sai, o cadastro fica pendente e o admin
-       * mostra exatamente isso. */
-      enviou = await enviarConfirmacaoDeNewsletter(payload, email)
-    } else if (await rdJaAvisou(payload, id)) {
+    if (await rdJaAvisou(payload, id)) {
       /* Task 045 (decidido em 15/10): o RD aceitou o lead, e quem avisa o time é
          a automação dele — como no site atual. Mandar o aviso do site também
          daria dois e-mails por lead. `notified` fica falso: ele diz "o site
@@ -253,41 +252,8 @@ async function rdJaAvisou(payload: Awaited<ReturnType<typeof getPayload>>, id: n
   }
 }
 
-function gerarToken(): string {
-  return randomBytes(24).toString('hex')
-}
-
-/** Reenvia o link a partir do doc recém-criado — o token está lá, não em memória. */
-async function enviarConfirmacaoDeNewsletter(
-  payload: Awaited<ReturnType<typeof getPayload>>,
-  email: string,
-): Promise<boolean> {
-  const { docs } = await payload.find({
-    collection: 'form-submissions',
-    where: { email: { equals: email }, kind: { equals: 'newsletter' } },
-    sort: '-createdAt',
-    limit: 1,
-    depth: 0,
-  })
-  const token = docs[0]?.confirmationToken
-  if (!token) return false
-  const origem = process.env.NEXT_PUBLIC_SITE_URL ?? ''
-  return enviarAviso({
-    para: email,
-    assunto: 'Confirme sua inscrição na newsletter da ATRA',
-    texto: [
-      'Você pediu para receber os insights da ATRA por e-mail.',
-      '',
-      `Para confirmar, abra este link: ${origem}/api/newsletter/confirmar?token=${token}`,
-      '',
-      'Se não foi você, ignore esta mensagem — sem o clique, nada é ativado.',
-    ].join('\n'),
-  })
-}
-
 const ASSUNTO: Record<string, string> = {
   contact: 'novo contato',
-  newsletter: 'nova inscrição na newsletter',
   'talent-pool': 'novo currículo no banco de talentos',
 }
 

@@ -368,8 +368,10 @@ runbook de cutover.
 como **conversão**, com as tags do formulário — a candidatura com currículo
 fica fora; o Trabalhe Conosco vai desde a **D-62** (15/10), sem currículo, sem
 mensagem livre e só com o aviso ao candidato registrado no cadastro (o texto
-vem do RH, em Sistema → Integrações; vazio, não vai); newsletter só
-confirmada; sem `RDSTATION_MARKETING_API_KEY` é inerte (o admin mostra "Chave
+vem do RH, em Sistema → Integrações; vazio, não vai); a newsletter vai na
+hora, sem o e-mail de confirmação desde a **D-64** (16/10) — a action carimba
+`confirmedAt` no envio, e inscrição antiga sem a data fica fora; sem
+`RDSTATION_MARKETING_API_KEY` é inerte (o admin mostra "Chave
 do RD: Ausente") e `rd.syncedAt` vazio denuncia no admin; qualquer edição do doc
 não sincronizado tenta de novo. ⚠️ O resultado é gravado com `db.updateOne` e o
 `req`: sem o `req` roda fora da transação do `create` e morre em "NotFound";
