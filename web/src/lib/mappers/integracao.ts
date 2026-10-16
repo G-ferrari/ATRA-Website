@@ -3,6 +3,7 @@ import {
   ehEndpointDeIntegracao,
   ehIdentificadorDeConversao,
   ehTagDoRd,
+  normalizarNome,
   TAGS_PADRAO,
 } from '@/lib/formatos-de-integracao'
 import type { Integration } from '@/payload-types'
@@ -58,7 +59,7 @@ export function toIntegracaoRd(doc: Pick<Integration, 'rdStationMarketing'>): In
   const identificador = (valor: string | null | undefined, padrao: string): string | null => {
     /* `undefined` é "nunca gravado" → padrão; `''` é o admin apagando de
      * propósito → aquele formulário não vai. */
-    const bruto = valor === undefined ? padrao : (valor ?? '').trim()
+    const bruto = normalizarNome(valor === undefined ? padrao : (valor ?? ''))
     return bruto && ehIdentificadorDeConversao(bruto) ? bruto : null
   }
   /* Mesma regra para as tags: `undefined` → padrão; lista gravada vale como
@@ -70,7 +71,7 @@ export function toIntegracaoRd(doc: Pick<Integration, 'rdStationMarketing'>): In
     const vistas = new Set<string>()
     const saida: string[] = []
     for (const v of lista) {
-      const tag = (v ?? '').trim()
+      const tag = normalizarNome(v ?? '')
       if (!tag || !ehTagDoRd(tag) || vistas.has(tag.toLowerCase())) continue
       vistas.add(tag.toLowerCase())
       saida.push(tag)

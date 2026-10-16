@@ -934,6 +934,9 @@ export type IntegracaoAtrair = {
   bancoDeTalentos: boolean
 }
 
+/** Os formulários que vão ao RD (D-54; Trabalhe Conosco desde 15/10). */
+export type FormularioDoRd = 'contato' | 'chat' | 'newsletter' | 'download' | 'consultores' | 'diagnostico' | 'talentos'
+
 /** As chaves da integração com o RD Station Marketing (D-54), do global
  * `integrations`. Quem lê é o hook de `form-submissions`.
  *
@@ -944,9 +947,6 @@ export type IntegracaoAtrair = {
  * ⚠️ `camposPersonalizados` nasce **desligado**: campo `cf_` que não existe na
  * conta do RD derruba a conversão inteira, e os campos têm que ser criados lá
  * antes de ligar aqui. */
-/** Os formulários que vão ao RD (D-54; Trabalhe Conosco desde 15/10). */
-export type FormularioDoRd = 'contato' | 'chat' | 'newsletter' | 'download' | 'consultores' | 'diagnostico' | 'talentos'
-
 export type IntegracaoRd = {
   ligado: boolean
   camposPersonalizados: boolean

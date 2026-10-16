@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { ehEndpointDeIntegracao, ehIdentificadorDeConversao, ehTagDoRd } from './formatos-de-integracao'
+import { ehEndpointDeIntegracao, ehIdentificadorDeConversao, ehTagDoRd, normalizarNome } from './formatos-de-integracao'
 
 /* 15/10: o site novo manda ao RD o mesmo nome que o site atual manda, porque
  * é por ele que as automações disparam. O do contato do WordPress tem espaço e
@@ -25,9 +25,27 @@ describe('ehIdentificadorDeConversao', () => {
     expect(ehIdentificadorDeConversao('contato\nhome')).toBe(false)
   })
 
+  it('⚠️ recusa caractere invisível colado junto — o nome pareceria igual ao do RD sem casar', () => {
+    expect(ehIdentificadorDeConversao('Formulário​Home')).toBe(false)
+    expect(ehIdentificadorDeConversao('Formulário Home‮')).toBe(false)
+    expect(ehIdentificadorDeConversao('Formulário Home')).toBe(false)
+  })
+
   it('recusa acima de 100 caracteres', () => {
     expect(ehIdentificadorDeConversao('a'.repeat(100))).toBe(true)
     expect(ehIdentificadorDeConversao('a'.repeat(101))).toBe(false)
+  })
+})
+
+describe('normalizarNome', () => {
+  it('⚠️ acento decomposto (colado do macOS) vira o composto — igual ao digitado', () => {
+    const colado = 'Formulário Home'
+    expect(colado).not.toBe('Formulário Home')
+    expect(normalizarNome(colado)).toBe('Formulário Home')
+  })
+
+  it('espaço sem quebra vira espaço comum, e as pontas saem', () => {
+    expect(normalizarNome('  Formulário Home ')).toBe('Formulário Home')
   })
 })
 

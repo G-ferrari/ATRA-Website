@@ -65,8 +65,12 @@ export const ENDPOINT_PADRAO_ATRAIR = process.env.ATRAIR_API_URL?.trim() || 'htt
 /* Marca de código colado por engano: o valor vai em JSON para fora, e um
  * pedaço de HTML ou de script no campo nunca é um nome de verdade. */
 const CARACTERES_DE_CODIGO = /[<>{}`"\\]/
-/* Controle (quebra de linha, tabulação...) não existe num nome digitado. */
-const CARACTERE_DE_CONTROLE = /\p{Cc}/u
+/* Controle (quebra de linha, tabulação...) não existe num nome digitado — nem
+ * os invisíveis (`\p{C}` inteiro: espaço de largura zero, inversão de direção
+ * U+202E) e os separadores de linha e parágrafo. Colado de outro lugar, um
+ * deles deixa o nome **parecendo** igual ao do RD sem casar, e a automação
+ * deixa de disparar sem erro nenhum. */
+const CARACTERE_DE_CONTROLE = /[\p{C}\p{Zl}\p{Zp}]/u
 const TEM_LETRA_OU_DIGITO = /[\p{L}\p{N}]/u
 
 const ehNomeLivre = (valor: string, max: number): boolean =>
@@ -76,6 +80,18 @@ const ehNomeLivre = (valor: string, max: number): boolean =>
   TEM_LETRA_OU_DIGITO.test(valor) &&
   !CARACTERE_DE_CONTROLE.test(valor) &&
   !CARACTERES_DE_CODIGO.test(valor)
+
+/**
+ * O nome como deve ser gravado e comparado: aparado, em NFC e com o espaço sem
+ * quebra (U+00A0) trocado pelo comum.
+ *
+ * ⚠️ Colado do macOS, "Formulário" pode vir com o acento **decomposto** (NFD:
+ * `a` + acento combinante) — idêntico na tela, diferente byte a byte do nome
+ * no RD. Normalizar aqui faz o valor colado casar com o digitado.
+ */
+export function normalizarNome(valor: string): string {
+  return valor.normalize('NFC').replace(/ /g, ' ').trim()
+}
 
 /**
  * O identificador de conversão que o RD mostra nos relatórios e usa nas

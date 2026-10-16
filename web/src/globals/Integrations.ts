@@ -1,12 +1,13 @@
 import type { GlobalConfig } from 'payload'
 
-import { isAdmin, isPublic } from '@/access'
+import { isAdmin, isEditorOrAdmin } from '@/access'
 import {
   CONVERSOES_PADRAO,
   ehEndpointDeIntegracao,
   ehIdentificadorDeConversao,
   ehTagDoRd,
   ENDPOINT_PADRAO_ATRAIR,
+  normalizarNome,
   TAGS_PADRAO,
 } from '@/lib/formatos-de-integracao'
 import { CAMPOS_PERSONALIZADOS } from '@/lib/rd-marketing'
@@ -41,10 +42,12 @@ import { CAMPOS_PERSONALIZADOS } from '@/lib/rd-marketing'
  * o que se grava é o endereço limpo. */
 const aparar = ({ value }: { value?: unknown }) => (typeof value === 'string' ? value.trim() : value)
 
-/* Idem para as listas de tags: cada uma aparada, e as vazias fora. */
-const apararLista = ({ value }: { value?: unknown }) =>
+/* Nomes do RD (identificadores e tags): além de aparar, normaliza — ver
+ * `normalizarNome`. As listas perdem as entradas vazias. */
+const normalizar = ({ value }: { value?: unknown }) => (typeof value === 'string' ? normalizarNome(value) : value)
+const normalizarLista = ({ value }: { value?: unknown }) =>
   Array.isArray(value)
-    ? value.map((v) => (typeof v === 'string' ? v.trim() : v)).filter((v) => v !== '')
+    ? value.map((v) => (typeof v === 'string' ? normalizarNome(v) : v)).filter((v) => v !== '')
     : value
 
 /* Os formulários que vão ao RD, na ordem do admin. A mesma lista monta os
@@ -69,7 +72,12 @@ export const Integrations: GlobalConfig = {
       en: 'ATRAIR (recruiting) and RD Station Marketing (leads) integrations. Admins only. The API keys live on the server — without them nothing syncs, even when enabled here.',
     },
   },
-  access: { read: isPublic, update: isAdmin },
+  /* Leitura só para quem está logado (15/10). Era pública, e `GET
+   * /api/globals/integrations` mostrava a qualquer visitante o endereço do
+   * ATRAIR e, com a task 043, as tags de segmentação do marketing. O site lê
+   * pela Local API (`lib/integracoes.ts`, `hooks/sincronizar-rd.ts`), que
+   * ignora o `access` — nada do site muda. */
+  access: { read: isEditorOrAdmin, update: isAdmin },
   fields: [
     {
       name: 'atrair',
@@ -204,11 +212,11 @@ export const Integrations: GlobalConfig = {
             type: 'text' as const,
             defaultValue: CONVERSOES_PADRAO[name],
             label: { pt, en },
-            hooks: { beforeValidate: [aparar] },
+            hooks: { beforeValidate: [normalizar] },
             validate: (valor: string | null | undefined) =>
               !valor ||
               ehIdentificadorDeConversao(valor) ||
-              'Use o nome como está no RD, com até 100 caracteres, sem quebra de linha e sem < > { } " \\ (ex.: Formulário Home).',
+              'Use o nome como está no RD, com até 100 caracteres, sem quebra de linha e sem < > { } " ` \\ (ex.: Formulário Home).',
           })),
         },
         {
@@ -233,11 +241,14 @@ export const Integrations: GlobalConfig = {
             /* O padrão do Payload ("Selecione um valor") sugere uma lista para
                escolher; aqui a tag é digitada. */
             admin: { placeholder: { pt: 'Digite a tag e tecle Enter', en: 'Type a tag and press Enter' } },
-            hooks: { beforeValidate: [apararLista] },
+            hooks: { beforeValidate: [normalizarLista] },
+            /* ⚠️ O `maxRows` acima não vale sozinho no servidor: um `validate`
+               próprio substitui o padrão do Payload, que é quem o confere. Sem
+               a contagem aqui, a API aceitaria centenas de tags. */
             validate: (valores: string[] | null | undefined) =>
               !valores?.length ||
-              valores.every(ehTagDoRd) ||
-              'Cada tag com até 50 caracteres, sem quebra de linha e sem < > { } " \\.',
+              (valores.length <= 10 && valores.every(ehTagDoRd)) ||
+              'Até 10 tags, cada uma com até 50 caracteres, sem quebra de linha e sem < > { } " ` \\.',
           })),
         },
       ],

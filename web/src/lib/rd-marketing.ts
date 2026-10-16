@@ -136,7 +136,9 @@ export function chaveDoRdConfigurada(env: Record<string, string | undefined> = p
 
 export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Promise<ResultadoDaConversao> {
   if (!config.ligado) return { ok: false, motivo: 'integração desligada no admin' }
-  const chave = process.env.RDSTATION_MARKETING_API_KEY
+  /* Aparada, pela mesma regra de `chaveDoRdConfigurada`: o que o admin chama de
+     "ausente" não pode virar tentativa de envio aqui. */
+  const chave = process.env.RDSTATION_MARKETING_API_KEY?.trim()
   if (!chave) return { ok: false, motivo: 'RDSTATION_MARKETING_API_KEY ausente' }
   const identificador = identificadorDe(doc.kind, config.conversoes)
   if (!identificador) return { ok: false, motivo: `sem identificador de conversão para o kind "${doc.kind}"` }
