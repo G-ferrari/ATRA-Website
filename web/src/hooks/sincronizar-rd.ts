@@ -47,6 +47,13 @@ export const sincronizarComRd: CollectionAfterChangeHook = async ({ doc, req, co
     await req.payload.update({
       collection: 'form-submissions',
       id: lead.id,
+      /* ⚠️ `req` obrigatório (15/10): o `create` que disparou este gancho roda
+       * numa transação ainda aberta, e um `update` sem o `req` vai por outra
+       * conexão, que não enxerga o documento — morria em "NotFound", o
+       * `syncedAt` nunca era gravado e cada edição no admin reenviava o lead
+       * ao RD. Ficou escondido desde a D-54 porque a chave nunca esteve no
+       * servidor; a prova da task 044, com `fetch` falso, mostrou. */
+      req,
       /* O grupo vai inteiro: update parcial de grupo não é garantia do
        * adapter, e aqui os três campos são deste hook mesmo. */
       data: {
