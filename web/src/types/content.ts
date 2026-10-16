@@ -492,10 +492,10 @@ export type BlocoProcessSteps = Base & {
   title: string | null
   description: string | null
   steps: { title: string; description: string }[]
-  /** Apresentação-only, injetada pela página: `timeline` troca a grade de cards
-   *  por uma linha do tempo horizontal com círculos numerados (layout da jornada
-   *  da landing). Padrão `cards`. */
-  layout?: 'cards' | 'timeline'
+  /** O "Formato" do bloco no admin (desde 15/10): `timeline` troca a grade de
+   *  cards por uma linha do tempo com círculos numerados (a jornada da RC18).
+   *  Até ali era a rota da RC18 que ligava a linha, por código. */
+  layout: 'cards' | 'timeline'
 }
 
 export type BlocoPartnerShowcase = Base & {
@@ -995,6 +995,9 @@ export type Contato = {
   redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
   /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
   destinos: Record<FormularioComAviso, string | null>
+  /** Aviso de privacidade do formulário de candidatura (P-17). `null` enquanto
+   *  o RH não escreve — e sem ele o formulário não aparece. */
+  avisoDeCandidatura: string | null
 }
 
 /** Os formulários que avisam a ATRA por e-mail. A newsletter não entra: quem
