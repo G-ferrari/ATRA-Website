@@ -326,6 +326,17 @@ fica o que o site manda ao RD a cada formulário:
 - **Tags** — as tags que o lead recebe no RD, por formulário: digite e tecle
   Enter para cada uma. A newsletter já vem com `newsletter`, que é como os
   envios são segmentados.
+- **E-books** — cada e-book chega ao RD com o **identificador dele**, para o
+  RD saber qual material foi baixado e o marketing montar uma automação por
+  e-book. Ele fica no próprio e-book, em **Conteúdo → Materiais**, no campo
+  **Identificador no RD** da lateral (mesma regra: escreva como está no RD).
+  Vazio, o e-book vai como `ebook-` seguido do endereço dele em português (ex.:
+  `ebook-governanca-de-dados-na-era-da-ia-generativa`). O identificador
+  "Download de material" daqui virou o **liga/desliga** dos downloads: vazio,
+  nenhum e-book vai ao RD; preenchido, cada um vai com o seu. As tags do
+  "Download de material" valem para todos os e-books. Na página do e-book, o
+  formulário fica depois do texto, antes de "Entre em contato", e o botão do
+  topo leva até ele; o formulário só aparece quando o e-book tem o PDF.
 - **Trabalhe Conosco** — o cadastro no banco de talentos de /carreiras também
   tem identificador e tags. Vão ao RD só os dados de contato e de perfil;
   **o currículo nunca vai**.
