@@ -3993,7 +3993,7 @@ export interface Resource {
   } | null;
   publishedAt: string;
   /**
-   * The name this ebook’s download reaches RD Station with — RD automations fire and segment on it. Type it exactly as it is in RD. Empty: it goes as "ebook-" followed by the ebook’s Portuguese address (e.g. ebook-guia-de-governanca).
+   * The name this ebook’s download reaches RD Station with — RD automations fire and segment on it. Type it exactly as it is in RD; it applies once published. Empty: it goes as "ebook-" followed by the ebook’s Portuguese address (e.g. ebook-guia-de-governanca) — and changes if the address changes, so fill it in before building the RD automation.
    */
   rdConversionIdentifier?: string | null;
   /**

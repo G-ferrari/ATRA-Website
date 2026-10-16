@@ -17,7 +17,13 @@ import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
  * Mesmos padrões de `formulario.tsx`: carimbo por ref, escondidos antes dos
  * reais, sem fieldset. */
 
-const CAMPO = 'w-full bg-surface-2 dark:bg-white/5  rounded-[6px] px-4 py-3 text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
+/* Com borda desde a task 046. No herói azul o campo branco se destacava
+ * sozinho; no painel claro do fim da página ficava branco sobre quase branco,
+ * sem contorno. A borda também faz o `focus:border-primary/60` funcionar — sem
+ * ela, e com o `focus:outline-none`, quem navega por teclado não via em que
+ * campo estava. */
+const CAMPO =
+  'w-full bg-surface-2 dark:bg-white/5 border border-slate-300 dark:border-white/15 rounded-[6px] px-4 py-3 text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
 
 export function DownloadGate({ resourceId }: { resourceId: number }) {
   const carimbo = useRef<HTMLInputElement>(null)

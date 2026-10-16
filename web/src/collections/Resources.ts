@@ -130,9 +130,15 @@ export const Resources: CollectionConfig = {
       label: { pt: 'Identificador no RD', en: 'RD identifier' },
       admin: {
         position: 'sidebar',
+        /* Só e-book tem página e formulário (relatório saiu do site, D-49). */
+        condition: (_, irmaos) => irmaos?.kind === 'ebook',
+        /* Dois avisos, porque os dois falham calados: o padrão muda com o
+         * endereço (renomear o e-book desligaria a automação do RD sem erro
+         * nenhum), e o gancho lê a versão publicada — "Salvar rascunho" não
+         * muda o que vai ao RD. */
         description: {
-          pt: 'O nome com que o download deste e-book chega ao RD Station — é por ele que a automação do RD manda o e-mail e segmenta. Escreva exatamente como está no RD. Vazio: vai como "ebook-" seguido do endereço do e-book em português (ex.: ebook-guia-de-governanca).',
-          en: 'The name this ebook’s download reaches RD Station with — RD automations fire and segment on it. Type it exactly as it is in RD. Empty: it goes as "ebook-" followed by the ebook’s Portuguese address (e.g. ebook-guia-de-governanca).',
+          pt: 'O nome com que o download deste e-book chega ao RD Station — é por ele que a automação do RD manda o e-mail e segmenta. Escreva exatamente como está no RD; vale depois de publicar. Vazio: vai como "ebook-" seguido do endereço do e-book em português (ex.: ebook-guia-de-governanca) — e muda se o endereço mudar, por isso preencha antes de montar a automação no RD.',
+          en: 'The name this ebook’s download reaches RD Station with — RD automations fire and segment on it. Type it exactly as it is in RD; it applies once published. Empty: it goes as "ebook-" followed by the ebook’s Portuguese address (e.g. ebook-guia-de-governanca) — and changes if the address changes, so fill it in before building the RD automation.',
         },
       },
       /* As mesmas regras dos identificadores de Sistema → Integrações (task

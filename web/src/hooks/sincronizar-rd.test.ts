@@ -75,6 +75,20 @@ describe('sincronizarComRd', () => {
     await expect(resultado).resolves.toEqual(contato)
   })
 
+  /* O que deixa o download (e todo formulário) responder na hora com o RD fora:
+     o gancho roda dentro do `create` e nunca lança. */
+  it.each([
+    ['RD recusou', async () => new Response('{"errors":"campo"}', { status: 400 })],
+    ['rede caiu', async () => Promise.reject(new Error('fetch failed'))],
+  ])('%s: devolve o doc e grava o erro', async (_, resposta) => {
+    vi.stubGlobal('fetch', vi.fn(resposta))
+    const { resultado, updateOne } = chamar(contato)
+    await expect(resultado).resolves.toEqual(contato)
+    expect(updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { rd: expect.objectContaining({ syncedAt: null, error: expect.any(String) }) } }),
+    )
+  })
+
   it('sem chave não chama o RD nem grava nada', async () => {
     vi.stubEnv('RDSTATION_MARKETING_API_KEY', '')
     const { resultado, updateOne } = chamar(contato)

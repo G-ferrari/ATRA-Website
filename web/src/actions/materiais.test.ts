@@ -2,10 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 /* O download de material (MIG-104) depois da task 046: o RD não entra no
  * caminho do visitante. A ida ao RD é do gancho de `form-submissions`, que
- * roda dentro do `create` e nunca lança (`hooks/sincronizar-rd.test.ts`); aqui
- * o `create` simulado responde como o gancho deixaria, com o RD aceitando ou
- * não, e a URL sai igual. Banco, storage e cabeçalhos são simulados; o
- * anti-spam roda de verdade. */
+ * roda dentro do `create` e nunca lança — o que prova que o lead fica e a
+ * resposta sai com o RD aceitando, recusando ou fora está no teste do gancho
+ * (`hooks/sincronizar-rd.test.ts`). Aqui fica a parte da action: lead gravado
+ * antes da URL, e nada liberado sem lead ou sem PDF. Banco, storage e
+ * cabeçalhos são simulados; o anti-spam roda de verdade. */
 
 const payload = { findByID: vi.fn(), create: vi.fn() }
 const urlAssinada = vi.fn()
@@ -36,13 +37,9 @@ beforeEach(() => {
   urlAssinada.mockResolvedValue('https://storage/atra-privado/guia.pdf?assinatura')
 })
 
-describe('baixarMaterial — o download sai na hora, com ou sem RD (task 046)', () => {
-  it.each([
-    ['RD aceitou', { syncedAt: '2026-10-16T12:00:00Z', error: null }],
-    ['RD recusou', { syncedAt: null, error: 'RD Station respondeu 400' }],
-    ['sem chave do RD', null],
-  ])('%s → grava o lead do e-book e devolve a URL assinada', async (_, rd) => {
-    payload.create.mockResolvedValue({ id: 501, rd })
+describe('baixarMaterial — o lead antes do arquivo (task 046)', () => {
+  it('grava o lead do e-book e devolve a URL assinada na mesma resposta', async () => {
+    payload.create.mockResolvedValue({ id: 501 })
     expect(await baixarMaterial(envio())).toEqual({ ok: true, url: 'https://storage/atra-privado/guia.pdf?assinatura' })
     expect(payload.create).toHaveBeenCalledWith({
       collection: 'form-submissions',

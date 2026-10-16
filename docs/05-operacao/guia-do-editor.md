@@ -331,7 +331,10 @@ fica o que o site manda ao RD a cada formulário:
   e-book. Ele fica no próprio e-book, em **Conteúdo → Materiais**, no campo
   **Identificador no RD** da lateral (mesma regra: escreva como está no RD).
   Vazio, o e-book vai como `ebook-` seguido do endereço dele em português (ex.:
-  `ebook-governanca-de-dados-na-era-da-ia-generativa`). O identificador
+  `ebook-governanca-de-dados-na-era-da-ia-generativa`). ⚠️ Esse nome muda se o
+  endereço do e-book mudar, e a automação do RD para de disparar sem aviso:
+  preencha o campo antes de montar a automação. E o campo vale **depois de
+  publicar** — "Salvar rascunho" não muda o que vai ao RD. O identificador
   "Download de material" daqui virou o **liga/desliga** dos downloads: vazio,
   nenhum e-book vai ao RD; preenchido, cada um vai com o seu. As tags do
   "Download de material" valem para todos os e-books. Na página do e-book, o

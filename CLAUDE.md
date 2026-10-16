@@ -375,7 +375,10 @@ não sincronizado tenta de novo. ⚠️ O resultado é gravado com `db.updateOne
 `req`: sem o `req` roda fora da transação do `create` e morre em "NotFound";
 com `payload.update`, uma falha desfaria a transação do próprio lead (achado
 na D-62). Identificadores de conversão (com espaço e acento, como no RD), tags,
-liga/desliga e o opt-in de campos `cf_*` moram no global `integrations`; o id
+liga/desliga e o opt-in de campos `cf_*` moram no global `integrations` — menos
+o do e-book: desde a **D-63** cada um vai com o próprio (campo do material;
+vazio, `ebook-<slug>`), e o de "Download de material" virou só o liga/desliga;
+o id
 do monitoramento do RD, em `tracking`, atrás do aceite de
 marketing (consentimento v3). ⚠️ A chave certa é a **Chave de API** da App Store
 do RD, não o token público/privado da API 1.x; e `RDSTATION_CRM_TOKEN` nunca

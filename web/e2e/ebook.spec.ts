@@ -51,8 +51,25 @@ test.describe('/ebooks/[slug] — formulário depois do texto (task 046)', () =>
     await expect(page).toHaveURL(/#baixar$/)
     await expect(titulo).toBeInViewport()
 
-    /* O `scroll-mt` da seção: sem ele o título parava atrás do cabeçalho. */
-    const topo = await titulo.evaluate((el) => el.getBoundingClientRect().top)
+    /* O `scroll-mt` da seção: sem ele o painel parava com a primeira linha (o
+       rótulo "E-book") atrás do cabeçalho. Mede o rótulo, e não o título: o
+       título fica abaixo dele e do respiro do painel, e escapava do cabeçalho
+       mesmo sem a margem — o teste passava com ela removida.
+       ⚠️ Medido só depois de a rolagem parar. O site rola suave (`scroll-behavior`
+       no `html`), e o `toBeInViewport` acima passa assim que o título entra por
+       baixo, ainda longe do cabeçalho. */
+    const rotulo = page.locator('#baixar').getByText('E-book', { exact: true })
+    const posicao = () => rotulo.evaluate((el) => Math.round(el.getBoundingClientRect().top))
+    let anterior = Number.NaN
+    await expect
+      .poll(async () => {
+        const agora = await posicao()
+        const parou = agora === anterior
+        anterior = agora
+        return parou
+      }, { intervals: [200] })
+      .toBe(true)
+    const topo = await posicao()
     const cabecalho = await page.evaluate(() => document.querySelector('nav.fixed')?.getBoundingClientRect().bottom)
     expect(cabecalho, 'o cabeçalho fixo (`nav.fixed`) não foi achado').toBeDefined()
     expect(topo).toBeGreaterThanOrEqual(cabecalho!)
