@@ -138,7 +138,9 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
        temar junto com o texto do corpo (Regra do Par). O claro segue `bg-white`
        — pixel intacto; só o escuro muda, e o gabarito escuro precisa regravar. */
     <main className="min-h-screen bg-white dark:bg-[#0e1015]">
-      <section className="relative min-h-[50vh] md:min-h-[60vh] bg-primary overflow-hidden flex items-center pt-32 md:pt-48 pb-16">
+      {/* `data-heroi-azul`: o cabeçalho, transparente por cima, ganha fundo
+          (variante `sobre-azul`, globals.css). */}
+      <section data-heroi-azul className="relative min-h-[50vh] md:min-h-[60vh] bg-primary overflow-hidden flex items-center pt-32 md:pt-48 pb-16">
         <div className="absolute inset-0">
           <Image
             src={caso.image.url}

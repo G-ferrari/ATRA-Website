@@ -31,6 +31,8 @@ import { sincronizarComRd } from '@/hooks/sincronizar-rd'
 const soDiagnosticoDeMaturidade = (data: Partial<{ kind: string }> | undefined) =>
   data?.kind === 'data-maturity-diagnostic'
 
+const soBancoDeTalentos = (data: Partial<{ kind: string }> | undefined) => data?.kind === 'talent-pool'
+
 export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
   admin: {
@@ -129,6 +131,34 @@ export const FormSubmissions: CollectionConfig = {
     { name: 'phone', type: 'text', label: { pt: 'Telefone', en: 'Phone' } },
     { name: 'company', type: 'text', label: { pt: 'Empresa', en: 'Company' } },
     { name: 'message', type: 'textarea', label: { pt: 'Mensagem', en: 'Message' } },
+    {
+      /* 15/10 (task 044, D-62) — o perfil do banco de talentos em campos
+       * próprios. Até aqui LinkedIn, área e senioridade entravam só
+       * serializados na mensagem (MIG-102), o que bastava para o admin e para
+       * o aviso por e-mail. Com o Trabalhe Conosco indo ao RD, o RD precisa de
+       * cada um no seu campo — e a mensagem, texto livre, **não** vai para a
+       * base de marketing. A mensagem continua como está, para o admin e o
+       * aviso não mudarem. Somente leitura: é o que o candidato enviou. */
+      name: 'talent',
+      type: 'group',
+      label: { pt: 'Banco de talentos', en: 'Talent pool' },
+      admin: { readOnly: true, condition: soBancoDeTalentos },
+      fields: [
+        { name: 'linkedin', type: 'text', label: { pt: 'LinkedIn', en: 'LinkedIn' } },
+        { name: 'area', type: 'text', label: { pt: 'Área de atuação', en: 'Field' } },
+        { name: 'seniority', type: 'text', label: { pt: 'Senioridade', en: 'Seniority' } },
+        {
+          /* D-62: o aviso de privacidade que o formulário mostrava quando a
+           * pessoa se cadastrou (Sistema → Integrações), copiado no servidor
+           * no momento da gravação. É o registro de que ela foi avisada de
+           * que o cadastro iria ao RD — e o que libera o envio. Vazio: não
+           * havia aviso, e o cadastro não vai ao RD. */
+          name: 'privacyNotice',
+          type: 'textarea',
+          label: { pt: 'Aviso exibido no cadastro', en: 'Notice shown at sign-up' },
+        },
+      ],
+    },
     {
       /* MIG-149 (D-29) — só o kind `chat-lead` preenche. O recorte de P-20:
        * as últimas mensagens **do visitante** na conversa com a ATRA AI, nada

@@ -9251,14 +9251,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "variant": {
-          "name": "variant",
-          "type": "enum_pages_blocks_process_steps_variant",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'cards'"
-        },
         "anchor": {
           "name": "anchor",
           "type": "varchar",
@@ -22856,14 +22848,6 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
-        },
-        "variant": {
-          "name": "variant",
-          "type": "enum__pages_v_blocks_process_steps_variant",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'cards'"
         },
         "anchor": {
           "name": "anchor",
@@ -40390,14 +40374,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "variant": {
-          "name": "variant",
-          "type": "enum_partners_blocks_process_steps_variant",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'cards'"
-        },
         "anchor": {
           "name": "anchor",
           "type": "varchar",
@@ -53280,14 +53256,6 @@
           "type": "varchar",
           "primaryKey": true,
           "notNull": true
-        },
-        "variant": {
-          "name": "variant",
-          "type": "enum_segments_blocks_process_steps_variant",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'cards'"
         },
         "anchor": {
           "name": "anchor",
@@ -66372,14 +66340,6 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
-        },
-        "variant": {
-          "name": "variant",
-          "type": "enum__segments_v_blocks_process_steps_variant",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'cards'"
         },
         "anchor": {
           "name": "anchor",
@@ -79629,14 +79589,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "variant": {
-          "name": "variant",
-          "type": "enum_solutions_blocks_process_steps_variant",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'cards'"
-        },
         "anchor": {
           "name": "anchor",
           "type": "varchar",
@@ -92638,14 +92590,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "variant": {
-          "name": "variant",
-          "type": "enum__solutions_v_blocks_process_steps_variant",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'cards'"
-        },
         "anchor": {
           "name": "anchor",
           "type": "varchar",
@@ -104994,6 +104938,13 @@
           "notNull": false,
           "default": "'site-diagnostico-maturidade'"
         },
+        "rd_station_marketing_conversions_talent_pool": {
+          "name": "rd_station_marketing_conversions_talent_pool",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'site-trabalhe-conosco'"
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp(3) with time zone",
@@ -105009,6 +104960,85 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.integrations_texts": {
+      "name": "integrations_texts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "integrations_texts_order_parent": {
+          "name": "integrations_texts_order_parent",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "integrations_texts_parent_fk": {
+          "name": "integrations_texts_parent_fk",
+          "tableFrom": "integrations_texts",
+          "tableTo": "integrations",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -107093,14 +107123,6 @@
         "surface-2"
       ]
     },
-    "public.enum_pages_blocks_process_steps_variant": {
-      "name": "enum_pages_blocks_process_steps_variant",
-      "schema": "public",
-      "values": [
-        "cards",
-        "timeline"
-      ]
-    },
     "public.enum_pages_blocks_process_steps_borda": {
       "name": "enum_pages_blocks_process_steps_borda",
       "schema": "public",
@@ -108740,14 +108762,6 @@
       "values": [
         "surface-1",
         "surface-2"
-      ]
-    },
-    "public.enum__pages_v_blocks_process_steps_variant": {
-      "name": "enum__pages_v_blocks_process_steps_variant",
-      "schema": "public",
-      "values": [
-        "cards",
-        "timeline"
       ]
     },
     "public.enum__pages_v_blocks_process_steps_borda": {
@@ -110527,14 +110541,6 @@
         "surface-2"
       ]
     },
-    "public.enum_partners_blocks_process_steps_variant": {
-      "name": "enum_partners_blocks_process_steps_variant",
-      "schema": "public",
-      "values": [
-        "cards",
-        "timeline"
-      ]
-    },
     "public.enum_partners_blocks_process_steps_borda": {
       "name": "enum_partners_blocks_process_steps_borda",
       "schema": "public",
@@ -112159,14 +112165,6 @@
       "values": [
         "surface-1",
         "surface-2"
-      ]
-    },
-    "public.enum_segments_blocks_process_steps_variant": {
-      "name": "enum_segments_blocks_process_steps_variant",
-      "schema": "public",
-      "values": [
-        "cards",
-        "timeline"
       ]
     },
     "public.enum_segments_blocks_process_steps_borda": {
@@ -113833,14 +113831,6 @@
       "values": [
         "surface-1",
         "surface-2"
-      ]
-    },
-    "public.enum__segments_v_blocks_process_steps_variant": {
-      "name": "enum__segments_v_blocks_process_steps_variant",
-      "schema": "public",
-      "values": [
-        "cards",
-        "timeline"
       ]
     },
     "public.enum__segments_v_blocks_process_steps_borda": {
@@ -115515,14 +115505,6 @@
       "values": [
         "surface-1",
         "surface-2"
-      ]
-    },
-    "public.enum_solutions_blocks_process_steps_variant": {
-      "name": "enum_solutions_blocks_process_steps_variant",
-      "schema": "public",
-      "values": [
-        "cards",
-        "timeline"
       ]
     },
     "public.enum_solutions_blocks_process_steps_borda": {
@@ -117202,14 +117184,6 @@
         "surface-2"
       ]
     },
-    "public.enum__solutions_v_blocks_process_steps_variant": {
-      "name": "enum__solutions_v_blocks_process_steps_variant",
-      "schema": "public",
-      "values": [
-        "cards",
-        "timeline"
-      ]
-    },
     "public.enum__solutions_v_blocks_process_steps_borda": {
       "name": "enum__solutions_v_blocks_process_steps_borda",
       "schema": "public",
@@ -118512,6 +118486,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "b1d9acb9-7f68-40e3-8481-8cda04c33efc",
+  "id": "e6747c09-11c6-425a-a86e-4521bd2be05f",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

@@ -6049,6 +6049,10 @@ export interface Resource {
   } | null;
   publishedAt: string;
   /**
+   * The name this ebook’s download reaches RD Station with — RD automations fire and segment on it. Type it exactly as it is in RD; it applies once published. Empty: it goes as "ebook-" followed by the ebook’s Portuguese address (e.g. ebook-guia-de-governanca) — and changes if the address changes, so fill it in before building the RD automation.
+   */
+  rdConversionIdentifier?: string | null;
+  /**
    * Optional. When empty, the site falls back to the page title and summary.
    */
   seo?: {
@@ -11889,6 +11893,12 @@ export interface FormSubmission {
   phone?: string | null;
   company?: string | null;
   message?: string | null;
+  talent?: {
+    linkedin?: string | null;
+    area?: string | null;
+    seniority?: string | null;
+    privacyNotice?: string | null;
+  };
   chatContext?: string | null;
   diagnostic?: {
     sector?: string | null;
@@ -13251,6 +13261,7 @@ export interface ResourcesSelect<T extends boolean = true> {
   pages?: T;
   body?: T;
   publishedAt?: T;
+  rdConversionIdentifier?: T;
   seo?:
     | T
     | {
@@ -15921,6 +15932,14 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   phone?: T;
   company?: T;
   message?: T;
+  talent?:
+    | T
+    | {
+        linkedin?: T;
+        area?: T;
+        seniority?: T;
+        privacyNotice?: T;
+      };
   chatContext?: T;
   diagnostic?:
     | T
@@ -16435,24 +16454,44 @@ export interface Integration {
   };
   rdStationMarketing?: {
     /**
-     * On: every commercial form submission becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications and Talent Pool never go — they are HR data.
+     * On: every submission of the forms below becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications with a CV never go; from Work with us only contact and profile data go, never the CV.
      */
     enabled?: boolean | null;
     /**
-     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
+     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI), cf_area_de_atuacao and cf_nivel (field and seniority from Work with us) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
      */
     customFields?: boolean | null;
     /**
-     * The name each form shows up with in RD. Letters, digits, dot, hyphen and underscore. Empty: that form is not sent.
+     * The name each form shows up with in RD — type it exactly as it is there, spaces and accents included: RD automations fire on it. Empty: that form is not sent.
      */
     conversions?: {
       contact?: string | null;
       chatLead?: string | null;
       newsletter?: string | null;
+      /**
+       * Each ebook reaches RD with its own identifier (Content → Resources → RD identifier) or, when that is empty, as "ebook-" followed by its address. This field turns download sending on — empty, none go — and is only used as the name when the ebook cannot be found.
+       */
       materialDownload?: string | null;
       consultantRequest?: string | null;
       dataMaturityDiagnostic?: string | null;
+      talentPool?: string | null;
     };
+    /**
+     * The tags the lead gets in RD, per form. Type and press Enter for each; use the same names as in RD. Empty: the lead arrives untagged.
+     */
+    tags?: {
+      contact?: string[] | null;
+      chatLead?: string[] | null;
+      newsletter?: string[] | null;
+      materialDownload?: string[] | null;
+      consultantRequest?: string[] | null;
+      dataMaturityDiagnostic?: string[] | null;
+      talentPool?: string[] | null;
+    };
+    /**
+     * Shown on the talent pool form, above the submit button. Written by HR and legal: say the sign-up also goes to RD Station (a marketing tool), what for, and how to ask for deletion. Empty: Work with us does not go to RD — sign-ups are still stored in the admin and sent to ATRAIR.
+     */
+    talentPoolNotice?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -17191,7 +17230,20 @@ export interface IntegrationsSelect<T extends boolean = true> {
               materialDownload?: T;
               consultantRequest?: T;
               dataMaturityDiagnostic?: T;
+              talentPool?: T;
             };
+        tags?:
+          | T
+          | {
+              contact?: T;
+              chatLead?: T;
+              newsletter?: T;
+              materialDownload?: T;
+              consultantRequest?: T;
+              dataMaturityDiagnostic?: T;
+              talentPool?: T;
+            };
+        talentPoolNotice?: T;
       };
   updatedAt?: T;
   createdAt?: T;

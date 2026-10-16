@@ -7,7 +7,8 @@ import { baixarMaterial, type ResultadoDownload } from '@/actions/materiais'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
 import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 
-/* MIG-104 — o formulário que troca contato por download, na página do material.
+/* MIG-104 — o formulário que troca contato por download, na página do material,
+ * depois do texto (task 046).
  *
  * Só é montado quando o material tem PDF (`resources.file`), decisão da página.
  * O sucesso mostra o botão com a URL pré-assinada — que expira em 15 minutos,
@@ -16,7 +17,13 @@ import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
  * Mesmos padrões de `formulario.tsx`: carimbo por ref, escondidos antes dos
  * reais, sem fieldset. */
 
-const CAMPO = 'w-full bg-surface-2 dark:bg-white/5  rounded-[6px] px-4 py-3 text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
+/* Com borda desde a task 046. No herói azul o campo branco se destacava
+ * sozinho; no painel claro do fim da página ficava branco sobre quase branco,
+ * sem contorno. A borda também faz o `focus:border-primary/60` funcionar — sem
+ * ela, e com o `focus:outline-none`, quem navega por teclado não via em que
+ * campo estava. */
+const CAMPO =
+  'w-full bg-surface-2 dark:bg-white/5 border border-slate-300 dark:border-white/15 rounded-[6px] px-4 py-3 text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
 
 export function DownloadGate({ resourceId }: { resourceId: number }) {
   const carimbo = useRef<HTMLInputElement>(null)
@@ -58,7 +65,9 @@ export function DownloadGate({ resourceId }: { resourceId: number }) {
       <input name="company" placeholder="Empresa (opcional)" aria-label="Empresa" className={CAMPO} />
 
       {estado && !estado.ok && (
-        <p role="alert" className="text-sm font-light text-red-400">
+        /* O par claro: o `red-400` foi escolhido para o herói azul, e no painel
+           claro do fim da página (task 046) ficava abaixo de 3:1. */
+        <p role="alert" className="text-sm font-light text-red-600 dark:text-red-400">
           {estado.erro}
         </p>
       )}

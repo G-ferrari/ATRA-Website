@@ -1,0 +1,43 @@
+/* O quadro "Chave do RD" de Sistema → Integrações. Só variáveis do tema do
+ * Payload, para acompanhar o claro e o escuro do admin. */
+
+.quadro {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--spacing-field, 24px);
+  padding: 12px 14px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-elevation-0);
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.selo {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.configurada {
+  background: var(--theme-success-100);
+  color: var(--theme-success-800);
+}
+
+.ausente {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-800);
+}
+
+.explicacao {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-500);
+}
