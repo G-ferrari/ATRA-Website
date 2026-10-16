@@ -12057,7 +12057,7 @@ export interface Integration {
   };
   rdStationMarketing?: {
     /**
-     * On: every commercial form submission becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications and Talent Pool never go — they are HR data.
+     * On: every submission of the forms below becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications with a CV never go; from Work with us only contact and profile data go, never the CV.
      */
     enabled?: boolean | null;
     /**
@@ -12065,7 +12065,7 @@ export interface Integration {
      */
     customFields?: boolean | null;
     /**
-     * The name each form shows up with in RD. Letters, digits, dot, hyphen and underscore. Empty: that form is not sent.
+     * The name each form shows up with in RD — type it exactly as it is there, spaces and accents included: RD automations fire on it. Empty: that form is not sent.
      */
     conversions?: {
       contact?: string | null;
@@ -12074,6 +12074,19 @@ export interface Integration {
       materialDownload?: string | null;
       consultantRequest?: string | null;
       dataMaturityDiagnostic?: string | null;
+      talentPool?: string | null;
+    };
+    /**
+     * The tags the lead gets in RD, per form. Type and press Enter for each; use the same names as in RD. Empty: the lead arrives untagged.
+     */
+    tags?: {
+      contact?: string[] | null;
+      chatLead?: string[] | null;
+      newsletter?: string[] | null;
+      materialDownload?: string[] | null;
+      consultantRequest?: string[] | null;
+      dataMaturityDiagnostic?: string[] | null;
+      talentPool?: string[] | null;
     };
   };
   updatedAt?: string | null;
@@ -12552,6 +12565,18 @@ export interface IntegrationsSelect<T extends boolean = true> {
               materialDownload?: T;
               consultantRequest?: T;
               dataMaturityDiagnostic?: T;
+              talentPool?: T;
+            };
+        tags?:
+          | T
+          | {
+              contact?: T;
+              chatLead?: T;
+              newsletter?: T;
+              materialDownload?: T;
+              consultantRequest?: T;
+              dataMaturityDiagnostic?: T;
+              talentPool?: T;
             };
       };
   updatedAt?: T;

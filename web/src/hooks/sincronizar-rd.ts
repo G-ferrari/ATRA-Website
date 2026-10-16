@@ -1,7 +1,7 @@
 import type { CollectionAfterChangeHook } from 'payload'
 
 import { toIntegracaoRd } from '@/lib/mappers/integracao'
-import { deveSincronizar, enviarConversao, type LeadParaRd } from '@/lib/rd-marketing'
+import { chaveDoRdConfigurada, deveSincronizar, enviarConversao, type LeadParaRd } from '@/lib/rd-marketing'
 
 /* D-54 — o hook que leva o lead ao RD Station Marketing (sucede o
  * `sincronizar-crm.ts` de MIG-148, com o mesmo contrato).
@@ -27,7 +27,10 @@ export const sincronizarComRd: CollectionAfterChangeHook = async ({ doc, req, co
   if (context?.skipRdSync) return doc
   /* Sem chave não há o que tentar — e não há erro a registrar: a ausência é
    * estado (`syncedAt` vazio), não falha. */
-  if (!process.env.RDSTATION_MARKETING_API_KEY) return doc
+  /* A mesma regra do quadro do admin (`chaveDoRdConfigurada`): chave só com
+     espaço é ausente lá e aqui — senão o admin diria "Ausente" e o gancho
+     tentaria enviar. */
+  if (!chaveDoRdConfigurada()) return doc
 
   const lead = doc as LeadParaRd & { id: number | string }
   if (!deveSincronizar(lead)) return doc

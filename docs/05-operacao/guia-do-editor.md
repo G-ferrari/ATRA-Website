@@ -308,6 +308,28 @@ cima). Ele é o mesmo nas três abas; só o case de baixo muda.
   mais de um, eles se alternam a cada 5 segundos. Aba sem case escolhido
   mostra os 3 mais recentes, e case despublicado some do painel sozinho.
 
+## Leads no RD Station: identificadores, tags e a chave
+
+Em **Sistema → Integrações → RD Station Marketing** (papel de administrador)
+fica o que o site manda ao RD a cada formulário:
+
+- **Chave do RD** — o quadro do topo diz **Configurada** ou **Ausente**. A
+  chave em si não aparece em lugar nenhum do painel, de propósito: ela fica no
+  servidor (variável `RDSTATION_MARKETING_API_KEY`), e quem a põe é quem cuida
+  do servidor. **Ausente** quer dizer que nada vai ao RD, mesmo com a
+  integração ligada.
+- **Identificadores de conversão** — o nome com que cada formulário chega ao
+  RD. Escreva **exatamente** como está no RD, com espaço e acento se tiver
+  (ex.: "Formulário Home"): é por esse nome que as automações do RD (o e-mail
+  de agradecimento e o aviso ao time) disparam. Vazio: aquele formulário não
+  vai ao RD.
+- **Tags** — as tags que o lead recebe no RD, por formulário: digite e tecle
+  Enter para cada uma. A newsletter já vem com `newsletter`, que é como os
+  envios são segmentados.
+- **Trabalhe Conosco** — o cadastro no banco de talentos de /carreiras também
+  tem identificador e tags. Vão ao RD só os dados de contato e de perfil;
+  **o currículo nunca vai**.
+
 ## O que mais é editável
 
 - **Depoimentos e clientes** — Catálogos. Depoimento sem foto mostra
@@ -321,8 +343,8 @@ cima). Ele é o mesmo nas três abas; só o case de baixo muda.
   provavelmente sua primeira tarefa real neste painel.
 - **Leads** — os envios do formulário de contato ficam em "Form submissions",
   com a campanha de origem de cada um. Eles também vão para o RD Station
-  Marketing como conversões: o nome de cada conversão e o liga/desliga ficam em
-  Sistema → Integrações (papel de administrador), e "Sincronizado em" vazio
+  Marketing como conversões: o nome de cada conversão, as tags e o liga/desliga
+  ficam em Sistema → Integrações (ver "Leads no RD Station", acima), e "Sincronizado em" vazio
   num envio quer dizer que ele ainda não chegou lá — editar o envio tenta de
   novo.
 - **Google Tag Manager, Lusha e RD Station** — Sistema → Rastreamento (papel de

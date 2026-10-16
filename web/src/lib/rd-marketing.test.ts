@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CONVERSOES_PADRAO } from './formatos-de-integracao'
 import {
   CAMPOS_PERSONALIZADOS,
+  chaveDoRdConfigurada,
   deveSincronizar,
   enviarConversao,
   identificadorDe,
@@ -30,8 +31,22 @@ const config = (extra: Partial<IntegracaoRd> = {}): IntegracaoRd => ({
     download: CONVERSOES_PADRAO.materialDownload,
     consultores: CONVERSOES_PADRAO.consultantRequest,
     diagnostico: CONVERSOES_PADRAO.dataMaturityDiagnostic,
+    talentos: CONVERSOES_PADRAO.talentPool,
   },
+  tags: { contato: [], chat: [], newsletter: ['newsletter'], download: [], consultores: [], diagnostico: [], talentos: [] },
   ...extra,
+})
+
+/* 15/10: o admin mostra se a chave está no servidor — e só isso. */
+describe('chaveDoRdConfigurada', () => {
+  it('diz se a chave existe, sem devolver nada dela', () => {
+    expect(chaveDoRdConfigurada({ RDSTATION_MARKETING_API_KEY: 'abc123' })).toBe(true)
+    expect(chaveDoRdConfigurada({})).toBe(false)
+  })
+
+  it('chave só com espaço conta como ausente', () => {
+    expect(chaveDoRdConfigurada({ RDSTATION_MARKETING_API_KEY: '   ' })).toBe(false)
+  })
 })
 
 /* Espelho declarado de `KINDS_COMERCIAIS`, conferido pelo teste logo abaixo. */
