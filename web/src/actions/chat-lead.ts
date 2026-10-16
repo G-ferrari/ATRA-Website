@@ -40,6 +40,16 @@ const texto = (dados: FormData, campo: string, max = MAX_CAMPO): string =>
 const campanha = (dados: FormData, campo: string): string | undefined =>
   texto(dados, campo).slice(0, MAX_POR_VALOR) || undefined
 
+/** O que um erro pode deixar no log: o código do Postgres ou o nome.
+ *
+ * ⚠️ **Nunca `console.error(..., e)`.** A mensagem do erro do Drizzle leva
+ * `params:`, e o que o visitante digitou iria inteiro para o log (ver
+ * `consultores.ts`). */
+const semDadoPessoal = (e: unknown): string => {
+  const erro = e as { cause?: { code?: unknown }; code?: unknown; name?: unknown } | null
+  return String(erro?.cause?.code ?? erro?.code ?? erro?.name ?? 'erro desconhecido')
+}
+
 export async function enviarLeadDoChat(dados: FormData): Promise<ResultadoLeadDoChat> {
   if (process.env.ENABLE_CHAT_LEAD !== '1') return { ok: false, erro: ERRO }
 
@@ -65,8 +75,11 @@ export async function enviarLeadDoChat(dados: FormData): Promise<ResultadoLeadDo
   const ai = await payload.findGlobal({ slug: 'atra-ai', depth: 0 })
   if (!ai.leadCapture?.enabled) return { ok: false, erro: ERRO }
 
+  /* O id do que foi gravado: é por ele que o `notified` volta ao documento
+     certo. */
+  let id: number | string
   try {
-    await payload.create({
+    const gravado = await payload.create({
       collection: 'form-submissions',
       data: {
         kind: 'chat-lead',
@@ -87,39 +100,59 @@ export async function enviarLeadDoChat(dados: FormData): Promise<ResultadoLeadDo
         notified: false,
       },
     })
+    id = gravado.id
   } catch (e) {
     console.error('[chat-lead] não gravou:', e)
     return { ok: false, erro: ERRO }
   }
 
-  const contato = await lerContato()
-  const empresa = texto(dados, 'company')
-  const enviou = await enviarAviso({
-    para: destinoDoAviso(contato, 'chat'),
-    assunto: `[site] novo lead do chat${empresa ? ` — ${empresa}` : ''}`,
-    responderPara: email,
-    texto: [
-      `E-mail: ${email}`,
-      texto(dados, 'name') && `Nome: ${texto(dados, 'name')}`,
-      texto(dados, 'phone') && `Telefone: ${texto(dados, 'phone')}`,
-      empresa && `Empresa: ${empresa}`,
-      texto(dados, 'chatContext', MAX_CONTEXTO) &&
-        `\nO que perguntou à ATRA AI:\n${texto(dados, 'chatContext', MAX_CONTEXTO)}`,
-    ]
-      .filter(Boolean)
-      .join('\n'),
-  })
-
-  if (enviou) {
-    const { docs } = await payload.find({
-      collection: 'form-submissions',
-      where: { email: { equals: email }, kind: { equals: 'chat-lead' } },
-      sort: '-createdAt',
-      limit: 1,
-      depth: 0,
+  /* Daqui em diante o lead está salvo: falha só vai para o log.
+     ⚠️ `lerContato` consulta o banco e pode lançar. Fora do `try`, a action
+     respondia erro com o lead já gravado: o visitante tentava de novo, e o
+     comercial recebia duplicata — o defeito que o diagnóstico RC18 tinha e
+     `consultores.ts` já evita. */
+  let enviou: boolean
+  try {
+    const contato = await lerContato()
+    const empresa = texto(dados, 'company')
+    enviou = await enviarAviso({
+      para: destinoDoAviso(contato, 'chat'),
+      assunto: `[site] novo lead do chat${empresa ? ` — ${empresa}` : ''}`,
+      responderPara: email,
+      texto: [
+        `E-mail: ${email}`,
+        texto(dados, 'name') && `Nome: ${texto(dados, 'name')}`,
+        texto(dados, 'phone') && `Telefone: ${texto(dados, 'phone')}`,
+        empresa && `Empresa: ${empresa}`,
+        texto(dados, 'chatContext', MAX_CONTEXTO) &&
+          `\nO que perguntou à ATRA AI:\n${texto(dados, 'chatContext', MAX_CONTEXTO)}`,
+      ]
+        .filter(Boolean)
+        .join('\n'),
     })
-    if (docs[0]) {
-      await payload.update({ collection: 'form-submissions', id: docs[0].id, data: { notified: true } })
+  } catch (e) {
+    console.error(`[chat-lead] lead ${id} gravado, mas o aviso falhou:`, semDadoPessoal(e))
+    return { ok: true }
+  }
+
+  /* Pelo id do que acabou de ser gravado. Antes a action procurava "o último
+     lead do chat daquele e-mail", e podia marcar um envio antigo da mesma
+     pessoa — o mesmo defeito que a task 045 tirou de `formularios.ts`.
+     ⚠️ Com `skipRdSync`: o site já avisou o time, e deixar o gancho tentar o RD
+     de novo aqui faria o RD também avisar, se a nova tentativa passasse — dois
+     avisos —, e dobraria a espera do visitante com o RD fora do ar. A nova
+     tentativa fica para a edição no admin. E sem derrubar nada: o lead já está
+     gravado e avisado. */
+  if (enviou) {
+    try {
+      await payload.update({
+        collection: 'form-submissions',
+        id,
+        data: { notified: true },
+        context: { skipRdSync: true },
+      })
+    } catch (e) {
+      console.error('[chat-lead] não marcou o aviso como enviado:', e)
     }
   }
 

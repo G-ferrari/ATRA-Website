@@ -1928,3 +1928,103 @@ contato, e explica que a conversa é iniciada pela própria pessoa. A frase
 "cada projeto é avaliado conforme o cenário", que também apareceu, fica: é o
 comportamento certo, por decisão do G-ferrari.
 
+
+## D-62 — O Trabalhe Conosco vai ao RD, sem currículo e só com o aviso ao candidato registrado
+
+*Decidida em 15/10/2026 por G-ferrari, a pedido da ATRA (Taci, reunião de 14/10). Revê em parte a D-29. (D-58, D-59 e D-61 estão em PRs abertos.)*
+
+**Contexto.** A D-29 deixou dado de candidato fora do RD Station: currículo
+dentro de base de marketing seria desvio de finalidade (LGPD). O site atual
+(WordPress) manda o formulário Trabalhe Conosco ao RD, pelo plugin oficial, e
+é o RD que agradece a pessoa por e-mail. Para desligar o WordPress sem perder
+esse agradecimento, a ATRA pediu o mesmo no site novo (feature
+`rd-station-formularios`).
+
+**Decisão.**
+
+- O **banco de talentos** (`talent-pool`, o Trabalhe Conosco de `/carreiras`)
+  passa a ir ao RD como conversão, com identificador e tags próprios
+  (Sistema → Integrações).
+- Vão **só dados de contato e de perfil**: nome, e-mail, telefone, LinkedIn
+  (campo padrão do RD) e, com os campos personalizados ligados, área
+  (`cf_area_de_atuacao`) e senioridade (`cf_nivel`). O perfil passou a ter
+  campos próprios em `form-submissions` (grupo `talent`).
+- **Nunca o currículo**, que o banco de talentos nem coleta, e **nunca a
+  mensagem em texto livre**.
+- **Só com o aviso ao candidato registrado no cadastro** (decidido por
+  G-ferrari em 15/10, depois da revisão de LGPD). O RH e o jurídico escrevem o
+  aviso em Sistema → Integrações → "Aviso ao candidato (Trabalhe Conosco)". O
+  formulário o mostra antes do botão, e a action grava, no servidor, uma cópia
+  do aviso que estava valendo (`talent.privacyNotice`). Só cadastro com essa
+  cópia vai ao RD. Assim, ninguém vai sem ter sido avisado: nem quem se
+  cadastrou antes do aviso existir (o retry por edição mandaria quando o RH o
+  marcasse como lido), nem quem se cadastrar enquanto ele estiver vazio. Um
+  corte por data foi a primeira versão e saiu: quem se cadastrasse depois dele
+  também não teria sido avisado.
+- **Só opções da lista.** Área e senioridade são conferidas no servidor e
+  gravadas em português (`lib/banco-de-talentos.ts`). O LinkedIn só é aceito
+  como endereço. Um POST forjado não põe texto livre no RD, no perfil de
+  ninguém.
+- **A candidatura com currículo** (`job-application`, P-17) **continua fora**
+  — a D-29 vale para ela.
+- O envio ao ATRAIR (D-41) não muda.
+
+**Achado junto.** A prova desta decisão, com `fetch` falso, mostrou um defeito
+da D-54 que nunca tinha aparecido, porque a chave do RD nunca esteve no
+servidor. O gancho gravava o resultado do envio (`rd.syncedAt`) fora da
+transação do `create` e morria em "NotFound". Sem `syncedAt`, cada edição no
+admin reenviaria o lead ao RD. Agora a gravação vai direto ao adaptador
+(`db.updateOne`), com o `req`, na mesma transação. Um `payload.update` com o
+`req` também resolveria o NotFound, mas, se falhasse, desfaria a transação do
+próprio lead (`hooks/sincronizar-rd.ts`).
+
+**O que ainda falta.**
+
+- **O texto do aviso ao candidato** (RH e jurídico). Sem ele o Trabalhe
+  Conosco não vai ao RD, e o resto do formulário funciona como antes.
+- Os nomes dos campos personalizados de candidato e o identificador que o RD
+  já usa vêm da lista que a Taci vai passar (task 047). As opções de área e
+  nível do site novo não são as do WordPress (31 cargos; nível com
+  "Especialista"). Se esses campos forem listas fechadas no RD, as opções
+  precisam casar — escolher é do marketing e do RH (D-22).
+- A base legal desses leads segue a regra da P-14: hoje só a newsletter
+  confirmada declara consentimento.
+
+## D-63 — Cada e-book chega ao RD com o próprio identificador, e o formulário fica depois do texto
+
+*Decidida em 15/10/2026 por G-ferrari, a pedido da ATRA (Taci, reunião de 14/10). Task 046 da feature `rd-station-formularios`.*
+
+**Contexto.** Todo download de material chegava ao RD Station com o mesmo
+identificador de conversão ("Download de material", em Sistema →
+Integrações). O RD não sabia qual e-book foi baixado, e o marketing não
+conseguia montar uma automação (o e-mail com aquele material) nem uma
+segmentação por e-book. E o formulário ficava no topo da página, antes de a
+pessoa ler sobre o material.
+
+**Decisão.**
+
+- **Um identificador por e-book.** Cada material ganha o campo
+  "Identificador no RD" (`resources.rdConversionIdentifier`, só em e-book), com
+  as regras dos outros identificadores (aceita espaço e acento). Vazio, vale
+  `ebook-<slug>`, com o endereço em português.
+- **O identificador "Download de material" vira o liga/desliga.** Vazio,
+  nenhum download vai ao RD, como em todo formulário. Ele só vira o nome da
+  conversão se o e-book não puder ser lido no envio. As tags dele valem para
+  todos os e-books.
+- **O gancho lê o e-book a cada envio**, só o slug e o identificador, da versão
+  publicada. Lê sem o `req` do lead: o `findByID` do Payload desfaz a
+  transação do `req` quando falha, e um e-book apagado desfaria a gravação do
+  lead (a mesma armadilha da D-62, por outra porta).
+- **O formulário fica depois do texto**, antes de "Entre em contato". O botão
+  do topo continua e leva até ele (`#baixar`). Sem PDF, nada muda.
+
+**Consequências.**
+
+- O padrão `ebook-<slug>` muda se o endereço do e-book mudar, e a automação do
+  RD para de disparar sem erro nenhum. O guia do editor manda preencher o campo
+  antes de montar a automação.
+- O identificador vale depois de publicar o e-book: "Salvar rascunho" não muda
+  o que vai ao RD.
+
+**O que ainda falta.** Os identificadores que o RD já usa para os e-books vêm
+da lista da Taci (task 047), e os PDFs reais, da P-07.

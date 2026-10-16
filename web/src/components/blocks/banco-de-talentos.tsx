@@ -2,6 +2,7 @@ import { Send, Upload } from 'lucide-react'
 
 import { Formulario } from '@/components/forms/formulario'
 import { TechCornerBraces } from '@/components/ui'
+import { AREAS, SENIORIDADES } from '@/lib/banco-de-talentos'
 import type { Locale } from '@/lib/locales'
 import type { BlocoJobsList } from '@/types/content'
 
@@ -31,9 +32,9 @@ const TEXTOS = {
     linkedin: 'LinkedIn',
     telefone: 'Telefone / WhatsApp',
     area: 'Área de atuação',
-    areas: ['Engenharia de Dados', 'Inteligência Artificial / ML', 'Analytics & BI', 'Arquitetura Cloud', 'Outros'],
+    areas: AREAS.pt,
     senioridade: 'Senioridade',
-    senioridades: ['Júnior', 'Pleno', 'Sênior', 'Lead / Principal', 'Trainee'],
+    senioridades: SENIORIDADES.pt,
     enviar: 'Enviar Candidatura',
     sucesso: 'Candidatura recebida! Nossa equipe de recrutamento avaliará seu perfil e entrará em contato quando surgir uma oportunidade.',
   },
@@ -43,9 +44,9 @@ const TEXTOS = {
     linkedin: 'LinkedIn',
     telefone: 'Phone / WhatsApp',
     area: 'Field',
-    areas: ['Data Engineering', 'Artificial Intelligence / ML', 'Analytics & BI', 'Cloud Architecture', 'Other'],
+    areas: AREAS.en,
     senioridade: 'Seniority',
-    senioridades: ['Junior', 'Mid-level', 'Senior', 'Lead / Principal', 'Trainee'],
+    senioridades: SENIORIDADES.en,
     enviar: 'Send application',
     sucesso: 'Application received! Our recruiting team will review your profile and reach out when an opportunity comes up.',
   },
@@ -136,9 +137,22 @@ export function BancoDeTalentos({
             </select>
           </div>
 
+          {/* D-62: o aviso de privacidade (RH e jurídico, em Sistema →
+              Integrações) vem antes do botão, para ser lido antes de enviar.
+              Sem ele o cadastro não vai ao RD — a action confere no servidor. */}
+          {banco.aviso && (
+            <p
+              id="aviso-do-banco-de-talentos"
+              className="text-[11px] font-light leading-relaxed text-text-muted whitespace-pre-line"
+            >
+              {banco.aviso}
+            </p>
+          )}
+
           <div className="pt-2">
             <button
               type="submit"
+              aria-describedby={banco.aviso ? 'aviso-do-banco-de-talentos' : undefined}
               className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white px-7 py-3 rounded-[6px] text-xs font-semibold transition-all cursor-pointer shadow-md shadow-primary/20 flex items-center justify-center gap-2 active:scale-95"
             >
               <Send size={13} aria-hidden />
