@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 import { NEXT_URL } from '../playwright.config'
-import { ROTAS_COM_GABARITO } from './support/rotas'
+import { ROTAS_COM_GABARITO, ROTAS_SEM_GABARITO } from './support/rotas'
 
 /* Legibilidade no tema claro.
  *
@@ -115,7 +115,7 @@ async function medir(page: import('@playwright/test').Page, tema: 'dark' | 'ligh
   return new Map((await auditar(page)).map((a) => [a.chave, a.razao]))
 }
 
-for (const { nome, caminho } of ROTAS_COM_GABARITO) {
+for (const { nome, caminho } of [...ROTAS_COM_GABARITO, ...ROTAS_SEM_GABARITO]) {
   test(`tema claro: ${nome} é legível`, async ({ page }, info) => {
     test.skip(info.project.name !== 'desktop', 'contraste não muda com o viewport')
 
