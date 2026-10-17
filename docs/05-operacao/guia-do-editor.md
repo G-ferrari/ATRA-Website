@@ -355,7 +355,10 @@ fica o que o site manda ao RD a cada formulário:
   vai ao RD.
 - **Tags** — as tags que o lead recebe no RD, por formulário: digite e tecle
   Enter para cada uma. A newsletter já vem com `newsletter`, que é como os
-  envios são segmentados.
+  envios são segmentados. Desde 16/10 a inscrição na newsletter vai ao RD na
+  hora, sem e-mail de confirmação: quem se inscreve já está na lista. Em
+  Envios de formulário, "Confirmado em" vazio só aparece em inscrição antiga
+  que nunca confirmou, e essa não vai ao RD.
 - **E-books** — cada e-book chega ao RD com o **identificador dele**, para o
   RD saber qual material foi baixado e o marketing montar uma automação por
   e-book. Ele fica no próprio e-book, em **Conteúdo → Materiais**, no campo

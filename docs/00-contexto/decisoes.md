@@ -2068,3 +2068,34 @@ pessoa ler sobre o material.
 
 **O que ainda falta.** Os identificadores que o RD já usa para os e-books vêm
 da lista da Taci (task 047), e os PDFs reais, da P-07.
+
+## D-64 — A newsletter vale no envio, sem o e-mail de confirmação
+
+*Decidida em 16/10/2026 por G-ferrari. Revê a dupla confirmação de MIG-103.*
+
+**Contexto.** Desde agosto a inscrição na newsletter só contava depois do
+clique no link de um e-mail que o próprio site manda (MIG-103). Na prova de
+16/10, o download do e-book chegou ao RD e a newsletter não: a chave do Resend,
+que manda esse e-mail, ainda não está no servidor, e a inscrição ficou parada
+esperando uma confirmação que não chegaria. O marketing segmenta a newsletter
+no RD pela tag `newsletter`, e a confirmação não era pedido da ATRA.
+
+**Decisão.**
+
+- A inscrição vale no envio: a action grava `confirmedAt` na hora, e o gancho
+  leva a inscrição ao RD já na gravação, com a tag `newsletter`.
+- O site não manda e-mail nenhum na inscrição: nem a confirmação ao visitante
+  nem aviso ao time. O que o RD mandar depois é automação do marketing.
+- A base legal declarada ao RD continua a de consentimento: a pessoa pede a
+  inscrição ao digitar o e-mail e clicar em "Inscrever-se".
+- A inscrição antiga que nunca confirmou fica como está, sem a data e fora do
+  RD: ela pediu uma confirmação que não deu.
+- A rota e a página de confirmação ficam para os links que já tenham saído.
+
+**Consequências.**
+
+- Sem a prova do clique, qualquer um pode inscrever o e-mail de outra pessoa.
+  O anti-spam do formulário continua, e o primeiro e-mail do RD deve trazer o
+  link para sair.
+- A base legal deve ser revista pelo jurídico junto com o texto de
+  consentimento do formulário, que espera a política de privacidade (P-14).

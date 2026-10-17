@@ -105,9 +105,11 @@ export const FormSubmissions: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     { name: 'email', type: 'email', required: true, label: { pt: 'E-mail', en: 'Email' } },
-    /* MIG-103 — dupla confirmação da newsletter. `confirmedAt` vazio = o
-     * visitante pediu mas nunca clicou no link: **não** está na lista. O token
-     * é o segredo do link de confirmação; `hidden` porque não é dado editorial. */
+    /* MIG-103 — a dupla confirmação da newsletter, que saiu na D-64 (16/10):
+     * desde então a action carimba `confirmedAt` no envio. Vazio só fica em
+     * inscrição antiga que nunca clicou no link, e essa **não** está na lista
+     * nem vai ao RD. O token é o segredo dos links antigos de confirmação;
+     * `hidden` porque não é dado editorial. */
     { name: 'confirmationToken', type: 'text', index: true, admin: { hidden: true } },
     {
       name: 'confirmedAt',
@@ -116,8 +118,8 @@ export const FormSubmissions: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description: {
-          pt: 'Newsletter: vazio significa que o visitante ainda não confirmou pelo e-mail — não conta como inscrito.',
-          en: 'Newsletter: empty means the visitor never confirmed by e-mail — not a subscriber.',
+          pt: 'Newsletter: preenchido no envio desde 16/10. Vazio só em inscrição antiga que nunca confirmou pelo e-mail: não conta como inscrito e não vai ao RD.',
+          en: 'Newsletter: filled in on submission since 16/10. Empty only on old sign-ups that never confirmed by e-mail: not a subscriber, and not sent to RD.',
         },
       },
     },

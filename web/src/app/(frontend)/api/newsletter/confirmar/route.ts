@@ -6,6 +6,10 @@ export const dynamic = 'force-dynamic'
 
 /* MIG-103 — o clique do link de confirmação da newsletter.
  *
+ * Desde a D-64 (16/10) o site não manda mais esse link: a inscrição vale no
+ * envio. A rota fica para os links que já tenham saído — confirmar uma
+ * inscrição antiga carimba `confirmedAt`, e o gancho a leva ao RD.
+ *
  * GET de propósito: o link chega por e-mail e precisa funcionar num clique,
  * sem JavaScript e sem formulário. O que ele muda é idempotente — confirmar
  * duas vezes carimba a mesma inscrição.
