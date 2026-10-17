@@ -159,6 +159,10 @@ type Base = {
   espaco: 'normal' | 'amplo'
 }
 
+export type VideoDoHero =
+  | { tipo: 'arquivo'; url: string; mimeType: string; titulo: string }
+  | { tipo: 'embed'; src: string; provedor: string }
+
 export type BlocoPageHero = Base & {
   tipo: 'pageHero'
   badge: string | null
@@ -172,8 +176,12 @@ export type BlocoPageHero = Base & {
   ctas: { label: string; href: string }[]
   ctaVariant: 'primary' | 'secondary'
   descriptionWidth: 'narrow' | 'wide'
-  mediaMode: 'none' | 'image' | 'marquee'
+  mediaMode: 'none' | 'image' | 'marquee' | 'video'
+  /** Em `video`, a primeira é a capa antes do play. */
   images: Image[]
+  /** Só em `mediaMode: 'video'`. Arquivo toca no próprio site; embed é
+   *  YouTube/Vimeo e só carrega no clique (D-30). */
+  video: VideoDoHero | null
   /** Números da própria oferta, não da empresa — o `statsGrid` é que lê o global. */
   metrics: { value: number; suffix: string; label: string; color: 'primary' | 'secondary' | 'emerald' }[]
   /** Data-limite em destaque (ex.: RC 18/2025). Presentation-only, injetada pela
@@ -492,10 +500,10 @@ export type BlocoProcessSteps = Base & {
   title: string | null
   description: string | null
   steps: { title: string; description: string }[]
-  /** Apresentação-only, injetada pela página: `timeline` troca a grade de cards
-   *  por uma linha do tempo horizontal com círculos numerados (layout da jornada
-   *  da landing). Padrão `cards`. */
-  layout?: 'cards' | 'timeline'
+  /** O "Formato" do bloco no admin (desde 15/10): `timeline` troca a grade de
+   *  cards por uma linha do tempo com círculos numerados (a jornada da RC18).
+   *  Até ali era a rota da RC18 que ligava a linha, por código. */
+  layout: 'cards' | 'timeline'
 }
 
 export type BlocoPartnerShowcase = Base & {
@@ -995,6 +1003,9 @@ export type Contato = {
   redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
   /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
   destinos: Record<FormularioComAviso, string | null>
+  /** Aviso de privacidade do formulário de candidatura (P-17). `null` enquanto
+   *  o RH não escreve — e sem ele o formulário não aparece. */
+  avisoDeCandidatura: string | null
 }
 
 /** Os formulários que avisam a ATRA por e-mail. A newsletter não entra: quem

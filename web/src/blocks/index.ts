@@ -1,6 +1,8 @@
 import type { Block, Field } from 'payload'
 
-import { campoDeIcone, camposComuns, ICONES } from './shared'
+import { paraEmbed } from '@/lib/video'
+
+import { campoDeIcone, camposComuns, OPCOES_DE_ICONE, SELETOR_DE_ICONE } from './shared'
 
 /* Blocos de página (MIG-047).
  *
@@ -57,7 +59,8 @@ export const PageHero: Block = {
     {
       /* A coluna direita do herói. `marquee` é a vitrine vertical de fotos de
        * `About.tsx:199`; `image` é uma imagem só; `none` deixa o texto ocupar a
-       * largura toda, que é o caso de /glossario e /carreiras. */
+       * largura toda, que é o caso de /glossario e /carreiras. `video` (pedido
+       * de 08/10) é um arquivo enviado ou um link do YouTube/Vimeo. */
       name: 'mediaMode',
       type: 'select',
       defaultValue: 'none',
@@ -65,20 +68,56 @@ export const PageHero: Block = {
         { value: 'none', label: { pt: 'Sem mídia', en: 'No media' } },
         { value: 'image', label: { pt: 'Uma imagem', en: 'Single image' } },
         { value: 'marquee', label: { pt: 'Fotos em rolagem', en: 'Scrolling photos' } },
+        { value: 'video', label: { pt: 'Um vídeo', en: 'A video' } },
       ],
       label: { pt: 'Mídia ao lado', en: 'Side media' },
+    },
+    {
+      name: 'videoFile',
+      type: 'upload',
+      relationTo: 'media',
+      /* ⚠️ A biblioteca é uma só para imagem, PDF e vídeo. Sem o filtro o
+       * seletor ofereceria as 287 imagens aqui — e, no campo de imagens abaixo,
+       * um vídeo, que não tem largura nem altura e derruba o mapper. */
+      filterOptions: { mimeType: { contains: 'video/' } },
+      label: { pt: 'Arquivo de vídeo', en: 'Video file' },
+      admin: {
+        condition: (_, irmaos) => irmaos?.mediaMode === 'video',
+        description: {
+          pt: 'MP4 ou WebM, até 300 MB. O vídeo toca no próprio site, com os controles do navegador. Tendo arquivo e link, vale o arquivo.',
+          en: 'MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.',
+        },
+      },
+    },
+    {
+      name: 'videoUrl',
+      type: 'text',
+      label: { pt: 'Ou o link do vídeo', en: 'Or the video link' },
+      /* O mesmo conversor da página de webinar decide o que é link válido: o
+       * que ele não reconhece não vira iframe, e sem este aviso o herói sairia
+       * sem mídia e sem explicação. */
+      validate: (valor: string | null | undefined) =>
+        !valor?.trim() || paraEmbed(valor) ? true : 'Use um link do YouTube ou do Vimeo.',
+      admin: {
+        condition: (_, irmaos) => irmaos?.mediaMode === 'video',
+        description: {
+          pt: 'YouTube ou Vimeo. O vídeo só carrega quando o visitante clica no play.',
+          en: 'YouTube or Vimeo. The video only loads when the visitor clicks play.',
+        },
+      },
     },
     {
       name: 'images',
       type: 'upload',
       relationTo: 'media',
       hasMany: true,
+      filterOptions: { mimeType: { contains: 'image/' } },
       label: { pt: 'Imagens', en: 'Images' },
       admin: {
         condition: (_, irmaos) => irmaos?.mediaMode !== 'none',
         description: {
-          pt: 'Em “uma imagem”, só a primeira é usada. Na rolagem, todas.',
-          en: 'With a single image only the first is used. In the marquee, all of them.',
+          pt: 'Em “uma imagem”, só a primeira é usada. Na rolagem, todas. Em “um vídeo”, a primeira é a capa mostrada antes do play.',
+          en: 'With a single image only the first is used. In the marquee, all of them. With a video, the first is the cover shown before play.',
         },
       },
     },
@@ -726,6 +765,26 @@ export const ProcessSteps: Block = {
         { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
       ],
     },
+    {
+      /* 15/10 — o formato vira escolha do editor. A linha do tempo existia só
+       * na RC18, ligada por uma regra na rota da solução; em qualquer outra
+       * página o bloco saía em cartões, sem o admin ter como pedir a outra
+       * forma (e a miniatura do seletor, tirada da RC18, mostrava a linha). */
+      name: 'variant',
+      type: 'select',
+      defaultValue: 'cards',
+      options: [
+        { value: 'cards', label: { pt: 'Cartões', en: 'Cards' } },
+        { value: 'timeline', label: { pt: 'Linha do tempo', en: 'Timeline' } },
+      ],
+      label: { pt: 'Formato', en: 'Layout' },
+      admin: {
+        description: {
+          pt: 'Cartões numerados em grade, ou círculos numerados ligados por uma linha (o da página RC18). A linha do tempo cabe de 3 a 8 etapas.',
+          en: 'Numbered cards in a grid, or numbered circles joined by a line (as on the RC18 page). The timeline fits 3 to 8 steps.',
+        },
+      },
+    },
     ...camposComuns,
   ],
 }
@@ -828,8 +887,9 @@ export const JobsList: Block = {
 const campoDeIconeOpcional = (nome = 'eyebrowIcon'): Field => ({
   name: nome,
   type: 'select',
-  options: ICONES.map((v) => ({ value: v, label: v })),
+  options: OPCOES_DE_ICONE,
   label: { pt: 'Ícone da linha de apoio', en: 'Eyebrow icon' },
+  admin: { components: { Field: SELETOR_DE_ICONE } },
 })
 
 /* `select` e não texto de cor: o valor vira classe do Tailwind, e classe
@@ -1005,9 +1065,12 @@ export const BentoGrid: Block = {
            * união e o TypeScript passa a cobrar campos de `RowField`. */
           name: 'footerIcon',
           type: 'select',
-          options: ICONES.map((v) => ({ value: v, label: v })),
+          options: OPCOES_DE_ICONE,
           label: { pt: 'Ícone do rodapé', en: 'Footer icon' },
-          admin: { condition: (_, irmaos) => Boolean(irmaos?.footer) },
+          admin: {
+            condition: (_, irmaos) => Boolean(irmaos?.footer),
+            components: { Field: SELETOR_DE_ICONE },
+          },
         },
       ],
     },

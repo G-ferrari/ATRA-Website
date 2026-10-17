@@ -12,12 +12,24 @@ import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
  * no render é impuro e diverge do servidor), campos escondidos ANTES dos reais
  * (a armadilha do space-y do Tailwind 4), sem fieldset, sucesso inline.
  *
- * ⚠️ Só é montado quando `ENABLE_JOB_APPLICATIONS=1` — a página decide, não
- * este componente. P-17 (retenção do CV, LGPD) é o interruptor. */
+ * ⚠️ Só é montado quando `ENABLE_JOB_APPLICATIONS=1` **e** o aviso de
+ * privacidade está escrito no admin — a página decide, não este componente.
+ * P-17 (retenção do CV, LGPD) é o interruptor; o prazo de 6 meses é cumprido
+ * por `lib/retencao-de-candidaturas.ts`. */
 
 const CAMPO = 'w-full bg-surface-2 dark:bg-white/5  rounded-[6px] px-4 py-3 text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
 
-export function Candidatura({ jobId, jobTitle }: { jobId: number; jobTitle: string }) {
+export function Candidatura({
+  jobId,
+  jobTitle,
+  avisoDePrivacidade,
+}: {
+  jobId: number
+  jobTitle: string
+  /** O texto do RH (Contato → Candidaturas). A página só monta o formulário
+   *  quando ele existe — por isso obrigatório aqui. */
+  avisoDePrivacidade: string
+}) {
   const carimbo = useRef<HTMLInputElement>(null)
   useEffect(() => {
     if (carimbo.current) carimbo.current.value = String(Date.now())
@@ -64,7 +76,19 @@ export function Candidatura({ jobId, jobTitle }: { jobId: number; jobTitle: stri
         </p>
       )}
 
-      <button type="submit" className="pill-btn-primary" disabled={enviando}>
+      {/* P-17: o aviso vem antes do botão, para ser lido antes de enviar, e não
+          num link à parte. `whitespace-pre-line` respeita as quebras de linha
+          que o RH digitar no admin. */}
+      <p id="aviso-de-privacidade-da-candidatura" className="text-xs font-light leading-relaxed text-text-muted whitespace-pre-line">
+        {avisoDePrivacidade}
+      </p>
+
+      <button
+        type="submit"
+        className="pill-btn-primary"
+        disabled={enviando}
+        aria-describedby="aviso-de-privacidade-da-candidatura"
+      >
         {enviando ? 'Enviando…' : 'Enviar candidatura'}
       </button>
     </form>

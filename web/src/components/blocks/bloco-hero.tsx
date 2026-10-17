@@ -3,7 +3,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
+import { VideoSobClique } from '@/components/content/video-sob-clique'
 import { MetricChip, StatusBadge, TechCornerBraces } from '@/components/ui'
+import type { Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
 import type { BlocoPageHero } from '@/types/content'
 
@@ -13,6 +15,8 @@ import { TextoDestacado } from './texto-destacado'
 
 /* CTA com href absoluto (http/https) é link externo — ex.: o WhatsApp do diretor
    na RC18. Abre em nova aba; `rel` fecha o vazamento de opener/referrer. */
+const ASSISTIR: Record<Locale, string> = { pt: 'Assistir ao vídeo', en: 'Watch the video' }
+
 const ehExterno = (href: string) => /^https?:\/\//i.test(href)
 
 /* Classe literal por cor: o Tailwind não enxerga `text-${cor}` no build. */
@@ -33,7 +37,7 @@ function Caixa({ quando, className, children }: { quando: boolean; className: st
 
 /* Abertura de página — porte de `legacy/src/pages/About.tsx:150`, que é a mesma
  * caixa usada em `Glossary.tsx:71` e `Careers.tsx:99`. */
-export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
+export function BlocoHero({ bloco, locale = 'pt' }: { bloco: BlocoPageHero; locale?: Locale }) {
   /* ⚠️ O respiro entre as colunas segue o estilo do botão, e isso é acoplamento
    * implícito assumido: no legado os três (botão laranja, descrição larga,
    * `lg:gap-12`) só aparecem juntos, na página de solução. O certo seria um
@@ -196,7 +200,44 @@ export function BlocoHero({ bloco }: { bloco: BlocoPageHero }) {
               </Caixa>
             </div>
 
-            {bloco.mediaMode !== 'none' && bloco.images.length > 0 && (
+            {bloco.mediaMode === 'video' && bloco.video && (
+              /* ⚠️ Sem o `hidden lg:block` da coluna de fotos, de propósito: a
+                 foto é decoração e some no celular, como no legado; o vídeo é
+                 conteúdo que alguém escolheu mostrar, e some com ele a única
+                 razão de o bloco estar nesse modo. Abaixo de `lg` ele desce
+                 para baixo do texto, na largura toda. */
+              <div className="lg:col-span-5 relative">
+                {bloco.video.tipo === 'arquivo' ? (
+                  <div className="aspect-video rounded-[6px] overflow-hidden bg-slate-950 shadow-2xl">
+                    {/* `preload="metadata"`: o arquivo sai deste servidor, e
+                        baixá-lo inteiro em toda visita à página é banda gasta
+                        com quem não vai dar play. */}
+                    <video
+                      controls
+                      playsInline
+                      preload="metadata"
+                      poster={bloco.images[0]?.url}
+                      aria-label={bloco.video.titulo}
+                      /* `contain`, e não `cover` como nas fotos: vídeo em pé ou
+                         quadrado cortado pela caixa perde o que mostra. */
+                      className="w-full h-full object-contain"
+                    >
+                      <source src={bloco.video.url} type={bloco.video.mimeType} />
+                    </video>
+                  </div>
+                ) : (
+                  <VideoSobClique
+                    embed={{ src: bloco.video.src, titulo: bloco.video.provedor }}
+                    imagem={bloco.images[0] ?? null}
+                    titulo={bloco.title}
+                    rotuloAssistir={ASSISTIR[locale]}
+                    sizes="(min-width: 1024px) 33vw, 100vw"
+                  />
+                )}
+              </div>
+            )}
+
+            {bloco.mediaMode !== 'none' && bloco.mediaMode !== 'video' && bloco.images.length > 0 && (
               /* `hidden lg:block` é do legado (`About.tsx:204`): abaixo de lg a
                  coluna some e o texto ocupa a largura toda. */
               <div className="lg:col-span-5 relative hidden lg:block">
