@@ -7579,7 +7579,7 @@ export interface FormSubmission {
   email: string;
   confirmationToken?: string | null;
   /**
-   * Newsletter: empty means the visitor never confirmed by e-mail — not a subscriber.
+   * Newsletter: filled in on submission since 16/10. Empty only on old sign-ups that never confirmed by e-mail: not a subscriber, and not sent to RD.
    */
   confirmedAt?: string | null;
   job?: (number | null) | Job;

@@ -7,7 +7,8 @@ import { enviarFormulario, type Resultado } from '@/actions/formularios'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
 import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 
-/* MIG-103 — a caixa de newsletter da home, agora viva.
+/* MIG-103 — a caixa de newsletter da home, agora viva. Desde a D-64 (16/10) a
+ * inscrição vale no envio, sem o e-mail de confirmação.
  *
  * ⚠️ A home está sob o gate visual, então o render inicial reproduz o markup
  * estático que estava aqui **classe por classe**: o `<form>` assume o
@@ -36,7 +37,7 @@ export function NewsletterInline({ placeholder }: { placeholder: string | null }
   if (estado?.ok) {
     return (
       <p role="status" className="mt-4 text-xs font-light text-emerald-500">
-        Quase lá: enviamos um e-mail de confirmação. A inscrição só ativa depois do clique.
+        Pronto: você está inscrito na newsletter da ATRA.
       </p>
     )
   }

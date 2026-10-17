@@ -55,7 +55,7 @@ const normalizarLista = ({ value }: { value?: unknown }) =>
 const FORMULARIOS_DO_RD = [
   ['contact', 'Contato', 'Contact'],
   ['chatLead', 'Lead do chat (ATRA AI)', 'Chat lead (ATRA AI)'],
-  ['newsletter', 'Newsletter (só confirmada)', 'Newsletter (confirmed only)'],
+  ['newsletter', 'Newsletter', 'Newsletter'],
   ['materialDownload', 'Download de material', 'Material download'],
   ['consultantRequest', 'Solicitação de consultores', 'Consultant request'],
   ['dataMaturityDiagnostic', 'Diagnóstico de maturidade de dados', 'Data maturity diagnostic'],

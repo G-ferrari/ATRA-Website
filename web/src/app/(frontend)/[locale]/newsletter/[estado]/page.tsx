@@ -8,6 +8,9 @@ import { isLocale } from '@/lib/locales'
 
 /* MIG-103 — onde o link de confirmação da newsletter aterrissa.
  *
+ * Desde a D-64 (16/10) o site não manda mais o e-mail de confirmação: a
+ * inscrição vale no envio. A página fica para os links que já tenham saído.
+ *
  * Dois estados, uma rota: `confirmada` e `invalida`. Página nova, fora do
  * gate visual (não existe no protótipo) e fora do índice — ninguém busca
  * "newsletter confirmada", e indexada ela viraria resultado órfão.
@@ -28,7 +31,7 @@ const ESTADOS = {
     selo: 'Link inválido',
     titulo: 'Este link não confirmou nada.',
     texto:
-      'O link pode ter vindo incompleto do seu e-mail. Volte à página inicial e inscreva-se de novo — o e-mail de confirmação chega em seguida.',
+      'O link pode ter vindo incompleto do seu e-mail. Volte à página inicial e inscreva-se de novo: a inscrição vale na hora.',
   },
 } as const
 
