@@ -7,7 +7,7 @@ import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
  * novo, as migrações de dados de 27/09 em diante leem `pages`, `solutions`,
  * `segments` e `partners` pela Local API com o config de hoje, e o SELECT já
  * pede `video_file_id` e `video_url` — que só nasceriam em
- * `20261009_193535_page_hero_video`. Aqui vão só as colunas, que é o que o
+ * `20261017_105319_page_hero_video`. Aqui vão só as colunas, que é o que o
  * SELECT exige; a chave estrangeira, o índice e a opção nova do seletor ficam
  * na de 09/10, que repete as colunas com `IF NOT EXISTS`. */
 export async function up({ db }: MigrateUpArgs): Promise<void> {
@@ -30,5 +30,5 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 
 /* A volta é a da migração de 09/10, que apaga as colunas. */
 export async function down({ payload }: MigrateDownArgs): Promise<void> {
-  payload.logger.warn('[page-hero-video] as colunas são desfeitas por 20261009_193535_page_hero_video')
+  payload.logger.warn('[page-hero-video] as colunas são desfeitas por 20261017_105319_page_hero_video')
 }

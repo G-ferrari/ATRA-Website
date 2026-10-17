@@ -500,10 +500,10 @@ export type BlocoProcessSteps = Base & {
   title: string | null
   description: string | null
   steps: { title: string; description: string }[]
-  /** Apresentação-only, injetada pela página: `timeline` troca a grade de cards
-   *  por uma linha do tempo horizontal com círculos numerados (layout da jornada
-   *  da landing). Padrão `cards`. */
-  layout?: 'cards' | 'timeline'
+  /** O "Formato" do bloco no admin (desde 15/10): `timeline` troca a grade de
+   *  cards por uma linha do tempo com círculos numerados (a jornada da RC18).
+   *  Até ali era a rota da RC18 que ligava a linha, por código. */
+  layout: 'cards' | 'timeline'
 }
 
 export type BlocoPartnerShowcase = Base & {
@@ -582,6 +582,9 @@ export type BlocoJobsList = Base & {
     highlight: string | null
     description: string | null
     note: string | null
+    /** O aviso de privacidade do formulário (D-62), resolvido pela página a
+     *  partir de Sistema → Integrações. `null`: o formulário sai sem aviso. */
+    aviso: string | null
   } | null
   /** Resolvido pela página, das vagas publicadas. */
   vagas: Vaga[]
@@ -859,6 +862,24 @@ export type SegmentCard = {
   shortDescription: string
 }
 
+/* ATRA AI — o que o assistente pode recomendar, com o endereço certo (D-60).
+ * O modelo nunca escreve endereço: cita o `codigo`, e o servidor devolve o
+ * resto junto da resposta. */
+export type TipoDeConteudoDaIa = 'solucao' | 'segmento' | 'case' | 'webinar' | 'ebook' | 'artigo' | 'pagina'
+
+export type ConteudoRecomendavel = {
+  /** O que o modelo cita (`[UI_CONTEUDO:S12]`): prefixo do tipo + id do documento. */
+  codigo: string
+  tipo: TipoDeConteudoDaIa
+  titulo: string
+  /** Uma linha. Vazio quando o CMS não tem resumo para o item. */
+  resumo: string
+  href: string
+}
+
+/** O que acompanha cada resposta do modelo: só os itens que ela citou, por código. */
+export type ReferenciasDaIa = Record<string, Omit<ConteudoRecomendavel, 'codigo'>>
+
 /** O convite de lead dentro do chat (MIG-150, D-29), do global `atra-ai`.
  * `null` quando qualquer uma das três chaves está fechada — env, toggle
  * editorial ou consentimento vazio no idioma. */
@@ -924,6 +945,9 @@ export type IntegracaoAtrair = {
   bancoDeTalentos: boolean
 }
 
+/** Os formulários que vão ao RD (D-54; Trabalhe Conosco desde 15/10). */
+export type FormularioDoRd = 'contato' | 'chat' | 'newsletter' | 'download' | 'consultores' | 'diagnostico' | 'talentos'
+
 /** As chaves da integração com o RD Station Marketing (D-54), do global
  * `integrations`. Quem lê é o hook de `form-submissions`.
  *
@@ -937,14 +961,14 @@ export type IntegracaoAtrair = {
 export type IntegracaoRd = {
   ligado: boolean
   camposPersonalizados: boolean
-  conversoes: {
-    contato: string | null
-    chat: string | null
-    newsletter: string | null
-    download: string | null
-    consultores: string | null
-    diagnostico: string | null
-  }
+  /** `null` desliga aquele formulário, não a integração. */
+  conversoes: Record<FormularioDoRd, string | null>
+  /** As tags com que o lead chega ao RD, por formulário — já aparadas, sem
+   *  vazias e sem repetição. */
+  tags: Record<FormularioDoRd, string[]>
+  /** O aviso que o formulário do banco de talentos mostra (D-62). `null`
+   *  enquanto o RH não escreve — e sem ele o Trabalhe Conosco não vai ao RD. */
+  avisoAoCandidato: string | null
 }
 
 /** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global
@@ -979,6 +1003,9 @@ export type Contato = {
   redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
   /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
   destinos: Record<FormularioComAviso, string | null>
+  /** Aviso de privacidade do formulário de candidatura (P-17). `null` enquanto
+   *  o RH não escreve — e sem ele o formulário não aparece. */
+  avisoDeCandidatura: string | null
 }
 
 /** Os formulários que avisam a ATRA por e-mail. A newsletter não entra: quem

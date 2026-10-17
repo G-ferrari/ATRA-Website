@@ -4117,18 +4117,6 @@
           "notNull": false,
           "default": "'none'"
         },
-        "video_file_id": {
-          "name": "video_file_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "video_url": {
-          "name": "video_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "cta_variant": {
           "name": "cta_variant",
           "type": "enum_pages_blocks_page_hero_cta_variant",
@@ -4227,37 +4215,9 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "pages_blocks_page_hero_video_file_idx": {
-          "name": "pages_blocks_page_hero_video_file_idx",
-          "columns": [
-            {
-              "expression": "video_file_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
-        "pages_blocks_page_hero_video_file_id_media_id_fk": {
-          "name": "pages_blocks_page_hero_video_file_id_media_id_fk",
-          "tableFrom": "pages_blocks_page_hero",
-          "tableTo": "media",
-          "columnsFrom": [
-            "video_file_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "pages_blocks_page_hero_parent_id_fk": {
           "name": "pages_blocks_page_hero_parent_id_fk",
           "tableFrom": "pages_blocks_page_hero",
@@ -17605,18 +17565,6 @@
           "notNull": false,
           "default": "'none'"
         },
-        "video_file_id": {
-          "name": "video_file_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "video_url": {
-          "name": "video_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "cta_variant": {
           "name": "cta_variant",
           "type": "enum__pages_v_blocks_page_hero_cta_variant",
@@ -17721,37 +17669,9 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "_pages_v_blocks_page_hero_video_file_idx": {
-          "name": "_pages_v_blocks_page_hero_video_file_idx",
-          "columns": [
-            {
-              "expression": "video_file_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
-        "_pages_v_blocks_page_hero_video_file_id_media_id_fk": {
-          "name": "_pages_v_blocks_page_hero_video_file_id_media_id_fk",
-          "tableFrom": "_pages_v_blocks_page_hero",
-          "tableTo": "media",
-          "columnsFrom": [
-            "video_file_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "_pages_v_blocks_page_hero_parent_id_fk": {
           "name": "_pages_v_blocks_page_hero_parent_id_fk",
           "tableFrom": "_pages_v_blocks_page_hero",
@@ -35320,18 +35240,6 @@
           "notNull": false,
           "default": "'none'"
         },
-        "video_file_id": {
-          "name": "video_file_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "video_url": {
-          "name": "video_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "cta_variant": {
           "name": "cta_variant",
           "type": "enum_partners_blocks_page_hero_cta_variant",
@@ -35430,37 +35338,9 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "partners_blocks_page_hero_video_file_idx": {
-          "name": "partners_blocks_page_hero_video_file_idx",
-          "columns": [
-            {
-              "expression": "video_file_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
-        "partners_blocks_page_hero_video_file_id_media_id_fk": {
-          "name": "partners_blocks_page_hero_video_file_id_media_id_fk",
-          "tableFrom": "partners_blocks_page_hero",
-          "tableTo": "media",
-          "columnsFrom": [
-            "video_file_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "partners_blocks_page_hero_parent_id_fk": {
           "name": "partners_blocks_page_hero_parent_id_fk",
           "tableFrom": "partners_blocks_page_hero",
@@ -48243,18 +48123,6 @@
           "notNull": false,
           "default": "'none'"
         },
-        "video_file_id": {
-          "name": "video_file_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "video_url": {
-          "name": "video_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "cta_variant": {
           "name": "cta_variant",
           "type": "enum_segments_blocks_page_hero_cta_variant",
@@ -48353,37 +48221,9 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "segments_blocks_page_hero_video_file_idx": {
-          "name": "segments_blocks_page_hero_video_file_idx",
-          "columns": [
-            {
-              "expression": "video_file_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
-        "segments_blocks_page_hero_video_file_id_media_id_fk": {
-          "name": "segments_blocks_page_hero_video_file_id_media_id_fk",
-          "tableFrom": "segments_blocks_page_hero",
-          "tableTo": "media",
-          "columnsFrom": [
-            "video_file_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "segments_blocks_page_hero_parent_id_fk": {
           "name": "segments_blocks_page_hero_parent_id_fk",
           "tableFrom": "segments_blocks_page_hero",
@@ -61217,18 +61057,6 @@
           "notNull": false,
           "default": "'none'"
         },
-        "video_file_id": {
-          "name": "video_file_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "video_url": {
-          "name": "video_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "cta_variant": {
           "name": "cta_variant",
           "type": "enum__segments_v_blocks_page_hero_cta_variant",
@@ -61333,37 +61161,9 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "_segments_v_blocks_page_hero_video_file_idx": {
-          "name": "_segments_v_blocks_page_hero_video_file_idx",
-          "columns": [
-            {
-              "expression": "video_file_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
-        "_segments_v_blocks_page_hero_video_file_id_media_id_fk": {
-          "name": "_segments_v_blocks_page_hero_video_file_id_media_id_fk",
-          "tableFrom": "_segments_v_blocks_page_hero",
-          "tableTo": "media",
-          "columnsFrom": [
-            "video_file_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "_segments_v_blocks_page_hero_parent_id_fk": {
           "name": "_segments_v_blocks_page_hero_parent_id_fk",
           "tableFrom": "_segments_v_blocks_page_hero",
@@ -74655,18 +74455,6 @@
           "notNull": false,
           "default": "'none'"
         },
-        "video_file_id": {
-          "name": "video_file_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "video_url": {
-          "name": "video_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "cta_variant": {
           "name": "cta_variant",
           "type": "enum_solutions_blocks_page_hero_cta_variant",
@@ -74765,37 +74553,9 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "solutions_blocks_page_hero_video_file_idx": {
-          "name": "solutions_blocks_page_hero_video_file_idx",
-          "columns": [
-            {
-              "expression": "video_file_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
-        "solutions_blocks_page_hero_video_file_id_media_id_fk": {
-          "name": "solutions_blocks_page_hero_video_file_id_media_id_fk",
-          "tableFrom": "solutions_blocks_page_hero",
-          "tableTo": "media",
-          "columnsFrom": [
-            "video_file_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "solutions_blocks_page_hero_parent_id_fk": {
           "name": "solutions_blocks_page_hero_parent_id_fk",
           "tableFrom": "solutions_blocks_page_hero",
@@ -87546,18 +87306,6 @@
           "notNull": false,
           "default": "'none'"
         },
-        "video_file_id": {
-          "name": "video_file_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "video_url": {
-          "name": "video_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "cta_variant": {
           "name": "cta_variant",
           "type": "enum__solutions_v_blocks_page_hero_cta_variant",
@@ -87662,37 +87410,9 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "_solutions_v_blocks_page_hero_video_file_idx": {
-          "name": "_solutions_v_blocks_page_hero_video_file_idx",
-          "columns": [
-            {
-              "expression": "video_file_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
-        "_solutions_v_blocks_page_hero_video_file_id_media_id_fk": {
-          "name": "_solutions_v_blocks_page_hero_video_file_id_media_id_fk",
-          "tableFrom": "_solutions_v_blocks_page_hero",
-          "tableTo": "media",
-          "columnsFrom": [
-            "video_file_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
         "_solutions_v_blocks_page_hero_parent_id_fk": {
           "name": "_solutions_v_blocks_page_hero_parent_id_fk",
           "tableFrom": "_solutions_v_blocks_page_hero",
@@ -102750,6 +102470,89 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.atra_ai_recommends": {
+      "name": "atra_ai_recommends",
+      "schema": "",
+      "columns": {
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "enum_atra_ai_recommends",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "atra_ai_recommends_order_idx": {
+          "name": "atra_ai_recommends_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "atra_ai_recommends_parent_idx": {
+          "name": "atra_ai_recommends_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "atra_ai_recommends_parent_fk": {
+          "name": "atra_ai_recommends_parent_fk",
+          "tableFrom": "atra_ai_recommends",
+          "tableTo": "atra_ai",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.atra_ai": {
       "name": "atra_ai",
       "schema": "",
@@ -105135,6 +104938,13 @@
           "notNull": false,
           "default": "'site-diagnostico-maturidade'"
         },
+        "rd_station_marketing_conversions_talent_pool": {
+          "name": "rd_station_marketing_conversions_talent_pool",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'site-trabalhe-conosco'"
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp(3) with time zone",
@@ -105150,6 +104960,85 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.integrations_texts": {
+      "name": "integrations_texts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "integrations_texts_order_parent": {
+          "name": "integrations_texts_order_parent",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "integrations_texts_parent_fk": {
+          "name": "integrations_texts_parent_fk",
+          "tableFrom": "integrations_texts",
+          "tableTo": "integrations",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -106395,8 +106284,7 @@
       "values": [
         "none",
         "image",
-        "marquee",
-        "video"
+        "marquee"
       ]
     },
     "public.enum_pages_blocks_page_hero_cta_variant": {
@@ -108037,8 +107925,7 @@
       "values": [
         "none",
         "image",
-        "marquee",
-        "video"
+        "marquee"
       ]
     },
     "public.enum__pages_v_blocks_page_hero_cta_variant": {
@@ -109815,8 +109702,7 @@
       "values": [
         "none",
         "image",
-        "marquee",
-        "video"
+        "marquee"
       ]
     },
     "public.enum_partners_blocks_page_hero_cta_variant": {
@@ -111442,8 +111328,7 @@
       "values": [
         "none",
         "image",
-        "marquee",
-        "video"
+        "marquee"
       ]
     },
     "public.enum_segments_blocks_page_hero_cta_variant": {
@@ -113109,8 +112994,7 @@
       "values": [
         "none",
         "image",
-        "marquee",
-        "video"
+        "marquee"
       ]
     },
     "public.enum__segments_v_blocks_page_hero_cta_variant": {
@@ -114784,8 +114668,7 @@
       "values": [
         "none",
         "image",
-        "marquee",
-        "video"
+        "marquee"
       ]
     },
     "public.enum_solutions_blocks_page_hero_cta_variant": {
@@ -116462,8 +116345,7 @@
       "values": [
         "none",
         "image",
-        "marquee",
-        "video"
+        "marquee"
       ]
     },
     "public.enum__solutions_v_blocks_page_hero_cta_variant": {
@@ -118221,6 +118103,19 @@
         "material"
       ]
     },
+    "public.enum_atra_ai_recommends": {
+      "name": "enum_atra_ai_recommends",
+      "schema": "public",
+      "values": [
+        "solutions",
+        "segments",
+        "cases",
+        "webinars",
+        "ebooks",
+        "posts",
+        "pages"
+      ]
+    },
     "public.enum_conversion_panel_paths_icon": {
       "name": "enum_conversion_panel_paths_icon",
       "schema": "public",
@@ -118591,6 +118486,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "627149e9-4222-4887-b806-6989b6e5860e",
+  "id": "e6747c09-11c6-425a-a86e-4521bd2be05f",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

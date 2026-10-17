@@ -9,6 +9,7 @@ import { BlocoCta } from '@/components/blocks/bloco-cta'
 import { BlocoHero } from '@/components/blocks/bloco-hero'
 import { RichText } from '@/components/content/rich-text'
 import { Candidatura } from '@/components/forms/candidatura'
+import { lerContato } from '@/lib/contato'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toVagaDetalhe } from '@/lib/mappers/job'
 import { getPayload } from '@/lib/payload'
@@ -113,6 +114,11 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
   if (!vaga) notFound()
 
   const t = TEXTOS[locale]
+  /* Duas chaves para a candidatura aparecer (P-17): a do servidor e o aviso de
+     privacidade escrito pelo RH no admin (Contato → Candidaturas). Só lê o
+     global quando a primeira está ligada. */
+  const avisoDeCandidatura =
+    process.env.ENABLE_JOB_APPLICATIONS === '1' ? (await lerContato()).avisoDeCandidatura : null
   const listaDeVagas = `${hrefDe('carreiras', locale)}#trabalhe-conosco`
   const bancoDeTalentos = `${hrefDe('carreiras', locale)}#banco-talentos`
 
@@ -174,15 +180,17 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
        * `ENABLE_JOB_APPLICATIONS=1` — P-17 (retenção do CV e acesso do RH,
        * LGPD) é quem liga. Variável de servidor lida aqui no Server Component;
        * mudar exige rebuild, o que está certo: ligar coleta de dado pessoal
-       * não deveria ser um toggle silencioso. */}
-      {process.env.ENABLE_JOB_APPLICATIONS === '1' && (
+       * não deveria ser um toggle silencioso. Desde 15/10, também só com o
+       * aviso de privacidade preenchido — e o currículo vence em 6 meses
+       * (`lib/retencao-de-candidaturas.ts`). */}
+      {avisoDeCandidatura && (
         <section className="pb-24">
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-3xl mx-auto">
               <h2 className="text-2xl font-display font-light text-text-main mb-6">
                 {t.candidatarTitulo}
               </h2>
-              <Candidatura jobId={vaga.id} jobTitle={vaga.title} />
+              <Candidatura jobId={vaga.id} jobTitle={vaga.title} avisoDePrivacidade={avisoDeCandidatura} />
             </div>
           </div>
         </section>

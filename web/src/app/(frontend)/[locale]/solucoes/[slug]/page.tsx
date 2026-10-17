@@ -136,9 +136,8 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
         b.compactoNoCelular = true
       }
       /* Os dois `processSteps` — "O prazo" e a jornada "Como a ATRA te ajuda" —
-         viram linha do tempo horizontal, como na landing. Ficam em fundos alternados
-         (surface-2 / surface-1), o que os mantém distintos apesar do mesmo formato. */
-      if (b.tipo === 'processSteps') b.layout = 'timeline'
+         são linha do tempo pelo campo "Formato" do bloco (15/10), e não mais por
+         esta rota: a regra daqui deixava a linha presa à RC18. */
     }
     /* As 12 dimensões saem do acordeão (parede de 12 linhas, ~1290px) para uma grade
        de cards (ícone + título + descrição, 3 linhas de 4). O bloco no CMS continua

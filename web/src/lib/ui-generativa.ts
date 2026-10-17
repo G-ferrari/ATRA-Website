@@ -15,6 +15,9 @@
 export type TokenDeUi =
   | { tipo: 'texto'; texto: string }
   | { tipo: 'contato' }
+  /* D-60 — item do site, citado pelo código. Quem sabe título, resumo e
+     endereço é o servidor, que manda o mapa junto da resposta. */
+  | { tipo: 'conteudo'; codigo: string }
   | { tipo: 'servico'; titulo: string; descricao: string; icone: string }
   | { tipo: 'parceiro'; nome: string }
   | { tipo: 'grafico'; grafico: string }
@@ -30,6 +33,14 @@ export function tokenizarUiGenerativa(texto: string): TokenDeUi[] {
     if (parte.startsWith('[UI_CONTACT]')) {
       tokens.push({ tipo: 'contato' })
       continue
+    }
+
+    if (parte.startsWith('[UI_CONTEUDO:')) {
+      const m = parte.match(/\[UI_CONTEUDO:([^\]\s]+)\]/)
+      if (m) {
+        tokens.push({ tipo: 'conteudo', codigo: m[1] })
+        continue
+      }
     }
 
     if (parte.startsWith('[UI_SERVICE:')) {

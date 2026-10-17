@@ -1,5 +1,7 @@
 import { revalidatePath } from 'next/cache'
 
+import { invalidarCatalogoDaIa } from '../lib/cache-do-catalogo-da-ia'
+
 /* MIG-143 — publicar no CMS passa a atualizar o site.
  *
  * As páginas são pré-renderizadas no build, e até aqui **nada** as invalidava:
@@ -23,6 +25,11 @@ import { revalidatePath } from 'next/cache'
  * o cachorro.
  */
 export function revalidarSite(): void {
+  /* D-60 — a ATRA AI lê o catálogo do site de um cache em memória. Publicar,
+     editar ou apagar qualquer coisa zera esse cache, e a conversa seguinte já
+     enxerga a mudança. Fora do `try`: é só um mapa, vale em qualquer processo. */
+  invalidarCatalogoDaIa()
+
   try {
     revalidatePath('/', 'layout')
   } catch {

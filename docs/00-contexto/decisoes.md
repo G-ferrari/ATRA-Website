@@ -1733,7 +1733,9 @@ não existia mais.
   passo vazio, com a exclusão pronta em `EXCLUSAO_ADIADA`; ela entra numa
   publicação seguinte, depois de esta se provar estável. Conferido: um banco
   migrado com o código novo mantém as 930 tabelas e 6.863 colunas que a
-  versão anterior espera.
+  versão anterior espera. ✅ **15/10:** a exclusão entrou em
+  `20261015_120000_insights_apaga_tabelas_antigas` — 28 tabelas e 7 colunas,
+  depois de seis publicações (#120 a #125) com o código que não as lê.
 - ⚠️ **Campo de texto vazio não fica vazio em inglês**: o Payload preenche
   texto vazio com o português (`afterRead`, `fallbackLocale`). Por isso a
   chamada dos webinars não tem "fim do título": o trecho em destaque fica
@@ -1837,3 +1839,232 @@ do órgão. O que ele ditou:
   linha em `perfil.ts`.
 - **PLD/FT em Mercado Financeiro** ficou, como ele ditou. O achado da D-56
   continua: nenhuma pergunta do setor mede PLD/FT.
+
+## D-60 — A ATRA AI recomenda o que está publicado, e não escreve endereço
+
+*Decidida em 09/10/2026 por G-ferrari. (D-58 e D-59 estão em PRs abertos, do CI.)*
+
+**Contexto.** O assistente de `/chat` só conhecia o texto fixo do admin —
+ainda o do protótipo, com a oferta antiga. Sem ler o site, ele **inventava** o
+nome e a descrição do que recomendava (`[UI_SERVICE:Arquitetura Lakehouse:…]`),
+o cartão "Conhecer solução →" era um `div` sem link, e endereço escrito no texto
+era o que o modelo imaginasse. O pedido: a IA conhecer o que está no site,
+inclusive o que mudou há pouco, e sugerir com o link certo.
+
+**Decisão.**
+
+- A cada conversa o servidor monta o **catálogo** do que está publicado
+  (`lib/catalogo-da-ia.ts`) e o entrega ao modelo depois do texto do admin
+  (`lib/instrucao-da-ia.ts`): soluções, segmentos, cases, webinars, e-books,
+  artigos do blog e as páginas de contato, sobre, consultores, diagnóstico e os
+  índices das seções. Título e resumo; dos artigos, só o título.
+- O modelo **não recebe nem escreve endereço**. Cita o item pelo código
+  (`[UI_CONTEUDO:S12]`), e o servidor confere a resposta contra o catálogo
+  (`lib/referencias-da-ia.ts`): cartão só de item que existe, link só para
+  endereço do catálogo, imagem nunca. O resto vira texto simples.
+- O time de conteúdo escolhe **no admin** quais tipos a IA recomenda
+  (Configuração → ATRA AI → "O que a IA pode recomendar"). Vazio é nada ligado.
+- As regras de recomendação e o formato da etiqueta saíram do campo editável e
+  moram no código: etiqueta fora do formato era descartada em silêncio, e o
+  manual vivia num texto que o marketing edita.
+- Atualização: cache em memória de 60 s, zerado a cada publicação pelo gancho
+  que já revalida o site (`hooks/revalidar.ts`).
+
+**Por que lista inteira, e não busca.** São ~50 itens com resumo e ~220 títulos
+de artigo: cerca de 6,5 mil tokens por mensagem, que cabem na instrução. Banco
+vetorial e busca semântica custariam um serviço a mais para decidir entre
+poucas centenas de linhas. O teto é `MAX_ARTIGOS` (400): passando disso, a
+saída é busca por assunto.
+
+**Recusado.** Deixar o modelo escrever o endereço com a lista de URLs na mão:
+ele erra uma letra do slug e o link quebra de novo, sem ninguém ver. Citar por
+código faz o erro virar "cartão que não aparece", e não "link que dá 404".
+
+**O preço.**
+
+- **Custo:** a lista vai junto a cada mensagem, e o custo de entrada sobe cerca
+  de seis vezes (de ~1 mil para ~7,5 mil tokens). O teto diário de conversas do
+  admin continua limitando o gasto; desligar "artigos do blog" corta metade.
+- **Alucinação:** links, títulos e resumos dos cartões não têm como ser
+  inventados. O **texto livre** ainda pode exagerar um detalhe, porque o modelo
+  só conhece o resumo de cada item; a instrução manda não afirmar o que não
+  está na lista e encaminhar à página ou a um especialista. Reduz, não elimina.
+- Em inglês só entra o que tem **slug em inglês**; o resto não é recomendado lá.
+- O catálogo não filtra página magra (segmento sem blocos, artigo sem corpo):
+  conferir custaria carregar os blocos e o corpo de todos os artigos.
+
+**O texto do admin.** A migração `20261010_000000_atra_ai_recomenda_conteudo`
+troca o item do cartão de serviço **só** se o campo ainda for o texto do
+protótipo, sem edição. O "Sobre a ATRA", com os três pilares antigos, fica:
+atualizar a oferta descrita ali é conteúdo (D-22). Se o texto contradisser a
+lista, as regras dizem que vale a lista.
+
+**Fica para depois.** O texto completo das páginas (respostas mais detalhadas),
+ATRA na mídia e vagas, e o teste com o modelo de verdade em desenvolvimento —
+não há `GEMINI_API_KEY` no ambiente local.
+
+**Ajuste de 10/10, depois do primeiro teste com o modelo de verdade.** Cinco
+perguntas em homologação: os doze cartões eram de itens publicados, todos os
+endereços abriram, e a página de preços que não existe não foi inventada. Mas o
+texto livre enfeitou — disse que a ATRA "não trabalha com tabela de preços
+fixa" e deu a um case qualidades que o resumo não tem. Duas decisões do
+G-ferrari:
+
+- **O assistente não define preço nem condição de contratação.** Não informa
+  valor, faixa, modelo de cobrança, desconto, prazo ou condição, e também não
+  descreve como a ATRA cobra; diz que isso é com o time comercial e oferece o
+  contato. É regra de negócio, e por isso mora no código
+  (`lib/instrucao-da-ia.ts`, "limites da conversa"), valendo com ou sem
+  catálogo — no texto do admin, sumiria numa edição.
+- **Temperatura de 0,7 para 0,3.** Respostas mais contidas e mais repetitivas.
+
+⚠️ As duas coisas reduzem o risco; nenhuma o elimina. O que o servidor
+**garante** continua sendo só o que ele confere: cartões e links.
+
+**Ajuste de 12/10.** No teste dos limites — três perguntas de preço e contrato,
+nenhum valor, prazo ou desconto na resposta —, a IA escreveu "para que um
+especialista entre em contato, confirme aqui comigo". Confirmar ali não dispara
+nada: o cartão de contato abre o WhatsApp, e quem chama é o visitante. Quarto
+limite: ela não agenda, não registra pedido, não diz que alguém vai entrar em
+contato, e explica que a conversa é iniciada pela própria pessoa. A frase
+"cada projeto é avaliado conforme o cenário", que também apareceu, fica: é o
+comportamento certo, por decisão do G-ferrari.
+
+## D-61 — O currículo vence em 6 meses, e a candidatura só liga com o aviso escrito
+
+*Decidida em 14/10/2026 pela ATRA (o prazo), via G-ferrari; a forma, em 15/10.*
+
+**Contexto.** A candidatura com currículo (MIG-102) está pronta e desligada
+desde agosto, esperando a P-17: por quanto tempo o currículo fica guardado e
+quem no RH tem acesso. Em 14/10 a ATRA respondeu a primeira metade: **até 6
+meses**. Nada no sistema apagava currículo, e o formulário não dizia nada ao
+candidato sobre o que acontece com o arquivo.
+
+**Decisão.**
+
+- **O prazo é regra do sistema.** Uma varredura apaga, a cada 12 horas, as
+  candidaturas (`form-submissions` de tipo `job-application`: nome, e-mail,
+  telefone, mensagem, vaga) e os currículos (`private-files` de tipo `cv`, com
+  o PDF do bucket privado) com mais de 6 meses — `lib/retencao-de-candidaturas.ts`.
+  O currículo é apagado pelo tipo e pela data, não pelo vínculo: o arquivo é
+  gravado antes da candidatura, e o que ficou órfão de uma gravação que falhou
+  também é dado pessoal. O material rico não entra.
+- **Quem dispara é o próprio servidor**, um temporizador ligado por
+  `instrumentation.ts` (`lib/agendar-retencao.ts`), 2 minutos depois de subir e a
+  cada 12 horas. Recusados: a fila de jobs do Payload (tabela e migração para uma
+  tarefa só) e um cron na VPS (fora do deploy, ninguém veria parar). Falha vai
+  para o Sentry; o log guarda só a contagem, nunca quem foi apagado.
+- **O prazo mora no código**, não no admin: é o que o aviso promete, e mudar um
+  sem o outro quebra a promessa.
+- **O aviso de privacidade é do RH e do jurídico** (D-22), em Contato →
+  Candidaturas, e nasce vazio. **Sem ele o formulário não aparece**, mesmo com
+  `ENABLE_JOB_APPLICATIONS=1` — a mesma trava do convite do chat (D-29). Ele fica
+  logo acima do botão de enviar, ligado ao botão por `aria-describedby`.
+
+**O que a limpeza não alcança.** O e-mail de aviso que o RH recebe a cada
+candidatura (nome, e-mail e vaga, sem o PDF) e os backups diários do banco, que
+guardam o que existia no dia. O aviso de privacidade deve dizer isso, ou o RH
+apagar os e-mails no mesmo prazo.
+
+**O que ainda falta para ligar.** A outra metade da P-17 (quem no RH acessa), o
+texto do aviso no admin e `ENABLE_JOB_APPLICATIONS=1` no servidor de produção.
+
+## D-62 — O Trabalhe Conosco vai ao RD, sem currículo e só com o aviso ao candidato registrado
+
+*Decidida em 15/10/2026 por G-ferrari, a pedido da ATRA (Taci, reunião de 14/10). Revê em parte a D-29. (D-58, D-59 e D-61 estão em PRs abertos.)*
+
+**Contexto.** A D-29 deixou dado de candidato fora do RD Station: currículo
+dentro de base de marketing seria desvio de finalidade (LGPD). O site atual
+(WordPress) manda o formulário Trabalhe Conosco ao RD, pelo plugin oficial, e
+é o RD que agradece a pessoa por e-mail. Para desligar o WordPress sem perder
+esse agradecimento, a ATRA pediu o mesmo no site novo (feature
+`rd-station-formularios`).
+
+**Decisão.**
+
+- O **banco de talentos** (`talent-pool`, o Trabalhe Conosco de `/carreiras`)
+  passa a ir ao RD como conversão, com identificador e tags próprios
+  (Sistema → Integrações).
+- Vão **só dados de contato e de perfil**: nome, e-mail, telefone, LinkedIn
+  (campo padrão do RD) e, com os campos personalizados ligados, área
+  (`cf_area_de_atuacao`) e senioridade (`cf_nivel`). O perfil passou a ter
+  campos próprios em `form-submissions` (grupo `talent`).
+- **Nunca o currículo**, que o banco de talentos nem coleta, e **nunca a
+  mensagem em texto livre**.
+- **Só com o aviso ao candidato registrado no cadastro** (decidido por
+  G-ferrari em 15/10, depois da revisão de LGPD). O RH e o jurídico escrevem o
+  aviso em Sistema → Integrações → "Aviso ao candidato (Trabalhe Conosco)". O
+  formulário o mostra antes do botão, e a action grava, no servidor, uma cópia
+  do aviso que estava valendo (`talent.privacyNotice`). Só cadastro com essa
+  cópia vai ao RD. Assim, ninguém vai sem ter sido avisado: nem quem se
+  cadastrou antes do aviso existir (o retry por edição mandaria quando o RH o
+  marcasse como lido), nem quem se cadastrar enquanto ele estiver vazio. Um
+  corte por data foi a primeira versão e saiu: quem se cadastrasse depois dele
+  também não teria sido avisado.
+- **Só opções da lista.** Área e senioridade são conferidas no servidor e
+  gravadas em português (`lib/banco-de-talentos.ts`). O LinkedIn só é aceito
+  como endereço. Um POST forjado não põe texto livre no RD, no perfil de
+  ninguém.
+- **A candidatura com currículo** (`job-application`, P-17) **continua fora**
+  — a D-29 vale para ela.
+- O envio ao ATRAIR (D-41) não muda.
+
+**Achado junto.** A prova desta decisão, com `fetch` falso, mostrou um defeito
+da D-54 que nunca tinha aparecido, porque a chave do RD nunca esteve no
+servidor. O gancho gravava o resultado do envio (`rd.syncedAt`) fora da
+transação do `create` e morria em "NotFound". Sem `syncedAt`, cada edição no
+admin reenviaria o lead ao RD. Agora a gravação vai direto ao adaptador
+(`db.updateOne`), com o `req`, na mesma transação. Um `payload.update` com o
+`req` também resolveria o NotFound, mas, se falhasse, desfaria a transação do
+próprio lead (`hooks/sincronizar-rd.ts`).
+
+**O que ainda falta.**
+
+- **O texto do aviso ao candidato** (RH e jurídico). Sem ele o Trabalhe
+  Conosco não vai ao RD, e o resto do formulário funciona como antes.
+- Os nomes dos campos personalizados de candidato e o identificador que o RD
+  já usa vêm da lista que a Taci vai passar (task 047). As opções de área e
+  nível do site novo não são as do WordPress (31 cargos; nível com
+  "Especialista"). Se esses campos forem listas fechadas no RD, as opções
+  precisam casar — escolher é do marketing e do RH (D-22).
+- A base legal desses leads segue a regra da P-14: hoje só a newsletter
+  confirmada declara consentimento.
+
+## D-63 — Cada e-book chega ao RD com o próprio identificador, e o formulário fica depois do texto
+
+*Decidida em 15/10/2026 por G-ferrari, a pedido da ATRA (Taci, reunião de 14/10). Task 046 da feature `rd-station-formularios`.*
+
+**Contexto.** Todo download de material chegava ao RD Station com o mesmo
+identificador de conversão ("Download de material", em Sistema →
+Integrações). O RD não sabia qual e-book foi baixado, e o marketing não
+conseguia montar uma automação (o e-mail com aquele material) nem uma
+segmentação por e-book. E o formulário ficava no topo da página, antes de a
+pessoa ler sobre o material.
+
+**Decisão.**
+
+- **Um identificador por e-book.** Cada material ganha o campo
+  "Identificador no RD" (`resources.rdConversionIdentifier`, só em e-book), com
+  as regras dos outros identificadores (aceita espaço e acento). Vazio, vale
+  `ebook-<slug>`, com o endereço em português.
+- **O identificador "Download de material" vira o liga/desliga.** Vazio,
+  nenhum download vai ao RD, como em todo formulário. Ele só vira o nome da
+  conversão se o e-book não puder ser lido no envio. As tags dele valem para
+  todos os e-books.
+- **O gancho lê o e-book a cada envio**, só o slug e o identificador, da versão
+  publicada. Lê sem o `req` do lead: o `findByID` do Payload desfaz a
+  transação do `req` quando falha, e um e-book apagado desfaria a gravação do
+  lead (a mesma armadilha da D-62, por outra porta).
+- **O formulário fica depois do texto**, antes de "Entre em contato". O botão
+  do topo continua e leva até ele (`#baixar`). Sem PDF, nada muda.
+
+**Consequências.**
+
+- O padrão `ebook-<slug>` muda se o endereço do e-book mudar, e a automação do
+  RD para de disparar sem erro nenhum. O guia do editor manda preencher o campo
+  antes de montar a automação.
+- O identificador vale depois de publicar o e-book: "Salvar rascunho" não muda
+  o que vai ao RD.
+
+**O que ainda falta.** Os identificadores que o RD já usa para os e-books vêm
+da lista da Taci (task 047), e os PDFs reais, da P-07.

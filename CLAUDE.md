@@ -365,11 +365,21 @@ runbook de cutover.
 `afterChange` em `form-submissions`, e a **D-54 (02/10, MIG-157)** trocou o alvo:
 é o **RD Station Marketing** (os formulários da ATRA vivem lá), não o CRM.
 `hooks/sincronizar-rd.ts` + `lib/rd-marketing.ts` mandam cada lead comercial
-como **conversão** — RH fica fora, newsletter só confirmada; sem
-`RDSTATION_MARKETING_API_KEY` é inerte e `rd.syncedAt` vazio denuncia no admin;
-qualquer edição do doc não sincronizado tenta de novo. Identificadores de
-conversão, liga/desliga e o opt-in de campos `cf_*` moram no global
-`integrations`; o id do monitoramento do RD, em `tracking`, atrás do aceite de
+como **conversão**, com as tags do formulário — a candidatura com currículo
+fica fora; o Trabalhe Conosco vai desde a **D-62** (15/10), sem currículo, sem
+mensagem livre e só com o aviso ao candidato registrado no cadastro (o texto
+vem do RH, em Sistema → Integrações; vazio, não vai); newsletter só
+confirmada; sem `RDSTATION_MARKETING_API_KEY` é inerte (o admin mostra "Chave
+do RD: Ausente") e `rd.syncedAt` vazio denuncia no admin; qualquer edição do doc
+não sincronizado tenta de novo. ⚠️ O resultado é gravado com `db.updateOne` e o
+`req`: sem o `req` roda fora da transação do `create` e morre em "NotFound";
+com `payload.update`, uma falha desfaria a transação do próprio lead (achado
+na D-62). Identificadores de conversão (com espaço e acento, como no RD), tags,
+liga/desliga e o opt-in de campos `cf_*` moram no global `integrations` — menos
+o do e-book: desde a **D-63** cada um vai com o próprio (campo do material;
+vazio, `ebook-<slug>`), e o de "Download de material" virou só o liga/desliga;
+o id
+do monitoramento do RD, em `tracking`, atrás do aceite de
 marketing (consentimento v3). ⚠️ A chave certa é a **Chave de API** da App Store
 do RD, não o token público/privado da API 1.x; e `RDSTATION_CRM_TOKEN` nunca
 esteve na lista do compose de produção. E o chat ganhou convite
@@ -399,9 +409,10 @@ pela seção e não pelo slug. As rotas são casca fina (`resolverPaginaMestra` 
 `PaginaMestra`); a parte automática é bloco (`components/secoes/`), com as
 consultas em `lib/conteudo-da-secao.ts`. Página-mestra **não se apaga**
 (despublicada, a rota dá 404) e o slug fica travado. A Insights se monta
-sozinha: os 3 primeiros de cada tipo e "Ver todos". ⚠️ **Pendente:** apagar do
-banco as tabelas dos cartões antigos da Insights (`EXCLUSAO_ADIADA`), numa
-publicação depois de esta se provar estável. ⚠️ A rota de seção que
+sozinha: os 3 primeiros de cada tipo e "Ver todos". As tabelas dos cartões
+antigos da Insights (`EXCLUSAO_ADIADA`) saem em
+`20261015_120000_insights_apaga_tabelas_antigas`, depois de seis publicações
+sem ler. ⚠️ A rota de seção que
 responder 404 de repente é página-mestra que não chegou ao banco — o conteúdo
 vem da migração `20261005_230000_paginas_mestras_conteudo`, e Carreiras e
 Insights só são marcadas depois do seed em banco novo.
@@ -418,6 +429,20 @@ original. Cada setor só oferece o que as perguntas dele avaliam. ⚠️ Regener
 **órgão**, não a norma — `impactosNoPerfil`, em `perfil.ts`, pedido do Roger. É
 só o resumo: perguntas, lacunas e lead seguem norma por norma, e o HTML dele não
 foi editado.
+
+**D-60 (09/10)**: a ATRA AI recebe, a cada conversa, o **catálogo do que está
+publicado** (`lib/catalogo-da-ia.ts`: soluções, segmentos, cases, webinars,
+e-books, artigos e páginas) e recomenda por código — `[UI_CONTEUDO:S12]`. O
+modelo **não escreve endereço**: `lib/referencias-da-ia.ts` confere a resposta
+no servidor e só deixa passar cartão de item que existe e link do catálogo. As
+regras e o formato da etiqueta moram em `lib/instrucao-da-ia.ts`, não no texto
+do admin; os tipos recomendáveis, sim (`recommends`, no global `atra-ai`).
+Os **limites da conversa** também são do código: o assistente não define preço
+nem condição de contratação (10/10), e a temperatura é 0,3.
+⚠️ O cache do catálogo é zerado por `revalidarSite()`: collection nova que deva
+entrar no catálogo precisa estar no gancho (`payload.config.ts`). ⚠️ Não há
+`GEMINI_API_KEY` no ambiente local: a conversa de verdade só se testa em
+homologação.
 
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),

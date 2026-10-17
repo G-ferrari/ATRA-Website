@@ -1,11 +1,26 @@
 'use client'
 
 import { Icon } from '@iconify/react'
-import { ArrowRight, CheckCircle2, Phone, Sparkles } from 'lucide-react'
+import {
+  ArrowUpRight,
+  BookOpen,
+  Building2,
+  CheckCircle2,
+  FileText,
+  Layers,
+  type LucideIcon,
+  PanelsTopLeft,
+  Phone,
+  Sparkles,
+  Trophy,
+  Video,
+} from 'lucide-react'
+import type { ComponentProps } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { tokenizarUiGenerativa } from '@/lib/ui-generativa'
+import type { ReferenciasDaIa, TipoDeConteudoDaIa } from '@/types/content'
 
 /* Cartões da "UI generativa" do chat — porte de
  * `legacy/src/components/ChatGenerativeUI.tsx`, chamado pelos tokens de
@@ -61,7 +76,13 @@ function CartaoContato({ whatsapp }: { whatsapp: string }) {
   )
 }
 
-/** [UI_SERVICE:título:descrição:ícone] — cartão de solução recomendada. */
+/** [UI_SERVICE:título:descrição:ícone] — o cartão antigo de solução recomendada.
+ *
+ * ⚠️ Não é link, e deixou de parecer um (D-60): o protótipo punha "Conhecer
+ * solução →" e cursor de clique num `div` que não levava a lugar nenhum, com
+ * título e descrição inventados pelo modelo. Quem recomenda agora é
+ * `CartaoConteudo`; este só aparece se a resposta ainda trouxer a etiqueta
+ * antiga com um nome que não é de nenhuma solução publicada. */
 function CartaoServico({ titulo, descricao, icone }: { titulo: string; descricao: string; icone: string }) {
   /* O modelo nem sempre manda o ícone certo; o legado corrige por palavra-chave
    * do título antes de confiar no que veio. */
@@ -76,25 +97,85 @@ function CartaoServico({ titulo, descricao, icone }: { titulo: string; descricao
   }
 
   return (
-    <div className="bg-surface-2 dark:bg-[#181b22]  hover:border-primary/50 rounded-[6px] shadow-sm p-3.5 my-2.5 flex flex-col gap-2.5 group transition-all cursor-pointer">
+    <div className="bg-surface-2 dark:bg-[#181b22]  rounded-[6px] shadow-sm p-3.5 my-2.5 flex flex-col gap-2.5">
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+        <div className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0">
           <Icon icon={iconeResolvido} width={18} height={18} />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-bold text-text-main text-xs mb-0.5 group-hover:text-primary transition-colors">{titulo}</h4>
+          <h4 className="font-bold text-text-main text-xs mb-0.5">{titulo}</h4>
           <p className="text-[11px] text-text-muted leading-relaxed line-clamp-3">{descricao}</p>
         </div>
       </div>
-      <div className="pt-2 border-t border-border-main/50 flex items-center justify-between">
+      <div className="pt-2 border-t border-border-main/50">
         <span className="text-[10px] text-text-muted flex items-center gap-1">
           <Sparkles size={11} className="text-secondary" aria-hidden /> Solução Especializada
         </span>
-        <span className="text-[11px] font-semibold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-          Conhecer solução <ArrowRight size={12} aria-hidden />
-        </span>
       </div>
     </div>
+  )
+}
+
+/* O que cada tipo de conteúdo mostra no cartão. Ao contrário dos cartões
+ * portados do protótipo, estes rótulos acompanham o idioma da conversa: o
+ * cartão é novo (D-60), não há gabarito em português a preservar. */
+const TIPOS: Record<TipoDeConteudoDaIa, { icone: LucideIcon; pt: string; en: string }> = {
+  solucao: { icone: Layers, pt: 'Solução', en: 'Solution' },
+  segmento: { icone: Building2, pt: 'Segmento', en: 'Segment' },
+  case: { icone: Trophy, pt: 'Case de sucesso', en: 'Success story' },
+  webinar: { icone: Video, pt: 'Webinar', en: 'Webinar' },
+  ebook: { icone: BookOpen, pt: 'E-book', en: 'E-book' },
+  artigo: { icone: FileText, pt: 'Artigo', en: 'Article' },
+  pagina: { icone: PanelsTopLeft, pt: 'Página', en: 'Page' },
+}
+
+const ABRIR = { pt: 'Abrir', en: 'Open' } as const
+const NOVA_ABA = { pt: 'abre em nova aba', en: 'opens in a new tab' } as const
+
+/** [UI_CONTEUDO:código] — um item do site, com o endereço de verdade.
+ *
+ * Título, resumo e endereço vêm do CMS pelo servidor (`lib/referencias-da-ia.ts`):
+ * o modelo só escolheu o código. ⚠️ Abre em **nova aba**: a conversa vive na
+ * memória desta página, e navegar na mesma aba a apagaria. */
+function CartaoConteudo({ item, locale }: { item: ReferenciasDaIa[string]; locale: 'pt' | 'en' }) {
+  const tipo = TIPOS[item.tipo]
+  const Icone = tipo.icone
+
+  return (
+    <a
+      href={item.href}
+      target="_blank"
+      rel="noopener"
+      className="group bg-surface-2 dark:bg-[#181b22] rounded-[6px] shadow-sm p-3.5 my-2.5 flex items-start gap-3 max-w-md transition-colors hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    >
+      <span className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+        <Icone size={16} aria-hidden />
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block text-[10px] font-semibold uppercase tracking-wider text-text-muted">{tipo[locale]}</span>
+        <span className="block font-bold text-text-main text-xs mt-0.5 group-hover:text-primary transition-colors">{item.titulo}</span>
+        {item.resumo && <span className="block text-[11px] text-text-muted leading-relaxed line-clamp-2 mt-0.5">{item.resumo}</span>}
+        <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-primary">
+          {ABRIR[locale]} <ArrowUpRight size={12} aria-hidden />
+          <span className="sr-only">({NOVA_ABA[locale]})</span>
+        </span>
+      </span>
+    </a>
+  )
+}
+
+/** Link escrito no meio do texto. Só chega aqui o que o servidor conferiu
+ *  contra o catálogo; os outros já viraram texto simples. */
+function LinkDoTexto({ href, children }: ComponentProps<'a'>) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener"
+      className="font-semibold text-primary underline underline-offset-2 hover:no-underline"
+    >
+      {children}
+    </a>
   )
 }
 
@@ -225,13 +306,29 @@ function CartaoGrafico({ tipo }: { tipo: string }) {
  * é o preflight sobre os elementos que o ReactMarkdown emite (negrito funciona;
  * lista sai sem marcador). Tirá-las ou ativar o plugin mudaria a renderização
  * contra o gabarito (D-15). */
-export function RespostaDoModelo({ texto, whatsapp }: { texto: string; whatsapp: string }) {
+export function RespostaDoModelo({
+  texto,
+  whatsapp,
+  referencias,
+  locale,
+}: {
+  texto: string
+  whatsapp: string
+  /* Os itens que esta resposta citou. Etiqueta sem par aqui não desenha nada:
+     o servidor já tirou as que não existem, e o navegador não inventa cartão. */
+  referencias?: ReferenciasDaIa
+  locale: 'pt' | 'en'
+}) {
   return (
     <div>
       {tokenizarUiGenerativa(texto).map((token, i) => {
         switch (token.tipo) {
           case 'contato':
             return <CartaoContato key={i} whatsapp={whatsapp} />
+          case 'conteudo': {
+            const item = referencias?.[token.codigo]
+            return item ? <CartaoConteudo key={i} item={item} locale={locale} /> : null
+          }
           case 'servico':
             return <CartaoServico key={i} titulo={token.titulo} descricao={token.descricao} icone={token.icone} />
           case 'parceiro':
@@ -244,7 +341,10 @@ export function RespostaDoModelo({ texto, whatsapp }: { texto: string; whatsapp:
                 key={i}
                 className="markdown-body prose prose-xs dark:prose-invert max-w-none text-text-main text-[13px] leading-relaxed prose-p:leading-relaxed prose-headings:text-text-main prose-headings:font-bold prose-a:text-primary prose-a:font-semibold hover:prose-a:underline prose-strong:text-text-main prose-code:text-primary prose-code:bg-surface-1 dark:prose-code:bg-[#0e1015] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-[6px] prose-ul:my-1.5 prose-li:my-0.5"
               >
-                <ReactMarkdown>{token.texto}</ReactMarkdown>
+                {/* `img` não desenha nada: o servidor já tira imagem da
+                    resposta, e isto é a segunda tranca — o navegador nunca
+                    busca um endereço que o modelo escreveu. */}
+                <ReactMarkdown components={{ a: LinkDoTexto, img: () => null }}>{token.texto}</ReactMarkdown>
               </div>
             )
         }
