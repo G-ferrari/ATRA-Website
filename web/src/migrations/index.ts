@@ -108,6 +108,7 @@ import * as migration_20261016_003419_form_submissions_talent from './20261016_0
 import * as migration_20261016_005120_rd_aviso_ao_candidato from './20261016_005120_rd_aviso_ao_candidato';
 import * as migration_20261016_012747_ebook_rd_identifier from './20261016_012747_ebook_rd_identifier';
 import * as migration_20261016_201318_process_steps_variant from './20261016_201318_process_steps_variant';
+import * as migration_20261016_201604_mais_icones from './20261016_201604_mais_icones';
 
 export const migrations = [
   {
@@ -658,6 +659,11 @@ export const migrations = [
   {
     up: migration_20261016_201318_process_steps_variant.up,
     down: migration_20261016_201318_process_steps_variant.down,
-    name: '20261016_201318_process_steps_variant'
+    name: '20261016_201318_process_steps_variant',
+  },
+  {
+    up: migration_20261016_201604_mais_icones.up,
+    down: migration_20261016_201604_mais_icones.down,
+    name: '20261016_201604_mais_icones'
   },
 ];

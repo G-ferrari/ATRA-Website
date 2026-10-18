@@ -1,6 +1,6 @@
 import type { Block, Field } from 'payload'
 
-import { campoDeIcone, camposComuns, ICONES } from './shared'
+import { campoDeIcone, camposComuns, OPCOES_DE_ICONE, SELETOR_DE_ICONE } from './shared'
 
 /* Blocos de página (MIG-047).
  *
@@ -848,8 +848,9 @@ export const JobsList: Block = {
 const campoDeIconeOpcional = (nome = 'eyebrowIcon'): Field => ({
   name: nome,
   type: 'select',
-  options: ICONES.map((v) => ({ value: v, label: v })),
+  options: OPCOES_DE_ICONE,
   label: { pt: 'Ícone da linha de apoio', en: 'Eyebrow icon' },
+  admin: { components: { Field: SELETOR_DE_ICONE } },
 })
 
 /* `select` e não texto de cor: o valor vira classe do Tailwind, e classe
@@ -1025,9 +1026,12 @@ export const BentoGrid: Block = {
            * união e o TypeScript passa a cobrar campos de `RowField`. */
           name: 'footerIcon',
           type: 'select',
-          options: ICONES.map((v) => ({ value: v, label: v })),
+          options: OPCOES_DE_ICONE,
           label: { pt: 'Ícone do rodapé', en: 'Footer icon' },
-          admin: { condition: (_, irmaos) => Boolean(irmaos?.footer) },
+          admin: {
+            condition: (_, irmaos) => Boolean(irmaos?.footer),
+            components: { Field: SELETOR_DE_ICONE },
+          },
         },
       ],
     },
