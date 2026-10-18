@@ -133,6 +133,11 @@ Três seções que mudaram de comportamento em 29/09:
   centro (no cartão largo ela é cortada em faixa). O destino pode ser a página
   do parceiro no site (`/parceiros/google-cloud`) ou o site dele, com
   `https://`.
+- **Etapas de processo** — tem o campo **"Formato"** (desde 15/10): *Cartões*
+  (o padrão, a grade numerada de Carreiras) ou *Linha do tempo*, os círculos
+  numerados ligados por uma linha que a página da RC18 usa. No celular a linha
+  fica de pé, com o texto ao lado de cada círculo. Funciona bem de **3 a 8**
+  etapas; com mais que isso, os textos ficam estreitos demais no computador.
 
 ## ATRA na mídia
 

@@ -726,6 +726,26 @@ export const ProcessSteps: Block = {
         { name: 'description', type: 'textarea', required: true, localized: true, label: { pt: 'Descrição', en: 'Description' } },
       ],
     },
+    {
+      /* 15/10 — o formato vira escolha do editor. A linha do tempo existia só
+       * na RC18, ligada por uma regra na rota da solução; em qualquer outra
+       * página o bloco saía em cartões, sem o admin ter como pedir a outra
+       * forma (e a miniatura do seletor, tirada da RC18, mostrava a linha). */
+      name: 'variant',
+      type: 'select',
+      defaultValue: 'cards',
+      options: [
+        { value: 'cards', label: { pt: 'Cartões', en: 'Cards' } },
+        { value: 'timeline', label: { pt: 'Linha do tempo', en: 'Timeline' } },
+      ],
+      label: { pt: 'Formato', en: 'Layout' },
+      admin: {
+        description: {
+          pt: 'Cartões numerados em grade, ou círculos numerados ligados por uma linha (o da página RC18). A linha do tempo cabe de 3 a 8 etapas.',
+          en: 'Numbered cards in a grid, or numbered circles joined by a line (as on the RC18 page). The timeline fits 3 to 8 steps.',
+        },
+      },
+    },
     ...camposComuns,
   ],
 }
