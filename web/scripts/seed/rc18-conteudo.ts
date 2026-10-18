@@ -231,6 +231,7 @@ export function layoutRc18(t: typeof PT_RC18) {
     /* BLOCO 06 | O PRAZO */
     {
       blockType: 'processSteps' as const,
+      variant: 'timeline' as const,
       theme: 'surface-2' as const,
       eyebrow: t.prazo.eyebrow,
       title: t.prazo.title,
@@ -240,6 +241,7 @@ export function layoutRc18(t: typeof PT_RC18) {
     /* BLOCO 07 | COMO A ATRA TE AJUDA */
     {
       blockType: 'processSteps' as const,
+      variant: 'timeline' as const,
       anchor: 'como-ajudamos',
       navLabel: t.nav.jornada,
       eyebrow: t.jornada.eyebrow,

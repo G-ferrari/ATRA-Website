@@ -133,6 +133,11 @@ Três seções que mudaram de comportamento em 29/09:
   centro (no cartão largo ela é cortada em faixa). O destino pode ser a página
   do parceiro no site (`/parceiros/google-cloud`) ou o site dele, com
   `https://`.
+- **Etapas de processo** — tem o campo **"Formato"** (desde 15/10): *Cartões*
+  (o padrão, a grade numerada de Carreiras) ou *Linha do tempo*, os círculos
+  numerados ligados por uma linha que a página da RC18 usa. No celular a linha
+  fica de pé, com o texto ao lado de cada círculo. Funciona bem de **3 a 8**
+  etapas; com mais que isso, os textos ficam estreitos demais no computador.
 
 ## ATRA na mídia
 
@@ -307,6 +312,17 @@ cima). Ele é o mesmo nas três abas; só o case de baixo muda.
 - **Cases de cada aba** — até 3 por aba (Inovação & IA, Dados, Governança). Com
   mais de um, eles se alternam a cada 5 segundos. Aba sem case escolhido
   mostra os 3 mais recentes, e case despublicado some do painel sozinho.
+
+## Escolher um ícone
+
+Todo campo **"Ícone"** (cartões, segmentos, soluções, menu, linha de apoio das
+seções) mostra o desenho escolhido e o nome dele em português. **"Trocar
+ícone"** abre a grade com os 99 disponíveis, em grupos (Dados e tecnologia,
+Negócio e resultados, Pessoas e comunicação, Segurança e regulação, Setores,
+Conteúdo e navegação). O campo de busca acha pelo nome do desenho e também pelo
+assunto: "saúde" mostra o hospital e o estetoscópio, "LGPD" a balança, "IA" o
+robô e o cérebro. Acento não importa. Nos campos opcionais, **"Sem ícone"**
+tira o que estiver lá. Ícone que não existe na lista precisa do time técnico.
 
 ## Leads no RD Station: identificadores, tags e a chave
 
