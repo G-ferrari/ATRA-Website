@@ -995,6 +995,9 @@ export type Contato = {
   redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
   /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
   destinos: Record<FormularioComAviso, string | null>
+  /** Aviso de privacidade do formulário de candidatura (P-17). `null` enquanto
+   *  o RH não escreve — e sem ele o formulário não aparece. */
+  avisoDeCandidatura: string | null
 }
 
 /** Os formulários que avisam a ATRA por e-mail. A newsletter não entra: quem

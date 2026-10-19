@@ -106,5 +106,31 @@ export const Contact: GlobalConfig = {
         { name: 'chat', type: 'email', label: { pt: 'Lead do chat', en: 'Chat lead' } },
       ],
     },
+    {
+      /* P-17 (15/10): o formulário de candidatura coleta currículo, que é dado
+       * pessoal, e não dizia nada ao candidato. O texto é do RH e do jurídico
+       * (D-22: não é de quem programa), então nasce vazio — e vazio o
+       * formulário não aparece, mesmo com `ENABLE_JOB_APPLICATIONS=1`. É a
+       * mesma trava do convite do chat (`consentNotice`, D-29): coleta de dado
+       * pessoal só liga com o aviso escrito.
+       *
+       * Sem `localized`: o formulário de candidatura só existe em português. */
+      name: 'jobApplications',
+      type: 'group',
+      label: { pt: 'Candidaturas', en: 'Job applications' },
+      fields: [
+        {
+          name: 'privacyNotice',
+          type: 'textarea',
+          label: { pt: 'Aviso de privacidade da candidatura', en: 'Job application privacy notice' },
+          admin: {
+            description: {
+              pt: 'Aparece no formulário de candidatura de cada vaga, acima do botão de enviar. Texto do RH e do jurídico: por quanto tempo o currículo fica guardado (o site apaga sozinho depois de 6 meses), quem tem acesso e para que ele é usado. Vazio, o formulário de candidatura não aparece.',
+              en: 'Shown on each job application form, above the submit button. Written by HR and legal: how long the CV is kept (the site deletes it after 6 months), who can access it and what it is used for. When empty, the application form is not shown.',
+            },
+          },
+        },
+      ],
+    },
   ],
 }

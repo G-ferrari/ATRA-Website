@@ -324,6 +324,20 @@ assunto: "saúde" mostra o hospital e o estetoscópio, "LGPD" a balança, "IA" o
 robô e o cérebro. Acento não importa. Nos campos opcionais, **"Sem ícone"**
 tira o que estiver lá. Ícone que não existe na lista precisa do time técnico.
 
+## Candidatura a vagas: o aviso de privacidade
+
+A candidatura com currículo, na página de cada vaga, ainda está **desligada**:
+espera o RH dizer quem acessa os currículos (P-17). Quando ligar, o texto que o
+candidato lê antes de enviar fica em **Contato → Candidaturas → Aviso de
+privacidade da candidatura**. É texto do RH e do jurídico. **Vazio, o formulário
+não aparece**, mesmo com a candidatura ligada no servidor.
+
+O site apaga sozinho, depois de **6 meses**, o currículo e os dados de cada
+candidatura (D-61). O aviso precisa dizer isso, e também quem tem acesso e para
+que o currículo é usado. O e-mail que avisa o RH de cada candidatura não é
+apagado pelo site: quem recebe precisa apagar no mesmo prazo, ou o aviso precisa
+dizer que ele fica.
+
 ## Leads no RD Station: identificadores, tags e a chave
 
 Em **Sistema → Integrações → RD Station Marketing** (papel de administrador)
