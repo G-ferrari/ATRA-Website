@@ -103,6 +103,7 @@ import * as migration_20261007_205424_diagnostic_regulations from './20261007_20
 import * as migration_20261007_210000_regulacoes_do_diagnostico from './20261007_210000_regulacoes_do_diagnostico';
 import * as migration_20261009_235921_atra_ai_recommends from './20261009_235921_atra_ai_recommends';
 import * as migration_20261010_000000_atra_ai_recomenda_conteudo from './20261010_000000_atra_ai_recomenda_conteudo';
+import * as migration_20261015_120000_insights_apaga_tabelas_antigas from './20261015_120000_insights_apaga_tabelas_antigas';
 import * as migration_20261016_001637_rd_tags_e_trabalhe_conosco from './20261016_001637_rd_tags_e_trabalhe_conosco';
 import * as migration_20261016_001700_rd_tag_da_newsletter from './20261016_001700_rd_tag_da_newsletter';
 import * as migration_20261016_003419_form_submissions_talent from './20261016_003419_form_submissions_talent';
@@ -637,6 +638,11 @@ export const migrations = [
     up: migration_20261010_000000_atra_ai_recomenda_conteudo.up,
     down: migration_20261010_000000_atra_ai_recomenda_conteudo.down,
     name: '20261010_000000_atra_ai_recomenda_conteudo',
+  },
+  {
+    up: migration_20261015_120000_insights_apaga_tabelas_antigas.up,
+    down: migration_20261015_120000_insights_apaga_tabelas_antigas.down,
+    name: '20261015_120000_insights_apaga_tabelas_antigas',
   },
   {
     up: migration_20261016_001637_rd_tags_e_trabalhe_conosco.up,

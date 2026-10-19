@@ -1733,7 +1733,9 @@ não existia mais.
   passo vazio, com a exclusão pronta em `EXCLUSAO_ADIADA`; ela entra numa
   publicação seguinte, depois de esta se provar estável. Conferido: um banco
   migrado com o código novo mantém as 930 tabelas e 6.863 colunas que a
-  versão anterior espera.
+  versão anterior espera. ✅ **15/10:** a exclusão entrou em
+  `20261015_120000_insights_apaga_tabelas_antigas` — 28 tabelas e 7 colunas,
+  depois de seis publicações (#120 a #125) com o código que não as lê.
 - ⚠️ **Campo de texto vazio não fica vazio em inglês**: o Payload preenche
   texto vazio com o português (`afterRead`, `fallbackLocale`). Por isso a
   chamada dos webinars não tem "fim do título": o trecho em destaque fica
