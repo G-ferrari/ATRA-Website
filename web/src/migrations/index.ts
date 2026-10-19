@@ -72,6 +72,7 @@ import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './2026092
 import * as migration_20260928_120000_pagina_rc18 from './20260928_120000_pagina_rc18';
 import * as migration_20260929_122603_integracoes from './20260929_122603_integracoes';
 import * as migration_20260929_222024_optional_address_and_partner_source from './20260929_222024_optional_address_and_partner_source';
+import * as migration_20260929_222950_contact_privacy_notice from './20260929_222950_contact_privacy_notice';
 import * as migration_20260929_223000_sem_endereco_fixo from './20260929_223000_sem_endereco_fixo';
 import * as migration_20260929_223100_selos_na_pagina_do_google_cloud from './20260929_223100_selos_na_pagina_do_google_cloud';
 import * as migration_20260929_223200_fim_das_paginas_internas from './20260929_223200_fim_das_paginas_internas';
@@ -109,6 +110,7 @@ import * as migration_20261016_005120_rd_aviso_ao_candidato from './20261016_005
 import * as migration_20261016_012747_ebook_rd_identifier from './20261016_012747_ebook_rd_identifier';
 import * as migration_20261016_201318_process_steps_variant from './20261016_201318_process_steps_variant';
 import * as migration_20261016_201604_mais_icones from './20261016_201604_mais_icones';
+import * as migration_20261016_201812_contact_job_applications_notice from './20261016_201812_contact_job_applications_notice';
 
 export const migrations = [
   {
@@ -482,6 +484,11 @@ export const migrations = [
     name: '20260929_222024_optional_address_and_partner_source',
   },
   {
+    up: migration_20260929_222950_contact_privacy_notice.up,
+    down: migration_20260929_222950_contact_privacy_notice.down,
+    name: '20260929_222950_contact_privacy_notice',
+  },
+  {
     up: migration_20260929_223000_sem_endereco_fixo.up,
     down: migration_20260929_223000_sem_endereco_fixo.down,
     name: '20260929_223000_sem_endereco_fixo',
@@ -664,6 +671,11 @@ export const migrations = [
   {
     up: migration_20261016_201604_mais_icones.up,
     down: migration_20261016_201604_mais_icones.down,
-    name: '20261016_201604_mais_icones'
+    name: '20261016_201604_mais_icones',
+  },
+  {
+    up: migration_20261016_201812_contact_job_applications_notice.up,
+    down: migration_20261016_201812_contact_job_applications_notice.down,
+    name: '20261016_201812_contact_job_applications_notice'
   },
 ];
