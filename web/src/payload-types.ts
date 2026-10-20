@@ -605,6 +605,10 @@ export interface Partner {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -2160,6 +2164,10 @@ export interface Partner {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -2522,6 +2530,10 @@ export interface Partner {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -3359,6 +3371,10 @@ export interface Page {
         eyebrow?: string | null;
         title: string;
         description?: string | null;
+        /**
+         * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+         */
+        descriptionAlign?: ('left' | 'right') | null;
         footnote?: string | null;
         cta?: {
           label?: string | null;
@@ -4914,6 +4930,10 @@ export interface Page {
       }
     | {
         title?: string | null;
+        /**
+         * Short text below the title. Empty, the strip shows only the title.
+         */
+        description?: string | null;
         partners?:
           | {
               name: string;
@@ -5276,6 +5296,10 @@ export interface Page {
         eyebrow?: string | null;
         title: string;
         description?: string | null;
+        /**
+         * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+         */
+        descriptionAlign?: ('left' | 'right') | null;
         readLabel?: string | null;
         cta?: {
           label?: string | null;
@@ -6461,6 +6485,10 @@ export interface Segment {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -8016,6 +8044,10 @@ export interface Segment {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -8378,6 +8410,10 @@ export interface Segment {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -9237,6 +9273,10 @@ export interface Solution {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -10792,6 +10832,10 @@ export interface Solution {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -11154,6 +11198,10 @@ export interface Solution {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -12470,6 +12518,7 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -12756,6 +12805,7 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -12958,6 +13008,7 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -13483,6 +13534,7 @@ export interface PartnersSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -13769,6 +13821,7 @@ export interface PartnersSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -13971,6 +14024,7 @@ export interface PartnersSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -14333,6 +14387,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -14619,6 +14674,7 @@ export interface SegmentsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -14821,6 +14877,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -15190,6 +15247,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -15476,6 +15534,7 @@ export interface SolutionsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -15678,6 +15737,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
