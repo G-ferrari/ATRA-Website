@@ -14,8 +14,8 @@ import { hrefDe } from '@/lib/routes'
 import { paraEmbed } from '@/lib/video'
 import type { Webinar } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
+import { VideoSobClique } from '@/components/content/video-sob-clique'
 
-import { VideoSobClique } from './video-sob-clique'
 
 /* /webinars/[slug] (MIG-046). Rota **sem gabarito** — não existe no protótipo.
  *
