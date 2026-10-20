@@ -41,12 +41,19 @@ function Cartao({
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
       )}
-      <div className="absolute inset-0 bg-linear-to-t from-surface-1/95 via-surface-1/60 to-transparent p-5 flex flex-col justify-end">
+      {/* Sombra mais forte e título em negrito (#221, 20/10): o texto fica sobre
+          a foto, e a foto às vezes já tem letra — o "Banco Carrefour e o
+          Google" do webinar —, que disputava com o título.
+          ⚠️ `font-semibold!`, com o `!`: o `globals.css` põe peso 300 em todo
+          `h1`–`h6` fora das camadas do Tailwind, e isso vence a classe sem o
+          `!`. A raiz fica para a revisão da escala de letras (#215), porque
+          mudá-la engrossa títulos no site inteiro. */}
+      <div className="absolute inset-0 bg-linear-to-t from-surface-1 via-surface-1/80 via-35% to-transparent p-5 flex flex-col justify-end">
         <div className="flex items-center gap-1.5 mb-1.5">
           <Icone nome={card.icon} size={13} className="text-secondary" />
           <span className="text-[10px] font-bold tracking-widest uppercase text-secondary">{card.category}</span>
         </div>
-        <h3 className="text-sm sm:text-base font-medium leading-tight text-text-main group-hover:text-primary transition-colors">
+        <h3 className="text-sm sm:text-base font-semibold! leading-tight text-text-main group-hover:text-primary transition-colors">
           {card.title} <ArrowRight size={13} className="inline ml-1" aria-hidden />
         </h3>
       </div>
@@ -123,14 +130,18 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 )}
-                <div className="absolute inset-0 bg-linear-to-t from-surface-1/95 via-surface-1/50 to-transparent p-6 flex flex-col justify-between">
+                {/* ⚠️ Categoria, título e botão juntos embaixo (#220, 20/10), como
+                    nos outros cartões. Era `justify-between`: o título ia para o
+                    topo, onde o degradê já acabou, e ficava sobre a foto limpa —
+                    o único cartão da vitrine difícil de ler. */}
+                <div className="absolute inset-0 bg-linear-to-t from-surface-1 via-surface-1/80 via-40% to-transparent p-6 flex flex-col justify-end gap-4">
                   <div>
                     {bloco.featured.category && (
                       <span className="text-[10px] font-bold tracking-widest uppercase mb-1.5 block text-secondary">
                         {bloco.featured.category}
                       </span>
                     )}
-                    <h3 className="text-base font-display leading-snug text-text-main">{bloco.featured.title}</h3>
+                    <h3 className="text-base font-display font-semibold! leading-snug text-text-main">{bloco.featured.title}</h3>
                   </div>
                   {bloco.featured.ctaLabel && (
                     <Link
@@ -149,8 +160,9 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
                 <h4 className="text-base md:text-lg font-light font-display mb-4 text-text-main">
                   {bloco.newsletter.title}
                 </h4>
-                {/* MIG-103: viva, com dupla confirmação. O render inicial
-                    reproduz o estático classe por classe — ver a nota na ilha. */}
+                {/* MIG-103: viva, sem confirmação por e-mail desde a D-64. O
+                    render inicial reproduz o estático classe por classe — ver a
+                    nota na ilha. */}
                 <NewsletterInline placeholder={bloco.newsletter.placeholder} />
               </div>
             )}
