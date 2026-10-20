@@ -1,7 +1,9 @@
-import type { Page, SiteSetting } from '@/payload-types'
+import { paraEmbed } from '@/lib/video'
+import type { Media, Page, SiteSetting } from '@/payload-types'
 import type {
   Acento,
   Bloco,
+  BlocoPageHero,
   Contato,
   Depoimento,
   LogoDeCliente,
@@ -115,6 +117,32 @@ export function toSelos(g: SiteSetting | null | undefined): Selo[] {
  * (blocos.md, regra 1). Passar o global inteiro para o mapper, e não para os
  * componentes, mantém a regra e evita cada bloco reabrir a mesma consulta.
  */
+/* A coluna de mídia da abertura de página.
+ *
+ * ⚠️ "Um vídeo" sem vídeo resolvido vira `none`, e não uma coluna vazia: o
+ * componente divide a grade em 7 + 5 pelo `mediaMode`, e o texto ficaria
+ * espremido à esquerda de um buraco. Acontece com o modo escolhido e nada
+ * preenchido, e com link que o conversor não reconhece. */
+function midiaDoHero(b: Extract<NonNullable<Page['layout']>[number], { blockType: 'pageHero' }>): Pick<
+  BlocoPageHero,
+  'mediaMode' | 'images' | 'video'
+> {
+  const images = (b.images ?? [])
+    .map((i) => toImageOpcional(i as never, 'pageHero.images'))
+    .filter((i): i is NonNullable<typeof i> => i !== null)
+  const mediaMode = b.mediaMode ?? 'none'
+  if (mediaMode !== 'video') return { mediaMode, images, video: null }
+
+  // Arquivo e link preenchidos: vale o arquivo, como o admin avisa.
+  const arquivo = isPopulated<Media>(b.videoFile) ? b.videoFile : null
+  if (arquivo?.url && arquivo.mimeType?.startsWith('video/')) {
+    return { mediaMode, images, video: { tipo: 'arquivo', url: arquivo.url, mimeType: arquivo.mimeType, titulo: arquivo.alt } }
+  }
+  const embed = paraEmbed(b.videoUrl)
+  if (embed) return { mediaMode, images, video: { tipo: 'embed', src: embed.src, provedor: embed.titulo } }
+  return { mediaMode: 'none', images, video: null }
+}
+
 export function toBlocos(
   layout: Page['layout'] | null | undefined,
   institucional?: { metricas: MetricaInstitucional[]; selos?: Selo[] },
@@ -143,10 +171,7 @@ export function toBlocos(
             label: m.label,
             color: m.color ?? 'primary',
           })),
-          mediaMode: b.mediaMode ?? 'none',
-          images: (b.images ?? [])
-            .map((i) => toImageOpcional(i as never, 'pageHero.images'))
-            .filter((i): i is NonNullable<typeof i> => i !== null),
+          ...midiaDoHero(b),
         })
         break
 

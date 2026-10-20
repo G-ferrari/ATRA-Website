@@ -159,6 +159,10 @@ type Base = {
   espaco: 'normal' | 'amplo'
 }
 
+export type VideoDoHero =
+  | { tipo: 'arquivo'; url: string; mimeType: string; titulo: string }
+  | { tipo: 'embed'; src: string; provedor: string }
+
 export type BlocoPageHero = Base & {
   tipo: 'pageHero'
   badge: string | null
@@ -172,8 +176,12 @@ export type BlocoPageHero = Base & {
   ctas: { label: string; href: string }[]
   ctaVariant: 'primary' | 'secondary'
   descriptionWidth: 'narrow' | 'wide'
-  mediaMode: 'none' | 'image' | 'marquee'
+  mediaMode: 'none' | 'image' | 'marquee' | 'video'
+  /** Em `video`, a primeira é a capa antes do play. */
   images: Image[]
+  /** Só em `mediaMode: 'video'`. Arquivo toca no próprio site; embed é
+   *  YouTube/Vimeo e só carrega no clique (D-30). */
+  video: VideoDoHero | null
   /** Números da própria oferta, não da empresa — o `statsGrid` é que lê o global. */
   metrics: { value: number; suffix: string; label: string; color: 'primary' | 'secondary' | 'emerald' }[]
   /** Data-limite em destaque (ex.: RC 18/2025). Presentation-only, injetada pela

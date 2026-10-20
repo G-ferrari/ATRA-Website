@@ -65,6 +65,7 @@ import * as migration_20260927_215600_solutions_badge from './20260927_215600_so
 import * as migration_20260927_215700_rich_text_body_size from './20260927_215700_rich_text_body_size';
 import * as migration_20260927_215800_paginas_mestras from './20260927_215800_paginas_mestras';
 import * as migration_20260927_215900_partner_mosaic from './20260927_215900_partner_mosaic';
+import * as migration_20260927_215950_page_hero_video from './20260927_215950_page_hero_video';
 import * as migration_20260927_215950_process_steps_variant from './20260927_215950_process_steps_variant';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
@@ -112,6 +113,7 @@ import * as migration_20261016_012747_ebook_rd_identifier from './20261016_01274
 import * as migration_20261016_201318_process_steps_variant from './20261016_201318_process_steps_variant';
 import * as migration_20261016_201604_mais_icones from './20261016_201604_mais_icones';
 import * as migration_20261016_201812_contact_job_applications_notice from './20261016_201812_contact_job_applications_notice';
+import * as migration_20261017_105319_page_hero_video from './20261017_105319_page_hero_video';
 
 export const migrations = [
   {
@@ -450,6 +452,11 @@ export const migrations = [
     name: '20260927_215900_partner_mosaic',
   },
   {
+    up: migration_20260927_215950_page_hero_video.up,
+    down: migration_20260927_215950_page_hero_video.down,
+    name: '20260927_215950_page_hero_video',
+  },
+  {
     up: migration_20260927_215950_process_steps_variant.up,
     down: migration_20260927_215950_process_steps_variant.down,
     name: '20260927_215950_process_steps_variant',
@@ -682,6 +689,11 @@ export const migrations = [
   {
     up: migration_20261016_201812_contact_job_applications_notice.up,
     down: migration_20261016_201812_contact_job_applications_notice.down,
-    name: '20261016_201812_contact_job_applications_notice'
+    name: '20261016_201812_contact_job_applications_notice',
+  },
+  {
+    up: migration_20261017_105319_page_hero_video.up,
+    down: migration_20261017_105319_page_hero_video.down,
+    name: '20261017_105319_page_hero_video'
   },
 ];

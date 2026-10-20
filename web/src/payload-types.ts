@@ -470,9 +470,17 @@ export interface Partner {
             subtitle?: string | null;
             description?: string | null;
             align?: ('left' | 'center') | null;
-            mediaMode?: ('none' | 'image' | 'marquee') | null;
+            mediaMode?: ('none' | 'image' | 'marquee' | 'video') | null;
             /**
-             * With a single image only the first is used. In the marquee, all of them.
+             * MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
+             */
+            videoFile?: (number | null) | Media;
+            /**
+             * YouTube or Vimeo. The video only loads when the visitor clicks play.
+             */
+            videoUrl?: string | null;
+            /**
+             * With a single image only the first is used. In the marquee, all of them. With a video, the first is the cover shown before play.
              */
             images?: (number | Media)[] | null;
             ctas?:
@@ -3216,9 +3224,17 @@ export interface Page {
         subtitle?: string | null;
         description?: string | null;
         align?: ('left' | 'center') | null;
-        mediaMode?: ('none' | 'image' | 'marquee') | null;
+        mediaMode?: ('none' | 'image' | 'marquee' | 'video') | null;
         /**
-         * With a single image only the first is used. In the marquee, all of them.
+         * MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
+         */
+        videoFile?: (number | null) | Media;
+        /**
+         * YouTube or Vimeo. The video only loads when the visitor clicks play.
+         */
+        videoUrl?: string | null;
+        /**
+         * With a single image only the first is used. In the marquee, all of them. With a video, the first is the cover shown before play.
          */
         images?: (number | Media)[] | null;
         ctas?:
@@ -6310,9 +6326,17 @@ export interface Segment {
             subtitle?: string | null;
             description?: string | null;
             align?: ('left' | 'center') | null;
-            mediaMode?: ('none' | 'image' | 'marquee') | null;
+            mediaMode?: ('none' | 'image' | 'marquee' | 'video') | null;
             /**
-             * With a single image only the first is used. In the marquee, all of them.
+             * MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
+             */
+            videoFile?: (number | null) | Media;
+            /**
+             * YouTube or Vimeo. The video only loads when the visitor clicks play.
+             */
+            videoUrl?: string | null;
+            /**
+             * With a single image only the first is used. In the marquee, all of them. With a video, the first is the cover shown before play.
              */
             images?: (number | Media)[] | null;
             ctas?:
@@ -9078,9 +9102,17 @@ export interface Solution {
             subtitle?: string | null;
             description?: string | null;
             align?: ('left' | 'center') | null;
-            mediaMode?: ('none' | 'image' | 'marquee') | null;
+            mediaMode?: ('none' | 'image' | 'marquee' | 'video') | null;
             /**
-             * With a single image only the first is used. In the marquee, all of them.
+             * MP4 or WebM, up to 300 MB. Plays on the site itself, with the browser controls. If both a file and a link are set, the file wins.
+             */
+            videoFile?: (number | null) | Media;
+            /**
+             * YouTube or Vimeo. The video only loads when the visitor clicks play.
+             */
+            videoUrl?: string | null;
+            /**
+             * With a single image only the first is used. In the marquee, all of them. With a video, the first is the cover shown before play.
              */
             images?: (number | Media)[] | null;
             ctas?:
@@ -12335,6 +12367,8 @@ export interface PagesSelect<T extends boolean = true> {
               description?: T;
               align?: T;
               mediaMode?: T;
+              videoFile?: T;
+              videoUrl?: T;
               images?: T;
               ctas?:
                 | T
@@ -13346,6 +13380,8 @@ export interface PartnersSelect<T extends boolean = true> {
               description?: T;
               align?: T;
               mediaMode?: T;
+              videoFile?: T;
+              videoUrl?: T;
               images?: T;
               ctas?:
                 | T
@@ -14194,6 +14230,8 @@ export interface SegmentsSelect<T extends boolean = true> {
               description?: T;
               align?: T;
               mediaMode?: T;
+              videoFile?: T;
+              videoUrl?: T;
               images?: T;
               ctas?:
                 | T
@@ -15049,6 +15087,8 @@ export interface SolutionsSelect<T extends boolean = true> {
               description?: T;
               align?: T;
               mediaMode?: T;
+              videoFile?: T;
+              videoUrl?: T;
               images?: T;
               ctas?:
                 | T
