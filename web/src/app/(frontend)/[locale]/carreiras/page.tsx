@@ -24,6 +24,16 @@ import { metadataDaPaginaMestra, resolverPaginaMestra } from '@/lib/paginas'
  * `[]` é o ATRAIR dizendo "nenhuma vaga aberta" (mostra o vazio) e `null` é
  * "não foi possível perguntar" (cai para o CMS). Ver `ResultadoDeVagas`. */
 
+/* ⚠️ O prazo da rota é escrito aqui, e não herdado do `revalidate: 300` do
+ * `fetch` em `buscarVagasAbertas`. O Next só herda o prazo de um `fetch` que
+ * acontece **no build**, e o build de produção não tem `ATRAIR_API_KEY`
+ * (`infra/deploy/deploy.sh` não a passa, e credencial não vai em build-arg):
+ * sem chamada, a página saía estática para sempre, com as vagas do CMS. Ela só
+ * mudava quando alguém publicava algo no admin (`revalidarSite`), e cada
+ * deploy ou reinício do container voltava para o HTML do build (20/10/2026).
+ * Com o cache do `fetch` por cima, uma vaga nova no ATRAIR leva até ~10 min. */
+export const revalidate = 300
+
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
 }
