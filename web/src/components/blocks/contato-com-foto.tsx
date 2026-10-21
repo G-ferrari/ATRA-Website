@@ -24,7 +24,7 @@ import { PainelDeContatos } from './painel-de-contatos'
 /* ⚠️ Sem `disabled:opacity-60`: o gabarito desenha os campos em opacidade
  * cheia. Quem impede o envio é o `disabled` e o `title` do botão, não a cor. */
 const CAMPO =
-  'w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main dark:text-white placeholder:text-text-muted dark:placeholder:text-white/40 font-light transition-colors disabled:opacity-100'
+  'w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-base sm:text-sm text-text-main dark:text-white placeholder:text-text-muted dark:placeholder:text-white/40 transition-colors disabled:opacity-100'
 
 export function ContatoComFoto({ bloco, locale }: { bloco: BlocoCtaContact; locale: Locale }) {
   /* Injetado pela página (MIG-072). `null` só no preview de um bloco solto. */
@@ -47,12 +47,12 @@ export function ContatoComFoto({ bloco, locale }: { bloco: BlocoCtaContact; loca
       <div className="container mx-auto max-w-7xl relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 items-stretch relative z-10">
           <div className="flex flex-col text-left py-8 md:py-12 pr-0 lg:pr-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-light font-display text-text-main dark:text-white mb-8 leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display text-text-main dark:text-white mb-8 leading-tight">
               {bloco.title}
             </h2>
 
             {bloco.subtitle && (
-              <h3 className="text-xl md:text-2xl font-light font-display text-text-main dark:text-white mb-6">
+              <h3 className="text-xl md:text-2xl font-display text-text-main dark:text-white mb-6">
                 {bloco.subtitle}
               </h3>
             )}

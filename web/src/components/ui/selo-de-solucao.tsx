@@ -12,7 +12,7 @@ export function SeloDeSolucao({ texto, className }: { texto: string; className?:
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 shrink-0 rounded-full bg-secondary/15 text-secondary-dark dark:text-secondary px-2 py-0.5 text-[10px] font-semibold leading-none whitespace-nowrap',
+        'inline-flex items-center gap-1 shrink-0 rounded-full bg-secondary/15 text-secondary-dark dark:text-secondary px-2 py-0.5 text-xs font-semibold leading-none whitespace-nowrap',
         className,
       )}
     >

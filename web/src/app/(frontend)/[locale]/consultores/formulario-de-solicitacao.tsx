@@ -71,7 +71,7 @@ const TEXTOS = {
 /* O mesmo campo de antes. A nota sobre `disabled:opacity-100` saiu com o
  * `disabled`: o formulário agora envia. */
 const CAMPO =
-  'w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main dark:text-white placeholder:text-text-muted dark:placeholder:text-white/40 font-light transition-colors'
+  'w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-base sm:text-sm text-text-main dark:text-white placeholder:text-text-muted dark:placeholder:text-white/40 transition-colors'
 
 export function FormularioDeSolicitacao({
   slugs,
@@ -225,13 +225,13 @@ export function FormularioDeSolicitacao({
       </div>
 
       {envio && !envio.ok && (
-        <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {t.erros[envio.codigo] ?? envio.erro}
         </p>
       )}
 
       <div className="flex flex-col @lg:flex-row @lg:justify-between @lg:items-center gap-3 pt-3">
-        <p className="text-xs text-text-muted dark:text-white/60 font-light max-w-sm">
+        <p className="text-sm text-text-muted dark:text-white/60 max-w-sm">
           {t.privacidade}{' '}
           <a href={privacidadeHref} className="text-primary underline">
             {t.politica}

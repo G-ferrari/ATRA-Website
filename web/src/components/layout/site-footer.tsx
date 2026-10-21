@@ -40,8 +40,16 @@ export function SiteFooter({
   return (
     <footer className="bg-slate-100 text-slate-600 dark:bg-[#0e1015] dark:text-white/70 pt-16 pb-10 rounded-t-[6px] relative overflow-hidden">
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-        <div className="grid md:grid-cols-5 gap-10 mb-12">
-          <div className="col-span-1 md:col-span-1">
+        {/* ⚠️ No desktop, colunas do tamanho do próprio conteúdo, com o mesmo
+            espaço entre elas (#214, 20/10). Eram cinco colunas iguais
+            (`grid-cols-5`), e como cada uma tem texto de largura diferente, o
+            vão entre um bloco e o outro variava muito — pouco depois da
+            descrição da ATRA, muito entre Sobre e Fale Conosco. A descrição
+            ganha largura máxima para quebrar em linhas, em vez de esticar a
+            primeira coluna. No tablet, a marca ocupa a linha e as colunas vão
+            de duas em duas. */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 mb-12 lg:flex lg:justify-between">
+          <div className="sm:col-span-2 lg:max-w-[16rem]">
             <div className="mb-4">
               {logo && (
                 /* eslint-disable-next-line @next/next/no-img-element -- ver SiteHeader */
@@ -54,7 +62,7 @@ export function SiteFooter({
                 />
               )}
             </div>
-            <p className="text-xs font-light leading-relaxed mb-4 text-slate-500 dark:text-white/60">{rodape.sobre}</p>
+            <p className="text-sm leading-relaxed mb-4 text-slate-500 dark:text-white/60">{rodape.sobre}</p>
             <div className="flex gap-2.5">
               {redes.map(({ Icone, nome, url }) => (
                 <a
@@ -76,7 +84,7 @@ export function SiteFooter({
               <h2 className="text-primary font-medium text-xs font-display tracking-wide mb-4">{coluna.titulo}</h2>
 
               {coluna.tipo === 'contact' ? (
-                <ul className="space-y-3 text-xs font-light">
+                <ul className="space-y-3 text-sm">
                   <li className="flex gap-2.5">
                     <Phone size={16} className="text-secondary opacity-80 shrink-0" aria-hidden />
                     <a
@@ -102,7 +110,7 @@ export function SiteFooter({
                   )}
                 </ul>
               ) : (
-                <ul className="space-y-2 text-xs font-light">
+                <ul className="space-y-2 text-sm">
                   {coluna.links.map((item) =>
                     /* Sem destino o legado desenha `<a href="#">`, não `<Link>`:
                        um `Link` para `#` faria o router do Next prefetchar a
@@ -127,7 +135,7 @@ export function SiteFooter({
           ))}
         </div>
 
-        <div className="pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-[11px] font-light text-slate-500 dark:text-white/40">
+        <div className="pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-slate-500 dark:text-white/40">
           <p>{rodape.direitos}</p>
           <div className="flex gap-4">
             {/* Destino externo (ERP): vai em <a> literal, não em `hrefDe` — a

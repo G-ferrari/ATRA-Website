@@ -39,7 +39,7 @@ export function ListaDeWebinars({
           abertura,
           chave: 'cabecalho-webinars',
           classeDaCaixa: 'mb-12 md:mb-16',
-          classeDoTitulo: 'text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main dark:text-white',
+          classeDoTitulo: 'text-2xl sm:text-3xl md:text-4xl font-display text-text-main dark:text-white',
         })}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
@@ -64,18 +64,18 @@ export function ListaDeWebinars({
                   </div>
                 </div>
                 <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                  <span className="px-2.5 py-1 rounded-[4px] bg-black/70 backdrop-blur-md text-[10px] font-bold text-white uppercase">
+                  <span className="px-2.5 py-1 rounded-[4px] bg-black/70 backdrop-blur-md text-xs font-bold text-white uppercase">
                     {w.duration}
                   </span>
                   {/* "HD" é literal no legado, igual nos três cards. */}
-                  <span className="px-2.5 py-1 rounded-[4px] bg-primary/80 backdrop-blur-md text-[10px] font-bold text-white uppercase">
+                  <span className="px-2.5 py-1 rounded-[4px] bg-primary/80 backdrop-blur-md text-xs font-bold text-white uppercase">
                     HD
                   </span>
                 </div>
               </div>
               <div>
-                <div className="text-[11px] text-primary mb-1.5 font-bold uppercase tracking-wider">{w.dateLabel}</div>
-                <h3 className="text-lg sm:text-xl font-bold font-display text-text-main dark:text-white group-hover:text-primary transition-colors leading-snug">
+                <div className="text-xs text-primary mb-1.5 font-bold uppercase tracking-wider">{w.dateLabel}</div>
+                <h3 className="text-lg sm:text-xl font-display text-text-main dark:text-white group-hover:text-primary transition-colors leading-snug">
                   {/* ⚠️ O cartão inteiro leva ao webinar. No legado ele tinha
                       cursor de mão e hover, mas não era link — e foi portado
                       assim (D-15); em 30/09 o G-ferrari relatou como defeito.

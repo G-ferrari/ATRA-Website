@@ -57,11 +57,11 @@ export function SolicitarConsultores({
           {/* Centralizada ao lado da foto: sem o formulário (task 018) a coluna ficou
               curta, e colada no topo deixava um vazio embaixo do botão. */}
           <div className="flex flex-col lg:justify-center text-left py-6 md:py-10 pr-0 lg:pr-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-light font-display text-text-main dark:text-white mb-4 leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display text-text-main dark:text-white mb-4 leading-tight">
               {t.titulo}
             </h2>
 
-            <h3 className="text-lg md:text-xl font-light font-display text-text-main dark:text-white mb-6">
+            <h3 className="text-lg md:text-xl font-display text-text-main dark:text-white mb-6">
               {t.subtitulo}
             </h3>
 

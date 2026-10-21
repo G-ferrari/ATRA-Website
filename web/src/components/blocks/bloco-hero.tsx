@@ -102,12 +102,12 @@ export function BlocoHero({ bloco, locale = 'pt' }: { bloco: BlocoPageHero; loca
                 </div>
               )}
 
-              <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display mb-4 tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-display mb-4 tracking-tight leading-tight">
                 <TextoDestacado texto={bloco.title} destaque={bloco.highlight} />
               </h1>
 
               {bloco.subtitle && (
-                <p className="text-sm md:text-lg font-medium text-slate-700 dark:text-white/90 mb-3">{bloco.subtitle}</p>
+                <p className="text-base md:text-lg font-medium text-slate-700 dark:text-white/90 mb-3">{bloco.subtitle}</p>
               )}
 
               <Caixa quando={painelDePrazo} className="lg:grid lg:grid-cols-12 lg:gap-x-12">
@@ -122,9 +122,9 @@ export function BlocoHero({ bloco, locale = 'pt' }: { bloco: BlocoPageHero; loca
                 <p
                   className={
                     centro
-                      ? 'text-xs sm:text-sm text-slate-600 dark:text-white/70 font-light max-w-xl mx-auto mb-8'
+                      ? 'text-base text-slate-600 dark:text-white/70 max-w-xl mx-auto mb-8'
                       : cn(
-                          'text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 font-light leading-relaxed mb-6',
+                          'text-base text-slate-600 dark:text-white/70 leading-relaxed mb-6',
                           bloco.descriptionWidth === 'wide' ? 'max-w-2xl' : 'max-w-xl',
                         )
                   }
@@ -145,7 +145,7 @@ export function BlocoHero({ bloco, locale = 'pt' }: { bloco: BlocoPageHero; loca
                       <div className={cn('text-lg sm:text-xl font-bold', COR_DA_METRICA[m.color])}>
                         <ContadorAnimado ate={m.value} sufixo={m.suffix} />
                       </div>
-                      <div className="text-[10px] text-slate-500 dark:text-white/60 font-medium mt-0.5">{m.label}</div>
+                      <div className="text-xs text-slate-500 dark:text-white/60 font-medium mt-0.5">{m.label}</div>
                     </div>
                   ))}
                 </div>

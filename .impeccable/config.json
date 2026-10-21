@@ -4,24 +4,6 @@
     "ignoreFiles": [],
     "ignoreValues": [
       {
-        "rule": "design-system-font-size",
-        "value": "9px",
-        "createdAt": "2026-09-10T21:47:43.073Z",
-        "reason": "tier micro/caption incumbente (eyebrows, tags, meta) do porte fiel D-15; documentada no DESIGN.md; padronização de tamanho de fonte é passada typeset separada, não este passo de raios/bordas"
-      },
-      {
-        "rule": "design-system-font-size",
-        "value": "10px",
-        "createdAt": "2026-09-10T21:47:43.102Z",
-        "reason": "tier micro/caption incumbente (eyebrows, tags, meta) do porte fiel D-15; documentada no DESIGN.md; padronização de tamanho de fonte é passada typeset separada, não este passo de raios/bordas"
-      },
-      {
-        "rule": "design-system-font-size",
-        "value": "11px",
-        "createdAt": "2026-09-10T21:47:43.130Z",
-        "reason": "tier micro/caption incumbente (eyebrows, tags, meta) do porte fiel D-15; documentada no DESIGN.md; padronização de tamanho de fonte é passada typeset separada, não este passo de raios/bordas"
-      },
-      {
         "rule": "broken-image",
         "value": "*",
         "files": [

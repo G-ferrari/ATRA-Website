@@ -467,6 +467,16 @@ coluna, num arquivo que roda no CI e em produção. Falta provisionar
 `ATRAIR_API_URL` na VPS — sem ela o campo nasce com o endereço de dev, o mapper
 recusa, e a grade vem do CMS (estado seguro).
 
+**D-65 (20/10)** é a escala de letras: texto corrido em 16 px, apoio em 14,
+nada abaixo de 12, `font-light` só em título e número de exibição, campo de
+formulário com 16 px no celular. O **peso dos títulos** é do admin
+(Configuração → Aparência do site, global `appearance`: Negrito 600, Normal
+400, Fino 300, padrão Fino), que o layout põe no `<body>` como
+`--peso-dos-titulos`. ⚠️ A regra de `h1`–`h6` saiu de fora das camadas para
+`@layer base`: antes ela vencia toda classe de peso escrita num título. Agora
+a classe vence — então **título grande não leva classe de peso** (venceria o
+admin), e título pequeno (até 16 px) leva a sua.
+
 A revisão crítica de 25/08 (MIG-140–147) fechou: IP confiável nos limites
 (`lib/ip.ts` — nunca ler `x-forwarded-for` primeiro), tetos do chat
 (`lib/chat.ts`), campos do formulário cortados, mídia sem SVG, cabeçalhos de

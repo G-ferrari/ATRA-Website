@@ -1384,11 +1384,47 @@ export const HomeHero: Block = {
   ],
 }
 
+/* O alinhamento do texto que fica ao lado do título (#218, 20/10), nos dois
+ * blocos que põem título à esquerda e texto à direita. Cada um nasce com o que
+ * já tinha — as abas de destaque alinhavam à esquerda e o carrossel de cases à
+ * direita —, e o marketing passa a escolher. */
+const alinhamentoDaDescricao = (padrao: 'left' | 'right'): Field => ({
+  name: 'descriptionAlign',
+  type: 'select',
+  defaultValue: padrao,
+  options: [
+    { value: 'left', label: { pt: 'À esquerda', en: 'Left' } },
+    { value: 'right', label: { pt: 'À direita', en: 'Right' } },
+  ],
+  label: { pt: 'Alinhamento do texto ao lado do título', en: 'Alignment of the text beside the title' },
+  admin: {
+    description: {
+      pt: 'Vale no computador, onde o texto fica numa coluna à direita do título. No celular ele vem embaixo do título, sempre à esquerda.',
+      en: 'Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.',
+    },
+  },
+})
+
 export const LogoMarquee: Block = {
   slug: 'logoMarquee',
   labels: { singular: { pt: 'Faixa de logos', en: 'Logo strip' }, plural: { pt: 'Faixas de logos', en: 'Logo strips' } },
   fields: [
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      /* #216 (20/10): a faixa da home, "Parceiros Estratégicos", ganha um texto
+       * abaixo do título. O texto é do marketing; vazio, a faixa fica só com o
+       * título, como antes. */
+      name: 'description',
+      type: 'textarea',
+      localized: true,
+      label: { pt: 'Descrição', en: 'Description' },
+      admin: {
+        description: {
+          pt: 'Texto curto abaixo do título. Vazio, a faixa fica só com o título.',
+          en: 'Short text below the title. Empty, the strip shows only the title.',
+        },
+      },
+    },
     {
       /* ⚠️ Campo aposentado: os logos da faixa saem da collection `partners`
        * (`resolverPagina`), a mesma do mega-menu, para uma troca de logo no
@@ -1421,6 +1457,7 @@ export const FeatureTabs: Block = {
     { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto ao lado do título', en: 'Text beside the title' } },
+    alinhamentoDaDescricao('left'),
     { name: 'footnote', type: 'text', localized: true, label: { pt: 'Rodapé do cartão', en: 'Card footnote' } },
     {
       name: 'cta',
@@ -1534,6 +1571,7 @@ export const CaseCarousel: Block = {
     { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto ao lado do título', en: 'Text beside the title' } },
+    alinhamentoDaDescricao('right'),
     { name: 'readLabel', type: 'text', localized: true, label: { pt: 'Texto do link no cartão', en: 'Card link label' } },
     {
       name: 'cta',

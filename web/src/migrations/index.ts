@@ -65,6 +65,7 @@ import * as migration_20260927_215600_solutions_badge from './20260927_215600_so
 import * as migration_20260927_215700_rich_text_body_size from './20260927_215700_rich_text_body_size';
 import * as migration_20260927_215800_paginas_mestras from './20260927_215800_paginas_mestras';
 import * as migration_20260927_215900_partner_mosaic from './20260927_215900_partner_mosaic';
+import * as migration_20260927_215950_descricao_e_alinhamento from './20260927_215950_descricao_e_alinhamento';
 import * as migration_20260927_215950_page_hero_video from './20260927_215950_page_hero_video';
 import * as migration_20260927_215950_process_steps_variant from './20260927_215950_process_steps_variant';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
@@ -114,6 +115,8 @@ import * as migration_20261016_201318_process_steps_variant from './20261016_201
 import * as migration_20261016_201604_mais_icones from './20261016_201604_mais_icones';
 import * as migration_20261016_201812_contact_job_applications_notice from './20261016_201812_contact_job_applications_notice';
 import * as migration_20261017_105319_page_hero_video from './20261017_105319_page_hero_video';
+import * as migration_20261020_232303_descricao_e_alinhamento from './20261020_232303_descricao_e_alinhamento';
+import * as migration_20261020_234623_aparencia_do_site from './20261020_234623_aparencia_do_site';
 
 export const migrations = [
   {
@@ -452,6 +455,11 @@ export const migrations = [
     name: '20260927_215900_partner_mosaic',
   },
   {
+    up: migration_20260927_215950_descricao_e_alinhamento.up,
+    down: migration_20260927_215950_descricao_e_alinhamento.down,
+    name: '20260927_215950_descricao_e_alinhamento',
+  },
+  {
     up: migration_20260927_215950_page_hero_video.up,
     down: migration_20260927_215950_page_hero_video.down,
     name: '20260927_215950_page_hero_video',
@@ -694,6 +702,16 @@ export const migrations = [
   {
     up: migration_20261017_105319_page_hero_video.up,
     down: migration_20261017_105319_page_hero_video.down,
-    name: '20261017_105319_page_hero_video'
+    name: '20261017_105319_page_hero_video',
+  },
+  {
+    up: migration_20261020_232303_descricao_e_alinhamento.up,
+    down: migration_20261020_232303_descricao_e_alinhamento.down,
+    name: '20261020_232303_descricao_e_alinhamento',
+  },
+  {
+    up: migration_20261020_234623_aparencia_do_site.up,
+    down: migration_20261020_234623_aparencia_do_site.down,
+    name: '20261020_234623_aparencia_do_site'
   },
 ];

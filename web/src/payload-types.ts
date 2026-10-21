@@ -124,6 +124,7 @@ export interface Config {
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
   globals: {
+    appearance: Appearance;
     'atra-ai': AtraAi;
     contact: Contact;
     'conversion-panel': ConversionPanel;
@@ -136,6 +137,7 @@ export interface Config {
     tracking: Tracking;
   };
   globalsSelect: {
+    appearance: AppearanceSelect<false> | AppearanceSelect<true>;
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     'conversion-panel': ConversionPanelSelect<false> | ConversionPanelSelect<true>;
@@ -605,6 +607,10 @@ export interface Partner {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -2160,6 +2166,10 @@ export interface Partner {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -2522,6 +2532,10 @@ export interface Partner {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -3359,6 +3373,10 @@ export interface Page {
         eyebrow?: string | null;
         title: string;
         description?: string | null;
+        /**
+         * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+         */
+        descriptionAlign?: ('left' | 'right') | null;
         footnote?: string | null;
         cta?: {
           label?: string | null;
@@ -4914,6 +4932,10 @@ export interface Page {
       }
     | {
         title?: string | null;
+        /**
+         * Short text below the title. Empty, the strip shows only the title.
+         */
+        description?: string | null;
         partners?:
           | {
               name: string;
@@ -5276,6 +5298,10 @@ export interface Page {
         eyebrow?: string | null;
         title: string;
         description?: string | null;
+        /**
+         * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+         */
+        descriptionAlign?: ('left' | 'right') | null;
         readLabel?: string | null;
         cta?: {
           label?: string | null;
@@ -6461,6 +6487,10 @@ export interface Segment {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -8016,6 +8046,10 @@ export interface Segment {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -8378,6 +8412,10 @@ export interface Segment {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -9237,6 +9275,10 @@ export interface Solution {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -10792,6 +10834,10 @@ export interface Solution {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -11154,6 +11200,10 @@ export interface Solution {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -12470,6 +12520,7 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -12756,6 +12807,7 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -12958,6 +13010,7 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -13483,6 +13536,7 @@ export interface PartnersSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -13769,6 +13823,7 @@ export interface PartnersSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -13971,6 +14026,7 @@ export interface PartnersSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -14333,6 +14389,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -14619,6 +14676,7 @@ export interface SegmentsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -14821,6 +14879,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -15190,6 +15249,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -15476,6 +15536,7 @@ export interface SolutionsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -15678,6 +15739,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -16078,6 +16140,21 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Visual settings for the whole site. Saving here changes every page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance".
+ */
+export interface Appearance {
+  id: number;
+  /**
+   * Applies to page, section and card headings across the site. Light is the original design. Small headings, such as author names and uppercase labels, keep their own weight.
+   */
+  headingWeight: 'bold' | 'normal' | 'light';
+  updatedAt?: string | null;
+  createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -17055,6 +17132,16 @@ export interface Tracking {
   rdStationLoaderId?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance_select".
+ */
+export interface AppearanceSelect<T extends boolean = true> {
+  headingWeight?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
