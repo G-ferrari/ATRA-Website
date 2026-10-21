@@ -79,8 +79,16 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
               {bloco.title}
             </h2>
           </div>
+          {/* #218: o alinhamento vem do admin; no celular, sempre à esquerda. */}
           {bloco.description && (
-            <p className="text-text-muted max-w-md text-base">{bloco.description}</p>
+            <p
+              className={cn(
+                'text-text-muted max-w-md text-base',
+                bloco.alinhamentoDaDescricao === 'right' && 'md:text-right',
+              )}
+            >
+              {bloco.description}
+            </p>
           )}
         </div>
 

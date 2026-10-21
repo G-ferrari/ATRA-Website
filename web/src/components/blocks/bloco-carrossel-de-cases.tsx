@@ -60,7 +60,13 @@ export function BlocoCarrosselDeCases({ bloco }: { bloco: BlocoCaseCarousel }) {
             </h2>
           </div>
 
-          <div className="flex flex-col items-start md:items-end text-left md:text-right max-w-md gap-3">
+          {/* #218: o alinhamento vem do admin; no celular, sempre à esquerda. */}
+          <div
+            className={cn(
+              'flex flex-col items-start text-left max-w-md gap-3',
+              bloco.alinhamentoDaDescricao === 'right' && 'md:items-end md:text-right',
+            )}
+          >
             {bloco.description && (
               <p className="text-sm text-text-muted leading-relaxed">{bloco.description}</p>
             )}

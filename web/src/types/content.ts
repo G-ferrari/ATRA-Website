@@ -284,6 +284,7 @@ export type ParceiroDaFaixa = {
 export type BlocoLogoMarquee = Base & {
   tipo: 'logoMarquee'
   title: string | null
+  description: string | null
   /** Resolvidos pela página, da collection `partners`. */
   partners: ParceiroDaFaixa[]
 }
@@ -293,6 +294,8 @@ export type BlocoFeatureTabs = Base & {
   eyebrow: string | null
   title: string
   description: string | null
+  /** Como o texto ao lado do título se alinha no computador (#218). */
+  alinhamentoDaDescricao: 'left' | 'right'
   footnote: string | null
   cta: { label: string; href: string } | null
   items: { icon: string; badge: string; title: string; description: string; image: Image | null }[]
@@ -336,6 +339,8 @@ export type BlocoCaseCarousel = Base & {
   eyebrow: string | null
   title: string
   description: string | null
+  /** Como o texto ao lado do título se alinha no computador (#218). */
+  alinhamentoDaDescricao: 'left' | 'right'
   readLabel: string | null
   cta: { label: string; href: string } | null
   items: {
