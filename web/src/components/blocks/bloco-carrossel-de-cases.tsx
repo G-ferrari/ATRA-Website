@@ -76,11 +76,12 @@ export function BlocoCarrosselDeCases({ bloco }: { bloco: BlocoCaseCarousel }) {
           </div>
         </div>
 
+        {/* Sem barra: as setas e a barra de progresso abaixo são o caminho de
+            quem usa mouse. */}
         <div
           ref={trilhoRef}
           onScroll={aoRolar}
-          className="flex gap-5 md:gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-4 select-none"
-          style={{ scrollbarWidth: 'none' }}
+          className="flex gap-5 md:gap-6 overflow-x-auto scrollbar-hidden scroll-smooth snap-x snap-mandatory pb-4 select-none"
         >
           {bloco.items.map((c, i) => {
             const Icone = iconePorNome(c.icon)

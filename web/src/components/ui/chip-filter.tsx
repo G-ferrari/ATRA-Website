@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils'
 /* Barra de chips de categoria.
  *
  * É o filtro que o legado usa nas 5 listagens (cases, blog, webinars, ebooks,
- * relatórios) — markup idêntico ao de `legacy/src/pages/SuccessStories.tsx:135`,
- * extraído aqui para existir uma vez só.
+ * relatórios). O markup é o de `legacy/src/pages/SuccessStories.tsx:135`, menos
+ * a rolagem (ver abaixo), e mora aqui para existir uma vez só.
  *
  * Não confundir com `TabFilter`: aquele é outro componente do legado, usado em
  * `/design-system`, com outro desenho. Trocar um pelo outro quebra a paridade
@@ -39,8 +39,12 @@ export function ChipFilter({
       ? 'bg-surface-2 text-text-muted dark:text-gray-300 hover:text-text-main dark:hover:text-white hover:bg-surface-3'
       : 'bg-surface-2 text-text-muted hover:text-text-main hover:bg-surface-3'
 
+  /* ⚠️ Quebra linha, não rola — como o filtro de /consultores. Era
+     `overflow-x-auto`: a 390px as categorias do blog passam 300px da tela, e as
+     opções vêm do CMS, então nada garante que caibam nem no desktop. Escondida
+     a barra, a categoria fora da tela ficaria inalcançável com mouse. */
   return (
-    <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 no-scrollbar">
+    <div className="flex flex-wrap items-center gap-2 mb-8 pb-2">
       <span className="text-[11px] font-bold text-text-muted uppercase mr-1 shrink-0">{label}</span>
       {options.map((opcao) => (
         <button

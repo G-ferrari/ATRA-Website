@@ -289,7 +289,9 @@ export function SiteHeader({
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="pointer-events-auto w-full max-w-lg mt-2 bg-surface-2  rounded-xl shadow-2xl overflow-hidden relative z-40 mx-auto md:hidden max-h-[82vh] flex flex-col"
           >
-            <div data-testid="menu-gaveta" className="overflow-y-auto no-scrollbar p-4 space-y-1.5 flex-1">
+            {/* Rola na vertical, que a roda do mouse alcança sem barra; o item
+                cortado na borda de baixo avisa que há mais. */}
+            <div data-testid="menu-gaveta" className="overflow-y-auto scrollbar-hidden p-4 space-y-1.5 flex-1">
               {categorias.map((categoria) => {
                 /* Só as categorias que têm o que listar expandem. No legado são
                    Soluções, Insights e Parceiros — aqui sai do formato do

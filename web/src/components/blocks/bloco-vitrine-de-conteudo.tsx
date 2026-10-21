@@ -59,9 +59,12 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
   const segunda = bloco.cards.filter((c) => c.column === 'second')
 
   /* As colunas rolam na horizontal no celular e empilham a partir de `md` — daí
-     o `-mx-4 px-4` que sangra até a borda da tela antes de voltar ao normal. */
+     o `-mx-4 px-4` que sangra até a borda da tela antes de voltar ao normal.
+     Sem barra, porque só rola abaixo do `md`. Quem avisa que há outro cartão é
+     a ponta dele na borda: com `w-full` o segundo ficava inteiro fora da tela. */
   const trilho =
-    'flex md:flex-col overflow-x-auto md:overflow-x-visible gap-4 pb-4 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 no-scrollbar'
+    'flex md:flex-col overflow-x-auto md:overflow-x-visible gap-4 pb-4 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hidden'
+  const cartaoNoTrilho = 'min-w-[240px] md:min-w-0 w-[85%] md:w-full shrink-0'
 
   return (
     <section
@@ -96,7 +99,7 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
 
             <div className={trilho}>
               {primeira.map((c) => (
-                <div key={c.title} className="min-w-[240px] md:min-w-0 w-full shrink-0">
+                <div key={c.title} className={cartaoNoTrilho}>
                   <Cartao card={c} aspecto="aspect-[4/3]" />
                 </div>
               ))}
@@ -105,7 +108,7 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
 
           <div className={cn(trilho, 'items-start')}>
             {segunda.map((c) => (
-              <div key={c.title} className="min-w-[240px] md:min-w-0 w-full shrink-0">
+              <div key={c.title} className={cartaoNoTrilho}>
                 <Cartao card={c} aspecto="aspect-square" />
               </div>
             ))}

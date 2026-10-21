@@ -408,7 +408,10 @@ export function ListaDeConsultores({
           {/* ⚠️ Quebra linha, não rola. Era `overflow-x-auto no-scrollbar`: a
               375px a linha rolava 54px **sem barra de rolagem à vista**, e
               "Lead / Principal" — um valor inteiro do filtro — ficava fora da
-              tela, sem nada indicando que havia mais. */}
+              tela, sem nada indicando que havia mais. A barra não sumia pela
+              classe, que nunca existiu (ver `scrollbar-hidden` em
+              `globals.css`): no celular ela só aparece durante a rolagem. O
+              `ChipFilter` das outras listas seguiu o mesmo caminho. */}
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className={ROTULO_DO_FILTRO}>{t.senioridade}</span>
             {[TODOS, ...senioridades].map((s) => {
