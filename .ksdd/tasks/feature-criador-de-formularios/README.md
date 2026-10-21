@@ -11,7 +11,7 @@
 | 049 | Receber o envio de um formulário do admin — validar, gravar e avisar o time | backend | P0 | M | em revisão | 048 |
 | 050 | Levar o envio do formulário do admin ao RD com identificador, tags, campos mapeados e consentimento | backend | P0 | M | em revisão | 048, 049 |
 | 051 | Desenhar a seção "Formulário" no site, com os nove tipos de campo e o depois do envio | frontend | P0 | L | em revisão | 048, 049 |
-| 052 | Mostrar os formulários do admin em Integrações e filtrar os envios por formulário | frontend | P1 | S | para implementar | 048, 049 |
+| 052 | Mostrar os formulários do admin em Integrações e filtrar os envios por formulário | frontend | P1 | S | em revisão | 048, 049 |
 | 053 | Fechar a feature — miniatura no seletor, e2e do envio, guia do editor e decisão | qa | P1 | M | para implementar | 050, 051, 052 |
 | 054 | Testar com o marketing na homologação — criar e publicar um formulário sem ajuda | qa | P1 | S | para implementar | 053 |
 

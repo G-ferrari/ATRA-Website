@@ -1,7 +1,7 @@
 ---
 id: 052
 title: Mostrar os formulários do admin em Integrações e filtrar os envios por formulário
-status: para implementar
+status: em revisão
 feature: criador-de-formularios
 area: frontend
 priority: P1
