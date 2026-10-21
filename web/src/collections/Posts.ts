@@ -1,4 +1,5 @@
-import type { CollectionConfig } from 'payload'
+import { withFieldTranslation } from '@focus-reactive/payload-plugin-translator'
+import type { CollectionConfig, TextField } from 'payload'
 
 import { isEditorOrAdmin } from '@/access'
 import { seoField } from '@/fields/seo'
@@ -39,7 +40,10 @@ export const Posts: CollectionConfig = {
   defaultSort: '-publishedAt',
   fields: [
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
-    slugField('title'),
+    /* #66: o slug fica fora da tradução automática. No teste, o endereço em
+       inglês continua o de hoje; traduzir o endereço muda links e é decisão
+       à parte. */
+    withFieldTranslation(slugField('title') as TextField, { exclude: true }),
     {
       name: 'description',
       type: 'textarea',
