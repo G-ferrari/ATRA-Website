@@ -46,6 +46,14 @@ function hrefNoIdioma(caminho: string, locale: Locale): string {
   return caminho === '/' ? `/${locale}` : `/${locale}${caminho}`
 }
 
+/** Para onde o visitante vai depois do envio, ou `null` para "fica na
+ *  mensagem". Sem lançar: a action (049) só precisa disto, e um texto de
+ *  apresentação faltando em português não pode impedir o lead de ser gravado. */
+export function destinoDepoisDoEnvio(doc: Pick<Form, 'afterSubmit' | 'redirectPath'>, locale: Locale): string | null {
+  const caminho = doc.redirectPath?.trim()
+  return doc.afterSubmit === 'page' && caminho && ehEnderecoInterno(caminho) ? hrefNoIdioma(caminho, locale) : null
+}
+
 export function toFormularioDoAdmin(doc: Form, locale: Locale): FormularioDoAdmin {
   const campos: CampoDoFormulario[] = linhasValidas(doc).map(({ linha, tipo, i }) => {
     const rotulo = linha.label?.trim()

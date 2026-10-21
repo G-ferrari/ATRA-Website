@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Form } from '@/payload-types'
 
-import { toConfigDoFormulario, toFormularioDoAdmin } from './form'
+import { destinoDepoisDoEnvio, toConfigDoFormulario, toFormularioDoAdmin } from './form'
 import { ConteudoIncompleto } from './shared'
 
 const base = (sobre: Partial<Form> = {}): Form => ({
@@ -104,5 +104,14 @@ describe('toConfigDoFormulario', () => {
   it('identificador vazio ou fora do formato quer dizer "não vai ao RD"', () => {
     expect(toConfigDoFormulario(base({ rd: { conversionIdentifier: '' } })).rd.identificador).toBeNull()
     expect(toConfigDoFormulario(base({ rd: { conversionIdentifier: 'a<b' } })).rd.identificador).toBeNull()
+  })
+})
+
+describe('destinoDepoisDoEnvio', () => {
+  it('devolve o endereço no idioma, ou null para ficar na mensagem — sem lançar', () => {
+    expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: '/obrigado' }, 'en')).toBe('/en/obrigado')
+    expect(destinoDepoisDoEnvio({ afterSubmit: 'message', redirectPath: '/obrigado' }, 'pt')).toBeNull()
+    expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: 'https://fora.com' }, 'pt')).toBeNull()
+    expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: null }, 'pt')).toBeNull()
   })
 })

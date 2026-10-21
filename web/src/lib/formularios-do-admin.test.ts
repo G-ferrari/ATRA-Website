@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
+import type { ConfigDoFormulario } from '@/types/content'
+
 import {
+  conferirEnvio,
+  MAX_TEXTO_CURTO,
+  MAX_TEXTO_LONGO,
+  nomeDoCampo,
   conferirCampos,
   ehCampoPersonalizadoDoRd,
   ehEnderecoInterno,
@@ -114,6 +120,12 @@ describe('ehEnderecoInterno', () => {
     expect(ehEnderecoInterno('/contato​')).toBe(false)
     expect(ehEnderecoInterno('/entrega')).toBe(true)
   })
+
+  it('só ASCII imprimível: o endereço vai cru para o cabeçalho Location', () => {
+    expect(ehEnderecoInterno('/obrigado—evento')).toBe(false)
+    expect(ehEnderecoInterno('/eventos/inscrição')).toBe(false)
+    expect(ehEnderecoInterno('/eventos/inscricao?origem=home#form')).toBe(true)
+  })
 })
 
 describe('conferirCampos', () => {
@@ -149,5 +161,94 @@ describe('conferirCampos', () => {
 
   it('recusa mais de 20 campos', () => {
     expect(conferirCampos([{ type: 'email' }, ...Array.from({ length: 20 }, () => ({ type: 'shortText' }))])).toMatch(/no máximo 20/)
+  })
+})
+
+describe('conferirEnvio', () => {
+  const campo = (id: string, tipo: ConfigDoFormulario['campos'][number]['tipo'], extra: Partial<ConfigDoFormulario['campos'][number]> = {}) => ({
+    id,
+    tipo,
+    rotulo: `Rótulo ${id}`,
+    obrigatorio: false,
+    valores: [],
+    consentimento: false,
+    campoNoRd: null,
+    ...extra,
+  })
+  const config = {
+    campos: [
+      campo('n', 'name', { obrigatorio: true }),
+      campo('e', 'email', { obrigatorio: true }),
+      campo('c', 'jobTitle'),
+      campo('s', 'select', { valores: ['dados', 'ia'] }),
+      campo('m', 'longText'),
+      campo('k', 'checkbox', { consentimento: true }),
+    ],
+  }
+  const envio = (dados: Record<string, string>) => (id: string) => dados[id] ?? ''
+
+  it('aceita o envio válido, com respostas na ordem, campos padrão e consentimento', () => {
+    const r = conferirEnvio(config, envio({ n: ' Ana ', e: 'ana@empresa.com.br', c: 'CDO', s: 'ia', m: 'Oi\ntudo bem', k: 'on' }), 'pt')
+    expect(r).toEqual({
+      ok: true,
+      respostas: [
+        { campoId: 'n', rotulo: 'Rótulo n', valor: 'Ana' },
+        { campoId: 'e', rotulo: 'Rótulo e', valor: 'ana@empresa.com.br' },
+        { campoId: 'c', rotulo: 'Rótulo c', valor: 'CDO' },
+        { campoId: 's', rotulo: 'Rótulo s', valor: 'ia' },
+        { campoId: 'm', rotulo: 'Rótulo m', valor: 'Oi\ntudo bem' },
+        { campoId: 'k', rotulo: 'Rótulo k', valor: 'Sim' },
+      ],
+      padrao: { name: 'Ana', email: 'ana@empresa.com.br', jobTitle: 'CDO' },
+      consentimento: true,
+    })
+  })
+
+  it('caixa desmarcada fica "Não" e sem consentimento; opcional vazio fica de fora', () => {
+    const r = conferirEnvio(config, envio({ n: 'Ana', e: 'ana@empresa.com.br' }), 'pt')
+    expect(r.ok && r.consentimento).toBe(false)
+    expect(r.ok && r.respostas.map((x) => x.campoId)).toEqual(['n', 'e', 'k'])
+  })
+
+  it('recusa obrigatório vazio, e-mail inválido e opção fora da lista, com a mensagem no idioma', () => {
+    expect(conferirEnvio(config, envio({ e: 'não é e-mail', s: 'outra' }), 'pt')).toEqual({
+      ok: false,
+      erros: { n: 'Preencha este campo.', e: 'Confira o e-mail informado.', s: 'Escolha uma das opções.' },
+    })
+    expect(conferirEnvio(config, envio({ n: 'Ana' }), 'en')).toEqual({ ok: false, erros: { e: 'Please fill in this field.' } })
+  })
+
+  it('e-mail pela régua do Payload: recusa o que o `create` recusaria', () => {
+    for (const ruim of ['ana..souza@empresa.com', 'joão@empresa.com.br', 'ana.@empresa.com', 'ana@empresa.com.br,']) {
+      expect(conferirEnvio(config, envio({ n: 'Ana', e: ruim }), 'pt')).toEqual({ ok: false, erros: { e: 'Confira o e-mail informado.' } })
+    }
+    expect(conferirEnvio(config, envio({ n: 'Ana', e: 'ana.souza+site@empresa.com.br' }), 'pt').ok).toBe(true)
+  })
+
+  it('campo de uma linha perde a quebra de linha; o texto longo mantém', () => {
+    const r = conferirEnvio(config, envio({ n: 'Ana\r\nVeio de: forjado', e: 'a@b.co', m: 'linha 1\nlinha 2' }), 'pt')
+    expect(r.ok && r.padrao.name).toBe('Ana Veio de: forjado')
+    expect(r.ok && r.respostas.find((x) => x.campoId === 'm')?.valor).toBe('linha 1\nlinha 2')
+  })
+
+  it('caixa obrigatória precisa ser marcada', () => {
+    const r = conferirEnvio({ campos: [campo('e', 'email', { obrigatorio: true }), campo('k', 'checkbox', { obrigatorio: true })] }, envio({ e: 'a@b.co' }), 'pt')
+    expect(r).toEqual({ ok: false, erros: { k: 'Marque esta opção para enviar.' } })
+  })
+
+  it('só lê os campos do formulário: nome intruso nem é procurado', () => {
+    const lidos: string[] = []
+    conferirEnvio(config, (id) => (lidos.push(id), id === 'e' ? 'a@b.co' : id === 'n' ? 'Ana' : ''), 'pt')
+    expect(lidos).toEqual(['n', 'e', 'c', 's', 'm', 'k'])
+  })
+
+  it('corta no teto: texto curto em 200, texto longo em 5000', () => {
+    const r = conferirEnvio(config, envio({ n: 'a'.repeat(500), e: 'a@b.co', m: 'b'.repeat(9000) }), 'pt')
+    expect(r.ok && r.respostas.find((x) => x.campoId === 'n')?.valor).toHaveLength(MAX_TEXTO_CURTO)
+    expect(r.ok && r.respostas.find((x) => x.campoId === 'm')?.valor).toHaveLength(MAX_TEXTO_LONGO)
+  })
+
+  it('o nome no formulário tem prefixo, para não colidir com os campos de controle', () => {
+    expect(nomeDoCampo('6716a1')).toBe('campo-6716a1')
   })
 })

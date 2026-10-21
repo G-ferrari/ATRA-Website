@@ -11996,7 +11996,8 @@ export interface FormSubmission {
     | 'material-download'
     | 'rc18-diagnostic'
     | 'consultant-request'
-    | 'data-maturity-diagnostic';
+    | 'data-maturity-diagnostic'
+    | 'custom-form';
   status: 'new' | 'read' | 'archived';
   email: string;
   confirmationToken?: string | null;
@@ -12007,6 +12008,16 @@ export interface FormSubmission {
   job?: (number | null) | Job;
   cv?: (number | null) | PrivateFile;
   resource?: (number | null) | Resource;
+  form?: (number | null) | Form;
+  answers?:
+    | {
+        fieldId?: string | null;
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  communicationConsent?: boolean | null;
   name?: string | null;
   phone?: string | null;
   company?: string | null;
@@ -16099,6 +16110,16 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   job?: T;
   cv?: T;
   resource?: T;
+  form?: T;
+  answers?:
+    | T
+    | {
+        fieldId?: T;
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  communicationConsent?: T;
   name?: T;
   phone?: T;
   company?: T;

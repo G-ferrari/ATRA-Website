@@ -33,6 +33,8 @@ const soDiagnosticoDeMaturidade = (data: Partial<{ kind: string }> | undefined) 
 
 const soBancoDeTalentos = (data: Partial<{ kind: string }> | undefined) => data?.kind === 'talent-pool'
 
+const soFormularioDoAdmin = (data: Partial<{ kind: string }> | undefined) => data?.kind === 'custom-form'
+
 export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
   admin: {
@@ -71,6 +73,9 @@ export const FormSubmissions: CollectionConfig = {
         { value: 'rc18-diagnostic', label: { pt: 'Diagnóstico RC 18', en: 'RC 18 diagnostic' } },
         { value: 'consultant-request', label: { pt: 'Solicitação de consultores', en: 'Consultant request' } },
         { value: 'data-maturity-diagnostic', label: { pt: 'Diagnóstico de maturidade', en: 'Data maturity diagnostic' } },
+        /* Criador de formulários (task 049): qualquer formulário montado em
+           Conteúdo → Formulários. Qual deles está em `form`. */
+        { value: 'custom-form', label: { pt: 'Formulário do admin', en: 'Admin form' } },
       ],
       /* D-35 — o diagnóstico de maturidade substitui o da RC 18, e
        * `rc18-diagnostic` sai das opções **sem sair do enum**: tirar o valor do
@@ -129,6 +134,42 @@ export const FormSubmissions: CollectionConfig = {
     { name: 'cv', type: 'relationship', relationTo: 'private-files', label: { pt: 'Currículo', en: 'CV' } },
     /* MIG-104 — download: qual material o lead pediu. */
     { name: 'resource', type: 'relationship', relationTo: 'resources', label: { pt: 'Material', en: 'Material' } },
+    /* Task 049 — de qual formulário do admin veio. Dele saem o identificador e
+       as tags do RD (050); apagado depois, o envio fica com o resto. */
+    {
+      name: 'form',
+      type: 'relationship',
+      relationTo: 'forms',
+      label: { pt: 'Formulário', en: 'Form' },
+      admin: { readOnly: true, position: 'sidebar', condition: soFormularioDoAdmin },
+    },
+    {
+      /* As respostas do formulário do admin, com o rótulo de cada pergunta **no
+         momento do envio** — reescrever o formulário depois não muda o que o
+         lead respondeu. Nome, e-mail, telefone e empresa também ficam nas
+         colunas de sempre (busca e lista do admin). `fieldId` é o id da linha
+         no formulário: é por ele que a 050 acha o destino de cada resposta no
+         RD. Somente leitura: é o que o visitante enviou. */
+      name: 'answers',
+      type: 'array',
+      label: { pt: 'Respostas', en: 'Answers' },
+      labels: { singular: { pt: 'Resposta', en: 'Answer' }, plural: { pt: 'Respostas', en: 'Answers' } },
+      admin: { readOnly: true, condition: soFormularioDoAdmin },
+      fields: [
+        { name: 'fieldId', type: 'text', admin: { hidden: true } },
+        { name: 'label', type: 'text', label: { pt: 'Pergunta', en: 'Question' } },
+        { name: 'value', type: 'textarea', label: { pt: 'Resposta', en: 'Answer' } },
+      ],
+    },
+    {
+      /* A caixa de consentimento do formulário do admin foi marcada: é o que a
+         050 manda ao RD como base legal. Sem caixa no formulário, fica falso. */
+      name: 'communicationConsent',
+      type: 'checkbox',
+      defaultValue: false,
+      label: { pt: 'Aceitou receber comunicações', en: 'Agreed to receive communications' },
+      admin: { readOnly: true, position: 'sidebar', condition: soFormularioDoAdmin },
+    },
     { name: 'name', type: 'text', label: { pt: 'Nome', en: 'Name' } },
     { name: 'phone', type: 'text', label: { pt: 'Telefone', en: 'Phone' } },
     { name: 'company', type: 'text', label: { pt: 'Empresa', en: 'Company' } },

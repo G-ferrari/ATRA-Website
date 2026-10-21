@@ -3,6 +3,8 @@
  * para validar, o mapper para ler, e a action da 049 para conferir o envio — a
  * mesma regra nos três lados. */
 
+import type { ConfigDoFormulario } from '@/types/content'
+
 import { ehIdentificadorDeConversao, normalizarNome } from './formatos-de-integracao'
 
 /** Os tipos de campo da v1, na ordem do seletor do admin. */
@@ -125,7 +127,11 @@ export function ehCampoPersonalizadoDoRd(valor: string): boolean {
  */
 export function ehEnderecoInterno(valor: string): boolean {
   return (
-    /^\/(?!\/)[^\s\\]{0,199}$/.test(valor) &&
+    /* ASCII imprimível, sem espaço e sem barra invertida: o endereço vai cru
+       para o cabeçalho `Location` do redirecionamento (049), e o Node recusa
+       caractere fora do Latin-1 — o visitante veria erro com o lead já
+       gravado, e mandaria de novo. Os endereços do site são ASCII. */
+    /^\/(?!\/)[\x21-\x5b\x5d-\x7e]{0,199}$/.test(valor) &&
     /* O prefixo de idioma é do site, não do editor: `/pt/contato` viraria
        `/en/pt/contato` na versão em inglês. */
     !/^\/(pt|en)(\/|$|[?#])/i.test(valor) &&
@@ -192,4 +198,117 @@ export const ROTULO_DO_TIPO: Record<TipoDeCampo, { pt: string; en: string }> = {
   longText: { pt: 'Texto longo', en: 'Long text' },
   select: { pt: 'Lista de opções', en: 'Option list' },
   checkbox: { pt: 'Caixa de marcar', en: 'Checkbox' },
+}
+
+/* ---------------------------------------------------------------------------
+ * O envio (task 049)
+ * ------------------------------------------------------------------------- */
+
+/* Os tetos dos formulários escritos em código (`actions/formularios.ts`,
+ * MIG-142): quem posta não é obrigado a ser o nosso JavaScript. */
+export const MAX_TEXTO_CURTO = 200
+export const MAX_TEXTO_LONGO = 5000
+
+/* ⚠️ O mesmo regex do campo `email` do Payload (`fields/validations.js`).
+ * Mais frouxo que ele, um "ana..souza@empresa.com" passaria aqui e cairia no
+ * `create`: o visitante leria a mensagem genérica em vez de "Confira o e-mail"
+ * ao lado do campo, e nada seria gravado. */
+const EMAIL =
+  /^(?!.*\.\.)[\w!#$%&'*+/=?^`{|}~-](?:[\w!#$%&'*+/=?^`{|}~.-]*[\w!#$%&'*+/=?^`{|}~-])?@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/i
+
+const MENSAGENS = {
+  pt: {
+    obrigatorio: 'Preencha este campo.',
+    marcar: 'Marque esta opção para enviar.',
+    email: 'Confira o e-mail informado.',
+    opcao: 'Escolha uma das opções.',
+  },
+  en: {
+    obrigatorio: 'Please fill in this field.',
+    marcar: 'Tick this option to send.',
+    email: 'Please check the e-mail address.',
+    opcao: 'Please choose one of the options.',
+  },
+} as const
+
+export type CamposPadraoDoEnvio = {
+  email: string
+  name?: string
+  phone?: string
+  company?: string
+  jobTitle?: string
+}
+
+export type ConferenciaDoEnvio =
+  | {
+      ok: true
+      /** Todas as respostas, na ordem do formulário, com o rótulo do momento
+       *  do envio — o que o admin e o aviso mostram. */
+      respostas: { campoId: string; rotulo: string; valor: string }[]
+      padrao: CamposPadraoDoEnvio
+      /** A caixa de consentimento de comunicação foi marcada. */
+      consentimento: boolean
+    }
+  | { ok: false; erros: Record<string, string> }
+
+const TIPOS_PADRAO = new Set<string>(['email', 'name', 'phone', 'company', 'jobTitle'])
+
+/** O `name` de um campo no `<form>`: o id da linha com prefixo, para nunca
+ *  colidir com os campos de controle do envio (`formulario`, `locale`,
+ *  `source`, a UTM, a isca e o carimbo). A seção (051) e a action (049) usam
+ *  os dois a mesma função. */
+export const nomeDoCampo = (campoId: string): string => `campo-${campoId}`
+
+/**
+ * Confere um envio contra o formulário **publicado**, campo a campo. Pura: a
+ * action passa como ler cada campo do `FormData`.
+ *
+ * ⚠️ Só os campos do formulário são lidos — qualquer outro nome no envio fica
+ * de fora sem precisar ser procurado. Lista de opções só aceita um valor da
+ * lista; caixa de marcar vale "marcada" com qualquer valor enviado.
+ */
+export function conferirEnvio(
+  config: Pick<ConfigDoFormulario, 'campos'>,
+  ler: (campoId: string) => string,
+  locale: 'pt' | 'en',
+): ConferenciaDoEnvio {
+  const m = MENSAGENS[locale]
+  const erros: Record<string, string> = {}
+  const respostas: { campoId: string; rotulo: string; valor: string }[] = []
+  const padrao: Partial<CamposPadraoDoEnvio> = {}
+  let consentimento = false
+
+  for (const campo of config.campos) {
+    const bruto = ler(campo.id)
+    if (campo.tipo === 'checkbox') {
+      const marcado = bruto !== ''
+      if (campo.obrigatorio && !marcado) erros[campo.id] = m.marcar
+      if (campo.consentimento) consentimento = marcado
+      respostas.push({ campoId: campo.id, rotulo: campo.rotulo, valor: marcado ? 'Sim' : 'Não' })
+      continue
+    }
+
+    /* Campo de uma linha não tem quebra: um `<input>` nunca manda, só um POST
+       forjado — e ela chegaria ao assunto e ao corpo do aviso, onde forjaria
+       linhas ("Veio de: …"). */
+    const limpo = campo.tipo === 'longText' ? bruto.trim() : bruto.replace(/\s+/g, ' ').trim()
+    const valor = limpo.slice(0, campo.tipo === 'longText' ? MAX_TEXTO_LONGO : MAX_TEXTO_CURTO)
+    if (!valor) {
+      if (campo.obrigatorio) erros[campo.id] = m.obrigatorio
+      continue
+    }
+    if (campo.tipo === 'email' && !EMAIL.test(valor)) {
+      erros[campo.id] = m.email
+      continue
+    }
+    if (campo.tipo === 'select' && !campo.valores.includes(valor)) {
+      erros[campo.id] = m.opcao
+      continue
+    }
+    respostas.push({ campoId: campo.id, rotulo: campo.rotulo, valor })
+    if (TIPOS_PADRAO.has(campo.tipo)) padrao[campo.tipo as keyof CamposPadraoDoEnvio] = valor
+  }
+
+  if (Object.keys(erros).length > 0 || !padrao.email) return { ok: false, erros }
+  return { ok: true, respostas, padrao: padrao as CamposPadraoDoEnvio, consentimento }
 }
