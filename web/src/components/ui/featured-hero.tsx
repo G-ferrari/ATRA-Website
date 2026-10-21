@@ -1,11 +1,11 @@
 'use client'
 
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import type { ReactNode } from 'react'
-import { useEffect, useState } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { congelado } from '@/lib/e2e'
 import { cn } from '@/lib/utils'
@@ -67,6 +67,24 @@ export type FeaturedHeroProps = {
   abertura?: boolean
   /** Âncora da seção, quando o bloco tem uma. */
   id?: string
+  /** Rótulos das setas da régua de miniaturas, no idioma da página. */
+  rotulosDaRegua?: { anteriores: string; proximos: string }
+}
+
+/** Largura do esmaecido nas bordas da régua que têm mais miniaturas. */
+const ESMAECIDO = 48
+
+/** Rolagem suave, menos para quem pediu ao sistema menos movimento. */
+function rolagem(): ScrollBehavior {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+}
+
+/* O esmaecido é máscara, e não um degradê pintado por cima: o fundo do herói
+   tem manchas coloridas, e uma faixa da cor da página apareceria sobre elas. */
+function mascaraDaRegua(sobra: { antes: boolean; depois: boolean }): CSSProperties | undefined {
+  if (!sobra.antes && !sobra.depois) return undefined
+  const mascara = `linear-gradient(to right, transparent 0, #000 ${sobra.antes ? ESMAECIDO : 0}px, #000 calc(100% - ${sobra.depois ? ESMAECIDO : 0}px), transparent 100%)`
+  return { maskImage: mascara, WebkitMaskImage: mascara }
 }
 
 export function FeaturedHero({
@@ -80,17 +98,59 @@ export function FeaturedHero({
   intervalo = 5000,
   abertura = true,
   id,
+  rotulosDaRegua = { anteriores: 'Destaques anteriores', proximos: 'Próximos destaques' },
 }: FeaturedHeroProps) {
   const Titulo = abertura ? 'h1' : 'h2'
   const [indiceAtivo, setIndiceAtivo] = useState(0)
+  const [pausado, setPausado] = useState(false)
+  const reguaRef = useRef<HTMLDivElement>(null)
+  /** Se há miniatura escondida antes e depois da parte visível da régua. */
+  const [sobra, setSobra] = useState({ antes: false, depois: false })
 
   useEffect(() => {
-    if (congelado()) return // regressão visual: fixa no primeiro destaque
+    if (congelado() || pausado) return // regressão visual: fixa no primeiro destaque
     const timer = setTimeout(() => {
       setIndiceAtivo((atual) => (atual + 1) % items.length)
     }, intervalo)
     return () => clearTimeout(timer)
-  }, [indiceAtivo, items.length, intervalo])
+  }, [indiceAtivo, items.length, intervalo, pausado])
+
+  const medirRegua = useCallback(() => {
+    const el = reguaRef.current
+    if (!el) return
+    // 1px de folga: o `scrollLeft` sai fracionado com zoom do navegador.
+    const antes = el.scrollLeft > 1
+    const depois = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
+    setSobra((s) => (s.antes === antes && s.depois === depois ? s : { antes, depois }))
+  }, [])
+
+  useEffect(() => {
+    const el = reguaRef.current
+    if (!el) return
+    medirRegua()
+    const observador = new ResizeObserver(medirRegua)
+    observador.observe(el)
+    return () => observador.disconnect()
+  }, [medirRegua, items.length])
+
+  /* A régua acompanha o destaque ativo, inclusive na rotação automática. Conta
+     feita à mão, e não `scrollIntoView`: aquele rola também a página, e o
+     visitante que desceu para a lista seria puxado de volta ao topo. */
+  useEffect(() => {
+    const el = reguaRef.current
+    const miniatura = el?.children[indiceAtivo] as HTMLElement | undefined
+    if (!el || !miniatura) return
+    const inicio = miniatura.offsetLeft
+    const fim = inicio + miniatura.offsetWidth
+    if (inicio < el.scrollLeft) el.scrollTo({ left: Math.max(0, inicio - ESMAECIDO), behavior: rolagem() })
+    else if (fim > el.scrollLeft + el.clientWidth)
+      el.scrollTo({ left: fim - el.clientWidth + ESMAECIDO, behavior: rolagem() })
+  }, [indiceAtivo])
+
+  const rolarRegua = (direcao: -1 | 1) => {
+    const el = reguaRef.current
+    el?.scrollBy({ left: direcao * el.clientWidth * 0.75, behavior: rolagem() })
+  }
 
   const ativo = items[indiceAtivo] ?? items[0]
   if (!ativo) return null
@@ -212,41 +272,89 @@ export function FeaturedHero({
           </motion.div>
         </AnimatePresence>
 
-        <div className="mt-8 md:mt-12 w-full flex overflow-x-auto no-scrollbar gap-3 sm:gap-6 pt-5 border-t border-border-main/30">
-          {items.map((item, idx) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setIndiceAtivo(idx)}
-              className={cn(
-                'text-left opacity-50 hover:opacity-100 transition-all cursor-pointer group min-w-[200px] sm:min-w-[240px] flex-1',
-                indiceAtivo === idx && 'opacity-100',
-              )}
-            >
-              <div className="h-1 w-full bg-slate-200 dark:bg-white/10 mb-3 overflow-hidden rounded-[4px] relative">
-                {indiceAtivo === idx && (
-                  <motion.div
-                    key={indiceAtivo}
-                    className="absolute top-0 left-0 h-full bg-primary origin-left w-full"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ ease: 'linear', duration: intervalo / 1000 }}
-                  />
+        {/* A régua de miniaturas (#32). Com mais de 4 destaques — webinars e
+            e-books entram todos — ela passa da largura. Era `no-scrollbar`, uma
+            classe que o Tailwind 4 não tem: aparecia a barra nativa, e o que
+            passava da borda ficava cortado sem aviso. Agora a barra some, a
+            borda com mais itens esmaece, as setas rolam (do `sm` para cima; no
+            celular é o dedo) e a régua acompanha o destaque ativo. Com o
+            ponteiro ou o foco nela, a rotação para — senão o destaque trocaria
+            embaixo de quem está escolhendo. */}
+        <div
+          className="relative mt-8 md:mt-12 pt-5 border-t border-border-main/30"
+          onMouseEnter={() => setPausado(true)}
+          onMouseLeave={() => setPausado(false)}
+          onFocus={() => setPausado(true)}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget)) setPausado(false)
+          }}
+        >
+          <div
+            ref={reguaRef}
+            onScroll={medirRegua}
+            className="relative w-full flex overflow-x-auto gap-3 sm:gap-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            style={mascaraDaRegua(sobra)}
+          >
+            {items.map((item, idx) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setIndiceAtivo(idx)}
+                className={cn(
+                  'text-left opacity-50 hover:opacity-100 transition-all cursor-pointer group min-w-[200px] sm:min-w-[240px] flex-1',
+                  indiceAtivo === idx && 'opacity-100',
                 )}
-                {indiceAtivo > idx && (
-                  <div className="absolute top-0 left-0 h-full bg-slate-300 dark:bg-white/20 w-full" />
-                )}
-              </div>
-              <h3 className="text-xs sm:text-sm font-bold text-text-main mb-1 line-clamp-1 group-hover:text-primary transition-colors">
-                {item.title}
-              </h3>
-              {item.thumbLabel && (
-                <div className="text-[10px] sm:text-[11px] text-text-muted uppercase tracking-widest font-semibold">
-                  {item.thumbLabel}
+              >
+                <div className="h-1 w-full bg-slate-200 dark:bg-white/10 mb-3 overflow-hidden rounded-[4px] relative">
+                  {indiceAtivo === idx &&
+                    (pausado ? (
+                      <div className="absolute top-0 left-0 h-full bg-primary w-full" />
+                    ) : (
+                      <motion.div
+                        key={indiceAtivo}
+                        className="absolute top-0 left-0 h-full bg-primary origin-left w-full"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ ease: 'linear', duration: intervalo / 1000 }}
+                      />
+                    ))}
+                  {indiceAtivo > idx && (
+                    <div className="absolute top-0 left-0 h-full bg-slate-300 dark:bg-white/20 w-full" />
+                  )}
                 </div>
-              )}
-            </button>
-          ))}
+                <h3 className="text-xs sm:text-sm font-bold text-text-main mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+                  {item.title}
+                </h3>
+                {item.thumbLabel && (
+                  <div className="text-[10px] sm:text-[11px] text-text-muted uppercase tracking-widest font-semibold">
+                    {item.thumbLabel}
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {(
+            [
+              [-1, sobra.antes, rotulosDaRegua.anteriores, 'left-0', ChevronLeft],
+              [1, sobra.depois, rotulosDaRegua.proximos, 'right-0', ChevronRight],
+            ] as const
+          ).map(([direcao, visivel, rotulo, lado, Seta]) =>
+            visivel ? (
+              <button
+                key={direcao}
+                type="button"
+                onClick={() => rolarRegua(direcao)}
+                aria-label={rotulo}
+                className={cn(
+                  'hidden sm:flex absolute top-7 z-10 w-9 h-9 items-center justify-center rounded-[6px] bg-surface-2 text-text-main shadow-md hover:bg-primary hover:text-white active:scale-95 transition-all cursor-pointer',
+                  lado,
+                )}
+              >
+                <Seta size={18} aria-hidden />
+              </button>
+            ) : null,
+          )}
         </div>
       </div>
     </section>
