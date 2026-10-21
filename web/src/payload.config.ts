@@ -201,7 +201,14 @@ export default buildConfig({
     translatorPlugin({
       collections: [Posts],
       translationProvider: provedorDeTraducao,
-      runner: createPayloadJobsRunner({ staleJobTimeoutMs: 10 * 60_000 }),
+      /* Um artigo por vez, com espera longa entre tentativas: com 9 de uma vez
+         o Gemini respondeu 429 (limite de uso da chave) a quase todos, e as 4
+         tentativas acabaram em segundos (21/10). */
+      runner: createPayloadJobsRunner({
+        staleJobTimeoutMs: 10 * 60_000,
+        autoRun: { cron: '* * * * *', limit: 1 },
+        retries: { attempts: 4, backoff: { type: 'exponential', delay: 60_000 } },
+      }),
       access: quemTraduz,
     }),
   ],

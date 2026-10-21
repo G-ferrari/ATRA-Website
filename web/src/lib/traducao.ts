@@ -29,7 +29,25 @@ const completar: CompletionFn = async (pedido) => {
     throw new ProviderConfigurationError('GEMINI_API_KEY ausente no servidor: a tradução usa a chave do Gemini da ATRA AI.')
   }
   const cliente = new OpenAI({ apiKey: chave, baseURL: ENDERECO_COMPATIVEL })
-  return openAIComplete({ client: cliente, model: MODELO, sampling: { temperature: 0.2 } })(pedido)
+  /* ⚠️ `json_object`, e não o `json_schema` padrão do plugin: no endereço
+     compatível, o Gemini responde 503 sem corpo a todo pedido com esquema
+     (medido em 21/10; os outros dois formatos respondem). O plugin confere
+     depois se todas as chaves voltaram e acusa a que faltar. */
+  try {
+    return await openAIComplete({
+      client: cliente,
+      model: MODELO,
+      sampling: { temperature: 0.2 },
+      structuredOutput: 'json_object',
+    })(pedido)
+  } catch (e) {
+    /* O plugin guarda o erro do Gemini num `cause` que o log da fila não
+       mostra: sem isto, toda falha sai como "o pedido falhou antes da
+       resposta". Status e mensagem, nunca o pedido nem a chave. */
+    const causa = ((e as { cause?: unknown }).cause ?? e) as { status?: number; message?: string }
+    console.error(`[traducao] o Gemini recusou: ${causa.status ?? 'sem status'} ${String(causa.message ?? '').slice(0, 300)}`)
+    throw e
+  }
 }
 
 /* O que se acrescenta à instrução do plugin. Só o que é técnico e não se
