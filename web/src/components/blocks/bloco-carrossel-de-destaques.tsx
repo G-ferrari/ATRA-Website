@@ -107,7 +107,7 @@ export function BlocoCarrosselDeDestaques({ bloco, locale }: { bloco: BlocoHighl
     >
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
         {bloco.title && (
-          <h2 className="text-3xl md:text-5xl font-light font-display text-text-main leading-tight mb-8 md:mb-12">
+          <h2 className="text-3xl md:text-5xl font-display text-text-main leading-tight mb-8 md:mb-12">
             {bloco.title}
           </h2>
         )}
@@ -210,11 +210,11 @@ function Banner({
           {item.tag}
         </span>
       )}
-      <h3 className="text-2xl sm:text-3xl md:text-4xl font-light font-display text-text-main leading-tight max-w-2xl">
+      <h3 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main leading-tight max-w-2xl">
         {item.title}
       </h3>
       {item.description && (
-        <p className="text-sm md:text-base text-text-muted leading-relaxed max-w-xl">{item.description}</p>
+        <p className="text-base text-text-muted leading-relaxed max-w-xl">{item.description}</p>
       )}
       {item.cta && (
         <Link href={item.cta.href} {...propsExternas(item.cta.href)} className="pill-btn-primary self-start mt-2 group">

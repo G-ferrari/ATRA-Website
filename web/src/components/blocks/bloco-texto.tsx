@@ -15,7 +15,7 @@ import type { BlocoRichTextSection } from '@/types/content'
  * menor parágrafo do site; "normal" subiu para 14/16px, o mesmo das descrições
  * de topo e de seção, e "grande" fica 2 pontos acima. A entrelinha acompanha. */
 const TAMANHO_DO_TEXTO = {
-  normal: 'text-sm md:text-base leading-relaxed',
+  normal: 'text-base leading-relaxed',
   large: 'text-base md:text-lg leading-relaxed',
 } as const
 export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
@@ -41,12 +41,12 @@ export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
               </span>
             )}
             {bloco.title && (
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main mb-4">
                 {bloco.title}
               </h2>
             )}
             {bloco.description && (
-              <p className="text-text-muted text-xs sm:text-sm md:text-base max-w-2xl mx-auto font-light">
+              <p className="text-text-muted text-base max-w-2xl mx-auto">
                 {bloco.description}
               </p>
             )}
@@ -72,7 +72,7 @@ export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
           >
             {centrado ? (
               bloco.subtitle && (
-                <h3 className="text-xl sm:text-2xl font-bold text-text-main leading-tight">{bloco.subtitle}</h3>
+                <h3 className="text-xl sm:text-2xl text-text-main leading-tight">{bloco.subtitle}</h3>
               )
             ) : (
               <>
@@ -82,7 +82,7 @@ export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
                   </span>
                 )}
                 {bloco.title && (
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-6 leading-tight">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main mb-6 leading-tight">
                     {bloco.title}
                   </h2>
                 )}
@@ -90,7 +90,7 @@ export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
             )}
 
             {bloco.body ? (
-              <div className={cn('space-y-4 text-text-muted font-light', TAMANHO_DO_TEXTO[bloco.bodySize])}>
+              <div className={cn('space-y-4 text-text-muted', TAMANHO_DO_TEXTO[bloco.bodySize])}>
                 {/* String vazia, não `undefined`: `undefined` aciona o valor
                     padrão do parâmetro e a tipografia do case voltaria a vazar. */}
                 <RichText data={bloco.body} className="space-y-4" classeDoParagrafo="" />
@@ -98,7 +98,7 @@ export function BlocoTexto({ bloco }: { bloco: BlocoRichTextSection }) {
             ) : null}
 
             {bloco.callout?.text && (
-              <div className="p-4 rounded-[6px] bg-surface-1  text-xs text-text-muted font-light">
+              <div className="p-4 rounded-[6px] bg-surface-1 text-sm text-text-muted">
                 {bloco.callout.label && (
                   <strong className="text-primary font-semibold block mb-1">{bloco.callout.label}</strong>
                 )}

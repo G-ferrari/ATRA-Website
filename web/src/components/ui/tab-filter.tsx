@@ -77,7 +77,7 @@ export function TabFilter({
             {typeof tab.count === 'number' && (
               <span
                 className={cn(
-                  'text-[10px] px-1.5 py-0.2 rounded-[6px] font-mono',
+                  'text-xs px-1.5 py-0.2 rounded-[6px] font-mono',
                   ativo ? 'bg-white/20 text-white' : 'bg-surface-2 dark:bg-[#181b22] text-text-muted',
                 )}
               >

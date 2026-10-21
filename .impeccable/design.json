@@ -23,9 +23,9 @@
       "on-graphite-muted": { "role": "text", "displayName": "Alvo Discreto", "canonical": "#9CA3AF", "tonalRamp": ["#374151", "#4B5563", "#6B7280", "#858D99", "#9CA3AF", "#C0C5CD", "#E5E7EB", "#F3F4F6"] }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Heróis e aberturas. Mona Sans peso 300, apertado (letter-spacing -0.02em), clamp(2.5rem,6vw,4rem)." },
-      "headline": { "displayName": "Headline", "purpose": "Títulos de seção. Mona Sans peso 300, letter-spacing -0.02em, clamp(1.75rem,3.5vw,2.5rem)." },
-      "title": { "displayName": "Title", "purpose": "Títulos de cartão (~1.25rem). Renderiza peso 300 como todo heading — a regra global h1..h6{font-weight:300} (globals.css:151, fora de @layer) vence os utilitários, então font-bold/font-extrabold em heading são inertes. NÃO é 700." },
+      "display": { "displayName": "Display", "purpose": "Heróis e aberturas. Mona Sans no peso do admin (Aparência do site; padrão Fino 300), apertado (letter-spacing -0.02em), clamp(2.5rem,6vw,4rem)." },
+      "headline": { "displayName": "Headline", "purpose": "Títulos de seção. Mona Sans no peso do admin (padrão 300), letter-spacing -0.02em, clamp(1.75rem,3.5vw,2.5rem)." },
+      "title": { "displayName": "Title", "purpose": "Títulos de cartão (1.125–1.5rem). Peso do admin (Aparência do site; Fino 300 · Normal 400 · Negrito 600), lido de --peso-dos-titulos pela regra de h1..h6 em @layer base. Título grande não leva classe de peso; título pequeno (até 1rem) leva a sua e não segue o admin (#215, D-65)." },
       "body": { "displayName": "Body", "purpose": "Texto corrido. Peso 400, 1rem, lh 1.6; alvo 65–75ch em leitura longa (blog, materiais)." },
       "body-sm": { "displayName": "Body-sm", "purpose": "Metadados e resumos de cartão. Peso 400, 0.875rem, lh 1.5." },
       "label": { "displayName": "Label", "purpose": "Rótulos de botão, eyebrows e etiquetas. CAIXA-ALTA, peso 600, 0.75rem, letter-spacing 0.08em." }
@@ -81,9 +81,9 @@
       "name": "Filter Chip",
       "kind": "chip",
       "refersTo": "chip-filter",
-      "description": "Barra de filtro de listagem (cases, blog, webinars, ebooks, relatórios). Ativo = azul cheio + font-semibold + shadow-xs; inativo sem borda, realce tonal no hover. aria-pressed no estado. Rótulo em 11px bold CAIXA-ALTA.",
+      "description": "Barra de filtro de listagem (cases, blog, webinars, ebooks, relatórios). Ativo = azul cheio + font-semibold + shadow-xs; inativo sem borda, realce tonal no hover. aria-pressed no estado. Rótulo em 12px bold CAIXA-ALTA (piso do site desde a #215).",
       "html": "<div class=\"ds-chips\"><span class=\"ds-chips-label\">Categoria</span><button class=\"ds-chip\" aria-pressed=\"true\">Todos</button><button class=\"ds-chip\" aria-pressed=\"false\">Governança</button><button class=\"ds-chip\" aria-pressed=\"false\">Cloud</button></div>",
-      "css": ".ds-chips{display:flex;align-items:center;gap:8px;overflow-x:auto;padding-bottom:8px}.ds-chips-label{flex:0 0 auto;margin-right:4px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--color-text-muted,#64748b)}.ds-chip{white-space:nowrap;padding:4px 12px;border:0;border-radius:4px;font-size:.75rem;font-weight:500;background:var(--color-surface-2,#fff);color:var(--color-text-muted,#64748b);cursor:pointer;transition:all .2s cubic-bezier(0.16,1,0.3,1)}.ds-chip:hover{color:var(--color-text-main,#0F172A);background:var(--color-surface-3,#F1F5F9)}.ds-chip[aria-pressed=\"true\"]{background:var(--color-primary,#3C98FA);color:#fff;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.05)}"
+      "css": ".ds-chips{display:flex;align-items:center;gap:8px;overflow-x:auto;padding-bottom:8px}.ds-chips-label{flex:0 0 auto;margin-right:4px;font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--color-text-muted,#64748b)}.ds-chip{white-space:nowrap;padding:4px 12px;border:0;border-radius:4px;font-size:.75rem;font-weight:500;background:var(--color-surface-2,#fff);color:var(--color-text-muted,#64748b);cursor:pointer;transition:all .2s cubic-bezier(0.16,1,0.3,1)}.ds-chip:hover{color:var(--color-text-main,#0F172A);background:var(--color-surface-3,#F1F5F9)}.ds-chip[aria-pressed=\"true\"]{background:var(--color-primary,#3C98FA);color:#fff;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.05)}"
     },
     {
       "name": "Status Badge",

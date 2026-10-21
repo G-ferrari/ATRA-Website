@@ -17,7 +17,7 @@ import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
  * P-17 (retenção do CV, LGPD) é o interruptor; o prazo de 6 meses é cumprido
  * por `lib/retencao-de-candidaturas.ts`. */
 
-const CAMPO = 'w-full bg-surface-2 dark:bg-white/5  rounded-[6px] px-4 py-3 text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
+const CAMPO = 'w-full bg-surface-2 dark:bg-white/5  rounded-[6px] px-4 py-3 text-base sm:text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
 
 export function Candidatura({
   jobId,
@@ -45,7 +45,7 @@ export function Candidatura({
 
   if (estado?.ok) {
     return (
-      <p role="status" className="text-sm font-light text-emerald-500">
+      <p role="status" className="text-sm text-emerald-500">
         Candidatura enviada. O RH recebe seu currículo e responde pelo e-mail informado.
       </p>
     )
@@ -71,7 +71,7 @@ export function Candidatura({
       </div>
 
       {estado && !estado.ok && (
-        <p role="alert" className="text-sm font-light text-red-400">
+        <p role="alert" className="text-sm text-red-400">
           {estado.erro}
         </p>
       )}
@@ -79,7 +79,7 @@ export function Candidatura({
       {/* P-17: o aviso vem antes do botão, para ser lido antes de enviar, e não
           num link à parte. `whitespace-pre-line` respeita as quebras de linha
           que o RH digitar no admin. */}
-      <p id="aviso-de-privacidade-da-candidatura" className="text-xs font-light leading-relaxed text-text-muted whitespace-pre-line">
+      <p id="aviso-de-privacidade-da-candidatura" className="text-sm leading-relaxed text-text-muted whitespace-pre-line">
         {avisoDePrivacidade}
       </p>
 

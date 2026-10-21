@@ -84,7 +84,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
       <TechCornerBraces color="orange" position="bottom-right" />
 
       <div className="container mx-auto px-4 md:px-6 text-center relative z-10 max-w-7xl">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-light font-display mb-10 text-text-main">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-display mb-10 text-text-main">
           {bloco.title}
         </h2>
 
@@ -129,7 +129,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
                       : 'opacity-0 scale-95 pointer-events-none z-0 translate-y-4',
                   )}
                 >
-                  <p className="text-xs sm:text-sm md:text-base font-light leading-relaxed mb-5 sm:mb-6 text-text-main italic">
+                  <p className="text-base leading-relaxed mb-5 sm:mb-6 text-text-main italic">
                     &quot;{d.quote}&quot;
                   </p>
 
@@ -158,13 +158,13 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
                       <div
                         aria-hidden
                         data-mascara
-                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-primary/40 shadow-sm shrink-0 bg-primary/15 text-primary flex items-center justify-center text-[11px] sm:text-xs font-bold tracking-wide"
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-primary/40 shadow-sm shrink-0 bg-primary/15 text-primary flex items-center justify-center text-xs font-bold tracking-wide"
                       >
                         {iniciais(d)}
                       </div>
                     )}
                     <div className="flex flex-col items-start justify-center text-left">
-                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] bg-primary/20 text-primary text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider">
                         <ShieldCheck size={12} aria-hidden /> {d.authorRole}
                       </div>
                       <h4 className="font-bold text-xs sm:text-sm text-text-main mt-0.5">

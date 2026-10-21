@@ -31,12 +31,12 @@ export function Documento({ md }: { md: string }) {
   const corpo = md.replace(/^---\n[\s\S]*?\n---\n/, '')
 
   return (
-    <div className="text-sm leading-relaxed text-text-subtle font-light">
+    <div className="text-sm leading-relaxed text-text-subtle">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          h1: (p) => <h3 className="text-xl font-display font-medium text-text-main mt-6 mb-3" {...p} />,
-          h2: (p) => <h4 className="text-lg font-display font-medium text-text-main mt-6 mb-2" {...p} />,
+          h1: (p) => <h3 className="text-xl font-display text-text-main mt-6 mb-3" {...p} />,
+          h2: (p) => <h4 className="text-lg font-display text-text-main mt-6 mb-2" {...p} />,
           h3: (p) => <h5 className="text-base font-semibold text-text-main mt-5 mb-2" {...p} />,
           h4: (p) => <h6 className="text-sm font-semibold text-text-main mt-4 mb-1.5" {...p} />,
           p: (p) => <p className="my-2" {...p} />,

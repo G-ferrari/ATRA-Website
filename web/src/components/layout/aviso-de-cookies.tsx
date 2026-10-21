@@ -86,7 +86,7 @@ export function AvisoDeCookies({ textos, locale }: { textos: TextosDoAviso; loca
               <div className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0">
                 <Cookie size={16} aria-hidden />
               </div>
-              <h2 className="text-[13px] font-bold text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                 {estado === 'painel' ? textos.tituloDoPainel : textos.titulo}
               </h2>
             </div>
@@ -104,7 +104,7 @@ export function AvisoDeCookies({ textos, locale }: { textos: TextosDoAviso; loca
 
           {estado === 'banner' ? (
             <>
-              <p className="text-[12px] text-text-muted leading-relaxed mb-3 whitespace-pre-wrap">
+              <p className="text-sm text-text-muted leading-relaxed mb-3 whitespace-pre-wrap">
                 {textos.mensagem}{' '}
                 <a
                   href={hrefDe('politicas', locale)}
@@ -133,7 +133,7 @@ export function AvisoDeCookies({ textos, locale }: { textos: TextosDoAviso; loca
                     setMarketing(false)
                     setEstado('painel')
                   }}
-                  className="px-3 py-2 text-[11px] font-semibold text-text-muted hover:text-text-main transition-colors cursor-pointer"
+                  className="px-3 py-2 text-xs font-semibold text-text-muted hover:text-text-main transition-colors cursor-pointer"
                 >
                   {textos.preferencias}
                 </button>
@@ -141,7 +141,7 @@ export function AvisoDeCookies({ textos, locale }: { textos: TextosDoAviso; loca
             </>
           ) : (
             <>
-              <p className="text-[12px] text-text-muted leading-relaxed mb-3">{textos.mensagemDoPainel}</p>
+              <p className="text-sm text-text-muted leading-relaxed mb-3">{textos.mensagemDoPainel}</p>
               <div className="space-y-2.5 mb-3">
                 <Categoria nome={textos.categorias.necessarios.nome} descricao={textos.categorias.necessarios.descricao} />
                 <Categoria
@@ -186,8 +186,8 @@ function Categoria({
   return (
     <div className="flex items-start justify-between gap-3 p-2.5 rounded-[6px] bg-surface-3/70 dark:bg-[#222631]/70 ">
       <div className="min-w-0">
-        <p className="text-[11.5px] font-bold text-text-main mb-0.5">{nome}</p>
-        <p className="text-[10.5px] text-text-muted leading-relaxed">{descricao}</p>
+        <p className="text-xs font-bold text-text-main mb-0.5">{nome}</p>
+        <p className="text-sm text-text-muted leading-relaxed">{descricao}</p>
       </div>
       <button
         type="button"
@@ -211,6 +211,6 @@ function Categoria({
 /* O CTA padrão do site — copiado do convite de lead (`convite-lead.tsx`),
  * que copiou do chat. O secundário tem o MESMO padding e tipografia. */
 const CTA =
-  'px-4 py-2 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:shadow-md hover:shadow-primary/25 active:scale-[0.98] transition-all cursor-pointer'
+  'px-4 py-2 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-xs uppercase tracking-wider rounded-[6px] hover:shadow-md hover:shadow-primary/25 active:scale-[0.98] transition-all cursor-pointer'
 const SECUNDARIO =
-  'px-4 py-2 bg-surface-1 dark:bg-[#0e1015]  text-text-main font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:border-primary/50 active:scale-[0.98] transition-all cursor-pointer'
+  'px-4 py-2 bg-surface-1 dark:bg-[#0e1015]  text-text-main font-bold text-xs uppercase tracking-wider rounded-[6px] hover:border-primary/50 active:scale-[0.98] transition-all cursor-pointer'

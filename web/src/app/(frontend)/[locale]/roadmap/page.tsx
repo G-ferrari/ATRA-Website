@@ -80,7 +80,7 @@ function Kpi({ valor, rotulo, contexto }: { valor: string; rotulo: string; conte
     <div className="vort-card dark:vort-card-dark !p-5">
       <p className="text-3xl font-display font-light text-text-main tabular-nums">{valor}</p>
       <p className="text-xs font-semibold text-text-subtle mt-1">{rotulo}</p>
-      {contexto && <p className="text-[11px] text-text-muted font-light mt-0.5">{contexto}</p>}
+      {contexto && <p className="text-sm text-text-muted mt-0.5">{contexto}</p>}
     </div>
   )
 }
@@ -138,10 +138,10 @@ export default async function Pagina() {
     <main className="w-full wrap-anywhere max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
       <header className="mb-10">
         <StatusBadge label="Interno · noindex" variant="secondary" size="sm" />
-        <h1 className="text-3xl md:text-4xl font-display font-light text-text-main mt-4 mb-3">
+        <h1 className="text-3xl md:text-4xl font-display text-text-main mt-4 mb-3">
           Roadmap da migração
         </h1>
-        <p className="text-text-muted font-light max-w-2xl">
+        <p className="text-text-muted max-w-2xl">
           O painel de acompanhamento da migração de <code className="text-sm">atra.com.br</code> para
           Next.js + Payload. Todo número desta página é parseado de{' '}
           <code className="text-sm">docs/</code> a cada build — não há segunda contagem para
@@ -183,7 +183,7 @@ export default async function Pagina() {
                   <p className="text-2xl font-display font-light text-text-main tabular-nums">
                     {feitas.length}/{contaveis.length} <span className="text-sm">tasks</span>
                   </p>
-                  <p className="text-[11px] text-text-muted font-light">
+                  <p className="text-sm text-text-muted">
                     {pctHoras}% do esforço em horas · ~{Math.round(horasTotais - horasFeitas)}h restantes
                   </p>
                 </div>
@@ -237,15 +237,15 @@ export default async function Pagina() {
                     className="rounded-[6px]  bg-surface-2 px-2.5 py-2"
                     title={`${f.nomeCurto}: ${estado}, ${pctFase}%`}
                   >
-                    <p className="text-[11px] font-semibold text-text-main truncate">{f.nomeCurto}</p>
+                    <p className="text-xs font-semibold text-text-main truncate">{f.nomeCurto}</p>
                     <p
-                      className={`text-[10px] mt-0.5 ${
-                        estado === 'concluída'
-                          ? 'text-emerald-500 dark:text-emerald-400'
-                          : estado === 'em curso'
-                            ? 'text-primary'
-                            : 'text-text-muted'
-                      }`}
+                      className={`text-sm mt-0.5 ${
+ estado === 'concluída'
+ ? 'text-emerald-500 dark:text-emerald-400'
+ : estado === 'em curso'
+ ? 'text-primary'
+ : 'text-text-muted'
+ }`}
                     >
                       {estado === 'concluída' ? '✓ concluída' : estado === 'em curso' ? `● ${pctFase}%` : '○ prevista'}
                     </p>
@@ -276,7 +276,7 @@ export default async function Pagina() {
           {/* ── riscos e caminho crítico ──────────────────────────────── */}
           <section id="riscos" className="mb-20 scroll-mt-28">
             <h2 className="text-xl font-display text-text-main mb-2">Riscos e caminho crítico</h2>
-            <p className="text-sm text-text-muted font-light mb-6">
+            <p className="text-sm text-text-muted mb-6">
               O registro de riscos de cronograma do roadmap, com a probabilidade vigente — um risco
               reavaliado mostra a de agora.
             </p>
@@ -294,8 +294,8 @@ export default async function Pagina() {
                     <p className={`text-sm ${r.mitigado ? 'line-through text-text-muted' : 'text-text-main'}`}>
                       {r.risco}
                     </p>
-                    <p className="text-xs text-text-muted font-light mt-1">
-                      <span className="font-bold uppercase tracking-wider text-[10px]">Mitigação</span>{' '}
+                    <p className="text-sm text-text-muted mt-1">
+                      <span className="font-bold uppercase tracking-wider text-xs">Mitigação</span>{' '}
                       {r.mitigacao}
                     </p>
                   </div>
@@ -311,7 +311,7 @@ export default async function Pagina() {
           {/* ── prontidão de cutover ──────────────────────────────────── */}
           <section id="cutover" className="mb-20 scroll-mt-28">
             <h2 className="text-xl font-display text-text-main mb-2">Prontidão de cutover</h2>
-            <p className="text-sm text-text-muted font-light mb-6">
+            <p className="text-sm text-text-muted mb-6">
               Os pré-requisitos do runbook — nada começa sem todos. A marcação é assinatura manual no
               documento, de propósito: estado inferido não substitui conferência.
             </p>
@@ -320,15 +320,15 @@ export default async function Pagina() {
                 <div key={item.texto} className="px-4 py-3 flex items-start gap-3">
                   <span
                     aria-hidden
-                    className={`mt-0.5 shrink-0 w-4 h-4 rounded-[4px] border grid place-items-center text-[10px] ${
-                      item.feito
-                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-500 dark:text-emerald-400'
-                        : 'border-border-main text-transparent'
-                    }`}
+                    className={`mt-0.5 shrink-0 w-4 h-4 rounded-[4px] border grid place-items-center text-xs ${
+ item.feito
+ ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-500 dark:text-emerald-400'
+ : 'border-border-main text-transparent'
+ }`}
                   >
                     ✓
                   </span>
-                  <p className={`text-sm font-light ${item.feito ? 'text-text-muted line-through' : 'text-text-subtle'}`}>
+                  <p className={`text-sm ${item.feito ? 'text-text-muted line-through' : 'text-text-subtle'}`}>
                     {item.texto}
                   </p>
                 </div>
@@ -339,7 +339,7 @@ export default async function Pagina() {
           {/* ── decisões ──────────────────────────────────────────────── */}
           <section id="decisoes" className="mb-20 scroll-mt-28">
             <h2 className="text-xl font-display text-text-main mb-2">Decisões</h2>
-            <p className="text-sm text-text-muted font-light mb-6">
+            <p className="text-sm text-text-muted mb-6">
               Toda decisão da migração vive em <code>docs/00-contexto/decisoes.md</code>. Cada uma abre
               com o registro completo — contexto, alternativas e consequência.
             </p>
@@ -367,7 +367,7 @@ export default async function Pagina() {
           {/* ── pendências ────────────────────────────────────────────── */}
           <section id="pendencias" className="mb-20 scroll-mt-28">
             <h2 className="text-xl font-display text-text-main mb-2">Pendências</h2>
-            <p className="text-sm text-text-muted font-light mb-6">
+            <p className="text-sm text-text-muted mb-6">
               O que depende de decisão — da ATRA ou do projeto — para andar. Abertas primeiro; cada uma
               abre com o que afeta e por que importa.
             </p>
@@ -393,12 +393,12 @@ export default async function Pagina() {
                   </summary>
                   <div className="px-4 sm:px-6 pb-4 border-t border-border-main pt-3 space-y-2">
                     {p.referencia && (
-                      <p className="text-xs text-text-muted">
-                        <span className="font-bold uppercase tracking-wider text-[10px]">Afeta</span>{' '}
+                      <p className="text-sm text-text-muted">
+                        <span className="font-bold uppercase tracking-wider text-xs">Afeta</span>{' '}
                         <span className="font-mono">{p.referencia}</span>
                       </p>
                     )}
-                    {p.nota && <p className="text-sm text-text-subtle font-light">{p.nota}</p>}
+                    {p.nota && <p className="text-sm text-text-subtle">{p.nota}</p>}
                   </div>
                 </details>
               ))}
@@ -408,7 +408,7 @@ export default async function Pagina() {
           {/* ── documentação completa ─────────────────────────────────── */}
           <section id="documentacao" className="scroll-mt-28">
             <h2 className="text-xl font-display text-text-main mb-2">Documentação</h2>
-            <p className="text-sm text-text-muted font-light mb-8">
+            <p className="text-sm text-text-muted mb-8">
               A especificação completa do projeto, arquivo a arquivo. Clique para expandir.
             </p>
             <div className="space-y-10">

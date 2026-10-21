@@ -47,11 +47,11 @@ export function BlocoContato({ bloco, locale }: { bloco: BlocoCtaContact; locale
           )}
         >
           <div className="flex flex-col text-left py-8 md:py-12 pr-0 lg:pr-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-light font-display text-text-main mb-8 leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display text-text-main mb-8 leading-tight">
               {bloco.title}
             </h2>
             {bloco.subtitle && (
-              <h3 className="text-xl md:text-2xl font-light font-display text-text-main mb-6">
+              <h3 className="text-xl md:text-2xl font-display text-text-main mb-6">
                 {bloco.subtitle}
               </h3>
             )}
@@ -73,7 +73,7 @@ export function BlocoContato({ bloco, locale }: { bloco: BlocoCtaContact; locale
                   name={c.name}
                   placeholder={c.ph}
                   required={c.name !== 'phone'}
-                  className="w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main placeholder:text-text-muted font-light"
+                  className="w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-base sm:text-sm text-text-main placeholder:text-text-muted"
                 />
               ))}
               <textarea
@@ -81,7 +81,7 @@ export function BlocoContato({ bloco, locale }: { bloco: BlocoCtaContact; locale
                 placeholder="Sua mensagem"
                 rows={3}
                 required
-                className="w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main placeholder:text-text-muted font-light resize-none"
+                className="w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-base sm:text-sm text-text-main placeholder:text-text-muted resize-none"
               />
               <button
                 type="submit"
