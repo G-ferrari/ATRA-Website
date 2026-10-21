@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Form } from '@/payload-types'
 
-import { destinoDepoisDoEnvio, toConfigDoFormulario, toFormularioDoAdmin } from './form'
+import { destinoDepoisDoEnvio, toConfigDoFormulario, toFormularioDoAdmin, toFormularioNoRd } from './form'
 import { ConteudoIncompleto } from './shared'
 
 const base = (sobre: Partial<Form> = {}): Form => ({
@@ -113,5 +113,23 @@ describe('destinoDepoisDoEnvio', () => {
     expect(destinoDepoisDoEnvio({ afterSubmit: 'message', redirectPath: '/obrigado' }, 'pt')).toBeNull()
     expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: 'https://fora.com' }, 'pt')).toBeNull()
     expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: null }, 'pt')).toBeNull()
+  })
+})
+
+/* Task 052: a lista de Sistema → Integrações usa a mesma regra do envio. */
+describe('toFormularioNoRd', () => {
+  it('situação, identificador e tags como vão ao RD — identificador fora do formato não vai', () => {
+    expect(toFormularioNoRd({ ...base(), _status: 'published', rd: { conversionIdentifier: ' Evento ', tags: ['a', ' a', 'b'] } })).toEqual({
+      id: 7,
+      nome: 'Inscrição no evento',
+      publicado: true,
+      identificador: 'Evento',
+      tags: ['a', 'b'],
+    })
+    expect(toFormularioNoRd({ ...base(), _status: 'draft', rd: { conversionIdentifier: 'com < sinal', tags: null } })).toMatchObject({
+      publicado: false,
+      identificador: null,
+      tags: [],
+    })
   })
 })

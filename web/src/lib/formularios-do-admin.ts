@@ -316,3 +316,32 @@ export function conferirEnvio(
   if (Object.keys(erros).length > 0 || !padrao.email) return { ok: false, erros }
   return { ok: true, respostas, padrao: padrao as CamposPadraoDoEnvio, consentimento }
 }
+
+/* ---------------------------------------------------------------------------
+ * A lista de Sistema → Integrações (task 052)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Quem mais usa o mesmo identificador de conversão, por chave.
+ *
+ * Repetir é permitido de propósito — dois formulários podem ser a mesma
+ * conversão —, mas mistura os leads no RD, e quem repete sem querer só
+ * descobre lá. A lista mostra. Sem distinguir maiúscula de minúscula: um
+ * "Evento" e um "evento" parecem dois nomes e não deveriam.
+ */
+export function identificadoresRepetidos(
+  itens: { chave: string; nome: string; identificador: string | null }[],
+): Map<string, string[]> {
+  const porIdentificador = new Map<string, { chave: string; nome: string }[]>()
+  for (const item of itens) {
+    if (!item.identificador) continue
+    const chave = item.identificador.toLowerCase()
+    porIdentificador.set(chave, [...(porIdentificador.get(chave) ?? []), item])
+  }
+  const repetidos = new Map<string, string[]>()
+  for (const grupo of porIdentificador.values()) {
+    if (grupo.length < 2) continue
+    for (const item of grupo) repetidos.set(item.chave, grupo.filter((o) => o.chave !== item.chave).map((o) => o.nome))
+  }
+  return repetidos
+}

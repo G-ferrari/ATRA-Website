@@ -10,6 +10,7 @@ import {
   conferirCampos,
   ehCampoPersonalizadoDoRd,
   ehEnderecoInterno,
+  identificadoresRepetidos,
   sugerirIdentificador,
   valorDaOpcao,
   valoresDasOpcoes,
@@ -250,5 +251,18 @@ describe('conferirEnvio', () => {
 
   it('o nome no formulário tem prefixo, para não colidir com os campos de controle', () => {
     expect(nomeDoCampo('6716a1')).toBe('campo-6716a1')
+  })
+})
+
+describe('identificadoresRepetidos', () => {
+  it('cada um aponta os outros com o mesmo identificador, sem distinguir caixa; sem identificador não conta', () => {
+    const r = identificadoresRepetidos([
+      { chave: 'a', nome: 'Evento', identificador: 'Evento' },
+      { chave: 'b', nome: 'Evento 2', identificador: 'evento' },
+      { chave: 'c', nome: 'Pesquisa', identificador: 'Pesquisa' },
+      { chave: 'd', nome: 'Rascunho', identificador: null },
+      { chave: 'e', nome: 'Outro', identificador: null },
+    ])
+    expect(Object.fromEntries(r)).toEqual({ a: ['Evento 2'], b: ['Evento'] })
   })
 })

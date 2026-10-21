@@ -8,7 +8,7 @@ import {
 } from '@/lib/formularios-do-admin'
 import type { Locale } from '@/lib/locales'
 import type { Form } from '@/payload-types'
-import type { CampoDoFormulario, ConfigDoFormulario, FormularioDoAdmin } from '@/types/content'
+import type { CampoDoFormulario, ConfigDoFormulario, FormularioDoAdmin, FormularioNoRd } from '@/types/content'
 
 import { ConteudoIncompleto } from './shared'
 
@@ -106,15 +106,28 @@ export function toConfigDoFormulario(doc: Form): ConfigDoFormulario {
     }
   })
 
-  const identificador = doc.rd?.conversionIdentifier?.trim()
   return {
     id: doc.id,
     nome: doc.name,
     campos,
     avisarPara: [...new Set((doc.notifyEmails ?? []).map((e) => e.trim()).filter((e) => EMAIL.test(e)))],
-    rd: {
-      identificador: identificador && ehIdentificadorDeConversao(identificador) ? identificador : null,
-      tags: [...new Set((doc.rd?.tags ?? []).map((t) => t.trim()).filter(ehTagDoRd))],
-    },
+    rd: rdDoFormulario(doc),
   }
+}
+
+/** O identificador e as tags com que o formulário vai ao RD. Uma regra só para
+ *  o envio (050) e para a lista de Integrações (052): o que a lista mostra é o
+ *  que vai. */
+function rdDoFormulario(doc: Pick<Form, 'rd'>): ConfigDoFormulario['rd'] {
+  const identificador = doc.rd?.conversionIdentifier?.trim()
+  return {
+    identificador: identificador && ehIdentificadorDeConversao(identificador) ? identificador : null,
+    tags: [...new Set((doc.rd?.tags ?? []).map((t) => t.trim()).filter(ehTagDoRd))],
+  }
+}
+
+/** O formulário como Sistema → Integrações o lista (052). Só o que vai ao RD:
+ *  nem campos, nem endereços do aviso, nem envios. */
+export function toFormularioNoRd(doc: Pick<Form, 'id' | 'name' | '_status' | 'rd'>): FormularioNoRd {
+  return { id: doc.id, nome: doc.name, publicado: doc._status === 'published', ...rdDoFormulario(doc) }
 }

@@ -1055,6 +1055,18 @@ export type ConfigDoFormulario = {
   }
 }
 
+/** Um formulário do admin como Sistema → Integrações o lista (task 052): o
+ *  que vai ao RD, sem nada dos envios. */
+export type FormularioNoRd = {
+  id: number
+  nome: string
+  /** Publicado: está no site e recebe envios. */
+  publicado: boolean
+  /** `null` = não vai ao RD. */
+  identificador: string | null
+  tags: string[]
+}
+
 /** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global
  * `data-maturity-diagnostic`. Servem à página, à conclusão e ao e-mail do
  * resultado.

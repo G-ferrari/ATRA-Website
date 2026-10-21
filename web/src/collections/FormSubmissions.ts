@@ -47,7 +47,9 @@ export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'kind', 'status', 'createdAt'],
+    /* `form` (052): de qual formulário do admin veio — vazio nos outros tipos.
+       O filtro por ele sai do próprio campo de relação. */
+    defaultColumns: ['email', 'kind', 'form', 'status', 'createdAt'],
     listSearchableFields: ['email', 'name', 'company'],
     group: { pt: 'Sistema', en: 'System' },
     description: {
@@ -164,7 +166,14 @@ export const FormSubmissions: CollectionConfig = {
       label: { pt: 'Respostas', en: 'Answers' },
       labels: { singular: { pt: 'Resposta', en: 'Answer' }, plural: { pt: 'Respostas', en: 'Answers' } },
       access: somenteNoEnvio,
-      admin: { readOnly: true, condition: soFormularioDoAdmin },
+      admin: {
+        readOnly: true,
+        condition: soFormularioDoAdmin,
+        /* 052: a linha recolhida já é "Pergunta: resposta". Recolhidas de
+           saída, o envio se lê como uma lista, na ordem do formulário. */
+        initCollapsed: true,
+        components: { RowLabel: '/components/admin/rotulo-da-resposta#RotuloDaResposta' },
+      },
       fields: [
         { name: 'fieldId', type: 'text', admin: { hidden: true } },
         { name: 'label', type: 'text', label: { pt: 'Pergunta', en: 'Question' } },
