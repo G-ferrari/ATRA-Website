@@ -1,7 +1,7 @@
 ---
 id: 050
 title: Levar o envio do formulário do admin ao RD com identificador, tags, campos mapeados e consentimento
-status: para implementar
+status: em revisão
 feature: criador-de-formularios
 area: backend
 priority: P0
