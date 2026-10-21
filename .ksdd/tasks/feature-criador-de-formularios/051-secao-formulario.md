@@ -1,7 +1,7 @@
 ---
 id: 051
 title: Desenhar a seção "Formulário" no site, com os nove tipos de campo e o depois do envio
-status: para implementar
+status: em revisão
 feature: criador-de-formularios
 area: frontend
 priority: P0
