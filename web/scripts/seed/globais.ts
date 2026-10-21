@@ -21,6 +21,7 @@ import { getPayload } from 'payload'
 import { ABAS_DE_SOLUCOES } from '../../src/lib/abas-de-solucoes'
 import { DESTINO, ROTULO } from '../../src/migrations/arquivos/rodape-legal'
 import config from '../../src/payload.config'
+import { midiaDe } from './midia'
 
 const payload = await getPayload({ config })
 
@@ -129,7 +130,10 @@ console.log(`  media #${logo.id}`)
 await payload.updateGlobal({ slug: 'site-settings', locale: 'pt', data: { logo: logo.id } })
 
 console.log('→ contato')
-await payload.updateGlobal({ slug: 'contact', data: CONTATO })
+/* #171: a foto de fundo do painel "Nossos Contatos" — do acervo da ATRA, não o
+   hotlink do Unsplash do gabarito (`App.tsx:2357`). Antes ia no bloco da home. */
+const fotoDoPainel = await midiaDe(payload, path.resolve(process.cwd(), 'public/fotos/equipe-atra.jpg'), 'Equipe da ATRA reunida em evento')
+await payload.updateGlobal({ slug: 'contact', data: { ...CONTATO, panelPhoto: fotoDoPainel } })
 
 console.log('→ rodapé')
 const pt = await payload.updateGlobal({ slug: 'footer', locale: 'pt', data: RODAPE.pt })

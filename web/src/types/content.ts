@@ -566,7 +566,6 @@ export type VagaDetalhe = Vaga & {
 export type BlocoCtaContact = Base & {
   tipo: 'ctaContact'
   variant: 'panel' | 'photo'
-  photo: Image | null
   title: string
   subtitle: string | null
   showContactCard: boolean
@@ -1012,6 +1011,8 @@ export type Contato = {
   /** `null` quando o global não tem endereço — a ATRA não tem sede fixa desde 29/09. */
   endereco: string | null
   redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
+  /** O fundo do painel "Nossos Contatos" (#171), igual em todo lugar. */
+  foto: Image | null
   /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
   destinos: Record<FormularioComAviso, string | null>
   /** Aviso de privacidade do formulário de candidatura (P-17). `null` enquanto

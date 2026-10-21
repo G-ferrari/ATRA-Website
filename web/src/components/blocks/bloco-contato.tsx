@@ -96,7 +96,7 @@ export function BlocoContato({ bloco, locale }: { bloco: BlocoCtaContact; locale
               tinha um card próprio de lista de ícones, que divergia da home.
               Ver painel-de-contatos.tsx. */}
           {bloco.showContactCard && contato && (
-            <PainelDeContatos contato={contato} locale={locale} foto={bloco.photo} />
+            <PainelDeContatos contato={contato} locale={locale} />
           )}
         </div>
       </div>

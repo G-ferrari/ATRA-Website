@@ -585,7 +585,6 @@ export function toBlocos(
           ...base(b),
           tipo: 'ctaContact',
           variant: b.variant ?? 'panel',
-          photo: toImageOpcional(b.photo, 'ctaContact.photo'),
           title: b.title,
           subtitle: vazio(b.subtitle),
           showContactCard: b.showContactCard ?? true,
