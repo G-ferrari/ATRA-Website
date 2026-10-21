@@ -70,6 +70,9 @@ const PAGINA_DO_BLOCO: Record<string, string | null> = {
   ctaBanner: '/segmentos/varejo',
   // As soluções perderam o formulário em 29/09; /contato segue com ele.
   ctaContact: '/contato',
+  // 21/10 (task 051): a miniatura saiu de uma página de teste local, com o mesmo
+  // procedimento deste arquivo. Apontar para a primeira página que usar a seção.
+  formSection: null,
   jobsList: '/carreiras',
   // Os blocos das páginas-mestras (D-55): a lista com filtro, o carrossel e a chamada do blog.
   sectionListing: '/cases-de-sucesso',

@@ -1,8 +1,10 @@
+import type { Locale } from '@/lib/locales'
 import { paraEmbed } from '@/lib/video'
-import type { Media, Page, SiteSetting } from '@/payload-types'
+import type { Form, Media, Page, SiteSetting } from '@/payload-types'
 import type {
   Acento,
   Bloco,
+  BlocoFormSection,
   BlocoPageHero,
   Contato,
   Depoimento,
@@ -15,7 +17,8 @@ import type {
   Vaga,
 } from '@/types/content'
 
-import { isPopulated, toImage, toImageOpcional, toTextos } from './shared'
+import { toFormularioDoAdmin } from './form'
+import { isPopulated, mapearOuFaltando, toImage, toImageOpcional, toTextos } from './shared'
 
 /* Documento do Payload → blocos de apresentação.
  *
@@ -143,9 +146,53 @@ function midiaDoHero(b: Extract<NonNullable<Page['layout']>[number], { blockType
   return { mediaMode: 'none', images, video: null }
 }
 
+/** O que a seção "Formulário" precisa saber da página: o idioma (para o
+ *  endereço do "depois do envio") e se é o preview, que mostra o formulário em
+ *  rascunho. */
+export type ContextoDosBlocos = { locale: Locale; rascunho: boolean }
+
+/* Task 051 — o formulário da seção, já populado pela consulta da página
+ * (`depth: 2`): no site, o que está **publicado**; no preview, a última versão.
+ *
+ * Sem consulta própria e sem filtro de `_status` escrito: o formulário vem
+ * dentro da página, e é o `_status` dele que decide. A tabela principal guarda
+ * a última versão publicada (um rascunho salvo por cima não a toca), então fora
+ * do preview `_status: 'draft'` quer dizer "nunca publicado" ou
+ * "despublicado" — e a seção some, como pede a especificação.
+ *
+ * Formulário publicado e incompleto (texto faltando em português, que o admin
+ * impede) não derruba a página inteira por uma seção: ela sai do site, e o erro
+ * vai para o log. No preview, o editor vê o que falta. */
+function formularioDaSecao(
+  valor: number | Form | null | undefined,
+  contexto: ContextoDosBlocos | undefined,
+): Pick<BlocoFormSection, 'formulario' | 'avisoDoPreview'> {
+  if (!contexto) {
+    throw new Error('[mapper] A seção "Formulário" precisa do idioma e do modo rascunho: passe o 3º argumento de `toBlocos`.')
+  }
+  const { locale, rascunho } = contexto
+  const fora = { formulario: null, avisoDoPreview: null }
+  if (valor == null) return rascunho ? { formulario: null, avisoDoPreview: { tipo: 'sem-formulario' } } : fora
+  if (!isPopulated<Form>(valor)) {
+    throw new Error('[mapper] "formSection.form" veio como id, não como documento. Aumente a `depth` da consulta.')
+  }
+
+  const publicado = valor._status === 'published'
+  if (!publicado && !rascunho) return fora
+
+  const mapeado = mapearOuFaltando(() => toFormularioDoAdmin(valor, locale))
+  if ('faltando' in mapeado) {
+    if (rascunho) return { formulario: null, avisoDoPreview: { tipo: 'incompleto', campo: mapeado.faltando } }
+    console.error(`[formulario] o formulário ${valor.id} está publicado sem "${mapeado.faltando}"; a seção saiu do site.`)
+    return fora
+  }
+  return { formulario: mapeado.doc, avisoDoPreview: publicado ? null : { tipo: 'nao-publicado' } }
+}
+
 export function toBlocos(
   layout: Page['layout'] | null | undefined,
   institucional?: { metricas: MetricaInstitucional[]; selos?: Selo[] },
+  contexto?: ContextoDosBlocos,
 ): Bloco[] {
   const blocos: Bloco[] = []
 
@@ -589,6 +636,22 @@ export function toBlocos(
           contato: null,
         })
         break
+
+      case 'formSection': {
+        const formulario = formularioDaSecao(b.form, contexto)
+        /* Fora do ar, a seção sai da lista, e não só da tela: senão a âncora
+           dela ficaria no menu da página, levando a lugar nenhum. */
+        if (!formulario.formulario && !formulario.avisoDoPreview) break
+        blocos.push({
+          ...base(b),
+          tipo: 'formSection',
+          title: vazio(b.title),
+          paragrafos: paragrafosDe(b.text),
+          layout: b.layout === 'side' ? 'lado-a-lado' : 'centralizado',
+          ...formulario,
+        })
+        break
+      }
 
       case 'jobsList':
         blocos.push({

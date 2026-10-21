@@ -25,7 +25,7 @@ vi.mock('@/lib/anti-spam', async (original) => ({
   excedeuPorIp: (...a: unknown[]) => excedeuPorIp(...a),
 }))
 
-const { enviarFormularioDoAdmin } = await import('./formularios-do-admin')
+const { enviarFormularioDoAdmin, enviarFormularioDoAdminNoEstado } = await import('./formularios-do-admin')
 
 const formulario = (sobre: Partial<Form> = {}): Form => ({
   id: 12,
@@ -146,6 +146,17 @@ describe('enviarFormularioDoAdmin', () => {
     expect(payload.create).not.toHaveBeenCalled()
   })
 
+  /* Task 051: a seção entrega esta direto ao `useActionState`. Com erro, o
+     que foi digitado volta (o React 19 limpa o formulário a cada envio) — só
+     os campos do formulário, nunca os escondidos. */
+  it('no formato do useActionState: com erro devolve o que foi digitado; com sucesso, só o resultado', async () => {
+    const f = envio({ 'campo-f2': 'errado', 'campo-f3': 'Banco X', utm_source: 'google' })
+    const r = await enviarFormularioDoAdminNoEstado(null, f)
+    expect(r).toMatchObject({ ok: false, valores: { 'campo-f2': 'errado', 'campo-f3': 'Banco X' } })
+    expect(Object.keys(r.ok ? {} : (r.valores ?? {}))).toEqual(['campo-f2', 'campo-f3'])
+    expect(await enviarFormularioDoAdminNoEstado(r, valido())).toEqual({ ok: true })
+  })
+
   it('erros no idioma da página', async () => {
     const r = await enviarFormularioDoAdmin(envio({ locale: 'en', 'campo-f2': 'ana@empresa.com.br' }))
     expect(r).toEqual({ ok: false, erros: { f1: 'Please fill in this field.' } })
@@ -214,6 +225,18 @@ describe('enviarFormularioDoAdmin', () => {
   it('limite por IP conta só envio válido: erro de campo não gasta vaga', async () => {
     await enviarFormularioDoAdmin(envio({ 'campo-f2': 'errado' }))
     expect(excedeuPorIp).not.toHaveBeenCalled()
+  })
+
+  /* 051: sem JavaScript, o sucesso de verdade num formulário que leva a outra
+     página é o redirecionamento; o falso não pode responder diferente. */
+  it('sucesso falso num formulário que leva a outra página também redireciona, sem gravar', async () => {
+    payload.find.mockResolvedValue({ docs: [formulario({ afterSubmit: 'page', redirectPath: '/obrigado' })] })
+    await expect(enviarFormularioDoAdmin(envio({ ...camposMinimos(), website: 'http://spam' }))).rejects.toThrow(
+      'NEXT_REDIRECT /obrigado',
+    )
+    excedeuPorIp.mockReturnValue(true)
+    await expect(enviarFormularioDoAdmin(valido())).rejects.toThrow('NEXT_REDIRECT /obrigado')
+    expect(payload.create).not.toHaveBeenCalled()
   })
 
   it('limite por IP estourado → sucesso falso, nada gravado, e o descarte no log sem o IP', async () => {

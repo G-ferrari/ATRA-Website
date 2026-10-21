@@ -7,7 +7,7 @@ import { CAMPO_ISCA, conferir, excedeuPorIp } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
 import { destinoDoAviso } from '@/lib/destino-do-aviso'
 import { enviarAviso } from '@/lib/email'
-import { conferirEnvio, nomeDoCampo, type ConferenciaDoEnvio } from '@/lib/formularios-do-admin'
+import { conferirEnvio, MAX_CAMPOS, MAX_TEXTO_LONGO, nomeDoCampo, type ConferenciaDoEnvio } from '@/lib/formularios-do-admin'
 import { ipDe } from '@/lib/ip'
 import { isLocale, type Locale } from '@/lib/locales'
 import { destinoDepoisDoEnvio, toConfigDoFormulario } from '@/lib/mappers/form'
@@ -80,6 +80,11 @@ export async function enviarFormularioDoAdmin(dados: FormData): Promise<Resultad
     /* ⚠️ Sucesso falso ao robô, de propósito — dizer "barrado" entrega o
        critério (ver `formularios.ts`). */
     console.warn(`[formulario-do-admin] barrado por ${veredito.motivo}`)
+    /* Sem JavaScript, o sucesso de um formulário que leva a outra página é o
+       redirecionamento (051): o falso tem que ser igual, ou um robô sem
+       JavaScript distingue os dois pela resposta. Fora do `try`, como abaixo. */
+    const destinoDoFalso = await destinoPublicado(id, locale)
+    if (destinoDoFalso) redirect(destinoDoFalso)
     return { ok: true }
   }
 
@@ -127,6 +132,7 @@ export async function enviarFormularioDoAdmin(dados: FormData): Promise<Resultad
      silêncio do sucesso falso. O descarte fica no log, sem o IP. */
   if (excedeuPorIp(ipDe(await headers()))) {
     console.warn('[formulario-do-admin] barrado por limite de envios do IP')
+    if (destino) redirect(destino)
     return { ok: true }
   }
   if (rotuloDoConsentimento) {
@@ -206,6 +212,59 @@ export async function enviarFormularioDoAdmin(dados: FormData): Promise<Resultad
      desligado é ele que leva o visitante à página escolhida. */
   if (destino) redirect(destino)
   return { ok: true }
+}
+
+/** O estado da seção "Formulário" (task 051): o resultado e, quando o envio
+ *  volta com erro, o que o visitante tinha digitado. */
+export type EstadoDoFormularioDoAdmin = ResultadoDoFormularioDoAdmin & {
+  /** Por nome do campo no `<form>` (`campo-…`). */
+  valores?: Record<string, string>
+}
+
+/**
+ * A action com a assinatura do `useActionState`, entregue **direto** a ele
+ * pela seção (051).
+ *
+ * ⚠️ Direto, e não embrulhada numa função do navegador: só uma Server Action
+ * de verdade vira o `action` do `<form>` no HTML, e é isso que faz o envio
+ * funcionar com o JavaScript desligado — o navegador posta, o servidor roda
+ * isto e devolve a página com o estado (ou o `redirect`).
+ *
+ * Com erro, volta também o que foi digitado: o React 19 limpa o formulário ao
+ * fim de toda action, e a seção devolve os valores como `defaultValue`. Só os
+ * campos do formulário (`campo-…`), cortados no teto, nunca os escondidos.
+ */
+export async function enviarFormularioDoAdminNoEstado(
+  _anterior: EstadoDoFormularioDoAdmin | null,
+  dados: FormData,
+): Promise<EstadoDoFormularioDoAdmin> {
+  const resultado = await enviarFormularioDoAdmin(dados)
+  if (resultado.ok) return resultado
+  const valores: Record<string, string> = {}
+  for (const [nome, valor] of dados) {
+    if (Object.keys(valores).length >= MAX_CAMPOS) break
+    if (nome.startsWith(nomeDoCampo('')) && typeof valor === 'string') valores[nome] = valor.slice(0, MAX_TEXTO_LONGO)
+  }
+  return { ...resultado, valores }
+}
+
+/** Para onde o formulário publicado leva depois do envio — só para o sucesso
+ *  falso imitar o verdadeiro. Falhar ao ler é ficar na mensagem. */
+async function destinoPublicado(id: number, locale: Locale): Promise<string | null> {
+  try {
+    const payload = await getPayload()
+    const { docs } = await payload.find({
+      collection: 'forms',
+      where: { and: [{ id: { equals: id } }, { _status: { equals: 'published' } }] },
+      depth: 0,
+      limit: 1,
+      locale: 'pt',
+      select: { afterSubmit: true, redirectPath: true },
+    })
+    return docs[0] ? destinoDepoisDoEnvio(docs[0], locale) : null
+  } catch {
+    return null
+  }
 }
 
 /** Se o RD aceitou o envio recém-gravado. Falhar ao reler conta como "não

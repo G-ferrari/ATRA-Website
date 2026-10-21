@@ -3052,6 +3052,35 @@ export interface Partner {
             blockType: 'ctaBanner';
           }
         | {
+            /**
+             * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+             */
+            form: number | Form;
+            title?: string | null;
+            /**
+             * A blank line separates paragraphs.
+             */
+            text?: string | null;
+            /**
+             * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+             */
+            layout?: ('centered' | 'side') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formSection';
+          }
+        | {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
@@ -5888,6 +5917,35 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'ctaBanner';
+      }
+    | {
+        /**
+         * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+         */
+        form: number | Form;
+        title?: string | null;
+        /**
+         * A blank line separates paragraphs.
+         */
+        text?: string | null;
+        /**
+         * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+         */
+        layout?: ('centered' | 'side') | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'formSection';
       }
     | {
         eyebrow?: string | null;
@@ -8992,6 +9050,35 @@ export interface Segment {
             blockType: 'ctaBanner';
           }
         | {
+            /**
+             * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+             */
+            form: number | Form;
+            title?: string | null;
+            /**
+             * A blank line separates paragraphs.
+             */
+            text?: string | null;
+            /**
+             * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+             */
+            layout?: ('centered' | 'side') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formSection';
+          }
+        | {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
@@ -11768,6 +11855,35 @@ export interface Solution {
             blockType: 'ctaBanner';
           }
         | {
+            /**
+             * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+             */
+            form: number | Form;
+            title?: string | null;
+            /**
+             * A blank line separates paragraphs.
+             */
+            text?: string | null;
+            /**
+             * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+             */
+            layout?: ('centered' | 'side') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formSection';
+          }
+        | {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
@@ -13299,6 +13415,21 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         jobsList?:
           | T
           | {
@@ -14312,6 +14443,21 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         jobsList?:
           | T
           | {
@@ -15154,6 +15300,21 @@ export interface SegmentsSelect<T extends boolean = true> {
                     caption?: T;
                   };
               variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -16011,6 +16172,21 @@ export interface SolutionsSelect<T extends boolean = true> {
                     caption?: T;
                   };
               variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;

@@ -68,6 +68,7 @@ import * as migration_20260927_215800_paginas_mestras from './20260927_215800_pa
 import * as migration_20260927_215900_partner_mosaic from './20260927_215900_partner_mosaic';
 import * as migration_20260927_215950_page_hero_video from './20260927_215950_page_hero_video';
 import * as migration_20260927_215950_process_steps_variant from './20260927_215950_process_steps_variant';
+import * as migration_20260927_220000_secao_formulario_antecipada from './20260927_220000_secao_formulario_antecipada';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './20260928_001000_carrossel_da_home_com_rc18';
@@ -117,6 +118,7 @@ import * as migration_20261016_201812_contact_job_applications_notice from './20
 import * as migration_20261017_105319_page_hero_video from './20261017_105319_page_hero_video';
 import * as migration_20261021_012219_formularios_do_admin from './20261021_012219_formularios_do_admin';
 import * as migration_20261021_113504_envio_do_formulario_do_admin from './20261021_113504_envio_do_formulario_do_admin';
+import * as migration_20261021_122514_secao_formulario from './20261021_122514_secao_formulario';
 
 export const migrations = [
   {
@@ -470,6 +472,11 @@ export const migrations = [
     name: '20260927_215950_process_steps_variant',
   },
   {
+    up: migration_20260927_220000_secao_formulario_antecipada.up,
+    down: migration_20260927_220000_secao_formulario_antecipada.down,
+    name: '20260927_220000_secao_formulario_antecipada',
+  },
+  {
     up: migration_20260927_235900_solucoes_do_wordpress.up,
     down: migration_20260927_235900_solucoes_do_wordpress.down,
     name: '20260927_235900_solucoes_do_wordpress',
@@ -712,6 +719,11 @@ export const migrations = [
   {
     up: migration_20261021_113504_envio_do_formulario_do_admin.up,
     down: migration_20261021_113504_envio_do_formulario_do_admin.down,
-    name: '20261021_113504_envio_do_formulario_do_admin'
+    name: '20261021_113504_envio_do_formulario_do_admin',
+  },
+  {
+    up: migration_20261021_122514_secao_formulario.up,
+    down: migration_20261021_122514_secao_formulario.down,
+    name: '20261021_122514_secao_formulario',
   },
 ];

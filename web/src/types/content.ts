@@ -569,6 +569,24 @@ export type BlocoCtaContact = Base & {
   contato: Contato | null
 }
 
+/** A seção "Formulário" (task 051): um formulário de Conteúdo → Formulários
+ *  numa página. */
+export type BlocoFormSection = Base & {
+  tipo: 'formSection'
+  title: string | null
+  paragrafos: string[]
+  layout: 'centralizado' | 'lado-a-lado'
+  /** `null` só no preview, ao lado do aviso. No site, formulário fora do ar
+   *  tira a seção da lista (o mapper nem a devolve). */
+  formulario: FormularioDoAdmin | null
+  /** Só no preview: o que o editor precisa saber para a seção aparecer no site. */
+  avisoDoPreview:
+    | { tipo: 'sem-formulario' }
+    | { tipo: 'incompleto'; campo: string }
+    | { tipo: 'nao-publicado' }
+    | null
+}
+
 export type BlocoJobsList = Base & {
   tipo: 'jobsList'
   eyebrow: string | null
@@ -725,6 +743,7 @@ export type BlocoPartnerMosaic = Base & {
 
 export type Bloco =
   | BlocoPartnerMosaic
+  | BlocoFormSection
   | BlocoSectionListing
   | BlocoSectionFeatured
   | BlocoWebinarTeaser
