@@ -85,6 +85,10 @@ export function BlocoFaixaDeLogos({ bloco }: { bloco: BlocoLogoMarquee }) {
         {bloco.title && (
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold tracking-tight text-text-main sm:text-3xl">{bloco.title}</h2>
+            {/* #216: o texto curto abaixo do título, escrito no admin. */}
+            {bloco.description && (
+              <p className="mt-4 text-sm sm:text-base text-text-muted leading-relaxed">{bloco.description}</p>
+            )}
           </div>
         )}
 
