@@ -1,7 +1,7 @@
 ---
 id: 053
 title: Fechar a feature — miniatura no seletor, e2e do envio, guia do editor e decisão
-status: para implementar
+status: em revisão
 feature: criador-de-formularios
 area: qa
 priority: P1
