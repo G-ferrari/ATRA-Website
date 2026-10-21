@@ -33,6 +33,7 @@ import { SpecialistRoles } from './collections/SpecialistRoles'
 import { Testimonials } from './collections/Testimonials'
 import { Topics } from './collections/Topics'
 import { Users } from './collections/Users'
+import { Forms } from './collections/Forms'
 import { Press } from './collections/Press'
 import { Webinars } from './collections/Webinars'
 import { AtraAi } from './globals/AtraAi'
@@ -96,7 +97,7 @@ export default buildConfig({
   collections: comRevalidacao(
     [
       Users, Media, Topics, Testimonials,
-      Cases, GlossaryTerms, Jobs, Pages, Posts, Press, Resources, Webinars,
+      Cases, Forms, GlossaryTerms, Jobs, Pages, Posts, Press, Resources, Webinars,
       Clients, Partners, Segments, Solutions, SpecialistRoles,
       AiUsage, FormSubmissions, PrivateFiles,
     ],

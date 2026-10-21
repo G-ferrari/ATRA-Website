@@ -971,6 +971,71 @@ export type IntegracaoRd = {
   avisoAoCandidato: string | null
 }
 
+/** O tipo de um campo de formulário montado no admin (feature
+ *  criador-de-formularios). Espelha `TIPOS_DE_CAMPO` de
+ *  `lib/formularios-do-admin.ts`. */
+export type TipoDeCampoDoFormulario =
+  | 'name'
+  | 'email'
+  | 'phone'
+  | 'company'
+  | 'jobTitle'
+  | 'shortText'
+  | 'longText'
+  | 'select'
+  | 'checkbox'
+
+/** Um campo de formulário do admin, pronto para desenhar. */
+export type CampoDoFormulario = {
+  /** O id da linha no admin: é o nome do campo no `<form>` e no envio. */
+  id: string
+  tipo: TipoDeCampoDoFormulario
+  rotulo: string
+  exemplo: string | null
+  obrigatorio: boolean
+  largura: 'inteira' | 'meia'
+  /** Só a lista de opções tem. `valor` é o que vai no envio. */
+  opcoes: { rotulo: string; valor: string }[]
+}
+
+/** Um formulário do admin, no idioma da página — o que a seção "Formulário"
+ *  desenha. Sem nada do RD nem do aviso: isso é do servidor
+ *  (`ConfigDoFormulario`). */
+export type FormularioDoAdmin = {
+  id: number
+  campos: CampoDoFormulario[]
+  botao: string
+  aviso: string | null
+  depoisDoEnvio: { tipo: 'mensagem'; mensagem: string } | { tipo: 'pagina'; href: string }
+}
+
+/** O que o servidor precisa de um formulário do admin para gravar, avisar e
+ *  mandar ao RD (tasks 049 e 050). Não vai para o navegador. */
+export type ConfigDoFormulario = {
+  id: number
+  nome: string
+  /** Por id da linha: o que o envio aceita e para onde cada campo vai no RD. */
+  campos: {
+    id: string
+    tipo: TipoDeCampoDoFormulario
+    rotulo: string
+    obrigatorio: boolean
+    /** Só na lista de opções: os valores aceitos. */
+    valores: string[]
+    /** Caixa de marcar que vale como consentimento de comunicação. */
+    consentimento: boolean
+    /** `cf_…` do RD, ou `null` para não mandar. */
+    campoNoRd: string | null
+  }[]
+  /** Quem recebe o aviso do site quando o RD não aceita; vazio = destino geral. */
+  avisarPara: string[]
+  rd: {
+    /** `null` = este formulário não vai ao RD. */
+    identificador: string | null
+    tags: string[]
+  }
+}
+
 /** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global
  * `data-maturity-diagnostic`. Servem à página, à conclusão e ao e-mail do
  * resultado.

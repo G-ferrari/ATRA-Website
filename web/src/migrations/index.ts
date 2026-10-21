@@ -61,6 +61,7 @@ import * as migration_20260927_163411_add_tracking from './20260927_163411_add_t
 import * as migration_20260927_215331_add_image_grid from './20260927_215331_add_image_grid';
 import * as migration_20260927_215400_partner_showcase_source from './20260927_215400_partner_showcase_source';
 import * as migration_20260927_215500_locked_documents_press from './20260927_215500_locked_documents_press';
+import * as migration_20260927_215510_locked_documents_forms from './20260927_215510_locked_documents_forms';
 import * as migration_20260927_215600_solutions_badge from './20260927_215600_solutions_badge';
 import * as migration_20260927_215700_rich_text_body_size from './20260927_215700_rich_text_body_size';
 import * as migration_20260927_215800_paginas_mestras from './20260927_215800_paginas_mestras';
@@ -114,6 +115,7 @@ import * as migration_20261016_201318_process_steps_variant from './20261016_201
 import * as migration_20261016_201604_mais_icones from './20261016_201604_mais_icones';
 import * as migration_20261016_201812_contact_job_applications_notice from './20261016_201812_contact_job_applications_notice';
 import * as migration_20261017_105319_page_hero_video from './20261017_105319_page_hero_video';
+import * as migration_20261021_012219_formularios_do_admin from './20261021_012219_formularios_do_admin';
 
 export const migrations = [
   {
@@ -432,6 +434,11 @@ export const migrations = [
     name: '20260927_215500_locked_documents_press',
   },
   {
+    up: migration_20260927_215510_locked_documents_forms.up,
+    down: migration_20260927_215510_locked_documents_forms.down,
+    name: '20260927_215510_locked_documents_forms',
+  },
+  {
     up: migration_20260927_215600_solutions_badge.up,
     down: migration_20260927_215600_solutions_badge.down,
     name: '20260927_215600_solutions_badge',
@@ -694,6 +701,11 @@ export const migrations = [
   {
     up: migration_20261017_105319_page_hero_video.up,
     down: migration_20261017_105319_page_hero_video.down,
-    name: '20261017_105319_page_hero_video'
+    name: '20261017_105319_page_hero_video',
+  },
+  {
+    up: migration_20261021_012219_formularios_do_admin.up,
+    down: migration_20261021_012219_formularios_do_admin.down,
+    name: '20261021_012219_formularios_do_admin'
   },
 ];
