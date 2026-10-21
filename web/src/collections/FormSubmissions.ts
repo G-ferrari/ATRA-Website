@@ -35,6 +35,14 @@ const soBancoDeTalentos = (data: Partial<{ kind: string }> | undefined) => data?
 
 const soFormularioDoAdmin = (data: Partial<{ kind: string }> | undefined) => data?.kind === 'custom-form'
 
+/* Task 050 — o que o visitante enviou no formulário do admin é a prova do
+ * consentimento que vai ao RD, e cada edição tenta o RD de novo. `readOnly` só
+ * trava a tela: um `PATCH` na API ainda gravaria `communicationConsent: true` e
+ * a mesma edição declararia ao RD um consentimento que ninguém deu. Negado aqui,
+ * o Payload mantém o valor gravado. A action grava pelo `create` e a Local API
+ * passa por cima (`overrideAccess`), então nada do site muda. */
+const somenteNoEnvio = { update: () => false }
+
 export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
   admin: {
@@ -141,6 +149,7 @@ export const FormSubmissions: CollectionConfig = {
       type: 'relationship',
       relationTo: 'forms',
       label: { pt: 'Formulário', en: 'Form' },
+      access: somenteNoEnvio,
       admin: { readOnly: true, position: 'sidebar', condition: soFormularioDoAdmin },
     },
     {
@@ -154,6 +163,7 @@ export const FormSubmissions: CollectionConfig = {
       type: 'array',
       label: { pt: 'Respostas', en: 'Answers' },
       labels: { singular: { pt: 'Resposta', en: 'Answer' }, plural: { pt: 'Respostas', en: 'Answers' } },
+      access: somenteNoEnvio,
       admin: { readOnly: true, condition: soFormularioDoAdmin },
       fields: [
         { name: 'fieldId', type: 'text', admin: { hidden: true } },
@@ -168,6 +178,7 @@ export const FormSubmissions: CollectionConfig = {
       type: 'checkbox',
       defaultValue: false,
       label: { pt: 'Aceitou receber comunicações', en: 'Agreed to receive communications' },
+      access: somenteNoEnvio,
       admin: { readOnly: true, position: 'sidebar', condition: soFormularioDoAdmin },
     },
     { name: 'name', type: 'text', label: { pt: 'Nome', en: 'Name' } },

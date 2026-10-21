@@ -209,6 +209,10 @@ export const ROTULO_DO_TIPO: Record<TipoDeCampo, { pt: string; en: string }> = {
 export const MAX_TEXTO_CURTO = 200
 export const MAX_TEXTO_LONGO = 5000
 
+/* A resposta gravada de uma caixa de marcar. A 050 só manda ao RD a marcada. */
+export const CAIXA_MARCADA = 'Sim'
+export const CAIXA_DESMARCADA = 'Não'
+
 /* ⚠️ O mesmo regex do campo `email` do Payload (`fields/validations.js`).
  * Mais frouxo que ele, um "ana..souza@empresa.com" passaria aqui e cairia no
  * `create`: o visitante leria a mensagem genérica em vez de "Confira o e-mail"
@@ -284,7 +288,7 @@ export function conferirEnvio(
       const marcado = bruto !== ''
       if (campo.obrigatorio && !marcado) erros[campo.id] = m.marcar
       if (campo.consentimento) consentimento = marcado
-      respostas.push({ campoId: campo.id, rotulo: campo.rotulo, valor: marcado ? 'Sim' : 'Não' })
+      respostas.push({ campoId: campo.id, rotulo: campo.rotulo, valor: marcado ? CAIXA_MARCADA : CAIXA_DESMARCADA })
       continue
     }
 
