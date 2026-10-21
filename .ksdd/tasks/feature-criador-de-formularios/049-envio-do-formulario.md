@@ -1,7 +1,7 @@
 ---
 id: 049
 title: Receber o envio de um formulário do admin — validar, gravar e avisar o time
-status: para implementar
+status: em revisão
 feature: criador-de-formularios
 area: backend
 priority: P0
