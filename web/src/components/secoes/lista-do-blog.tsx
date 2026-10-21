@@ -53,9 +53,9 @@ export function ListaDoBlog({
             cabecalho,
             abertura,
             chave: 'cabecalho-blog',
-            classeDoTitulo: 'text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main leading-tight',
+            classeDoTitulo: 'text-2xl sm:text-3xl md:text-4xl font-display text-text-main leading-tight',
             depoisDoTitulo: pagina > 1 && (
-              <p className="mt-2 text-xs sm:text-sm text-text-muted font-light">{t.paginaDe(pagina, totalDePaginas)}</p>
+              <p className="mt-2 text-sm text-text-muted">{t.paginaDe(pagina, totalDePaginas)}</p>
             ),
           })}
         />

@@ -41,7 +41,7 @@ export function ChipFilter({
 
   return (
     <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 no-scrollbar">
-      <span className="text-[11px] font-bold text-text-muted uppercase mr-1 shrink-0">{label}</span>
+      <span className="text-xs font-bold text-text-muted uppercase mr-1 shrink-0">{label}</span>
       {options.map((opcao) => (
         <button
           key={opcao.id}

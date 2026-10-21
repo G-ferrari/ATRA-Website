@@ -914,6 +914,12 @@ export type AvisoDeCookies = {
   }
 }
 
+/** Ajustes visuais do site inteiro (#215, D-65), do global `appearance`. */
+export type Aparencia = {
+  /** Peso da fonte dos títulos: 600 (Negrito), 400 (Normal) ou 300 (Fino). */
+  pesoDosTitulos: 300 | 400 | 600
+}
+
 /** Os ids dos scripts de rastreamento (D-40), do global `tracking`. `null` é
  * "não configurado": o componente correspondente não faz nada. Mesmo com id,
  * cada script espera o aceite da sua categoria no aviso de cookies. */

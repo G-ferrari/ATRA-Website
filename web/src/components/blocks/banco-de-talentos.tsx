@@ -77,7 +77,7 @@ export function BancoDeTalentos({
             <span className="text-primary font-bold uppercase tracking-wider text-xs mb-3 block">{banco.eyebrow}</span>
           )}
           {banco.title && (
-            <h3 className="text-2xl lg:text-3xl font-bold font-display leading-tight mb-4">
+            <h3 className="text-2xl lg:text-3xl font-display leading-tight mb-4">
               {/* ⚠️ Laranja e **sem** `font-normal`: `Careers.tsx:456` usa só
                   `text-secondary`, enquanto o padrão do `TextoDestacado` é
                   `text-primary font-normal`. As duas diferenças importam — a
@@ -86,13 +86,13 @@ export function BancoDeTalentos({
             </h3>
           )}
           {banco.description && (
-            <p className="text-slate-600 dark:text-white/70 text-xs sm:text-sm leading-relaxed mb-6 font-light">{banco.description}</p>
+            <p className="text-slate-600 dark:text-white/70 text-sm leading-relaxed mb-6">{banco.description}</p>
           )}
 
           {banco.note && (
             <div className="flex items-center gap-4 bg-slate-100 dark:bg-white/5  p-4 rounded-[6px]">
               <Upload size={20} className="text-primary shrink-0" aria-hidden />
-              <p className="text-xs text-slate-600 dark:text-white/80 font-light leading-relaxed">{banco.note}</p>
+              <p className="text-sm text-slate-600 dark:text-white/80 leading-relaxed">{banco.note}</p>
             </div>
           )}
         </div>
@@ -143,7 +143,7 @@ export function BancoDeTalentos({
           {banco.aviso && (
             <p
               id="aviso-do-banco-de-talentos"
-              className="text-[11px] font-light leading-relaxed text-text-muted whitespace-pre-line"
+              className="text-sm leading-relaxed text-text-muted whitespace-pre-line"
             >
               {banco.aviso}
             </p>

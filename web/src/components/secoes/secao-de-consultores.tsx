@@ -73,7 +73,7 @@ export function SecaoDeConsultores({
           )}
 
           {(cabecalho.title || cabecalho.highlight) && (
-            <Titulo className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display tracking-tight text-text-main mb-4 leading-tight">
+            <Titulo className="text-2xl sm:text-4xl md:text-5xl font-display tracking-tight text-text-main mb-4 leading-tight">
               <TituloComDestaque cabecalho={cabecalho} />
             </Titulo>
           )}
@@ -81,7 +81,7 @@ export function SecaoDeConsultores({
           {cabecalho.paragrafos.length > 0 && (
             <div className="max-w-2xl mb-6 space-y-3">
               {cabecalho.paragrafos.map((p) => (
-                <p key={p} className="text-xs sm:text-sm md:text-base text-text-muted font-light leading-relaxed">
+                <p key={p} className="text-base text-text-muted leading-relaxed">
                   {p}
                 </p>
               ))}

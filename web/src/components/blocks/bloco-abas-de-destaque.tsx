@@ -75,12 +75,12 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
                 <Sparkles size={13} aria-hidden /> {bloco.eyebrow}
               </div>
             )}
-            <h2 className="text-2xl md:text-4xl font-light font-display text-text-main leading-tight">
+            <h2 className="text-2xl md:text-4xl font-display text-text-main leading-tight">
               {bloco.title}
             </h2>
           </div>
           {bloco.description && (
-            <p className="text-text-muted font-light max-w-md text-xs md:text-sm">{bloco.description}</p>
+            <p className="text-text-muted max-w-md text-base">{bloco.description}</p>
           )}
         </div>
 
@@ -129,7 +129,7 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
                       {/* A numeração sai da ordem, com zero à esquerda — o
                           gabarito escreve `0{index + 1}` e por isso passa de
                           "09" para "010" na décima aba. Só há quatro. */}
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-0.5">
+                      <span className="text-xs font-bold uppercase tracking-widest text-primary block mb-0.5">
                         0{i + 1} • {f.badge}
                       </span>
                       <h3 className="font-medium text-xs sm:text-sm md:text-base text-text-main">{f.title}</h3>
@@ -192,17 +192,17 @@ export function BlocoAbasDeDestaque({ bloco }: { bloco: BlocoFeatureTabs }) {
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 text-xs font-bold uppercase tracking-wider text-primary mb-6">
                       {item.badge}
                     </div>
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-light font-display text-text-main dark:text-white mb-4 leading-snug">
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-display text-text-main dark:text-white mb-4 leading-snug">
                       {item.title}
                     </h3>
-                    <p className="text-text-muted dark:text-white/70 font-light text-xs sm:text-sm md:text-base leading-relaxed max-w-lg">
+                    <p className="text-text-muted dark:text-white/70 text-base leading-relaxed max-w-lg">
                       {item.description}
                     </p>
                   </div>
 
                   <div className="relative z-10 mt-8 pt-6 border-t border-border-main dark:border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     {bloco.footnote && (
-                      <div className="flex items-center gap-2 text-xs text-text-muted dark:text-white/50 font-light">
+                      <div className="flex items-center gap-2 text-xs text-text-muted dark:text-white/50">
                         <CheckCircle2 size={15} className="text-primary" aria-hidden /> {bloco.footnote}
                       </div>
                     )}

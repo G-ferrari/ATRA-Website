@@ -60,7 +60,7 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
             {bloco.title && (
               <h2
                 className={cn(
-                  'text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main',
+                  'text-2xl sm:text-3xl md:text-4xl font-display text-text-main',
                   alto ? 'mb-4 tracking-tight' : 'mb-3',
                 )}
               >
@@ -71,7 +71,7 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
               /* ⚠️ `dark:text-gray-300` (`Careers.tsx:214`). Sem ele o texto sai
                  em `text-muted`, que no escuro é gray-400 — um tom mais escuro,
                  e o aceite visual captura em modo escuro. */
-              <p className="text-text-muted dark:text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed font-light">
+              <p className="text-text-muted dark:text-gray-300 text-base leading-relaxed">
                 {bloco.description}
               </p>
             )}
@@ -106,12 +106,12 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
                   >
                     <Icone size={26} strokeWidth={1.75} aria-hidden />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold font-display text-text-main mb-2">{v.title}</h3>
+                  <h3 className="text-xl sm:text-2xl font-display text-text-main mb-2">{v.title}</h3>
                   {/* `min-h-[36px]` é o que mantém divisor e checklist dos três
                       cartões na mesma linha quando a frase quebra em duas. */}
                   <p
                     className={cn(
-                      'text-xs sm:text-[13px] font-medium mb-5 min-h-[36px] flex items-center',
+                      'text-sm font-medium mb-5 min-h-[36px] flex items-center',
                       /* No escuro o azul clareia (`Careers.tsx:231`); o laranja
                          não muda (`:285`). Assimetria do legado. */
                       laranja ? 'text-secondary' : 'text-primary dark:text-[#3C98FA]',
@@ -120,7 +120,7 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
                     {v.description}
                   </p>
                   <div className="h-px w-full bg-slate-200 dark:bg-white/10 mb-6" />
-                  <ul className="space-y-3.5 text-xs sm:text-[13px] text-text-muted dark:text-gray-300 font-light leading-relaxed">
+                  <ul className="space-y-3.5 text-sm text-text-muted dark:text-gray-300 leading-relaxed">
                     {v.bullets.map((b) => (
                       <li key={b} className="flex gap-3 items-start">
                         <CheckCircle2
@@ -140,10 +140,10 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
                   <div className="w-12 h-12 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center mb-6">
                     <Icone size={24} aria-hidden />
                   </div>
-                  <h3 className="text-lg font-bold font-display text-text-main mb-3 group-hover:text-primary transition-colors">
+                  <h3 className="text-lg font-display text-text-main mb-3 group-hover:text-primary transition-colors">
                     {v.title}
                   </h3>
-                  <p className="text-xs text-text-muted font-light leading-relaxed">{v.description}</p>
+                  <p className="text-sm text-text-muted leading-relaxed">{v.description}</p>
                 </div>
               </GlowCard>
             )

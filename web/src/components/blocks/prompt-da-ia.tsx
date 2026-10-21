@@ -85,12 +85,12 @@ export function PromptDaIa({
                     placeholder={prompt.placeholder ?? undefined}
                     aria-label={prompt.placeholder ?? 'Mensagem'}
                     rows={2}
-                    className="w-full bg-transparent text-text-main dark:text-white text-xs sm:text-sm focus:outline-none placeholder:text-text-muted/60 font-light resize-none h-11 sm:h-12 border-0 focus:ring-0 p-0 leading-relaxed"
+                    className="w-full bg-transparent text-text-main dark:text-white text-base sm:text-sm focus:outline-none placeholder:text-text-muted/60 resize-none h-11 sm:h-12 border-0 focus:ring-0 p-0 leading-relaxed"
                   />
                 </div>
 
                 <div className="flex items-center justify-between pt-1 border-t border-slate-200/50 dark:border-white/5">
-                  <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-text-subtle select-none pl-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-subtle select-none pl-1">
                     <Sparkles size={13} className="text-primary" aria-hidden />
                     ATRA AI
                   </span>
@@ -109,7 +109,7 @@ export function PromptDaIa({
             </form>
 
             {prompt.disclaimer && (
-              <p className="text-[10px] md:text-xs text-text-muted tracking-wide mt-3 text-center">
+              <p className="text-xs text-text-muted tracking-wide mt-3 text-center">
                 {prompt.disclaimer}
               </p>
             )}
@@ -121,7 +121,7 @@ export function PromptDaIa({
                vez de separar o herói da caixa. `min-h-[50px] sm:h-[90px]` com
                `flex items-center`: a altura é fixa e o título centraliza
                dentro dela, quebre em uma linha ou em duas. */
-            <h2 className="text-xl sm:text-2xl md:text-[28px] font-normal font-display text-text-main mt-6 min-h-[50px] sm:h-[90px] flex items-center justify-center tracking-tight leading-tight">
+            <h2 className="text-xl sm:text-2xl md:text-[28px] font-display text-text-main mt-6 min-h-[50px] sm:h-[90px] flex items-center justify-center tracking-tight leading-tight">
               {prompt.title}
             </h2>
           )}
@@ -132,7 +132,7 @@ export function PromptDaIa({
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
               <div className="flex-shrink-0 flex items-center gap-6 justify-center md:justify-start w-full md:w-auto">
                 {prompt.clientsTitle && (
-                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-100 uppercase tracking-widest max-w-[180px] leading-relaxed text-center md:text-left whitespace-normal">
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-100 uppercase tracking-widest max-w-[180px] leading-relaxed text-center md:text-left whitespace-normal">
                     {prompt.clientsTitle}
                   </span>
                 )}

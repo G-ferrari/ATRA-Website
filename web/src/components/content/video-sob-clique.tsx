@@ -77,8 +77,8 @@ export function VideoSobClique({
         <span className="w-16 h-16 rounded-full bg-linear-to-r from-primary to-primary-dark text-white flex items-center justify-center shadow-md shadow-primary/25 group-hover:scale-105 active:scale-[0.98] transition-transform">
           <Play size={24} className="ml-1" aria-hidden />
         </span>
-        <span className="text-white font-bold text-[11px] uppercase tracking-wider">{rotuloAssistir}</span>
-        <span className="text-slate-300 text-[10.5px]">{embed.titulo}</span>
+        <span className="text-white font-bold text-xs uppercase tracking-wider">{rotuloAssistir}</span>
+        <span className="text-slate-300 text-xs">{embed.titulo}</span>
       </span>
     </button>
   )

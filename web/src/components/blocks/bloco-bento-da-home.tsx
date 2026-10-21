@@ -56,12 +56,12 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                     )}
                   </div>
                   {bloco.partnerCard.title && (
-                    <h3 className="text-xl sm:text-2xl font-extrabold font-display text-text-main mb-2">
+                    <h3 className="text-xl sm:text-2xl font-display text-text-main mb-2">
                       {bloco.partnerCard.title}
                     </h3>
                   )}
                   {bloco.partnerCard.description && (
-                    <p className="text-sm text-text-muted leading-relaxed mb-5 font-light">
+                    <p className="text-sm text-text-muted leading-relaxed mb-5">
                       {bloco.partnerCard.description}
                     </p>
                   )}
@@ -83,7 +83,9 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                         <p className="text-xs font-bold text-text-main truncate group-hover/item:text-primary transition-colors">
                           {i.name}
                         </p>
-                        {i.subtitle && <p className="text-[9px] text-text-muted truncate">{i.subtitle}</p>}
+                        {/* Quebra em vez de cortar: a 12 px (#215, era 9) "Premier
+                            Partner" não cabe numa linha nas três colunas do `xl`. */}
+                        {i.subtitle && <p className="text-xs leading-snug text-text-muted">{i.subtitle}</p>}
                       </div>
                     </div>
                   ))}
@@ -139,12 +141,12 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                     )}
 
                     <div className="text-center sm:text-left flex-1">
-                      <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold font-display text-text-main tracking-tight leading-none mb-2">
+                      <h3 className="text-2xl sm:text-3xl lg:text-4xl font-display text-text-main tracking-tight leading-none mb-2">
                         {bloco.sealsCard.counter && <ContadorDeTexto value={bloco.sealsCard.counter} />}{' '}
                         {bloco.sealsCard.title}
                       </h3>
                       {bloco.sealsCard.description && (
-                        <p className="text-xs sm:text-sm text-text-muted leading-relaxed font-light">
+                        <p className="text-sm text-text-muted leading-relaxed">
                           {bloco.sealsCard.description}
                         </p>
                       )}
@@ -159,7 +161,7 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                 </div>
 
                 {bloco.sealsCard.footnote && (
-                  <div className="mt-6 pt-4 border-t border-border-main/60 flex items-center justify-between text-xs text-text-muted font-light">
+                  <div className="mt-6 pt-4 border-t border-border-main/60 flex items-center justify-between text-xs text-text-muted">
                     <span>{bloco.sealsCard.footnote}</span>
                     <Award size={18} className="text-secondary shrink-0" aria-hidden />
                   </div>
@@ -192,7 +194,7 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                         </div>
                         <span
                           className={cn(
-                            'text-[10px] font-bold uppercase tracking-wider',
+                            'text-xs font-bold uppercase tracking-wider',
                             laranja ? 'text-secondary' : 'text-primary',
                           )}
                         >
@@ -202,10 +204,10 @@ export function BlocoBentoDaHome({ bloco }: { bloco: BlocoHomeBento }) {
                       {/* `pl-[1px]` é do gabarito (`App.tsx:1312`): 1px de
                           alinhamento ótico do número contra o ícone acima. */}
                       <div className="mt-5 mb-5 pl-[1px]">
-                        <h4 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display text-text-main leading-none mb-1">
+                        <h4 className="text-3xl sm:text-4xl lg:text-5xl font-display text-text-main leading-none mb-1">
                           <ContadorDeTexto value={m.value} />
                         </h4>
-                        <p className="text-[11px] sm:text-xs font-normal text-text-muted leading-relaxed">{m.label}</p>
+                        <p className="text-sm font-normal text-text-muted leading-relaxed">{m.label}</p>
                       </div>
                     </GlowCard>
                   </div>

@@ -44,7 +44,7 @@ function Cartao({
       <div className="absolute inset-0 bg-linear-to-t from-surface-1/95 via-surface-1/60 to-transparent p-5 flex flex-col justify-end">
         <div className="flex items-center gap-1.5 mb-1.5">
           <Icone nome={card.icon} size={13} className="text-secondary" />
-          <span className="text-[10px] font-bold tracking-widest uppercase text-secondary">{card.category}</span>
+          <span className="text-xs font-bold tracking-widest uppercase text-secondary">{card.category}</span>
         </div>
         <h3 className="text-sm sm:text-base font-medium leading-tight text-text-main group-hover:text-primary transition-colors">
           {card.title} <ArrowRight size={13} className="inline ml-1" aria-hidden />
@@ -82,15 +82,15 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
           <div className="flex flex-col gap-6">
             <div>
               {bloco.eyebrow && (
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider mb-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider mb-3">
                   <BookOpen size={13} aria-hidden /> {bloco.eyebrow}
                 </div>
               )}
-              <h2 className="text-xl sm:text-2xl font-display font-light leading-tight mb-4 text-text-main">
+              <h2 className="text-xl sm:text-2xl font-display leading-tight mb-4 text-text-main">
                 {bloco.title}
               </h2>
               {bloco.description && (
-                <p className="text-text-muted font-light text-xs sm:text-sm leading-relaxed">{bloco.description}</p>
+                <p className="text-text-muted text-sm leading-relaxed">{bloco.description}</p>
               )}
             </div>
 
@@ -126,7 +126,7 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
                 <div className="absolute inset-0 bg-linear-to-t from-surface-1/95 via-surface-1/50 to-transparent p-6 flex flex-col justify-between">
                   <div>
                     {bloco.featured.category && (
-                      <span className="text-[10px] font-bold tracking-widest uppercase mb-1.5 block text-secondary">
+                      <span className="text-xs font-bold tracking-widest uppercase mb-1.5 block text-secondary">
                         {bloco.featured.category}
                       </span>
                     )}
@@ -146,7 +146,7 @@ export function BlocoVitrineDeConteudo({ bloco }: { bloco: BlocoContentTeaser })
 
             {bloco.newsletter && (
               <div className="bg-surface-2 p-6 rounded-[6px] shadow-xl">
-                <h4 className="text-base md:text-lg font-light font-display mb-4 text-text-main">
+                <h4 className="text-base md:text-lg font-display mb-4 text-text-main">
                   {bloco.newsletter.title}
                 </h4>
                 {/* MIG-103: viva, com dupla confirmação. O render inicial

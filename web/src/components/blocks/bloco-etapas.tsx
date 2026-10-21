@@ -28,18 +28,18 @@ export function BlocoEtapas({ bloco }: { bloco: BlocoProcessSteps }) {
             {/* `mb-4`, não `mb-3`: é o valor de `Careers.tsx:366`, a única
                 seção do site que usa este bloco. */}
             {bloco.title && (
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main mb-4">
                 {bloco.title}
               </h2>
             )}
             {bloco.description && (
               <p
                 className={cn(
-                  'text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed',
+                  'text-base max-w-2xl mx-auto leading-relaxed',
                   /* Subtítulo em texto de apoio, não azul: o azul fica para títulos
                      e destaques, não para parágrafos inteiros (menos acento azul na
                      página). Vale para os dois layouts. */
-                  'text-text-muted font-light',
+                  'text-text-muted',
                 )}
               >
                 {bloco.description}
@@ -71,10 +71,10 @@ export function BlocoEtapas({ bloco }: { bloco: BlocoProcessSteps }) {
                     {String(i + 1).padStart(2, '0')}
                   </div>
                   <div className="min-w-0 pt-1.5 lg:contents">
-                    <h3 className="text-base lg:text-lg font-bold text-text-main mb-1 lg:mb-2 transition-colors group-hover:text-primary">
+                    <h3 className="text-base lg:text-lg text-text-main mb-1 lg:mb-2 transition-colors group-hover:text-primary">
                       {etapa.title}
                     </h3>
-                    <p className="text-xs text-text-muted font-light leading-relaxed lg:max-w-[240px]">
+                    <p className="text-sm text-text-muted leading-relaxed lg:max-w-[240px]">
                       {etapa.description}
                     </p>
                   </div>
@@ -94,7 +94,7 @@ export function BlocoEtapas({ bloco }: { bloco: BlocoProcessSteps }) {
                     {String(i + 1).padStart(2, '0')}
                   </div>
                   <h3 className="text-sm sm:text-base font-bold text-text-main mb-2">{etapa.title}</h3>
-                  <p className="text-xs text-text-muted font-light leading-relaxed">{etapa.description}</p>
+                  <p className="text-sm text-text-muted leading-relaxed">{etapa.description}</p>
                 </div>
               </div>
             ))}

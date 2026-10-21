@@ -163,7 +163,7 @@ export function ListaDeArtigos({
         <div className="bg-surface-2  rounded-[6px] p-10 text-center max-w-md mx-auto">
           <Search size={32} className="mx-auto text-text-muted mb-3" aria-hidden />
           <h3 className="text-base font-bold text-text-main mb-1">{t.vazioTitulo}</h3>
-          <p className="text-xs text-text-muted font-light mb-4">{t.vazioTexto}</p>
+          <p className="text-sm text-text-muted mb-4">{t.vazioTexto}</p>
           <button
             type="button"
             onClick={() => {
@@ -193,7 +193,7 @@ export function ListaDeArtigos({
                 />
                 <div className="absolute inset-0 bg-slate-950/20 dark:bg-black/40 group-hover:bg-transparent transition-all" />
                 <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-[4px] bg-primary text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-sm shadow-sm">
+                  <span className="px-3 py-1 rounded-[4px] bg-primary text-xs font-bold text-white uppercase tracking-wider backdrop-blur-sm shadow-sm">
                     {t.selo}
                   </span>
                 </div>
@@ -201,12 +201,12 @@ export function ListaDeArtigos({
 
               <div className="p-6 md:p-8 flex flex-col flex-1 justify-between">
                 <div>
-                  <div className="text-[11px] text-text-muted mb-3 flex items-center gap-1.5 font-medium">
+                  <div className="text-xs text-text-muted mb-3 flex items-center gap-1.5 font-medium">
                     <Calendar size={13} className="text-primary" aria-hidden />
                     <span>{formatarData(p.publishedAt)}</span>
                   </div>
 
-                  <h3 className="text-lg md:text-xl font-bold font-display text-text-main mb-3 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                  <h3 className="text-lg md:text-xl font-display text-text-main mb-3 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                     {/* O cartão inteiro leva ao artigo (pedido de 04/10): até aqui
                         só o "Continuar lendo" era link. O link fica no título,
                         com `after:inset-0` cobrindo o cartão — um link só, com o
@@ -216,7 +216,7 @@ export function ListaDeArtigos({
                     </Link>
                   </h3>
 
-                  <p className="text-text-muted text-xs sm:text-sm font-light leading-relaxed line-clamp-3 mb-6">
+                  <p className="text-text-muted text-sm leading-relaxed line-clamp-3 mb-6">
                     {p.description}
                   </p>
                 </div>
@@ -226,7 +226,7 @@ export function ListaDeArtigos({
                     {p.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 rounded-[4px] bg-surface-1 text-[10px] font-medium text-text-muted uppercase flex items-center gap-1 "
+                        className="px-2 py-0.5 rounded-[4px] bg-surface-1 text-xs font-medium text-text-muted uppercase flex items-center gap-1 "
                       >
                         <Tag size={10} className="text-primary/70" aria-hidden /> {tag}
                       </span>

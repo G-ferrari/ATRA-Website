@@ -38,7 +38,7 @@ export function BlocoFaixaDeLogos({ bloco }: { bloco: BlocoLogoMarquee }) {
             className="h-auto max-h-full object-contain pointer-events-none opacity-90 transition-all duration-200 group-hover:opacity-100 group-hover:scale-105"
           />
         </span>
-        <span className="select-none whitespace-nowrap text-[11px] font-medium tracking-wide text-text-muted transition-colors group-hover:text-primary sm:text-xs">
+        <span className="select-none whitespace-nowrap text-xs font-medium tracking-wide text-text-muted transition-colors group-hover:text-primary">
           {p.name}
         </span>
       </>
@@ -84,7 +84,7 @@ export function BlocoFaixaDeLogos({ bloco }: { bloco: BlocoLogoMarquee }) {
       <section className="w-full bg-transparent px-4 py-4 sm:py-6">
         {bloco.title && (
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-2xl font-bold tracking-tight text-text-main sm:text-3xl">{bloco.title}</h2>
+            <h2 className="text-2xl tracking-tight text-text-main sm:text-3xl">{bloco.title}</h2>
           </div>
         )}
 

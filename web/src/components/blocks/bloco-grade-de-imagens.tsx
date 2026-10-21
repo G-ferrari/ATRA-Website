@@ -33,11 +33,11 @@ export function BlocoGradeDeImagens({ bloco }: { bloco: BlocoImageGrid }) {
               </span>
             )}
             {bloco.title && (
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-3">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main mb-3">
                 {bloco.title}
               </h2>
             )}
-            {bloco.description && <p className="text-text-muted font-light">{bloco.description}</p>}
+            {bloco.description && <p className="text-text-muted">{bloco.description}</p>}
           </div>
         )}
 

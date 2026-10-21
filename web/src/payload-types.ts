@@ -124,6 +124,7 @@ export interface Config {
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
   globals: {
+    appearance: Appearance;
     'atra-ai': AtraAi;
     contact: Contact;
     'conversion-panel': ConversionPanel;
@@ -136,6 +137,7 @@ export interface Config {
     tracking: Tracking;
   };
   globalsSelect: {
+    appearance: AppearanceSelect<false> | AppearanceSelect<true>;
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     'conversion-panel': ConversionPanelSelect<false> | ConversionPanelSelect<true>;
@@ -16080,6 +16082,21 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Visual settings for the whole site. Saving here changes every page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance".
+ */
+export interface Appearance {
+  id: number;
+  /**
+   * Applies to page, section and card headings across the site. Light is the original design. Small headings, such as author names and uppercase labels, keep their own weight.
+   */
+  headingWeight: 'bold' | 'normal' | 'light';
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "atra-ai".
  */
@@ -17055,6 +17072,16 @@ export interface Tracking {
   rdStationLoaderId?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance_select".
+ */
+export interface AppearanceSelect<T extends boolean = true> {
+  headingWeight?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

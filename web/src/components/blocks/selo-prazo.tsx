@@ -27,7 +27,7 @@ export function SeloPrazo({ prazo, grande, className }: { prazo: string; grande?
     >
       <span className={cn('contents', grande && 'lg:flex lg:items-center lg:gap-2.5')}>
         <CalendarClock size={18} className={cn('text-secondary shrink-0', grande && 'lg:size-5')} aria-hidden />
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-600 dark:text-white/70">
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-white/70">
           Prazo de adequação
         </span>
       </span>

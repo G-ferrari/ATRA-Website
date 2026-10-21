@@ -324,6 +324,16 @@ assunto: "saúde" mostra o hospital e o estetoscópio, "LGPD" a balança, "IA" o
 robô e o cérebro. Acento não importa. Nos campos opcionais, **"Sem ícone"**
 tira o que estiver lá. Ícone que não existe na lista precisa do time técnico.
 
+## O peso dos títulos
+
+Em **Configuração → Aparência do site**, o campo **"Peso dos títulos"** escolhe
+como saem os títulos do site inteiro: **Negrito**, **Normal** ou **Fino**.
+Fino é o desenho original e vem marcado. Vale para os títulos de página, de
+seção e de cartão, em todas as páginas e nos dois idiomas, e muda o site ao
+salvar, sem deploy. Os títulos pequenos (nome de autor de depoimento, itens do
+menu, rótulos em caixa-alta) têm peso próprio e não mudam. O tamanho das
+letras não fica aqui: é do código (D-65).
+
 ## Candidatura a vagas: o aviso de privacidade
 
 A candidatura com currículo, na página de cada vaga, ainda está **desligada**:

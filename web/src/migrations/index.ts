@@ -114,6 +114,7 @@ import * as migration_20261016_201318_process_steps_variant from './20261016_201
 import * as migration_20261016_201604_mais_icones from './20261016_201604_mais_icones';
 import * as migration_20261016_201812_contact_job_applications_notice from './20261016_201812_contact_job_applications_notice';
 import * as migration_20261017_105319_page_hero_video from './20261017_105319_page_hero_video';
+import * as migration_20261020_234623_aparencia_do_site from './20261020_234623_aparencia_do_site';
 
 export const migrations = [
   {
@@ -694,6 +695,11 @@ export const migrations = [
   {
     up: migration_20261017_105319_page_hero_video.up,
     down: migration_20261017_105319_page_hero_video.down,
-    name: '20261017_105319_page_hero_video'
+    name: '20261017_105319_page_hero_video',
+  },
+  {
+    up: migration_20261020_234623_aparencia_do_site.up,
+    down: migration_20261020_234623_aparencia_do_site.down,
+    name: '20261020_234623_aparencia_do_site'
   },
 ];

@@ -65,11 +65,11 @@ export function ListaDeMidia({
           chave: 'cabecalho-midia',
           classeDaCaixa: 'mb-12 md:mb-16 max-w-3xl',
           classeDoTitulo:
-            'text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main dark:text-white leading-tight',
+            'text-2xl sm:text-3xl md:text-4xl font-display text-text-main dark:text-white leading-tight',
         })}
 
         {materias.length === 0 ? (
-          <p className="text-sm text-text-muted font-light">{t.vazio.midia}</p>
+          <p className="text-sm text-text-muted">{t.vazio.midia}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             {materias.map((m, i) => (
@@ -98,10 +98,10 @@ export function ListaDeMidia({
                   )}
                 </div>
                 <div className="flex flex-col flex-1">
-                  <div className="text-[11px] text-primary mb-1.5 font-bold uppercase tracking-wider">
+                  <div className="text-xs text-primary mb-1.5 font-bold uppercase tracking-wider">
                     {origemDaMateria(m, locale)}
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold font-display text-text-main dark:text-white group-hover:text-primary transition-colors leading-snug">
+                  <h3 className="text-lg sm:text-xl font-display text-text-main dark:text-white group-hover:text-primary transition-colors leading-snug">
                     {/* Um link só por cartão, no título, com `after:inset-0`
                         cobrindo o cartão inteiro — o mesmo desenho de
                         /webinars. Abre em outra aba, e o leitor de tela é
@@ -116,7 +116,7 @@ export function ListaDeMidia({
                       <span className="sr-only"> ({t.midia.novaAba})</span>
                     </a>
                   </h3>
-                  <p className="mt-2 text-text-muted dark:text-gray-300 text-xs sm:text-sm font-light leading-relaxed line-clamp-3">
+                  <p className="mt-2 text-text-muted dark:text-gray-300 text-sm leading-relaxed line-clamp-3">
                     {m.description}
                   </p>
                   <div

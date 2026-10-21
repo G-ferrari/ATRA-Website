@@ -69,7 +69,7 @@ function Linha({ icone, cor, rotulo, children }: { icone: ReactNode; cor: string
         {icone}
       </span>
       <div className="min-w-0">
-        <p className="text-[10px] text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-1.5">{rotulo}</p>
+        <p className="text-xs text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-1.5">{rotulo}</p>
         {children}
       </div>
     </li>
@@ -105,7 +105,7 @@ export function PainelDeContatos({
 }) {
   const t = TEXTOS[locale]
   const neutro = 'bg-primary/10 text-primary'
-  const valor = 'text-base md:text-lg font-light text-text-main dark:text-white/90 hover:text-primary dark:hover:text-primary transition-colors break-words'
+  const valor = 'text-base md:text-lg text-text-main dark:text-white/90 hover:text-primary dark:hover:text-primary transition-colors break-words'
 
   /* Sem foto, a lista. */
   if (!foto) {
@@ -114,7 +114,7 @@ export function PainelDeContatos({
         <div className="absolute inset-0 bg-linear-to-br from-surface-1/90 via-surface-1/80 to-surface-2/95 dark:from-black/90 dark:via-black/60 dark:to-[#12151c]/95 mix-blend-multiply" />
         <div className="absolute inset-0 bg-surface-1/40 dark:bg-[#12151c]/30" />
 
-        <h3 className="relative z-10 text-xl md:text-2xl font-light font-display text-text-main dark:text-white mb-2">
+        <h3 className="relative z-10 text-xl md:text-2xl font-display text-text-main dark:text-white mb-2">
           {t.contatos}
         </h3>
 
@@ -144,7 +144,7 @@ export function PainelDeContatos({
 
           {contato?.endereco && (
             <Linha icone={<MapPin size={20} />} cor={neutro} rotulo={t.endereco}>
-              <p className="text-sm font-light text-text-main dark:text-white/90 whitespace-pre-line">{contato.endereco}</p>
+              <p className="text-sm text-text-main dark:text-white/90 whitespace-pre-line">{contato.endereco}</p>
             </Linha>
           )}
 
@@ -173,22 +173,22 @@ export function PainelDeContatos({
       <div className="absolute inset-0 bg-surface-1/40 dark:bg-[#12151c]/30" />
 
       <div className="relative z-10 text-text-main dark:text-white">
-        <h3 className="text-xl md:text-2xl font-light font-display text-text-main dark:text-white mb-6">
+        <h3 className="text-xl md:text-2xl font-display text-text-main dark:text-white mb-6">
           {t.contatos}
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-lg">
           <div>
-            <p className="text-[10px] text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-2">
+            <p className="text-xs text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-2">
               {t.email}
             </p>
-            <p className="text-sm font-light text-text-main dark:text-white/90">{EMAIL}</p>
+            <p className="text-sm text-text-main dark:text-white/90">{EMAIL}</p>
           </div>
           {contato?.endereco && (
             <div>
-              <p className="text-[10px] text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-2">
+              <p className="text-xs text-text-muted dark:text-white/50 font-bold uppercase tracking-wider mb-2">
                 {t.endereco}
               </p>
-              <p className="text-sm font-light text-text-main dark:text-white/90 whitespace-pre-line">{contato.endereco}</p>
+              <p className="text-sm text-text-main dark:text-white/90 whitespace-pre-line">{contato.endereco}</p>
             </div>
           )}
         </div>
@@ -204,7 +204,7 @@ export function PainelDeContatos({
           >
             <div className="flex flex-col justify-center">
               <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-[10px] uppercase font-normal tracking-wider text-emerald-600 dark:text-emerald-400">
+                <span className="text-xs uppercase font-normal tracking-wider text-emerald-600 dark:text-emerald-400">
                   {t.conversar}
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -219,7 +219,7 @@ export function PainelDeContatos({
           </a>
 
           <div className="bg-surface-2/95 dark:bg-[#181b22]/95 backdrop-blur-sm rounded-[6px] px-4 py-3 shadow-lg flex flex-col justify-center gap-1.5 flex-1 sm:flex-initial h-[76px]">
-            <p className="text-[10px] uppercase font-normal tracking-wider text-text-muted dark:text-white/60">
+            <p className="text-xs uppercase font-normal tracking-wider text-text-muted dark:text-white/60">
               {t.redes}
             </p>
             <Redes redes={contato.redes} />
