@@ -7,7 +7,7 @@
 
 | ID | Título | Área | Prioridade | Estimativa | Status | Depende de |
 |----|--------|------|------------|------------|--------|------------|
-| 048 | Criar a collection "Formulários" no admin, com os campos, o depois do envio e o grupo do RD | data-model | P0 | M | para implementar | — |
+| 048 | Criar a collection "Formulários" no admin, com os campos, o depois do envio e o grupo do RD | data-model | P0 | M | em revisão | — |
 | 049 | Receber o envio de um formulário do admin — validar, gravar e avisar o time | backend | P0 | M | para implementar | 048 |
 | 050 | Levar o envio do formulário do admin ao RD com identificador, tags, campos mapeados e consentimento | backend | P0 | M | para implementar | 048, 049 |
 | 051 | Desenhar a seção "Formulário" no site, com os nove tipos de campo e o depois do envio | frontend | P0 | L | para implementar | 048, 049 |

@@ -1,7 +1,7 @@
 ---
 id: 048
 title: Criar a collection "Formulários" no admin, com os campos, o depois do envio e o grupo do RD
-status: para implementar
+status: em revisão
 feature: criador-de-formularios
 area: data-model
 priority: P0
