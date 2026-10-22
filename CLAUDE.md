@@ -446,6 +446,27 @@ entrar no catálogo precisa estar no gancho (`payload.config.ts`). ⚠️ Não h
 `GEMINI_API_KEY` no ambiente local: a conversa de verdade só se testa em
 homologação.
 
+**D-66 (20/10, tasks 048–054)**: o marketing monta formulários em **Conteúdo →
+Formulários** (`collections/Forms.ts`) e os põe em qualquer página com a seção
+**Formulário** (`formSection`). Cada um leva no próprio cadastro o
+identificador de conversão, as tags e o `cf_` de cada pergunta. O envio
+(`actions/formularios-do-admin.ts`) confere tudo contra o formulário
+**publicado**, grava o kind `custom-form` (respostas e consentimento travados
+contra edição) e o gancho do RD lê o formulário pelo id (`comFormulario`). A
+seção recebe o formulário populado pela consulta da página: por isso `toBlocos`
+pede o 3º argumento (`locale`, `rascunho`), e formulário fora do ar tira a seção
+da lista. ⚠️ A Server Action vai **direto** ao `useActionState`
+(`enviarFormularioDoAdminNoEstado`): embrulhada numa função do navegador, o
+envio sem JavaScript deixaria de funcionar. ⚠️ Bloco novo com relação para
+collection nova pede a antecipada **sem** a chave estrangeira
+(`20260927_220000_secao_formulario_antecipada`): em banco novo a tabela da
+collection ainda não existe ali. O e2e (`e2e/formulario-do-admin.spec.ts`) envia
+com `x-real-ip` próprio, para não gastar a cota de 5 envios por IP da suíte. Com
+`SEED_FIXTURES=1`, `scripts/seed/formulario-de-teste.ts` põe dois formulários em
+`/solucoes/ia-generativa-e-agentes-conversacionais` — e com isso o contraste e o
+axe da suíte medem a seção. Ele fica **por último** no `run.mjs`: as migrações de
+dados do passo anterior regravam páginas.
+
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
 containers logando no journald e o Caddy com log de acesso em arquivo.

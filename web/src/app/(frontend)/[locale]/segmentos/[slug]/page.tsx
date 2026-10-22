@@ -41,7 +41,7 @@ async function buscarSegmento(slug: string, locale: Locale) {
     doc: docs[0],
     // A vitrine de parceiros em "Todos" lê o cadastro (29/09).
     blocos: await comParceirosCadastrados(
-      toBlocos(docs[0].layout, { metricas: toMetricas(global), selos: toSelos(global) }),
+      toBlocos(docs[0].layout, { metricas: toMetricas(global), selos: toSelos(global) }, { locale, rascunho }),
       locale,
     ),
   }

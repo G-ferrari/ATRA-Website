@@ -832,6 +832,65 @@ export const CtaContact: Block = {
   ],
 }
 
+/* Feature criador-de-formularios, task 051 — um formulário montado em
+ * Conteúdo → Formulários, posto numa página.
+ *
+ * Justificativa de bloco novo (regra 3): o "Contato com formulário" tem os
+ * campos escritos em código e manda para o contato; este desenha os campos que
+ * o marketing escolheu e manda para o RD com o identificador do formulário. */
+export const FormSection: Block = {
+  slug: 'formSection',
+  labels: { singular: { pt: 'Formulário', en: 'Form' }, plural: { pt: 'Formulários', en: 'Forms' } },
+  fields: [
+    {
+      /* Sem `filterOptions` de publicado: o filtro também vale ao salvar, e a
+       * página que aponta para um formulário despublicado depois não poderia
+       * mais ser salva. Quem esconde o não publicado é a página (o mapper). */
+      name: 'form',
+      type: 'relationship',
+      relationTo: 'forms',
+      required: true,
+      label: { pt: 'Formulário', en: 'Form' },
+      admin: {
+        description: {
+          pt: 'Os formulários de Conteúdo → Formulários. Só aparece no site depois de publicado; antes disso, só no preview.',
+          en: 'The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.',
+        },
+      },
+    },
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      name: 'text',
+      type: 'textarea',
+      localized: true,
+      label: { pt: 'Texto', en: 'Text' },
+      admin: {
+        description: {
+          pt: 'Uma linha em branco separa um parágrafo do outro.',
+          en: 'A blank line separates paragraphs.',
+        },
+      },
+    },
+    {
+      name: 'layout',
+      type: 'select',
+      defaultValue: 'centered',
+      options: [
+        { value: 'centered', label: { pt: 'Sozinho, centralizado', en: 'On its own, centred' } },
+        { value: 'side', label: { pt: 'Com o texto ao lado', en: 'With the text beside it' } },
+      ],
+      label: { pt: 'Forma', en: 'Layout' },
+      admin: {
+        description: {
+          pt: 'Com o texto ao lado, o título e o texto ficam à esquerda e o formulário à direita; no celular, um embaixo do outro.',
+          en: 'With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.',
+        },
+      },
+    },
+    ...camposComuns,
+  ],
+}
+
 export const JobsList: Block = {
   slug: 'jobsList',
   labels: { singular: { pt: 'Lista de vagas', en: 'Jobs list' }, plural: { pt: 'Listas de vagas', en: 'Jobs lists' } },
@@ -1873,6 +1932,7 @@ const GRUPO_DO_BLOCO = {
   homeBento: 'vitrines',
   ctaBanner: 'chamadas',
   ctaContact: 'chamadas',
+  formSection: 'chamadas',
   jobsList: 'chamadas',
 } satisfies Record<string, Grupo>
 
@@ -1893,6 +1953,7 @@ const TODOS = [
   AudienceSplit,
   AccordionSteps,
   CtaContact,
+  FormSection,
   JobsList,
   CtaBanner,
   PartnerHero,

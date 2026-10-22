@@ -2140,3 +2140,54 @@ de poder escolher no admin o peso dos títulos, entre Negrito, Normal e Fino.
   segue cortado pelo `line-clamp` onde já era.
 - Título grande **não** leva classe de peso no código: uma classe venceria o
   admin. Título novo segue a mesma regra.
+
+## D-66 — Formulários montados no admin, ligados ao RD
+
+*Decidida em 20/10/2026 por G-ferrari (tarefa #212 do checklist, feature
+criador-de-formularios, tasks 048 a 054). A D-65 está no PR #155.*
+
+**Contexto.** Cada formulário novo do marketing (inscrição em evento, pesquisa,
+pedido de material) precisava de desenvolvedor: os formulários do site são
+escritos em código, cada um com o seu identificador em Sistema → Integrações. O
+RD Station Marketing não tem API para criar formulário, landing page nem
+automação; o que ele recebe do site é a conversão.
+
+**Decisão.**
+
+- **Conteúdo → Formulários** monta o formulário: nome, campos, botão, aviso,
+  o que acontece depois do envio e quem recebe o aviso do site. Numa aba
+  própria ficam o identificador de conversão (sugerido a partir do nome) e as
+  tags; o campo do RD (`cf_…`) se escolhe em cada pergunta. A seção **Formulário** o põe em Páginas,
+  Soluções, Segmentos e Parceiros, sozinho e centralizado ou com o texto ao lado.
+- **Campos da v1:** nome, e-mail, telefone, empresa, cargo, texto curto, texto
+  longo, lista de opções e caixa de marcar. O e-mail vem sempre e é
+  obrigatório. Sem tipo para documento, dado de saúde ou anexo.
+- **Depois do envio:** uma mensagem no lugar do formulário, ou outra página do
+  site (endereço digitado, só interno).
+- **Aviso igual aos formulários de hoje:** o RD aceitou, quem avisa o time é a
+  automação dele; não aceitou, o site manda o e-mail aos endereços do
+  formulário (vazio, o destino geral do contato). A nova tentativa por edição
+  no admin continua valendo.
+- **Consentimento:** uma caixa de marcar pode ser o consentimento de
+  comunicação, nunca obrigatória. Marcada pelo visitante, a conversão leva a
+  base legal (`legal_bases`, `available_for_mailing`), como a newsletter.
+  O formulário de origem, as respostas e o consentimento gravados no envio não
+  se editam depois: são a prova do que a pessoa autorizou.
+- **Só o publicado vale:** formulário em rascunho, despublicado ou apagado não
+  aparece no site e recusa envio; o preview mostra o rascunho com um aviso.
+- **Sistema → Integrações** lista os formulários do admin com o que vai ao RD,
+  e Envios de formulário filtra por formulário.
+- Os formulários escritos em código seguem como estão; passar algum deles para
+  o criador é decisão à parte.
+
+**Consequências.**
+
+- O e-mail de agradecimento e o aviso ao time continuam sendo fluxos que o
+  marketing monta no RD, disparados pelo identificador de cada formulário.
+- Campo personalizado (`cf_…`) é escrito pelo marketing: o admin confere o
+  formato, não se o campo existe no RD. Ele só vai com **Enviar campos
+  personalizados** ligado em Sistema → Integrações, e um nome que não existe na
+  conta faz o RD recusar o lead inteiro, com o erro no envio.
+- Identificador repetido entre formulários é permitido (dois formulários podem
+  ser a mesma conversão), mas mistura os leads no RD; a lista de Integrações
+  mostra a repetição.

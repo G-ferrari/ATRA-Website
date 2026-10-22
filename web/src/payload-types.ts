@@ -72,6 +72,7 @@ export interface Config {
     topics: Topic;
     testimonials: Testimonial;
     cases: Case;
+    forms: Form;
     'glossary-terms': GlossaryTerm;
     jobs: Job;
     pages: Page;
@@ -99,6 +100,7 @@ export interface Config {
     topics: TopicsSelect<false> | TopicsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     cases: CasesSelect<false> | CasesSelect<true>;
+    forms: FormsSelect<false> | FormsSelect<true>;
     'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
     jobs: JobsSelect<false> | JobsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -3066,6 +3068,35 @@ export interface Partner {
             blockType: 'ctaBanner';
           }
         | {
+            /**
+             * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+             */
+            form: number | Form;
+            title?: string | null;
+            /**
+             * A blank line separates paragraphs.
+             */
+            text?: string | null;
+            /**
+             * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+             */
+            layout?: ('centered' | 'side') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formSection';
+          }
+        | {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
@@ -3115,6 +3146,90 @@ export interface Partner {
   };
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Forms to place on any page with the "Form" section. Every submission is stored under Form submissions and reaches RD with the identifier and tags set here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms".
+ */
+export interface Form {
+  id: number;
+  /**
+   * To find the form in the admin and in RD. Visitors do not see it.
+   */
+  name: string;
+  /**
+   * In display order. The e-mail field is required and always present. Do not ask for ID numbers, health data or files: submissions go to a marketing database.
+   */
+  fields?:
+    | {
+        type: 'name' | 'email' | 'phone' | 'company' | 'jobTitle' | 'shortText' | 'longText' | 'select' | 'checkbox';
+        /**
+         * On phones every field is full width.
+         */
+        width: 'full' | 'half';
+        label: string;
+        /**
+         * Shown greyed out inside the empty field. Optional.
+         */
+        placeholder?: string | null;
+        /**
+         * Visitors can only submit with this field filled in — or, on a checkbox, ticked.
+         */
+        required?: boolean | null;
+        options?:
+          | {
+              label: string;
+              /**
+               * Created from the option on save. It is what the submission stores and RD receives, and it does not change if the option is reworded.
+               */
+              value?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * When the visitor ticks it, the lead reaches RD with consent as legal basis and open to e-mails. The label text comes from legal.
+         */
+        consent?: boolean | null;
+        /**
+         * Empty: the answer stays on the site only. To send it to RD, type the custom field name exactly as in RD, starting with cf_ (e.g. cf_area_de_interesse). Only sent with "Send custom fields" on under System → Integrations; a field missing in RD makes RD reject the lead.
+         */
+        rdField?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  submitLabel: string;
+  /**
+   * Optional. For example, the privacy notice: what happens to the data and how to ask for deletion. Written by legal.
+   */
+  notice?: string | null;
+  afterSubmit: 'message' | 'page';
+  /**
+   * Replaces the form after submission.
+   */
+  successMessage?: string | null;
+  /**
+   * The Portuguese address, starting with / (e.g. /cases-de-sucesso/marketplace-governanca-dados). On the English site, visitors go to the same page in English.
+   */
+  redirectPath?: string | null;
+  /**
+   * The site e-mails these addresses about a new lead only when RD does not accept it — when it does, the RD automation notifies. Empty: the general contact recipient.
+   */
+  notifyEmails?: string[] | null;
+  /**
+   * Name, e-mail, phone, company and job title always go to RD standard fields; other fields only when a custom field is set. The global switch and the key live under System → Integrations.
+   */
+  rd?: {
+    /**
+     * The name the form shows up with in RD; automations fire on it. Taken from the form name on creation — change it to what you use in RD. Empty: this form is not sent to RD.
+     */
+    conversionIdentifier?: string | null;
+    tags?: string[] | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Glossary terms, grouped by letter on /glossary.
@@ -5832,6 +5947,35 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'ctaBanner';
+      }
+    | {
+        /**
+         * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+         */
+        form: number | Form;
+        title?: string | null;
+        /**
+         * A blank line separates paragraphs.
+         */
+        text?: string | null;
+        /**
+         * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+         */
+        layout?: ('centered' | 'side') | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'formSection';
       }
     | {
         eyebrow?: string | null;
@@ -8950,6 +9094,35 @@ export interface Segment {
             blockType: 'ctaBanner';
           }
         | {
+            /**
+             * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+             */
+            form: number | Form;
+            title?: string | null;
+            /**
+             * A blank line separates paragraphs.
+             */
+            text?: string | null;
+            /**
+             * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+             */
+            layout?: ('centered' | 'side') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formSection';
+          }
+        | {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
@@ -11740,6 +11913,35 @@ export interface Solution {
             blockType: 'ctaBanner';
           }
         | {
+            /**
+             * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+             */
+            form: number | Form;
+            title?: string | null;
+            /**
+             * A blank line separates paragraphs.
+             */
+            text?: string | null;
+            /**
+             * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+             */
+            layout?: ('centered' | 'side') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formSection';
+          }
+        | {
             eyebrow?: string | null;
             title?: string | null;
             description?: string | null;
@@ -11968,7 +12170,8 @@ export interface FormSubmission {
     | 'material-download'
     | 'rc18-diagnostic'
     | 'consultant-request'
-    | 'data-maturity-diagnostic';
+    | 'data-maturity-diagnostic'
+    | 'custom-form';
   status: 'new' | 'read' | 'archived';
   email: string;
   confirmationToken?: string | null;
@@ -11979,6 +12182,16 @@ export interface FormSubmission {
   job?: (number | null) | Job;
   cv?: (number | null) | PrivateFile;
   resource?: (number | null) | Resource;
+  form?: (number | null) | Form;
+  answers?:
+    | {
+        fieldId?: string | null;
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  communicationConsent?: boolean | null;
   name?: string | null;
   phone?: string | null;
   company?: string | null;
@@ -12107,6 +12320,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'cases';
         value: number | Case;
+      } | null)
+    | ({
+        relationTo: 'forms';
+        value: number | Form;
       } | null)
     | ({
         relationTo: 'glossary-terms';
@@ -12362,6 +12579,47 @@ export interface CasesSelect<T extends boolean = true> {
   slug?: T;
   featured?: T;
   publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms_select".
+ */
+export interface FormsSelect<T extends boolean = true> {
+  name?: T;
+  fields?:
+    | T
+    | {
+        type?: T;
+        width?: T;
+        label?: T;
+        placeholder?: T;
+        required?: T;
+        options?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
+        consent?: T;
+        rdField?: T;
+        id?: T;
+      };
+  submitLabel?: T;
+  notice?: T;
+  afterSubmit?: T;
+  successMessage?: T;
+  redirectPath?: T;
+  notifyEmails?: T;
+  rd?:
+    | T
+    | {
+        conversionIdentifier?: T;
+        tags?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -13209,6 +13467,21 @@ export interface PagesSelect<T extends boolean = true> {
                     caption?: T;
                   };
               variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -14232,6 +14505,21 @@ export interface PartnersSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         jobsList?:
           | T
           | {
@@ -15076,6 +15364,21 @@ export interface SegmentsSelect<T extends boolean = true> {
                     caption?: T;
                   };
               variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -15943,6 +16246,21 @@ export interface SolutionsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         jobsList?:
           | T
           | {
@@ -16034,6 +16352,16 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   job?: T;
   cv?: T;
   resource?: T;
+  form?: T;
+  answers?:
+    | T
+    | {
+        fieldId?: T;
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  communicationConsent?: T;
   name?: T;
   phone?: T;
   company?: T;

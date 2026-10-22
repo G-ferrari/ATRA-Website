@@ -47,7 +47,7 @@ async function buscarSolucao(slug: string, locale: Locale) {
   ])
 
   if (!docs[0]) return null
-  const blocos = toBlocos(docs[0].layout, { metricas: toMetricas(global), selos: toSelos(global) })
+  const blocos = toBlocos(docs[0].layout, { metricas: toMetricas(global), selos: toSelos(global) }, { locale, rascunho })
   /* O `ctaContact` desenha telefone/e-mail/endereço/redes do global `contact` —
    * mesmo passo de `lib/paginas.ts`. A rota de solução não o fazia, então o cartão
    * nascia vazio aqui. Nasceu para o formulário da RC18, que saiu na task 029;

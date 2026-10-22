@@ -1,5 +1,6 @@
 import type { CollectionAfterChangeHook, Payload } from 'payload'
 
+import { toConfigDoFormulario } from '@/lib/mappers/form'
 import { toIntegracaoRd } from '@/lib/mappers/integracao'
 import { chaveDoRdConfigurada, deveSincronizar, enviarConversao, type LeadParaRd } from '@/lib/rd-marketing'
 
@@ -45,7 +46,7 @@ export const sincronizarComRd: CollectionAfterChangeHook = async ({ doc, req, co
    * config sem o alias. O global é lido a cada lead, de propósito: o hook roda
    * fora de requisição de página, onde o `cache()` do React não vale. */
   const config = toIntegracaoRd(await req.payload.findGlobal({ slug: 'integrations', depth: 0 }))
-  const resultado = await enviarConversao(await comMaterial(lead, req.payload), config)
+  const resultado = await enviarConversao(await comFormulario(await comMaterial(lead, req.payload), req.payload), config)
 
   try {
     /* ⚠️ Direto no adaptador (`db.updateOne`), com o `req` (15/10). Duas
@@ -118,5 +119,36 @@ async function comMaterial(lead: LeadParaRd & { resource?: unknown }, payload: P
   } catch (e) {
     console.error('[rd] não leu o material do download:', e)
     return lead
+  }
+}
+
+/* Task 050 — o formulário do admin vai ao RD com o identificador, as tags e o
+ * destino de cada campo **do formulário**, lidos aqui pelo id (`form`), com o
+ * nome de hoje: o retry por edição usa o que o marketing escreveu por último.
+ *
+ * Mesmas regras do `comMaterial`: sem o `req` do lead (falha aqui desfaria a
+ * gravação dele), `disableErrors`, e sem `draft` — vale o publicado. Apagado
+ * ou ilegível: `formulario: null`, `identificadorDe` devolve nada, o lead fica
+ * gravado, o motivo vai para `rd.error` e o site já avisou o time (049). */
+async function comFormulario(lead: LeadParaRd & { form?: unknown }, payload: Payload): Promise<LeadParaRd> {
+  if (lead.kind !== 'custom-form') return lead
+  const ref = lead.form
+  const id = typeof ref === 'object' && ref !== null ? (ref as { id?: unknown }).id : ref
+  if (typeof id !== 'number' && typeof id !== 'string') return { ...lead, formulario: null }
+  try {
+    const doc = await payload.findByID({ collection: 'forms', id, locale: 'pt', depth: 0, disableErrors: true })
+    if (!doc) return { ...lead, formulario: null }
+    const config = toConfigDoFormulario(doc)
+    return {
+      ...lead,
+      formulario: {
+        identificador: config.rd.identificador,
+        tags: config.rd.tags,
+        campos: config.campos.map((c) => ({ id: c.id, tipo: c.tipo, campoNoRd: c.campoNoRd })),
+      },
+    }
+  } catch (e) {
+    console.error('[rd] não leu o formulário do envio:', e instanceof Error ? e.name : 'erro')
+    return { ...lead, formulario: null }
   }
 }

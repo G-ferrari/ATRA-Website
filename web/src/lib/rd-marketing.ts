@@ -28,6 +28,7 @@
  */
 
 import { identificadorPadraoDoEbook } from '@/lib/formatos-de-integracao'
+import { CAIXA_MARCADA } from '@/lib/formularios-do-admin'
 import type { FormularioDoRd, IntegracaoRd } from '@/types/content'
 
 const ENDPOINT = 'https://api.rd.services/platform/conversions'
@@ -71,6 +72,19 @@ export type LeadParaRd = {
     durationSeconds?: number | null
   } | null
   confirmedAt?: string | null
+  /** Só o kind `custom-form` (049): as respostas, pelo id da linha do campo. */
+  answers?: { fieldId?: string | null; label?: string | null; value?: string | null }[] | null
+  /** Só o kind `custom-form` (049): a caixa de consentimento foi marcada. */
+  communicationConsent?: boolean | null
+  /** Só o kind `custom-form` (task 050): o formulário do admin de onde o envio
+   *  veio. **Não** é campo de `form-submissions` — o cadastro guarda só o id em
+   *  `form`, e o gancho lê o resto (identificador, tags e destino de cada
+   *  campo) antes de enviar, com o nome de hoje. `null`: apagado. */
+  formulario?: {
+    identificador: string | null
+    tags: string[]
+    campos: { id: string; tipo: string; campoNoRd: string | null }[]
+  } | null
   /** Só o kind `material-download` (task 046): o e-book baixado. **Não** é
    *  campo de `form-submissions` — o cadastro guarda só o id em `resource`, e
    *  o gancho lê o resto do material antes de enviar. */
@@ -112,6 +126,9 @@ export const KINDS_PARA_O_RD = new Set([
   'consultant-request',
   'data-maturity-diagnostic',
   'talent-pool',
+  /* Os formulários montados no admin (task 050), cada um com o identificador
+     e as tags que o marketing escreveu nele. */
+  'custom-form',
 ])
 
 /**
@@ -182,9 +199,12 @@ export function formularioDoRd(kind: string): FormularioDoRd | null {
  * melhor chegar ao RD com o nome genérico do que não chegar.
  */
 export function identificadorDe(
-  doc: Pick<LeadParaRd, 'kind' | 'material'>,
+  doc: Pick<LeadParaRd, 'kind' | 'material' | 'formulario'>,
   conversoes: IntegracaoRd['conversoes'],
 ): string | null {
+  /* Formulário do admin (050): o identificador é o dele, e não há linha em
+     Sistema → Integrações. Formulário apagado ou sem identificador: não vai. */
+  if (doc.kind === 'custom-form') return doc.formulario?.identificador?.trim() || null
   const formulario = formularioDoRd(doc.kind)
   const doFormulario = formulario ? conversoes[formulario] : null
   if (!doFormulario || doc.kind !== 'material-download') return doFormulario
@@ -212,8 +232,21 @@ export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Pr
      "ausente" não pode virar tentativa de envio aqui. */
   const chave = process.env.RDSTATION_MARKETING_API_KEY?.trim()
   if (!chave) return { ok: false, motivo: 'RDSTATION_MARKETING_API_KEY ausente' }
+  /* Formulário do admin (050): o `rd.error` diz ao marketing onde olhar — o
+     formulário que sumiu ou a aba RD Station dele, não Sistema → Integrações. */
+  if (doc.kind === 'custom-form' && !doc.formulario) {
+    return { ok: false, motivo: 'formulário do envio apagado ou ilegível' }
+  }
   const identificador = identificadorDe(doc, config.conversoes)
-  if (!identificador) return { ok: false, motivo: `sem identificador de conversão para o kind "${doc.kind}"` }
+  if (!identificador) {
+    return {
+      ok: false,
+      motivo:
+        doc.kind === 'custom-form'
+          ? 'formulário sem identificador de conversão (aba RD Station do formulário)'
+          : `sem identificador de conversão para o kind "${doc.kind}"`,
+    }
+  }
 
   const corpo = { event_type: 'CONVERSION', event_family: 'CDP', payload: montarPayload(doc, identificador, config) }
 
@@ -304,12 +337,17 @@ export function montarPayload(
      chave de campos personalizados. Só o banco de talentos tem (D-62). */
   const linkedin = doc.talent?.linkedin?.trim()
   if (linkedin) payload.linkedin = linkedin
+  /* Cargo é campo padrão do RD (`job_title`); só o formulário do admin tem. */
+  const cargo = doc.kind === 'custom-form' ? respostasDoTipo(doc, 'jobTitle')[0] : undefined
+  if (cargo) payload.job_title = cargo
 
   /* As tags do formulário, como o marketing configurou (task 043) — a
      newsletter chega com `newsletter`, que é como os envios são segmentados.
-     Sem tag configurada, o campo nem vai. */
+     O formulário do admin (050) traz as dele. Sem tag configurada, o campo nem
+     vai. */
   const formulario = formularioDoRd(doc.kind)
-  const tags = formulario ? (config.tags?.[formulario] ?? []) : []
+  const tags =
+    doc.kind === 'custom-form' ? (doc.formulario?.tags ?? []) : formulario ? (config.tags?.[formulario] ?? []) : []
   if (tags.length) payload.tags = [...tags]
 
   /* Atribuição (D-26, mantida): de onde o visitante veio, pela UTM que a
@@ -331,9 +369,46 @@ export function montarPayload(
     payload.legal_bases = [{ category: 'communications', type: 'consent', status: 'granted' }]
     payload.available_for_mailing = true
   }
+  /* O formulário do admin (050) declara consentimento só quando o visitante
+     marcou a caixa de consentimento — que nunca é obrigatória (048), então a
+     marca é escolha dele. O texto que ele viu fica nas respostas do envio
+     (049). Desmarcada ou ausente: nada é declarado, como nos outros. */
+  if (doc.kind === 'custom-form' && doc.communicationConsent) {
+    payload.legal_bases = [{ category: 'communications', type: 'consent', status: 'granted' }]
+    payload.available_for_mailing = true
+  }
 
-  if (config.camposPersonalizados) Object.assign(payload, camposPersonalizados(doc))
+  if (config.camposPersonalizados) {
+    Object.assign(payload, doc.kind === 'custom-form' ? camposDoFormularioDoAdmin(doc) : camposPersonalizados(doc))
+  }
   return payload
+}
+
+/** As respostas de um tipo de campo do formulário do admin, pelo id da linha. */
+function respostasDoTipo(doc: Pick<LeadParaRd, 'answers' | 'formulario'>, tipo: string): string[] {
+  const ids = new Set((doc.formulario?.campos ?? []).filter((c) => c.tipo === tipo).map((c) => c.id))
+  return (doc.answers ?? []).flatMap((r) => (r.fieldId && ids.has(r.fieldId) && r.value?.trim() ? [r.value.trim()] : []))
+}
+
+/* Formulário do admin (050): vai **só** o que o marketing ligou a um `cf_` no
+ * próprio formulário — nem a página de origem (`cf_quiz_url`), que os
+ * formulários escritos em código mandam. Cada `cf_` ali é escolha explícita, e
+ * um campo que a conta não tem derrubaria a conversão inteira.
+ *
+ * Caixa de marcar só vai **marcada**: o envio grava "Não" na desmarcada (é o
+ * registro do que o visitante viu), mas no RD ela é resposta vazia, e um "Não"
+ * num campo de opções que não o tem derrubaria a conversão. */
+function camposDoFormularioDoAdmin(doc: LeadParaRd): Record<string, unknown> {
+  const campos = new Map((doc.formulario?.campos ?? []).flatMap((c) => (c.campoNoRd ? [[c.id, c] as const] : [])))
+  const enviados: Record<string, unknown> = {}
+  for (const r of doc.answers ?? []) {
+    const campo = r.fieldId ? campos.get(r.fieldId) : undefined
+    const valor = r.value?.trim()
+    if (!campo?.campoNoRd || !valor) continue
+    if (campo.tipo === 'checkbox' && valor !== CAIXA_MARCADA) continue
+    enviados[campo.campoNoRd] = valor
+  }
+  return enviados
 }
 
 /* ⚠️ Só com a chave ligada: campo `cf_` que não existe na conta derruba a

@@ -261,6 +261,17 @@ export const Integrations: GlobalConfig = {
           })),
         },
         {
+          /* Task 052: os formulários de Conteúdo → Formulários, com o
+           * identificador e as tags com que vão ao RD — que moram em cada
+           * formulário, não aqui. Campo `ui`, como a situação da chave: sem
+           * coluna, fora da API, e o componente é de servidor. */
+          name: 'adminForms',
+          type: 'ui',
+          admin: {
+            components: { Field: '/components/admin/formularios-no-rd#FormulariosNoRd' },
+          },
+        },
+        {
           /* D-62 (15/10): o Trabalhe Conosco só vai ao RD com este aviso
            * exibido no formulário. O texto é do RH e do jurídico (D-22) e nasce
            * vazio; cada cadastro guarda uma cópia do aviso que viu

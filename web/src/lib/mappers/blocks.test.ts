@@ -326,3 +326,85 @@ describe('blocos de MIG-048', () => {
     ])
   })
 })
+
+/* Task 051 — a seção "Formulário". O formulário chega populado pela consulta
+   da página; no site vale o publicado, no preview a última versão. */
+describe('seção Formulário', () => {
+  const formulario = (extra: Record<string, unknown> = {}) => ({
+    id: 7,
+    name: 'Inscrição',
+    fields: [
+      { id: 'f1', type: 'email', width: 'full', label: 'E-mail' },
+      { id: 'f2', type: 'select', width: 'half', label: 'Área', options: [{ id: 'o1', label: 'Dados', value: 'dados' }] },
+    ],
+    submitLabel: 'Enviar',
+    afterSubmit: 'message',
+    successMessage: 'Recebido.',
+    notifyEmails: ['time@atra.com.br'],
+    rd: { conversionIdentifier: 'Inscrição', tags: ['evento'] },
+    _status: 'published',
+    ...extra,
+  })
+  const secao = (form: unknown, extra: Record<string, unknown> = {}) =>
+    layout({ id: 's1', blockType: 'formSection', form, title: 'Inscreva-se', text: 'Um.\n\nDois.', layout: 'side', ...extra })
+  const site = { locale: 'pt' as const, rascunho: false }
+  const preview = { locale: 'pt' as const, rascunho: true }
+
+  it('formulário publicado: a seção desenha título, parágrafos, forma e o formulário, sem nada do RD', () => {
+    const [b] = toBlocos(secao(formulario()), undefined, site)
+    expect(b).toMatchObject({
+      tipo: 'formSection',
+      title: 'Inscreva-se',
+      paragrafos: ['Um.', 'Dois.'],
+      layout: 'lado-a-lado',
+      avisoDoPreview: null,
+      formulario: { id: 7, botao: 'Enviar', depoisDoEnvio: { tipo: 'mensagem', mensagem: 'Recebido.' } },
+    })
+    expect(JSON.stringify(b)).not.toMatch(/time@atra|evento|conversionIdentifier/)
+  })
+
+  it('no site, formulário nunca publicado, despublicado ou apagado tira a seção da lista — e do menu da página', () => {
+    expect(toBlocos(secao(formulario({ _status: 'draft' }), { anchor: 'inscricao' }), undefined, site)).toEqual([])
+    expect(toBlocos(secao(null), undefined, site)).toEqual([])
+    expect(ancorasDe(toBlocos(secao(formulario({ _status: 'draft' }), { anchor: 'inscricao' }), undefined, site))).toEqual([])
+  })
+
+  it('no preview, o rascunho aparece com o aviso, e o que falta vira aviso em vez de erro', () => {
+    expect(toBlocos(secao(formulario({ _status: 'draft' })), undefined, preview)[0]).toMatchObject({
+      formulario: { id: 7 },
+      avisoDoPreview: { tipo: 'nao-publicado' },
+    })
+    expect(toBlocos(secao(formulario()), undefined, preview)[0]).toMatchObject({ avisoDoPreview: null })
+    expect(toBlocos(secao(null), undefined, preview)[0]).toMatchObject({ avisoDoPreview: { tipo: 'sem-formulario' } })
+    expect(toBlocos(secao(formulario({ submitLabel: ' ', _status: 'draft' })), undefined, preview)[0]).toMatchObject({
+      formulario: null,
+      avisoDoPreview: { tipo: 'incompleto', campo: 'forms.submitLabel' },
+    })
+  })
+
+  it('publicado e incompleto não derruba a página: a seção sai e o erro vai para o log', () => {
+    const erro = vi.spyOn(console, 'error').mockImplementation(() => {})
+    expect(toBlocos(secao(formulario({ submitLabel: '' })), undefined, site)).toEqual([])
+    expect(erro).toHaveBeenCalledWith(expect.stringContaining('forms.submitLabel'))
+    erro.mockRestore()
+  })
+
+  it('sem o idioma e o modo, ou com o formulário só como id, falha alto dizendo o conserto', () => {
+    expect(() => toBlocos(secao(formulario()))).toThrow(/3º argumento/)
+    expect(() => toBlocos(secao(7), undefined, site)).toThrow(/depth/)
+  })
+
+  it('sem forma escolhida é centralizado; o endereço do depois do envio segue o idioma', () => {
+    const [b] = toBlocos(
+      secao(formulario({ afterSubmit: 'page', redirectPath: '/contato' }), { layout: null, title: null, text: null }),
+      undefined,
+      { locale: 'en', rascunho: false },
+    )
+    expect(b).toMatchObject({
+      layout: 'centralizado',
+      title: null,
+      paragrafos: [],
+      formulario: { depoisDoEnvio: { tipo: 'pagina', href: '/en/contato' } },
+    })
+  })
+})
