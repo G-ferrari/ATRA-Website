@@ -3021,7 +3021,6 @@ export interface Partner {
              * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
              */
             variant?: ('panel' | 'photo') | null;
-            photo?: (number | null) | Media;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -5790,7 +5789,6 @@ export interface Page {
          * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
          */
         variant?: ('panel' | 'photo') | null;
-        photo?: (number | null) | Media;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -8907,7 +8905,6 @@ export interface Segment {
              * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
              */
             variant?: ('panel' | 'photo') | null;
-            photo?: (number | null) | Media;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -11698,7 +11695,6 @@ export interface Solution {
              * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
              */
             variant?: ('panel' | 'photo') | null;
-            photo?: (number | null) | Media;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -13185,7 +13181,6 @@ export interface PagesSelect<T extends boolean = true> {
               subtitle?: T;
               showContactCard?: T;
               variant?: T;
-              photo?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -14201,7 +14196,6 @@ export interface PartnersSelect<T extends boolean = true> {
               subtitle?: T;
               showContactCard?: T;
               variant?: T;
-              photo?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -15054,7 +15048,6 @@ export interface SegmentsSelect<T extends boolean = true> {
               subtitle?: T;
               showContactCard?: T;
               variant?: T;
-              photo?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -15914,7 +15907,6 @@ export interface SolutionsSelect<T extends boolean = true> {
               subtitle?: T;
               showContactCard?: T;
               variant?: T;
-              photo?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;

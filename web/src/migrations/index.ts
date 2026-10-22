@@ -119,6 +119,7 @@ import * as migration_20261017_105319_page_hero_video from './20261017_105319_pa
 import * as migration_20261020_232303_descricao_e_alinhamento from './20261020_232303_descricao_e_alinhamento';
 import * as migration_20261020_234623_aparencia_do_site from './20261020_234623_aparencia_do_site';
 import * as migration_20261021_233937_foto_do_painel_de_contatos from './20261021_233937_foto_do_painel_de_contatos';
+import * as migration_20261022_013640_remove_cta_contact_photo from './20261022_013640_remove_cta_contact_photo';
 
 export const migrations = [
   {
@@ -725,5 +726,10 @@ export const migrations = [
     up: migration_20261021_233937_foto_do_painel_de_contatos.up,
     down: migration_20261021_233937_foto_do_painel_de_contatos.down,
     name: '20261021_233937_foto_do_painel_de_contatos',
+  },
+  {
+    up: migration_20261022_013640_remove_cta_contact_photo.up,
+    down: migration_20261022_013640_remove_cta_contact_photo.down,
+    name: '20261022_013640_remove_cta_contact_photo',
   },
 ];
