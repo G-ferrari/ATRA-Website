@@ -369,8 +369,8 @@ como **conversão**, com as tags do formulário — a candidatura com currículo
 fica fora, e o Trabalhe Conosco também, desde a **D-67** (22/10): da D-62 à
 D-67 ele foi, e cada inscrição gastava um lead do plano do RD. O aviso de
 privacidade dele mora em Sistema → Contato → Candidaturas e não trava nada;
-⚠️ as duas colunas antigas em `integrations` saem numa publicação seguinte
-(`EXCLUSAO_ADIADA` em `20261022_181457_trabalhe_conosco_fora_do_rd`); a newsletter vai na
+as duas colunas antigas em `integrations` saíram uma publicação depois
+(`20261022_234755_drop_talent_pool_rd_columns`, exclusão adiada); a newsletter vai na
 hora, sem o e-mail de confirmação desde a **D-64** (16/10) — a action carimba
 `confirmedAt` no envio, e inscrição antiga sem a data fica fora; sem
 `RDSTATION_MARKETING_API_KEY` é inerte (o admin mostra "Chave

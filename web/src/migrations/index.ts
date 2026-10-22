@@ -127,6 +127,7 @@ import * as migration_20261021_122514_secao_formulario from './20261021_122514_s
 import * as migration_20261021_233937_foto_do_painel_de_contatos from './20261021_233937_foto_do_painel_de_contatos';
 import * as migration_20261022_013640_remove_cta_contact_photo from './20261022_013640_remove_cta_contact_photo';
 import * as migration_20261022_181457_trabalhe_conosco_fora_do_rd from './20261022_181457_trabalhe_conosco_fora_do_rd';
+import * as migration_20261022_234755_drop_talent_pool_rd_columns from './20261022_234755_drop_talent_pool_rd_columns';
 
 export const migrations = [
   {
@@ -773,5 +774,10 @@ export const migrations = [
     up: migration_20261022_181457_trabalhe_conosco_fora_do_rd.up,
     down: migration_20261022_181457_trabalhe_conosco_fora_do_rd.down,
     name: '20261022_181457_trabalhe_conosco_fora_do_rd',
+  },
+  {
+    up: migration_20261022_234755_drop_talent_pool_rd_columns.up,
+    down: migration_20261022_234755_drop_talent_pool_rd_columns.down,
+    name: '20261022_234755_drop_talent_pool_rd_columns',
   },
 ];
