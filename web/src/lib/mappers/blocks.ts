@@ -670,7 +670,7 @@ export function toBlocos(
                 highlight: vazio(b.talentBank.highlight),
                 description: vazio(b.talentBank.description),
                 note: vazio(b.talentBank.note),
-                // Preenchido pela página, de Sistema → Integrações (D-62).
+                // Preenchido pela página, de Sistema → Contato → Candidaturas (D-67).
                 aviso: null,
               }
             : null,
@@ -829,7 +829,7 @@ export function comVagas(blocos: Bloco[], vagas: Vaga[]): Bloco[] {
   return blocos
 }
 
-/** Injeta o aviso ao candidato no banco de talentos (D-62). */
+/** Injeta o aviso de privacidade no banco de talentos (D-67; antes, D-62). */
 export function comAvisoAoCandidato(blocos: Bloco[], aviso: string | null): Bloco[] {
   for (const b of blocos) if (b.tipo === 'jobsList' && b.talentBank) b.talentBank.aviso = aviso
   return blocos

@@ -77,6 +77,7 @@ import * as migration_20260928_120000_pagina_rc18 from './20260928_120000_pagina
 import * as migration_20260929_122603_integracoes from './20260929_122603_integracoes';
 import * as migration_20260929_222024_optional_address_and_partner_source from './20260929_222024_optional_address_and_partner_source';
 import * as migration_20260929_222900_foto_do_painel_de_contatos_antecipada from './20260929_222900_foto_do_painel_de_contatos_antecipada';
+import * as migration_20260929_222920_aviso_do_banco_de_talentos_antecipada from './20260929_222920_aviso_do_banco_de_talentos_antecipada';
 import * as migration_20260929_222950_contact_privacy_notice from './20260929_222950_contact_privacy_notice';
 import * as migration_20260929_223000_sem_endereco_fixo from './20260929_223000_sem_endereco_fixo';
 import * as migration_20260929_223100_selos_na_pagina_do_google_cloud from './20260929_223100_selos_na_pagina_do_google_cloud';
@@ -126,6 +127,7 @@ import * as migration_20261021_122514_secao_formulario from './20261021_122514_s
 import * as migration_20261021_233937_foto_do_painel_de_contatos from './20261021_233937_foto_do_painel_de_contatos';
 import * as migration_20261022_013640_remove_cta_contact_photo from './20261022_013640_remove_cta_contact_photo';
 import * as migration_20261022_180731_drop_cta_contact_photo_column from './20261022_180731_drop_cta_contact_photo_column';
+import * as migration_20261022_181457_trabalhe_conosco_fora_do_rd from './20261022_181457_trabalhe_conosco_fora_do_rd';
 
 export const migrations = [
   {
@@ -524,6 +526,11 @@ export const migrations = [
     name: '20260929_222900_foto_do_painel_de_contatos_antecipada',
   },
   {
+    up: migration_20260929_222920_aviso_do_banco_de_talentos_antecipada.up,
+    down: migration_20260929_222920_aviso_do_banco_de_talentos_antecipada.down,
+    name: '20260929_222920_aviso_do_banco_de_talentos_antecipada',
+  },
+  {
     up: migration_20260929_222950_contact_privacy_notice.up,
     down: migration_20260929_222950_contact_privacy_notice.down,
     name: '20260929_222950_contact_privacy_notice',
@@ -767,5 +774,10 @@ export const migrations = [
     up: migration_20261022_180731_drop_cta_contact_photo_column.up,
     down: migration_20261022_180731_drop_cta_contact_photo_column.down,
     name: '20261022_180731_drop_cta_contact_photo_column',
+  },
+  {
+    up: migration_20261022_181457_trabalhe_conosco_fora_do_rd.up,
+    down: migration_20261022_181457_trabalhe_conosco_fora_do_rd.down,
+    name: '20261022_181457_trabalhe_conosco_fora_do_rd',
   },
 ];

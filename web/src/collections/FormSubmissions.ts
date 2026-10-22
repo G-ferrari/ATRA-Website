@@ -198,10 +198,10 @@ export const FormSubmissions: CollectionConfig = {
       /* 15/10 (task 044, D-62) — o perfil do banco de talentos em campos
        * próprios. Até aqui LinkedIn, área e senioridade entravam só
        * serializados na mensagem (MIG-102), o que bastava para o admin e para
-       * o aviso por e-mail. Com o Trabalhe Conosco indo ao RD, o RD precisa de
-       * cada um no seu campo — e a mensagem, texto livre, **não** vai para a
-       * base de marketing. A mensagem continua como está, para o admin e o
-       * aviso não mudarem. Somente leitura: é o que o candidato enviou. */
+       * o aviso por e-mail. Os campos nasceram para o envio ao RD, que saiu
+       * na D-67 (22/10), e ficaram: são o perfil filtrável no admin. A
+       * mensagem continua como está, para o admin e o aviso não mudarem.
+       * Somente leitura: é o que o candidato enviou. */
       name: 'talent',
       type: 'group',
       label: { pt: 'Banco de talentos', en: 'Talent pool' },
@@ -211,11 +211,11 @@ export const FormSubmissions: CollectionConfig = {
         { name: 'area', type: 'text', label: { pt: 'Área de atuação', en: 'Field' } },
         { name: 'seniority', type: 'text', label: { pt: 'Senioridade', en: 'Seniority' } },
         {
-          /* D-62: o aviso de privacidade que o formulário mostrava quando a
-           * pessoa se cadastrou (Sistema → Integrações), copiado no servidor
-           * no momento da gravação. É o registro de que ela foi avisada de
-           * que o cadastro iria ao RD — e o que libera o envio. Vazio: não
-           * havia aviso, e o cadastro não vai ao RD. */
+          /* O aviso de privacidade que o formulário mostrava quando a pessoa
+           * se cadastrou, copiado no servidor no momento da gravação: o
+           * registro do que ela leu. Vem de Sistema → Contato → Candidaturas
+           * desde a D-67; da D-62 à D-67 vinha de Sistema → Integrações e era
+           * o que liberava o envio ao RD, que saiu. Vazio: não havia aviso. */
           name: 'privacyNotice',
           type: 'textarea',
           label: { pt: 'Aviso exibido no cadastro', en: 'Notice shown at sign-up' },
