@@ -407,7 +407,9 @@ fica o que o site manda ao RD a cada formulário:
   iniciais, de propósito (ver a seção 3).
 - **Contato, rodapé e menu** — Globais (papel de administrador). O
   **endereço** em Contato é opcional desde 29/09 (a ATRA não tem endereço
-  fixo): vazio, ele não aparece no rodapé nem ao lado dos formulários.
+  fixo): vazio, ele não aparece no rodapé nem ao lado dos formulários. A
+  **foto de fundo** do cartão "Nossos Contatos" também mora lá (desde 21/10):
+  é uma só para a home, /contato e consultores, e trocar ali troca nos três.
 - **SEO de cada página** — todo conteúdo tem o grupo "SEO": título para
   buscadores, **descrição** (o texto cinza no resultado do Google) e imagem de
   compartilhamento. ⚠️ A **descrição da home está vazia** — preencher é

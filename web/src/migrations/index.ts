@@ -75,6 +75,7 @@ import * as migration_20260928_120000_pagina_rc18 from './20260928_120000_pagina
 import * as migration_20260929_122603_integracoes from './20260929_122603_integracoes';
 import * as migration_20260929_222024_optional_address_and_partner_source from './20260929_222024_optional_address_and_partner_source';
 import * as migration_20260929_222950_contact_privacy_notice from './20260929_222950_contact_privacy_notice';
+import * as migration_20260929_222900_foto_do_painel_de_contatos_antecipada from './20260929_222900_foto_do_painel_de_contatos_antecipada';
 import * as migration_20260929_223000_sem_endereco_fixo from './20260929_223000_sem_endereco_fixo';
 import * as migration_20260929_223100_selos_na_pagina_do_google_cloud from './20260929_223100_selos_na_pagina_do_google_cloud';
 import * as migration_20260929_223200_fim_das_paginas_internas from './20260929_223200_fim_das_paginas_internas';
@@ -117,6 +118,7 @@ import * as migration_20261016_201812_contact_job_applications_notice from './20
 import * as migration_20261017_105319_page_hero_video from './20261017_105319_page_hero_video';
 import * as migration_20261020_232303_descricao_e_alinhamento from './20261020_232303_descricao_e_alinhamento';
 import * as migration_20261020_234623_aparencia_do_site from './20261020_234623_aparencia_do_site';
+import * as migration_20261021_233937_foto_do_painel_de_contatos from './20261021_233937_foto_do_painel_de_contatos';
 
 export const migrations = [
   {
@@ -505,6 +507,11 @@ export const migrations = [
     name: '20260929_222950_contact_privacy_notice',
   },
   {
+    up: migration_20260929_222900_foto_do_painel_de_contatos_antecipada.up,
+    down: migration_20260929_222900_foto_do_painel_de_contatos_antecipada.down,
+    name: '20260929_222900_foto_do_painel_de_contatos_antecipada',
+  },
+  {
     up: migration_20260929_223000_sem_endereco_fixo.up,
     down: migration_20260929_223000_sem_endereco_fixo.down,
     name: '20260929_223000_sem_endereco_fixo',
@@ -712,6 +719,11 @@ export const migrations = [
   {
     up: migration_20261020_234623_aparencia_do_site.up,
     down: migration_20261020_234623_aparencia_do_site.down,
-    name: '20261020_234623_aparencia_do_site'
+    name: '20261020_234623_aparencia_do_site',
+  },
+  {
+    up: migration_20261021_233937_foto_do_painel_de_contatos.up,
+    down: migration_20261021_233937_foto_do_painel_de_contatos.down,
+    name: '20261021_233937_foto_do_painel_de_contatos',
   },
 ];

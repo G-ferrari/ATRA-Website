@@ -810,21 +810,34 @@ export const CtaContact: Block = {
        * `App.tsx:2288`: quatro campos em vez de três mais textarea, botão
        * alinhado à direita, e um cartão com foto de fundo no lugar do painel de
        * gradiente. A home só fecha o aceite com a segunda. */
+      /* #171 (21/10): o cartão de contatos é o mesmo nas duas formas — a lista
+       * sobre a foto do global Contato —, e o que a forma escolhe agora é só o
+       * formulário. Os valores ficaram (renomear valor de select é migração). */
       name: 'variant',
       type: 'select',
       defaultValue: 'panel',
       options: [
-        { value: 'panel', label: { pt: 'Cartão de gradiente', en: 'Gradient card' } },
-        { value: 'photo', label: { pt: 'Cartão com foto', en: 'Photo card' } },
+        { value: 'panel', label: { pt: 'Campos um embaixo do outro (como em /contato)', en: 'Stacked fields (as on /contato)' } },
+        { value: 'photo', label: { pt: 'E-mail e telefone lado a lado (como na home)', en: 'E-mail and phone side by side (as on the home page)' } },
       ],
-      label: { pt: 'Forma do cartão', en: 'Card shape' },
+      label: { pt: 'Forma do formulário', en: 'Form layout' },
+      admin: {
+        description: {
+          pt: 'O cartão "Nossos Contatos" ao lado é igual nas duas formas. A foto de fundo dele fica em Sistema → Contato.',
+          en: 'The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.',
+        },
+      },
     },
     {
+      /* ⚠️ Fora de uso desde a #171: a foto do cartão mora no global Contato
+       * (`panelPhoto`). Escondido, e não apagado: a coluna só sai numa
+       * publicação depois desta — apagar agora impediria a volta de um deploy
+       * para o código que ainda a lê (a armadilha do `deploy.sh` no CLAUDE.md). */
       name: 'photo',
       type: 'upload',
       relationTo: 'media',
-      label: { pt: 'Foto de fundo do cartão', en: 'Card background photo' },
-      admin: { condition: (_, irmaos) => irmaos?.variant === 'photo' },
+      label: { pt: 'Foto de fundo do cartão (fora de uso)', en: 'Card background photo (unused)' },
+      admin: { hidden: true },
     },
     ...camposComuns,
   ],

@@ -8,31 +8,28 @@ import { AbrirPedido } from './abrir-pedido'
 /* Seção "solicitar consultores" — porte de `legacy/src/pages/Consultants.tsx:685`.
  *
  * ⚠️ Não usa o bloco `ctaContact`. O legado diz copiar a seção da home, mas as
- * duas divergiram: aqui há subtítulo, um `select` de modelo de alocação e um
- * cartão à direita **com foto de fundo**, enquanto o `ctaContact` que portamos
- * em MIG-053 tem três campos e um cartão de gradiente escuro. Reusar o bloco
- * deixaria a seção ~200px mais curta que o gabarito.
+ * duas divergiram, e a coluna da esquerda segue diferente: aqui não há
+ * formulário, só o botão que abre o pedido (abaixo). O cartão da direita é o
+ * mesmo `PainelDeContatos` da home e de /contato desde a #171.
  *
  * O formulário **envia** desde a task 013 (feature consultores-solicitacao) e,
  * desde a 018, mora na **aba de pedido** (`aba-de-pedido.tsx`), junto do
  * carrinho. Aqui ficou um botão que abre a aba: dois formulários para o mesmo
  * pedido deixariam o visitante sem saber qual preencher.
  *
- * A foto é a do acervo da ATRA, não o hotlink do Unsplash do legado
- * (`Consultants.tsx:834`) — ver inventario-assets.md. */
+ * A foto do cartão é a do global Contato desde a #171 (21/10), a mesma da
+ * home e de /contato — não mais um arquivo fixo aqui. */
 
 const TEXTOS = {
   pt: {
     titulo: 'Vamos acelerar sua equipe com consultores ATRA?',
     subtitulo: 'Solicite perfis ou squads para o seu projeto!',
     abrir: 'Solicitar consultores',
-    fotoAlt: 'Equipe da ATRA reunida em evento',
   },
   en: {
     titulo: 'Shall we accelerate your team with ATRA consultants?',
     subtitulo: 'Request profiles or squads for your project.',
     abrir: 'Request consultants',
-    fotoAlt: 'ATRA team together at an event',
   },
 } as const
 
@@ -70,11 +67,7 @@ export function SolicitarConsultores({
 
           {/* Painel de contatos compartilhado (fonte única) — antes era uma cópia
               divergente com o e-mail partido. Ver painel-de-contatos.tsx. */}
-          <PainelDeContatos
-            contato={contato}
-            locale={locale}
-            foto={{ url: '/fotos/equipe-atra.jpg', alt: t.fotoAlt }}
-          />
+          <PainelDeContatos contato={contato} locale={locale} />
         </div>
       </div>
     </section>
