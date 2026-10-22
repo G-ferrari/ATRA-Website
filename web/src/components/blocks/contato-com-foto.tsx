@@ -11,10 +11,9 @@ import { PainelDeContatos } from './painel-de-contatos'
 /* Faixa de contato com cartão de foto — porte de `legacy/src/App.tsx:2288`, a
  * seção `#fale-conosco` que fecha a home.
  *
- * ⚠️ É irmã de `consultores/solicitar-consultores.tsx`, não a mesma coisa: lá
- * são cinco campos (com um `select` de modelo de alocação) e o cartão tem
- * `min-h-[480px]`; aqui são quatro e `min-h-[500px]`. As duas seções divergiram
- * no legado, e o aceite visual é contra cada página.
+ * ⚠️ É irmã de `consultores/solicitar-consultores.tsx`, não a mesma coisa: as
+ * duas divergiram no legado, e lá a coluna da esquerda é um botão que abre o
+ * pedido. O cartão da direita é um só nas duas (`PainelDeContatos`, #171).
  *
  * ⚠️ O formulário **envia** desde MIG-100. No gabarito ele não envia — o
  * `onSubmit` do protótipo só faz `preventDefault` —, e a diferença não aparece
@@ -101,7 +100,7 @@ export function ContatoComFoto({ bloco, locale }: { bloco: BlocoCtaContact; loca
 
           {/* Painel de contatos compartilhado (fonte única) — ver
               painel-de-contatos.tsx. */}
-          <PainelDeContatos contato={contato} locale={locale} foto={bloco.photo} />
+          <PainelDeContatos contato={contato} locale={locale} />
         </div>
       </div>
     </section>

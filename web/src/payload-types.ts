@@ -3017,6 +3017,9 @@ export interface Partner {
              * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
+            /**
+             * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+             */
             variant?: ('panel' | 'photo') | null;
             photo?: (number | null) | Media;
             /**
@@ -5783,6 +5786,9 @@ export interface Page {
          * Phone, e-mail, address (when there is one) and socials beside the form.
          */
         showContactCard?: boolean | null;
+        /**
+         * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+         */
         variant?: ('panel' | 'photo') | null;
         photo?: (number | null) | Media;
         /**
@@ -8897,6 +8903,9 @@ export interface Segment {
              * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
+            /**
+             * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+             */
             variant?: ('panel' | 'photo') | null;
             photo?: (number | null) | Media;
             /**
@@ -11685,6 +11694,9 @@ export interface Solution {
              * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
+            /**
+             * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+             */
             variant?: ('panel' | 'photo') | null;
             photo?: (number | null) | Media;
             /**
@@ -16222,6 +16234,10 @@ export interface Contact {
    * Optional. When empty, the address appears nowhere on the site.
    */
   address?: string | null;
+  /**
+   * Shown darkened behind "Our contacts", beside the contact forms on the home page, /contato and consultants. When empty, the panel keeps a plain dark background.
+   */
+  panelPhoto?: (number | null) | Media;
   social?: {
     linkedin?: string | null;
     instagram?: string | null;
@@ -17178,6 +17194,7 @@ export interface ContactSelect<T extends boolean = true> {
   whatsapp?: T;
   email?: T;
   address?: T;
+  panelPhoto?: T;
   social?:
     | T
     | {
