@@ -72,8 +72,8 @@ export function Diferenciais({ locale }: { locale: Locale }) {
     <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
       <div className="bg-surface-2  rounded-[6px] p-5 sm:p-7 shadow-xs">
         <div className="max-w-2xl mb-6">
-          <h2 className="text-base md:text-lg font-bold font-display text-text-main mb-1">{t.titulo}</h2>
-          <p className="text-xs text-text-muted font-light">{t.texto}</p>
+          <h2 className="text-base md:text-lg font-display text-text-main mb-1">{t.titulo}</h2>
+          <p className="text-sm text-text-muted">{t.texto}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -86,7 +86,7 @@ export function Diferenciais({ locale }: { locale: Locale }) {
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-xs font-bold text-text-main mb-1">{d.title}</h3>
-                  <p className="text-xs text-text-muted font-light leading-relaxed">{d.desc}</p>
+                  <p className="text-sm text-text-muted leading-relaxed">{d.desc}</p>
                 </div>
               </div>
             )

@@ -810,21 +810,34 @@ export const CtaContact: Block = {
        * `App.tsx:2288`: quatro campos em vez de três mais textarea, botão
        * alinhado à direita, e um cartão com foto de fundo no lugar do painel de
        * gradiente. A home só fecha o aceite com a segunda. */
+      /* #171 (21/10): o cartão de contatos é o mesmo nas duas formas — a lista
+       * sobre a foto do global Contato —, e o que a forma escolhe agora é só o
+       * formulário. Os valores ficaram (renomear valor de select é migração). */
       name: 'variant',
       type: 'select',
       defaultValue: 'panel',
       options: [
-        { value: 'panel', label: { pt: 'Cartão de gradiente', en: 'Gradient card' } },
-        { value: 'photo', label: { pt: 'Cartão com foto', en: 'Photo card' } },
+        { value: 'panel', label: { pt: 'Campos um embaixo do outro (como em /contato)', en: 'Stacked fields (as on /contato)' } },
+        { value: 'photo', label: { pt: 'E-mail e telefone lado a lado (como na home)', en: 'E-mail and phone side by side (as on the home page)' } },
       ],
-      label: { pt: 'Forma do cartão', en: 'Card shape' },
+      label: { pt: 'Forma do formulário', en: 'Form layout' },
+      admin: {
+        description: {
+          pt: 'O cartão "Nossos Contatos" ao lado é igual nas duas formas. A foto de fundo dele fica em Sistema → Contato.',
+          en: 'The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.',
+        },
+      },
     },
     {
+      /* ⚠️ Fora de uso desde a #171: a foto do cartão mora no global Contato
+       * (`panelPhoto`). Escondido, e não apagado: a coluna só sai numa
+       * publicação depois desta — apagar agora impediria a volta de um deploy
+       * para o código que ainda a lê (a armadilha do `deploy.sh` no CLAUDE.md). */
       name: 'photo',
       type: 'upload',
       relationTo: 'media',
-      label: { pt: 'Foto de fundo do cartão', en: 'Card background photo' },
-      admin: { condition: (_, irmaos) => irmaos?.variant === 'photo' },
+      label: { pt: 'Foto de fundo do cartão (fora de uso)', en: 'Card background photo (unused)' },
+      admin: { hidden: true },
     },
     ...camposComuns,
   ],
@@ -1443,11 +1456,47 @@ export const HomeHero: Block = {
   ],
 }
 
+/* O alinhamento do texto que fica ao lado do título (#218, 20/10), nos dois
+ * blocos que põem título à esquerda e texto à direita. Cada um nasce com o que
+ * já tinha — as abas de destaque alinhavam à esquerda e o carrossel de cases à
+ * direita —, e o marketing passa a escolher. */
+const alinhamentoDaDescricao = (padrao: 'left' | 'right'): Field => ({
+  name: 'descriptionAlign',
+  type: 'select',
+  defaultValue: padrao,
+  options: [
+    { value: 'left', label: { pt: 'À esquerda', en: 'Left' } },
+    { value: 'right', label: { pt: 'À direita', en: 'Right' } },
+  ],
+  label: { pt: 'Alinhamento do texto ao lado do título', en: 'Alignment of the text beside the title' },
+  admin: {
+    description: {
+      pt: 'Vale no computador, onde o texto fica numa coluna à direita do título. No celular ele vem embaixo do título, sempre à esquerda.',
+      en: 'Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.',
+    },
+  },
+})
+
 export const LogoMarquee: Block = {
   slug: 'logoMarquee',
   labels: { singular: { pt: 'Faixa de logos', en: 'Logo strip' }, plural: { pt: 'Faixas de logos', en: 'Logo strips' } },
   fields: [
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      /* #216 (20/10): a faixa da home, "Parceiros Estratégicos", ganha um texto
+       * abaixo do título. O texto é do marketing; vazio, a faixa fica só com o
+       * título, como antes. */
+      name: 'description',
+      type: 'textarea',
+      localized: true,
+      label: { pt: 'Descrição', en: 'Description' },
+      admin: {
+        description: {
+          pt: 'Texto curto abaixo do título. Vazio, a faixa fica só com o título.',
+          en: 'Short text below the title. Empty, the strip shows only the title.',
+        },
+      },
+    },
     {
       /* ⚠️ Campo aposentado: os logos da faixa saem da collection `partners`
        * (`resolverPagina`), a mesma do mega-menu, para uma troca de logo no
@@ -1480,6 +1529,7 @@ export const FeatureTabs: Block = {
     { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto ao lado do título', en: 'Text beside the title' } },
+    alinhamentoDaDescricao('left'),
     { name: 'footnote', type: 'text', localized: true, label: { pt: 'Rodapé do cartão', en: 'Card footnote' } },
     {
       name: 'cta',
@@ -1593,6 +1643,7 @@ export const CaseCarousel: Block = {
     { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto ao lado do título', en: 'Text beside the title' } },
+    alinhamentoDaDescricao('right'),
     { name: 'readLabel', type: 'text', localized: true, label: { pt: 'Texto do link no cartão', en: 'Card link label' } },
     {
       name: 'cta',

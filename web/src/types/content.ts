@@ -284,6 +284,7 @@ export type ParceiroDaFaixa = {
 export type BlocoLogoMarquee = Base & {
   tipo: 'logoMarquee'
   title: string | null
+  description: string | null
   /** Resolvidos pela página, da collection `partners`. */
   partners: ParceiroDaFaixa[]
 }
@@ -293,6 +294,8 @@ export type BlocoFeatureTabs = Base & {
   eyebrow: string | null
   title: string
   description: string | null
+  /** Como o texto ao lado do título se alinha no computador (#218). */
+  alinhamentoDaDescricao: 'left' | 'right'
   footnote: string | null
   cta: { label: string; href: string } | null
   items: { icon: string; badge: string; title: string; description: string; image: Image | null }[]
@@ -336,6 +339,8 @@ export type BlocoCaseCarousel = Base & {
   eyebrow: string | null
   title: string
   description: string | null
+  /** Como o texto ao lado do título se alinha no computador (#218). */
+  alinhamentoDaDescricao: 'left' | 'right'
   readLabel: string | null
   cta: { label: string; href: string } | null
   items: {
@@ -561,7 +566,6 @@ export type VagaDetalhe = Vaga & {
 export type BlocoCtaContact = Base & {
   tipo: 'ctaContact'
   variant: 'panel' | 'photo'
-  photo: Image | null
   title: string
   subtitle: string | null
   showContactCard: boolean
@@ -933,6 +937,12 @@ export type AvisoDeCookies = {
   }
 }
 
+/** Ajustes visuais do site inteiro (#215, D-65), do global `appearance`. */
+export type Aparencia = {
+  /** Peso da fonte dos títulos: 600 (Negrito), 400 (Normal) ou 300 (Fino). */
+  pesoDosTitulos: 300 | 400 | 600
+}
+
 /** Os ids dos scripts de rastreamento (D-40), do global `tracking`. `null` é
  * "não configurado": o componente correspondente não faz nada. Mesmo com id,
  * cada script espera o aceite da sua categoria no aviso de cookies. */
@@ -1097,6 +1107,8 @@ export type Contato = {
   /** `null` quando o global não tem endereço — a ATRA não tem sede fixa desde 29/09. */
   endereco: string | null
   redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
+  /** O fundo do painel "Nossos Contatos" (#171), igual em todo lugar. */
+  foto: Image | null
   /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
   destinos: Record<FormularioComAviso, string | null>
   /** Aviso de privacidade do formulário de candidatura (P-17). `null` enquanto

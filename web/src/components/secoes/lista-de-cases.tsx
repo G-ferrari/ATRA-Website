@@ -47,7 +47,7 @@ export function ListaDeCases({
             cabecalho,
             abertura,
             chave: 'cabecalho-cases',
-            classeDoTitulo: 'text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main leading-tight',
+            classeDoTitulo: 'text-2xl sm:text-3xl md:text-4xl font-display text-text-main leading-tight',
           })}
         />
       </div>

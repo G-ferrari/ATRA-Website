@@ -20,7 +20,7 @@ const VARIANTES: Record<Variante, string> = {
 }
 
 const TAMANHOS: Record<Tamanho, string> = {
-  sm: 'text-[10px] px-2 py-0.5 rounded-[6px] gap-1',
+  sm: 'text-xs px-2 py-0.5 rounded-[6px] gap-1',
   md: 'text-xs px-2.5 py-1 rounded-[6px] gap-1.5',
 }
 
@@ -104,7 +104,7 @@ export function MetricChip({
     <div
       className={cn(
         'inline-flex items-center rounded-[6px] shadow-xs',
-        size === 'sm' ? 'gap-1.5 px-2.5 py-1 text-[10px]' : 'gap-2.5 px-3 py-1.5 text-xs',
+        size === 'sm' ? 'gap-1.5 px-2.5 py-1 text-xs' : 'gap-2.5 px-3 py-1.5 text-xs',
         variant === 'primary'
           ? 'bg-primary/10 text-primary border-primary/20'
           : variant === 'secondary'
@@ -116,7 +116,7 @@ export function MetricChip({
       {value && <span className="font-extrabold text-primary font-mono">{value}</span>}
       <span className="font-medium text-text-muted">{label}</span>
       {trend && (
-        <span className="text-[10px] font-bold text-emerald-500 flex items-center bg-emerald-500/10 px-1.5 py-0.5 rounded-[6px]">
+        <span className="text-xs font-bold text-emerald-500 flex items-center bg-emerald-500/10 px-1.5 py-0.5 rounded-[6px]">
           {trend} <ArrowUpRight size={10} />
         </span>
       )}

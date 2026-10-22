@@ -44,7 +44,7 @@ export function Formulario({
   if (estado?.ok) {
     /* Inline, não modal — é o que `formularios-e-integracoes.md` especifica. */
     return (
-      <p role="status" className="text-sm font-light text-emerald-500">
+      <p role="status" className="text-sm text-emerald-500">
         {sucesso}
       </p>
     )
@@ -76,7 +76,7 @@ export function Formulario({
       {children}
 
       {estado && !estado.ok && (
-        <p role="alert" className="text-sm font-light text-red-500">
+        <p role="alert" className="text-sm text-red-500">
           {estado.erro}
         </p>
       )}

@@ -37,7 +37,7 @@ export function ContactCta({
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
 
           <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold mb-8">
+            <h2 className="text-3xl md:text-5xl mb-8">
               {title} <span className="text-secondary">{titleHighlight}</span>
             </h2>
             <p className="text-lg text-white/80 mb-12">{description}</p>

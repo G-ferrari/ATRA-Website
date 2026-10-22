@@ -259,7 +259,7 @@ export function Questionario({
           </h1>
           {/* `aria-live`: a cada tela o foco vai para o título, que diz a
               pergunta; isto diz em que ponto dela a pessoa está. */}
-          <p aria-live="polite" className="shrink-0 whitespace-nowrap text-xs font-medium text-text-muted">
+          <p aria-live="polite" className="shrink-0 whitespace-nowrap text-sm font-medium text-text-muted">
             {rotulo}
           </p>
         </div>
@@ -387,7 +387,7 @@ export function Questionario({
           {/* "Prefere conversar?" (FEATURE §5.2 F): o `#aq-help` do HTML, com
               o texto dele. Visível em toda tela do fluxo, menos na conclusão.
               Link externo, nova aba. */}
-          <p className="px-5 pb-6 pt-5 text-center text-[13px] leading-normal text-text-muted sm:px-8">
+          <p className="px-5 pb-6 pt-5 text-center text-sm leading-normal text-text-muted sm:px-8">
             Gostaria de um atendimento mais personalizado?{' '}
             <a
               href={textos.whatsappUrl}
@@ -498,7 +498,7 @@ function TelaDaPergunta({
         <Etiqueta tom="dama" title="Área de conhecimento DAMA-DMBOK">
           DAMA · {pergunta.dama}
         </Etiqueta>
-        <span className="ml-1.5 text-[11px] font-medium text-text-muted">Impacta:</span>
+        <span className="ml-1.5 text-xs font-medium text-text-muted">Impacta:</span>
         {impactos.length > 0 ? (
           impactos.map((impacto) => (
             <Etiqueta key={impacto.tag} tom="regulacao">
@@ -761,7 +761,7 @@ function TelaDoContato({
             nome="company"
             rotulo={
               <>
-                Empresa <small className="text-[13px] font-medium text-text-muted">(opcional)</small>
+                Empresa <small className="text-sm font-medium text-text-muted">(opcional)</small>
               </>
             }
             type="text"
@@ -778,7 +778,7 @@ function TelaDoContato({
               ⚠️ P-14: o texto e a política publicada são pré-requisito de
               produção (LGPD); a pendência segue aberta. */}
           <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <label className="flex cursor-pointer items-start gap-2.5 text-[13px] leading-normal text-text-muted">
+            <label className="flex cursor-pointer items-start gap-2.5 text-sm leading-normal text-text-muted">
               <input
                 ref={(el) => guardarCampo('consentimento', el)}
                 id={idDe('consentimento')}
@@ -805,7 +805,7 @@ function TelaDoContato({
               </span>
             </label>
             {erros.consentimento && (
-              <p id={`${idDe('consentimento')}-erro`} className="text-xs text-red-600 dark:text-red-400">
+              <p id={`${idDe('consentimento')}-erro`} className="text-sm text-red-600 dark:text-red-400">
                 {erros.consentimento}
               </p>
             )}
@@ -863,13 +863,13 @@ function TelaDeConclusao({
       <h2 ref={refDoTitulo} id={idDoTitulo} tabIndex={-1} className={cn(TITULO_DA_TELA, 'mt-4')}>
         Diagnóstico registrado. Obrigado!
       </h2>
-      <p className="mt-3 max-w-xl text-sm leading-relaxed text-text-muted">
+      <p className="mt-3 max-w-xl text-base leading-relaxed text-text-muted">
         Enviamos o seu resultado para <strong className="break-all font-semibold text-text-main">{email}</strong>
       </p>
       {textos.conclusao && (
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-muted">{textos.conclusao}</p>
+        <p className="mt-2 max-w-xl text-base leading-relaxed text-text-muted">{textos.conclusao}</p>
       )}
-      <p className="mt-2 max-w-xl text-[13px] leading-normal text-text-muted">
+      <p className="mt-2 max-w-xl text-base leading-normal text-text-muted">
         Não encontrou o e-mail? Confira também a caixa de spam ou de lixo eletrônico.
       </p>
 
@@ -936,7 +936,7 @@ function CampoDeEscolha({
   const idDoErro = `${id}-erro`
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
-      <label htmlFor={id} className="text-[13px] font-semibold text-text-subtle">
+      <label htmlFor={id} className="text-sm font-semibold text-text-subtle">
         {rotulo}
       </label>
       <div className="relative">
@@ -964,7 +964,7 @@ function CampoDeEscolha({
         />
       </div>
       {invalido && (
-        <p id={idDoErro} className="text-xs text-red-600 dark:text-red-400">
+        <p id={idDoErro} className="text-sm text-red-600 dark:text-red-400">
           {erro}
         </p>
       )}
@@ -1011,7 +1011,7 @@ function CampoDeTexto({
   const idDoErro = `${id}-erro`
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
-      <label htmlFor={id} className="text-[13px] font-semibold text-text-subtle">
+      <label htmlFor={id} className="text-sm font-semibold text-text-subtle">
         {rotulo}
       </label>
       <input
@@ -1030,7 +1030,7 @@ function CampoDeTexto({
         className={CAMPO_DE_TEXTO}
       />
       {erro && (
-        <p id={idDoErro} className="text-xs text-red-600 dark:text-red-400">
+        <p id={idDoErro} className="text-sm text-red-600 dark:text-red-400">
           {erro}
         </p>
       )}
@@ -1054,13 +1054,13 @@ function ImpactosDoSetor({
     <div aria-live="polite" aria-atomic="true">
       {setor && (
         <p className="mt-1.5 flex flex-wrap items-center gap-1.5">
-          <span className="text-[11px] font-medium text-text-muted">Impactos avaliados:</span>
+          <span className="text-xs font-medium text-text-muted">Impactos avaliados:</span>
           {impactosNoPerfil(setor, regulacoes).map((impacto) => (
             <Etiqueta key={impacto.tag} tom="regulacao">
               {impacto.rotulo}
             </Etiqueta>
           ))}
-          <span className="text-[11px] font-medium text-text-muted">entre outros</span>
+          <span className="text-xs font-medium text-text-muted">entre outros</span>
         </p>
       )}
     </div>
@@ -1078,7 +1078,7 @@ function Pilula({ children }: { children: string }) {
       label={children}
       variant="primary"
       icon={<span aria-hidden className="size-1.5 rounded-full bg-primary" />}
-      className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary-dark dark:text-primary"
+      className="text-xs font-bold uppercase tracking-[0.08em] text-primary-dark dark:text-primary"
     />
   )
 }
@@ -1095,7 +1095,7 @@ function Etiqueta({ tom, title, children }: { tom: keyof typeof TONS; title?: st
   return (
     <span
       title={title}
-      className={cn('inline-flex items-center rounded-[4px] px-2 py-0.5 text-[11px] font-semibold leading-snug', TONS[tom])}
+      className={cn('inline-flex items-center rounded-[4px] px-2 py-0.5 text-xs font-semibold leading-snug', TONS[tom])}
     >
       {children}
     </span>

@@ -48,10 +48,10 @@ export default async function Pagina({ params }: { params: Promise<{ estado: str
   return (
     <main className="max-w-2xl mx-auto px-4 sm:px-6 py-24 md:py-32 text-center">
       <StatusBadge label={t.selo} variant={estado === 'confirmada' ? 'primary' : 'secondary'} />
-      <h1 className="text-3xl md:text-4xl font-display font-light text-text-main mt-6 mb-4">
+      <h1 className="text-3xl md:text-4xl font-display text-text-main mt-6 mb-4">
         {t.titulo}
       </h1>
-      <p className="text-text-muted font-light mb-10">{t.texto}</p>
+      <p className="text-text-muted mb-10">{t.texto}</p>
       <Link
         href="/"
         className="pill-btn-primary"

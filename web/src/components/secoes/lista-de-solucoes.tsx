@@ -48,14 +48,14 @@ export function ListaDeSolucoes({
               )}
             </div>
             {(cabecalho.title || cabecalho.highlight) && (
-              <Titulo className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display leading-tight">
+              <Titulo className="text-2xl sm:text-4xl md:text-5xl font-display leading-tight">
                 <TituloComDestaque cabecalho={cabecalho} />
               </Titulo>
             )}
             {/* O texto de abertura nasce vazio aqui (o topo de hoje não tem); se a
                 editora escrever, sai no tom da descrição do herói de página. */}
             {cabecalho.paragrafos.length > 0 && (
-              <div className="mt-4 space-y-3 max-w-xl text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 font-light leading-relaxed">
+              <div className="mt-4 space-y-3 max-w-xl text-base text-slate-600 dark:text-white/70 leading-relaxed">
                 {cabecalho.paragrafos.map((p) => (
                   <p key={p}>{p}</p>
                 ))}
@@ -75,7 +75,7 @@ export function ListaDeSolucoes({
 
           return (
             <section key={aba.id}>
-              <h2 className="text-lg sm:text-xl font-bold font-display text-text-main mb-5">{aba[locale]}</h2>
+              <h2 className="text-lg sm:text-xl font-display text-text-main mb-5">{aba[locale]}</h2>
               <div className="grid gap-5 md:grid-cols-2">
                 {daAba.map((solucao) => {
                   /* Resolvido aqui, e não dentro do cartão: `iconePorNome`
@@ -110,7 +110,7 @@ function CartaoDeSolucao({ solucao, locale, icone: Icone }: { solucao: SolutionC
         <h3 className="text-text-main font-bold text-sm leading-tight group-hover:text-primary transition-colors">{solucao.title}</h3>
         {solucao.badge && <SeloDeSolucao texto={solucao.badge} className="ml-auto" />}
       </div>
-      <p className="text-xs text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">{solucao.shortDescription}</p>
+      <p className="text-sm text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">{solucao.shortDescription}</p>
     </>
   )
 

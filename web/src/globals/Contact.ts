@@ -73,6 +73,23 @@ export const Contact: GlobalConfig = {
       },
     },
     {
+      /* #171 (21/10): o fundo do painel "Nossos Contatos", ao lado dos
+       * formulários da home, de /contato e de consultores. Mora aqui, e não em
+       * cada bloco, para os três saírem iguais e uma troca valer em todos —
+       * antes eram três fontes (a foto do bloco da home, nenhuma em /contato,
+       * e um arquivo fixo em consultores). */
+      name: 'panelPhoto',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Foto de fundo do painel de contatos', en: 'Contacts panel background photo' },
+      admin: {
+        description: {
+          pt: 'Aparece escurecida atrás de "Nossos Contatos", ao lado dos formulários de contato da home, de /contato e de consultores. Vazio, o painel fica só com o fundo escuro.',
+          en: 'Shown darkened behind "Our contacts", beside the contact forms on the home page, /contato and consultants. When empty, the panel keeps a plain dark background.',
+        },
+      },
+    },
+    {
       name: 'social',
       type: 'group',
       label: { pt: 'Redes sociais', en: 'Social networks' },

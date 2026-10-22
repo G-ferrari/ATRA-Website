@@ -162,7 +162,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
               <Calendar size={14} aria-hidden />
               {t.prefixo} — {data}
             </div>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl text-white mb-6 leading-tight">
               {post.title}
             </h1>
             <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl">{post.description}</p>
@@ -178,7 +178,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
                 {post.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-0.5 rounded-[4px] bg-slate-50 dark:bg-[#181b22] text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1 "
+                    className="px-2 py-0.5 rounded-[4px] bg-slate-50 dark:bg-[#181b22] text-xs font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1 "
                   >
                     <Tag size={10} className="text-primary/70" aria-hidden /> {tag}
                   </span>

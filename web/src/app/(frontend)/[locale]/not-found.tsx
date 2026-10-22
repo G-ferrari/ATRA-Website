@@ -58,8 +58,8 @@ export default async function NaoEncontrada() {
         </div>
 
         <p className="text-primary font-bold tracking-widest text-xs uppercase mb-3">404</p>
-        <h1 className="text-3xl md:text-5xl font-bold font-display mb-4 leading-tight">{t.titulo}</h1>
-        <p className="text-sm md:text-base text-text-muted font-light leading-relaxed mb-10">{t.texto}</p>
+        <h1 className="text-3xl md:text-5xl font-display mb-4 leading-tight">{t.titulo}</h1>
+        <p className="text-base text-text-muted leading-relaxed mb-10">{t.texto}</p>
 
         <Link
           href={locale === 'pt' ? '/' : `/${locale}`}
@@ -69,7 +69,7 @@ export default async function NaoEncontrada() {
         </Link>
 
         <div className="mt-12 pt-8 border-t border-slate-200 dark:border-white/5">
-          <p className="text-[11px] font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center justify-center gap-2">
+          <p className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center justify-center gap-2">
             <Search size={12} aria-hidden /> {t.atalhos}
           </p>
           <div className="flex flex-wrap justify-center gap-2">
@@ -77,7 +77,7 @@ export default async function NaoEncontrada() {
               <Link
                 key={a.href}
                 href={a.href}
-                className="px-3 py-1 rounded-[4px] text-xs font-medium bg-surface-2 text-text-muted hover:text-text-main  hover:bg-surface-3 transition-all"
+                className="px-3 py-1 rounded-[4px] text-xs font-medium bg-surface-2 text-text-muted hover:text-text-main hover:bg-surface-3 transition-all"
               >
                 {a.label}
               </Link>

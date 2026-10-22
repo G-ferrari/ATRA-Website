@@ -66,12 +66,12 @@ export function BlocoVagas({
               </span>
             )}
             {bloco.title && (
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main mb-4">
                 {bloco.title}
               </h2>
             )}
             {bloco.description && (
-              <p className="text-text-muted text-xs sm:text-sm md:text-base max-w-2xl mx-auto font-light">
+              <p className="text-text-muted text-base max-w-2xl mx-auto">
                 {bloco.description}
               </p>
             )}
@@ -79,7 +79,7 @@ export function BlocoVagas({
         )}
 
         {vazia ? (
-          <p className="text-center text-text-muted text-sm font-light max-w-2xl mx-auto">
+          <p className="text-center text-text-muted text-base max-w-2xl mx-auto">
             {bloco.emptyText ?? 'Nenhuma vaga aberta no momento. Volte em breve.'}
           </p>
         ) : (
@@ -105,7 +105,7 @@ export function BlocoVagas({
                         </span>
                         {/* Uma linha só, igual em todos os cards, para as
                             alturas continuarem casando (ver ⚠️ acima). */}
-                        <span className="block text-[11px] text-text-muted font-light mt-0.5">
+                        <span className="block text-xs text-text-muted mt-0.5">
                           {[v.senioridade, v.modeloDeTrabalho, v.tipoDeContrato].filter(Boolean).join(' · ') ||
                             (locale === 'pt' ? 'Candidatar-se' : 'Apply')}
                         </span>

@@ -2100,6 +2100,47 @@ no RD pela tag `newsletter`, e a confirmação não era pedido da ATRA.
 - A base legal deve ser revista pelo jurídico junto com o texto de
   consentimento do formulário, que espera a política de privacidade (P-14).
 
+## D-65 — A letra do site sobe de tamanho, e o peso dos títulos é escolhido no admin
+
+*Decidida em 20/10/2026 por G-ferrari, a pedido da ATRA. Revê a "Regra do Título Leve" do DESIGN.md e relaxa D-15 no que restava do porte tipográfico, como a D-31 permite.*
+
+**Contexto.** O pedido de 20/10 foi que a letra do site inteiro estava pequena
+e difícil de ler. O levantamento nos componentes confirmou: o tamanho mais
+usado era 12 px, havia 124 lugares com 9 a 11 px, e 148 textos usavam o peso
+fino, quase sempre em cinza. E o `globals.css` punha peso 300 em todo título
+fora das camadas do Tailwind, o que anulava qualquer classe de peso escrita no
+título: 104 títulos saíam finos com `font-bold` no código, inclusive os
+pequenos (nome de autor, título de item do menu). No mesmo dia veio o pedido
+de poder escolher no admin o peso dos títulos, entre Negrito, Normal e Fino.
+
+**Decisão.**
+
+- Escala de letras do site: texto corrido em 16 px (descrição de seção,
+  abertura de página, depoimento, corpo de bloco de texto), apoio em 14 px
+  (resumo de cartão, descrição do menu, aviso, erro de formulário), e nada
+  abaixo de 12 px, que fica para rótulo, etiqueta e metadado. Campo de
+  formulário tem 16 px no celular, onde o iOS amplia a página ao focar campo
+  menor.
+- O peso fino sai do texto: fica só em título e em número de exibição.
+- O peso dos títulos é um controle só, para o site inteiro: **Peso dos
+  títulos**, em Configuração → Aparência do site (global `appearance`), com
+  Negrito (600), Normal (400) e Fino (300). Vale do título de cartão para
+  cima. O padrão é Fino, o desenho que estava no ar.
+- Título pequeno (até 16 px: nome de autor, item de menu, rótulo em caixa-alta)
+  tem peso próprio no código e não segue o controle. É a correção da regra
+  global: ela foi para `@layer base`, e a classe escrita no título volta a
+  valer.
+- O tamanho não vai para o admin: fica no código, pela escala acima.
+
+**Consequências.**
+
+- Mudam todas as páginas. A paridade com o protótipo já estava fora do CI
+  (D-39), e o protótipo não volta a bater em rota nenhuma.
+- Cartões e seções ficam mais altos com a letra maior; o resumo de cartão
+  segue cortado pelo `line-clamp` onde já era.
+- Título grande **não** leva classe de peso no código: uma classe venceria o
+  admin. Título novo segue a mesma regra.
+
 ## D-66 — Formulários montados no admin, ligados ao RD
 
 *Decidida em 20/10/2026 por G-ferrari (tarefa #212 do checklist, feature

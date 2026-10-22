@@ -126,6 +126,7 @@ export interface Config {
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
   globals: {
+    appearance: Appearance;
     'atra-ai': AtraAi;
     contact: Contact;
     'conversion-panel': ConversionPanel;
@@ -138,6 +139,7 @@ export interface Config {
     tracking: Tracking;
   };
   globalsSelect: {
+    appearance: AppearanceSelect<false> | AppearanceSelect<true>;
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     'conversion-panel': ConversionPanelSelect<false> | ConversionPanelSelect<true>;
@@ -607,6 +609,10 @@ export interface Partner {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -2162,6 +2168,10 @@ export interface Partner {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -2524,6 +2534,10 @@ export interface Partner {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -3005,6 +3019,9 @@ export interface Partner {
              * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
+            /**
+             * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+             */
             variant?: ('panel' | 'photo') | null;
             photo?: (number | null) | Media;
             /**
@@ -3474,6 +3491,10 @@ export interface Page {
         eyebrow?: string | null;
         title: string;
         description?: string | null;
+        /**
+         * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+         */
+        descriptionAlign?: ('left' | 'right') | null;
         footnote?: string | null;
         cta?: {
           label?: string | null;
@@ -5029,6 +5050,10 @@ export interface Page {
       }
     | {
         title?: string | null;
+        /**
+         * Short text below the title. Empty, the strip shows only the title.
+         */
+        description?: string | null;
         partners?:
           | {
               name: string;
@@ -5391,6 +5416,10 @@ export interface Page {
         eyebrow?: string | null;
         title: string;
         description?: string | null;
+        /**
+         * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+         */
+        descriptionAlign?: ('left' | 'right') | null;
         readLabel?: string | null;
         cta?: {
           label?: string | null;
@@ -5872,6 +5901,9 @@ export interface Page {
          * Phone, e-mail, address (when there is one) and socials beside the form.
          */
         showContactCard?: boolean | null;
+        /**
+         * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+         */
         variant?: ('panel' | 'photo') | null;
         photo?: (number | null) | Media;
         /**
@@ -6605,6 +6637,10 @@ export interface Segment {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -8160,6 +8196,10 @@ export interface Segment {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -8522,6 +8562,10 @@ export interface Segment {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -9003,6 +9047,9 @@ export interface Segment {
              * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
+            /**
+             * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+             */
             variant?: ('panel' | 'photo') | null;
             photo?: (number | null) | Media;
             /**
@@ -9410,6 +9457,10 @@ export interface Solution {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -10965,6 +11016,10 @@ export interface Solution {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -11327,6 +11382,10 @@ export interface Solution {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -11808,6 +11867,9 @@ export interface Solution {
              * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
+            /**
+             * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+             */
             variant?: ('panel' | 'photo') | null;
             photo?: (number | null) | Media;
             /**
@@ -12728,6 +12790,7 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -13014,6 +13077,7 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -13216,6 +13280,7 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -13756,6 +13821,7 @@ export interface PartnersSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -14042,6 +14108,7 @@ export interface PartnersSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -14244,6 +14311,7 @@ export interface PartnersSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -14621,6 +14689,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -14907,6 +14976,7 @@ export interface SegmentsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -15109,6 +15179,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -15493,6 +15564,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -15779,6 +15851,7 @@ export interface SolutionsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -15981,6 +16054,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -16408,6 +16482,21 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Visual settings for the whole site. Saving here changes every page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance".
+ */
+export interface Appearance {
+  id: number;
+  /**
+   * Applies to page, section and card headings across the site. Light is the original design. Small headings, such as author names and uppercase labels, keep their own weight.
+   */
+  headingWeight: 'bold' | 'normal' | 'light';
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "atra-ai".
  */
@@ -16473,6 +16562,10 @@ export interface Contact {
    * Optional. When empty, the address appears nowhere on the site.
    */
   address?: string | null;
+  /**
+   * Shown darkened behind "Our contacts", beside the contact forms on the home page, /contato and consultants. When empty, the panel keeps a plain dark background.
+   */
+  panelPhoto?: (number | null) | Media;
   social?: {
     linkedin?: string | null;
     instagram?: string | null;
@@ -17386,6 +17479,16 @@ export interface Tracking {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance_select".
+ */
+export interface AppearanceSelect<T extends boolean = true> {
+  headingWeight?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "atra-ai_select".
  */
 export interface AtraAiSelect<T extends boolean = true> {
@@ -17419,6 +17522,7 @@ export interface ContactSelect<T extends boolean = true> {
   whatsapp?: T;
   email?: T;
   address?: T;
+  panelPhoto?: T;
   social?:
     | T
     | {

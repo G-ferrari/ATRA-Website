@@ -357,6 +357,7 @@ export function toBlocos(
           ...base(b),
           tipo: 'logoMarquee',
           title: vazio(b.title),
+          description: vazio(b.description),
           // Preenchidos pela página, da collection `partners`.
           partners: [],
         })
@@ -369,6 +370,7 @@ export function toBlocos(
           eyebrow: vazio(b.eyebrow),
           title: b.title,
           description: vazio(b.description),
+          alinhamentoDaDescricao: b.descriptionAlign ?? 'left',
           footnote: vazio(b.footnote),
           cta: toCta(b.cta),
           items: (b.items ?? []).map((i) => ({
@@ -427,6 +429,7 @@ export function toBlocos(
           eyebrow: vazio(b.eyebrow),
           title: b.title,
           description: vazio(b.description),
+          alinhamentoDaDescricao: b.descriptionAlign ?? 'right',
           readLabel: vazio(b.readLabel),
           cta: toCta(b.cta),
           items: (b.items ?? []).map((i) => ({
@@ -629,7 +632,6 @@ export function toBlocos(
           ...base(b),
           tipo: 'ctaContact',
           variant: b.variant ?? 'panel',
-          photo: toImageOpcional(b.photo, 'ctaContact.photo'),
           title: b.title,
           subtitle: vazio(b.subtitle),
           showContactCard: b.showContactCard ?? true,

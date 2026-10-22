@@ -88,6 +88,36 @@ describe('toBlocos', () => {
     expect(antigo).toMatchObject({ tipo: 'processSteps', layout: 'cards' })
   })
 
+  /* #216 (20/10): o texto abaixo do título da faixa de logos. */
+  it('leva a descrição da faixa de logos, e vazio vira null', () => {
+    const [com, sem] = toBlocos(
+      layout(
+        { id: '1', blockType: 'logoMarquee', title: 'Parceiros', description: 'Quem constrói com a ATRA.' },
+        { id: '2', blockType: 'logoMarquee', title: 'Parceiros', description: '   ' },
+      ),
+    )
+    expect(com).toMatchObject({ tipo: 'logoMarquee', description: 'Quem constrói com a ATRA.' })
+    expect(sem).toMatchObject({ tipo: 'logoMarquee', description: null })
+  })
+
+  /* #218 (20/10): o alinhamento do texto ao lado do título. Bloco gravado antes
+   * do campo existir chega sem ele e fica como era: abas à esquerda, cases à
+   * direita. */
+  it('leva o alinhamento da descrição, com o padrão de cada bloco quando vazio', () => {
+    const [abas, abasAntigas, cases, casesAntigos] = toBlocos(
+      layout(
+        { id: '1', blockType: 'featureTabs', title: 'A', descriptionAlign: 'right', items: [] },
+        { id: '2', blockType: 'featureTabs', title: 'B', descriptionAlign: null, items: [] },
+        { id: '3', blockType: 'caseCarousel', title: 'C', descriptionAlign: 'left', items: [] },
+        { id: '4', blockType: 'caseCarousel', title: 'D', descriptionAlign: null, items: [] },
+      ),
+    )
+    expect(abas).toMatchObject({ tipo: 'featureTabs', alinhamentoDaDescricao: 'right' })
+    expect(abasAntigas).toMatchObject({ tipo: 'featureTabs', alinhamentoDaDescricao: 'left' })
+    expect(cases).toMatchObject({ tipo: 'caseCarousel', alinhamentoDaDescricao: 'left' })
+    expect(casesAntigos).toMatchObject({ tipo: 'caseCarousel', alinhamentoDaDescricao: 'right' })
+  })
+
   it('descarta o botão do ctaBanner quando falta rótulo ou destino', () => {
     const [so_label, completo] = toBlocos(
       layout(
