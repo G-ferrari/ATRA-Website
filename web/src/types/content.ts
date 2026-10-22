@@ -604,8 +604,9 @@ export type BlocoJobsList = Base & {
     highlight: string | null
     description: string | null
     note: string | null
-    /** O aviso de privacidade do formulário (D-62), resolvido pela página a
-     *  partir de Sistema → Integrações. `null`: o formulário sai sem aviso. */
+    /** O aviso de privacidade do formulário, resolvido pela página a partir
+     *  de Sistema → Contato → Candidaturas (D-67). `null`: o formulário sai
+     *  sem aviso. */
     aviso: string | null
   } | null
   /** Resolvido pela página, das vagas publicadas. */
@@ -974,8 +975,9 @@ export type IntegracaoAtrair = {
   bancoDeTalentos: boolean
 }
 
-/** Os formulários que vão ao RD (D-54; Trabalhe Conosco desde 15/10). */
-export type FormularioDoRd = 'contato' | 'chat' | 'newsletter' | 'download' | 'consultores' | 'diagnostico' | 'talentos'
+/** Os formulários que vão ao RD (D-54). O Trabalhe Conosco foi da D-62 à D-67
+ *  (15 a 22/10) e saiu. */
+export type FormularioDoRd = 'contato' | 'chat' | 'newsletter' | 'download' | 'consultores' | 'diagnostico'
 
 /** As chaves da integração com o RD Station Marketing (D-54), do global
  * `integrations`. Quem lê é o hook de `form-submissions`.
@@ -995,9 +997,6 @@ export type IntegracaoRd = {
   /** As tags com que o lead chega ao RD, por formulário — já aparadas, sem
    *  vazias e sem repetição. */
   tags: Record<FormularioDoRd, string[]>
-  /** O aviso que o formulário do banco de talentos mostra (D-62). `null`
-   *  enquanto o RH não escreve — e sem ele o Trabalhe Conosco não vai ao RD. */
-  avisoAoCandidato: string | null
 }
 
 /** O tipo de um campo de formulário montado no admin (feature
@@ -1114,6 +1113,9 @@ export type Contato = {
   /** Aviso de privacidade do formulário de candidatura (P-17). `null` enquanto
    *  o RH não escreve — e sem ele o formulário não aparece. */
   avisoDeCandidatura: string | null
+  /** Aviso de privacidade do banco de talentos (D-67). `null` enquanto o RH
+   *  não escreve; diferente do de cima, não esconde o formulário. */
+  avisoDoBancoDeTalentos: string | null
 }
 
 /** Os formulários que avisam a ATRA por e-mail. A newsletter não entra: quem

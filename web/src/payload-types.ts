@@ -16579,6 +16579,10 @@ export interface Contact {
      * Shown on each job application form, above the submit button. Written by HR and legal: how long the CV is kept (the site deletes it after 6 months), who can access it and what it is used for. When empty, the application form is not shown.
      */
     privacyNotice?: string | null;
+    /**
+     * Shown on the Work with us form (talent pool, on /carreiras), above the submit button. Written by HR and legal: what the sign-up is used for, how long it is kept and how to ask for deletion. Sign-ups stay here in the admin and go to ATRAIR when that integration is on; they do not go to RD Station. When empty, the form is shown without a notice.
+     */
+    talentPoolNotice?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -16907,11 +16911,11 @@ export interface Integration {
   };
   rdStationMarketing?: {
     /**
-     * On: every submission of the forms below becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications with a CV never go; from Work with us only contact and profile data go, never the CV.
+     * On: every submission of the forms below becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Work with us sign-ups and job applications with a CV never go: they stay here in the admin.
      */
     enabled?: boolean | null;
     /**
-     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI), cf_area_de_atuacao and cf_nivel (field and seniority from Work with us) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
+     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
      */
     customFields?: boolean | null;
     /**
@@ -16927,7 +16931,6 @@ export interface Integration {
       materialDownload?: string | null;
       consultantRequest?: string | null;
       dataMaturityDiagnostic?: string | null;
-      talentPool?: string | null;
     };
     /**
      * The tags the lead gets in RD, per form. Type and press Enter for each; use the same names as in RD. Empty: the lead arrives untagged.
@@ -16939,12 +16942,7 @@ export interface Integration {
       materialDownload?: string[] | null;
       consultantRequest?: string[] | null;
       dataMaturityDiagnostic?: string[] | null;
-      talentPool?: string[] | null;
     };
-    /**
-     * Shown on the talent pool form, above the submit button. Written by HR and legal: say the sign-up also goes to RD Station (a marketing tool), what for, and how to ask for deletion. Empty: Work with us does not go to RD — sign-ups are still stored in the admin and sent to ATRAIR.
-     */
-    talentPoolNotice?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -17536,6 +17534,7 @@ export interface ContactSelect<T extends boolean = true> {
     | T
     | {
         privacyNotice?: T;
+        talentPoolNotice?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -17694,7 +17693,6 @@ export interface IntegrationsSelect<T extends boolean = true> {
               materialDownload?: T;
               consultantRequest?: T;
               dataMaturityDiagnostic?: T;
-              talentPool?: T;
             };
         tags?:
           | T
@@ -17705,9 +17703,7 @@ export interface IntegrationsSelect<T extends boolean = true> {
               materialDownload?: T;
               consultantRequest?: T;
               dataMaturityDiagnostic?: T;
-              talentPool?: T;
             };
-        talentPoolNotice?: T;
       };
   updatedAt?: T;
   createdAt?: T;

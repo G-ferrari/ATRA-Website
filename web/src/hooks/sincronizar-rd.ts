@@ -8,11 +8,11 @@ import { chaveDoRdConfigurada, deveSincronizar, enviarConversao, type LeadParaRd
  * `sincronizar-crm.ts` de MIG-148, com o mesmo contrato).
  *
  * Hook de `form-submissions`, **não** código nas Server Actions: contato,
- * newsletter, download, consultores, chat, diagnóstico e banco de talentos
- * (D-62) desembocam todos na mesma collection, e aqui a sincronização cobre
+ * newsletter, download, consultores, chat, diagnóstico e os formulários do
+ * admin desembocam todos na mesma collection, e aqui a sincronização cobre
  * todos sem que nenhum saiba dela. Quem decide o que sincroniza é
- * `deveSincronizar` (`lib/rd-marketing.ts`) — a candidatura com currículo, por
- * exemplo, é RH e fica de fora.
+ * `deveSincronizar` (`lib/rd-marketing.ts`) — o banco de talentos e a
+ * candidatura com currículo, por exemplo, são RH e ficam de fora (D-67).
  *
  * O hook **escreve na própria collection** para gravar o resultado, direto no
  * adaptador (ver o `db.updateOne` abaixo), que não dispara gancho nenhum.

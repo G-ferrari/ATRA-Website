@@ -97,8 +97,14 @@ describe('sincronizarComRd', () => {
     expect(updateOne).not.toHaveBeenCalled()
   })
 
-  it('banco de talentos sem aviso registrado não vai ao RD (D-62)', async () => {
-    const { resultado, updateOne } = chamar({ id: 8, kind: 'talent-pool', email: 'c@x.com' })
+  /* D-67: nem com a cópia do aviso que, da D-62 à D-67, o liberava. */
+  it('banco de talentos não vai ao RD, nem com o aviso registrado (D-67)', async () => {
+    const { resultado, updateOne } = chamar({
+      id: 8,
+      kind: 'talent-pool',
+      email: 'c@x.com',
+      talent: { privacyNotice: 'Seu cadastro também vai ao RD Station.' },
+    })
     await resultado
     expect(fetch).not.toHaveBeenCalled()
     expect(updateOne).not.toHaveBeenCalled()

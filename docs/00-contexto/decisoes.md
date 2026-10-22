@@ -1971,6 +1971,8 @@ texto do aviso no admin e `ENABLE_JOB_APPLICATIONS=1` no servidor de produção.
 
 ## D-62 — O Trabalhe Conosco vai ao RD, sem currículo e só com o aviso ao candidato registrado
 
+> ⚠️ **Revista pela [D-67](#d-67--o-trabalhe-conosco-sai-do-rd-station) em 22/10/2026:** o Trabalhe Conosco saiu do RD. O que segue vale como registro da semana em que foi.
+
 *Decidida em 15/10/2026 por G-ferrari, a pedido da ATRA (Taci, reunião de 14/10). Revê em parte a D-29. (D-58, D-59 e D-61 estão em PRs abertos.)*
 
 **Contexto.** A D-29 deixou dado de candidato fora do RD Station: currículo
@@ -2191,3 +2193,48 @@ automação; o que ele recebe do site é a conversão.
 - Identificador repetido entre formulários é permitido (dois formulários podem
   ser a mesma conversão), mas mistura os leads no RD; a lista de Integrações
   mostra a repetição.
+
+## D-67 — O Trabalhe Conosco sai do RD Station
+
+*Decidida em 22/10/2026 por G-ferrari (tarefa #207 do checklist). Revê a D-62.*
+
+**Contexto.** A D-62 mandou o banco de talentos (o Trabalhe Conosco de
+`/carreiras`) ao RD como conversão, para o RD agradecer o candidato por e-mail
+como faz no site atual. Cada inscrição vira um lead no RD, e o plano da ATRA é
+cobrado por lead: candidato não é cliente, e o lead é gasto à toa. No site
+novo o envio nunca chegou a acontecer — o aviso ao candidato, condição da
+D-62, estava vazio na homologação.
+
+**Decisão.**
+
+- O **banco de talentos não vai ao RD**, com aviso ou sem. O cadastro fica em
+  Envios de formulário e vai ao ATRAIR quando essa integração está ligada
+  (D-41, sem mudança); quem avisa o RH é o site.
+- O **aviso de privacidade** do banco de talentos muda de Sistema →
+  Integrações para **Sistema → Contato → Candidaturas**, ao lado do aviso da
+  candidatura com currículo. É opcional: vazio, o formulário aparece sem aviso,
+  como já estava. O texto antigo **não foi copiado** — o que se pedia ali dizia
+  que o cadastro ia ao RD.
+- Cada cadastro continua guardando a cópia do aviso que a pessoa viu
+  (`talent.privacyNotice`). O perfil em campos próprios (LinkedIn, área,
+  senioridade) também fica: nasceu para o RD e serve de filtro no admin.
+- **Sem e-mail de agradecimento** ao candidato: ele vê a mensagem de
+  confirmação na tela, como antes da D-62. Um e-mail do próprio site, se a
+  ATRA quiser, é tarefa à parte e depende da chave do Resend.
+- Saem do envio ao RD: o kind `talent-pool`, o identificador e as tags do
+  Trabalhe Conosco em Integrações, e os campos personalizados de candidato
+  (`cf_area_de_atuacao`, `cf_nivel`). O identificador do formulário volta a
+  não existir (`formularioDoRd('talent-pool')` é `null`) — uma segunda trava,
+  se o kind voltasse à lista por engano.
+
+**Consequências.**
+
+- As duas colunas do Trabalhe Conosco no global `integrations` ficam no banco
+  nesta publicação, sem uso: o código que estava no ar ainda as lia, e um
+  deploy reprovado voltaria para ele. A exclusão está escrita
+  (`EXCLUSAO_ADIADA` em `20261022_181457_trabalhe_conosco_fora_do_rd`, com as
+  tags gravadas) e entra numa publicação seguinte.
+- O formulário do WordPress continua mandando ao RD, e gastando leads, até a
+  virada. Desligar lá é mexer no site no ar, com o marketing.
+- Voltar a mandar o Trabalhe Conosco ao RD é decisão da ATRA, não ajuste: pede
+  uma decisão nova, que reveja esta.

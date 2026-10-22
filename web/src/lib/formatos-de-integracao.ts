@@ -129,9 +129,8 @@ export const CONVERSOES_PADRAO = {
   materialDownload: 'site-download-material',
   consultantRequest: 'site-solicitacao-consultores',
   dataMaturityDiagnostic: 'site-diagnostico-maturidade',
-  /* 15/10: o Trabalhe Conosco passa a ir ao RD (sem currículo), pedido da
-   * ATRA que revê a D-29. */
-  talentPool: 'site-trabalhe-conosco',
+  /* O Trabalhe Conosco (`talentPool`) foi ao RD da D-62 à D-67 (15 a 22/10)
+   * e saiu: cada inscrição gastava um lead do plano. */
 } as const
 
 /**
@@ -155,5 +154,4 @@ export const TAGS_PADRAO: Record<keyof typeof CONVERSOES_PADRAO, readonly string
   materialDownload: [],
   consultantRequest: [],
   dataMaturityDiagnostic: [],
-  talentPool: [],
 }
