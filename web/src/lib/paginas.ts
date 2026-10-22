@@ -115,10 +115,11 @@ async function montar(filtro: Where, locale: Locale, rascunho: boolean): Promise
 
   if (!docs[0]) return null
 
-  const blocos = toBlocos(docs[0].layout, {
-    metricas: toMetricas(global),
-    selos: toSelos(global),
-  })
+  const blocos = toBlocos(
+    docs[0].layout,
+    { metricas: toMetricas(global), selos: toSelos(global) },
+    { locale, rascunho },
+  )
 
   /* Só consulta vagas se algum bloco as usa — a maioria das páginas não. */
   if (blocos.some((b) => b.tipo === 'jobsList')) {

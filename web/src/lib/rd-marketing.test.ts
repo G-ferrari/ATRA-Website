@@ -71,6 +71,7 @@ const COMERCIAIS = [
   'consultant-request',
   'data-maturity-diagnostic',
   'talent-pool',
+  'custom-form',
 ]
 
 /* O grupo como a action do diagnóstico grava: números do motor, top 3 no
@@ -496,5 +497,113 @@ describe('enviarConversao', () => {
   it('erro de rede vira { ok: false }, nunca exceção', async () => {
     fetchMock.mockRejectedValue(new TypeError('fetch failed'))
     await expect(enviarConversao(lead(), config())).resolves.toMatchObject({ ok: false, motivo: 'fetch failed' })
+  })
+})
+
+/* Task 050 — o formulário montado no admin. O gancho resolve `formulario`
+   (identificador, tags e destino de cada campo) a partir do `form` do envio. */
+describe('formulário do admin no RD', () => {
+  const formulario = {
+    identificador: 'Inscrição Evento Dados',
+    tags: ['evento', 'dados-2026'],
+    campos: [
+      { id: 'f1', tipo: 'name', campoNoRd: null },
+      { id: 'f2', tipo: 'email', campoNoRd: null },
+      { id: 'f3', tipo: 'jobTitle', campoNoRd: null },
+      { id: 'f4', tipo: 'select', campoNoRd: 'cf_area_de_interesse' },
+      { id: 'f5', tipo: 'longText', campoNoRd: 'cf_desafio' },
+      { id: 'f6', tipo: 'shortText', campoNoRd: null },
+      { id: 'f7', tipo: 'checkbox', campoNoRd: 'cf_aceite' },
+    ],
+  }
+  const envio = (extra: Partial<LeadParaRd> = {}) =>
+    lead({
+      kind: 'custom-form',
+      name: 'Ana',
+      email: 'Ana@Empresa.com.br',
+      company: 'Banco X',
+      source: '/eventos',
+      formulario,
+      answers: [
+        { fieldId: 'f1', label: 'Nome', value: 'Ana' },
+        { fieldId: 'f2', label: 'E-mail', value: 'Ana@Empresa.com.br' },
+        { fieldId: 'f3', label: 'Cargo', value: 'CDO' },
+        { fieldId: 'f4', label: 'Área', value: 'governanca' },
+        { fieldId: 'f5', label: 'Desafio', value: '  ' },
+        { fieldId: 'f6', label: 'Como soube', value: 'LinkedIn' },
+        { fieldId: 'f7', label: 'Aceito', value: 'Sim' },
+      ],
+      communicationConsent: false,
+      ...extra,
+    })
+
+  it('vai ao RD, com o identificador e as tags do próprio formulário', () => {
+    expect(deveSincronizar(envio())).toBe(true)
+    expect(identificadorDe(envio(), config().conversoes)).toBe('Inscrição Evento Dados')
+    expect(montarPayload(envio(), 'Inscrição Evento Dados', config()).tags).toEqual(['evento', 'dados-2026'])
+  })
+
+  it('formulário apagado ou sem identificador não vai — e não cai em identificador de outro formulário', () => {
+    expect(identificadorDe(envio({ formulario: null }), config().conversoes)).toBeNull()
+    expect(identificadorDe(envio({ formulario: { ...formulario, identificador: '  ' } }), config().conversoes)).toBeNull()
+  })
+
+  it('campos padrão, cargo em job_title, sem cf_ com a chave desligada — nem a página de origem', () => {
+    expect(montarPayload(envio(), 'X', config())).toEqual({
+      conversion_identifier: 'X',
+      email: 'ana@empresa.com.br',
+      name: 'Ana',
+      company_name: 'Banco X',
+      job_title: 'CDO',
+      tags: ['evento', 'dados-2026'],
+    })
+  })
+
+  it('com a chave, só os cf_ escolhidos no formulário, sem resposta vazia e sem cf_quiz_url', () => {
+    const p = montarPayload(envio(), 'X', config({ camposPersonalizados: true }))
+    expect(p).toMatchObject({ cf_area_de_interesse: 'governanca', cf_aceite: 'Sim' })
+    expect(p).not.toHaveProperty('cf_desafio')
+    expect(p).not.toHaveProperty('cf_quiz_url')
+    expect(p).not.toHaveProperty(CAMPOS_PERSONALIZADOS.mensagem)
+    expect(JSON.stringify(p)).not.toMatch(/LinkedIn/)
+  })
+
+  it('caixa de marcar desmarcada não vai ao RD (o "Não" fica só no envio)', () => {
+    const desmarcada = envio({
+      answers: [
+        { fieldId: 'f2', label: 'E-mail', value: 'ana@empresa.com.br' },
+        { fieldId: 'f7', label: 'Aceito', value: 'Não' },
+      ],
+    })
+    expect(montarPayload(desmarcada, 'X', config({ camposPersonalizados: true }))).not.toHaveProperty('cf_aceite')
+  })
+
+  it('consentimento marcado declara a base legal; desmarcado não declara', () => {
+    expect(montarPayload(envio({ communicationConsent: true }), 'X', config())).toMatchObject({
+      legal_bases: [{ category: 'communications', type: 'consent', status: 'granted' }],
+      available_for_mailing: true,
+    })
+    const sem = montarPayload(envio(), 'X', config())
+    expect(sem).not.toHaveProperty('legal_bases')
+    expect(sem).not.toHaveProperty('available_for_mailing')
+  })
+
+  it('enviarConversao sem formulário ou sem identificador não toca na rede, e o motivo diz onde olhar', async () => {
+    vi.stubEnv('RDSTATION_MARKETING_API_KEY', 'chave-teste')
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(enviarConversao(envio({ formulario: null }), config())).resolves.toEqual({
+      ok: false,
+      motivo: 'formulário do envio apagado ou ilegível',
+    })
+    await expect(
+      enviarConversao(envio({ formulario: { ...formulario, identificador: null } }), config()),
+    ).resolves.toEqual({
+      ok: false,
+      motivo: 'formulário sem identificador de conversão (aba RD Station do formulário)',
+    })
+    expect(fetchMock).not.toHaveBeenCalled()
+    vi.unstubAllGlobals()
+    vi.unstubAllEnvs()
   })
 })

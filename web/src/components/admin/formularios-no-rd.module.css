@@ -1,0 +1,121 @@
+/* A lista "Formulários do admin" de Sistema → Integrações (task 052). Só
+ * variáveis do tema do Payload, para acompanhar o claro e o escuro do admin —
+ * o mesmo quadro da situação da chave do RD. */
+
+.quadro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--spacing-field, 24px);
+  padding: 12px 14px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-elevation-0);
+}
+
+.titulo {
+  margin: 0;
+  font-weight: 600;
+}
+
+.explicacao {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-500);
+}
+
+.alerta {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--theme-warning-800);
+}
+
+/* A tabela rola sozinha em tela estreita, sem empurrar o formulário do admin. */
+.rolagem {
+  overflow-x: auto;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.tabela th {
+  padding: 6px 10px 6px 0;
+  text-align: left;
+  font-weight: 600;
+  color: var(--theme-elevation-500);
+  border-bottom: 1px solid var(--theme-elevation-150);
+  white-space: nowrap;
+}
+
+.tabela td {
+  padding: 8px 10px 8px 0;
+  vertical-align: top;
+  border-bottom: 1px solid var(--theme-elevation-100);
+}
+
+.tabela tr:last-child td {
+  border-bottom: 0;
+}
+
+.tabela td > * + * {
+  margin-top: 4px;
+}
+
+.selo {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.publicado {
+  background: var(--theme-success-100);
+  color: var(--theme-success-800);
+}
+
+.rascunho {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-800);
+}
+
+.naoVai {
+  background: var(--theme-warning-100);
+  color: var(--theme-warning-800);
+}
+
+.dica {
+  display: block;
+  color: var(--theme-elevation-500);
+  font-size: 0.75rem;
+}
+
+.repetido {
+  color: var(--theme-warning-800);
+}
+
+.identificador {
+  font-size: 0.75rem;
+  word-break: break-word;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--theme-elevation-100);
+  font-size: 0.75rem;
+}
+
+.vazio {
+  color: var(--theme-elevation-500);
+}
