@@ -137,9 +137,10 @@ export function BancoDeTalentos({
             </select>
           </div>
 
-          {/* D-62: o aviso de privacidade (RH e jurídico, em Sistema →
-              Integrações) vem antes do botão, para ser lido antes de enviar.
-              Sem ele o cadastro não vai ao RD — a action confere no servidor. */}
+          {/* O aviso de privacidade (RH e jurídico, em Sistema → Contato →
+              Candidaturas, D-67) vem antes do botão, para ser lido antes de
+              enviar. A action guarda no cadastro uma cópia do que estava
+              valendo. */}
           {banco.aviso && (
             <p
               id="aviso-do-banco-de-talentos"

@@ -17,10 +17,7 @@ vi.mock('next/headers', () => ({ headers: async () => new Headers({ 'x-real-ip':
 vi.mock('@/lib/payload', () => ({ getPayload: () => getPayload() }))
 vi.mock('@/lib/email', () => ({ enviarAviso: (...a: unknown[]) => enviarAviso(...a) }))
 vi.mock('@/lib/contato', () => ({ lerContato: () => lerContato() }))
-vi.mock('@/lib/integracoes', () => ({
-  lerIntegracaoAtrair: () => lerIntegracaoAtrair(),
-  lerIntegracaoRd: async () => ({ avisoAoCandidato: 'Aviso de teste.' }),
-}))
+vi.mock('@/lib/integracoes', () => ({ lerIntegracaoAtrair: () => lerIntegracaoAtrair() }))
 vi.mock('@/lib/atrair', () => ({ enviarParaAtrair: async () => false }))
 vi.mock('@/lib/anti-spam', async (original) => ({
   ...(await original<typeof import('@/lib/anti-spam')>()),
@@ -51,6 +48,7 @@ beforeEach(() => {
   lerContato.mockResolvedValue({
     email: 'negocios@atra.com.br',
     destinos: { contato: null, consultores: null, diagnostico: null, carreiras: 'rh@atra.com.br', chat: null },
+    avisoDoBancoDeTalentos: 'Aviso de teste.',
   })
   lerIntegracaoAtrair.mockResolvedValue({ endpoint: null, vagas: false, bancoDeTalentos: false })
   rdGravou(null)
@@ -179,8 +177,8 @@ describe('depois de gravar, é sucesso', () => {
   })
 })
 
-describe('banco de talentos — o que é gravado (D-62)', () => {
-  it('grava a área em português e a cópia do aviso que estava valendo', async () => {
+describe('banco de talentos — o que é gravado (D-62, D-67)', () => {
+  it('grava a área em português e a cópia do aviso que estava valendo (Contato → Candidaturas)', async () => {
     await enviarFormulario(talento())
     expect(payload.create.mock.calls[0][0].data.talent).toMatchObject({
       area: 'Engenharia de Dados',

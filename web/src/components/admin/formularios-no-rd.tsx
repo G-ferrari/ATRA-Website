@@ -76,7 +76,6 @@ const FIXOS: Partial<Record<keyof IntegracaoRd['conversoes'], { pt: string; en: 
   newsletter: { pt: 'Newsletter', en: 'Newsletter' },
   consultores: { pt: 'Solicitação de consultores', en: 'Consultant request' },
   diagnostico: { pt: 'Diagnóstico de maturidade de dados', en: 'Data maturity diagnostic' },
-  talentos: { pt: 'Trabalhe Conosco (banco de talentos)', en: 'Work with us (talent pool)' },
 }
 
 const SELECT = { name: true, _status: true, rd: true } as const

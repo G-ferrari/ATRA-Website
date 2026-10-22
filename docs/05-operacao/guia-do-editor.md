@@ -334,7 +334,7 @@ salvar, sem deploy. Os títulos pequenos (nome de autor de depoimento, itens do
 menu, rótulos em caixa-alta) têm peso próprio e não mudam. O tamanho das
 letras não fica aqui: é do código (D-65).
 
-## Candidatura a vagas: o aviso de privacidade
+## Candidatura a vagas e Trabalhe Conosco: o aviso de privacidade
 
 A candidatura com currículo, na página de cada vaga, ainda está **desligada**:
 espera o RH dizer quem acessa os currículos (P-17). Quando ligar, o texto que o
@@ -347,6 +347,16 @@ candidatura (D-61). O aviso precisa dizer isso, e também quem tem acesso e para
 que o currículo é usado. O e-mail que avisa o RH de cada candidatura não é
 apagado pelo site: quem recebe precisa apagar no mesmo prazo, ou o aviso precisa
 dizer que ele fica.
+
+O **Trabalhe Conosco** (o banco de talentos de /carreiras, sem currículo) tem o
+aviso dele no mesmo lugar: **Contato → Candidaturas → Aviso de privacidade do
+banco de talentos**. Também é do RH e do jurídico: para que o cadastro é usado,
+por quanto tempo fica guardado e como pedir a exclusão. Diferente do da
+candidatura, **vazio, o formulário continua aparecendo**, só que sem aviso.
+Cada cadastro guarda uma cópia do aviso que a pessoa viu ("Aviso exibido no
+cadastro", no envio do formulário), e trocar o texto não muda os cadastros
+antigos. O cadastro fica em Envios de formulário e vai ao ATRAIR quando essa
+integração está ligada; **não vai ao RD** (D-67, 22/10).
 
 ## Leads no RD Station: identificadores, tags e a chave
 
@@ -383,23 +393,21 @@ fica o que o site manda ao RD a cada formulário:
   "Download de material" valem para todos os e-books. Na página do e-book, o
   formulário fica depois do texto, antes de "Entre em contato", e o botão do
   topo leva até ele; o formulário só aparece quando o e-book tem o PDF.
-- **Trabalhe Conosco** — o cadastro no banco de talentos de /carreiras também
-  tem identificador e tags. Vão ao RD só os dados de contato e de perfil;
-  **o currículo nunca vai**.
+- **Trabalhe Conosco** — **não vai ao RD** desde 22/10 (D-67): cada inscrição
+  gastava um lead do plano com quem não é cliente. O cadastro fica em Envios
+  de formulário (e no ATRAIR, com a integração ligada), e quem avisa o RH é o
+  site. Por isso ele não tem mais identificador nem tags aqui. A candidatura
+  com currículo também nunca vai.
 - **Quem avisa o time a cada contato ou cadastro** — se o lead chegou ao RD
   ("Sincronizado em" preenchido no envio), quem avisa é a automação do RD, como
   no site antigo, e o site não manda e-mail. Se não chegou (integração
   desligada, chave ausente, nome recusado pelo RD), o site manda o aviso dele,
   e o envio fica com "Aviso por e-mail enviado" marcado. Um aviso por lead, nunca dois.
-  ⚠️ Vale para Contato e Trabalhe Conosco: confira no RD que a automação de
-  aviso ao time existe para cada um, senão o lead aceito fica sem aviso.
-- **Aviso ao candidato (Trabalhe Conosco)** — o texto que aparece no
-  formulário do banco de talentos, logo acima do botão. É do RH e do jurídico:
-  diz que o cadastro também vai ao RD Station, para quê, e como pedir a
-  exclusão. **Vazio, o Trabalhe Conosco não vai ao RD** (o cadastro continua
-  chegando ao admin e ao ATRAIR). Cada cadastro guarda uma cópia do aviso que a
-  pessoa viu ("Aviso exibido no cadastro", no envio do formulário): só os que
-  têm essa cópia vão ao RD, e trocar o texto não muda os cadastros antigos.
+  ⚠️ Confira no RD que a automação de aviso ao time existe para cada
+  formulário que vai para lá, senão o lead aceito fica sem aviso.
+- **Aviso ao candidato** — saiu daqui em 22/10. O aviso de privacidade do
+  banco de talentos agora fica em Contato → Candidaturas (ver "Candidatura a
+  vagas e Trabalhe Conosco: o aviso de privacidade", acima).
 
 ## Criar um formulário e pôr numa página
 
@@ -407,7 +415,7 @@ Um formulário de inscrição, de pesquisa ou de pedido se monta em **Conteúdo 
 Formulários** e vai para qualquer página com a seção **Formulário**. Cada envio
 fica em **Sistema → Envios de formulário** e vai ao RD com o identificador de
 conversão e as tags que você escolher no próprio formulário. Os formulários que já existiam (contato,
-newsletter, e-book, Trabalhe Conosco) continuam como estão.
+newsletter, e-book) continuam como estão; o Trabalhe Conosco segue fora do RD.
 
 **1. Criar.** Em **Conteúdo → Formulários**, crie um novo e dê um **Nome** (é
 interno: aparece no admin e nos envios, não no site).

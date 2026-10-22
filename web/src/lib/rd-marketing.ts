@@ -46,14 +46,6 @@ export type LeadParaRd = {
   source?: string | null
   /** Só o kind `chat-lead` (MIG-149) preenche. */
   chatContext?: string | null
-  /** Só o kind `talent-pool` (D-62) preenche: o perfil, cada um no seu campo,
-   *  e a cópia do aviso que o formulário mostrava. */
-  talent?: {
-    linkedin?: string | null
-    area?: string | null
-    seniority?: string | null
-    privacyNotice?: string | null
-  } | null
   /** Só o kind `data-maturity-diagnostic` (D-35) preenche. Os JSON chegam
    * como `unknown` e a montagem confere o formato. */
   diagnostic?: {
@@ -113,11 +105,12 @@ export type ResultadoDaConversao = { ok: true; eventUuid: string } | { ok: false
  * ⚠️ `job-application` **nunca**: é a candidatura com currículo, e currículo
  * dentro de base de marketing seria desvio de finalidade (LGPD) — D-29, mantido.
  *
- * `talent-pool` **vai desde a D-62** (15/10): a ATRA pediu (Taci, 14/10) que o
- * Trabalhe Conosco chegue ao RD como no site atual, para o agradecimento
- * automático. Vão só dados de contato e de perfil — nunca o currículo, que o
- * banco de talentos nem coleta, nem a mensagem em texto livre
- * (`camposPersonalizados` a deixa de fora). */
+ * ⚠️ `talent-pool` **também não**, desde a D-67 (22/10). Ele foi da D-62 à D-67
+ * (15 a 22/10), para o RD agradecer o candidato por e-mail como no site atual;
+ * saiu porque cada inscrição gastava um lead do plano do RD com quem não é
+ * cliente. O cadastro fica no admin (e no ATRAIR, com a chave ligada), e quem
+ * avisa o RH é o site. Voltar a mandar é decisão da ATRA, não ajuste: pede uma
+ * decisão nova, que reveja a D-67. */
 export const KINDS_PARA_O_RD = new Set([
   'contact',
   'chat-lead',
@@ -125,7 +118,6 @@ export const KINDS_PARA_O_RD = new Set([
   'rc18-diagnostic',
   'consultant-request',
   'data-maturity-diagnostic',
-  'talent-pool',
   /* Os formulários montados no admin (task 050), cada um com o identificador
      e as tags que o marketing escreveu nele. */
   'custom-form',
@@ -145,14 +137,6 @@ export function deveSincronizar(doc: LeadParaRd): boolean {
   if (doc.rd?.syncedAt) return false
   if (!KINDS_PARA_O_RD.has(doc.kind) && doc.kind !== 'newsletter') return false
   if (doc.kind === 'newsletter') return Boolean(doc.confirmedAt)
-  /* ⚠️ O banco de talentos só vai ao RD com o aviso ao candidato registrado
-   * no próprio cadastro (D-62): a cópia do aviso que o formulário mostrava,
-   * gravada pela action no servidor. Sem ela a pessoa não foi avisada de que o
-   * dado iria a uma base de marketing — vale para quem se cadastrou antes do
-   * aviso existir e para quem se cadastrar enquanto ele estiver vazio no
-   * admin. É o que impede o retry por edição de mandar um cadastro antigo ao
-   * RD quando o RH o marca como lido. */
-  if (doc.kind === 'talent-pool') return Boolean(doc.talent?.privacyNotice?.trim())
   return true
 }
 
@@ -181,7 +165,6 @@ export function formularioDoRd(kind: string): FormularioDoRd | null {
     'consultant-request': 'consultores',
     'data-maturity-diagnostic': 'diagnostico',
     'rc18-diagnostic': 'diagnostico',
-    'talent-pool': 'talentos',
   }
   return mapa[kind] ?? null
 }
@@ -288,11 +271,6 @@ export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Pr
 export const CAMPOS_PERSONALIZADOS = {
   mensagem: 'cf_site_mensagem',
   chat: 'cf_site_chat',
-  /* D-62 — o perfil do Trabalhe Conosco. Os nomes seguem os campos do
-   * formulário do WordPress (`area-de-atuacao`, `nivel`), que é o que o plugin
-   * do RD mapeava. ⚠️ A confirmar com a lista do RD (task 047): campo que não
-   * existe na conta derruba a conversão inteira. */
-  talentos: { area: 'cf_area_de_atuacao', senioridade: 'cf_nivel' },
   diagnostico: [
     'cf_quiz_setor_codigo',
     'cf_quiz_porte',
@@ -333,10 +311,6 @@ export function montarPayload(
   if (telefone) payload.personal_phone = telefone
   const empresa = doc.company?.trim()
   if (empresa) payload.company_name = empresa
-  /* `linkedin` é campo padrão do RD, não `cf_`: vai sempre, sem depender da
-     chave de campos personalizados. Só o banco de talentos tem (D-62). */
-  const linkedin = doc.talent?.linkedin?.trim()
-  if (linkedin) payload.linkedin = linkedin
   /* Cargo é campo padrão do RD (`job_title`); só o formulário do admin tem. */
   const cargo = doc.kind === 'custom-form' ? respostasDoTipo(doc, 'jobTitle')[0] : undefined
   if (cargo) payload.job_title = cargo
@@ -417,20 +391,11 @@ function camposDoFormularioDoAdmin(doc: LeadParaRd): Record<string, unknown> {
  * (`rd.error`) com o nome do campo recusado. */
 function camposPersonalizados(doc: LeadParaRd): Record<string, unknown> {
   const campos: Record<string, unknown> = {}
-  /* ⚠️ A mensagem do banco de talentos **não** vai (D-62): ali ela é o perfil
-     serializado para o admin, e texto livre de candidato não entra na base de
-     marketing. O perfil vai pelos campos próprios, logo abaixo. */
-  const mensagem = doc.kind === 'talent-pool' ? undefined : doc.message?.trim()
+  const mensagem = doc.message?.trim()
   if (mensagem) campos[CAMPOS_PERSONALIZADOS.mensagem] = mensagem
-  const area = doc.talent?.area?.trim()
-  if (area) campos[CAMPOS_PERSONALIZADOS.talentos.area] = area
-  const senioridade = doc.talent?.seniority?.trim()
-  if (senioridade) campos[CAMPOS_PERSONALIZADOS.talentos.senioridade] = senioridade
   const chat = doc.chatContext?.trim()
   if (chat) campos[CAMPOS_PERSONALIZADOS.chat] = chat
-  /* Do candidato vai só o que a D-62 lista: a página de origem não está nela
-     (e cairia num campo do questionário). */
-  if (doc.source && doc.kind !== 'talent-pool') campos.cf_quiz_url = doc.source
+  if (doc.source) campos.cf_quiz_url = doc.source
 
   const d = doc.diagnostic
   if (!d) return campos

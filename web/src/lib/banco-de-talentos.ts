@@ -1,11 +1,11 @@
 /* As opções do formulário do banco de talentos (Trabalhe Conosco) — uma lista
  * só, que o formulário mostra e a action confere.
  *
- * ⚠️ A action aceita **só** estas opções (D-62, 15/10). Até aqui ela gravava o
- * que viesse, cortado no tamanho; com o cadastro indo ao RD, um POST forjado
- * punha texto livre num campo do RD — inclusive no perfil de outro e-mail, que
- * o RD junta pelo endereço. E grava sempre o rótulo **em português**: em inglês
- * o mesmo cargo viraria outro valor no RD, e campo de lista lá recusaria.
+ * ⚠️ A action aceita **só** estas opções nos campos do perfil (D-62, 15/10).
+ * Nasceu para o envio ao RD, onde um POST forjado punha texto livre no perfil
+ * de qualquer e-mail; o envio saiu na D-67 (22/10), e a regra ficou: os campos
+ * são o filtro do RH no admin, e grava sempre o rótulo **em português** — em
+ * inglês o mesmo cargo viraria outro valor no filtro.
  *
  * As listas são as do protótipo (D-22: escolher as opções é do marketing e do
  * RH). O formulário do WordPress usava outras (31 cargos; nível com
