@@ -13,6 +13,7 @@ const contato: Contato = {
   foto: null,
   destinos: { contato: null, consultores: null, diagnostico: null, carreiras: null, chat: null },
   avisoDeCandidatura: null,
+  avisoDoBancoDeTalentos: null,
 }
 const seo: Seo = { title: 'Título', description: 'Resumo', image: { url: '/capa.webp', alt: 'a', width: 1200, height: 630 }, noIndex: false }
 

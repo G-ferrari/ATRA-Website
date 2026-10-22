@@ -147,6 +147,26 @@ export const Contact: GlobalConfig = {
             },
           },
         },
+        {
+          /* #207 (22/10): o aviso do banco de talentos (o Trabalhe Conosco de
+           * /carreiras). Morava em Sistema → Integrações desde a D-62, como a
+           * condição do envio ao RD; o Trabalhe Conosco saiu do RD (D-67), e o
+           * aviso ficou como o que é — o de privacidade do cadastro, ao lado do
+           * da candidatura. Diferente daquele, **não trava** o formulário: o
+           * banco de talentos já estava no ar sem aviso, e travar agora o
+           * tiraria do ar até o RH escrever. Cada cadastro guarda uma cópia do
+           * que viu (`form-submissions.talent.privacyNotice`). */
+          name: 'talentPoolNotice',
+          type: 'textarea',
+          maxLength: 1500,
+          label: { pt: 'Aviso de privacidade do banco de talentos', en: 'Talent pool privacy notice' },
+          admin: {
+            description: {
+              pt: 'Aparece no formulário do Trabalhe Conosco (banco de talentos, em /carreiras), acima do botão de enviar. Texto do RH e do jurídico: para que o cadastro é usado, por quanto tempo fica guardado e como pedir a exclusão. O cadastro fica aqui no admin e vai ao ATRAIR quando a integração está ligada; não vai ao RD Station. Vazio, o formulário aparece sem aviso.',
+              en: 'Shown on the Work with us form (talent pool, on /carreiras), above the submit button. Written by HR and legal: what the sign-up is used for, how long it is kept and how to ask for deletion. Sign-ups stay here in the admin and go to ATRAIR when that integration is on; they do not go to RD Station. When empty, the form is shown without a notice.',
+            },
+          },
+        },
       ],
     },
   ],

@@ -36,6 +36,7 @@ export function toContato(doc: Contact): Contato {
       chat: doc.formRecipients?.chat || null,
     },
     avisoDeCandidatura: doc.jobApplications?.privacyNotice?.trim() || null,
+    avisoDoBancoDeTalentos: doc.jobApplications?.talentPoolNotice?.trim() || null,
   }
 }
 
