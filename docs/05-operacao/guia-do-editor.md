@@ -401,6 +401,102 @@ fica o que o site manda ao RD a cada formulário:
   pessoa viu ("Aviso exibido no cadastro", no envio do formulário): só os que
   têm essa cópia vão ao RD, e trocar o texto não muda os cadastros antigos.
 
+## Criar um formulário e pôr numa página
+
+Um formulário de inscrição, de pesquisa ou de pedido se monta em **Conteúdo →
+Formulários** e vai para qualquer página com a seção **Formulário**. Cada envio
+fica em **Sistema → Envios de formulário** e vai ao RD com o identificador de
+conversão e as tags que você escolher no próprio formulário. Os formulários que já existiam (contato,
+newsletter, e-book, Trabalhe Conosco) continuam como estão.
+
+**1. Criar.** Em **Conteúdo → Formulários**, crie um novo e dê um **Nome** (é
+interno: aparece no admin e nos envios, não no site).
+
+**2. Campos** (aba **Campos**). Até 20, na ordem em que aparecem. O **e-mail
+vem sempre e é obrigatório**: é por ele que o RD reconhece a pessoa. Os tipos
+são nome, e-mail, telefone, empresa, cargo, texto curto, texto longo, lista de
+opções e caixa de marcar. Nome, telefone, empresa e cargo entram no máximo uma
+vez cada, e só uma caixa de marcar pode ser o consentimento: o admin recusa o
+resto ao salvar. Em cada campo:
+
+- **Rótulo** — o que o visitante lê acima do campo. **Texto de exemplo** é o
+  que aparece apagado dentro dele (opcional).
+- **Obrigatório** e **Largura** (linha inteira ou meia linha; no celular, todo
+  campo ocupa a linha inteira).
+- **Lista de opções** — escreva cada opção. O **Valor gravado** é criado sozinho
+  na primeira vez e não muda depois, nem se você corrigir o texto da opção: é
+  ele que fica no envio e vai ao RD.
+- **Caixa de marcar** — pode ser **o consentimento para receber comunicações**.
+  Marcada pelo visitante, o lead chega ao RD com a autorização registrada. Ela
+  nunca é obrigatória: quem não quer receber também pode enviar.
+- **Campo personalizado no RD** (só em texto curto, texto longo, lista de
+  opções e caixa de marcar) — nome, e-mail, telefone, empresa e cargo vão
+  sempre para os campos padrão do RD. Os outros só vão se você escrever aqui o
+  campo personalizado do RD (`cf_…`), exatamente como ele está lá; vazio, a
+  resposta fica só no site. Esses campos só vão com **Enviar campos
+  personalizados** ligado em Sistema → Integrações, e o campo precisa existir na
+  conta do RD antes: se não existir, o RD recusa o lead inteiro, e o erro
+  aparece no envio. Caixa de marcar desmarcada não vai.
+
+⚠️ **Não peça documento (CPF, RG), dado de saúde nem arquivo.** O formulário vai
+para uma base de marketing, e não há tipo de campo para isso de propósito: não
+use "texto curto" para contornar.
+
+**3. Botão e envio** (aba **Botão e envio**):
+
+- **Texto do botão** e **Aviso acima do botão** (por exemplo, a frase de
+  privacidade).
+- **Depois do envio** — **Mostrar uma mensagem** (no lugar do formulário) ou
+  **Ir para outra página**. A página é um endereço do próprio site, como
+  `/contato` ou `/cases-de-sucesso`; no inglês o site acrescenta o `/en`
+  sozinho.
+- **Quem recebe o aviso do site** — os e-mails que recebem o envio quando o RD
+  não o aceita. Vazio, vale o destino geral do contato.
+
+**4. RD Station** (aba **RD Station**):
+
+- **Identificador de conversão** — o nome com que o envio chega ao RD. Ele vem
+  sugerido a partir do Nome; escreva exatamente como está no RD. Vazio, o
+  formulário não vai ao RD (os envios continuam chegando ao admin e ao e-mail
+  do aviso).
+- **Tags** — as tags que o lead recebe no RD (digite e tecle Enter).
+
+Para onde vai cada resposta se escolhe em cada campo, na aba **Campos** (acima).
+
+**5. Publicar.** Só formulário **publicado** aparece no site e recebe envio.
+"Salvar rascunho" num formulário já publicado não muda o que está no ar.
+Despublicar tira a seção do site e o formulário para de receber.
+
+**6. Pôr numa página.** Na página (Páginas, Soluções, Segmentos ou Parceiros),
+**Adicionar Seção → Formulário** (grupo "Chamadas e contato"). Escolha o
+formulário, escreva o título e o texto e a forma: **sozinho, centralizado**, ou
+**com o texto ao lado** (no celular, um embaixo do outro). No preview a seção
+aparece mesmo com o formulário em rascunho, com um aviso amarelo dizendo o que
+falta para ela ir ao site.
+
+**7. O que o RD faz, e o que você monta lá.** O site cria a conversão no RD com o
+identificador e as tags. O **e-mail de agradecimento** ao visitante e o
+**aviso ao time** são automações que o marketing monta no RD, disparadas por
+esse identificador: o RD não deixa o site criar formulário, landing page nem
+automação. Quem avisa o time segue a regra dos outros formulários: o RD aceitou,
+avisa a automação dele; não aceitou, o site manda o e-mail aos endereços do
+formulário.
+
+**8. Conferir.**
+
+- Em **Sistema → Integrações → RD Station Marketing (leads)**, a lista
+  **Formulários do admin** mostra cada formulário com o identificador e as tags com que vai ao
+  RD, "Não vai ao RD" quando falta o identificador, e o aviso quando dois
+  formulários usam o mesmo identificador (é permitido, mas os leads se misturam
+  no RD).
+- Em **Sistema → Envios de formulário**, o filtro **Formulário** mostra os
+  envios de um só. Aberto, o envio mostra cada resposta como "Pergunta:
+  resposta", na ordem do formulário.
+
+**Inglês.** Rótulos, textos de exemplo, opções, botão, aviso e mensagem têm
+versão em inglês: troque o idioma no topo do admin e preencha. Vazio em
+inglês, o site usa o português.
+
 ## O que mais é editável
 
 - **Depoimentos e clientes** — Catálogos. Depoimento sem foto mostra
@@ -417,7 +513,9 @@ fica o que o site manda ao RD a cada formulário:
 - **Leads** — os envios do formulário de contato ficam em "Form submissions",
   com a campanha de origem de cada um. Eles também vão para o RD Station
   Marketing como conversões: o nome de cada conversão, as tags e o liga/desliga
-  ficam em Sistema → Integrações (ver "Leads no RD Station", acima), e "Sincronizado em" vazio
+  ficam em Sistema → Integrações (ver "Leads no RD Station", acima) — menos os
+  formulários de Conteúdo → Formulários, que levam o nome e as tags no próprio
+  cadastro (ver "Criar um formulário", acima) —, e "Sincronizado em" vazio
   num envio quer dizer que ele ainda não chegou lá — editar o envio tenta de
   novo.
 - **Google Tag Manager, Lusha e RD Station** — Sistema → Rastreamento (papel de
