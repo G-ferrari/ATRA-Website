@@ -828,17 +828,6 @@ export const CtaContact: Block = {
         },
       },
     },
-    {
-      /* ⚠️ Fora de uso desde a #171: a foto do cartão mora no global Contato
-       * (`panelPhoto`). Escondido, e não apagado: a coluna só sai numa
-       * publicação depois desta — apagar agora impediria a volta de um deploy
-       * para o código que ainda a lê (a armadilha do `deploy.sh` no CLAUDE.md). */
-      name: 'photo',
-      type: 'upload',
-      relationTo: 'media',
-      label: { pt: 'Foto de fundo do cartão (fora de uso)', en: 'Card background photo (unused)' },
-      admin: { hidden: true },
-    },
     ...camposComuns,
   ],
 }

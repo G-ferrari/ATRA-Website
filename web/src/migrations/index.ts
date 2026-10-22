@@ -124,6 +124,7 @@ import * as migration_20261021_012219_formularios_do_admin from './20261021_0122
 import * as migration_20261021_113504_envio_do_formulario_do_admin from './20261021_113504_envio_do_formulario_do_admin';
 import * as migration_20261021_122514_secao_formulario from './20261021_122514_secao_formulario';
 import * as migration_20261021_233937_foto_do_painel_de_contatos from './20261021_233937_foto_do_painel_de_contatos';
+import * as migration_20261022_013640_remove_cta_contact_photo from './20261022_013640_remove_cta_contact_photo';
 
 export const migrations = [
   {
@@ -755,5 +756,10 @@ export const migrations = [
     up: migration_20261021_233937_foto_do_painel_de_contatos.up,
     down: migration_20261021_233937_foto_do_painel_de_contatos.down,
     name: '20261021_233937_foto_do_painel_de_contatos',
+  },
+  {
+    up: migration_20261022_013640_remove_cta_contact_photo.up,
+    down: migration_20261022_013640_remove_cta_contact_photo.down,
+    name: '20261022_013640_remove_cta_contact_photo',
   },
 ];
