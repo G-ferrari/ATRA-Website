@@ -41,12 +41,12 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
               </div>
             )}
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold font-display text-slate-900 dark:text-white mb-4 tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display text-slate-900 dark:text-white mb-4 tracking-tight leading-tight">
               <TextoDestacado texto={bloco.title} destaque={bloco.highlight} className="text-primary" />
             </h1>
 
             {bloco.description && (
-              <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 mb-8 font-light leading-relaxed max-w-2xl mx-auto">
+              <p className="text-base text-slate-600 dark:text-white/70 mb-8 leading-relaxed max-w-2xl mx-auto">
                 {bloco.description}
               </p>
             )}
@@ -77,7 +77,7 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
                       />
                     )}
                     {p.topText && (
-                      <div className="text-[9px] font-bold text-slate-500 dark:text-white/50 mb-0.5 uppercase tracking-wider">
+                      <div className="text-xs font-bold text-slate-500 dark:text-white/50 mb-0.5 uppercase tracking-wider">
                         {p.topText}
                       </div>
                     )}

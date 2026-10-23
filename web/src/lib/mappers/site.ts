@@ -1,6 +1,8 @@
 import type { Contact, Footer } from '@/payload-types'
 import type { Contato, Rodape } from '@/types/content'
 
+import { toImageOpcional } from './shared'
+
 /* Mappers da casca do site: contato e rodapé (MIG-072).
  *
  * Os dois globals nasceram com os dados que estavam escritos em
@@ -25,6 +27,7 @@ export function toContato(doc: Contact): Contato {
       facebook: doc.social?.facebook ?? null,
       youtube: doc.social?.youtube ?? null,
     },
+    foto: toImageOpcional(doc.panelPhoto, 'contact.panelPhoto'),
     destinos: {
       contato: doc.formRecipients?.contact || null,
       consultores: doc.formRecipients?.consultants || null,
@@ -33,6 +36,7 @@ export function toContato(doc: Contact): Contato {
       chat: doc.formRecipients?.chat || null,
     },
     avisoDeCandidatura: doc.jobApplications?.privacyNotice?.trim() || null,
+    avisoDoBancoDeTalentos: doc.jobApplications?.talentPoolNotice?.trim() || null,
   }
 }
 

@@ -19,6 +19,6 @@ import type { Contato } from '@/types/content'
 export const lerContato = cache(async (): Promise<Contato> => {
   const payload = await getPayload()
   /* Sem `locale`: o global não é localizado — telefone e endereço são os mesmos
-   * nos dois idiomas. */
-  return toContato(await payload.findGlobal({ slug: 'contact', depth: 0 }))
+   * nos dois idiomas. `depth: 1` para a foto do painel vir com a URL. */
+  return toContato(await payload.findGlobal({ slug: 'contact', depth: 1 }))
 })

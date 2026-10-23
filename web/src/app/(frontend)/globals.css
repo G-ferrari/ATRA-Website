@@ -142,6 +142,14 @@
     @apply bg-linear-to-r from-[var(--color-primary)] to-[var(--color-secondary)];
   }
 
+  /* O trecho em destaque dentro de um título ("Todos os <span>artigos</span>"):
+   * um passo acima do peso do título (#215). No desenho original o título era
+   * 300 e o destaque `font-normal`, 400; com um peso fixo, o Negrito do admin
+   * deixaria o destaque mais fino que o resto do título. */
+  .peso-do-destaque {
+    font-weight: calc(var(--peso-dos-titulos, 300) + 100);
+  }
+
   @keyframes marquee-vertical {
     from { transform: translateY(0); }
     to { transform: translateY(-50%); }
@@ -263,10 +271,21 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  font-weight: 300;
-  letter-spacing: -0.02em;
+/* Títulos (#215, D-65). O peso vem do admin (Configuração → Aparência do site),
+ * que o layout põe no `<body>` como `--peso-dos-titulos`; sem ele, 300.
+ *
+ * ⚠️ Dentro de `@layer base`, e não solto como era: CSS sem camada vence as
+ * utilidades do Tailwind, então o peso 300 anulava toda classe de peso escrita
+ * num título — 104 títulos saíam finos com `font-bold` no código, inclusive os
+ * pequenos (nome de autor, rótulo em caixa-alta), onde o fino atrapalha a
+ * leitura. Na camada, a classe vence: título grande não leva classe de peso e
+ * segue o admin; título pequeno leva a sua e fica com ela. */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: var(--peso-dos-titulos, 300);
+    letter-spacing: -0.02em;
+  }
 }
 
 html.dark {

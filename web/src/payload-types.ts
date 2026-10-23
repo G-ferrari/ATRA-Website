@@ -72,6 +72,7 @@ export interface Config {
     topics: Topic;
     testimonials: Testimonial;
     cases: Case;
+    forms: Form;
     'glossary-terms': GlossaryTerm;
     jobs: Job;
     pages: Page;
@@ -99,6 +100,7 @@ export interface Config {
     topics: TopicsSelect<false> | TopicsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     cases: CasesSelect<false> | CasesSelect<true>;
+    forms: FormsSelect<false> | FormsSelect<true>;
     'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
     jobs: JobsSelect<false> | JobsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -124,6 +126,7 @@ export interface Config {
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
   globals: {
+    appearance: Appearance;
     'atra-ai': AtraAi;
     contact: Contact;
     'conversion-panel': ConversionPanel;
@@ -136,6 +139,7 @@ export interface Config {
     tracking: Tracking;
   };
   globalsSelect: {
+    appearance: AppearanceSelect<false> | AppearanceSelect<true>;
     'atra-ai': AtraAiSelect<false> | AtraAiSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     'conversion-panel': ConversionPanelSelect<false> | ConversionPanelSelect<true>;
@@ -605,6 +609,10 @@ export interface Partner {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -2160,6 +2168,10 @@ export interface Partner {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -2522,6 +2534,10 @@ export interface Partner {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -3003,8 +3019,10 @@ export interface Partner {
              * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
+            /**
+             * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+             */
             variant?: ('panel' | 'photo') | null;
-            photo?: (number | null) | Media;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -3048,6 +3066,35 @@ export interface Partner {
             id?: string | null;
             blockName?: string | null;
             blockType: 'ctaBanner';
+          }
+        | {
+            /**
+             * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+             */
+            form: number | Form;
+            title?: string | null;
+            /**
+             * A blank line separates paragraphs.
+             */
+            text?: string | null;
+            /**
+             * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+             */
+            layout?: ('centered' | 'side') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formSection';
           }
         | {
             eyebrow?: string | null;
@@ -3099,6 +3146,90 @@ export interface Partner {
   };
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Forms to place on any page with the "Form" section. Every submission is stored under Form submissions and reaches RD with the identifier and tags set here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms".
+ */
+export interface Form {
+  id: number;
+  /**
+   * To find the form in the admin and in RD. Visitors do not see it.
+   */
+  name: string;
+  /**
+   * In display order. The e-mail field is required and always present. Do not ask for ID numbers, health data or files: submissions go to a marketing database.
+   */
+  fields?:
+    | {
+        type: 'name' | 'email' | 'phone' | 'company' | 'jobTitle' | 'shortText' | 'longText' | 'select' | 'checkbox';
+        /**
+         * On phones every field is full width.
+         */
+        width: 'full' | 'half';
+        label: string;
+        /**
+         * Shown greyed out inside the empty field. Optional.
+         */
+        placeholder?: string | null;
+        /**
+         * Visitors can only submit with this field filled in — or, on a checkbox, ticked.
+         */
+        required?: boolean | null;
+        options?:
+          | {
+              label: string;
+              /**
+               * Created from the option on save. It is what the submission stores and RD receives, and it does not change if the option is reworded.
+               */
+              value?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * When the visitor ticks it, the lead reaches RD with consent as legal basis and open to e-mails. The label text comes from legal.
+         */
+        consent?: boolean | null;
+        /**
+         * Empty: the answer stays on the site only. To send it to RD, type the custom field name exactly as in RD, starting with cf_ (e.g. cf_area_de_interesse). Only sent with "Send custom fields" on under System → Integrations; a field missing in RD makes RD reject the lead.
+         */
+        rdField?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  submitLabel: string;
+  /**
+   * Optional. For example, the privacy notice: what happens to the data and how to ask for deletion. Written by legal.
+   */
+  notice?: string | null;
+  afterSubmit: 'message' | 'page';
+  /**
+   * Replaces the form after submission.
+   */
+  successMessage?: string | null;
+  /**
+   * The Portuguese address, starting with / (e.g. /cases-de-sucesso/marketplace-governanca-dados). On the English site, visitors go to the same page in English.
+   */
+  redirectPath?: string | null;
+  /**
+   * The site e-mails these addresses about a new lead only when RD does not accept it — when it does, the RD automation notifies. Empty: the general contact recipient.
+   */
+  notifyEmails?: string[] | null;
+  /**
+   * Name, e-mail, phone, company and job title always go to RD standard fields; other fields only when a custom field is set. The global switch and the key live under System → Integrations.
+   */
+  rd?: {
+    /**
+     * The name the form shows up with in RD; automations fire on it. Taken from the form name on creation — change it to what you use in RD. Empty: this form is not sent to RD.
+     */
+    conversionIdentifier?: string | null;
+    tags?: string[] | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Glossary terms, grouped by letter on /glossary.
@@ -3359,6 +3490,10 @@ export interface Page {
         eyebrow?: string | null;
         title: string;
         description?: string | null;
+        /**
+         * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+         */
+        descriptionAlign?: ('left' | 'right') | null;
         footnote?: string | null;
         cta?: {
           label?: string | null;
@@ -4914,6 +5049,10 @@ export interface Page {
       }
     | {
         title?: string | null;
+        /**
+         * Short text below the title. Empty, the strip shows only the title.
+         */
+        description?: string | null;
         partners?:
           | {
               name: string;
@@ -5276,6 +5415,10 @@ export interface Page {
         eyebrow?: string | null;
         title: string;
         description?: string | null;
+        /**
+         * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+         */
+        descriptionAlign?: ('left' | 'right') | null;
         readLabel?: string | null;
         cta?: {
           label?: string | null;
@@ -5757,8 +5900,10 @@ export interface Page {
          * Phone, e-mail, address (when there is one) and socials beside the form.
          */
         showContactCard?: boolean | null;
+        /**
+         * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+         */
         variant?: ('panel' | 'photo') | null;
-        photo?: (number | null) | Media;
         /**
          * When filled, the block joins the page side nav. E.g. who-we-are.
          */
@@ -5802,6 +5947,35 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'ctaBanner';
+      }
+    | {
+        /**
+         * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+         */
+        form: number | Form;
+        title?: string | null;
+        /**
+         * A blank line separates paragraphs.
+         */
+        text?: string | null;
+        /**
+         * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+         */
+        layout?: ('centered' | 'side') | null;
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'formSection';
       }
     | {
         eyebrow?: string | null;
@@ -6461,6 +6635,10 @@ export interface Segment {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -8016,6 +8194,10 @@ export interface Segment {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -8378,6 +8560,10 @@ export interface Segment {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -8859,8 +9045,10 @@ export interface Segment {
              * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
+            /**
+             * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+             */
             variant?: ('panel' | 'photo') | null;
-            photo?: (number | null) | Media;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -8904,6 +9092,35 @@ export interface Segment {
             id?: string | null;
             blockName?: string | null;
             blockType: 'ctaBanner';
+          }
+        | {
+            /**
+             * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+             */
+            form: number | Form;
+            title?: string | null;
+            /**
+             * A blank line separates paragraphs.
+             */
+            text?: string | null;
+            /**
+             * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+             */
+            layout?: ('centered' | 'side') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formSection';
           }
         | {
             eyebrow?: string | null;
@@ -9237,6 +9454,10 @@ export interface Solution {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             footnote?: string | null;
             cta?: {
               label?: string | null;
@@ -10792,6 +11013,10 @@ export interface Solution {
           }
         | {
             title?: string | null;
+            /**
+             * Short text below the title. Empty, the strip shows only the title.
+             */
+            description?: string | null;
             partners?:
               | {
                   name: string;
@@ -11154,6 +11379,10 @@ export interface Solution {
             eyebrow?: string | null;
             title: string;
             description?: string | null;
+            /**
+             * Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.
+             */
+            descriptionAlign?: ('left' | 'right') | null;
             readLabel?: string | null;
             cta?: {
               label?: string | null;
@@ -11635,8 +11864,10 @@ export interface Solution {
              * Phone, e-mail, address (when there is one) and socials beside the form.
              */
             showContactCard?: boolean | null;
+            /**
+             * The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.
+             */
             variant?: ('panel' | 'photo') | null;
-            photo?: (number | null) | Media;
             /**
              * When filled, the block joins the page side nav. E.g. who-we-are.
              */
@@ -11680,6 +11911,35 @@ export interface Solution {
             id?: string | null;
             blockName?: string | null;
             blockType: 'ctaBanner';
+          }
+        | {
+            /**
+             * The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.
+             */
+            form: number | Form;
+            title?: string | null;
+            /**
+             * A blank line separates paragraphs.
+             */
+            text?: string | null;
+            /**
+             * With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.
+             */
+            layout?: ('centered' | 'side') | null;
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'formSection';
           }
         | {
             eyebrow?: string | null;
@@ -11910,7 +12170,8 @@ export interface FormSubmission {
     | 'material-download'
     | 'rc18-diagnostic'
     | 'consultant-request'
-    | 'data-maturity-diagnostic';
+    | 'data-maturity-diagnostic'
+    | 'custom-form';
   status: 'new' | 'read' | 'archived';
   email: string;
   confirmationToken?: string | null;
@@ -11921,6 +12182,16 @@ export interface FormSubmission {
   job?: (number | null) | Job;
   cv?: (number | null) | PrivateFile;
   resource?: (number | null) | Resource;
+  form?: (number | null) | Form;
+  answers?:
+    | {
+        fieldId?: string | null;
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  communicationConsent?: boolean | null;
   name?: string | null;
   phone?: string | null;
   company?: string | null;
@@ -12049,6 +12320,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'cases';
         value: number | Case;
+      } | null)
+    | ({
+        relationTo: 'forms';
+        value: number | Form;
       } | null)
     | ({
         relationTo: 'glossary-terms';
@@ -12310,6 +12585,47 @@ export interface CasesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms_select".
+ */
+export interface FormsSelect<T extends boolean = true> {
+  name?: T;
+  fields?:
+    | T
+    | {
+        type?: T;
+        width?: T;
+        label?: T;
+        placeholder?: T;
+        required?: T;
+        options?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
+        consent?: T;
+        rdField?: T;
+        id?: T;
+      };
+  submitLabel?: T;
+  notice?: T;
+  afterSubmit?: T;
+  successMessage?: T;
+  redirectPath?: T;
+  notifyEmails?: T;
+  rd?:
+    | T
+    | {
+        conversionIdentifier?: T;
+        tags?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "glossary-terms_select".
  */
 export interface GlossaryTermsSelect<T extends boolean = true> {
@@ -12470,6 +12786,7 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -12756,6 +13073,7 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -12958,6 +13276,7 @@ export interface PagesSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -13120,7 +13439,6 @@ export interface PagesSelect<T extends boolean = true> {
               subtitle?: T;
               showContactCard?: T;
               variant?: T;
-              photo?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -13149,6 +13467,21 @@ export interface PagesSelect<T extends boolean = true> {
                     caption?: T;
                   };
               variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -13483,6 +13816,7 @@ export interface PartnersSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -13769,6 +14103,7 @@ export interface PartnersSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -13971,6 +14306,7 @@ export interface PartnersSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -14133,7 +14469,6 @@ export interface PartnersSelect<T extends boolean = true> {
               subtitle?: T;
               showContactCard?: T;
               variant?: T;
-              photo?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -14162,6 +14497,21 @@ export interface PartnersSelect<T extends boolean = true> {
                     caption?: T;
                   };
               variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -14333,6 +14683,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -14619,6 +14970,7 @@ export interface SegmentsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -14821,6 +15173,7 @@ export interface SegmentsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -14983,7 +15336,6 @@ export interface SegmentsSelect<T extends boolean = true> {
               subtitle?: T;
               showContactCard?: T;
               variant?: T;
-              photo?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -15012,6 +15364,21 @@ export interface SegmentsSelect<T extends boolean = true> {
                     caption?: T;
                   };
               variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -15190,6 +15557,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               footnote?: T;
               cta?:
                 | T
@@ -15476,6 +15844,7 @@ export interface SolutionsSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              description?: T;
               partners?:
                 | T
                 | {
@@ -15678,6 +16047,7 @@ export interface SolutionsSelect<T extends boolean = true> {
               eyebrow?: T;
               title?: T;
               description?: T;
+              descriptionAlign?: T;
               readLabel?: T;
               cta?:
                 | T
@@ -15840,7 +16210,6 @@ export interface SolutionsSelect<T extends boolean = true> {
               subtitle?: T;
               showContactCard?: T;
               variant?: T;
-              photo?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -15869,6 +16238,21 @@ export interface SolutionsSelect<T extends boolean = true> {
                     caption?: T;
                   };
               variant?: T;
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        formSection?:
+          | T
+          | {
+              form?: T;
+              title?: T;
+              text?: T;
+              layout?: T;
               anchor?: T;
               navLabel?: T;
               borda?: T;
@@ -15968,6 +16352,16 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   job?: T;
   cv?: T;
   resource?: T;
+  form?: T;
+  answers?:
+    | T
+    | {
+        fieldId?: T;
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  communicationConsent?: T;
   name?: T;
   phone?: T;
   company?: T;
@@ -16080,6 +16474,21 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Visual settings for the whole site. Saving here changes every page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance".
+ */
+export interface Appearance {
+  id: number;
+  /**
+   * Applies to page, section and card headings across the site. Light is the original design. Small headings, such as author names and uppercase labels, keep their own weight.
+   */
+  headingWeight: 'bold' | 'normal' | 'light';
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "atra-ai".
  */
@@ -16145,6 +16554,10 @@ export interface Contact {
    * Optional. When empty, the address appears nowhere on the site.
    */
   address?: string | null;
+  /**
+   * Shown darkened behind "Our contacts", beside the contact forms on the home page, /contato and consultants. When empty, the panel keeps a plain dark background.
+   */
+  panelPhoto?: (number | null) | Media;
   social?: {
     linkedin?: string | null;
     instagram?: string | null;
@@ -16166,6 +16579,10 @@ export interface Contact {
      * Shown on each job application form, above the submit button. Written by HR and legal: how long the CV is kept (the site deletes it after 6 months), who can access it and what it is used for. When empty, the application form is not shown.
      */
     privacyNotice?: string | null;
+    /**
+     * Shown on the Work with us form (talent pool, on /carreiras), above the submit button. Written by HR and legal: what the sign-up is used for, how long it is kept and how to ask for deletion. Sign-ups stay here in the admin and go to ATRAIR when that integration is on; they do not go to RD Station. When empty, the form is shown without a notice.
+     */
+    talentPoolNotice?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -16494,11 +16911,11 @@ export interface Integration {
   };
   rdStationMarketing?: {
     /**
-     * On: every submission of the forms below becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications with a CV never go; from Work with us only contact and profile data go, never the CV.
+     * On: every submission of the forms below becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Work with us sign-ups and job applications with a CV never go: they stay here in the admin.
      */
     enabled?: boolean | null;
     /**
-     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI), cf_area_de_atuacao and cf_nivel (field and seniority from Work with us) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
+     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
      */
     customFields?: boolean | null;
     /**
@@ -16514,7 +16931,6 @@ export interface Integration {
       materialDownload?: string | null;
       consultantRequest?: string | null;
       dataMaturityDiagnostic?: string | null;
-      talentPool?: string | null;
     };
     /**
      * The tags the lead gets in RD, per form. Type and press Enter for each; use the same names as in RD. Empty: the lead arrives untagged.
@@ -16526,12 +16942,7 @@ export interface Integration {
       materialDownload?: string[] | null;
       consultantRequest?: string[] | null;
       dataMaturityDiagnostic?: string[] | null;
-      talentPool?: string[] | null;
     };
-    /**
-     * Shown on the talent pool form, above the submit button. Written by HR and legal: say the sign-up also goes to RD Station (a marketing tool), what for, and how to ask for deletion. Empty: Work with us does not go to RD — sign-ups are still stored in the admin and sent to ATRAIR.
-     */
-    talentPoolNotice?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -17058,6 +17469,16 @@ export interface Tracking {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance_select".
+ */
+export interface AppearanceSelect<T extends boolean = true> {
+  headingWeight?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "atra-ai_select".
  */
 export interface AtraAiSelect<T extends boolean = true> {
@@ -17091,6 +17512,7 @@ export interface ContactSelect<T extends boolean = true> {
   whatsapp?: T;
   email?: T;
   address?: T;
+  panelPhoto?: T;
   social?:
     | T
     | {
@@ -17112,6 +17534,7 @@ export interface ContactSelect<T extends boolean = true> {
     | T
     | {
         privacyNotice?: T;
+        talentPoolNotice?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -17270,7 +17693,6 @@ export interface IntegrationsSelect<T extends boolean = true> {
               materialDownload?: T;
               consultantRequest?: T;
               dataMaturityDiagnostic?: T;
-              talentPool?: T;
             };
         tags?:
           | T
@@ -17281,9 +17703,7 @@ export interface IntegrationsSelect<T extends boolean = true> {
               materialDownload?: T;
               consultantRequest?: T;
               dataMaturityDiagnostic?: T;
-              talentPool?: T;
             };
-        talentPoolNotice?: T;
       };
   updatedAt?: T;
   createdAt?: T;

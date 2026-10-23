@@ -15,6 +15,7 @@ import { BlocoMenuDaPagina } from './bloco-menu-da-pagina'
 import { BlocoNumeros } from './bloco-numeros'
 import { BlocoEtapas } from './bloco-etapas'
 import { BlocoContato } from './bloco-contato'
+import { BlocoFormulario } from './bloco-formulario'
 import { BlocoParaQuem } from './bloco-para-quem'
 import { BlocoAbasDeDestaque } from './bloco-abas-de-destaque'
 import { BlocoBentoDaHome } from './bloco-bento-da-home'
@@ -122,6 +123,8 @@ export function RenderBlocks({
         return <BlocoEtapas key={b.id} bloco={b} />
       case 'ctaContact':
         return <BlocoContato key={b.id} bloco={b} locale={locale} />
+      case 'formSection':
+        return <BlocoFormulario key={b.id} bloco={b} locale={locale} />
       case 'jobsList':
         return <BlocoVagas key={b.id} bloco={b} locale={locale} vagasDoAtrair={vagasDoAtrair} />
       case 'partnerShowcase':

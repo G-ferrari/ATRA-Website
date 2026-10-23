@@ -810,21 +810,82 @@ export const CtaContact: Block = {
        * `App.tsx:2288`: quatro campos em vez de três mais textarea, botão
        * alinhado à direita, e um cartão com foto de fundo no lugar do painel de
        * gradiente. A home só fecha o aceite com a segunda. */
+      /* #171 (21/10): o cartão de contatos é o mesmo nas duas formas — a lista
+       * sobre a foto do global Contato —, e o que a forma escolhe agora é só o
+       * formulário. Os valores ficaram (renomear valor de select é migração). */
       name: 'variant',
       type: 'select',
       defaultValue: 'panel',
       options: [
-        { value: 'panel', label: { pt: 'Cartão de gradiente', en: 'Gradient card' } },
-        { value: 'photo', label: { pt: 'Cartão com foto', en: 'Photo card' } },
+        { value: 'panel', label: { pt: 'Campos um embaixo do outro (como em /contato)', en: 'Stacked fields (as on /contato)' } },
+        { value: 'photo', label: { pt: 'E-mail e telefone lado a lado (como na home)', en: 'E-mail and phone side by side (as on the home page)' } },
       ],
-      label: { pt: 'Forma do cartão', en: 'Card shape' },
+      label: { pt: 'Forma do formulário', en: 'Form layout' },
+      admin: {
+        description: {
+          pt: 'O cartão "Nossos Contatos" ao lado é igual nas duas formas. A foto de fundo dele fica em Sistema → Contato.',
+          en: 'The "Our contacts" card beside it is the same in both. Its background photo lives in System → Contact.',
+        },
+      },
+    },
+    ...camposComuns,
+  ],
+}
+
+/* Feature criador-de-formularios, task 051 — um formulário montado em
+ * Conteúdo → Formulários, posto numa página.
+ *
+ * Justificativa de bloco novo (regra 3): o "Contato com formulário" tem os
+ * campos escritos em código e manda para o contato; este desenha os campos que
+ * o marketing escolheu e manda para o RD com o identificador do formulário. */
+export const FormSection: Block = {
+  slug: 'formSection',
+  labels: { singular: { pt: 'Formulário', en: 'Form' }, plural: { pt: 'Formulários', en: 'Forms' } },
+  fields: [
+    {
+      /* Sem `filterOptions` de publicado: o filtro também vale ao salvar, e a
+       * página que aponta para um formulário despublicado depois não poderia
+       * mais ser salva. Quem esconde o não publicado é a página (o mapper). */
+      name: 'form',
+      type: 'relationship',
+      relationTo: 'forms',
+      required: true,
+      label: { pt: 'Formulário', en: 'Form' },
+      admin: {
+        description: {
+          pt: 'Os formulários de Conteúdo → Formulários. Só aparece no site depois de publicado; antes disso, só no preview.',
+          en: 'The forms in Content → Forms. It shows on the site only once published; until then, only in the preview.',
+        },
+      },
+    },
+    { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      name: 'text',
+      type: 'textarea',
+      localized: true,
+      label: { pt: 'Texto', en: 'Text' },
+      admin: {
+        description: {
+          pt: 'Uma linha em branco separa um parágrafo do outro.',
+          en: 'A blank line separates paragraphs.',
+        },
+      },
     },
     {
-      name: 'photo',
-      type: 'upload',
-      relationTo: 'media',
-      label: { pt: 'Foto de fundo do cartão', en: 'Card background photo' },
-      admin: { condition: (_, irmaos) => irmaos?.variant === 'photo' },
+      name: 'layout',
+      type: 'select',
+      defaultValue: 'centered',
+      options: [
+        { value: 'centered', label: { pt: 'Sozinho, centralizado', en: 'On its own, centred' } },
+        { value: 'side', label: { pt: 'Com o texto ao lado', en: 'With the text beside it' } },
+      ],
+      label: { pt: 'Forma', en: 'Layout' },
+      admin: {
+        description: {
+          pt: 'Com o texto ao lado, o título e o texto ficam à esquerda e o formulário à direita; no celular, um embaixo do outro.',
+          en: 'With the text beside it, title and text sit on the left and the form on the right; on phones, one under the other.',
+        },
+      },
     },
     ...camposComuns,
   ],
@@ -1384,11 +1445,47 @@ export const HomeHero: Block = {
   ],
 }
 
+/* O alinhamento do texto que fica ao lado do título (#218, 20/10), nos dois
+ * blocos que põem título à esquerda e texto à direita. Cada um nasce com o que
+ * já tinha — as abas de destaque alinhavam à esquerda e o carrossel de cases à
+ * direita —, e o marketing passa a escolher. */
+const alinhamentoDaDescricao = (padrao: 'left' | 'right'): Field => ({
+  name: 'descriptionAlign',
+  type: 'select',
+  defaultValue: padrao,
+  options: [
+    { value: 'left', label: { pt: 'À esquerda', en: 'Left' } },
+    { value: 'right', label: { pt: 'À direita', en: 'Right' } },
+  ],
+  label: { pt: 'Alinhamento do texto ao lado do título', en: 'Alignment of the text beside the title' },
+  admin: {
+    description: {
+      pt: 'Vale no computador, onde o texto fica numa coluna à direita do título. No celular ele vem embaixo do título, sempre à esquerda.',
+      en: 'Applies on desktop, where the text sits in a column to the right of the title. On mobile it goes below the title, always left-aligned.',
+    },
+  },
+})
+
 export const LogoMarquee: Block = {
   slug: 'logoMarquee',
   labels: { singular: { pt: 'Faixa de logos', en: 'Logo strip' }, plural: { pt: 'Faixas de logos', en: 'Logo strips' } },
   fields: [
     { name: 'title', type: 'text', localized: true, label: { pt: 'Título', en: 'Title' } },
+    {
+      /* #216 (20/10): a faixa da home, "Parceiros Estratégicos", ganha um texto
+       * abaixo do título. O texto é do marketing; vazio, a faixa fica só com o
+       * título, como antes. */
+      name: 'description',
+      type: 'textarea',
+      localized: true,
+      label: { pt: 'Descrição', en: 'Description' },
+      admin: {
+        description: {
+          pt: 'Texto curto abaixo do título. Vazio, a faixa fica só com o título.',
+          en: 'Short text below the title. Empty, the strip shows only the title.',
+        },
+      },
+    },
     {
       /* ⚠️ Campo aposentado: os logos da faixa saem da collection `partners`
        * (`resolverPagina`), a mesma do mega-menu, para uma troca de logo no
@@ -1421,6 +1518,7 @@ export const FeatureTabs: Block = {
     { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto ao lado do título', en: 'Text beside the title' } },
+    alinhamentoDaDescricao('left'),
     { name: 'footnote', type: 'text', localized: true, label: { pt: 'Rodapé do cartão', en: 'Card footnote' } },
     {
       name: 'cta',
@@ -1534,6 +1632,7 @@ export const CaseCarousel: Block = {
     { name: 'eyebrow', type: 'text', localized: true, label: { pt: 'Pílula', en: 'Pill' } },
     { name: 'title', type: 'text', required: true, localized: true, label: { pt: 'Título', en: 'Title' } },
     { name: 'description', type: 'textarea', localized: true, label: { pt: 'Texto ao lado do título', en: 'Text beside the title' } },
+    alinhamentoDaDescricao('right'),
     { name: 'readLabel', type: 'text', localized: true, label: { pt: 'Texto do link no cartão', en: 'Card link label' } },
     {
       name: 'cta',
@@ -1833,6 +1932,7 @@ const GRUPO_DO_BLOCO = {
   homeBento: 'vitrines',
   ctaBanner: 'chamadas',
   ctaContact: 'chamadas',
+  formSection: 'chamadas',
   jobsList: 'chamadas',
 } satisfies Record<string, Grupo>
 
@@ -1853,6 +1953,7 @@ const TODOS = [
   AudienceSplit,
   AccordionSteps,
   CtaContact,
+  FormSection,
   JobsList,
   CtaBanner,
   PartnerHero,

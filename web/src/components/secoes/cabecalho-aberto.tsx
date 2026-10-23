@@ -56,7 +56,7 @@ export function cabecalhoAberto({
       )}
       {depoisDoTitulo}
       {paragrafos.length > 0 && (
-        <div className="mt-5 space-y-3 text-sm md:text-base text-text-muted dark:text-gray-300 font-light leading-relaxed">
+        <div className="mt-5 space-y-3 text-base text-text-muted dark:text-gray-300 leading-relaxed">
           {paragrafos.map((p) => (
             <p key={p}>{p}</p>
           ))}

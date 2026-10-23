@@ -64,7 +64,7 @@ export function OpcaoDoQuestionario({
           cheia também diz "escolhida" para quem não distingue a cor. */}
       <span
         className={cn(
-          'flex min-h-11 items-start gap-3 rounded-[6px] px-4 py-3.5 text-[15px] leading-relaxed transition-[background-color,box-shadow,color] duration-200 motion-reduce:transition-none',
+          'flex min-h-11 items-start gap-3 rounded-[6px] px-4 py-3.5 text-base leading-relaxed transition-[background-color,box-shadow,color] duration-200 motion-reduce:transition-none',
           'group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-primary',
           'group-disabled:opacity-50',
           selecionada

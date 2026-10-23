@@ -148,7 +148,7 @@ export function SiteHeader({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 2 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="p-1.5 px-3.5 rounded-[6px] transition-all flex items-center gap-1.5 text-[13px] font-semibold tracking-normal cursor-pointer hover:scale-105 active:scale-95 bg-transparent text-text-main dark:text-white hover:opacity-80"
+                  className="p-1.5 px-3.5 rounded-[6px] transition-all flex items-center gap-1.5 text-sm font-semibold tracking-normal cursor-pointer hover:scale-105 active:scale-95 bg-transparent text-text-main dark:text-white hover:opacity-80"
                   onClick={() => setAberto(true)}
                   aria-expanded={false}
                   aria-label={t.abrirMenu}
@@ -177,7 +177,7 @@ export function SiteHeader({
                           }}
                           onMouseEnter={() => setCategoriaAtiva(rotulo)}
                           className={cn(
-                            'text-[13px] font-semibold transition-colors flex items-center gap-1 cursor-pointer relative pb-1 tracking-normal',
+                            'text-sm font-semibold transition-colors flex items-center gap-1 cursor-pointer relative pb-1 tracking-normal',
                             selecionada ? 'text-primary font-bold' : 'text-text-muted hover:text-text-main',
                           )}
                         >
@@ -218,7 +218,7 @@ export function SiteHeader({
               className={cn(
                 /* `h-9`: menor que antes (28/09) e da altura do botão do
                    WhatsApp ao lado, para os dois alinharem. */
-                'items-center gap-1.5 rounded-[6px] text-[13px] font-normal transition-all shadow-md hover:shadow-lg capitalize border border-primary text-primary hover:bg-primary/10 bg-transparent h-9 px-4 active:scale-95 cursor-pointer',
+                'items-center gap-1.5 rounded-[6px] text-sm font-normal transition-all shadow-md hover:shadow-lg capitalize border border-primary text-primary hover:bg-primary/10 bg-transparent h-9 px-4 active:scale-95 cursor-pointer',
                 aberto ? 'hidden' : 'hidden lg:flex',
               )}
             >
@@ -397,7 +397,7 @@ function ItensDaGaveta({
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-semibold capitalize tracking-wide leading-tight">{grupo.title}</span>
-                <span className="text-[10px] text-text-muted leading-tight mt-0.5 line-clamp-1">
+                <span className="text-xs text-text-muted leading-tight mt-0.5 line-clamp-1">
                   {primeira.description}
                 </span>
               </div>
@@ -452,7 +452,7 @@ function ItensDaGaveta({
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-semibold capitalize tracking-wide leading-tight">{l.label}</span>
-            <span className="text-[10px] text-text-muted leading-tight line-clamp-1">{l.description}</span>
+            <span className="text-xs text-text-muted leading-tight line-clamp-1">{l.description}</span>
           </div>
         </Link>
       ))}

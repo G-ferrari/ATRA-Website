@@ -25,7 +25,7 @@ export function EmptyState({ title, description, action, icon, className }: Empt
     >
       {icon ?? <Search size={32} className="mx-auto text-text-muted mb-3" aria-hidden />}
       <h3 className="text-base font-bold text-text-main mb-1">{title}</h3>
-      <p className="text-xs text-text-muted font-light mb-4">{description}</p>
+      <p className="text-sm text-text-muted mb-4">{description}</p>
       {action && (
         <button
           onClick={action.onClick}

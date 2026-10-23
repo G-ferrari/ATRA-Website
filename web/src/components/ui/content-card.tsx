@@ -70,7 +70,7 @@ export function ContentCard({
 
         {badge && (
           <div className="absolute top-4 left-4 flex items-center gap-2">
-            <span className="px-3 py-1.5 rounded-[4px] bg-secondary text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-md shadow-md flex items-center gap-1.5">
+            <span className="px-3 py-1.5 rounded-[4px] bg-secondary text-xs font-bold text-white uppercase tracking-wider backdrop-blur-md shadow-md flex items-center gap-1.5">
               {badge.icon ?? <ShieldCheck size={12} aria-hidden />} {badge.label}
             </span>
           </div>
@@ -81,7 +81,7 @@ export function ContentCard({
              não tinha: no tema claro a etiqueta ficava verde-claro sobre
              quase-branco, ilegível. O `dark:` guarda o valor que o gabarito
              compara. */
-          <div className="absolute bottom-3 right-3 bg-surface-1/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-[4px] text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+          <div className="absolute bottom-3 right-3 bg-surface-1/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-[4px] text-xs font-bold text-emerald-700 dark:text-emerald-400">
             {highlight}
           </div>
         )}
@@ -96,11 +96,11 @@ export function ContentCard({
             </div>
           )}
 
-          <h3 className="text-lg sm:text-xl font-bold font-display text-text-main mb-3 leading-snug group-hover:text-primary transition-colors">
+          <h3 className="text-lg sm:text-xl font-display text-text-main mb-3 leading-snug group-hover:text-primary transition-colors">
             {title}
           </h3>
 
-          <p className="text-text-muted text-xs sm:text-sm font-light leading-relaxed mb-6 line-clamp-3">
+          <p className="text-text-muted text-sm leading-relaxed mb-6 line-clamp-3">
             {summary}
           </p>
         </div>
@@ -111,7 +111,7 @@ export function ContentCard({
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2.5 py-1 rounded-[4px] bg-surface-1 text-[11px] font-medium text-text-muted uppercase flex items-center gap-1.5"
+                  className="px-2.5 py-1 rounded-[4px] bg-surface-1 text-xs font-medium text-text-muted uppercase flex items-center gap-1.5"
                 >
                   <Tag size={11} className="text-primary/70" aria-hidden /> {tag}
                 </span>

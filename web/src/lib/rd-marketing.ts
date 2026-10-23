@@ -28,6 +28,7 @@
  */
 
 import { identificadorPadraoDoEbook } from '@/lib/formatos-de-integracao'
+import { CAIXA_MARCADA } from '@/lib/formularios-do-admin'
 import type { FormularioDoRd, IntegracaoRd } from '@/types/content'
 
 const ENDPOINT = 'https://api.rd.services/platform/conversions'
@@ -45,14 +46,6 @@ export type LeadParaRd = {
   source?: string | null
   /** Só o kind `chat-lead` (MIG-149) preenche. */
   chatContext?: string | null
-  /** Só o kind `talent-pool` (D-62) preenche: o perfil, cada um no seu campo,
-   *  e a cópia do aviso que o formulário mostrava. */
-  talent?: {
-    linkedin?: string | null
-    area?: string | null
-    seniority?: string | null
-    privacyNotice?: string | null
-  } | null
   /** Só o kind `data-maturity-diagnostic` (D-35) preenche. Os JSON chegam
    * como `unknown` e a montagem confere o formato. */
   diagnostic?: {
@@ -71,6 +64,19 @@ export type LeadParaRd = {
     durationSeconds?: number | null
   } | null
   confirmedAt?: string | null
+  /** Só o kind `custom-form` (049): as respostas, pelo id da linha do campo. */
+  answers?: { fieldId?: string | null; label?: string | null; value?: string | null }[] | null
+  /** Só o kind `custom-form` (049): a caixa de consentimento foi marcada. */
+  communicationConsent?: boolean | null
+  /** Só o kind `custom-form` (task 050): o formulário do admin de onde o envio
+   *  veio. **Não** é campo de `form-submissions` — o cadastro guarda só o id em
+   *  `form`, e o gancho lê o resto (identificador, tags e destino de cada
+   *  campo) antes de enviar, com o nome de hoje. `null`: apagado. */
+  formulario?: {
+    identificador: string | null
+    tags: string[]
+    campos: { id: string; tipo: string; campoNoRd: string | null }[]
+  } | null
   /** Só o kind `material-download` (task 046): o e-book baixado. **Não** é
    *  campo de `form-submissions` — o cadastro guarda só o id em `resource`, e
    *  o gancho lê o resto do material antes de enviar. */
@@ -99,11 +105,12 @@ export type ResultadoDaConversao = { ok: true; eventUuid: string } | { ok: false
  * ⚠️ `job-application` **nunca**: é a candidatura com currículo, e currículo
  * dentro de base de marketing seria desvio de finalidade (LGPD) — D-29, mantido.
  *
- * `talent-pool` **vai desde a D-62** (15/10): a ATRA pediu (Taci, 14/10) que o
- * Trabalhe Conosco chegue ao RD como no site atual, para o agradecimento
- * automático. Vão só dados de contato e de perfil — nunca o currículo, que o
- * banco de talentos nem coleta, nem a mensagem em texto livre
- * (`camposPersonalizados` a deixa de fora). */
+ * ⚠️ `talent-pool` **também não**, desde a D-67 (22/10). Ele foi da D-62 à D-67
+ * (15 a 22/10), para o RD agradecer o candidato por e-mail como no site atual;
+ * saiu porque cada inscrição gastava um lead do plano do RD com quem não é
+ * cliente. O cadastro fica no admin (e no ATRAIR, com a chave ligada), e quem
+ * avisa o RH é o site. Voltar a mandar é decisão da ATRA, não ajuste: pede uma
+ * decisão nova, que reveja a D-67. */
 export const KINDS_PARA_O_RD = new Set([
   'contact',
   'chat-lead',
@@ -111,7 +118,9 @@ export const KINDS_PARA_O_RD = new Set([
   'rc18-diagnostic',
   'consultant-request',
   'data-maturity-diagnostic',
-  'talent-pool',
+  /* Os formulários montados no admin (task 050), cada um com o identificador
+     e as tags que o marketing escreveu nele. */
+  'custom-form',
 ])
 
 /**
@@ -128,14 +137,6 @@ export function deveSincronizar(doc: LeadParaRd): boolean {
   if (doc.rd?.syncedAt) return false
   if (!KINDS_PARA_O_RD.has(doc.kind) && doc.kind !== 'newsletter') return false
   if (doc.kind === 'newsletter') return Boolean(doc.confirmedAt)
-  /* ⚠️ O banco de talentos só vai ao RD com o aviso ao candidato registrado
-   * no próprio cadastro (D-62): a cópia do aviso que o formulário mostrava,
-   * gravada pela action no servidor. Sem ela a pessoa não foi avisada de que o
-   * dado iria a uma base de marketing — vale para quem se cadastrou antes do
-   * aviso existir e para quem se cadastrar enquanto ele estiver vazio no
-   * admin. É o que impede o retry por edição de mandar um cadastro antigo ao
-   * RD quando o RH o marca como lido. */
-  if (doc.kind === 'talent-pool') return Boolean(doc.talent?.privacyNotice?.trim())
   return true
 }
 
@@ -164,7 +165,6 @@ export function formularioDoRd(kind: string): FormularioDoRd | null {
     'consultant-request': 'consultores',
     'data-maturity-diagnostic': 'diagnostico',
     'rc18-diagnostic': 'diagnostico',
-    'talent-pool': 'talentos',
   }
   return mapa[kind] ?? null
 }
@@ -182,9 +182,12 @@ export function formularioDoRd(kind: string): FormularioDoRd | null {
  * melhor chegar ao RD com o nome genérico do que não chegar.
  */
 export function identificadorDe(
-  doc: Pick<LeadParaRd, 'kind' | 'material'>,
+  doc: Pick<LeadParaRd, 'kind' | 'material' | 'formulario'>,
   conversoes: IntegracaoRd['conversoes'],
 ): string | null {
+  /* Formulário do admin (050): o identificador é o dele, e não há linha em
+     Sistema → Integrações. Formulário apagado ou sem identificador: não vai. */
+  if (doc.kind === 'custom-form') return doc.formulario?.identificador?.trim() || null
   const formulario = formularioDoRd(doc.kind)
   const doFormulario = formulario ? conversoes[formulario] : null
   if (!doFormulario || doc.kind !== 'material-download') return doFormulario
@@ -212,8 +215,21 @@ export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Pr
      "ausente" não pode virar tentativa de envio aqui. */
   const chave = process.env.RDSTATION_MARKETING_API_KEY?.trim()
   if (!chave) return { ok: false, motivo: 'RDSTATION_MARKETING_API_KEY ausente' }
+  /* Formulário do admin (050): o `rd.error` diz ao marketing onde olhar — o
+     formulário que sumiu ou a aba RD Station dele, não Sistema → Integrações. */
+  if (doc.kind === 'custom-form' && !doc.formulario) {
+    return { ok: false, motivo: 'formulário do envio apagado ou ilegível' }
+  }
   const identificador = identificadorDe(doc, config.conversoes)
-  if (!identificador) return { ok: false, motivo: `sem identificador de conversão para o kind "${doc.kind}"` }
+  if (!identificador) {
+    return {
+      ok: false,
+      motivo:
+        doc.kind === 'custom-form'
+          ? 'formulário sem identificador de conversão (aba RD Station do formulário)'
+          : `sem identificador de conversão para o kind "${doc.kind}"`,
+    }
+  }
 
   const corpo = { event_type: 'CONVERSION', event_family: 'CDP', payload: montarPayload(doc, identificador, config) }
 
@@ -255,11 +271,6 @@ export async function enviarConversao(doc: LeadParaRd, config: IntegracaoRd): Pr
 export const CAMPOS_PERSONALIZADOS = {
   mensagem: 'cf_site_mensagem',
   chat: 'cf_site_chat',
-  /* D-62 — o perfil do Trabalhe Conosco. Os nomes seguem os campos do
-   * formulário do WordPress (`area-de-atuacao`, `nivel`), que é o que o plugin
-   * do RD mapeava. ⚠️ A confirmar com a lista do RD (task 047): campo que não
-   * existe na conta derruba a conversão inteira. */
-  talentos: { area: 'cf_area_de_atuacao', senioridade: 'cf_nivel' },
   diagnostico: [
     'cf_quiz_setor_codigo',
     'cf_quiz_porte',
@@ -300,16 +311,17 @@ export function montarPayload(
   if (telefone) payload.personal_phone = telefone
   const empresa = doc.company?.trim()
   if (empresa) payload.company_name = empresa
-  /* `linkedin` é campo padrão do RD, não `cf_`: vai sempre, sem depender da
-     chave de campos personalizados. Só o banco de talentos tem (D-62). */
-  const linkedin = doc.talent?.linkedin?.trim()
-  if (linkedin) payload.linkedin = linkedin
+  /* Cargo é campo padrão do RD (`job_title`); só o formulário do admin tem. */
+  const cargo = doc.kind === 'custom-form' ? respostasDoTipo(doc, 'jobTitle')[0] : undefined
+  if (cargo) payload.job_title = cargo
 
   /* As tags do formulário, como o marketing configurou (task 043) — a
      newsletter chega com `newsletter`, que é como os envios são segmentados.
-     Sem tag configurada, o campo nem vai. */
+     O formulário do admin (050) traz as dele. Sem tag configurada, o campo nem
+     vai. */
   const formulario = formularioDoRd(doc.kind)
-  const tags = formulario ? (config.tags?.[formulario] ?? []) : []
+  const tags =
+    doc.kind === 'custom-form' ? (doc.formulario?.tags ?? []) : formulario ? (config.tags?.[formulario] ?? []) : []
   if (tags.length) payload.tags = [...tags]
 
   /* Atribuição (D-26, mantida): de onde o visitante veio, pela UTM que a
@@ -331,9 +343,46 @@ export function montarPayload(
     payload.legal_bases = [{ category: 'communications', type: 'consent', status: 'granted' }]
     payload.available_for_mailing = true
   }
+  /* O formulário do admin (050) declara consentimento só quando o visitante
+     marcou a caixa de consentimento — que nunca é obrigatória (048), então a
+     marca é escolha dele. O texto que ele viu fica nas respostas do envio
+     (049). Desmarcada ou ausente: nada é declarado, como nos outros. */
+  if (doc.kind === 'custom-form' && doc.communicationConsent) {
+    payload.legal_bases = [{ category: 'communications', type: 'consent', status: 'granted' }]
+    payload.available_for_mailing = true
+  }
 
-  if (config.camposPersonalizados) Object.assign(payload, camposPersonalizados(doc))
+  if (config.camposPersonalizados) {
+    Object.assign(payload, doc.kind === 'custom-form' ? camposDoFormularioDoAdmin(doc) : camposPersonalizados(doc))
+  }
   return payload
+}
+
+/** As respostas de um tipo de campo do formulário do admin, pelo id da linha. */
+function respostasDoTipo(doc: Pick<LeadParaRd, 'answers' | 'formulario'>, tipo: string): string[] {
+  const ids = new Set((doc.formulario?.campos ?? []).filter((c) => c.tipo === tipo).map((c) => c.id))
+  return (doc.answers ?? []).flatMap((r) => (r.fieldId && ids.has(r.fieldId) && r.value?.trim() ? [r.value.trim()] : []))
+}
+
+/* Formulário do admin (050): vai **só** o que o marketing ligou a um `cf_` no
+ * próprio formulário — nem a página de origem (`cf_quiz_url`), que os
+ * formulários escritos em código mandam. Cada `cf_` ali é escolha explícita, e
+ * um campo que a conta não tem derrubaria a conversão inteira.
+ *
+ * Caixa de marcar só vai **marcada**: o envio grava "Não" na desmarcada (é o
+ * registro do que o visitante viu), mas no RD ela é resposta vazia, e um "Não"
+ * num campo de opções que não o tem derrubaria a conversão. */
+function camposDoFormularioDoAdmin(doc: LeadParaRd): Record<string, unknown> {
+  const campos = new Map((doc.formulario?.campos ?? []).flatMap((c) => (c.campoNoRd ? [[c.id, c] as const] : [])))
+  const enviados: Record<string, unknown> = {}
+  for (const r of doc.answers ?? []) {
+    const campo = r.fieldId ? campos.get(r.fieldId) : undefined
+    const valor = r.value?.trim()
+    if (!campo?.campoNoRd || !valor) continue
+    if (campo.tipo === 'checkbox' && valor !== CAIXA_MARCADA) continue
+    enviados[campo.campoNoRd] = valor
+  }
+  return enviados
 }
 
 /* ⚠️ Só com a chave ligada: campo `cf_` que não existe na conta derruba a
@@ -342,20 +391,11 @@ export function montarPayload(
  * (`rd.error`) com o nome do campo recusado. */
 function camposPersonalizados(doc: LeadParaRd): Record<string, unknown> {
   const campos: Record<string, unknown> = {}
-  /* ⚠️ A mensagem do banco de talentos **não** vai (D-62): ali ela é o perfil
-     serializado para o admin, e texto livre de candidato não entra na base de
-     marketing. O perfil vai pelos campos próprios, logo abaixo. */
-  const mensagem = doc.kind === 'talent-pool' ? undefined : doc.message?.trim()
+  const mensagem = doc.message?.trim()
   if (mensagem) campos[CAMPOS_PERSONALIZADOS.mensagem] = mensagem
-  const area = doc.talent?.area?.trim()
-  if (area) campos[CAMPOS_PERSONALIZADOS.talentos.area] = area
-  const senioridade = doc.talent?.seniority?.trim()
-  if (senioridade) campos[CAMPOS_PERSONALIZADOS.talentos.senioridade] = senioridade
   const chat = doc.chatContext?.trim()
   if (chat) campos[CAMPOS_PERSONALIZADOS.chat] = chat
-  /* Do candidato vai só o que a D-62 lista: a página de origem não está nela
-     (e cairia num campo do questionário). */
-  if (doc.source && doc.kind !== 'talent-pool') campos.cf_quiz_url = doc.source
+  if (doc.source) campos.cf_quiz_url = doc.source
 
   const d = doc.diagnostic
   if (!d) return campos

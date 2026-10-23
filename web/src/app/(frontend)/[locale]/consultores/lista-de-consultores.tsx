@@ -177,7 +177,7 @@ const PILULA = 'px-3 py-1 rounded-[4px] text-xs transition-all duration-200 curs
 const PILULA_ATIVA = 'bg-primary text-white font-semibold shadow-xs'
 const PILULA_INATIVA = cn(RECUADA, RECUADA_HOVER, 'text-text-muted font-medium hover:text-text-main')
 /* Rótulo das linhas do filtro, na medida do rótulo do `ChipFilter`. */
-const ROTULO_DO_FILTRO = 'text-[11px] font-bold text-text-muted uppercase mr-1 shrink-0'
+const ROTULO_DO_FILTRO = 'text-xs font-bold text-text-muted uppercase mr-1 shrink-0'
 
 export function ListaDeConsultores({
   perfis,
@@ -252,12 +252,12 @@ export function ListaDeConsultores({
 
             <div className="min-w-0">
               <div className="flex items-center gap-2.5 flex-wrap">
-                <h3 className="text-base sm:text-lg font-bold text-text-main leading-snug group-hover:text-primary transition-colors truncate">
+                <h3 className="text-base sm:text-lg text-text-main leading-snug group-hover:text-primary transition-colors truncate">
                   {p.role}
                 </h3>
                 {/* Sem linha de borda nos três selos do cabeçalho: a hierarquia
                     sai do tom, não do contorno (regra sem-borda do DESIGN.md). */}
-                <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-primary/10 text-primary shrink-0">
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-[4px] bg-primary/10 text-primary shrink-0">
                   {p.level}
                 </span>
                 {/* ⚠️ Par claro/escuro, ao contrário da pílula de nível ao lado.
@@ -266,7 +266,7 @@ export function ListaDeConsultores({
                     página. Elemento novo não tem gabarito a honrar, então aqui
                     o par vale (mesmo caso do âmbar em `page.tsx`). */}
                 {selo && (
-                  <span className="text-[10.5px] font-semibold px-2.5 py-0.5 rounded-[4px] bg-secondary/10 text-amber-700 dark:text-secondary shrink-0">
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-[4px] bg-secondary/10 text-amber-700 dark:text-secondary shrink-0">
                     {t.selo(cobertura, resultado.alvo)}
                   </span>
                 )}
@@ -282,7 +282,7 @@ export function ListaDeConsultores({
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-text-muted font-light leading-relaxed mb-4 line-clamp-2">
+        <p className="text-sm text-text-muted leading-relaxed mb-4 line-clamp-2">
           {p.description}
         </p>
 
@@ -302,14 +302,14 @@ export function ListaDeConsultores({
             </>
           }
           classeDoControle={cn(
-            'text-[11px] px-2 py-1 rounded-[4px] text-text-muted hover:text-text-main transition-colors cursor-pointer',
+            'text-xs px-2 py-1 rounded-[4px] text-text-muted hover:text-text-main transition-colors cursor-pointer',
             RECUADA,
           )}
           item={(tag, visivel) => (
             <span
               key={tag}
               className={cn(
-                'text-[11px] px-2.5 py-1 rounded-[4px] transition-colors font-medium',
+                'text-xs px-2.5 py-1 rounded-[4px] transition-colors font-medium',
                 tagsMarcadas.has(tag) ? PILULA_ATIVA : cn(RECUADA, 'text-text-muted hover:text-text-main'),
                 visivel,
               )}
@@ -398,7 +398,7 @@ export function ListaDeConsultores({
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 className={cn(
-                  'w-full pl-8 pr-3 py-1.5 rounded-[6px] text-xs font-normal text-text-main placeholder:text-text-muted focus:outline-none transition-all',
+                  'w-full pl-8 pr-3 py-1.5 rounded-[6px] text-base sm:text-sm font-normal text-text-main placeholder:text-text-muted focus:outline-none transition-all',
                   RECUADA,
                 )}
               />
@@ -528,10 +528,10 @@ export function ListaDeConsultores({
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-base md:text-lg font-bold font-display text-text-main">{t.titulo}</h2>
+            <h2 className="text-base md:text-lg font-display text-text-main">{t.titulo}</h2>
             {/* Em `E` o contador responde "quem cobre tudo?" — inclusive com
                 zero, que é informação, não falha. Metade nula fica de fora. */}
-            <p className="text-xs text-text-muted font-light mt-0.5">
+            <p className="text-sm text-text-muted mt-0.5">
               {modo === 'e' && resultado.alvo > 0
                 ? [
                     t.cobremTudo(resultado.completos.length),
@@ -548,7 +548,7 @@ export function ListaDeConsultores({
           <div className="bg-surface-2  rounded-[6px] p-8 text-center max-w-md mx-auto">
             <UserCheck size={32} className="mx-auto text-text-muted mb-2" aria-hidden />
             <h3 className="text-sm font-bold text-text-main mb-1">{t.vazioTitulo}</h3>
-            <p className="text-xs text-text-muted font-light mb-4">{t.vazioTexto}</p>
+            <p className="text-sm text-text-muted mb-4">{t.vazioTexto}</p>
             <button
               type="button"
               onClick={limpar}
@@ -587,7 +587,7 @@ export function ListaDeConsultores({
                   <h3 className="text-sm font-bold text-text-main">
                     {vista.faixa === 'separador' ? t.parteTitulo : t.avisoTitulo}
                   </h3>
-                  <p className="text-xs text-text-muted font-light mt-0.5">
+                  <p className="text-sm text-text-muted mt-0.5">
                     {vista.faixa === 'separador' ? t.parteTexto : t.avisoTexto}
                   </p>
                 </div>
@@ -636,7 +636,7 @@ export function ListaDeConsultores({
                 {aberto.code}
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold font-display text-text-main leading-tight">
+                <h3 className="text-xl sm:text-2xl font-display text-text-main leading-tight">
                   {aberto.role}
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
@@ -647,7 +647,7 @@ export function ListaDeConsultores({
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-text-muted font-light leading-relaxed mb-6 bg-surface-1 p-4 rounded-[6px] ">
+            <p className="text-sm text-text-muted leading-relaxed mb-6 bg-surface-1 p-4 rounded-[6px] ">
               {aberto.description}
             </p>
 
@@ -683,7 +683,7 @@ export function ListaDeConsultores({
                 {aberto.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs px-2.5 py-1 rounded-[6px] bg-surface-1  text-text-muted font-medium"
+                    className="text-xs px-2.5 py-1 rounded-[6px] bg-surface-1 text-text-muted font-medium"
                   >
                     {tag}
                   </span>

@@ -121,7 +121,7 @@ export function ChamadaSobMedida({
           </div>
 
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg md:text-xl font-light font-display text-text-main leading-snug">
+            <h3 className="text-lg md:text-xl font-display text-text-main leading-snug">
               {t.naoEncontrou}
             </h3>
             <button

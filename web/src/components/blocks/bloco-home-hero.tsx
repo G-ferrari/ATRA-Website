@@ -54,7 +54,7 @@ export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale:
       >
         <div className="flex flex-col items-center max-w-5xl mx-auto space-y-5 sm:space-y-6 md:space-y-8">
           <div className="w-full">
-            <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-snug sm:leading-tight select-none text-center text-slate-900 dark:text-white">
+            <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-snug sm:leading-tight select-none text-center text-slate-900 dark:text-white">
               <span>{bloco.titlePrefix} </span>
               {/* `min-h-[1.2em]` e `align-top` seguram a altura da linha enquanto
                   a palavra troca: sem eles o título pula meio caractere a cada
@@ -78,7 +78,7 @@ export function BlocoHomeHero({ bloco, locale }: { bloco: BlocoHomeHero; locale:
 
           {bloco.description && (
             <div className="max-w-2xl px-2">
-              <p className="text-sm sm:text-lg md:text-xl font-light leading-relaxed text-slate-600 dark:text-gray-300">
+              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-slate-600 dark:text-gray-300">
                 {bloco.description}
               </p>
             </div>

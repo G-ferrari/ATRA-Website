@@ -36,7 +36,7 @@ export function NewsletterInline({ placeholder }: { placeholder: string | null }
 
   if (estado?.ok) {
     return (
-      <p role="status" className="mt-4 text-xs font-light text-emerald-500">
+      <p role="status" className="mt-4 text-sm text-emerald-500">
         Pronto: você está inscrito na newsletter da ATRA.
       </p>
     )
@@ -53,7 +53,7 @@ export function NewsletterInline({ placeholder }: { placeholder: string | null }
         required
         placeholder={placeholder ?? undefined}
         aria-label={placeholder ?? 'E-mail'}
-        className="flex-1 bg-surface-1 p-3 text-text-main border-r-0 focus:ring-1 focus:ring-primary outline-none text-xs rounded-l-[6px] font-light"
+        className="flex-1 bg-surface-1 p-3 text-text-main border-r-0 focus:ring-1 focus:ring-primary outline-none text-base sm:text-sm rounded-l-[6px]"
       />
       <button
         type="submit"

@@ -37,10 +37,10 @@ export default function Erro({
           <AlertTriangle size={32} aria-hidden />
         </div>
 
-        <h1 className="text-3xl md:text-5xl font-bold font-display mb-4 leading-tight">
+        <h1 className="text-3xl md:text-5xl font-display mb-4 leading-tight">
           Algo deu errado ao carregar esta página
         </h1>
-        <p className="text-sm md:text-base text-text-muted font-light leading-relaxed mb-10">
+        <p className="text-base text-text-muted leading-relaxed mb-10">
           O problema foi registrado e será investigado. Tentar de novo costuma resolver quando é
           uma falha passageira.
         </p>
@@ -54,7 +54,7 @@ export default function Erro({
         </button>
 
         {error.digest && (
-          <p className="mt-10 text-[11px] text-text-muted font-mono">
+          <p className="mt-10 text-sm text-text-muted font-mono">
             Código do erro: {error.digest}
           </p>
         )}

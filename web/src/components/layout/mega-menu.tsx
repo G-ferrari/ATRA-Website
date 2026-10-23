@@ -86,10 +86,10 @@ export function PainelDoMenu({
               )}
             </div>
             <div>
-              <div className="text-[11px] font-normal text-text-main mb-0.5 capitalize tracking-wide group-hover:text-primary transition-colors">
+              <div className="text-sm font-medium text-text-main mb-0.5 capitalize tracking-wide group-hover:text-primary transition-colors">
                 {p.name}
               </div>
-              <div className="text-[10px] text-text-muted leading-relaxed line-clamp-2">
+              <div className="text-xs text-text-muted leading-relaxed line-clamp-2">
                 {navegacao.descricoesDeParceiro[p.slug] ?? ''}
               </div>
             </div>
@@ -116,10 +116,10 @@ export function PainelDoMenu({
               <Icone nome={s.icon} size={20} />
             </div>
             <div>
-              <div className="text-[11px] font-normal text-text-main mb-0.5 capitalize tracking-wide group-hover:text-primary transition-colors">
+              <div className="text-sm font-medium text-text-main mb-0.5 capitalize tracking-wide group-hover:text-primary transition-colors">
                 {s.name}
               </div>
-              <div className="text-[10px] text-text-muted leading-relaxed line-clamp-2">{s.shortDescription}</div>
+              <div className="text-xs text-text-muted leading-relaxed line-clamp-2">{s.shortDescription}</div>
             </div>
           </Link>
         ))}
@@ -136,10 +136,10 @@ export function PainelDoMenu({
               <Icone nome={l.icon} size={20} />
             </div>
             <div>
-              <div className="text-[11px] font-normal text-text-main mb-0.5 capitalize tracking-wide group-hover:text-primary transition-colors">
+              <div className="text-sm font-medium text-text-main mb-0.5 capitalize tracking-wide group-hover:text-primary transition-colors">
                 {l.label}
               </div>
-              <div className="text-[10px] text-text-muted leading-relaxed line-clamp-2">{l.description}</div>
+              <div className="text-xs text-text-muted leading-relaxed line-clamp-2">{l.description}</div>
             </div>
           </Link>
         ))}
@@ -166,7 +166,7 @@ function PainelDividido({
   return (
     <div className="grid grid-cols-12 gap-6 pt-3 text-left items-center">
       <div className="col-span-6 flex flex-col justify-center gap-4 pr-2">
-        {categoria.intro && <p className="text-xs text-text-muted leading-relaxed">{categoria.intro}</p>}
+        {categoria.intro && <p className="text-sm text-text-muted leading-relaxed">{categoria.intro}</p>}
 
         {categoria.highlights.length > 0 && (
           <div className="space-y-3 pt-3 border-t border-slate-200/50 dark:border-white/5">
@@ -181,8 +181,8 @@ function PainelDividido({
                   <Icone nome={h.icon} size={18} />
                 </div>
                 <div>
-                  <h5 className="text-xs font-semibold text-text-main mb-0.5">{h.title}</h5>
-                  <p className="text-[10px] text-text-muted leading-relaxed">{h.description}</p>
+                  <h5 className="text-sm font-semibold text-text-main mb-0.5">{h.title}</h5>
+                  <p className="text-sm text-text-muted leading-relaxed">{h.description}</p>
                 </div>
               </div>
             ))}
@@ -207,7 +207,7 @@ function PainelDividido({
             </div>
 
             {categoria.card.bullets.length > 0 && (
-              <div className="grid grid-cols-2 gap-2.5 text-[11px] text-text-muted my-3">
+              <div className="grid grid-cols-2 gap-2.5 text-xs text-text-muted my-3">
                 {categoria.card.bullets.map((b) => (
                   <div key={b} className="flex items-center gap-1.5">
                     <CheckCircle2 size={12} className="text-primary shrink-0" aria-hidden />
@@ -289,12 +289,12 @@ function PainelDeSolucoes({
                   {/* Sem `capitalize` desde a D-52: o título vem do admin já com as
                       maiúsculas certas, e a classe transformava "de" em "De"
                       ("Fábrica De Soluções De Dados"). */}
-                  <h4 className="text-text-main font-normal text-xs leading-tight group-hover:text-primary transition-colors">
+                  <h4 className="text-text-main font-medium text-sm leading-tight group-hover:text-primary transition-colors">
                     {item.title}
                   </h4>
                   {item.badge && <SeloDeSolucao texto={item.badge} className="ml-auto" />}
                 </div>
-                <p className="text-[11px] text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">
+                <p className="text-sm text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">
                   {item.description}
                 </p>
               </>
@@ -359,7 +359,7 @@ function CamadaDeConversao({
         {/* `!`: a regra global dos títulos (`h1…h6 { font-weight: 300 }`) está
             fora das camadas do Tailwind e venceria o peso sem ele. */}
         <h3 className="text-base font-semibold! tracking-normal font-display text-text-main leading-tight">{painel.titulo}</h3>
-        {painel.abertura && <p className="mt-1 text-[11px] text-text-muted leading-relaxed">{painel.abertura}</p>}
+        {painel.abertura && <p className="mt-1 text-sm text-text-muted leading-relaxed">{painel.abertura}</p>}
       </div>
 
       {painel.caminhos.length > 0 && (
@@ -376,7 +376,7 @@ function CamadaDeConversao({
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="block text-xs font-semibold text-text-main group-hover:text-primary transition-colors">{c.title}</span>
-                  {c.description && <span className="block text-[10px] text-text-muted leading-snug">{c.description}</span>}
+                  {c.description && <span className="block text-xs text-text-muted leading-snug">{c.description}</span>}
                 </span>
                 <ArrowRight size={15} className="text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" aria-hidden />
               </Link>
@@ -399,7 +399,7 @@ function CamadaDeConversao({
               onClick={aoNavegar}
               className={cn(
                 'flex-1 flex items-center justify-center gap-2 rounded-[6px] bg-primary text-white font-semibold py-2.5 px-3 whitespace-nowrap shadow-md hover:bg-primary-dark active:scale-[0.99] transition-all',
-                painel.ctaSecundario ? 'text-[11px]' : 'text-xs',
+                painel.ctaSecundario ? 'text-xs' : 'text-xs',
               )}
             >
               {painel.cta.label}
@@ -410,7 +410,7 @@ function CamadaDeConversao({
             <Link
               href={painel.ctaSecundario.href}
               onClick={aoNavegar}
-              className="flex-1 flex items-center justify-center rounded-[6px] border border-primary text-primary text-[11px] font-semibold py-2.5 px-3 whitespace-nowrap hover:bg-primary hover:text-white active:scale-[0.99] transition-all"
+              className="flex-1 flex items-center justify-center rounded-[6px] border border-primary text-primary text-xs font-semibold py-2.5 px-3 whitespace-nowrap hover:bg-primary hover:text-white active:scale-[0.99] transition-all"
             >
               {painel.ctaSecundario.label}
             </Link>
@@ -422,7 +422,7 @@ function CamadaDeConversao({
           (medido: 356px de 368). O `flex-wrap` é a rede para um rótulo mais
           comprido digitado no admin: quebra em duas em vez de vazar. */}
       {painel.provas.length > 0 && (
-        <ul data-testid="prova-social" className="flex flex-wrap items-baseline justify-center gap-x-1 gap-y-0.5 text-[10px] text-text-muted leading-relaxed">
+        <ul data-testid="prova-social" className="flex flex-wrap items-baseline justify-center gap-x-1 gap-y-0.5 text-xs text-text-muted leading-relaxed">
           {painel.provas.map((p, i) => (
             <li key={`${p.value} ${p.label ?? ''}`} className="flex items-baseline gap-1 whitespace-nowrap">
               {i > 0 && <span aria-hidden className="text-text-muted/60">·</span>}
@@ -499,7 +499,7 @@ function CasesDaAba({
               <span className="block text-xs font-semibold text-text-main group-hover:text-primary transition-colors truncate">
                 {`${textos.case}: ${atual.client}`}
               </span>
-              <span className="block text-[10px] text-text-muted leading-snug line-clamp-2">{atual.title}</span>
+              <span className="block text-xs text-text-muted leading-snug line-clamp-2">{atual.title}</span>
             </>
           ) : (
             <span className="block text-xs font-semibold text-text-main group-hover:text-primary transition-colors line-clamp-2">

@@ -45,7 +45,7 @@ export function ChipFilter({
      a barra, a categoria fora da tela ficaria inalcançável com mouse. */
   return (
     <div className="flex flex-wrap items-center gap-2 mb-8 pb-2">
-      <span className="text-[11px] font-bold text-text-muted uppercase mr-1 shrink-0">{label}</span>
+      <span className="text-xs font-bold text-text-muted uppercase mr-1 shrink-0">{label}</span>
       {options.map((opcao) => (
         <button
           key={opcao.id}

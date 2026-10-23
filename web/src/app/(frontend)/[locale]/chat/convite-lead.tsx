@@ -62,7 +62,7 @@ export function ConviteLead({
       className="max-w-[95%] sm:max-w-[85%] rounded-[6px] rounded-tl-[2px] border border-primary/30 bg-surface-3 dark:bg-[#222631] p-4 sm:p-5 shadow-xs"
     >
       {estado?.ok ? (
-        <p role="status" className="text-[13px] leading-relaxed text-text-main">
+        <p role="status" className="text-sm leading-relaxed text-text-main">
           {convite.sucesso}
         </p>
       ) : (
@@ -70,7 +70,7 @@ export function ConviteLead({
           <div className="flex items-start justify-between gap-3 mb-2">
             <div className="flex items-center gap-2">
               <Sparkles size={14} className="text-primary shrink-0" aria-hidden />
-              <h3 className="text-[13px] font-bold text-text-main tracking-tight">{convite.titulo}</h3>
+              <h3 className="text-sm font-bold text-text-main tracking-tight">{convite.titulo}</h3>
             </div>
             <button
               type="button"
@@ -82,7 +82,7 @@ export function ConviteLead({
             </button>
           </div>
 
-          <p className="text-[12px] text-text-muted leading-relaxed mb-3">{convite.mensagem}</p>
+          <p className="text-sm text-text-muted leading-relaxed mb-3">{convite.mensagem}</p>
 
           <form action={acao} aria-busy={enviando} className="space-y-2.5">
             <input type="hidden" name="source" value={caminho ?? ''} />
@@ -117,16 +117,16 @@ export function ConviteLead({
             <button
               type="submit"
               disabled={enviando}
-              className="w-full sm:w-auto px-4 py-2 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] hover:shadow-md hover:shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full sm:w-auto px-4 py-2 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-xs uppercase tracking-wider rounded-[6px] hover:shadow-md hover:shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] transition-all cursor-pointer"
             >
               {t.enviar}
             </button>
 
             {/* P-14: o visitante lê o destino do dado antes de enviar. */}
-            <p className="text-[10px] text-text-muted leading-relaxed">{convite.consentimento}</p>
+            <p className="text-sm text-text-muted leading-relaxed">{convite.consentimento}</p>
 
             {estado && !estado.ok && (
-              <p role="alert" className="text-[11px] font-medium text-red-500 dark:text-red-400">
+              <p role="alert" className="text-sm font-medium text-red-500 dark:text-red-400">
                 {estado.erro}
               </p>
             )}
@@ -138,4 +138,4 @@ export function ConviteLead({
 }
 
 const CAMPO =
-  'w-full bg-surface-1 dark:bg-[#0e1015]  text-text-main placeholder:text-text-muted px-3 py-2 rounded-[6px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-[12px] shadow-inner'
+  'w-full bg-surface-1 dark:bg-[#0e1015]  text-text-main placeholder:text-text-muted px-3 py-2 rounded-[6px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-xs shadow-inner'

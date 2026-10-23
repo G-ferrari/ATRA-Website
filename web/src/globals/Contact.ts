@@ -73,6 +73,23 @@ export const Contact: GlobalConfig = {
       },
     },
     {
+      /* #171 (21/10): o fundo do painel "Nossos Contatos", ao lado dos
+       * formulários da home, de /contato e de consultores. Mora aqui, e não em
+       * cada bloco, para os três saírem iguais e uma troca valer em todos —
+       * antes eram três fontes (a foto do bloco da home, nenhuma em /contato,
+       * e um arquivo fixo em consultores). */
+      name: 'panelPhoto',
+      type: 'upload',
+      relationTo: 'media',
+      label: { pt: 'Foto de fundo do painel de contatos', en: 'Contacts panel background photo' },
+      admin: {
+        description: {
+          pt: 'Aparece escurecida atrás de "Nossos Contatos", ao lado dos formulários de contato da home, de /contato e de consultores. Vazio, o painel fica só com o fundo escuro.',
+          en: 'Shown darkened behind "Our contacts", beside the contact forms on the home page, /contato and consultants. When empty, the panel keeps a plain dark background.',
+        },
+      },
+    },
+    {
       name: 'social',
       type: 'group',
       label: { pt: 'Redes sociais', en: 'Social networks' },
@@ -127,6 +144,26 @@ export const Contact: GlobalConfig = {
             description: {
               pt: 'Aparece no formulário de candidatura de cada vaga, acima do botão de enviar. Texto do RH e do jurídico: por quanto tempo o currículo fica guardado (o site apaga sozinho depois de 6 meses), quem tem acesso e para que ele é usado. Vazio, o formulário de candidatura não aparece.',
               en: 'Shown on each job application form, above the submit button. Written by HR and legal: how long the CV is kept (the site deletes it after 6 months), who can access it and what it is used for. When empty, the application form is not shown.',
+            },
+          },
+        },
+        {
+          /* #207 (22/10): o aviso do banco de talentos (o Trabalhe Conosco de
+           * /carreiras). Morava em Sistema → Integrações desde a D-62, como a
+           * condição do envio ao RD; o Trabalhe Conosco saiu do RD (D-67), e o
+           * aviso ficou como o que é — o de privacidade do cadastro, ao lado do
+           * da candidatura. Diferente daquele, **não trava** o formulário: o
+           * banco de talentos já estava no ar sem aviso, e travar agora o
+           * tiraria do ar até o RH escrever. Cada cadastro guarda uma cópia do
+           * que viu (`form-submissions.talent.privacyNotice`). */
+          name: 'talentPoolNotice',
+          type: 'textarea',
+          maxLength: 1500,
+          label: { pt: 'Aviso de privacidade do banco de talentos', en: 'Talent pool privacy notice' },
+          admin: {
+            description: {
+              pt: 'Aparece no formulário do Trabalhe Conosco (banco de talentos, em /carreiras), acima do botão de enviar. Texto do RH e do jurídico: para que o cadastro é usado, por quanto tempo fica guardado e como pedir a exclusão. O cadastro fica aqui no admin e vai ao ATRAIR quando a integração está ligada; não vai ao RD Station. Vazio, o formulário aparece sem aviso.',
+              en: 'Shown on the Work with us form (talent pool, on /carreiras), above the submit button. Written by HR and legal: what the sign-up is used for, how long it is kept and how to ask for deletion. Sign-ups stay here in the admin and go to ATRAIR when that integration is on; they do not go to RD Station. When empty, the form is shown without a notice.',
             },
           },
         },

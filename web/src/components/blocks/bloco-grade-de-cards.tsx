@@ -82,7 +82,7 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
             {bloco.title && (
               <h2
                 className={cn(
-                  'text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main',
+                  'text-2xl sm:text-3xl md:text-4xl font-display text-text-main',
                   /* ⚠️ 12px que decidem o aceite: /sobre fecha o `h2` com `mb-3`
                      (`About.tsx:398`), "Vantagens de ser ATRA" não (`:554`), e
                      como é o último filho do cabeçalho a margem vira altura. */
@@ -161,12 +161,12 @@ export function BlocoGradeDeCards({ bloco }: { bloco: BlocoIconCardGrid }) {
                     >
                       {item.title}
                     </h3>
-                    <p className="text-xs text-text-muted font-light leading-relaxed">{item.description}</p>
+                    <p className="text-sm text-text-muted leading-relaxed">{item.description}</p>
                   </>
                 ) : (
                   /* Sem descrição o legado usa <p>, não <h3>: o texto é a frase
                    * inteira do card (`About.tsx:445`). */
-                  <p className="text-xs text-text-muted font-light group-hover:text-text-main transition-colors leading-relaxed">
+                  <p className="text-sm text-text-muted group-hover:text-text-main transition-colors leading-relaxed">
                     {item.title}
                   </p>
                 )}

@@ -187,7 +187,7 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
         <section className="pb-24">
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-3xl mx-auto">
-              <h2 className="text-2xl font-display font-light text-text-main mb-6">
+              <h2 className="text-2xl font-display text-text-main mb-6">
                 {t.candidatarTitulo}
               </h2>
               <Candidatura jobId={vaga.id} jobTitle={vaga.title} avisoDePrivacidade={avisoDeCandidatura} />

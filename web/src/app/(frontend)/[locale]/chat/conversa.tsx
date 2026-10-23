@@ -166,11 +166,11 @@ export function Conversa({
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-xs sm:text-sm font-bold text-text-main tracking-tight">Converse com a ATRA</h2>
-                  <span className="bg-primary/10 border border-primary/20 text-primary text-[9.5px] uppercase font-bold px-2 py-0.5 rounded-[6px] tracking-wider">
+                  <span className="bg-primary/10 border border-primary/20 text-primary text-xs uppercase font-bold px-2 py-0.5 rounded-[6px] tracking-wider">
                     BETA
                   </span>
                 </div>
-                <p className="text-[10.5px] text-text-muted">IA Especialista em Dados &amp; Negócios</p>
+                <p className="text-sm text-text-muted">IA Especialista em Dados &amp; Negócios</p>
               </div>
             </div>
           </div>
@@ -185,7 +185,7 @@ export function Conversa({
                   setTexto('')
                 }}
                 title="Reiniciar conversa"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-surface-3 dark:bg-[#222631]  text-text-muted hover:text-text-main hover:border-primary/50 text-[11px] font-semibold transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-surface-3 dark:bg-[#222631] text-text-muted hover:text-text-main hover:border-primary/50 text-xs font-semibold transition-all active:scale-95 cursor-pointer"
               >
                 <RotateCcw size={12} aria-hidden />
                 <span className="hidden sm:inline">Nova conversa</span>
@@ -214,11 +214,11 @@ export function Conversa({
                 <Sparkles size={26} className="text-primary" aria-hidden />
               </div>
 
-              <h3 className="text-lg sm:text-xl font-bold text-text-main mb-2 tracking-tight">
+              <h3 className="text-lg sm:text-xl text-text-main mb-2 tracking-tight">
                 Como podemos impulsionar sua empresa hoje?
               </h3>
 
-              <p className="text-xs sm:text-[13px] text-text-muted mb-6 max-w-lg leading-relaxed">
+              <p className="text-base text-text-muted mb-6 max-w-lg leading-relaxed">
                 Descubra nossas soluções em{' '}
                 <strong className="text-text-main font-semibold">Inteligência Artificial</strong>, arquitetura de{' '}
                 <strong className="text-text-main font-semibold">Lakehouse</strong>,{' '}
@@ -238,7 +238,7 @@ export function Conversa({
                       <Icone nome={s.icone} size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[11.5px] font-bold text-text-main mb-0.5 flex items-center justify-between group-hover:text-primary transition-colors">
+                      <div className="text-xs font-bold text-text-main mb-0.5 flex items-center justify-between group-hover:text-primary transition-colors">
                         <span>{s.titulo}</span>
                         <ArrowUpRight
                           size={12}
@@ -246,7 +246,7 @@ export function Conversa({
                           aria-hidden
                         />
                       </div>
-                      <p className="text-[10.5px] text-text-muted leading-relaxed line-clamp-2">{s.descricao}</p>
+                      <p className="text-sm text-text-muted leading-relaxed line-clamp-2">{s.descricao}</p>
                     </div>
                   </button>
                 ))}
@@ -272,7 +272,7 @@ export function Conversa({
 
               <div
                 className={cn(
-                  'p-3.5 sm:p-4 text-[13px] leading-relaxed overflow-hidden',
+                  'p-3.5 sm:p-4 text-sm leading-relaxed overflow-hidden',
                   m.role === 'user'
                     ? 'bg-primary text-white font-medium rounded-[6px] rounded-tr-[2px] shadow-md shadow-primary/20'
                     : 'bg-surface-3 dark:bg-[#222631] text-text-main rounded-[6px] rounded-tl-[2px]  shadow-xs',
@@ -310,7 +310,7 @@ export function Conversa({
                 </div>
               </div>
               <div className="px-4 py-3 rounded-[6px] rounded-tl-[2px] bg-surface-3 dark:bg-[#222631]  flex items-center gap-2 shadow-xs">
-                <span className="text-[11px] text-text-muted mr-1 font-medium">Consultando especialistas ATRA</span>
+                <span className="text-xs text-text-muted mr-1 font-medium">Consultando especialistas ATRA</span>
                 <div className="flex gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -338,20 +338,20 @@ export function Conversa({
               placeholder="O que você deseja construir hoje?"
               aria-label="O que você deseja construir hoje?"
               disabled={carregando}
-              className="flex-1 bg-surface-1 dark:bg-[#0e1015]  text-text-main placeholder:text-text-muted px-4 py-2.5 sm:py-3 rounded-[6px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-xs sm:text-[13px] shadow-inner"
+              className="flex-1 bg-surface-1 dark:bg-[#0e1015] text-text-main placeholder:text-text-muted px-4 py-2.5 sm:py-3 rounded-[6px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-base sm:text-sm shadow-inner"
             />
             <button
               type="submit"
               disabled={!texto.trim() || carregando}
               aria-label="Enviar mensagem"
-              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-[11px] uppercase tracking-wider rounded-[6px] flex items-center justify-center gap-1.5 hover:shadow-md hover:shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] transition-all cursor-pointer shrink-0"
+              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-linear-to-r from-primary to-primary-dark text-white font-bold text-xs uppercase tracking-wider rounded-[6px] flex items-center justify-center gap-1.5 hover:shadow-md hover:shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] transition-all cursor-pointer shrink-0"
             >
               <Send size={14} className={cn(carregando && 'opacity-0')} aria-hidden />
               <span className="hidden sm:inline">Enviar</span>
             </button>
           </form>
           <div className="text-center mt-2">
-            <p className="text-[10px] text-text-muted font-medium flex justify-center items-center gap-1.5">
+            <p className="text-sm text-text-muted font-medium flex justify-center items-center gap-1.5">
               <Sparkles size={10} className="text-primary" aria-hidden /> POWERED BY ATRA AI • Inteligência para Negócios
               &amp; Nuvem
             </p>

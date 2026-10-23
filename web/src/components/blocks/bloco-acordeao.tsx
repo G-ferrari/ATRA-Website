@@ -35,11 +35,11 @@ export function BlocoAcordeao({ bloco }: { bloco: BlocoAccordionSteps }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="mb-10 lg:mb-12">
           {bloco.eyebrow && <PilulaDeSecao texto={bloco.eyebrow} icone={bloco.eyebrowIcon} />}
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-display text-text-main leading-tight tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main leading-tight tracking-tight">
             {bloco.title}
           </h2>
           {bloco.description && (
-            <p className="text-xs sm:text-sm text-text-muted font-light mt-2 max-w-2xl">{bloco.description}</p>
+            <p className="text-base text-text-muted mt-2 max-w-2xl">{bloco.description}</p>
           )}
         </div>
 
@@ -63,7 +63,7 @@ export function BlocoAcordeao({ bloco }: { bloco: BlocoAccordionSteps }) {
                     <div>
                       <div className="text-xs font-bold text-text-main">{bloco.imageBadge.title}</div>
                       {bloco.imageBadge.subtitle && (
-                        <div className="text-[10px] text-text-muted">{bloco.imageBadge.subtitle}</div>
+                        <div className="text-xs text-text-muted">{bloco.imageBadge.subtitle}</div>
                       )}
                     </div>
                   </div>
@@ -121,7 +121,7 @@ export function BlocoAcordeao({ bloco }: { bloco: BlocoAccordionSteps }) {
                       </span>
                     </button>
                     {ativa && (
-                      <div className="px-5 pb-5 pt-0 text-text-muted text-xs sm:text-sm leading-relaxed font-light pl-14">
+                      <div className="px-5 pb-5 pt-0 text-text-muted text-sm sm:text-base leading-relaxed pl-14">
                         {etapa.description}
                       </div>
                     )}

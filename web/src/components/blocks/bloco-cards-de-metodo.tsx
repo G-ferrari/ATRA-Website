@@ -48,11 +48,11 @@ export function BlocoCardsDeMetodo({ bloco }: { bloco: BlocoMethodCards }) {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
           <div className="max-w-3xl">
             {bloco.eyebrow && <PilulaDeSecao texto={bloco.eyebrow} icone={bloco.eyebrowIcon} />}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-display text-text-main leading-tight tracking-tight mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main leading-tight tracking-tight mb-4">
               {bloco.title}
             </h2>
             {bloco.description && (
-              <p className="text-xs sm:text-sm md:text-base text-text-muted leading-relaxed font-light">
+              <p className="text-base text-text-muted leading-relaxed">
                 {bloco.description}
               </p>
             )}
@@ -105,14 +105,14 @@ export function BlocoCardsDeMetodo({ bloco }: { bloco: BlocoMethodCards }) {
 
                   <h3
                     className={cn(
-                      'text-base sm:text-lg font-bold font-display text-text-main mb-3 transition-colors leading-snug',
+                      'text-base sm:text-lg font-display text-text-main mb-3 transition-colors leading-snug',
                       cor.titulo,
                     )}
                   >
                     {item.title}
                   </h3>
 
-                  <p className="text-text-muted text-xs sm:text-sm leading-relaxed font-light mb-6">
+                  <p className="text-text-muted text-sm leading-relaxed mb-6">
                     {item.description}
                   </p>
                 </div>
@@ -120,7 +120,7 @@ export function BlocoCardsDeMetodo({ bloco }: { bloco: BlocoMethodCards }) {
                 {item.bullets.length > 0 && (
                   <div className="pt-4 border-t border-slate-200 dark:border-white/5 space-y-2">
                     {item.bullets.map((texto) => (
-                      <div key={texto} className="flex items-center gap-2 text-xs text-text-muted font-light">
+                      <div key={texto} className="flex items-center gap-2 text-xs text-text-muted">
                         <CheckCircle2 size={14} className={cn('shrink-0', cor.marca)} aria-hidden />
                         <span>{texto}</span>
                       </div>

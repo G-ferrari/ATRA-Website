@@ -97,11 +97,81 @@ describe('sincronizarComRd', () => {
     expect(updateOne).not.toHaveBeenCalled()
   })
 
-  it('banco de talentos sem aviso registrado não vai ao RD (D-62)', async () => {
-    const { resultado, updateOne } = chamar({ id: 8, kind: 'talent-pool', email: 'c@x.com' })
+  /* D-67: nem com a cópia do aviso que, da D-62 à D-67, o liberava. */
+  it('banco de talentos não vai ao RD, nem com o aviso registrado (D-67)', async () => {
+    const { resultado, updateOne } = chamar({
+      id: 8,
+      kind: 'talent-pool',
+      email: 'c@x.com',
+      talent: { privacyNotice: 'Seu cadastro também vai ao RD Station.' },
+    })
     await resultado
     expect(fetch).not.toHaveBeenCalled()
     expect(updateOne).not.toHaveBeenCalled()
+  })
+
+  /* Task 050: o formulário do admin vai com o identificador e as tags do
+     próprio formulário, lido pelo gancho a partir do `form` do envio. */
+  describe('formulário do admin', () => {
+    const envio = {
+      id: 11,
+      kind: 'custom-form',
+      email: 'ana@empresa.com.br',
+      name: 'Ana',
+      form: 12,
+      answers: [{ fieldId: 'f3', label: 'Cargo', value: 'CDO' }],
+      communicationConsent: true,
+    }
+    const formulario = {
+      id: 12,
+      name: 'Inscrição',
+      fields: [
+        { id: 'f1', type: 'email', width: 'full', label: 'E-mail' },
+        { id: 'f3', type: 'jobTitle', width: 'full', label: 'Cargo' },
+      ],
+      submitLabel: 'Enviar',
+      afterSubmit: 'message',
+      successMessage: 'Ok',
+      rd: { conversionIdentifier: 'Inscrição Evento', tags: ['evento'] },
+    }
+    const corpo = () =>
+      JSON.parse(String((vi.mocked(fetch).mock.calls[0] as unknown as [string, RequestInit])[1].body)).payload
+
+    it('lê o formulário (em português, sem o req do create) e manda identificador, tags, cargo e consentimento', async () => {
+      const { resultado, lerMaterial, updateOne } = chamar(envio, false, async () => formulario)
+      await resultado
+      expect(lerMaterial).toHaveBeenCalledWith(expect.objectContaining({ collection: 'forms', id: 12, locale: 'pt' }))
+      expect(lerMaterial.mock.calls[0][0]).not.toHaveProperty('req')
+      expect(corpo()).toMatchObject({
+        conversion_identifier: 'Inscrição Evento',
+        tags: ['evento'],
+        job_title: 'CDO',
+        legal_bases: [{ category: 'communications', type: 'consent', status: 'granted' }],
+      })
+      expect(updateOne).toHaveBeenCalledWith(
+        expect.objectContaining({ data: { rd: expect.objectContaining({ eventUuid: 'uuid-1', error: null }) } }),
+      )
+    })
+
+    it('o formulário populado também serve', async () => {
+      const { resultado, lerMaterial } = chamar({ ...envio, form: { id: 12, name: 'Inscrição' } }, false, async () => formulario)
+      await resultado
+      expect(lerMaterial).toHaveBeenCalledWith(expect.objectContaining({ id: 12 }))
+    })
+
+    it('formulário apagado ou ilegível: não chama o RD, o lead fica, e o motivo vai para rd.error', async () => {
+      for (const ler of [async () => null, async () => Promise.reject(new Error('banco fora'))]) {
+        vi.mocked(fetch).mockClear()
+        const { resultado, updateOne } = chamar(envio, false, ler)
+        await expect(resultado).resolves.toEqual(envio)
+        expect(fetch).not.toHaveBeenCalled()
+        expect(updateOne).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: { rd: expect.objectContaining({ syncedAt: null, error: 'formulário do envio apagado ou ilegível' }) },
+          }),
+        )
+      }
+    })
   })
 
   /* Task 046: o download vai com o identificador do e-book, lido pelo gancho. */

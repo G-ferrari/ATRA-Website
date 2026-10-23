@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { CSSProperties } from 'react'
 import { Mona_Sans } from 'next/font/google'
 import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
@@ -15,6 +16,7 @@ import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { HtmlComTema } from '@/components/layout/tema'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
+import { lerAparencia } from '@/lib/aparencia'
 import { ORIGEM } from '@/lib/seo'
 import { SCRIPT_DO_TEMA } from '@/lib/tema'
 import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
@@ -139,6 +141,8 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   const avisoDeCookies = await lerAvisoDeCookies(locale)
   /* D-40: os ids do GTM e da Lusha, do admin. */
   const rastreamento = await lerRastreamento()
+  /* #215 (D-65): o peso dos títulos, do admin. */
+  const aparencia = await lerAparencia()
 
   const navegacao = toNavegacao({
     global: navGlobal,
@@ -172,8 +176,12 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
      * assim as bordas divergiam. Porte fiel vale para isso também (D-15). */
     <HtmlComTema lang={locale === 'pt' ? 'pt-BR' : 'en'} classeBase={`${monaSans.variable} h-full`}>
       {/* A árvore reproduz a do legado (`App.tsx:2597`): o `<body>` fica limpo,
-        * como no `index.html` dele, e as classes de casca vivem no wrapper. */}
-      <body>
+        * como no `index.html` dele, e as classes de casca vivem no wrapper.
+        * A única coisa nele é a variável do peso dos títulos (#215), que a
+        * regra de `h1`–`h6` do `globals.css` lê: variável, e não classe, porque
+        * o valor vem do admin e uma classe montada em tempo de execução o
+        * Tailwind não gera. */}
+      <body style={{ '--peso-dos-titulos': aparencia.pesoDosTitulos } as CSSProperties}>
         {/* Primeiro filho do `<body>`, de propósito: roda antes de qualquer
             conteúdo ser pintado. Ver `lib/tema.ts`. */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_DO_TEMA }} />

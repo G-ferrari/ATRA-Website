@@ -88,7 +88,6 @@ export function toIntegracaoRd(doc: Pick<Integration, 'rdStationMarketing'>): In
       download: identificador(c?.materialDownload, CONVERSOES_PADRAO.materialDownload),
       consultores: identificador(c?.consultantRequest, CONVERSOES_PADRAO.consultantRequest),
       diagnostico: identificador(c?.dataMaturityDiagnostic, CONVERSOES_PADRAO.dataMaturityDiagnostic),
-      talentos: identificador(c?.talentPool, CONVERSOES_PADRAO.talentPool),
     },
     tags: {
       contato: tags(tg?.contact, TAGS_PADRAO.contact),
@@ -97,8 +96,6 @@ export function toIntegracaoRd(doc: Pick<Integration, 'rdStationMarketing'>): In
       download: tags(tg?.materialDownload, TAGS_PADRAO.materialDownload),
       consultores: tags(tg?.consultantRequest, TAGS_PADRAO.consultantRequest),
       diagnostico: tags(tg?.dataMaturityDiagnostic, TAGS_PADRAO.dataMaturityDiagnostic),
-      talentos: tags(tg?.talentPool, TAGS_PADRAO.talentPool),
     },
-    avisoAoCandidato: g?.talentPoolNotice?.trim() || null,
   }
 }
