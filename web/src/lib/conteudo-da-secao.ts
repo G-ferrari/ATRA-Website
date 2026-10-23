@@ -1,7 +1,7 @@
 import type { Locale } from './locales'
 import { buscarPostsDoBlog } from './blog'
 import { lerContato } from './contato'
-import { existentesNoIdioma } from './existe-no-idioma'
+import { ondeExisteNoIdioma } from './existe-no-idioma'
 import { toCaseCard } from './mappers/case'
 import { toConsultantRole } from './mappers/consultant'
 import type { UltimosConteudos } from './mappers/insights'
@@ -18,6 +18,8 @@ import type { SecaoMestra } from './paginas-mestras'
 import { getPayload } from './payload'
 import type { CaseCard, ConteudoDaSecao } from '@/types/content'
 
+const PUBLICADO = { _status: { equals: 'published' as const } }
+
 /* A parte automática de cada página-mestra (feature paginas-mestras, D-55): as
  * mesmas consultas que as rotas de seção faziam, agora num lugar só, para o
  * resolvedor injetar nos blocos "Lista da seção" e "Destaques da seção".
@@ -27,6 +29,10 @@ import type { CaseCard, ConteudoDaSecao } from '@/types/content'
  * editor quer ver no preview. `select` onde a collection tem blocos: sem ele o
  * adapter faz um JOIN por tipo de bloco e `/solucoes` levava 18–23 s.
  *
+ * ⚠️ E toda lista cujo cartão leva ao item passa por `ondeExisteNoIdioma`: no
+ * inglês, documento sem slug em inglês daria link para 404 (D-69). ATRA na
+ * mídia não passa — a matéria abre no veículo, não há página do item.
+ *
  * Insights e Carreiras não têm lista aqui: a Insights monta as faixas no
  * próprio bloco dela, e Carreiras usa o bloco de vagas. */
 export async function buscarConteudoDaSecao(
@@ -35,41 +41,39 @@ export async function buscarConteudoDaSecao(
   { rascunho, pagina = 1 }: { rascunho: boolean; pagina?: number },
 ): Promise<ConteudoDaSecao | null> {
   const payload = await getPayload()
-  const publicado = rascunho ? {} : { where: { _status: { equals: 'published' as const } } }
+  /* Fora do modo rascunho, só publicado; nos dois, o corte do idioma. */
+  const onde = ondeExisteNoIdioma(locale, rascunho ? undefined : PUBLICADO)
+  const publicado = rascunho ? {} : { where: PUBLICADO }
 
   switch (secao) {
-    /* Soluções e segmentos: no inglês, só o que existe no inglês — o mesmo
-       corte do menu (`existe-no-idioma.ts`, task #52). */
     case 'solucoes': {
-      const where = { _status: { equals: 'published' } } as const
-      const docs = await existentesNoIdioma(locale, 'solutions', where, payload.find({
+      const { docs } = await payload.find({
         collection: 'solutions',
         locale,
         depth: 0,
         limit: 100,
         sort: 'order',
-        where,
+        where: ondeExisteNoIdioma(locale, PUBLICADO),
         select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true, badge: true },
-      }))
+      })
       return { secao, solucoes: docs.map(toSolutionCard) }
     }
 
     case 'segmentos': {
-      const where = { _status: { equals: 'published' } } as const
-      const docs = await existentesNoIdioma(locale, 'segments', where, payload.find({
+      const { docs } = await payload.find({
         collection: 'segments',
         locale,
         depth: 0,
         limit: 100,
         sort: 'order',
-        where,
+        where: ondeExisteNoIdioma(locale, PUBLICADO),
         select: { name: true, slug: true, icon: true, shortDescription: true },
-      }))
+      })
       return { secao, segmentos: docs.map(toSegmentCard) }
     }
 
     case 'webinars': {
-      const { docs } = await payload.find({ collection: 'webinars', locale, depth: 1, limit: 100, sort: 'order', draft: rascunho, ...publicado })
+      const { docs } = await payload.find({ collection: 'webinars', locale, depth: 1, limit: 100, sort: 'order', draft: rascunho, where: onde })
       return { secao, webinars: docs.map(toWebinar) }
     }
 
@@ -83,7 +87,7 @@ export async function buscarConteudoDaSecao(
 
     case 'cases': {
       // depth: 2 popula heroImage e topics — os mappers exigem documento, não id.
-      const { docs } = await payload.find({ collection: 'cases', locale, depth: 2, limit: 100, sort: '-publishedAt', draft: rascunho, ...publicado })
+      const { docs } = await payload.find({ collection: 'cases', locale, depth: 2, limit: 100, sort: '-publishedAt', draft: rascunho, where: onde })
       /* Um rascunho pela metade não derruba a listagem: mapeia um a um e separa
        * os que ainda não estão prontos (só existem no modo rascunho). */
       const cases: CaseCard[] = []
@@ -129,32 +133,36 @@ export async function buscarConteudoDaSecao(
  *
  * ⚠️ Só publicado, mesmo no modo rascunho: a Insights é vitrine do que está no
  * ar, e o critério de aceite é que rascunho nunca aparece nela.
+ *
+ * O corte do idioma vai no `where` (D-69), e não depois: os três primeiros de
+ * cada faixa no inglês são três que abrem no inglês.
  */
 export async function buscarUltimosConteudos(locale: Locale, limite: number): Promise<UltimosConteudos> {
   const payload = await getPayload()
-  const publicado = { _status: { equals: 'published' as const } }
+  const noIdioma = ondeExisteNoIdioma(locale, PUBLICADO)
 
   const [cases, posts, webinars, materias, ebooks] = await Promise.all([
-    payload.find({ collection: 'cases', locale, depth: 2, limit: limite, sort: '-publishedAt', where: publicado }),
+    payload.find({ collection: 'cases', locale, depth: 2, limit: limite, sort: '-publishedAt', where: noIdioma }),
     payload.find({
       collection: 'posts',
       locale,
       depth: 1,
       limit: limite,
       sort: '-publishedAt',
-      where: publicado,
+      where: noIdioma,
       /* Sem o `body`: JSONB de artigo inteiro só para desenhar cartão. */
       select: { title: true, slug: true, description: true, coverImage: true, tags: true, publishedAt: true },
     }),
-    payload.find({ collection: 'webinars', locale, depth: 1, limit: limite, sort: 'order', where: publicado }),
-    payload.find({ collection: 'press', locale, depth: 1, limit: limite, sort: 'order', where: publicado }),
+    payload.find({ collection: 'webinars', locale, depth: 1, limit: limite, sort: 'order', where: noIdioma }),
+    /* A matéria abre no veículo: sem página do item, sem corte do idioma. */
+    payload.find({ collection: 'press', locale, depth: 1, limit: limite, sort: 'order', where: PUBLICADO }),
     payload.find({
       collection: 'resources',
       locale,
       depth: 1,
       limit: limite,
       sort: '-publishedAt',
-      where: { kind: { equals: 'ebook' }, ...publicado },
+      where: ondeExisteNoIdioma(locale, { kind: { equals: 'ebook' }, ...PUBLICADO }),
     }),
   ])
 

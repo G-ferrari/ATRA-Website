@@ -1,51 +1,43 @@
 import type { Where } from 'payload'
 
 import { DEFAULT_LOCALE, type Locale } from './locales'
-import { soOsQueExistemNoIdioma } from './mappers/idioma'
-import { getPayload } from './payload'
 
-/* Listagem no inglês só com o que existe no inglês (decisão de 23/10, task
- * #52). A regra e o porquê estão em `mappers/idioma.ts`; aqui fica a consulta
- * que ela pede.
+/* No inglês, listagem só com o que existe no inglês (D-69, task #52).
  *
- * Em português não há consulta a mais: é o idioma em que todo documento nasce.
- * Nos outros, a mesma consulta corre de novo **sem** fallback, só com o slug —
- * barata, e em paralelo com a da listagem. A da listagem continua com o
- * fallback: é ele que dá texto em português ao campo que ainda não foi
- * traduzido num documento que já existe no inglês (P-08). */
+ * Existe quando tem slug gravado **naquele** idioma. A rota `/en/<seção>/<slug>`
+ * consulta a coluna do inglês, e o fallback resolve leitura, não busca: um
+ * documento criado no admin só em português chega a uma consulta em inglês com
+ * o slug português emprestado, e o link montado com ele responde 404. Foi o
+ * achado de 07/10 no menu de Soluções, e a mesma conta valia para segmentos,
+ * parceiros, artigos, webinars, e-books, cases e vagas.
+ *
+ * O corte vai no `where`, e não num filtro depois da consulta: condição sobre
+ * campo localizado bate na coluna do idioma pedido, **sem** fallback — a mesma
+ * armadilha que dava o 404, usada a favor. A leitura continua com o fallback,
+ * que dá o texto em português ao campo ainda não traduzido de um documento que
+ * já existe no inglês (P-08). Uma consulta só, e o `limit` conta o que aparece:
+ * os três primeiros da Insights são três que abrem.
+ *
+ * É a regra do catálogo da ATRA AI (`slugNoIdioma`, em `mappers/idioma.ts`),
+ * escrita para o banco.
+ *
+ * ⚠️ Não é o `temIngles` do sitemap, e a diferença é de propósito. Lá a
+ * pergunta é se o inglês é **outro texto**: anunciar ao Google uma URL inglesa
+ * que serve português é pedir indexação no idioma errado. Aqui a pergunta é se
+ * o endereço **abre**. As 18 soluções da D-52 nasceram com o inglês copiado do
+ * português, de propósito, para a rota existir — pelo `temIngles` todas
+ * sairiam do menu inglês. */
 
-type Id = number | string
-
-/** As collections listadas no site cujo endereço sai do slug do documento. */
-export type ColecaoComSlug = 'solutions' | 'segments' | 'partners' | 'cases'
+const comSlugNoIdioma = (): Where => ({ slug: { exists: true } })
 
 /**
- * Espera a consulta da listagem e tira dela o que não existe no idioma.
+ * O `where` de uma listagem com o corte do idioma. Em português volta como
+ * veio: é o idioma em que todo documento nasce.
  *
- * `where` é o filtro da listagem. Repetido na consulta sem fallback para que
- * ela também só leia publicado: a Local API roda com `overrideAccess: true`
- * (regra 4 do CLAUDE.md).
+ * Só para collection cujo endereço sai do slug (`slugField`, localizado).
  */
-export async function existentesNoIdioma<T extends { id: Id; slug?: string | null }>(
-  locale: Locale,
-  collection: ColecaoComSlug,
-  where: Where | undefined,
-  consulta: Promise<{ docs: T[] }>,
-): Promise<T[]> {
-  if (locale === DEFAULT_LOCALE) return (await consulta).docs
-
-  const payload = await getPayload()
-  const [{ docs }, semReserva] = await Promise.all([
-    consulta,
-    payload.find({
-      collection,
-      locale,
-      fallbackLocale: false,
-      depth: 0,
-      pagination: false,
-      where,
-      select: { slug: true },
-    }),
-  ])
-  return soOsQueExistemNoIdioma(docs, semReserva.docs, locale)
+export function ondeExisteNoIdioma(locale: Locale, where?: Where): Where | undefined {
+  if (locale === DEFAULT_LOCALE) return where
+  if (!where || Object.keys(where).length === 0) return comSlugNoIdioma()
+  return { and: [where, comSlugNoIdioma()] }
 }
