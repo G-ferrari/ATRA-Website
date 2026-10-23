@@ -4,6 +4,7 @@ import { locale as getLocale } from 'next/root-params'
 import { cache } from 'react'
 import type { Where } from 'payload'
 
+import { ondeExisteNoIdioma } from './existe-no-idioma'
 import { isLocale, type Locale } from './locales'
 import { metadataDe } from './seo'
 import {
@@ -128,7 +129,8 @@ async function montar(filtro: Where, locale: Locale, rascunho: boolean): Promise
       depth: 0,
       limit: 100,
       sort: '-publishedAt',
-      where: rascunho ? {} : { _status: { equals: 'published' } },
+      /* No inglês, só a vaga com slug em inglês (D-69): o cartão leva à página. */
+      where: ondeExisteNoIdioma(locale, rascunho ? undefined : { _status: { equals: 'published' } }),
     })
     comVagas(blocos, vagas.map((v) => toVaga(v, locale)))
     /* O aviso do banco de talentos vem de Sistema → Contato → Candidaturas, ao

@@ -22,6 +22,7 @@ import { SCRIPT_DO_TEMA } from '@/lib/tema'
 import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
 import { lerContato } from '@/lib/contato'
 import { organizacao } from '@/lib/jsonld'
+import { buscarListasDoMenu } from '@/lib/listas-do-menu'
 import { LOCALES, isLocale } from '@/lib/locales'
 import { toPainelDeConversao } from '@/lib/mappers/conversion-panel'
 import { toNavegacao } from '@/lib/mappers/navigation'
@@ -75,63 +76,21 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   if (!isLocale(locale)) notFound()
 
   /* O menu é ilha cliente e não busca dado (blocos.md, regra 1): o layout
-   * resolve as três fontes e entrega pronto. `select` em cada consulta porque
-   * o menu só precisa do cartão — sem ele, `solutions` arrasta um join por
-   * tipo de bloco e o cabeçalho passa a custar dezenas de segundos. */
+   * resolve as fontes e entrega pronto. As listas de collection — e o corte
+   * do idioma que elas pedem (D-69) — estão em `lib/listas-do-menu.ts`. */
   const payload = await getPayload()
-  const [navGlobal, rodapeGlobal, institucional, contato, solucoes, parceiros, segmentos, painelGlobal, casesDoMenu] = await Promise.all([
+  const [navGlobal, rodapeGlobal, institucional, contato, listas, painelGlobal] = await Promise.all([
     payload.findGlobal({ slug: 'navigation', locale, depth: 0 }),
     payload.findGlobal({ slug: 'footer', locale, depth: 0 }),
     /* `depth: 1` só pelo logo: o `site-settings` também carrega selos e
        métricas, que o cabeçalho não usa. */
     payload.findGlobal({ slug: 'site-settings', locale, depth: 1 }),
     lerContato(),
-    payload.find({
-      collection: 'solutions',
-      locale,
-      depth: 0,
-      limit: 100,
-      sort: 'order',
-      /* ⚠️ O filtro de status é **obrigatório aqui**, e não redundante com o
-       * `access.read` da collection: a Local API roda com `overrideAccess: true`
-       * por padrão, então o acesso que esconde rascunho do público **não se
-       * aplica**. Sem isto o mega-menu lista rascunho para todo visitante — o
-       * que só apareceu quando MIG-093 pôs 12 soluções em rascunho, meses depois
-       * de a consulta ter sido escrita. */
-      where: { _status: { equals: 'published' } },
-      select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true, badge: true },
-    }),
-    payload.find({
-      collection: 'partners',
-      locale,
-      depth: 1,
-      limit: 100,
-      sort: 'order',
-      select: { name: true, slug: true, logo: true, logoDark: true, logoScale: true, description: true },
-    }),
-    payload.find({
-      collection: 'segments',
-      locale,
-      depth: 0,
-      limit: 100,
-      sort: 'order',
-      where: { _status: { equals: 'published' } },
-      select: { name: true, slug: true, icon: true, shortDescription: true },
-    }),
+    buscarListasDoMenu(locale),
     /* D-51: o painel de conversão do menu de Soluções. `depth: 0` porque os
-       cases de cada aba chegam só como id — quem os resolve é a consulta
-       abaixo, que já filtra o que está publicado. */
+       cases de cada aba chegam só como id — quem os resolve é a lista de
+       cases do menu, que já filtra o que está publicado. */
     payload.findGlobal({ slug: 'conversion-panel', locale, depth: 0 }),
-    payload.find({
-      collection: 'cases',
-      locale,
-      /* `depth: 1` só pela capa. */
-      depth: 1,
-      limit: 50,
-      sort: '-publishedAt',
-      where: { _status: { equals: 'published' } },
-      select: { title: true, slug: true, client: true, heroImage: true },
-    }),
   ])
 
   const logo = toImageOpcional(institucional.logo, 'site-settings.logo')
@@ -146,12 +105,12 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
 
   const navegacao = toNavegacao({
     global: navGlobal,
-    solucoes: solucoes.docs,
-    parceiros: parceiros.docs,
-    segmentos: segmentos.docs,
+    solucoes: listas.solucoes,
+    parceiros: listas.parceiros,
+    segmentos: listas.segmentos,
     conversao: toPainelDeConversao({
       global: painelGlobal,
-      cases: casesDoMenu.docs,
+      cases: listas.cases,
       /* Os destinos do painel são texto do admin (`/contato`), como os do
          rodapé: o prefixo do idioma entra aqui, e o `proxy.ts` faz a ponte para
          o slug traduzido. */

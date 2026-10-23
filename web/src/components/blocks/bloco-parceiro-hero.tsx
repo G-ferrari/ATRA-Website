@@ -54,9 +54,14 @@ export function BlocoParceiroHero({ bloco }: { bloco: BlocoPartnerHero }) {
 
           {bloco.awards.length > 0 && (
             /* A faixa sangra para fora do respiro do cartão (`-mx-4 px-4`) para
-               que o corte no mobile aconteça na borda, e não com margem. */
-            <div className="overflow-x-auto -mx-4 px-4 no-scrollbar mb-8 relative z-10">
-              <div className="flex justify-start md:justify-center gap-3 w-max md:w-auto mx-auto pb-2">
+               que o corte no mobile aconteça na borda, e não com margem.
+               ⚠️ Rola só abaixo do `md`, onde o prêmio cortado na borda avisa
+               que há mais e quem rola é o dedo — por isso sem barra. Do `md`
+               para cima quebra linha: a 768px e a 900px os 5 prêmios do Google
+               Cloud não cabem numa, e o centralizado empurrava o primeiro para
+               fora da esquerda, onde a rolagem não chega. */
+            <div className="overflow-x-auto -mx-4 px-4 scrollbar-hidden mb-8 relative z-10">
+              <div className="flex justify-start md:flex-wrap md:justify-center gap-3 w-max md:w-auto mx-auto pb-2">
                 {bloco.awards.map((p) => (
                   <div
                     key={`${p.title}-${p.highlight}`}

@@ -1228,6 +1228,8 @@ tudo — isso não muda enquanto o ambiente for homologação.
 
 ## D-46 — Observabilidade de erros: Sentry inerte até a conta, uptime por issue, logs no journald
 
+> ⚠️ **Revista pela [D-68](#d-68--o-alerta-de-queda-vai-para-o-google-cloud-monitoring) em 23/10/2026:** o uptime sai do GitHub Actions para o Google Cloud Monitoring. Sentry e logs seguem como estão abaixo.
+
 *Decidida em 01/10/2026 por Leonardo, depois de uma queda percebida por um
 testador que ninguém conseguiu medir.*
 
@@ -2240,6 +2242,122 @@ D-62, estava vazio na homologação.
   virada. Desligar lá é mexer no site no ar, com o marketing.
 - Voltar a mandar o Trabalhe Conosco ao RD é decisão da ATRA, não ajuste: pede
   uma decisão nova, que reveja esta.
+
+## D-68 — O alerta de queda vai para o Google Cloud Monitoring
+
+*Decidida em 23/10/2026 por G-ferrari (tarefa #188 do checklist). Revê a parte
+de uptime da D-46.*
+
+**Contexto.** A D-46 pôs a checagem de uptime num workflow do GitHub agendado a
+cada 5 minutos, como interino. O GitHub não cumpre esse agendamento: o
+`uptime.yml` rodou 18 vezes em cinco dias, com 3 a 8 horas entre uma e outra,
+e uma queda podia ficar horas sem aviso. E, se rodasse como configurado,
+gastaria mais de 8.000 minutos de Actions por mês — de graça só enquanto o
+repositório for público. A homologação já roda numa VM do Google
+(`atra-hmg.duckdns.org`), cuja conta tem um serviço de uptime de verdade.
+
+**Decisão.**
+
+- A checagem vai para o **Google Cloud Monitoring**, no projeto da VM:
+  `GET /api/health` em HTTPS a cada **1 minuto**, de **3 regiões** (América do
+  Sul, Virgínia e Europa), com **10 s** de limite, exigindo `"status":"ok"` no
+  corpo e certificado válido.
+- **Um alvo só**, a rota de saúde. É a mesma do healthcheck do container e do
+  `deploy.sh`: ela consulta o banco, então prova DNS, certificado, Caddy, Next e
+  Postgres de uma vez. A home e `/cases-de-sucesso`, alvos da spec, ficam de
+  fora: as duas são pré-renderizadas (`x-nextjs-cache: HIT`) e respondem 200 do
+  cache com o Postgres caído. A falha de banco que a spec queria pegar com a
+  segunda é justamente o que a rota de saúde pega.
+- **Alerta de queda: 2 das 3 regiões falhando por 3 minutos seguidos.** Uma
+  região sozinha é quase sempre a rede entre o Google e a VM, não o site. Três
+  minutos são três checagens: a troca de containers de um deploy, que dura
+  segundos, passa sem alarme, e uma queda real chega por e-mail em cerca de 5
+  minutos. O e-mail sai também quando o site volta.
+- **Alerta de certificado** com menos de 20 dias, o mesmo limite do workflow. O
+  Caddy renova com 30; abaixo de 20 é renovação travada.
+- **Canal: e-mail**, um por endereço, escolhido na hora de rodar.
+- Quem cria é G-ferrari ou Leonardo, na conta Google deles, com
+  `infra/monitoramento/criar-checagem-google.sh`. Projeto, e-mail e URL entram
+  por parâmetro: o repositório é público e não guarda nenhum dos três. Rodar de
+  novo acerta o que existe em vez de duplicar, e a produção é a mesma linha com
+  outra URL. Runbook em
+  [`monitoramento-de-uptime.md`](../05-operacao/monitoramento-de-uptime.md).
+
+**Consequências.**
+
+- O `uptime.yml` **fica agendado** até a checagem existir e o alerta de teste
+  chegar por e-mail: tirar antes deixaria o site sem vigilância nenhuma. Depois
+  disso o `schedule` sai num PR próprio, e o workflow fica só com o disparo
+  manual, para conferir os três alvos à mão.
+- A partir daí uma queda deixa de abrir issue com a etiqueta `uptime`; o
+  registro passa a ser o histórico de incidentes do Monitoring.
+- Custo: cada endereço gasta ~130 mil execuções por mês (3 regiões × 1 por
+  minuto), dentro do 1 milhão gratuito por projeto, mesmo com homologação e
+  produção juntas. As políticas de alerta passam a ser cobradas em setembro de
+  2027, US$ 0,35 por condição por mês — duas por endereço.
+- Quando a Let's Encrypt encurtar a validade dos certificados, o Caddy passa a
+  renovar mais perto do fim e o limite de 20 dias vira alarme falso:
+  `DIAS_DO_CERTIFICADO` baixa junto.
+- Como o rótulo da checagem vem do host, trocar de domínio na virada é criar
+  outra checagem (`--url` novo) e remover a antiga (`--remover`), não editar.
+
+## D-69 — No inglês, o que não tem versão inglesa não aparece
+
+*Decidida em 23/10/2026 por G-ferrari (tarefa #52 do checklist).*
+
+**Contexto.** Em 07/10 o menu inglês de Soluções mostrava Master Data
+Management e Privacidade & LGPD, criadas no admin só em português, e o link
+dava 404. A causa é o fallback de idioma: a consulta em inglês devolve o slug
+português no lugar do inglês que falta, a listagem monta `/en/<seção>/<slug-pt>`,
+e a rota, que busca o slug na coluna do inglês, não acha nada. Conferido na
+homologação em 23/10, o mesmo valia para o segmento Seguros, o parceiro AWS (no
+menu e na faixa de logos da home), dois artigos do blog e dois webinars — e para
+o sitemap, que montava a URL inglesa com o slug português: as três URLs
+inglesas que ele anunciava davam 404.
+
+**Decisão.**
+
+- Um documento **existe no inglês** quando tem slug gravado no inglês, lido
+  sem fallback. No inglês, toda listagem cujo cartão leva à página do item só
+  mostra o que existe no inglês: o mega-menu (soluções, segmentos, parceiros e
+  os cases do painel de conversão), os índices de Soluções, Segmentos, Cases,
+  Blog, Webinars e E-books, os carrosséis de destaque dessas seções, as faixas
+  da Insights, a lista de vagas do CMS e a faixa e a vitrine de parceiros. O
+  português não muda.
+- O corte vai na própria consulta (`ondeExisteNoIdioma`, em
+  `web/src/lib/existe-no-idioma.ts`): condição sobre campo localizado bate na
+  coluna do idioma pedido, sem fallback. A leitura continua com o fallback, que
+  dá o texto em português ao campo ainda não traduzido de um documento que já
+  existe no inglês (P-08). É a regra que o catálogo da ATRA AI já seguia
+  (D-60).
+- **Não** é o `temIngles` do sitemap. Ele pergunta se o inglês é texto
+  diferente do português, e as 18 soluções da D-52 têm o inglês copiado de
+  propósito: por ele, sumiriam todas do menu inglês. O inglês copiado continua
+  aparecendo.
+- O sitemap passa a exigir as duas coisas — tradução (`temIngles`) e slug no
+  inglês — e monta a URL inglesa com o slug inglês.
+- Quando a Taci salvar o item no inglês, no admin, o slug inglês nasce do
+  título e o item aparece sozinho.
+
+**Consequências.**
+
+- **Customer 360 e dois segmentos ficam no inglês com o nome e o endereço
+  antigos, e o conserto é no admin.** A Customer 360 é o documento "Master Data
+  & Customer 360" da D-52, renomeado em 06/10 só no português: o inglês ficou
+  com o título e o slug antigos (`master-data-e-customer-360`), e é ali que ela
+  abre no inglês. O mesmo com Agroindústria (no inglês, ainda "Indústria", em
+  `industria`) e Bancos e Serviços Financeiros (no inglês,
+  `bancos-seguradoras-servicos-financeiros`). Como existem no inglês, esta
+  decisão não os esconde: quem acerta é o marketing, atualizando o inglês de
+  cada um (D-22).
+- Fica fora da regra o que não abre página do item no site: ATRA na mídia (a
+  matéria abre no veículo) e as vagas do ATRAIR.
+- Links escritos no admin (carrosséis da home, botões) não passam por consulta
+  a collection e não são cortados. Na homologação de 23/10 nenhum deles dava
+  404 no inglês, mas vários levam o visitante inglês à página em português.
+- O `hreflang` das páginas de item ainda declara a versão inglesa com o slug
+  do português, exista ela ou não. Fica para outra tarefa: pede o slug do
+  outro idioma em cada rota de item.
 
 ## D-70 — Os artigos do blog se traduzem no admin, pelo Gemini, como rascunho
 

@@ -12,8 +12,8 @@ import {
   deSolucao,
   deWebinar,
   doDiagnostico,
-  type Par,
 } from './mappers/catalogo-da-ia'
+import type { Par } from './mappers/idioma'
 import { getPayload } from './payload'
 
 /* O catálogo da ATRA AI (D-60): tudo o que está **publicado** e tem endereço,

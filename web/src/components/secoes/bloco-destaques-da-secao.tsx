@@ -152,5 +152,5 @@ export function BlocoDestaquesDaSecao({ bloco, locale }: { bloco: BlocoSectionFe
       return null
   }
 
-  return <FeaturedHero {...props} abertura={bloco.abertura} id={bloco.anchor ?? undefined} />
+  return <FeaturedHero {...props} abertura={bloco.abertura} id={bloco.anchor ?? undefined} rotulosDaRegua={t.regua} />
 }
