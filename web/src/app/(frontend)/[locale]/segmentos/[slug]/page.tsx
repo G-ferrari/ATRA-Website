@@ -7,6 +7,7 @@ import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
 import { comParceirosCadastrados } from '@/lib/parceiros'
+import { comLinksNoIdioma } from '@/lib/traduzir-links'
 import { getPayload } from '@/lib/payload'
 import { toSeo } from '@/lib/mappers/seo'
 import { metadataDe } from '@/lib/seo'
@@ -40,9 +41,13 @@ async function buscarSegmento(slug: string, locale: Locale) {
   if (!docs[0]) return null
   return {
     doc: docs[0],
-    // A vitrine de parceiros em "Todos" lê o cadastro (29/09).
-    blocos: await comParceirosCadastrados(
-      toBlocos(docs[0].layout, { metricas: toMetricas(global), selos: toSelos(global) }, { locale, rascunho }),
+    /* A vitrine de parceiros em "Todos" lê o cadastro (29/09), e os links do
+       admin vão para o idioma da página (D-71), como em `lib/paginas.ts`. */
+    blocos: await comLinksNoIdioma(
+      await comParceirosCadastrados(
+        toBlocos(docs[0].layout, { metricas: toMetricas(global), selos: toSelos(global) }, { locale, rascunho }),
+        locale,
+      ),
       locale,
     ),
   }

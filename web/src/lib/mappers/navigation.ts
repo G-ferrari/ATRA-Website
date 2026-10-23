@@ -57,6 +57,9 @@ export function toGruposDeSolucoes(
   })).filter((g) => g.items.length > 0)
 }
 
+/* Os destinos saem como o admin escreveu (`/sobre`, um só para os dois
+ * idiomas): o layout põe todos no idioma da página — categoria, atalhos e
+ * cartão pela mesma regra (`comLinksNoIdioma`, D-71). */
 export function toCategorias(global: Navigation | null | undefined): CategoriaDoMenu[] {
   return (global?.categories ?? []).map((c) => ({
     label: c.label,

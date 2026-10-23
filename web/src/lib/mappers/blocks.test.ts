@@ -404,7 +404,7 @@ describe('seção Formulário', () => {
       layout: 'centralizado',
       title: null,
       paragrafos: [],
-      formulario: { depoisDoEnvio: { tipo: 'pagina', href: '/en/contato' } },
+      formulario: { depoisDoEnvio: { tipo: 'pagina', href: '/en/contact' } },
     })
   })
 })

@@ -869,7 +869,9 @@ export type GrupoDeSolucoes = {
 
 export type CategoriaDoMenu = {
   label: string
-  /** `null` quando a categoria só abre o painel — Soluções e Parceiros. */
+  /** `null` quando a categoria só abre o painel — Soluções e Parceiros. No
+   *  idioma da página depois de `comLinksNoIdioma` (D-71), como todo destino do
+   *  menu. */
   href: string | null
   panel: 'solutions' | 'partners' | 'segments' | 'links' | 'split'
   links: AtalhoDoMenu[]
@@ -1126,6 +1128,7 @@ export type ColunaDoRodape = {
   titulo: string
   /** `contact`: a coluna desenha o global `contact` em vez dos links. */
   tipo: 'links' | 'contact'
+  /** No idioma da página depois de `comLinksNoIdioma` (D-71). */
   links: { label: string; href: string | null }[]
 }
 
@@ -1147,7 +1150,8 @@ export type MiniCase = {
 }
 
 /** Painel fixo à direita do menu de Soluções (D-51), do global
- *  `conversion-panel`. Destinos já chegam com o prefixo do idioma. */
+ *  `conversion-panel`. Os destinos do admin entram no idioma da página com o
+ *  resto do menu (`comLinksNoIdioma`, D-71). */
 export type PainelDeConversao = {
   titulo: string
   abertura: string | null

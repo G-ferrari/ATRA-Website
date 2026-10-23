@@ -216,11 +216,23 @@ describe('enviarFormularioDoAdmin', () => {
   })
 
   it('depois do envio por página → redireciona no idioma da página, depois de gravar', async () => {
-    payload.find.mockResolvedValue({ docs: [formulario({ afterSubmit: 'page', redirectPath: '/obrigado' })] })
+    payload.find.mockResolvedValue({ docs: [formulario({ afterSubmit: 'page', redirectPath: '/contato' })] })
     const f = valido()
     f.set('locale', 'en')
-    await expect(enviarFormularioDoAdmin(f)).rejects.toThrow('NEXT_REDIRECT /en/obrigado')
+    await expect(enviarFormularioDoAdmin(f)).rejects.toThrow('NEXT_REDIRECT /en/contact')
     expect(payload.create).toHaveBeenCalledTimes(1)
+  })
+
+  /* D-71: o item vai ao slug inglês quando existe no inglês. */
+  it('depois do envio para um item → o slug inglês dele', async () => {
+    payload.find.mockImplementation(async (args: { collection: string }) =>
+      args.collection === 'cases'
+        ? { docs: [{ id: 9, slug: { pt: 'abc', en: 'abc-en' } }] }
+        : { docs: [formulario({ afterSubmit: 'page', redirectPath: '/cases-de-sucesso/abc' })] },
+    )
+    const f = valido()
+    f.set('locale', 'en')
+    await expect(enviarFormularioDoAdmin(f)).rejects.toThrow('NEXT_REDIRECT /en/success-stories/abc-en')
   })
   it('limite por IP conta só envio válido: erro de campo não gasta vaga', async () => {
     await enviarFormularioDoAdmin(envio({ 'campo-f2': 'errado' }))

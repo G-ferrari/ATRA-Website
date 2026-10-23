@@ -28,6 +28,7 @@ import type { SecaoMestra } from './paginas-mestras'
 import { toVaga } from './mappers/job'
 import { comParceirosCadastrados } from './parceiros'
 import { getPayload } from './payload'
+import { comLinksNoIdioma } from './traduzir-links'
 import type { Bloco, Seo } from '@/types/content'
 
 /* Resolve uma página montada por blocos, com tudo que os blocos consomem.
@@ -200,6 +201,10 @@ async function montar(filtro: Where, locale: Locale, rascunho: boolean): Promise
   if (blocos.some((b) => b.tipo === 'ctaContact')) {
     comContato(blocos, await lerContato())
   }
+
+  /* D-71: o link português sem `/en` vai para o inglês quando a página existe
+     no inglês — os itens citados, numa consulta por collection. */
+  await comLinksNoIdioma(blocos, locale)
 
   /* O `seo` sai resolvido daqui para o `generateMetadata` da rota não repetir
      os fallbacks — eles já estavam escritos em quatro lugares com três
