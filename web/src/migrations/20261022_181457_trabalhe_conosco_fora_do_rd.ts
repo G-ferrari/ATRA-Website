@@ -19,8 +19,9 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
  * esta publicação entra ainda declara os dois campos e os lê em toda consulta
  * ao global; se o deploy reprovar e voltar, sem as colunas ele cairia em
  * "column … does not exist". A publicação seguinte executa `EXCLUSAO_ADIADA`
- * no `up` e `RECRIACAO` no `down`; as duas são idempotentes. Até lá as
- * colunas ficam no banco, sem uso. */
+ * no `up` e `RECRIACAO` no `down` — é a
+ * `20261022_234755_drop_talent_pool_rd_columns`; as duas constantes são
+ * idempotentes. Até ela, as colunas ficam no banco, sem uso. */
 export const EXCLUSAO_ADIADA = sql`
   ALTER TABLE "integrations" DROP COLUMN IF EXISTS "rd_station_marketing_conversions_talent_pool";
   ALTER TABLE "integrations" DROP COLUMN IF EXISTS "rd_station_marketing_talent_pool_notice";

@@ -61,7 +61,8 @@ const FORMULARIOS_DO_RD = [
   ['dataMaturityDiagnostic', 'Diagnóstico de maturidade de dados', 'Data maturity diagnostic'],
   /* O Trabalhe Conosco esteve aqui da D-62 (15/10) à D-67 (22/10): cada
      inscrição gastava um lead do plano do RD. Saiu da lista, e as colunas dele
-     só são apagadas numa publicação seguinte (ver a migração da D-67). */
+     foram apagadas na publicação seguinte
+     (`20261022_234755_drop_talent_pool_rd_columns`). */
 ] as const
 
 /* Task 046: o download de e-book vai com o identificador de cada e-book, e o

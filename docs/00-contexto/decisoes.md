@@ -2233,7 +2233,9 @@ D-62, estava vazio na homologação.
   nesta publicação, sem uso: o código que estava no ar ainda as lia, e um
   deploy reprovado voltaria para ele. A exclusão está escrita
   (`EXCLUSAO_ADIADA` em `20261022_181457_trabalhe_conosco_fora_do_rd`, com as
-  tags gravadas) e entra numa publicação seguinte.
+  tags gravadas) e entra numa publicação seguinte: a
+  `20261022_234755_drop_talent_pool_rd_columns`, escrita em 22/10 depois de
+  a D-67 estar no ar na homologação.
 - O formulário do WordPress continua mandando ao RD, e gastando leads, até a
   virada. Desligar lá é mexer no site no ar, com o marketing.
 - Voltar a mandar o Trabalhe Conosco ao RD é decisão da ATRA, não ajuste: pede
