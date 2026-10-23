@@ -2271,14 +2271,17 @@ o resultado como rascunho no idioma de destino.
 
 **O que o teste mostrou.**
 
-- **10 artigos** em inglês, com a estrutura igual à do português: títulos,
-  listas, citações, links e imagens.
+- **8 dos 10 artigos mais recentes** em inglês, com a estrutura igual à do
+  português: títulos, listas, citações, links e imagens. Os outros dois
+  esgotaram as tentativas no limite diário da chave pessoal (429), duas vezes;
+  ficam para quando alguém pedir pelo admin.
 - **Formato de resposta:** o Gemini responde 503 a todo pedido com
   `json_schema`, então o pedido vai com `json_object`, e o plugin confere as
   chaves de volta.
 - **Limite da chave:** com a chave pessoal, pedir nove de uma vez estourou o
   limite (429) em segundos. Daí a fila de um por minuto. Mesmo assim, houve
-  503 e 429 no meio, e dois artigos precisaram ser pedidos de novo.
+  503 e 429 no meio: com a chave pessoal, a cota do dia acaba depois de uns
+  oito artigos.
 
 **Consequências.**
 
