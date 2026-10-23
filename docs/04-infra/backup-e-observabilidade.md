@@ -113,7 +113,7 @@ Postgres caído. Monitorar só a home é monitorar o cache.
 |---|---|
 | Sentry servidor + edge + navegador, `environment`, `release` por SHA, 0.1 de amostra, PII fora, ruído de extensão filtrado | ✅ no código (`src/lib/sentry/`, `instrumentation.ts`, `instrumentation-client.ts`, `global-error.tsx`); **inerte até existir `SENTRY_DSN`/`NEXT_PUBLIC_SENTRY_DSN` no `.env.prod`** — espera a conta |
 | Alerta do Sentry (erro novo, taxa) | ⏳ configuração do painel, depois da conta |
-| Uptime: 3 alvos + certificado | ✅ **interino** — `.github/workflows/uptime.yml`, a cada 5 min (o mínimo do cron do GitHub), alvo em `vars.SITE_URL`; queda abre issue com a etiqueta `uptime` e a fecha ao voltar. Um serviço de uptime de verdade entra com os mesmos alvos |
+| Uptime: 3 alvos + certificado | ✅ **interino** — `.github/workflows/uptime.yml`, a cada 5 min (o mínimo do cron do GitHub), alvo em `vars.SITE_URL`; queda abre issue com a etiqueta `uptime` e a fecha ao voltar. ⚠️ Na prática o GitHub roda de 3 em 3 a 8 em 8 horas. **D-68 (23/10)** troca por Google Cloud Monitoring: só `/api/health` (os outros dois alvos são pré-renderizados e não provam o banco), a cada minuto, de 3 regiões, mais o certificado — `infra/monitoramento/criar-checagem-google.sh`, runbook em [`monitoramento-de-uptime.md`](../05-operacao/monitoramento-de-uptime.md). Até a checagem existir, o workflow segue agendado |
 | Log de acesso do proxy, 30 dias | ✅ `/opt/atra/logs/caddy/access.log`, JSON, rotação pelo Caddy |
 | Logs dos containers com retenção | ✅ journald do host (`logging: journald` no compose), 30 dias / 2 GB (`preparar-vm.sh`). `journalctl CONTAINER_NAME=atra-web-1 --since "13:00"` |
 
