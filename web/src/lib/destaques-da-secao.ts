@@ -13,7 +13,9 @@ const LIMITE: Partial<Record<ConteudoDaSecao['secao'], number>> = {
   ebooks: Infinity,
   cases: 3,
   blog: 3,
-  /* Mais que 4 e a régua de miniaturas ganha barra de rolagem. */
+  /* O limite nasceu porque, com mais de 4, a régua de miniaturas ganhava barra
+     de rolagem. Desde a #32 ela rola sem barra, com setas; o 4 fica até o
+     marketing pedir mais matérias no topo. */
   midia: 4,
 }
 

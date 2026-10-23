@@ -1,5 +1,6 @@
 import { draftMode } from 'next/headers'
 
+import { ondeExisteNoIdioma } from './existe-no-idioma'
 import type { Locale } from './locales'
 import { toResource, toResourceDetail } from './mappers/resource'
 import { getPayload } from './payload'
@@ -21,9 +22,11 @@ export async function buscarMateriais(kind: Resource['kind'], locale: Locale): P
     limit: 100,
     sort: '-publishedAt',
     draft: rascunho,
-    where: rascunho
-      ? { kind: { equals: kind } }
-      : { kind: { equals: kind }, _status: { equals: 'published' } },
+    /* No inglês, só o que tem slug em inglês (D-69): o cartão leva à página. */
+    where: ondeExisteNoIdioma(
+      locale,
+      rascunho ? { kind: { equals: kind } } : { kind: { equals: kind }, _status: { equals: 'published' } },
+    ),
   })
 
   return docs.map(toResource)

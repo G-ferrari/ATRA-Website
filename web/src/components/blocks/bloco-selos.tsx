@@ -26,7 +26,12 @@ export function BlocoSelos({ bloco }: { bloco: BlocoSealsBanner }) {
           </h2>
         )}
 
-        <div className="flex overflow-x-auto no-scrollbar justify-center items-center gap-6 md:gap-10 pb-4">
+        {/* ⚠️ Quebra linha, não rola. Era `overflow-x-auto` com `justify-center`:
+            com mais selos do que cabem — 3 já não cabem a 390px —, o
+            centralizado empurra o primeiro para a esquerda do trilho, onde a
+            rolagem não chega. O selo do GPTW ficava cortado pela metade, para
+            todo mundo, com ou sem barra. */}
+        <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 pb-4">
           {bloco.seals.map((s) => (
             <div
               key={s.name}

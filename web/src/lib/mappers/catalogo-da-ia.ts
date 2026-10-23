@@ -4,6 +4,8 @@ import type { ConteudoRecomendavel, TipoDeConteudoDaIa } from '@/types/content'
 import type { Locale } from '../locales'
 import { hrefDe, type Secao } from '../routes'
 
+import { slugNoIdioma, type Par } from './idioma'
+
 /* Mapper do catálogo da ATRA AI (D-60): documento do CMS → item que o
  * assistente pode recomendar. É o único lugar que sabe de que campo sai o
  * título, o resumo e o endereço de cada tipo.
@@ -12,10 +14,8 @@ import { hrefDe, type Secao } from '../routes'
  * idioma da conversa. E **em inglês só entra o que tem slug em inglês** — a rota
  * `/en/<seção>/<slug>` consulta a coluna do idioma, e documento sem slug lá
  * responde 404 mesmo com o fallback ligado (armadilha do CLAUDE.md). É por isso
- * que cada função recebe o par: o português e o inglês **sem** fallback. */
-
-/** O mesmo documento nos dois idiomas; `en` vem com `fallbackLocale: false`. */
-export type Par<T> = { pt: T; en?: T | null }
+ * que cada função recebe o par: o português e o inglês **sem** fallback. A
+ * regra é `slugNoIdioma` (`./idioma`), a mesma do menu e dos índices do site. */
 
 type Base = { id: number | string; slug?: string | null }
 
@@ -37,7 +37,7 @@ function item<T extends Base>(
   textos: (doc: T) => { titulo?: string | null; resumo?: string | null },
 ): ConteudoRecomendavel | null {
   const doIdioma = locale === 'pt' ? par.pt : par.en
-  const slug = doIdioma?.slug?.trim()
+  const slug = slugNoIdioma(par, locale)
   if (!doIdioma || !slug) return null
 
   /* Texto que falta no inglês cai no português: o endereço existe, e um cartão

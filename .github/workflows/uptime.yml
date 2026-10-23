@@ -12,6 +12,11 @@ name: Uptime
 # de uptime de verdade; a troca é só apontar os mesmos alvos lá.
 # ⚠️ Cron só roda na branch padrão (`main`). Alvo em `vars.SITE_URL`, para a
 # virada de domínio não exigir commit.
+# ⚠️ D-68 (23/10/2026): na prática o GitHub roda isto de 3 em 3 a 8 em 8 horas.
+# O substituto é o Google Cloud Monitoring (infra/monitoramento/), e o
+# `schedule` abaixo só sai quando aquela checagem existir e o e-mail de teste
+# chegar — antes disso, tirá-lo deixaria o site sem vigilância nenhuma. Ver
+# docs/05-operacao/monitoramento-de-uptime.md.
 on:
   schedule:
     - cron: '*/5 * * * *'

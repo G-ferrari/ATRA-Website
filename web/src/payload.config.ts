@@ -1,6 +1,7 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 
+import { createPayloadJobsRunner, translatorPlugin } from '@focus-reactive/payload-plugin-translator'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { en } from '@payloadcms/translations/languages/en'
 import { pt } from '@payloadcms/translations/languages/pt'
@@ -13,6 +14,7 @@ import { s3Storage } from '@payloadcms/storage-s3'
 import { buildConfig, type CollectionConfig } from 'payload'
 
 import { revalidarSite } from './hooks/revalidar'
+import { provedorDeTraducao, quemTraduz } from './lib/traducao'
 import sharp from 'sharp'
 
 import { Cases } from './collections/Cases'
@@ -191,6 +193,25 @@ export default buildConfig({
         },
         forcePathStyle: true,
       },
+    }),
+    /* #66 (teste de 21/10): o botão "Traduzir" no admin, por enquanto só nos
+     * artigos. A tradução vai como rascunho para o idioma de destino e roda
+     * numa fila (Payload Jobs), para a editora não ficar esperando um lote.
+     * `staleJobTimeoutMs` acima do mais longo dos artigos: abaixo disso, uma
+     * tradução ainda em andamento recomeçaria, e seria cobrada duas vezes.
+     * Ver `lib/traducao.ts`. */
+    translatorPlugin({
+      collections: [Posts],
+      translationProvider: provedorDeTraducao,
+      /* Um artigo por vez, com espera longa entre tentativas: com 9 de uma vez
+         o Gemini respondeu 429 (limite de uso da chave) a quase todos, e as 4
+         tentativas acabaram em segundos (21/10). */
+      runner: createPayloadJobsRunner({
+        staleJobTimeoutMs: 10 * 60_000,
+        autoRun: { cron: '* * * * *', limit: 1 },
+        retries: { attempts: 4, backoff: { type: 'exponential', delay: 60_000 } },
+      }),
+      access: quemTraduz,
     }),
   ],
 

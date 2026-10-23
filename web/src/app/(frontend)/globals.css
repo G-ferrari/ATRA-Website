@@ -51,6 +51,24 @@
   --color-dark-surface-2: #222631;
 }
 
+/* Trilho que rola sem barra à vista. O legado usa `no-scrollbar`, uma classe
+ * que nem ele nem o Tailwind 4 definem, e o porte a herdou: onde havia
+ * transbordo aparecia a barra nativa — no Windows, uma faixa clara de 15px
+ * dentro de cartões escuros. O `scrollbar-none` do Tailwind só põe
+ * `scrollbar-width`, que o Safari ignora antes do 18.2; daí a segunda regra.
+ *
+ * ⚠️ Esconder a barra tira de quem usa mouse o único jeito de rolar de lado. Só
+ * vale onde o conteúdo inteiro se alcança de outro modo: setas próprias,
+ * rolagem só abaixo do `md` (quem chega lá é o dedo) ou rolagem vertical (a
+ * roda do mouse). Onde não, o caminho é quebrar linha. */
+@utility scrollbar-hidden {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @layer utilities {
   .glass-card {
     @apply bg-white shadow-xl border-0 rounded-[6px];

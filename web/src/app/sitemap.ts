@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 
 import { ehSecaoMestra } from '@/lib/paginas-mestras'
 import { getPayload } from '@/lib/payload'
-import { paraSitemap, temIngles, type Entrada } from '@/lib/sitemap'
+import { paraSitemap, versaoInglesa, type Entrada } from '@/lib/sitemap'
 
 /* MIG-106 — `/sitemap.xml`.
  *
@@ -16,7 +16,8 @@ import { paraSitemap, temIngles, type Entrada } from '@/lib/sitemap'
  *    é escrito em cada consulta;
  *  - só o que tem corpo. Página magra sai do índice por D-08, e anunciá-la aqui
  *    contradiz o `robots` que a própria página manda;
- *  - inglês só onde há tradução de verdade — ver `temIngles`.
+ *  - inglês só onde há tradução de verdade e slug gravado no inglês, que dá o
+ *    endereço — ver `versaoInglesa`.
  */
 
 /** Revalida a cada hora: publicar um artigo não deve exigir deploy. */
@@ -91,25 +92,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         local: { secao: 'blog' as const, slug: doc.slug },
         atualizadoEm: doc.updatedAt,
         prioridade: 0.6,
-        ingles: temIngles(doc.title, en?.title),
+        ...versaoInglesa({ texto: doc.title }, en && { texto: en.title, slug: en.slug }),
       })),
     ...cases.map(({ doc, en }) => ({
       local: { secao: 'cases' as const, slug: doc.slug },
       atualizadoEm: doc.updatedAt,
       prioridade: 0.7,
-      ingles: temIngles(doc.title, en?.title),
+      ...versaoInglesa({ texto: doc.title }, en && { texto: en.title, slug: en.slug }),
     })),
     ...vagas.filter(({ doc }) => doc.body).map(({ doc, en }) => ({
       local: { secao: 'carreiras' as const, slug: doc.slug },
       atualizadoEm: doc.updatedAt,
       prioridade: 0.6,
-      ingles: temIngles(doc.title, en?.title),
+      ...versaoInglesa({ texto: doc.title }, en && { texto: en.title, slug: en.slug }),
     })),
     ...segmentos.filter(({ doc }) => doc.layout?.length).map(({ doc, en }) => ({
       local: { secao: 'segmentos' as const, slug: doc.slug },
       atualizadoEm: doc.updatedAt,
       prioridade: 0.7,
-      ingles: temIngles(doc.name, en?.name),
+      ...versaoInglesa({ texto: doc.name }, en && { texto: en.name, slug: en.slug }),
     })),
     /* Só solução com página: as outras aparecem no índice e no menu, mas não
      * têm URL (D-09). */
@@ -117,7 +118,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       local: { secao: 'solucoes' as const, slug: doc.slug },
       atualizadoEm: doc.updatedAt,
       prioridade: 0.7,
-      ingles: temIngles(doc.title, en?.title),
+      ...versaoInglesa({ texto: doc.title }, en && { texto: en.title, slug: en.slug }),
     })),
   ]
 

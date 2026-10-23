@@ -262,6 +262,7 @@ comparam; na suíte padrão, a mesma lista alimenta o contraste e o axe.
 | Rascunho aparece no site | A Local API roda com **`overrideAccess: true`**: o `access.read` da collection, que filtra `_status` para o público, **não se aplica** a consulta de página. Toda listagem precisa do `where: { _status: { equals: 'published' } }` escrito. Ficou invisível até existir o primeiro rascunho |
 | `unique` recusa e o erro aponta para um bloco que está preenchido | Atualizar documento **publicado** revalida os obrigatórios **do idioma gravado**. Mandar só nome e slug para `en` faz o Payload recusar por "Título inválido" nos blocos, que estão vazios naquele idioma. Reenviar o layout com `casarIds` |
 | Rota `/en/<coleção>/<slug>` dá 404 com `fallback: true` ligado | O fallback resolve a **leitura**, não a **consulta**: `where: { slug: { equals } }` bate na coluna do locale, que está nula. Gravar o slug nos dois idiomas |
+| Item de listagem no inglês leva a 404 (menu de Soluções, blog, webinars, faixa de parceiros, sitemap) | A mesma armadilha pelo outro lado: a consulta **em inglês com fallback** devolve o slug **português** do documento criado só em português, e o link montado com ele cai na rota acima. Toda listagem cujo cartão abre o item filtra com `ondeExisteNoIdioma` (`lib/existe-no-idioma.ts`), que põe `slug exists` no `where` — e o `where` não sofre fallback (D-69). URL inglesa montada fora de listagem sai do slug **inglês**, lido com `fallbackLocale: false` |
 | Post importado é criado e apagado na mesma corrida | O hook de `slugField` normaliza o slug, e um post do WP tem `%c2%b2` no dele. Comparar por slug para achar o que remover perde exatamente esse; comparar pelos **ids que a importação tocou** |
 | Overlay acusa `key` faltando numa "lista" que não existe | Elemento criado num Server Component e passado como **prop** para componente de cliente (a `Casca` recebe cabeçalho, rodapé e alternador assim). Ele atravessa o RSC com `_store.validated` em 0, o `jsxs` não consegue marcá-lo, e o reconciliador trata como lista dinâmica. Chave constante resolve. React avisa **uma vez por pai**: keyar só o primeiro muda o aviso de alvo |
 | Deploy publica HTML velho com o log dizendo "563 páginas geradas" | O BuildKit reaproveita a camada de `COPY --from=build` do runner mesmo com o estágio build refeito — `--no-cache-filter build` não invalida quem copia dele. Invalidar **os dois**: `--no-cache-filter build,runner` |
@@ -369,8 +370,8 @@ como **conversão**, com as tags do formulário — a candidatura com currículo
 fica fora, e o Trabalhe Conosco também, desde a **D-67** (22/10): da D-62 à
 D-67 ele foi, e cada inscrição gastava um lead do plano do RD. O aviso de
 privacidade dele mora em Sistema → Contato → Candidaturas e não trava nada;
-⚠️ as duas colunas antigas em `integrations` saem numa publicação seguinte
-(`EXCLUSAO_ADIADA` em `20261022_181457_trabalhe_conosco_fora_do_rd`); a newsletter vai na
+as duas colunas antigas em `integrations` saíram uma publicação depois
+(`20261022_234755_drop_talent_pool_rd_columns`, exclusão adiada); a newsletter vai na
 hora, sem o e-mail de confirmação desde a **D-64** (16/10) — a action carimba
 `confirmedAt` no envio, e inscrição antiga sem a data fica fora; sem
 `RDSTATION_MARKETING_API_KEY` é inerte (o admin mostra "Chave
@@ -448,6 +449,17 @@ entrar no catálogo precisa estar no gancho (`payload.config.ts`). ⚠️ Não h
 `GEMINI_API_KEY` no ambiente local: a conversa de verdade só se testa em
 homologação.
 
+**D-69 (23/10, task #52)**: no inglês, o que não tem versão inglesa não
+aparece. Existe no inglês o documento com **slug gravado no inglês** — a regra
+do catálogo, agora de toda listagem que abre o item (menu, índices, carrosséis
+de seção, Insights, vagas do CMS, parceiros), aplicada no `where` por
+`ondeExisteNoIdioma`. **Não** é o `temIngles` do sitemap: o inglês copiado do
+português (as 18 soluções da D-52) continua aparecendo. O sitemap exige os
+dois e monta a URL inglesa com o slug inglês. Customer 360, Agroindústria e
+Bancos foram renomeados só no português e abrem no inglês com nome e endereço
+antigos — conserto no admin. Listagem nova de collection com página de item
+**nasce** com o corte.
+
 **D-66 (20/10, tasks 048–054)**: o marketing monta formulários em **Conteúdo →
 Formulários** (`collections/Forms.ts`) e os põe em qualquer página com a seção
 **Formulário** (`formSection`). Cada um leva no próprio cadastro o
@@ -469,9 +481,27 @@ com `x-real-ip` próprio, para não gastar a cota de 5 envios por IP da suíte. 
 axe da suíte medem a seção. Ele fica **por último** no `run.mjs`: as migrações de
 dados do passo anterior regravam páginas.
 
+**D-70 (23/10)**: os artigos do Blog se traduzem no admin pelo plugin
+`@focus-reactive/payload-plugin-translator`, com o Gemini da ATRA AI
+(`lib/traducao.ts`). Quem edita pede; a fila (`payload_jobs`) manda um por
+minuto e grava **rascunho** no idioma de destino. ⚠️ O Gemini responde 503 a
+`json_schema` no endereço compatível com a OpenAI: o pedido vai com
+`json_object`. ⚠️ O agendador da fila só começa quando o admin é aberto
+(`cron` do `initReq`), não no build nem em script.
+
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
 containers logando no journald e o Caddy com log de acesso em arquivo.
+
+**D-68 (23/10)** revê o uptime: o cron do GitHub rodava de 3 em 3 a 8 em 8
+horas, não a cada 5 minutos. A checagem vai para o **Google Cloud Monitoring**
+— `/api/health` a cada minuto, de 3 regiões, e-mail quando 2 delas falham por 3
+minutos seguidos, mais o aviso de certificado com menos de 20 dias. Quem cria é
+G-ferrari ou Leonardo, com `infra/monitoramento/criar-checagem-google.sh`
+(projeto, e-mail e URL por parâmetro, nunca no repositório; rodar de novo
+acerta, não duplica). ⚠️ O `schedule` do `uptime.yml` só sai depois de a
+checagem existir e o e-mail de teste chegar — até lá os dois convivem. Runbook
+em `docs/05-operacao/monitoramento-de-uptime.md`.
 
 **D-41 (29/09)** tirou a integração com o **ATRAIR** do ambiente: o global
 `integrations` (Sistema → Integrações, só admin) tem **duas chaves** —

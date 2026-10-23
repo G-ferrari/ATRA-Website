@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { paraSitemap, temIngles } from './sitemap'
+import { paraSitemap, temIngles, versaoInglesa } from './sitemap'
 
 describe('temIngles', () => {
   it('aceita tradução de verdade', () => {
@@ -49,5 +49,38 @@ describe('paraSitemap', () => {
   it('leva a data de atualização quando existe', () => {
     const r = paraSitemap([{ local: { secao: 'blog', slug: 'x' }, atualizadoEm: '2026-08-17T00:00:00.000Z' }])
     expect(r[0].lastModified).toEqual(new Date('2026-08-17T00:00:00.000Z'))
+  })
+})
+
+/* D-69: a URL inglesa sai do slug **inglês**. Até 23/10 saía do português, e
+   as três URLs inglesas que o sitemap da homologação anunciava davam 404. */
+describe('versaoInglesa', () => {
+  it('traduzido e com slug no inglês: entra, com o slug inglês', () => {
+    expect(versaoInglesa({ texto: 'Privacidade & LGPD' }, { texto: 'Privacy & LGPD', slug: 'privacy' })).toEqual({
+      ingles: true,
+      slugIngles: 'privacy',
+    })
+  })
+
+  it('sem slug gravado no inglês, fica de fora mesmo com título em inglês', () => {
+    expect(versaoInglesa({ texto: 'Customer 360' }, { texto: 'Customer 360 view', slug: null })).toEqual({ ingles: false })
+    expect(versaoInglesa({ texto: 'Customer 360' }, undefined)).toEqual({ ingles: false })
+  })
+
+  it('inglês copiado do português continua fora do sitemap, mesmo com slug', () => {
+    expect(versaoInglesa({ texto: 'Analytics Conversacional' }, { texto: 'Analytics Conversacional', slug: 'analytics-conversacional' })).toEqual({
+      ingles: false,
+    })
+  })
+})
+
+describe('paraSitemap com slug inglês', () => {
+  it('a URL inglesa e o par de idiomas usam o slug de cada idioma', () => {
+    const r = paraSitemap([{ local: { secao: 'solucoes', slug: 'privacidade' }, ingles: true, slugIngles: 'privacy' }])
+    expect(r.map((e) => e.url)).toEqual(['http://localhost:3000/solucoes/privacidade', 'http://localhost:3000/en/solutions/privacy'])
+    expect(r[1].alternates?.languages).toEqual({
+      'pt-BR': 'http://localhost:3000/solucoes/privacidade',
+      en: 'http://localhost:3000/en/solutions/privacy',
+    })
   })
 })
