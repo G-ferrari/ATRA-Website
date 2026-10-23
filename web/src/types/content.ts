@@ -284,6 +284,7 @@ export type ParceiroDaFaixa = {
 export type BlocoLogoMarquee = Base & {
   tipo: 'logoMarquee'
   title: string | null
+  description: string | null
   /** Resolvidos pela página, da collection `partners`. */
   partners: ParceiroDaFaixa[]
 }
@@ -293,6 +294,8 @@ export type BlocoFeatureTabs = Base & {
   eyebrow: string | null
   title: string
   description: string | null
+  /** Como o texto ao lado do título se alinha no computador (#218). */
+  alinhamentoDaDescricao: 'left' | 'right'
   footnote: string | null
   cta: { label: string; href: string } | null
   items: { icon: string; badge: string; title: string; description: string; image: Image | null }[]
@@ -336,6 +339,8 @@ export type BlocoCaseCarousel = Base & {
   eyebrow: string | null
   title: string
   description: string | null
+  /** Como o texto ao lado do título se alinha no computador (#218). */
+  alinhamentoDaDescricao: 'left' | 'right'
   readLabel: string | null
   cta: { label: string; href: string } | null
   items: {
@@ -561,12 +566,29 @@ export type VagaDetalhe = Vaga & {
 export type BlocoCtaContact = Base & {
   tipo: 'ctaContact'
   variant: 'panel' | 'photo'
-  photo: Image | null
   title: string
   subtitle: string | null
   showContactCard: boolean
   /** Resolvido pela página a partir do global `contact` — o bloco não busca. */
   contato: Contato | null
+}
+
+/** A seção "Formulário" (task 051): um formulário de Conteúdo → Formulários
+ *  numa página. */
+export type BlocoFormSection = Base & {
+  tipo: 'formSection'
+  title: string | null
+  paragrafos: string[]
+  layout: 'centralizado' | 'lado-a-lado'
+  /** `null` só no preview, ao lado do aviso. No site, formulário fora do ar
+   *  tira a seção da lista (o mapper nem a devolve). */
+  formulario: FormularioDoAdmin | null
+  /** Só no preview: o que o editor precisa saber para a seção aparecer no site. */
+  avisoDoPreview:
+    | { tipo: 'sem-formulario' }
+    | { tipo: 'incompleto'; campo: string }
+    | { tipo: 'nao-publicado' }
+    | null
 }
 
 export type BlocoJobsList = Base & {
@@ -582,8 +604,9 @@ export type BlocoJobsList = Base & {
     highlight: string | null
     description: string | null
     note: string | null
-    /** O aviso de privacidade do formulário (D-62), resolvido pela página a
-     *  partir de Sistema → Integrações. `null`: o formulário sai sem aviso. */
+    /** O aviso de privacidade do formulário, resolvido pela página a partir
+     *  de Sistema → Contato → Candidaturas (D-67). `null`: o formulário sai
+     *  sem aviso. */
     aviso: string | null
   } | null
   /** Resolvido pela página, das vagas publicadas. */
@@ -725,6 +748,7 @@ export type BlocoPartnerMosaic = Base & {
 
 export type Bloco =
   | BlocoPartnerMosaic
+  | BlocoFormSection
   | BlocoSectionListing
   | BlocoSectionFeatured
   | BlocoWebinarTeaser
@@ -914,6 +938,12 @@ export type AvisoDeCookies = {
   }
 }
 
+/** Ajustes visuais do site inteiro (#215, D-65), do global `appearance`. */
+export type Aparencia = {
+  /** Peso da fonte dos títulos: 600 (Negrito), 400 (Normal) ou 300 (Fino). */
+  pesoDosTitulos: 300 | 400 | 600
+}
+
 /** Os ids dos scripts de rastreamento (D-40), do global `tracking`. `null` é
  * "não configurado": o componente correspondente não faz nada. Mesmo com id,
  * cada script espera o aceite da sua categoria no aviso de cookies. */
@@ -945,8 +975,9 @@ export type IntegracaoAtrair = {
   bancoDeTalentos: boolean
 }
 
-/** Os formulários que vão ao RD (D-54; Trabalhe Conosco desde 15/10). */
-export type FormularioDoRd = 'contato' | 'chat' | 'newsletter' | 'download' | 'consultores' | 'diagnostico' | 'talentos'
+/** Os formulários que vão ao RD (D-54). O Trabalhe Conosco foi da D-62 à D-67
+ *  (15 a 22/10) e saiu. */
+export type FormularioDoRd = 'contato' | 'chat' | 'newsletter' | 'download' | 'consultores' | 'diagnostico'
 
 /** As chaves da integração com o RD Station Marketing (D-54), do global
  * `integrations`. Quem lê é o hook de `form-submissions`.
@@ -966,9 +997,83 @@ export type IntegracaoRd = {
   /** As tags com que o lead chega ao RD, por formulário — já aparadas, sem
    *  vazias e sem repetição. */
   tags: Record<FormularioDoRd, string[]>
-  /** O aviso que o formulário do banco de talentos mostra (D-62). `null`
-   *  enquanto o RH não escreve — e sem ele o Trabalhe Conosco não vai ao RD. */
-  avisoAoCandidato: string | null
+}
+
+/** O tipo de um campo de formulário montado no admin (feature
+ *  criador-de-formularios). Espelha `TIPOS_DE_CAMPO` de
+ *  `lib/formularios-do-admin.ts`. */
+export type TipoDeCampoDoFormulario =
+  | 'name'
+  | 'email'
+  | 'phone'
+  | 'company'
+  | 'jobTitle'
+  | 'shortText'
+  | 'longText'
+  | 'select'
+  | 'checkbox'
+
+/** Um campo de formulário do admin, pronto para desenhar. */
+export type CampoDoFormulario = {
+  /** O id da linha no admin: é o nome do campo no `<form>` e no envio. */
+  id: string
+  tipo: TipoDeCampoDoFormulario
+  rotulo: string
+  exemplo: string | null
+  obrigatorio: boolean
+  largura: 'inteira' | 'meia'
+  /** Só a lista de opções tem. `valor` é o que vai no envio. */
+  opcoes: { rotulo: string; valor: string }[]
+}
+
+/** Um formulário do admin, no idioma da página — o que a seção "Formulário"
+ *  desenha. Sem nada do RD nem do aviso: isso é do servidor
+ *  (`ConfigDoFormulario`). */
+export type FormularioDoAdmin = {
+  id: number
+  campos: CampoDoFormulario[]
+  botao: string
+  aviso: string | null
+  depoisDoEnvio: { tipo: 'mensagem'; mensagem: string } | { tipo: 'pagina'; href: string }
+}
+
+/** O que o servidor precisa de um formulário do admin para gravar, avisar e
+ *  mandar ao RD (tasks 049 e 050). Não vai para o navegador. */
+export type ConfigDoFormulario = {
+  id: number
+  nome: string
+  /** Por id da linha: o que o envio aceita e para onde cada campo vai no RD. */
+  campos: {
+    id: string
+    tipo: TipoDeCampoDoFormulario
+    rotulo: string
+    obrigatorio: boolean
+    /** Só na lista de opções: os valores aceitos. */
+    valores: string[]
+    /** Caixa de marcar que vale como consentimento de comunicação. */
+    consentimento: boolean
+    /** `cf_…` do RD, ou `null` para não mandar. */
+    campoNoRd: string | null
+  }[]
+  /** Quem recebe o aviso do site quando o RD não aceita; vazio = destino geral. */
+  avisarPara: string[]
+  rd: {
+    /** `null` = este formulário não vai ao RD. */
+    identificador: string | null
+    tags: string[]
+  }
+}
+
+/** Um formulário do admin como Sistema → Integrações o lista (task 052): o
+ *  que vai ao RD, sem nada dos envios. */
+export type FormularioNoRd = {
+  id: number
+  nome: string
+  /** Publicado: está no site e recebe envios. */
+  publicado: boolean
+  /** `null` = não vai ao RD. */
+  identificador: string | null
+  tags: string[]
 }
 
 /** Textos e links do Diagnóstico de Maturidade de Dados (D-35), do global
@@ -1001,11 +1106,16 @@ export type Contato = {
   /** `null` quando o global não tem endereço — a ATRA não tem sede fixa desde 29/09. */
   endereco: string | null
   redes: { linkedin: string | null; instagram: string | null; facebook: string | null; youtube: string | null }
+  /** O fundo do painel "Nossos Contatos" (#171), igual em todo lugar. */
+  foto: Image | null
   /** Destino do aviso de cada formulário; `null` cai no `email`. Ver `lib/destino-do-aviso.ts`. */
   destinos: Record<FormularioComAviso, string | null>
   /** Aviso de privacidade do formulário de candidatura (P-17). `null` enquanto
    *  o RH não escreve — e sem ele o formulário não aparece. */
   avisoDeCandidatura: string | null
+  /** Aviso de privacidade do banco de talentos (D-67). `null` enquanto o RH
+   *  não escreve; diferente do de cima, não esconde o formulário. */
+  avisoDoBancoDeTalentos: string | null
 }
 
 /** Os formulários que avisam a ATRA por e-mail. A newsletter não entra: quem

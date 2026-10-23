@@ -33,10 +33,8 @@ const config = (extra: Partial<IntegracaoRd> = {}): IntegracaoRd => ({
     download: CONVERSOES_PADRAO.materialDownload,
     consultores: CONVERSOES_PADRAO.consultantRequest,
     diagnostico: CONVERSOES_PADRAO.dataMaturityDiagnostic,
-    talentos: CONVERSOES_PADRAO.talentPool,
   },
-  tags: { contato: [], chat: [], newsletter: ['newsletter'], download: [], consultores: [], diagnostico: [], talentos: [] },
-  avisoAoCandidato: null,
+  tags: { contato: [], chat: [], newsletter: ['newsletter'], download: [], consultores: [], diagnostico: [] },
   ...extra,
 })
 
@@ -70,7 +68,7 @@ const COMERCIAIS = [
   'rc18-diagnostic',
   'consultant-request',
   'data-maturity-diagnostic',
-  'talent-pool',
+  'custom-form',
 ]
 
 /* O grupo como a action do diagnóstico grava: números do motor, top 3 no
@@ -93,9 +91,7 @@ const diagnostico: NonNullable<LeadParaRd['diagnostic']> = {
 
 describe('deveSincronizar', () => {
   it('manda os kinds da lista', () => {
-    /* Com o aviso registrado: o banco de talentos só vai assim (D-62). */
-    const aviso = { privacyNotice: 'Seu cadastro também vai ao RD Station.' }
-    for (const kind of COMERCIAIS) expect(deveSincronizar(lead({ kind, talent: aviso }))).toBe(true)
+    for (const kind of COMERCIAIS) expect(deveSincronizar(lead({ kind }))).toBe(true)
   })
 
   /* ⚠️ É este teste que impede a próxima pessoa de repetir o que aconteceu com
@@ -106,25 +102,27 @@ describe('deveSincronizar', () => {
   })
 
   /* A candidatura com currículo é RH: currículo em base de marketing seria
-     desvio de finalidade (D-29, mantido). O banco de talentos vai desde a
-     D-62, sem currículo e sem a mensagem em texto livre. */
-  it('segura a candidatura com currículo e deixa passar o banco de talentos com aviso', () => {
-    const aviso = { privacyNotice: 'Seu cadastro também vai ao RD Station.' }
-    expect(deveSincronizar(lead({ kind: 'job-application', talent: aviso }))).toBe(false)
-    expect(deveSincronizar(lead({ kind: 'talent-pool', talent: aviso }))).toBe(true)
-  })
-
-  /* ⚠️ D-62: sem a cópia do aviso no cadastro, a pessoa não foi avisada de que
-     iria a uma base de marketing — cadastro de antes do aviso existir, ou de
-     quando ele estava vazio no admin. Editar no admin não pode mandá-lo. */
-  it('banco de talentos sem o aviso registrado não vai', () => {
+     desvio de finalidade (D-29, mantido). O banco de talentos foi da D-62 à
+     D-67 e saiu: cada inscrição gastava um lead do plano do RD. */
+  it('segura a candidatura com currículo e o banco de talentos', () => {
+    expect(deveSincronizar(lead({ kind: 'job-application' }))).toBe(false)
     expect(deveSincronizar(lead({ kind: 'talent-pool' }))).toBe(false)
-    expect(deveSincronizar(lead({ kind: 'talent-pool', talent: { privacyNotice: '   ' } }))).toBe(false)
-    expect(deveSincronizar(lead({ kind: 'talent-pool', talent: { linkedin: 'https://linkedin.com/in/x' } }))).toBe(false)
   })
 
-  it('kind fora da lista não vai, mesmo com aviso', () => {
-    expect(deveSincronizar(lead({ kind: 'qualquer-outro', talent: { privacyNotice: 'aviso' } }))).toBe(false)
+  /* ⚠️ D-67: o cadastro do banco de talentos ainda guarda a cópia do aviso de
+     privacidade (`talent.privacyNotice`), que da D-62 à D-67 era o que o
+     liberava para o RD. Um cadastro daquela semana, com a cópia, não pode ir
+     quando o RH o marcar como lido no admin. */
+  it('banco de talentos não vai nem com a cópia do aviso no cadastro', () => {
+    const comAviso = {
+      ...lead({ kind: 'talent-pool' }),
+      talent: { privacyNotice: 'Seu cadastro também vai ao RD Station.' },
+    } as LeadParaRd
+    expect(deveSincronizar(comAviso)).toBe(false)
+  })
+
+  it('kind fora da lista não vai', () => {
+    expect(deveSincronizar(lead({ kind: 'qualquer-outro' }))).toBe(false)
   })
 
   /* MIG-103: sem o clique de confirmação a pessoa NÃO está inscrita. */
@@ -154,7 +152,9 @@ describe('identificadorDe', () => {
     expect(identificadorDe({ kind: 'consultant-request' }, c)).toBe('site-solicitacao-consultores')
     expect(identificadorDe({ kind: 'data-maturity-diagnostic' }, c)).toBe('site-diagnostico-maturidade')
     expect(identificadorDe({ kind: 'rc18-diagnostic' }, c)).toBe('site-diagnostico-maturidade')
-    expect(identificadorDe({ kind: 'talent-pool' }, c)).toBe('site-trabalhe-conosco')
+    /* D-67: sem formulário no RD, sem identificador — a segunda trava, se o
+       kind voltasse à lista por engano. */
+    expect(identificadorDe({ kind: 'talent-pool' }, c)).toBeNull()
   })
 
   it('kind sem identificador (apagado no admin, ou RH) é null', () => {
@@ -344,84 +344,14 @@ describe('montarPayload', () => {
   })
 })
 
-/* D-62 (15/10): o Trabalhe Conosco vai ao RD — só contato e perfil. */
-describe('banco de talentos no RD', () => {
-  const candidato = (extra: Partial<LeadParaRd> = {}): LeadParaRd =>
-    lead({
-      kind: 'talent-pool',
-      company: null,
-      phone: '11 98888-0000',
-      /* A mensagem do banco de talentos é o perfil serializado para o admin
-         (`actions/formularios.ts`) — o que NÃO pode ir. */
-      message: 'LinkedIn: https://linkedin.com/in/maria\nÁrea: Engenharia de Dados\nSenioridade: Sênior',
-      talent: {
-        linkedin: 'https://linkedin.com/in/maria',
-        area: 'Engenharia de Dados',
-        seniority: 'Sênior',
-        privacyNotice: 'Seu cadastro também vai ao RD Station, para o agradecimento.',
-      },
-      ...extra,
-    })
-
-  it('é do formulário Trabalhe Conosco, com identificador e tags próprios', () => {
-    expect(formularioDoRd('talent-pool')).toBe('talentos')
-    const cfg = config({ tags: { ...config().tags, talentos: ['candidato'] } })
-    const p = montarPayload(candidato(), identificadorDe({ kind: 'talent-pool' }, cfg.conversoes)!, cfg)
-    expect(p).toMatchObject({
-      conversion_identifier: 'site-trabalhe-conosco',
-      email: 'lead@empresa.com.br',
-      name: 'Maria',
-      personal_phone: '11 98888-0000',
-      linkedin: 'https://linkedin.com/in/maria',
-      tags: ['candidato'],
-    })
-  })
-
-  it('área e senioridade só com os campos personalizados ligados', () => {
-    const desligado = montarPayload(candidato(), 'site-trabalhe-conosco', config())
-    expect(desligado).not.toHaveProperty(CAMPOS_PERSONALIZADOS.talentos.area)
-    const ligado = montarPayload(candidato(), 'site-trabalhe-conosco', config({ camposPersonalizados: true }))
-    expect(ligado).toMatchObject({
-      [CAMPOS_PERSONALIZADOS.talentos.area]: 'Engenharia de Dados',
-      [CAMPOS_PERSONALIZADOS.talentos.senioridade]: 'Sênior',
-    })
-  })
-
-  it('⚠️ nunca leva a mensagem em texto livre, nem com os campos personalizados ligados', () => {
-    const p = montarPayload(candidato(), 'site-trabalhe-conosco', config({ camposPersonalizados: true }))
-    expect(p).not.toHaveProperty(CAMPOS_PERSONALIZADOS.mensagem)
-    expect(JSON.stringify(p)).not.toContain('Senioridade: Sênior')
-  })
-
-  it('⚠️ nenhum corpo de candidato leva currículo, arquivo ou link de arquivo privado', () => {
-    const comCv = { ...candidato(), cv: 42, cvFilename: 'cv-maria.pdf' } as LeadParaRd
-    const corpo = JSON.stringify(montarPayload(comCv, 'site-trabalhe-conosco', config({ camposPersonalizados: true })))
-    expect(corpo).not.toMatch(/\bcv\b|curr[ií]culo|\.pdf|private-files|\/api\/private-files/i)
-  })
-
-  it('⚠️ leva exatamente estes campos — nem a página de origem, nem o aviso', () => {
-    const p = montarPayload(
-      candidato({ source: '/carreiras', utm: null }),
-      'site-trabalhe-conosco',
-      config({ camposPersonalizados: true }),
-    )
-    expect(Object.keys(p).sort()).toEqual(
-      [
-        'conversion_identifier',
-        'email',
-        'name',
-        'personal_phone',
-        'linkedin',
-        CAMPOS_PERSONALIZADOS.talentos.area,
-        CAMPOS_PERSONALIZADOS.talentos.senioridade,
-      ].sort(),
-    )
-  })
-
-  it('sem base legal declarada — consentimento provado só na newsletter (P-14)', () => {
-    const p = montarPayload(candidato(), 'site-trabalhe-conosco', config())
-    expect(p).not.toHaveProperty('legal_bases')
-    expect(p).not.toHaveProperty('available_for_mailing')
+/* D-67 (22/10): o Trabalhe Conosco não vai ao RD. Da D-62 à D-67 ia, com o
+   perfil em campos próprios; o que sobra é provar que nenhuma peça daquele
+   envio continua de pé. */
+describe('banco de talentos fora do RD', () => {
+  it('não é formulário do RD, e não há campo personalizado de candidato', () => {
+    expect(formularioDoRd('talent-pool')).toBeNull()
+    expect(Object.keys(CAMPOS_PERSONALIZADOS)).not.toContain('talentos')
+    expect(Object.keys(CONVERSOES_PADRAO)).not.toContain('talentPool')
   })
 })
 
@@ -496,5 +426,113 @@ describe('enviarConversao', () => {
   it('erro de rede vira { ok: false }, nunca exceção', async () => {
     fetchMock.mockRejectedValue(new TypeError('fetch failed'))
     await expect(enviarConversao(lead(), config())).resolves.toMatchObject({ ok: false, motivo: 'fetch failed' })
+  })
+})
+
+/* Task 050 — o formulário montado no admin. O gancho resolve `formulario`
+   (identificador, tags e destino de cada campo) a partir do `form` do envio. */
+describe('formulário do admin no RD', () => {
+  const formulario = {
+    identificador: 'Inscrição Evento Dados',
+    tags: ['evento', 'dados-2026'],
+    campos: [
+      { id: 'f1', tipo: 'name', campoNoRd: null },
+      { id: 'f2', tipo: 'email', campoNoRd: null },
+      { id: 'f3', tipo: 'jobTitle', campoNoRd: null },
+      { id: 'f4', tipo: 'select', campoNoRd: 'cf_area_de_interesse' },
+      { id: 'f5', tipo: 'longText', campoNoRd: 'cf_desafio' },
+      { id: 'f6', tipo: 'shortText', campoNoRd: null },
+      { id: 'f7', tipo: 'checkbox', campoNoRd: 'cf_aceite' },
+    ],
+  }
+  const envio = (extra: Partial<LeadParaRd> = {}) =>
+    lead({
+      kind: 'custom-form',
+      name: 'Ana',
+      email: 'Ana@Empresa.com.br',
+      company: 'Banco X',
+      source: '/eventos',
+      formulario,
+      answers: [
+        { fieldId: 'f1', label: 'Nome', value: 'Ana' },
+        { fieldId: 'f2', label: 'E-mail', value: 'Ana@Empresa.com.br' },
+        { fieldId: 'f3', label: 'Cargo', value: 'CDO' },
+        { fieldId: 'f4', label: 'Área', value: 'governanca' },
+        { fieldId: 'f5', label: 'Desafio', value: '  ' },
+        { fieldId: 'f6', label: 'Como soube', value: 'LinkedIn' },
+        { fieldId: 'f7', label: 'Aceito', value: 'Sim' },
+      ],
+      communicationConsent: false,
+      ...extra,
+    })
+
+  it('vai ao RD, com o identificador e as tags do próprio formulário', () => {
+    expect(deveSincronizar(envio())).toBe(true)
+    expect(identificadorDe(envio(), config().conversoes)).toBe('Inscrição Evento Dados')
+    expect(montarPayload(envio(), 'Inscrição Evento Dados', config()).tags).toEqual(['evento', 'dados-2026'])
+  })
+
+  it('formulário apagado ou sem identificador não vai — e não cai em identificador de outro formulário', () => {
+    expect(identificadorDe(envio({ formulario: null }), config().conversoes)).toBeNull()
+    expect(identificadorDe(envio({ formulario: { ...formulario, identificador: '  ' } }), config().conversoes)).toBeNull()
+  })
+
+  it('campos padrão, cargo em job_title, sem cf_ com a chave desligada — nem a página de origem', () => {
+    expect(montarPayload(envio(), 'X', config())).toEqual({
+      conversion_identifier: 'X',
+      email: 'ana@empresa.com.br',
+      name: 'Ana',
+      company_name: 'Banco X',
+      job_title: 'CDO',
+      tags: ['evento', 'dados-2026'],
+    })
+  })
+
+  it('com a chave, só os cf_ escolhidos no formulário, sem resposta vazia e sem cf_quiz_url', () => {
+    const p = montarPayload(envio(), 'X', config({ camposPersonalizados: true }))
+    expect(p).toMatchObject({ cf_area_de_interesse: 'governanca', cf_aceite: 'Sim' })
+    expect(p).not.toHaveProperty('cf_desafio')
+    expect(p).not.toHaveProperty('cf_quiz_url')
+    expect(p).not.toHaveProperty(CAMPOS_PERSONALIZADOS.mensagem)
+    expect(JSON.stringify(p)).not.toMatch(/LinkedIn/)
+  })
+
+  it('caixa de marcar desmarcada não vai ao RD (o "Não" fica só no envio)', () => {
+    const desmarcada = envio({
+      answers: [
+        { fieldId: 'f2', label: 'E-mail', value: 'ana@empresa.com.br' },
+        { fieldId: 'f7', label: 'Aceito', value: 'Não' },
+      ],
+    })
+    expect(montarPayload(desmarcada, 'X', config({ camposPersonalizados: true }))).not.toHaveProperty('cf_aceite')
+  })
+
+  it('consentimento marcado declara a base legal; desmarcado não declara', () => {
+    expect(montarPayload(envio({ communicationConsent: true }), 'X', config())).toMatchObject({
+      legal_bases: [{ category: 'communications', type: 'consent', status: 'granted' }],
+      available_for_mailing: true,
+    })
+    const sem = montarPayload(envio(), 'X', config())
+    expect(sem).not.toHaveProperty('legal_bases')
+    expect(sem).not.toHaveProperty('available_for_mailing')
+  })
+
+  it('enviarConversao sem formulário ou sem identificador não toca na rede, e o motivo diz onde olhar', async () => {
+    vi.stubEnv('RDSTATION_MARKETING_API_KEY', 'chave-teste')
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(enviarConversao(envio({ formulario: null }), config())).resolves.toEqual({
+      ok: false,
+      motivo: 'formulário do envio apagado ou ilegível',
+    })
+    await expect(
+      enviarConversao(envio({ formulario: { ...formulario, identificador: null } }), config()),
+    ).resolves.toEqual({
+      ok: false,
+      motivo: 'formulário sem identificador de conversão (aba RD Station do formulário)',
+    })
+    expect(fetchMock).not.toHaveBeenCalled()
+    vi.unstubAllGlobals()
+    vi.unstubAllEnvs()
   })
 })

@@ -86,7 +86,6 @@ describe('toIntegracaoRd (D-54)', () => {
       download: 'site-download-material',
       consultores: 'site-solicitacao-consultores',
       diagnostico: 'site-diagnostico-maturidade',
-      talentos: 'site-trabalhe-conosco',
     })
     /* Só a newsletter nasce com tag: é por ela que o marketing segmenta. */
     expect(r.tags).toEqual({
@@ -96,14 +95,13 @@ describe('toIntegracaoRd (D-54)', () => {
       download: [],
       consultores: [],
       diagnostico: [],
-      talentos: [],
     })
   })
 
   it('15/10: aceita o nome que o RD já usa, com espaço e acento', () => {
-    const r = toIntegracaoRd(docRd({ conversions: { contact: 'Formulário Home', talentPool: 'Trabalhe Conosco' } }))
+    const r = toIntegracaoRd(docRd({ conversions: { contact: 'Formulário Home', newsletter: 'Inscrição na Newsletter' } }))
     expect(r.conversoes.contato).toBe('Formulário Home')
-    expect(r.conversoes.talentos).toBe('Trabalhe Conosco')
+    expect(r.conversoes.newsletter).toBe('Inscrição na Newsletter')
   })
 
   it('tags gravadas valem como estão, aparadas, sem vazias e sem repetir (ignorando caixa)', () => {
@@ -114,20 +112,12 @@ describe('toIntegracaoRd (D-54)', () => {
     /* Lista gravada vazia é o admin tirando a tag — não volta ao padrão. */
     expect(r.tags.newsletter).toEqual([])
     /* Formulário cuja lista nunca foi gravada cai no padrão. */
-    expect(r.tags.talentos).toEqual([])
+    expect(r.tags.chat).toEqual([])
   })
 
   it('⚠️ tag fora do formato sai sozinha, sem levar as outras', () => {
     const r = toIntegracaoRd(docRd({ tags: { contact: ['ok', '<script>', 'outra'] } }))
     expect(r.tags.contato).toEqual(['ok', 'outra'])
-  })
-
-  it('D-62: o aviso ao candidato chega aparado, e vazio vira null', () => {
-    expect(toIntegracaoRd(docRd({ talentPoolNotice: '  Seu cadastro vai ao RD.  ' })).avisoAoCandidato).toBe(
-      'Seu cadastro vai ao RD.',
-    )
-    expect(toIntegracaoRd(docRd({ talentPoolNotice: '   ' })).avisoAoCandidato).toBeNull()
-    expect(toIntegracaoRd(docRd(undefined)).avisoAoCandidato).toBeNull()
   })
 
   it('lista `null` (como o banco devolve) é lida como vazia', () => {

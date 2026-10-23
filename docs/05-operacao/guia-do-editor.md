@@ -324,7 +324,17 @@ assunto: "saúde" mostra o hospital e o estetoscópio, "LGPD" a balança, "IA" o
 robô e o cérebro. Acento não importa. Nos campos opcionais, **"Sem ícone"**
 tira o que estiver lá. Ícone que não existe na lista precisa do time técnico.
 
-## Candidatura a vagas: o aviso de privacidade
+## O peso dos títulos
+
+Em **Configuração → Aparência do site**, o campo **"Peso dos títulos"** escolhe
+como saem os títulos do site inteiro: **Negrito**, **Normal** ou **Fino**.
+Fino é o desenho original e vem marcado. Vale para os títulos de página, de
+seção e de cartão, em todas as páginas e nos dois idiomas, e muda o site ao
+salvar, sem deploy. Os títulos pequenos (nome de autor de depoimento, itens do
+menu, rótulos em caixa-alta) têm peso próprio e não mudam. O tamanho das
+letras não fica aqui: é do código (D-65).
+
+## Candidatura a vagas e Trabalhe Conosco: o aviso de privacidade
 
 A candidatura com currículo, na página de cada vaga, ainda está **desligada**:
 espera o RH dizer quem acessa os currículos (P-17). Quando ligar, o texto que o
@@ -337,6 +347,16 @@ candidatura (D-61). O aviso precisa dizer isso, e também quem tem acesso e para
 que o currículo é usado. O e-mail que avisa o RH de cada candidatura não é
 apagado pelo site: quem recebe precisa apagar no mesmo prazo, ou o aviso precisa
 dizer que ele fica.
+
+O **Trabalhe Conosco** (o banco de talentos de /carreiras, sem currículo) tem o
+aviso dele no mesmo lugar: **Contato → Candidaturas → Aviso de privacidade do
+banco de talentos**. Também é do RH e do jurídico: para que o cadastro é usado,
+por quanto tempo fica guardado e como pedir a exclusão. Diferente do da
+candidatura, **vazio, o formulário continua aparecendo**, só que sem aviso.
+Cada cadastro guarda uma cópia do aviso que a pessoa viu ("Aviso exibido no
+cadastro", no envio do formulário), e trocar o texto não muda os cadastros
+antigos. O cadastro fica em Envios de formulário e vai ao ATRAIR quando essa
+integração está ligada; **não vai ao RD** (D-67, 22/10).
 
 ## Leads no RD Station: identificadores, tags e a chave
 
@@ -373,23 +393,117 @@ fica o que o site manda ao RD a cada formulário:
   "Download de material" valem para todos os e-books. Na página do e-book, o
   formulário fica depois do texto, antes de "Entre em contato", e o botão do
   topo leva até ele; o formulário só aparece quando o e-book tem o PDF.
-- **Trabalhe Conosco** — o cadastro no banco de talentos de /carreiras também
-  tem identificador e tags. Vão ao RD só os dados de contato e de perfil;
-  **o currículo nunca vai**.
+- **Trabalhe Conosco** — **não vai ao RD** desde 22/10 (D-67): cada inscrição
+  gastava um lead do plano com quem não é cliente. O cadastro fica em Envios
+  de formulário (e no ATRAIR, com a integração ligada), e quem avisa o RH é o
+  site. Por isso ele não tem mais identificador nem tags aqui. A candidatura
+  com currículo também nunca vai.
 - **Quem avisa o time a cada contato ou cadastro** — se o lead chegou ao RD
   ("Sincronizado em" preenchido no envio), quem avisa é a automação do RD, como
   no site antigo, e o site não manda e-mail. Se não chegou (integração
   desligada, chave ausente, nome recusado pelo RD), o site manda o aviso dele,
   e o envio fica com "Aviso por e-mail enviado" marcado. Um aviso por lead, nunca dois.
-  ⚠️ Vale para Contato e Trabalhe Conosco: confira no RD que a automação de
-  aviso ao time existe para cada um, senão o lead aceito fica sem aviso.
-- **Aviso ao candidato (Trabalhe Conosco)** — o texto que aparece no
-  formulário do banco de talentos, logo acima do botão. É do RH e do jurídico:
-  diz que o cadastro também vai ao RD Station, para quê, e como pedir a
-  exclusão. **Vazio, o Trabalhe Conosco não vai ao RD** (o cadastro continua
-  chegando ao admin e ao ATRAIR). Cada cadastro guarda uma cópia do aviso que a
-  pessoa viu ("Aviso exibido no cadastro", no envio do formulário): só os que
-  têm essa cópia vão ao RD, e trocar o texto não muda os cadastros antigos.
+  ⚠️ Confira no RD que a automação de aviso ao time existe para cada
+  formulário que vai para lá, senão o lead aceito fica sem aviso.
+- **Aviso ao candidato** — saiu daqui em 22/10. O aviso de privacidade do
+  banco de talentos agora fica em Contato → Candidaturas (ver "Candidatura a
+  vagas e Trabalhe Conosco: o aviso de privacidade", acima).
+
+## Criar um formulário e pôr numa página
+
+Um formulário de inscrição, de pesquisa ou de pedido se monta em **Conteúdo →
+Formulários** e vai para qualquer página com a seção **Formulário**. Cada envio
+fica em **Sistema → Envios de formulário** e vai ao RD com o identificador de
+conversão e as tags que você escolher no próprio formulário. Os formulários que já existiam (contato,
+newsletter, e-book) continuam como estão; o Trabalhe Conosco segue fora do RD.
+
+**1. Criar.** Em **Conteúdo → Formulários**, crie um novo e dê um **Nome** (é
+interno: aparece no admin e nos envios, não no site).
+
+**2. Campos** (aba **Campos**). Até 20, na ordem em que aparecem. O **e-mail
+vem sempre e é obrigatório**: é por ele que o RD reconhece a pessoa. Os tipos
+são nome, e-mail, telefone, empresa, cargo, texto curto, texto longo, lista de
+opções e caixa de marcar. Nome, telefone, empresa e cargo entram no máximo uma
+vez cada, e só uma caixa de marcar pode ser o consentimento: o admin recusa o
+resto ao salvar. Em cada campo:
+
+- **Rótulo** — o que o visitante lê acima do campo. **Texto de exemplo** é o
+  que aparece apagado dentro dele (opcional).
+- **Obrigatório** e **Largura** (linha inteira ou meia linha; no celular, todo
+  campo ocupa a linha inteira).
+- **Lista de opções** — escreva cada opção. O **Valor gravado** é criado sozinho
+  na primeira vez e não muda depois, nem se você corrigir o texto da opção: é
+  ele que fica no envio e vai ao RD.
+- **Caixa de marcar** — pode ser **o consentimento para receber comunicações**.
+  Marcada pelo visitante, o lead chega ao RD com a autorização registrada. Ela
+  nunca é obrigatória: quem não quer receber também pode enviar.
+- **Campo personalizado no RD** (só em texto curto, texto longo, lista de
+  opções e caixa de marcar) — nome, e-mail, telefone, empresa e cargo vão
+  sempre para os campos padrão do RD. Os outros só vão se você escrever aqui o
+  campo personalizado do RD (`cf_…`), exatamente como ele está lá; vazio, a
+  resposta fica só no site. Esses campos só vão com **Enviar campos
+  personalizados** ligado em Sistema → Integrações, e o campo precisa existir na
+  conta do RD antes: se não existir, o RD recusa o lead inteiro, e o erro
+  aparece no envio. Caixa de marcar desmarcada não vai.
+
+⚠️ **Não peça documento (CPF, RG), dado de saúde nem arquivo.** O formulário vai
+para uma base de marketing, e não há tipo de campo para isso de propósito: não
+use "texto curto" para contornar.
+
+**3. Botão e envio** (aba **Botão e envio**):
+
+- **Texto do botão** e **Aviso acima do botão** (por exemplo, a frase de
+  privacidade).
+- **Depois do envio** — **Mostrar uma mensagem** (no lugar do formulário) ou
+  **Ir para outra página**. A página é um endereço do próprio site, como
+  `/contato` ou `/cases-de-sucesso`; no inglês o site acrescenta o `/en`
+  sozinho.
+- **Quem recebe o aviso do site** — os e-mails que recebem o envio quando o RD
+  não o aceita. Vazio, vale o destino geral do contato.
+
+**4. RD Station** (aba **RD Station**):
+
+- **Identificador de conversão** — o nome com que o envio chega ao RD. Ele vem
+  sugerido a partir do Nome; escreva exatamente como está no RD. Vazio, o
+  formulário não vai ao RD (os envios continuam chegando ao admin e ao e-mail
+  do aviso).
+- **Tags** — as tags que o lead recebe no RD (digite e tecle Enter).
+
+Para onde vai cada resposta se escolhe em cada campo, na aba **Campos** (acima).
+
+**5. Publicar.** Só formulário **publicado** aparece no site e recebe envio.
+"Salvar rascunho" num formulário já publicado não muda o que está no ar.
+Despublicar tira a seção do site e o formulário para de receber.
+
+**6. Pôr numa página.** Na página (Páginas, Soluções, Segmentos ou Parceiros),
+**Adicionar Seção → Formulário** (grupo "Chamadas e contato"). Escolha o
+formulário, escreva o título e o texto e a forma: **sozinho, centralizado**, ou
+**com o texto ao lado** (no celular, um embaixo do outro). No preview a seção
+aparece mesmo com o formulário em rascunho, com um aviso amarelo dizendo o que
+falta para ela ir ao site.
+
+**7. O que o RD faz, e o que você monta lá.** O site cria a conversão no RD com o
+identificador e as tags. O **e-mail de agradecimento** ao visitante e o
+**aviso ao time** são automações que o marketing monta no RD, disparadas por
+esse identificador: o RD não deixa o site criar formulário, landing page nem
+automação. Quem avisa o time segue a regra dos outros formulários: o RD aceitou,
+avisa a automação dele; não aceitou, o site manda o e-mail aos endereços do
+formulário.
+
+**8. Conferir.**
+
+- Em **Sistema → Integrações → RD Station Marketing (leads)**, a lista
+  **Formulários do admin** mostra cada formulário com o identificador e as tags com que vai ao
+  RD, "Não vai ao RD" quando falta o identificador, e o aviso quando dois
+  formulários usam o mesmo identificador (é permitido, mas os leads se misturam
+  no RD).
+- Em **Sistema → Envios de formulário**, o filtro **Formulário** mostra os
+  envios de um só. Aberto, o envio mostra cada resposta como "Pergunta:
+  resposta", na ordem do formulário.
+
+**Inglês.** Rótulos, textos de exemplo, opções, botão, aviso e mensagem têm
+versão em inglês: troque o idioma no topo do admin e preencha. Vazio em
+inglês, o site usa o português.
 
 ## O que mais é editável
 
@@ -397,7 +511,9 @@ fica o que o site manda ao RD a cada formulário:
   iniciais, de propósito (ver a seção 3).
 - **Contato, rodapé e menu** — Globais (papel de administrador). O
   **endereço** em Contato é opcional desde 29/09 (a ATRA não tem endereço
-  fixo): vazio, ele não aparece no rodapé nem ao lado dos formulários.
+  fixo): vazio, ele não aparece no rodapé nem ao lado dos formulários. A
+  **foto de fundo** do cartão "Nossos Contatos" também mora lá (desde 21/10):
+  é uma só para a home, /contato e consultores, e trocar ali troca nos três.
 - **SEO de cada página** — todo conteúdo tem o grupo "SEO": título para
   buscadores, **descrição** (o texto cinza no resultado do Google) e imagem de
   compartilhamento. ⚠️ A **descrição da home está vazia** — preencher é
@@ -405,7 +521,9 @@ fica o que o site manda ao RD a cada formulário:
 - **Leads** — os envios do formulário de contato ficam em "Form submissions",
   com a campanha de origem de cada um. Eles também vão para o RD Station
   Marketing como conversões: o nome de cada conversão, as tags e o liga/desliga
-  ficam em Sistema → Integrações (ver "Leads no RD Station", acima), e "Sincronizado em" vazio
+  ficam em Sistema → Integrações (ver "Leads no RD Station", acima) — menos os
+  formulários de Conteúdo → Formulários, que levam o nome e as tags no próprio
+  cadastro (ver "Criar um formulário", acima) —, e "Sincronizado em" vazio
   num envio quer dizer que ele ainda não chegou lá — editar o envio tenta de
   novo.
 - **Google Tag Manager, Lusha e RD Station** — Sistema → Rastreamento (papel de

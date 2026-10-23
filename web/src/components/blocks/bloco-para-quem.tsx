@@ -30,16 +30,16 @@ export function BlocoParaQuem({ bloco }: { bloco: BlocoAudienceSplit }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
           <div>
             {bloco.eyebrow && <PilulaDeSecao texto={bloco.eyebrow} icone={bloco.eyebrowIcon} />}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-display text-text-main mb-4 leading-tight tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main mb-4 leading-tight tracking-tight">
               {bloco.title}
             </h2>
             {bloco.description && (
               <p
                 className={cn(
-                  'text-xs sm:text-sm md:text-base mb-8 leading-relaxed',
+                  'text-base mb-8 leading-relaxed',
                   /* Parágrafo em texto de apoio, não azul: o azul fica para títulos
                      e destaques, não para subtítulos inteiros. */
-                  'text-text-muted font-light',
+                  'text-text-muted',
                 )}
               >
                 {bloco.description}
@@ -61,7 +61,7 @@ export function BlocoParaQuem({ bloco }: { bloco: BlocoAudienceSplit }) {
                itens não entram nesta forma — o rótulo basta. */
             <div>
               {bloco.itemsIntro && (
-                <p className="text-sm sm:text-base text-text-muted font-light leading-relaxed mb-6">
+                <p className="text-base text-text-muted leading-relaxed mb-6">
                   {bloco.itemsIntro}
                 </p>
               )}
@@ -103,7 +103,7 @@ export function BlocoParaQuem({ bloco }: { bloco: BlocoAudienceSplit }) {
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-text-main mb-1">{item.title}</h3>
-                      <p className="text-text-muted font-light text-xs sm:text-sm leading-relaxed">
+                      <p className="text-text-muted text-sm leading-relaxed">
                         {item.description}
                       </p>
                     </div>

@@ -22,8 +22,8 @@ function CampoDaTask({ rotulo, valor, mono = false }: { rotulo: string; valor: s
   if (!valor) return null
   return (
     <div>
-      <dt className="text-[10px] font-bold uppercase tracking-wider text-text-muted">{rotulo}</dt>
-      <dd className={`text-xs text-text-subtle mt-0.5 ${mono ? 'font-mono' : 'font-light'}`}>
+      <dt className="text-xs font-bold uppercase tracking-wider text-text-muted">{rotulo}</dt>
+      <dd className={`text-xs text-text-subtle mt-0.5 ${mono ? 'font-mono' : ''}`}>
         {valor}
       </dd>
     </div>
@@ -124,7 +124,7 @@ export function Painel({ fases }: { fases: Fase[] }) {
             <details key={fase.nome} open className="group/fase">
               <summary className="cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
                 <div className="flex items-baseline justify-between gap-4 mb-1.5">
-                  <h3 className="text-lg font-display font-medium text-text-main flex items-center gap-2">
+                  <h3 className="text-lg font-display text-text-main flex items-center gap-2">
                     <span
                       className="text-text-muted text-sm transition-transform group-open/fase:rotate-90"
                       aria-hidden

@@ -43,15 +43,15 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
 
             <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
               <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-display text-slate-900 dark:text-white mb-3 leading-tight">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-slate-900 dark:text-white mb-3 leading-tight">
                   <TextoDestacado
                     texto={bloco.title}
                     destaque={bloco.highlight}
-                    className="text-secondary font-normal"
+                    className="text-secondary peso-do-destaque"
                   />
                 </h2>
                 {bloco.description && (
-                  <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 leading-relaxed max-w-xl font-light">
+                  <p className="text-base text-slate-600 dark:text-white/70 leading-relaxed max-w-xl">
                     {bloco.description}
                   </p>
                 )}
@@ -84,7 +84,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                       {bloco.secondaryCta.label}
                     </Link>
                     {bloco.secondaryCta.caption && (
-                      <span className="text-slate-400 dark:text-white/40 text-[10px] mt-1.5 uppercase tracking-wider font-semibold text-center">
+                      <span className="text-slate-400 dark:text-white/40 text-xs mt-1.5 uppercase tracking-wider font-semibold text-center">
                         {bloco.secondaryCta.caption}
                       </span>
                     )}
@@ -117,11 +117,11 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
             <TechCornerBraces color="orange" position="bottom-right" size={14} />
 
             <div className="max-w-3xl mx-auto relative z-10">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-display text-slate-900 dark:text-white mb-3 leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-slate-900 dark:text-white mb-3 leading-tight">
                 <TextoDestacado texto={bloco.title} destaque={bloco.highlight} className="text-secondary" />
               </h2>
               {bloco.description && (
-                <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 mb-8 font-light leading-relaxed whitespace-pre-line max-w-xl mx-auto">
+                <p className="text-base text-slate-600 dark:text-white/70 mb-8 leading-relaxed whitespace-pre-line max-w-xl mx-auto">
                   {bloco.description}
                 </p>
               )}
@@ -139,7 +139,7 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
                   <Link
                     href={bloco.secondaryCta.href}
                     {...propsExternas(bloco.secondaryCta.href)}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white  px-6 py-2.5 rounded-[6px] text-xs sm:text-sm font-medium transition-all"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white px-6 py-2.5 rounded-[6px] text-xs sm:text-sm font-medium transition-all"
                   >
                     <Bot size={16} aria-hidden />
                     <span>{bloco.secondaryCta.label}</span>
@@ -163,11 +163,11 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
         )}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-4 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main mb-4 tracking-tight">
             <TextoDestacado texto={bloco.title} destaque={bloco.highlight} />
           </h2>
           {bloco.description && (
-            <p className="text-xs sm:text-sm text-text-muted font-light mb-8 max-w-xl mx-auto leading-relaxed">
+            <p className="text-base text-text-muted mb-8 max-w-xl mx-auto leading-relaxed">
               {bloco.description}
             </p>
           )}
@@ -207,11 +207,11 @@ export function BlocoCta({ bloco }: { bloco: BlocoCtaBanner }) {
           )}
 
           <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold mb-8">
+            <h2 className="text-3xl md:text-5xl mb-8">
               <TextoDestacado
                 texto={bloco.title}
                 destaque={bloco.highlight}
-                className={azul ? 'text-secondary' : 'text-primary font-normal'}
+                className={azul ? 'text-secondary' : 'text-primary peso-do-destaque'}
               />
             </h2>
 

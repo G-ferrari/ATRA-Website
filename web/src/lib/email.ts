@@ -14,7 +14,8 @@
  */
 
 export type Aviso = {
-  para: string
+  /** Um endereço, ou vários — os formulários do admin escolhem a lista (049). */
+  para: string | string[]
   assunto: string
   /** Sempre enviado: é o que lê quem não abre HTML, e o que os avisos internos usam. */
   texto: string
@@ -37,7 +38,7 @@ export async function enviarAviso(aviso: Aviso): Promise<boolean> {
       headers: { authorization: `Bearer ${chave}`, 'content-type': 'application/json' },
       body: JSON.stringify({
         from: REMETENTE,
-        to: [aviso.para],
+        to: Array.isArray(aviso.para) ? aviso.para : [aviso.para],
         subject: aviso.assunto,
         text: aviso.texto,
         /* Só com HTML de verdade. Com as duas partes, o cliente de e-mail mostra

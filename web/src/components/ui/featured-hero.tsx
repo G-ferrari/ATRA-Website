@@ -196,11 +196,11 @@ export function FeaturedHero({
                   <span>{ativo.eyebrow}</span>
                 </div>
               )}
-              <Titulo className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-5 leading-tight tracking-tight text-text-main font-display">
+              <Titulo className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-3 sm:mb-5 leading-tight tracking-tight text-text-main font-display">
                 {ativo.title}
               </Titulo>
               {ativo.description && (
-                <p className="text-xs sm:text-base lg:text-lg text-text-muted mb-5 sm:mb-7 max-w-2xl leading-relaxed font-light">
+                <p className="text-base lg:text-lg text-text-muted mb-5 sm:mb-7 max-w-2xl leading-relaxed">
                   {ativo.description}
                 </p>
               )}
@@ -209,7 +209,7 @@ export function FeaturedHero({
                   {ativo.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2.5 py-1 bg-surface-2 rounded-[6px] text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-primary shadow-xs"
+                      className="px-2.5 py-1 bg-surface-2 rounded-[6px] text-xs font-semibold uppercase tracking-wider text-primary shadow-xs"
                     >
                       {tag}
                     </span>
@@ -326,7 +326,7 @@ export function FeaturedHero({
                   {item.title}
                 </h3>
                 {item.thumbLabel && (
-                  <div className="text-[10px] sm:text-[11px] text-text-muted uppercase tracking-widest font-semibold">
+                  <div className="text-xs text-text-muted uppercase tracking-widest font-semibold">
                     {item.thumbLabel}
                   </div>
                 )}

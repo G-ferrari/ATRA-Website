@@ -84,7 +84,7 @@ export function PaginaDeMaterial({
                 {ehEbook && material.pages !== null && ` — ${material.pages} ${t.paginas}`}
               </div>
 
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-3xl md:text-5xl text-white mb-6 leading-tight">
                 {material.title}
               </h1>
               <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl mb-8">
@@ -96,7 +96,7 @@ export function PaginaDeMaterial({
                   {material.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 rounded-[4px] bg-white/10 text-[10px] font-medium text-white/80 uppercase flex items-center gap-1 "
+                      className="px-2 py-0.5 rounded-[4px] bg-white/10 text-xs font-medium text-white/80 uppercase flex items-center gap-1 "
                     >
                       <Tag size={10} aria-hidden /> {tag}
                     </span>
@@ -125,7 +125,7 @@ export function PaginaDeMaterial({
                   >
                     <Download size={20} aria-hidden /> {t.cta}
                   </button>
-                  <p className="text-xs text-white/60 mt-3">{t.ctaIndisponivel}</p>
+                  <p className="text-sm text-white/60 mt-3">{t.ctaIndisponivel}</p>
                 </>
               )}
             </div>
@@ -178,7 +178,7 @@ export function PaginaDeMaterial({
                 </div>
                 <h2
                   id={`${ANCORA_DO_FORMULARIO}-titulo`}
-                  className="text-2xl font-bold text-slate-900 dark:text-white leading-tight mb-3"
+                  className="text-2xl text-slate-900 dark:text-white leading-tight mb-3"
                 >
                   {t.cta}
                 </h2>

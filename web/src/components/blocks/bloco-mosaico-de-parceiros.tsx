@@ -69,12 +69,12 @@ export function BlocoMosaicoDeParceiros({ bloco }: { bloco: BlocoPartnerMosaic }
               </div>
             )}
             {bloco.title && (
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main leading-tight">
                 {bloco.title}
               </h2>
             )}
             {bloco.paragrafos.length > 0 && (
-              <div className="mt-4 space-y-3 text-sm md:text-base text-text-muted font-light leading-relaxed">
+              <div className="mt-4 space-y-3 text-base text-text-muted leading-relaxed">
                 {bloco.paragrafos.map((p) => (
                   <p key={p}>{p}</p>
                 ))}
@@ -90,13 +90,13 @@ export function BlocoMosaicoDeParceiros({ bloco }: { bloco: BlocoPartnerMosaic }
                inteiro dentro do link, que é o nome acessível do cartão. */
             const texto = (
               <>
-                <span className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-secondary">
+                <span className="block text-xs font-bold uppercase tracking-widest text-secondary">
                   {item.name}
                 </span>
                 {item.linkLabel && (
                   <span
                     className={cn(
-                      'mt-1 inline-flex items-center gap-2 font-light text-white',
+                      'mt-1 inline-flex items-center gap-2 text-white',
                       forma === 'pequeno' ? 'text-sm' : 'text-base md:text-lg',
                     )}
                   >

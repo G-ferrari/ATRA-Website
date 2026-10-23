@@ -41,11 +41,11 @@ export function BlocoChamadaWebinars({ bloco, locale }: { bloco: BlocoWebinarTea
                 <span>{bloco.eyebrow}</span>
               </div>
             )}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold font-display mb-4 md:mb-6 leading-tight text-text-main dark:text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display mb-4 md:mb-6 leading-tight text-text-main dark:text-white">
               <TextoDestacado texto={bloco.title} destaque={bloco.highlight} />
             </h2>
             {bloco.description && (
-              <p className="text-sm md:text-base text-text-muted dark:text-gray-300 mb-8 max-w-xl font-light leading-relaxed">
+              <p className="text-base text-text-muted dark:text-gray-300 mb-8 max-w-xl leading-relaxed">
                 {bloco.description}
               </p>
             )}

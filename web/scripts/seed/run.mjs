@@ -16,7 +16,7 @@ import { spawnSync } from 'node:child_process'
  * `solucoes-wp.ts`) recriariam as soluções que a migração apagou. Só a RC18
  * continua aqui.
  */
-const SEEDS = ['parceiros-catalogo.ts', 'cases.ts', 'glossary.ts', 'resources.ts', 'webinars.ts', 'posts.ts', 'clientes.ts', 'sobre.ts', 'carreiras.ts', 'contato.ts', 'consultores.ts', 'parceiros.ts', 'solucoes-rc18.ts', 'home.ts', 'insights.ts', 'atra-ai.ts', 'navegacao.ts', 'globais.ts', 'segmentos.ts', 'rastreamento.ts', 'migracoes-de-dados.ts']
+const SEEDS = ['parceiros-catalogo.ts', 'cases.ts', 'glossary.ts', 'resources.ts', 'webinars.ts', 'posts.ts', 'clientes.ts', 'sobre.ts', 'carreiras.ts', 'contato.ts', 'consultores.ts', 'parceiros.ts', 'solucoes-rc18.ts', 'home.ts', 'insights.ts', 'atra-ai.ts', 'navegacao.ts', 'globais.ts', 'segmentos.ts', 'rastreamento.ts', 'migracoes-de-dados.ts', 'formulario-de-teste.ts']
 
 for (const arquivo of SEEDS) {
   console.log(`\n▶ ${arquivo}`)

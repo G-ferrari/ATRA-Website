@@ -205,9 +205,8 @@ const layout = [
     title: 'Vamos construir o próximo nível do seu negócio?',
     subtitle: 'Comece seu projeto de dados!',
     showContactCard: true,
-    /* A foto é do acervo da ATRA, não o hotlink do Unsplash do gabarito
-       (`App.tsx:2357`) — mesma decisão de /sobre e /consultores. */
-    photo: await upsertMidiaLocal('public/fotos/equipe-atra.jpg', 'Equipe da ATRA reunida em evento'),
+    /* A foto do painel de contatos mora no global Contato desde a #171
+       (`globais.ts`), a mesma da home, de /contato e de consultores. */
   },
 ]
 

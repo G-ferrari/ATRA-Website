@@ -9,7 +9,7 @@ import React, { Fragment } from 'react'
 export function TextoDestacado({
   texto,
   destaque,
-  className = 'text-primary font-normal',
+  className = 'text-primary peso-do-destaque',
 }: {
   texto: string
   /** Um trecho, vários, ou nenhum. */

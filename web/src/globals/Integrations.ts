@@ -59,7 +59,10 @@ const FORMULARIOS_DO_RD = [
   ['materialDownload', 'Download de material', 'Material download'],
   ['consultantRequest', 'Solicitação de consultores', 'Consultant request'],
   ['dataMaturityDiagnostic', 'Diagnóstico de maturidade de dados', 'Data maturity diagnostic'],
-  ['talentPool', 'Trabalhe Conosco (banco de talentos)', 'Work with us (talent pool)'],
+  /* O Trabalhe Conosco esteve aqui da D-62 (15/10) à D-67 (22/10): cada
+     inscrição gastava um lead do plano do RD. Saiu da lista, e as colunas dele
+     foram apagadas na publicação seguinte
+     (`20261022_234755_drop_talent_pool_rd_columns`). */
 ] as const
 
 /* Task 046: o download de e-book vai com o identificador de cada e-book, e o
@@ -183,8 +186,8 @@ export const Integrations: GlobalConfig = {
           label: { pt: 'Enviar leads para o RD Station Marketing', en: 'Send leads to RD Station Marketing' },
           admin: {
             description: {
-              pt: 'Ligado: cada envio dos formulários abaixo vira uma conversão no RD (precisa da chave de API no servidor). Desligado: o lead fica só em Envios de formulário. A candidatura com currículo nunca vai; do Trabalhe Conosco vão só os dados de contato e perfil, nunca o currículo.',
-              en: 'On: every submission of the forms below becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Job applications with a CV never go; from Work with us only contact and profile data go, never the CV.',
+              pt: 'Ligado: cada envio dos formulários abaixo vira uma conversão no RD (precisa da chave de API no servidor). Desligado: o lead fica só em Envios de formulário. O Trabalhe Conosco e a candidatura com currículo nunca vão: ficam só aqui no admin.',
+              en: 'On: every submission of the forms below becomes a conversion in RD (needs the API key on the server). Off: the lead stays in Form submissions only. Work with us sign-ups and job applications with a CV never go: they stay here in the admin.',
             },
           },
         },
@@ -197,8 +200,8 @@ export const Integrations: GlobalConfig = {
           label: { pt: 'Enviar campos personalizados', en: 'Send custom fields' },
           admin: {
             description: {
-              pt: `Só ligue depois de criar na conta do RD os campos personalizados com exatamente estes nomes: ${CAMPOS_PERSONALIZADOS.mensagem} (mensagem do contato), ${CAMPOS_PERSONALIZADOS.chat} (o que perguntou à ATRA AI), ${CAMPOS_PERSONALIZADOS.talentos.area} e ${CAMPOS_PERSONALIZADOS.talentos.senioridade} (área e senioridade do Trabalhe Conosco) e, para o diagnóstico, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. Campo inexistente faz o RD recusar o lead inteiro — a falha aparece em Envios de formulário.`,
-              en: `Only enable after creating custom fields in the RD account with exactly these names: ${CAMPOS_PERSONALIZADOS.mensagem} (contact message), ${CAMPOS_PERSONALIZADOS.chat} (what they asked ATRA AI), ${CAMPOS_PERSONALIZADOS.talentos.area} and ${CAMPOS_PERSONALIZADOS.talentos.senioridade} (field and seniority from Work with us) and, for the diagnostic, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. A missing field makes RD reject the whole lead — the failure shows under Form submissions.`,
+              pt: `Só ligue depois de criar na conta do RD os campos personalizados com exatamente estes nomes: ${CAMPOS_PERSONALIZADOS.mensagem} (mensagem do contato), ${CAMPOS_PERSONALIZADOS.chat} (o que perguntou à ATRA AI) e, para o diagnóstico, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. Campo inexistente faz o RD recusar o lead inteiro — a falha aparece em Envios de formulário.`,
+              en: `Only enable after creating custom fields in the RD account with exactly these names: ${CAMPOS_PERSONALIZADOS.mensagem} (contact message), ${CAMPOS_PERSONALIZADOS.chat} (what they asked ATRA AI) and, for the diagnostic, ${CAMPOS_PERSONALIZADOS.diagnostico.join(', ')}. A missing field makes RD reject the whole lead — the failure shows under Form submissions.`,
             },
           },
         },
@@ -261,22 +264,14 @@ export const Integrations: GlobalConfig = {
           })),
         },
         {
-          /* D-62 (15/10): o Trabalhe Conosco só vai ao RD com este aviso
-           * exibido no formulário. O texto é do RH e do jurídico (D-22) e nasce
-           * vazio; cada cadastro guarda uma cópia do aviso que viu
-           * (`form-submissions.talent.privacyNotice`), e só esses vão ao RD.
-           * Mora aqui, e não em Contato, porque é a condição do envio ao RD:
-           * quem liga a integração vê, no mesmo lugar, o que falta. Sem
-           * `localized`: o aviso legal sai em português nos dois idiomas. */
-          name: 'talentPoolNotice',
-          type: 'textarea',
-          maxLength: 1500,
-          label: { pt: 'Aviso ao candidato (Trabalhe Conosco)', en: 'Candidate notice (Work with us)' },
+          /* Task 052: os formulários de Conteúdo → Formulários, com o
+           * identificador e as tags com que vão ao RD — que moram em cada
+           * formulário, não aqui. Campo `ui`, como a situação da chave: sem
+           * coluna, fora da API, e o componente é de servidor. */
+          name: 'adminForms',
+          type: 'ui',
           admin: {
-            description: {
-              pt: 'Aparece no formulário do banco de talentos, acima do botão de enviar. Texto do RH e do jurídico: diga que o cadastro vai também ao RD Station (ferramenta de marketing), para quê, e como pedir a exclusão. Vazio: o Trabalhe Conosco não vai ao RD — o cadastro continua sendo gravado no admin e enviado ao ATRAIR.',
-              en: 'Shown on the talent pool form, above the submit button. Written by HR and legal: say the sign-up also goes to RD Station (a marketing tool), what for, and how to ask for deletion. Empty: Work with us does not go to RD — sign-ups are still stored in the admin and sent to ATRAIR.',
-            },
+            components: { Field: '/components/admin/formularios-no-rd#FormulariosNoRd' },
           },
         },
       ],

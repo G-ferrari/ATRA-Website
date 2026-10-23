@@ -33,11 +33,23 @@ const soDiagnosticoDeMaturidade = (data: Partial<{ kind: string }> | undefined) 
 
 const soBancoDeTalentos = (data: Partial<{ kind: string }> | undefined) => data?.kind === 'talent-pool'
 
+const soFormularioDoAdmin = (data: Partial<{ kind: string }> | undefined) => data?.kind === 'custom-form'
+
+/* Task 050 — o que o visitante enviou no formulário do admin é a prova do
+ * consentimento que vai ao RD, e cada edição tenta o RD de novo. `readOnly` só
+ * trava a tela: um `PATCH` na API ainda gravaria `communicationConsent: true` e
+ * a mesma edição declararia ao RD um consentimento que ninguém deu. Negado aqui,
+ * o Payload mantém o valor gravado. A action grava pelo `create` e a Local API
+ * passa por cima (`overrideAccess`), então nada do site muda. */
+const somenteNoEnvio = { update: () => false }
+
 export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'kind', 'status', 'createdAt'],
+    /* `form` (052): de qual formulário do admin veio — vazio nos outros tipos.
+       O filtro por ele sai do próprio campo de relação. */
+    defaultColumns: ['email', 'kind', 'form', 'status', 'createdAt'],
     listSearchableFields: ['email', 'name', 'company'],
     group: { pt: 'Sistema', en: 'System' },
     description: {
@@ -71,6 +83,9 @@ export const FormSubmissions: CollectionConfig = {
         { value: 'rc18-diagnostic', label: { pt: 'Diagnóstico RC 18', en: 'RC 18 diagnostic' } },
         { value: 'consultant-request', label: { pt: 'Solicitação de consultores', en: 'Consultant request' } },
         { value: 'data-maturity-diagnostic', label: { pt: 'Diagnóstico de maturidade', en: 'Data maturity diagnostic' } },
+        /* Criador de formulários (task 049): qualquer formulário montado em
+           Conteúdo → Formulários. Qual deles está em `form`. */
+        { value: 'custom-form', label: { pt: 'Formulário do admin', en: 'Admin form' } },
       ],
       /* D-35 — o diagnóstico de maturidade substitui o da RC 18, e
        * `rc18-diagnostic` sai das opções **sem sair do enum**: tirar o valor do
@@ -129,6 +144,52 @@ export const FormSubmissions: CollectionConfig = {
     { name: 'cv', type: 'relationship', relationTo: 'private-files', label: { pt: 'Currículo', en: 'CV' } },
     /* MIG-104 — download: qual material o lead pediu. */
     { name: 'resource', type: 'relationship', relationTo: 'resources', label: { pt: 'Material', en: 'Material' } },
+    /* Task 049 — de qual formulário do admin veio. Dele saem o identificador e
+       as tags do RD (050); apagado depois, o envio fica com o resto. */
+    {
+      name: 'form',
+      type: 'relationship',
+      relationTo: 'forms',
+      label: { pt: 'Formulário', en: 'Form' },
+      access: somenteNoEnvio,
+      admin: { readOnly: true, position: 'sidebar', condition: soFormularioDoAdmin },
+    },
+    {
+      /* As respostas do formulário do admin, com o rótulo de cada pergunta **no
+         momento do envio** — reescrever o formulário depois não muda o que o
+         lead respondeu. Nome, e-mail, telefone e empresa também ficam nas
+         colunas de sempre (busca e lista do admin). `fieldId` é o id da linha
+         no formulário: é por ele que a 050 acha o destino de cada resposta no
+         RD. Somente leitura: é o que o visitante enviou. */
+      name: 'answers',
+      type: 'array',
+      label: { pt: 'Respostas', en: 'Answers' },
+      labels: { singular: { pt: 'Resposta', en: 'Answer' }, plural: { pt: 'Respostas', en: 'Answers' } },
+      access: somenteNoEnvio,
+      admin: {
+        readOnly: true,
+        condition: soFormularioDoAdmin,
+        /* 052: a linha recolhida já é "Pergunta: resposta". Recolhidas de
+           saída, o envio se lê como uma lista, na ordem do formulário. */
+        initCollapsed: true,
+        components: { RowLabel: '/components/admin/rotulo-da-resposta#RotuloDaResposta' },
+      },
+      fields: [
+        { name: 'fieldId', type: 'text', admin: { hidden: true } },
+        { name: 'label', type: 'text', label: { pt: 'Pergunta', en: 'Question' } },
+        { name: 'value', type: 'textarea', label: { pt: 'Resposta', en: 'Answer' } },
+      ],
+    },
+    {
+      /* A caixa de consentimento do formulário do admin foi marcada: é o que a
+         050 manda ao RD como base legal. Sem caixa no formulário, fica falso. */
+      name: 'communicationConsent',
+      type: 'checkbox',
+      defaultValue: false,
+      label: { pt: 'Aceitou receber comunicações', en: 'Agreed to receive communications' },
+      access: somenteNoEnvio,
+      admin: { readOnly: true, position: 'sidebar', condition: soFormularioDoAdmin },
+    },
     { name: 'name', type: 'text', label: { pt: 'Nome', en: 'Name' } },
     { name: 'phone', type: 'text', label: { pt: 'Telefone', en: 'Phone' } },
     { name: 'company', type: 'text', label: { pt: 'Empresa', en: 'Company' } },
@@ -137,10 +198,10 @@ export const FormSubmissions: CollectionConfig = {
       /* 15/10 (task 044, D-62) — o perfil do banco de talentos em campos
        * próprios. Até aqui LinkedIn, área e senioridade entravam só
        * serializados na mensagem (MIG-102), o que bastava para o admin e para
-       * o aviso por e-mail. Com o Trabalhe Conosco indo ao RD, o RD precisa de
-       * cada um no seu campo — e a mensagem, texto livre, **não** vai para a
-       * base de marketing. A mensagem continua como está, para o admin e o
-       * aviso não mudarem. Somente leitura: é o que o candidato enviou. */
+       * o aviso por e-mail. Os campos nasceram para o envio ao RD, que saiu
+       * na D-67 (22/10), e ficaram: são o perfil filtrável no admin. A
+       * mensagem continua como está, para o admin e o aviso não mudarem.
+       * Somente leitura: é o que o candidato enviou. */
       name: 'talent',
       type: 'group',
       label: { pt: 'Banco de talentos', en: 'Talent pool' },
@@ -150,11 +211,11 @@ export const FormSubmissions: CollectionConfig = {
         { name: 'area', type: 'text', label: { pt: 'Área de atuação', en: 'Field' } },
         { name: 'seniority', type: 'text', label: { pt: 'Senioridade', en: 'Seniority' } },
         {
-          /* D-62: o aviso de privacidade que o formulário mostrava quando a
-           * pessoa se cadastrou (Sistema → Integrações), copiado no servidor
-           * no momento da gravação. É o registro de que ela foi avisada de
-           * que o cadastro iria ao RD — e o que libera o envio. Vazio: não
-           * havia aviso, e o cadastro não vai ao RD. */
+          /* O aviso de privacidade que o formulário mostrava quando a pessoa
+           * se cadastrou, copiado no servidor no momento da gravação: o
+           * registro do que ela leu. Vem de Sistema → Contato → Candidaturas
+           * desde a D-67; da D-62 à D-67 vinha de Sistema → Integrações e era
+           * o que liberava o envio ao RD, que saiu. Vazio: não havia aviso. */
           name: 'privacyNotice',
           type: 'textarea',
           label: { pt: 'Aviso exibido no cadastro', en: 'Notice shown at sign-up' },
