@@ -24,6 +24,8 @@ export const TEXTOS_DAS_SECOES = {
     ebooks: { selo: 'E-book', paginas: 'páginas de conteúdo exclusivo', cta: 'Baixar agora', rotuloDaCapa: 'E-book' },
     blog: { paginaDe: (n: number, total: number) => `Página ${n} de ${total}` },
     consultores: { metricas: ['No Time', 'Projetos Ativos', 'Satisfação'] },
+    /** As setas da régua de miniaturas do carrossel de destaques (#32). */
+    regua: { anteriores: 'Destaques anteriores', proximos: 'Próximos destaques' },
   },
   en: {
     vazio: {
@@ -43,5 +45,6 @@ export const TEXTOS_DAS_SECOES = {
     ebooks: { selo: 'Ebook', paginas: 'pages of exclusive content', cta: 'Download now', rotuloDaCapa: 'E-book' },
     blog: { paginaDe: (n: number, total: number) => `Page ${n} of ${total}` },
     consultores: { metricas: ['On the team', 'Active projects', 'Satisfaction'] },
+    regua: { anteriores: 'Previous highlights', proximos: 'Next highlights' },
   },
 } as const

@@ -1,9 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 import type { BlocoStickyPageNav } from '@/types/content'
+
+/** Respiro entre o item ativo e a borda do trilho quando ele é trazido à vista. */
+const FOLGA = 24
 
 /* Menu que acompanha a rolagem — porte de `legacy/src/pages/About.tsx:258`.
  *
@@ -17,10 +20,13 @@ import type { BlocoStickyPageNav } from '@/types/content'
  * ⚠️ Na captura da regressão visual o observer é substituído por um que reporta
  * tudo visível de uma vez (`e2e/support/stability.ts`), então o item ativo será
  * o **último** da lista. É determinístico dos dois lados, que é o que importa
- * ali — mas não confunda com o comportamento real. */
+ * ali — mas não confunda com o comportamento real. No celular o trilho rola até
+ * esse último item, e o do legado não: com a paridade religada (D-39), o menu
+ * de /sobre e de /carreiras diverge a 375px. */
 export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
   const [ativo, setAtivo] = useState<string | null>(bloco.items[0]?.anchor ?? null)
   const [grudado, setGrudado] = useState(false)
+  const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const aoRolar = () => setGrudado(window.scrollY > 20)
@@ -45,6 +51,20 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
     }
     return () => observer.disconnect()
   }, [bloco.items])
+
+  /* O item ativo fica à vista no trilho. No celular o menu passa da tela, e o
+     destaque de quem desce a página sumia pela direita. Conta feita à mão, e não
+     `scrollIntoView`, que rolaria a página junto (como em `featured-hero.tsx`). */
+  useEffect(() => {
+    const nav = navRef.current
+    const link = nav?.querySelector<HTMLElement>('[aria-current="true"]')
+    if (!nav || !link) return
+    const trilho = nav.getBoundingClientRect()
+    const item = link.getBoundingClientRect()
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    if (item.left < trilho.left + FOLGA) nav.scrollBy({ left: item.left - trilho.left - FOLGA, behavior })
+    else if (item.right > trilho.right - FOLGA) nav.scrollBy({ left: item.right - trilho.right + FOLGA, behavior })
+  }, [ativo])
 
   if (bloco.items.length === 0) return null
 
@@ -77,11 +97,20 @@ export function BlocoMenuDaPagina({ bloco }: { bloco: BlocoStickyPageNav }) {
       )}
     >
       <nav
+        ref={navRef}
         className={cn(
-          'pointer-events-auto w-full max-w-7xl mx-auto flex items-center overflow-x-auto no-scrollbar transition-all duration-300 bg-surface-2',
+          /* ⚠️ Barra escondida só abaixo do `md`, onde quem rola é o dedo e o
+             rótulo cortado na borda avisa que há mais. Do `md` para cima a barra
+             fica: a 768px os itens de /carreiras ainda não cabem, e para quem
+             usa mouse ela é o único caminho até o fim. Fica fina e na cor do
+             tema — a nativa era uma faixa clara de 15px no cartão escuro. E
+             centralizado com `-safe`: o `justify-center` puro empurrava o
+             transbordo para a esquerda, onde a rolagem não chega — "Jeito ATRA
+             de ser" saía cortado pela metade, sem como trazer de volta. */
+          'pointer-events-auto w-full max-w-7xl mx-auto flex items-center overflow-x-auto max-md:scrollbar-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300 dark:scrollbar-thumb-white/20 transition-all duration-300 bg-surface-2',
           solucao
-            ? 'py-4 md:py-4.5 min-h-[52px] md:min-h-[56px] px-6 md:px-8 justify-start md:justify-center'
-            : 'py-2.5 sm:py-3.5 md:py-4.5 min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 sm:px-6 md:px-8 justify-start md:justify-center ',
+            ? 'py-4 md:py-4.5 min-h-[52px] md:min-h-[56px] px-6 md:px-8 justify-start md:justify-center-safe'
+            : 'py-2.5 sm:py-3.5 md:py-4.5 min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 sm:px-6 md:px-8 justify-start md:justify-center-safe',
           /* ⚠️ Sombra por estado. Flutuando (topo da página, o único estado que a
              regressão visual captura), a barra é um cartão solto: `shadow-xl` nas
              quatro direções. Grudada sob o cabeçalho, a sombra que sobe encontra a

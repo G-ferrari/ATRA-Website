@@ -1228,6 +1228,8 @@ tudo — isso não muda enquanto o ambiente for homologação.
 
 ## D-46 — Observabilidade de erros: Sentry inerte até a conta, uptime por issue, logs no journald
 
+> ⚠️ **Revista pela [D-68](#d-68--o-alerta-de-queda-vai-para-o-google-cloud-monitoring) em 23/10/2026:** o uptime sai do GitHub Actions para o Google Cloud Monitoring. Sentry e logs seguem como estão abaixo.
+
 *Decidida em 01/10/2026 por Leonardo, depois de uma queda percebida por um
 testador que ninguém conseguiu medir.*
 
@@ -2240,6 +2242,64 @@ D-62, estava vazio na homologação.
   virada. Desligar lá é mexer no site no ar, com o marketing.
 - Voltar a mandar o Trabalhe Conosco ao RD é decisão da ATRA, não ajuste: pede
   uma decisão nova, que reveja esta.
+
+## D-68 — O alerta de queda vai para o Google Cloud Monitoring
+
+*Decidida em 23/10/2026 por G-ferrari (tarefa #188 do checklist). Revê a parte
+de uptime da D-46.*
+
+**Contexto.** A D-46 pôs a checagem de uptime num workflow do GitHub agendado a
+cada 5 minutos, como interino. O GitHub não cumpre esse agendamento: o
+`uptime.yml` rodou 18 vezes em cinco dias, com 3 a 8 horas entre uma e outra,
+e uma queda podia ficar horas sem aviso. E, se rodasse como configurado,
+gastaria mais de 8.000 minutos de Actions por mês — de graça só enquanto o
+repositório for público. A homologação já roda numa VM do Google
+(`atra-hmg.duckdns.org`), cuja conta tem um serviço de uptime de verdade.
+
+**Decisão.**
+
+- A checagem vai para o **Google Cloud Monitoring**, no projeto da VM:
+  `GET /api/health` em HTTPS a cada **1 minuto**, de **3 regiões** (América do
+  Sul, Virgínia e Europa), com **10 s** de limite, exigindo `"status":"ok"` no
+  corpo e certificado válido.
+- **Um alvo só**, a rota de saúde. É a mesma do healthcheck do container e do
+  `deploy.sh`: ela consulta o banco, então prova DNS, certificado, Caddy, Next e
+  Postgres de uma vez. A home e `/cases-de-sucesso`, alvos da spec, ficam de
+  fora: as duas são pré-renderizadas (`x-nextjs-cache: HIT`) e respondem 200 do
+  cache com o Postgres caído. A falha de banco que a spec queria pegar com a
+  segunda é justamente o que a rota de saúde pega.
+- **Alerta de queda: 2 das 3 regiões falhando por 3 minutos seguidos.** Uma
+  região sozinha é quase sempre a rede entre o Google e a VM, não o site. Três
+  minutos são três checagens: a troca de containers de um deploy, que dura
+  segundos, passa sem alarme, e uma queda real chega por e-mail em cerca de 5
+  minutos. O e-mail sai também quando o site volta.
+- **Alerta de certificado** com menos de 20 dias, o mesmo limite do workflow. O
+  Caddy renova com 30; abaixo de 20 é renovação travada.
+- **Canal: e-mail**, um por endereço, escolhido na hora de rodar.
+- Quem cria é G-ferrari ou Leonardo, na conta Google deles, com
+  `infra/monitoramento/criar-checagem-google.sh`. Projeto, e-mail e URL entram
+  por parâmetro: o repositório é público e não guarda nenhum dos três. Rodar de
+  novo acerta o que existe em vez de duplicar, e a produção é a mesma linha com
+  outra URL. Runbook em
+  [`monitoramento-de-uptime.md`](../05-operacao/monitoramento-de-uptime.md).
+
+**Consequências.**
+
+- O `uptime.yml` **fica agendado** até a checagem existir e o alerta de teste
+  chegar por e-mail: tirar antes deixaria o site sem vigilância nenhuma. Depois
+  disso o `schedule` sai num PR próprio, e o workflow fica só com o disparo
+  manual, para conferir os três alvos à mão.
+- A partir daí uma queda deixa de abrir issue com a etiqueta `uptime`; o
+  registro passa a ser o histórico de incidentes do Monitoring.
+- Custo: cada endereço gasta ~130 mil execuções por mês (3 regiões × 1 por
+  minuto), dentro do 1 milhão gratuito por projeto, mesmo com homologação e
+  produção juntas. As políticas de alerta passam a ser cobradas em setembro de
+  2027, US$ 0,35 por condição por mês — duas por endereço.
+- Quando a Let's Encrypt encurtar a validade dos certificados, o Caddy passa a
+  renovar mais perto do fim e o limite de 20 dias vira alarme falso:
+  `DIAS_DO_CERTIFICADO` baixa junto.
+- Como o rótulo da checagem vem do host, trocar de domínio na virada é criar
+  outra checagem (`--url` novo) e remover a antiga (`--remover`), não editar.
 
 ## D-69 — No inglês, o que não tem versão inglesa não aparece
 
