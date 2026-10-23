@@ -21,6 +21,7 @@ import { ORIGEM } from '@/lib/seo'
 import { SCRIPT_DO_TEMA } from '@/lib/tema'
 import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
 import { lerContato } from '@/lib/contato'
+import { existentesNoIdioma } from '@/lib/existe-no-idioma'
 import { organizacao } from '@/lib/jsonld'
 import { LOCALES, isLocale } from '@/lib/locales'
 import { toPainelDeConversao } from '@/lib/mappers/conversion-panel'
@@ -68,6 +69,8 @@ export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
 }
 
+const PUBLICADO = { _status: { equals: 'published' } } as const
+
 export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'>) {
   // next/root-params (Next 16): dá o locale em qualquer Server Component,
   // sem passar por props até o fim da árvore.
@@ -77,7 +80,13 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   /* O menu é ilha cliente e não busca dado (blocos.md, regra 1): o layout
    * resolve as três fontes e entrega pronto. `select` em cada consulta porque
    * o menu só precisa do cartão — sem ele, `solutions` arrasta um join por
-   * tipo de bloco e o cabeçalho passa a custar dezenas de segundos. */
+   * tipo de bloco e o cabeçalho passa a custar dezenas de segundos.
+   *
+   * ⚠️ Toda lista do menu que vira link passa por `existentesNoIdioma`: no
+   * inglês, o que não existe no inglês fica de fora (task #52). Com o fallback,
+   * a solução criada no admin só em português entrava no menu inglês com o
+   * slug português, e o link dava 404 — foi assim com Master Data Management,
+   * Privacidade & LGPD, o segmento Seguros e o parceiro AWS. */
   const payload = await getPayload()
   const [navGlobal, rodapeGlobal, institucional, contato, solucoes, parceiros, segmentos, painelGlobal, casesDoMenu] = await Promise.all([
     payload.findGlobal({ slug: 'navigation', locale, depth: 0 }),
@@ -86,7 +95,7 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
        métricas, que o cabeçalho não usa. */
     payload.findGlobal({ slug: 'site-settings', locale, depth: 1 }),
     lerContato(),
-    payload.find({
+    existentesNoIdioma(locale, 'solutions', PUBLICADO, payload.find({
       collection: 'solutions',
       locale,
       depth: 0,
@@ -98,40 +107,41 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
        * aplica**. Sem isto o mega-menu lista rascunho para todo visitante — o
        * que só apareceu quando MIG-093 pôs 12 soluções em rascunho, meses depois
        * de a consulta ter sido escrita. */
-      where: { _status: { equals: 'published' } },
+      where: PUBLICADO,
       select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true, badge: true },
-    }),
-    payload.find({
+    })),
+    /* `partners` não tem rascunho: sem filtro de status. */
+    existentesNoIdioma(locale, 'partners', undefined, payload.find({
       collection: 'partners',
       locale,
       depth: 1,
       limit: 100,
       sort: 'order',
       select: { name: true, slug: true, logo: true, logoDark: true, logoScale: true, description: true },
-    }),
-    payload.find({
+    })),
+    existentesNoIdioma(locale, 'segments', PUBLICADO, payload.find({
       collection: 'segments',
       locale,
       depth: 0,
       limit: 100,
       sort: 'order',
-      where: { _status: { equals: 'published' } },
+      where: PUBLICADO,
       select: { name: true, slug: true, icon: true, shortDescription: true },
-    }),
+    })),
     /* D-51: o painel de conversão do menu de Soluções. `depth: 0` porque os
        cases de cada aba chegam só como id — quem os resolve é a consulta
        abaixo, que já filtra o que está publicado. */
     payload.findGlobal({ slug: 'conversion-panel', locale, depth: 0 }),
-    payload.find({
+    existentesNoIdioma(locale, 'cases', PUBLICADO, payload.find({
       collection: 'cases',
       locale,
       /* `depth: 1` só pela capa. */
       depth: 1,
       limit: 50,
       sort: '-publishedAt',
-      where: { _status: { equals: 'published' } },
+      where: PUBLICADO,
       select: { title: true, slug: true, client: true, heroImage: true },
-    }),
+    })),
   ])
 
   const logo = toImageOpcional(institucional.logo, 'site-settings.logo')
@@ -146,12 +156,12 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
 
   const navegacao = toNavegacao({
     global: navGlobal,
-    solucoes: solucoes.docs,
-    parceiros: parceiros.docs,
-    segmentos: segmentos.docs,
+    solucoes,
+    parceiros,
+    segmentos,
     conversao: toPainelDeConversao({
       global: painelGlobal,
-      cases: casesDoMenu.docs,
+      cases: casesDoMenu,
       /* Os destinos do painel são texto do admin (`/contato`), como os do
          rodapé: o prefixo do idioma entra aqui, e o `proxy.ts` faz a ponte para
          o slug traduzido. */

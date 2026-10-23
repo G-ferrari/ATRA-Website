@@ -1,6 +1,7 @@
 import type { Locale } from './locales'
 import { buscarPostsDoBlog } from './blog'
 import { lerContato } from './contato'
+import { existentesNoIdioma } from './existe-no-idioma'
 import { toCaseCard } from './mappers/case'
 import { toConsultantRole } from './mappers/consultant'
 import type { UltimosConteudos } from './mappers/insights'
@@ -37,29 +38,33 @@ export async function buscarConteudoDaSecao(
   const publicado = rascunho ? {} : { where: { _status: { equals: 'published' as const } } }
 
   switch (secao) {
+    /* Soluções e segmentos: no inglês, só o que existe no inglês — o mesmo
+       corte do menu (`existe-no-idioma.ts`, task #52). */
     case 'solucoes': {
-      const { docs } = await payload.find({
+      const where = { _status: { equals: 'published' } } as const
+      const docs = await existentesNoIdioma(locale, 'solutions', where, payload.find({
         collection: 'solutions',
         locale,
         depth: 0,
         limit: 100,
         sort: 'order',
-        where: { _status: { equals: 'published' } },
+        where,
         select: { title: true, slug: true, category: true, icon: true, shortDescription: true, hasPage: true, badge: true },
-      })
+      }))
       return { secao, solucoes: docs.map(toSolutionCard) }
     }
 
     case 'segmentos': {
-      const { docs } = await payload.find({
+      const where = { _status: { equals: 'published' } } as const
+      const docs = await existentesNoIdioma(locale, 'segments', where, payload.find({
         collection: 'segments',
         locale,
         depth: 0,
         limit: 100,
         sort: 'order',
-        where: { _status: { equals: 'published' } },
+        where,
         select: { name: true, slug: true, icon: true, shortDescription: true },
-      })
+      }))
       return { secao, segmentos: docs.map(toSegmentCard) }
     }
 
