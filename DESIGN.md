@@ -133,7 +133,7 @@ O tema **escuro é o padrão** (o `<html>` nasce em `dark`, grafite `#0E1015`); 
 
 **Key Characteristics:**
 - Grafite escuro por padrão; acento azul→laranja usado com parcimônia.
-- Títulos leves (Mona Sans peso 300) contra rótulos técnicos em caixa-alta.
+- Títulos leves por padrão (Mona Sans 300, peso escolhido no admin) contra rótulos técnicos em caixa-alta.
 - Caixas **sem borda**: hierarquia por tom de superfície e sombra suave.
 - Escala de raio enxuta (6px padrão, 12px em superfícies maiores, 4px em chips); um brilho de assinatura (GlowCard).
 - A home é o gabarito; o resto deriva dela.
@@ -174,16 +174,20 @@ A paleta é **dual (claro/escuro)**: os mesmos papéis trocam de valor por tema.
 **Character:** uma voz editorial contida. Os títulos são **leves e apertados**; os rótulos, técnicos e espaçados. O contraste entre os dois é a personalidade tipográfica.
 
 ### Hierarchy
-- **Display** (300, `clamp(2.5rem, 6vw, 4rem)`, lh 1.05, ls −0.02em): heróis e aberturas.
-- **Headline** (300, `clamp(1.75rem, 3.5vw, 2.5rem)`, lh 1.1, ls −0.02em): títulos de seção.
-- **Title** (~1.25rem): **títulos de cartão.** ⚠️ Renderiza **peso 300 como todo heading** — a regra global `h1..h6{font-weight:300}` (`globals.css:151`, fora de `@layer`) vence os utilitários, então `font-bold`/`font-extrabold` em heading são **inertes**. Derivação honesta do build atual; se o cartão precisar de um peso mais firme, é mudança de código (escopar uma utilidade que vença ou remover a regra global), adiada.
-- **Body** (400, 1rem, lh 1.6): texto corrido; alvo de 65–75 caracteres por linha em leitura longa (blog, materiais).
-- **Body-sm** (400, 0.875rem, lh 1.5): metadados, resumos de cartão.
-- **Label** (600, 0.75rem, ls 0.08em, **CAIXA-ALTA**): rótulos de botão, eyebrows, etiquetas.
-- **Caption / Micro** (500–600, **11px / 10px / 9px**): tier de meta densa — chips de tag, legendas de cartão, rótulos de bento. Herdado do porte fiel (D-15); registrado aqui como parte real do sistema. Padronizar/consolidar esse tier é trabalho de `typeset`, não de layout.
+Escala revista pela `typeset` da #215 (20/10, D-65): texto corrido em 16px, apoio em 14px, nada abaixo de 12px, peso fino só em título.
+
+- **Display** (peso do admin, padrão 300; `clamp(2.5rem, 6vw, 4rem)`, lh 1.05, ls −0.02em): heróis e aberturas.
+- **Headline** (peso do admin, padrão 300; `clamp(1.75rem, 3.5vw, 2.5rem)`, lh 1.1, ls −0.02em): títulos de seção.
+- **Title** (peso do admin, padrão 300; 1.125–1.5rem): títulos de cartão.
+- **Title-sm** (peso próprio, 500–700; até 1rem): título pequeno — nome de autor, item de menu, título de cartão compacto. Leva a classe de peso no código e **não** segue o admin.
+- **Body** (400, 1rem, lh 1.6): texto corrido — descrição de seção, abertura de página, depoimento, corpo de bloco de texto. Alvo de 65–75 caracteres por linha.
+- **Body-sm** (400, 0.875rem, lh 1.5): apoio — resumo de cartão, descrição de item do menu, aviso, erro de formulário.
+- **Label** (600, 0.75rem, ls 0.08em, **CAIXA-ALTA**): rótulos de botão, eyebrows, etiquetas, metadados (data, local). **0.75rem é o piso do site**: o antigo tier de 9–11px foi consolidado aqui.
+- **Campo** (400, 1rem no celular, 0.875rem do `sm` para cima): todo `input`/`textarea`. Abaixo de 16px o iOS amplia a página ao focar o campo.
 
 ### Named Rules
-**A Regra do Título Leve.** Todo heading é peso **300** com `letter-spacing −0.02em`; a hierarquia entre níveis vem do **tamanho**, não do peso. Isto é imposto globalmente por `h1..h6{font-weight:300}` (`globals.css:151`), que vence classes de peso — inclusive nos títulos de cartão. Não há exceção de peso no build atual.
+**A Regra do Título Leve, agora no admin.** Todo título do tamanho de cartão para cima segue o **Peso dos títulos** de Configuração → Aparência do site (Fino 300 · Normal 400 · Negrito 600), com `letter-spacing −0.02em`. O padrão é Fino, o desenho original. A regra vive em `@layer base` (`globals.css`), lida de `--peso-dos-titulos` no `<body>`: título grande **não** leva classe de peso (ela venceria o admin); título pequeno leva a sua.
+**A Regra do Corpo Regular.** `font-light` não entra em texto corrido, apoio, rótulo nem campo — só em número de exibição (2xl ou maior). O fino em letra pequena e cinza era o que tornava o site difícil de ler.
 **A Regra Sem-Suavização.** Nunca introduzir `antialiased`/`-webkit-font-smoothing` nem pedir o eixo `wdth` na fonte — muda a rasterização/métrica e estoura o gate visual (D-16/D-25).
 
 ## Layout
@@ -250,7 +254,7 @@ Cartão com borda de **brilho** interativa (gradiente radial mascarado seguindo 
 - **Do** usar **6px** em toda caixa/controle e o par de utilities `pill-btn-*` para botões.
 - **Do** comunicar profundidade por **superfície + sombra suave**; use o GlowCard como o único brilho de assinatura.
 - **Do** escrever cor sempre em par claro/escuro, com o **valor escuro por último**, e medir contraste nos dois temas.
-- **Do** manter títulos em Mona Sans **peso 300** e rótulos em CAIXA-ALTA 600.
+- **Do** deixar o peso dos títulos para o admin (sem classe de peso em título grande) e rótulos em CAIXA-ALTA 600; texto corrido em 16px, apoio em 14px, nada abaixo de 12px.
 
 ### Don't:
 - **Don't** pôr **linha de borda em caixa** (cartão, chip, campo, selo, painel) — separe por tom e sombra (Regra Sem-Borda).

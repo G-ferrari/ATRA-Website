@@ -42,14 +42,14 @@ export function ListaDeSegmentos({
               {cabecalho.chip && <MetricChip label={`${segmentos.length} ${cabecalho.chip}`} variant="neutral" size="sm" />}
             </div>
             {(cabecalho.title || cabecalho.highlight) && (
-              <Titulo className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display leading-tight">
+              <Titulo className="text-2xl sm:text-4xl md:text-5xl font-display leading-tight">
                 <TituloComDestaque cabecalho={cabecalho} />
               </Titulo>
             )}
             {/* O texto de abertura nasce vazio aqui (o topo de hoje não tem); se a
                 editora escrever, sai no tom da descrição do herói de página. */}
             {cabecalho.paragrafos.length > 0 && (
-              <div className="mt-4 space-y-3 max-w-xl text-xs sm:text-sm md:text-base text-slate-600 dark:text-white/70 font-light leading-relaxed">
+              <div className="mt-4 space-y-3 max-w-xl text-base text-slate-600 dark:text-white/70 leading-relaxed">
                 {cabecalho.paragrafos.map((p) => (
                   <p key={p}>{p}</p>
                 ))}
@@ -89,7 +89,7 @@ function CartaoDeSegmento({ segmento, locale, icone: Icone }: { segmento: Segmen
         </div>
         <h2 className="text-text-main font-bold text-sm leading-tight group-hover:text-primary transition-colors">{segmento.name}</h2>
       </div>
-      <p className="text-xs text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">{segmento.shortDescription}</p>
+      <p className="text-sm text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors">{segmento.shortDescription}</p>
     </Link>
   )
 }

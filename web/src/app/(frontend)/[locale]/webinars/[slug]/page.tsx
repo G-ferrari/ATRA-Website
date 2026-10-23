@@ -124,7 +124,7 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
                 <Clock size={14} aria-hidden /> {t.duracao} {w.duration}
               </span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">{w.title}</h1>
+            <h1 className="text-3xl md:text-5xl text-white mb-6 leading-tight">{w.title}</h1>
             <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl">{w.description}</p>
           </div>
         </div>
@@ -142,7 +142,7 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
               <div className="aspect-video rounded-[6px]  bg-slate-50 dark:bg-[#181b22] flex flex-col items-center justify-center text-center px-8">
                 <Video size={36} className="text-slate-400 mb-4" aria-hidden />
                 <h2 className="font-bold text-slate-900 dark:text-white mb-1">{t.semVideoTitulo}</h2>
-                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md">{t.semVideoTexto}</p>
+                <p className="text-base text-slate-600 dark:text-slate-400 max-w-md">{t.semVideoTexto}</p>
               </div>
             )}
 
@@ -151,7 +151,7 @@ export default async function WebinarPage({ params }: PageProps<'/[locale]/webin
                 {w.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-0.5 rounded-[4px] bg-slate-50 dark:bg-[#181b22] text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1 "
+                    className="px-2 py-0.5 rounded-[4px] bg-slate-50 dark:bg-[#181b22] text-xs font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1 "
                   >
                     <Tag size={10} className="text-primary/70" aria-hidden /> {tag}
                   </span>

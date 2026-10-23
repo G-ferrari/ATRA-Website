@@ -35,7 +35,8 @@ describe('seletor de seções', () => {
     expect(new Set(slugs).size).toBe(slugs.length)
     expect(slugs).toContain('highlightCarousel')
     expect(slugs).toContain('partnerMosaic')
-    expect(slugs).toHaveLength(29)
+    expect(slugs).toContain('formSection')
+    expect(slugs).toHaveLength(30)
   })
 
   /* Task 033: sem miniatura o card volta para a montanha cinza do Payload, e o

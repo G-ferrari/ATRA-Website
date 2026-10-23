@@ -164,7 +164,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
             <div className="text-secondary font-black uppercase tracking-[0.2em] text-xs md:text-sm mb-4">
               {caso.client ? `${t.prefixo} — ${caso.client}` : t.prefixo}
             </div>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl text-white mb-6 leading-tight">
               {caso.title}
             </h1>
             <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl">{caso.heroSubtitle}</p>
@@ -178,7 +178,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
             <div className="lg:w-2/3">
               {caso.challenges.length > 0 && (
                 <>
-                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">{t.desafios}</h2>
+                  <h2 className="text-3xl text-slate-900 dark:text-white mb-8">{t.desafios}</h2>
                   <ul className="space-y-4 mb-12">
                     {caso.challenges.map((d) => (
                       <li key={d} className="flex gap-4 items-start">
@@ -196,14 +196,14 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
                 * Resultados (CaseDetailBase.tsx:81). */}
               {caso.solution ? (
                 <>
-                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">{t.solucao}</h2>
+                  <h2 className="text-3xl text-slate-900 dark:text-white mb-8">{t.solucao}</h2>
                   <RichText data={caso.solution} />
                 </>
               ) : null}
 
               {caso.results.length > 0 && (
                 <>
-                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">{t.resultados}</h2>
+                  <h2 className="text-3xl text-slate-900 dark:text-white mb-8">{t.resultados}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                     {caso.results.map((r) => (
                       <div key={r} className="bg-slate-50 dark:bg-[#181b22] p-6 rounded-[6px]">
@@ -229,7 +229,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
 
               {caso.aboutClient && (
                 <>
-                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">
+                  <h2 className="text-3xl text-slate-900 dark:text-white mb-8">
                     {caso.client ? `${t.sobre} ${caso.client}` : t.sobreOCliente}
                   </h2>
                   <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-12">{caso.aboutClient}</p>
@@ -254,7 +254,7 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
                           <Users size={20} className="text-primary" aria-hidden />
                         </div>
                         <div>
-                          <div className="text-[10px] text-slate-400 uppercase font-black mb-1">{t.parceiros}</div>
+                          <div className="text-xs text-slate-400 uppercase font-black mb-1">{t.parceiros}</div>
                           <div className="text-slate-900 dark:text-white font-bold text-sm">
                             {caso.partners.map((p) => p.name).join(t.conector)}
                           </div>
@@ -268,10 +268,10 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
                           <Cpu size={20} className="text-primary" aria-hidden />
                         </div>
                         <div>
-                          <div className="text-[10px] text-slate-400 uppercase font-black mb-3">{t.tecnologias}</div>
+                          <div className="text-xs text-slate-400 uppercase font-black mb-3">{t.tecnologias}</div>
                           <div className="flex flex-wrap gap-2">
                             {caso.technologies.map((tec) => (
-                              <span key={tec} className="px-2.5 py-1 bg-white dark:bg-[#222631] rounded-[6px] text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                              <span key={tec} className="px-2.5 py-1 bg-white dark:bg-[#222631] rounded-[6px] text-xs font-bold text-slate-600 dark:text-slate-300">
                                 {tec}
                               </span>
                             ))}
@@ -285,10 +285,10 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
                         <Layers size={20} className="text-primary" aria-hidden />
                       </div>
                       <div>
-                        <div className="text-[10px] text-slate-400 uppercase font-black mb-3">{t.areas}</div>
+                        <div className="text-xs text-slate-400 uppercase font-black mb-3">{t.areas}</div>
                         <ul className="space-y-2">
                           {AREAS_DE_ATUACAO[locale].map((area) => (
-                            <li key={area} className="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                            <li key={area} className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                               <div className="w-1 h-1 rounded-full bg-secondary" />
                               {area}
                             </li>

@@ -39,7 +39,7 @@ export function ListaDeEbooks({
           abertura,
           chave: 'cabecalho-ebooks',
           classeDaCaixa: 'mb-12 md:mb-16 max-w-3xl',
-          classeDoTitulo: 'text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main leading-tight',
+          classeDoTitulo: 'text-2xl sm:text-3xl md:text-4xl font-display text-text-main leading-tight',
         })}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
@@ -59,15 +59,15 @@ export function ListaDeEbooks({
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 rounded-[4px] bg-primary text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-sm shadow-sm">
+                    <span className="px-3 py-1 rounded-[4px] bg-primary text-xs font-bold text-white uppercase tracking-wider backdrop-blur-sm shadow-sm">
                       {t.selo}
                     </span>
                   </div>
                 </div>
-                <h3 className="text-lg md:text-xl font-bold font-display text-text-main mb-3 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                <h3 className="text-lg md:text-xl font-display text-text-main mb-3 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                   {r.title}
                 </h3>
-                <div className="text-xs text-text-muted mb-6 font-light">
+                <div className="text-xs text-text-muted mb-6">
                   {r.pages} {t.paginas}
                 </div>
               </div>

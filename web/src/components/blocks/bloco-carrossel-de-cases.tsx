@@ -55,14 +55,20 @@ export function BlocoCarrosselDeCases({ bloco }: { bloco: BlocoCaseCarousel }) {
                 {bloco.eyebrow}
               </div>
             )}
-            <h2 className="text-3xl md:text-5xl font-light font-display text-text-main leading-tight">
+            <h2 className="text-3xl md:text-5xl font-display text-text-main leading-tight">
               {bloco.title}
             </h2>
           </div>
 
-          <div className="flex flex-col items-start md:items-end text-left md:text-right max-w-md gap-3">
+          {/* #218: o alinhamento vem do admin; no celular, sempre à esquerda. */}
+          <div
+            className={cn(
+              'flex flex-col items-start text-left max-w-md gap-3',
+              bloco.alinhamentoDaDescricao === 'right' && 'md:items-end md:text-right',
+            )}
+          >
             {bloco.description && (
-              <p className="text-xs md:text-sm text-text-muted leading-relaxed font-light">{bloco.description}</p>
+              <p className="text-sm text-text-muted leading-relaxed">{bloco.description}</p>
             )}
             {bloco.cta && (
               <Link
@@ -109,13 +115,13 @@ export function BlocoCarrosselDeCases({ bloco }: { bloco: BlocoCaseCarousel }) {
                       </div>
                     </div>
 
-                    <h3 className="text-base sm:text-lg md:text-xl font-normal font-display leading-snug mb-2 sm:mb-3 text-white">
+                    <h3 className="text-base sm:text-lg md:text-xl font-display leading-snug mb-2 sm:mb-3 text-white">
                       {c.title}
                     </h3>
 
                     {/* O `line-clamp` cresce com a viewport: 3 linhas no
                         celular, 5 no desktop. */}
-                    <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-light line-clamp-3 sm:line-clamp-4 md:line-clamp-5">
+                    <p className="text-sm text-white/80 leading-relaxed line-clamp-3 sm:line-clamp-4 md:line-clamp-5">
                       {c.description}
                     </p>
                   </div>

@@ -61,18 +61,23 @@ import * as migration_20260927_163411_add_tracking from './20260927_163411_add_t
 import * as migration_20260927_215331_add_image_grid from './20260927_215331_add_image_grid';
 import * as migration_20260927_215400_partner_showcase_source from './20260927_215400_partner_showcase_source';
 import * as migration_20260927_215500_locked_documents_press from './20260927_215500_locked_documents_press';
+import * as migration_20260927_215510_locked_documents_forms from './20260927_215510_locked_documents_forms';
 import * as migration_20260927_215600_solutions_badge from './20260927_215600_solutions_badge';
 import * as migration_20260927_215700_rich_text_body_size from './20260927_215700_rich_text_body_size';
 import * as migration_20260927_215800_paginas_mestras from './20260927_215800_paginas_mestras';
 import * as migration_20260927_215900_partner_mosaic from './20260927_215900_partner_mosaic';
+import * as migration_20260927_215950_descricao_e_alinhamento from './20260927_215950_descricao_e_alinhamento';
 import * as migration_20260927_215950_page_hero_video from './20260927_215950_page_hero_video';
 import * as migration_20260927_215950_process_steps_variant from './20260927_215950_process_steps_variant';
+import * as migration_20260927_220000_secao_formulario_antecipada from './20260927_220000_secao_formulario_antecipada';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
 import * as migration_20260928_001000_carrossel_da_home_com_rc18 from './20260928_001000_carrossel_da_home_com_rc18';
 import * as migration_20260928_120000_pagina_rc18 from './20260928_120000_pagina_rc18';
 import * as migration_20260929_122603_integracoes from './20260929_122603_integracoes';
 import * as migration_20260929_222024_optional_address_and_partner_source from './20260929_222024_optional_address_and_partner_source';
+import * as migration_20260929_222900_foto_do_painel_de_contatos_antecipada from './20260929_222900_foto_do_painel_de_contatos_antecipada';
+import * as migration_20260929_222920_aviso_do_banco_de_talentos_antecipada from './20260929_222920_aviso_do_banco_de_talentos_antecipada';
 import * as migration_20260929_222950_contact_privacy_notice from './20260929_222950_contact_privacy_notice';
 import * as migration_20260929_223000_sem_endereco_fixo from './20260929_223000_sem_endereco_fixo';
 import * as migration_20260929_223100_selos_na_pagina_do_google_cloud from './20260929_223100_selos_na_pagina_do_google_cloud';
@@ -114,7 +119,17 @@ import * as migration_20261016_201318_process_steps_variant from './20261016_201
 import * as migration_20261016_201604_mais_icones from './20261016_201604_mais_icones';
 import * as migration_20261016_201812_contact_job_applications_notice from './20261016_201812_contact_job_applications_notice';
 import * as migration_20261017_105319_page_hero_video from './20261017_105319_page_hero_video';
-import * as migration_20261021_160711_traducao_no_admin from './20261021_160711_traducao_no_admin';
+import * as migration_20261020_232303_descricao_e_alinhamento from './20261020_232303_descricao_e_alinhamento';
+import * as migration_20261020_234623_aparencia_do_site from './20261020_234623_aparencia_do_site';
+import * as migration_20261021_012219_formularios_do_admin from './20261021_012219_formularios_do_admin';
+import * as migration_20261021_113504_envio_do_formulario_do_admin from './20261021_113504_envio_do_formulario_do_admin';
+import * as migration_20261021_122514_secao_formulario from './20261021_122514_secao_formulario';
+import * as migration_20261021_233937_foto_do_painel_de_contatos from './20261021_233937_foto_do_painel_de_contatos';
+import * as migration_20261022_013640_remove_cta_contact_photo from './20261022_013640_remove_cta_contact_photo';
+import * as migration_20261022_180731_drop_cta_contact_photo_column from './20261022_180731_drop_cta_contact_photo_column';
+import * as migration_20261022_181457_trabalhe_conosco_fora_do_rd from './20261022_181457_trabalhe_conosco_fora_do_rd';
+import * as migration_20261022_234755_drop_talent_pool_rd_columns from './20261022_234755_drop_talent_pool_rd_columns';
+import * as migration_20261023_010102_traducao_no_admin from './20261023_010102_traducao_no_admin';
 
 export const migrations = [
   {
@@ -433,6 +448,11 @@ export const migrations = [
     name: '20260927_215500_locked_documents_press',
   },
   {
+    up: migration_20260927_215510_locked_documents_forms.up,
+    down: migration_20260927_215510_locked_documents_forms.down,
+    name: '20260927_215510_locked_documents_forms',
+  },
+  {
     up: migration_20260927_215600_solutions_badge.up,
     down: migration_20260927_215600_solutions_badge.down,
     name: '20260927_215600_solutions_badge',
@@ -453,6 +473,11 @@ export const migrations = [
     name: '20260927_215900_partner_mosaic',
   },
   {
+    up: migration_20260927_215950_descricao_e_alinhamento.up,
+    down: migration_20260927_215950_descricao_e_alinhamento.down,
+    name: '20260927_215950_descricao_e_alinhamento',
+  },
+  {
     up: migration_20260927_215950_page_hero_video.up,
     down: migration_20260927_215950_page_hero_video.down,
     name: '20260927_215950_page_hero_video',
@@ -461,6 +486,11 @@ export const migrations = [
     up: migration_20260927_215950_process_steps_variant.up,
     down: migration_20260927_215950_process_steps_variant.down,
     name: '20260927_215950_process_steps_variant',
+  },
+  {
+    up: migration_20260927_220000_secao_formulario_antecipada.up,
+    down: migration_20260927_220000_secao_formulario_antecipada.down,
+    name: '20260927_220000_secao_formulario_antecipada',
   },
   {
     up: migration_20260927_235900_solucoes_do_wordpress.up,
@@ -491,6 +521,16 @@ export const migrations = [
     up: migration_20260929_222024_optional_address_and_partner_source.up,
     down: migration_20260929_222024_optional_address_and_partner_source.down,
     name: '20260929_222024_optional_address_and_partner_source',
+  },
+  {
+    up: migration_20260929_222900_foto_do_painel_de_contatos_antecipada.up,
+    down: migration_20260929_222900_foto_do_painel_de_contatos_antecipada.down,
+    name: '20260929_222900_foto_do_painel_de_contatos_antecipada',
+  },
+  {
+    up: migration_20260929_222920_aviso_do_banco_de_talentos_antecipada.up,
+    down: migration_20260929_222920_aviso_do_banco_de_talentos_antecipada.down,
+    name: '20260929_222920_aviso_do_banco_de_talentos_antecipada',
   },
   {
     up: migration_20260929_222950_contact_privacy_notice.up,
@@ -698,8 +738,58 @@ export const migrations = [
     name: '20261017_105319_page_hero_video',
   },
   {
-    up: migration_20261021_160711_traducao_no_admin.up,
-    down: migration_20261021_160711_traducao_no_admin.down,
-    name: '20261021_160711_traducao_no_admin'
+    up: migration_20261020_232303_descricao_e_alinhamento.up,
+    down: migration_20261020_232303_descricao_e_alinhamento.down,
+    name: '20261020_232303_descricao_e_alinhamento',
+  },
+  {
+    up: migration_20261020_234623_aparencia_do_site.up,
+    down: migration_20261020_234623_aparencia_do_site.down,
+    name: '20261020_234623_aparencia_do_site',
+  },
+  {
+    up: migration_20261021_012219_formularios_do_admin.up,
+    down: migration_20261021_012219_formularios_do_admin.down,
+    name: '20261021_012219_formularios_do_admin',
+  },
+  {
+    up: migration_20261021_113504_envio_do_formulario_do_admin.up,
+    down: migration_20261021_113504_envio_do_formulario_do_admin.down,
+    name: '20261021_113504_envio_do_formulario_do_admin',
+  },
+  {
+    up: migration_20261021_122514_secao_formulario.up,
+    down: migration_20261021_122514_secao_formulario.down,
+    name: '20261021_122514_secao_formulario',
+  },
+  {
+    up: migration_20261021_233937_foto_do_painel_de_contatos.up,
+    down: migration_20261021_233937_foto_do_painel_de_contatos.down,
+    name: '20261021_233937_foto_do_painel_de_contatos',
+  },
+  {
+    up: migration_20261022_013640_remove_cta_contact_photo.up,
+    down: migration_20261022_013640_remove_cta_contact_photo.down,
+    name: '20261022_013640_remove_cta_contact_photo',
+  },
+  {
+    up: migration_20261022_180731_drop_cta_contact_photo_column.up,
+    down: migration_20261022_180731_drop_cta_contact_photo_column.down,
+    name: '20261022_180731_drop_cta_contact_photo_column',
+  },
+  {
+    up: migration_20261022_181457_trabalhe_conosco_fora_do_rd.up,
+    down: migration_20261022_181457_trabalhe_conosco_fora_do_rd.down,
+    name: '20261022_181457_trabalhe_conosco_fora_do_rd',
+  },
+  {
+    up: migration_20261022_234755_drop_talent_pool_rd_columns.up,
+    down: migration_20261022_234755_drop_talent_pool_rd_columns.down,
+    name: '20261022_234755_drop_talent_pool_rd_columns',
+  },
+  {
+    up: migration_20261023_010102_traducao_no_admin.up,
+    down: migration_20261023_010102_traducao_no_admin.down,
+    name: '20261023_010102_traducao_no_admin'
   },
 ];

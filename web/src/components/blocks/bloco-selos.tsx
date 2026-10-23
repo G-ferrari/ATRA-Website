@@ -21,7 +21,7 @@ export function BlocoSelos({ bloco }: { bloco: BlocoSealsBanner }) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
         {bloco.title && (
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold font-display text-text-main mb-10">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-display text-text-main mb-10">
             {bloco.title}
           </h2>
         )}

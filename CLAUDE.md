@@ -366,9 +366,11 @@ runbook de cutover.
 é o **RD Station Marketing** (os formulários da ATRA vivem lá), não o CRM.
 `hooks/sincronizar-rd.ts` + `lib/rd-marketing.ts` mandam cada lead comercial
 como **conversão**, com as tags do formulário — a candidatura com currículo
-fica fora; o Trabalhe Conosco vai desde a **D-62** (15/10), sem currículo, sem
-mensagem livre e só com o aviso ao candidato registrado no cadastro (o texto
-vem do RH, em Sistema → Integrações; vazio, não vai); a newsletter vai na
+fica fora, e o Trabalhe Conosco também, desde a **D-67** (22/10): da D-62 à
+D-67 ele foi, e cada inscrição gastava um lead do plano do RD. O aviso de
+privacidade dele mora em Sistema → Contato → Candidaturas e não trava nada;
+as duas colunas antigas em `integrations` saíram uma publicação depois
+(`20261022_234755_drop_talent_pool_rd_columns`, exclusão adiada); a newsletter vai na
 hora, sem o e-mail de confirmação desde a **D-64** (16/10) — a action carimba
 `confirmedAt` no envio, e inscrição antiga sem a data fica fora; sem
 `RDSTATION_MARKETING_API_KEY` é inerte (o admin mostra "Chave
@@ -446,6 +448,27 @@ entrar no catálogo precisa estar no gancho (`payload.config.ts`). ⚠️ Não h
 `GEMINI_API_KEY` no ambiente local: a conversa de verdade só se testa em
 homologação.
 
+**D-66 (20/10, tasks 048–054)**: o marketing monta formulários em **Conteúdo →
+Formulários** (`collections/Forms.ts`) e os põe em qualquer página com a seção
+**Formulário** (`formSection`). Cada um leva no próprio cadastro o
+identificador de conversão, as tags e o `cf_` de cada pergunta. O envio
+(`actions/formularios-do-admin.ts`) confere tudo contra o formulário
+**publicado**, grava o kind `custom-form` (respostas e consentimento travados
+contra edição) e o gancho do RD lê o formulário pelo id (`comFormulario`). A
+seção recebe o formulário populado pela consulta da página: por isso `toBlocos`
+pede o 3º argumento (`locale`, `rascunho`), e formulário fora do ar tira a seção
+da lista. ⚠️ A Server Action vai **direto** ao `useActionState`
+(`enviarFormularioDoAdminNoEstado`): embrulhada numa função do navegador, o
+envio sem JavaScript deixaria de funcionar. ⚠️ Bloco novo com relação para
+collection nova pede a antecipada **sem** a chave estrangeira
+(`20260927_220000_secao_formulario_antecipada`): em banco novo a tabela da
+collection ainda não existe ali. O e2e (`e2e/formulario-do-admin.spec.ts`) envia
+com `x-real-ip` próprio, para não gastar a cota de 5 envios por IP da suíte. Com
+`SEED_FIXTURES=1`, `scripts/seed/formulario-de-teste.ts` põe dois formulários em
+`/solucoes/ia-generativa-e-agentes-conversacionais` — e com isso o contraste e o
+axe da suíte medem a seção. Ele fica **por último** no `run.mjs`: as migrações de
+dados do passo anterior regravam páginas.
+
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
 containers logando no journald e o Caddy com log de acesso em arquivo.
@@ -466,6 +489,16 @@ drizzle assa o `ATRAIR_API_URL` de quem gerou a migração como `DEFAULT` da
 coluna, num arquivo que roda no CI e em produção. Falta provisionar
 `ATRAIR_API_URL` na VPS — sem ela o campo nasce com o endereço de dev, o mapper
 recusa, e a grade vem do CMS (estado seguro).
+
+**D-65 (20/10)** é a escala de letras: texto corrido em 16 px, apoio em 14,
+nada abaixo de 12, `font-light` só em título e número de exibição, campo de
+formulário com 16 px no celular. O **peso dos títulos** é do admin
+(Configuração → Aparência do site, global `appearance`: Negrito 600, Normal
+400, Fino 300, padrão Fino), que o layout põe no `<body>` como
+`--peso-dos-titulos`. ⚠️ A regra de `h1`–`h6` saiu de fora das camadas para
+`@layer base`: antes ela vencia toda classe de peso escrita num título. Agora
+a classe vence — então **título grande não leva classe de peso** (venceria o
+admin), e título pequeno (até 16 px) leva a sua.
 
 A revisão crítica de 25/08 (MIG-140–147) fechou: IP confiável nos limites
 (`lib/ip.ts` — nunca ler `x-forwarded-for` primeiro), tetos do chat

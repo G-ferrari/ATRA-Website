@@ -35,7 +35,7 @@ export function RascunhoIncompleto({ campos }: { campos: string[] }) {
               <li key={c}>• {c}</li>
             ))}
           </ul>
-          <p className="text-xs text-text-muted mt-3">
+          <p className="text-sm text-text-muted mt-3">
             Você está vendo isto porque abriu o modo rascunho. Quem visita o site não vê esta página.
           </p>
         </div>

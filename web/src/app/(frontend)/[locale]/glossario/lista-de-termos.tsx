@@ -85,11 +85,11 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
                 <MetricChip label={t.chip} variant="neutral" size="sm" />
               </div>
 
-              <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display mb-4 tracking-tight leading-tight">
-                {t.titulo} <span className="text-primary font-normal">{t.tituloDestaque}</span>
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-display mb-4 tracking-tight leading-tight">
+                {t.titulo} <span className="text-primary peso-do-destaque">{t.tituloDestaque}</span>
               </h1>
 
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-white/70 font-light max-w-xl mx-auto mb-6">
+              <p className="text-base text-slate-600 dark:text-white/70 max-w-xl mx-auto mb-6">
                 {t.subtitulo}
               </p>
 
@@ -101,7 +101,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
                   aria-label={t.buscar}
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-white/10  rounded-[6px] text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-primary transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-white/10 rounded-[6px] text-base sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-primary transition-all"
                 />
               </div>
             </div>
@@ -149,7 +149,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
             {letras.map((l) => (
               <div key={l} className="flex flex-col">
                 <div className="text-xs font-bold text-primary mb-2 flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-[4px] bg-primary/10 flex items-center justify-center text-[10px]">{l}</span>
+                  <span className="w-5 h-5 rounded-[4px] bg-primary/10 flex items-center justify-center text-xs">{l}</span>
                   <span>({grupos[l].length})</span>
                 </div>
                 <ul className="space-y-1">
@@ -157,7 +157,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
                     <li key={i.slug}>
                       <a
                         href={`#${ancora(i.term)}`}
-                        className="text-text-muted hover:text-primary transition-colors text-xs font-light block truncate"
+                        className="text-text-muted hover:text-primary transition-colors text-xs block truncate"
                       >
                         • {i.term}
                       </a>
@@ -173,7 +173,7 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
           <div className="text-center py-16 bg-surface-2  rounded-[6px] p-8">
             <BookOpen size={36} className="mx-auto text-text-muted mb-3" aria-hidden />
             <h3 className="text-base font-bold text-text-main mb-1">{t.vazioTitulo}</h3>
-            <p className="text-xs text-text-muted font-light mb-4">{t.vazioTexto}</p>
+            <p className="text-sm text-text-muted mb-4">{t.vazioTexto}</p>
             <button
               type="button"
               onClick={() => {
@@ -216,11 +216,11 @@ export function ListaDeTermos({ termos, locale }: { termos: GlossaryTerm[]; loca
                           <h3 className="text-sm font-bold text-text-main group-hover:text-primary transition-colors">
                             {i.term}
                           </h3>
-                          <span className="px-2 py-0.5 rounded-[4px] bg-surface-1 text-text-muted text-[10px] font-medium ">
+                          <span className="px-2 py-0.5 rounded-[4px] bg-surface-1 text-text-muted text-xs font-medium ">
                             {i.category}
                           </span>
                         </div>
-                        <p className="text-xs text-text-muted font-light leading-relaxed">{i.definition}</p>
+                        <p className="text-sm text-text-muted leading-relaxed">{i.definition}</p>
                       </div>
                     </div>
                   ))}

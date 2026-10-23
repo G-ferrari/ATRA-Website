@@ -60,7 +60,7 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
                 {bloco.eyebrow}
               </span>
             )}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-text-main mb-4 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main mb-4 leading-tight">
               {bloco.title}
             </h2>
 
@@ -72,7 +72,7 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
               <p
                 key={p}
                 className={cn(
-                  'text-xs sm:text-sm md:text-base text-text-muted leading-relaxed font-light whitespace-pre-line',
+                  'text-base text-text-muted leading-relaxed whitespace-pre-line',
                   i === bloco.body.length - 1 ? 'mb-6' : 'mb-4',
                 )}
               >
@@ -129,7 +129,7 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
                   className="flex items-start gap-3 bg-surface-1  p-4 rounded-[6px] shadow-xs"
                 >
                   <CheckCircle2 className="text-primary shrink-0 mt-0.5" size={16} aria-hidden />
-                  <p className="text-text-main text-xs sm:text-sm font-light leading-relaxed">{texto}</p>
+                  <p className="text-text-main text-sm leading-relaxed">{texto}</p>
                 </div>
               ))}
             </div>
@@ -151,7 +151,7 @@ export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit
                           página. Traduzido aqui porque é chrome de componente,
                           não texto de marketing — e não muda um pixel em PT, que
                           é o que o aceite visual compara. */}
-                      <div className="text-[9px] font-bold text-primary uppercase tracking-wider mb-1">
+                      <div className="text-xs font-bold text-primary uppercase tracking-wider mb-1">
                         {ESPECIALIZACAO[locale]}
                       </div>
                       <div className="text-xs font-semibold text-text-main leading-tight line-clamp-2">{nome}</div>

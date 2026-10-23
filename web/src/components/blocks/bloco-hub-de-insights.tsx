@@ -77,7 +77,7 @@ function Cartao({ item, tipo, locale }: { item: CartaoDeInsight; tipo: TipoDeIns
           )}
           {item.selo && (
             <div className="absolute bottom-3 right-3">
-              <span className="px-2.5 py-1 rounded-[6px] bg-black/60 text-white text-[10px] font-medium backdrop-blur-md flex items-center gap-1">
+              <span className="px-2.5 py-1 rounded-[6px] bg-black/60 text-white text-xs font-medium backdrop-blur-md flex items-center gap-1">
                 <Clock size={12} aria-hidden />
                 {item.selo}
               </span>
@@ -86,7 +86,7 @@ function Cartao({ item, tipo, locale }: { item: CartaoDeInsight; tipo: TipoDeIns
         </div>
 
         <div className="p-6">
-          {item.origem && <div className="text-[11px] font-semibold text-primary mb-2">{item.origem}</div>}
+          {item.origem && <div className="text-xs font-semibold text-primary mb-2">{item.origem}</div>}
 
           <h3 className="text-base font-bold text-text-main mb-2.5 group-hover:text-primary transition-colors leading-snug line-clamp-2">
             {item.externo ? (
@@ -101,7 +101,7 @@ function Cartao({ item, tipo, locale }: { item: CartaoDeInsight; tipo: TipoDeIns
             )}
           </h3>
 
-          <p className="text-xs text-text-muted font-light leading-relaxed line-clamp-3 mb-4">{item.description}</p>
+          <p className="text-sm text-text-muted leading-relaxed line-clamp-3 mb-4">{item.description}</p>
         </div>
       </div>
 
@@ -109,7 +109,7 @@ function Cartao({ item, tipo, locale }: { item: CartaoDeInsight; tipo: TipoDeIns
         {item.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-5">
             {item.tags.map((tag) => (
-              <span key={tag} className="text-[10px] font-medium px-2 py-0.5 rounded-[6px] bg-surface-1 text-text-muted ">
+              <span key={tag} className="text-xs font-medium px-2 py-0.5 rounded-[6px] bg-surface-1 text-text-muted ">
                 {tag}
               </span>
             ))}
@@ -118,7 +118,7 @@ function Cartao({ item, tipo, locale }: { item: CartaoDeInsight; tipo: TipoDeIns
 
         <span
           aria-hidden
-          className="w-full py-2.5 px-4 rounded-[6px] bg-surface-1 group-hover:bg-primary group-hover:text-white text-text-main  text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+          className="w-full py-2.5 px-4 rounded-[6px] bg-surface-1 group-hover:bg-primary group-hover:text-white text-text-main text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2"
         >
           <span>{acao}</span>
           <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -144,12 +144,12 @@ export function BlocoHubDeInsights({ bloco, locale }: { bloco: BlocoInsightsHub;
             </div>
           )}
 
-          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-display tracking-tight text-text-main mb-6 leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display tracking-tight text-text-main mb-6 leading-tight">
             <TextoDestacado texto={bloco.title} destaque={bloco.highlight} />
           </h1>
 
           {bloco.description && (
-            <p className="text-xs sm:text-sm md:text-base text-text-muted max-w-3xl font-light leading-relaxed mb-8">
+            <p className="text-base text-text-muted max-w-3xl leading-relaxed mb-8">
               {bloco.description}
             </p>
           )}
@@ -182,7 +182,7 @@ export function BlocoHubDeInsights({ bloco, locale }: { bloco: BlocoInsightsHub;
           {bloco.faixas.map((faixa) => (
             <div key={faixa.tipo}>
               <div className="flex items-end justify-between gap-4 mb-6">
-                <h2 className="text-xl md:text-2xl font-bold font-display text-text-main">{faixa.titulo}</h2>
+                <h2 className="text-xl md:text-2xl font-display text-text-main">{faixa.titulo}</h2>
                 <Link
                   href={faixa.verTodos}
                   className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-primary hover:text-primary-dark whitespace-nowrap transition-colors group"
@@ -210,9 +210,9 @@ export function BlocoHubDeInsights({ bloco, locale }: { bloco: BlocoInsightsHub;
       {bloco.portals && (
         <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-20">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold font-display text-text-main mb-2">{bloco.portals.title}</h2>
+            <h2 className="text-2xl md:text-3xl font-display text-text-main mb-2">{bloco.portals.title}</h2>
             {bloco.portals.description && (
-              <p className="text-xs md:text-sm text-text-muted font-light">{bloco.portals.description}</p>
+              <p className="text-sm text-text-muted">{bloco.portals.description}</p>
             )}
           </div>
 
@@ -231,7 +231,7 @@ export function BlocoHubDeInsights({ bloco, locale }: { bloco: BlocoInsightsHub;
                   <h4 className="text-sm font-bold text-text-main mb-1 group-hover:text-primary transition-colors">
                     {f.label}
                   </h4>
-                  <span className="text-[11px] text-text-muted font-medium flex items-center gap-1">
+                  <span className="text-xs text-text-muted font-medium flex items-center gap-1">
                     {t.verSecao} <ChevronRight size={12} aria-hidden />
                   </span>
                 </Link>
@@ -253,11 +253,11 @@ export function BlocoHubDeInsights({ bloco, locale }: { bloco: BlocoInsightsHub;
                   <span>{bloco.newsletter.eyebrow}</span>
                 </div>
               )}
-              <h3 className="text-2xl md:text-3xl font-bold font-display text-text-main mb-2">
+              <h3 className="text-2xl md:text-3xl font-display text-text-main mb-2">
                 {bloco.newsletter.title}
               </h3>
               {bloco.newsletter.description && (
-                <p className="text-xs md:text-sm text-text-muted font-light">{bloco.newsletter.description}</p>
+                <p className="text-sm text-text-muted">{bloco.newsletter.description}</p>
               )}
             </div>
 
@@ -268,7 +268,7 @@ export function BlocoHubDeInsights({ bloco, locale }: { bloco: BlocoInsightsHub;
                   disabled
                   placeholder={t.email}
                   aria-label={t.email}
-                  className="w-full px-4 py-3 bg-surface-1  rounded-[6px] text-xs text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-all disabled:opacity-100"
+                  className="w-full px-4 py-3 bg-surface-1 rounded-[6px] text-base sm:text-sm text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary transition-all disabled:opacity-100"
                 />
                 <button
                   type="button"
@@ -288,9 +288,9 @@ export function BlocoHubDeInsights({ bloco, locale }: { bloco: BlocoInsightsHub;
       {bloco.closing && (
         <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
           <div className="bg-surface-2  rounded-[6px] p-8 md:p-10 shadow-sm">
-            <h3 className="text-xl md:text-2xl font-bold font-display text-text-main mb-3">{bloco.closing.title}</h3>
+            <h3 className="text-xl md:text-2xl font-display text-text-main mb-3">{bloco.closing.title}</h3>
             {bloco.closing.description && (
-              <p className="text-xs md:text-sm text-text-muted font-light max-w-2xl mx-auto mb-6">
+              <p className="text-base text-text-muted max-w-2xl mx-auto mb-6">
                 {bloco.closing.description}
               </p>
             )}
@@ -306,7 +306,7 @@ export function BlocoHubDeInsights({ bloco, locale }: { bloco: BlocoInsightsHub;
               {bloco.closing.secondaryLabel && (
                 <Link
                   href={bloco.closing.secondaryHref ?? '#'}
-                  className="px-6 py-3 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-main  text-xs md:text-sm font-semibold transition-all"
+                  className="px-6 py-3 rounded-[6px] bg-surface-1 hover:bg-surface-3 text-text-main text-xs md:text-sm font-semibold transition-all"
                 >
                   {bloco.closing.secondaryLabel}
                 </Link>

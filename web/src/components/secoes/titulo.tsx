@@ -9,7 +9,7 @@ export function TituloComDestaque({ cabecalho }: { cabecalho: CabecalhoDaSecao }
       {cabecalho.highlight && (
         <>
           {cabecalho.title ? ' ' : ''}
-          <span className="text-primary font-normal">{cabecalho.highlight}</span>
+          <span className="text-primary peso-do-destaque">{cabecalho.highlight}</span>
         </>
       )}
     </>

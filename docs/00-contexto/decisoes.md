@@ -1971,6 +1971,8 @@ texto do aviso no admin e `ENABLE_JOB_APPLICATIONS=1` no servidor de produção.
 
 ## D-62 — O Trabalhe Conosco vai ao RD, sem currículo e só com o aviso ao candidato registrado
 
+> ⚠️ **Revista pela [D-67](#d-67--o-trabalhe-conosco-sai-do-rd-station) em 22/10/2026:** o Trabalhe Conosco saiu do RD. O que segue vale como registro da semana em que foi.
+
 *Decidida em 15/10/2026 por G-ferrari, a pedido da ATRA (Taci, reunião de 14/10). Revê em parte a D-29. (D-58, D-59 e D-61 estão em PRs abertos.)*
 
 **Contexto.** A D-29 deixou dado de candidato fora do RD Station: currículo
@@ -2099,3 +2101,142 @@ no RD pela tag `newsletter`, e a confirmação não era pedido da ATRA.
   link para sair.
 - A base legal deve ser revista pelo jurídico junto com o texto de
   consentimento do formulário, que espera a política de privacidade (P-14).
+
+## D-65 — A letra do site sobe de tamanho, e o peso dos títulos é escolhido no admin
+
+*Decidida em 20/10/2026 por G-ferrari, a pedido da ATRA. Revê a "Regra do Título Leve" do DESIGN.md e relaxa D-15 no que restava do porte tipográfico, como a D-31 permite.*
+
+**Contexto.** O pedido de 20/10 foi que a letra do site inteiro estava pequena
+e difícil de ler. O levantamento nos componentes confirmou: o tamanho mais
+usado era 12 px, havia 124 lugares com 9 a 11 px, e 148 textos usavam o peso
+fino, quase sempre em cinza. E o `globals.css` punha peso 300 em todo título
+fora das camadas do Tailwind, o que anulava qualquer classe de peso escrita no
+título: 104 títulos saíam finos com `font-bold` no código, inclusive os
+pequenos (nome de autor, título de item do menu). No mesmo dia veio o pedido
+de poder escolher no admin o peso dos títulos, entre Negrito, Normal e Fino.
+
+**Decisão.**
+
+- Escala de letras do site: texto corrido em 16 px (descrição de seção,
+  abertura de página, depoimento, corpo de bloco de texto), apoio em 14 px
+  (resumo de cartão, descrição do menu, aviso, erro de formulário), e nada
+  abaixo de 12 px, que fica para rótulo, etiqueta e metadado. Campo de
+  formulário tem 16 px no celular, onde o iOS amplia a página ao focar campo
+  menor.
+- O peso fino sai do texto: fica só em título e em número de exibição.
+- O peso dos títulos é um controle só, para o site inteiro: **Peso dos
+  títulos**, em Configuração → Aparência do site (global `appearance`), com
+  Negrito (600), Normal (400) e Fino (300). Vale do título de cartão para
+  cima. O padrão é Fino, o desenho que estava no ar.
+- Título pequeno (até 16 px: nome de autor, item de menu, rótulo em caixa-alta)
+  tem peso próprio no código e não segue o controle. É a correção da regra
+  global: ela foi para `@layer base`, e a classe escrita no título volta a
+  valer.
+- O tamanho não vai para o admin: fica no código, pela escala acima.
+
+**Consequências.**
+
+- Mudam todas as páginas. A paridade com o protótipo já estava fora do CI
+  (D-39), e o protótipo não volta a bater em rota nenhuma.
+- Cartões e seções ficam mais altos com a letra maior; o resumo de cartão
+  segue cortado pelo `line-clamp` onde já era.
+- Título grande **não** leva classe de peso no código: uma classe venceria o
+  admin. Título novo segue a mesma regra.
+
+## D-66 — Formulários montados no admin, ligados ao RD
+
+*Decidida em 20/10/2026 por G-ferrari (tarefa #212 do checklist, feature
+criador-de-formularios, tasks 048 a 054). A D-65 está no PR #155.*
+
+**Contexto.** Cada formulário novo do marketing (inscrição em evento, pesquisa,
+pedido de material) precisava de desenvolvedor: os formulários do site são
+escritos em código, cada um com o seu identificador em Sistema → Integrações. O
+RD Station Marketing não tem API para criar formulário, landing page nem
+automação; o que ele recebe do site é a conversão.
+
+**Decisão.**
+
+- **Conteúdo → Formulários** monta o formulário: nome, campos, botão, aviso,
+  o que acontece depois do envio e quem recebe o aviso do site. Numa aba
+  própria ficam o identificador de conversão (sugerido a partir do nome) e as
+  tags; o campo do RD (`cf_…`) se escolhe em cada pergunta. A seção **Formulário** o põe em Páginas,
+  Soluções, Segmentos e Parceiros, sozinho e centralizado ou com o texto ao lado.
+- **Campos da v1:** nome, e-mail, telefone, empresa, cargo, texto curto, texto
+  longo, lista de opções e caixa de marcar. O e-mail vem sempre e é
+  obrigatório. Sem tipo para documento, dado de saúde ou anexo.
+- **Depois do envio:** uma mensagem no lugar do formulário, ou outra página do
+  site (endereço digitado, só interno).
+- **Aviso igual aos formulários de hoje:** o RD aceitou, quem avisa o time é a
+  automação dele; não aceitou, o site manda o e-mail aos endereços do
+  formulário (vazio, o destino geral do contato). A nova tentativa por edição
+  no admin continua valendo.
+- **Consentimento:** uma caixa de marcar pode ser o consentimento de
+  comunicação, nunca obrigatória. Marcada pelo visitante, a conversão leva a
+  base legal (`legal_bases`, `available_for_mailing`), como a newsletter.
+  O formulário de origem, as respostas e o consentimento gravados no envio não
+  se editam depois: são a prova do que a pessoa autorizou.
+- **Só o publicado vale:** formulário em rascunho, despublicado ou apagado não
+  aparece no site e recusa envio; o preview mostra o rascunho com um aviso.
+- **Sistema → Integrações** lista os formulários do admin com o que vai ao RD,
+  e Envios de formulário filtra por formulário.
+- Os formulários escritos em código seguem como estão; passar algum deles para
+  o criador é decisão à parte.
+
+**Consequências.**
+
+- O e-mail de agradecimento e o aviso ao time continuam sendo fluxos que o
+  marketing monta no RD, disparados pelo identificador de cada formulário.
+- Campo personalizado (`cf_…`) é escrito pelo marketing: o admin confere o
+  formato, não se o campo existe no RD. Ele só vai com **Enviar campos
+  personalizados** ligado em Sistema → Integrações, e um nome que não existe na
+  conta faz o RD recusar o lead inteiro, com o erro no envio.
+- Identificador repetido entre formulários é permitido (dois formulários podem
+  ser a mesma conversão), mas mistura os leads no RD; a lista de Integrações
+  mostra a repetição.
+
+## D-67 — O Trabalhe Conosco sai do RD Station
+
+*Decidida em 22/10/2026 por G-ferrari (tarefa #207 do checklist). Revê a D-62.*
+
+**Contexto.** A D-62 mandou o banco de talentos (o Trabalhe Conosco de
+`/carreiras`) ao RD como conversão, para o RD agradecer o candidato por e-mail
+como faz no site atual. Cada inscrição vira um lead no RD, e o plano da ATRA é
+cobrado por lead: candidato não é cliente, e o lead é gasto à toa. No site
+novo o envio nunca chegou a acontecer — o aviso ao candidato, condição da
+D-62, estava vazio na homologação.
+
+**Decisão.**
+
+- O **banco de talentos não vai ao RD**, com aviso ou sem. O cadastro fica em
+  Envios de formulário e vai ao ATRAIR quando essa integração está ligada
+  (D-41, sem mudança); quem avisa o RH é o site.
+- O **aviso de privacidade** do banco de talentos muda de Sistema →
+  Integrações para **Sistema → Contato → Candidaturas**, ao lado do aviso da
+  candidatura com currículo. É opcional: vazio, o formulário aparece sem aviso,
+  como já estava. O texto antigo **não foi copiado** — o que se pedia ali dizia
+  que o cadastro ia ao RD.
+- Cada cadastro continua guardando a cópia do aviso que a pessoa viu
+  (`talent.privacyNotice`). O perfil em campos próprios (LinkedIn, área,
+  senioridade) também fica: nasceu para o RD e serve de filtro no admin.
+- **Sem e-mail de agradecimento** ao candidato: ele vê a mensagem de
+  confirmação na tela, como antes da D-62. Um e-mail do próprio site, se a
+  ATRA quiser, é tarefa à parte e depende da chave do Resend.
+- Saem do envio ao RD: o kind `talent-pool`, o identificador e as tags do
+  Trabalhe Conosco em Integrações, e os campos personalizados de candidato
+  (`cf_area_de_atuacao`, `cf_nivel`). O identificador do formulário volta a
+  não existir (`formularioDoRd('talent-pool')` é `null`) — uma segunda trava,
+  se o kind voltasse à lista por engano.
+
+**Consequências.**
+
+- As duas colunas do Trabalhe Conosco no global `integrations` ficam no banco
+  nesta publicação, sem uso: o código que estava no ar ainda as lia, e um
+  deploy reprovado voltaria para ele. A exclusão está escrita
+  (`EXCLUSAO_ADIADA` em `20261022_181457_trabalhe_conosco_fora_do_rd`, com as
+  tags gravadas) e entra numa publicação seguinte: a
+  `20261022_234755_drop_talent_pool_rd_columns`, escrita em 22/10 depois de
+  a D-67 estar no ar na homologação.
+- O formulário do WordPress continua mandando ao RD, e gastando leads, até a
+  virada. Desligar lá é mexer no site no ar, com o marketing.
+- Voltar a mandar o Trabalhe Conosco ao RD é decisão da ATRA, não ajuste: pede
+  uma decisão nova, que reveja esta.

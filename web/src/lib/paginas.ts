@@ -16,7 +16,6 @@ import {
   toMetricas,
   toSelos,
 } from './mappers/blocks'
-import { lerIntegracaoRd } from './integracoes'
 import { toDepoimento, toLogoDeCliente } from './mappers/client'
 import { toSeo } from './mappers/seo'
 import { lerContato } from './contato'
@@ -115,10 +114,11 @@ async function montar(filtro: Where, locale: Locale, rascunho: boolean): Promise
 
   if (!docs[0]) return null
 
-  const blocos = toBlocos(docs[0].layout, {
-    metricas: toMetricas(global),
-    selos: toSelos(global),
-  })
+  const blocos = toBlocos(
+    docs[0].layout,
+    { metricas: toMetricas(global), selos: toSelos(global) },
+    { locale, rascunho },
+  )
 
   /* Só consulta vagas se algum bloco as usa — a maioria das páginas não. */
   if (blocos.some((b) => b.tipo === 'jobsList')) {
@@ -131,9 +131,10 @@ async function montar(filtro: Where, locale: Locale, rascunho: boolean): Promise
       where: rascunho ? {} : { _status: { equals: 'published' } },
     })
     comVagas(blocos, vagas.map((v) => toVaga(v, locale)))
-    /* D-62: o aviso do banco de talentos vem de Sistema → Integrações, ao lado
-       das regras do envio ao RD que ele condiciona. */
-    comAvisoAoCandidato(blocos, (await lerIntegracaoRd()).avisoAoCandidato)
+    /* O aviso do banco de talentos vem de Sistema → Contato → Candidaturas, ao
+       lado do aviso da candidatura (D-67). `lerContato` é `cache()` por
+       requisição, e o layout já lê o mesmo global. */
+    comAvisoAoCandidato(blocos, (await lerContato()).avisoDoBancoDeTalentos)
   }
 
   /* Idem para a home: os logos de cliente e os depoimentos em destaque saem das

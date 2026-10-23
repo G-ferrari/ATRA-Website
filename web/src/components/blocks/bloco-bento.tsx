@@ -47,11 +47,11 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-12">
           {bloco.eyebrow && <PilulaDeSecao texto={bloco.eyebrow} icone={bloco.eyebrowIcon} />}
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-display text-text-main tracking-tight leading-tight mb-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-text-main tracking-tight leading-tight mb-3">
             {bloco.title}
           </h2>
           {bloco.description && (
-            <p className="text-xs sm:text-sm text-text-muted font-light leading-relaxed">{bloco.description}</p>
+            <p className="text-sm text-text-muted leading-relaxed">{bloco.description}</p>
           )}
         </div>
 
@@ -97,11 +97,11 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
 
                       {item.chip &&
                         (destaque ? (
-                          <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-[6px]">
+                          <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-[6px]">
                             {item.chip}
                           </span>
                         ) : (
-                          <span className={cn('text-[10px] font-bold uppercase tracking-wider', cor.marca)}>
+                          <span className={cn('text-xs font-bold uppercase tracking-wider', cor.marca)}>
                             {item.chip}
                           </span>
                         ))}
@@ -120,18 +120,18 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
                       <h3
                         className={cn(
                           item.size === 'featured-wide' ? 'text-xl sm:text-2xl lg:text-3xl' : 'text-xl sm:text-2xl',
-                          'font-extrabold font-display text-text-main mb-3 leading-tight',
+                          'font-display text-text-main mb-3 leading-tight',
                         )}
                       >
                         {item.title}
                       </h3>
                     ) : (
-                      <h3 className="text-lg sm:text-xl font-bold font-display text-text-main mb-2">{item.title}</h3>
+                      <h3 className="text-lg sm:text-xl font-display text-text-main mb-2">{item.title}</h3>
                     )}
 
                     <p
                       className={cn(
-                        'text-xs sm:text-sm text-text-muted leading-relaxed font-light',
+                        'text-sm text-text-muted leading-relaxed',
                         destaque ? 'mb-6' : 'mb-4',
                       )}
                     >
@@ -146,7 +146,7 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
                             className="p-3 rounded-[6px] bg-surface-2 "
                           >
                             <div className={cn('text-base font-bold', COR_DO_NUMERO[m.color])}>{m.value}</div>
-                            <div className="text-[11px] text-text-muted font-light mt-0.5">{m.label}</div>
+                            <div className="text-xs text-text-muted mt-0.5">{m.label}</div>
                           </div>
                         ))}
                       </div>
@@ -157,7 +157,7 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
                         {item.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="text-[11px] font-medium px-2.5 py-1 rounded-[6px] bg-surface-2  text-text-main"
+                            className="text-xs font-medium px-2.5 py-1 rounded-[6px] bg-surface-2 text-text-main"
                           >
                             {tag}
                           </span>
@@ -168,7 +168,7 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
                     {item.bullets.length > 0 && (
                       <div className="space-y-2">
                         {item.bullets.map((texto) => (
-                          <div key={texto} className="flex items-center gap-2 text-xs text-text-main font-light">
+                          <div key={texto} className="flex items-center gap-2 text-xs text-text-main">
                             <CheckCircle2 size={14} className={cn('shrink-0', cor.marca)} aria-hidden />
                             <span>{texto}</span>
                           </div>
@@ -182,8 +182,8 @@ export function BlocoBento({ bloco }: { bloco: BlocoBentoGrid }) {
                       className={cn(
                         'mt-6 pt-4 border-t border-slate-200 dark:border-white/5',
                         destaque
-                          ? 'flex items-center justify-between text-xs text-text-muted font-light'
-                          : 'text-[11px] text-text-muted',
+                          ? 'flex items-center justify-between text-xs text-text-muted'
+                          : 'text-xs text-text-muted',
                       )}
                     >
                       <span>{item.footer}</span>

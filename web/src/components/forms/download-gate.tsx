@@ -23,7 +23,7 @@ import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
  * ela, e com o `focus:outline-none`, quem navega por teclado não via em que
  * campo estava. */
 const CAMPO =
-  'w-full bg-surface-2 dark:bg-white/5 border border-slate-300 dark:border-white/15 rounded-[6px] px-4 py-3 text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
+  'w-full bg-surface-2 dark:bg-white/5 border border-slate-300 dark:border-white/15 rounded-[6px] px-4 py-3 text-base sm:text-sm text-text-main placeholder:text-text-muted/60 focus:outline-none focus:border-primary/60'
 
 export function DownloadGate({ resourceId }: { resourceId: number }) {
   const carimbo = useRef<HTMLInputElement>(null)
@@ -47,7 +47,7 @@ export function DownloadGate({ resourceId }: { resourceId: number }) {
         <a href={estado.url} className="pill-btn-primary inline-flex" download>
           <Download size={16} aria-hidden /> Baixar o PDF
         </a>
-        <p className="text-xs font-light text-text-muted">
+        <p className="text-sm text-text-muted">
           O link vale por 15 minutos — baixe agora em vez de guardar.
         </p>
       </div>
@@ -67,7 +67,7 @@ export function DownloadGate({ resourceId }: { resourceId: number }) {
       {estado && !estado.ok && (
         /* O par claro: o `red-400` foi escolhido para o herói azul, e no painel
            claro do fim da página (task 046) ficava abaixo de 3:1. */
-        <p role="alert" className="text-sm font-light text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {estado.erro}
         </p>
       )}

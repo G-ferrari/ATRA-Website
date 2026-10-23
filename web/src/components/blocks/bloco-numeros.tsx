@@ -24,7 +24,7 @@ export function BlocoNumeros({ bloco }: { bloco: BlocoStatsGrid }) {
             <div className="text-2xl sm:text-3xl font-bold font-display text-primary mb-1">
               <ContadorAnimado ate={m.value} sufixo={m.suffix} />
             </div>
-            <div className="text-[11px] sm:text-xs font-semibold text-text-muted uppercase tracking-wider leading-tight">
+            <div className="text-xs font-semibold text-text-muted uppercase tracking-wider leading-tight">
               {m.label}
             </div>
           </div>

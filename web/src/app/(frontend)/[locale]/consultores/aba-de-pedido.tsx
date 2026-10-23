@@ -86,7 +86,7 @@ const RECUADA = 'bg-surface-3 dark:bg-surface-1'
  * - respiro no lugar de linha divisória (a home separa por espaço).
  *
  * O formulário em si já era o da home desde a 013 — `CAMPO` é a mesma string. */
-const ROTULO_MICRO = 'text-[10px] uppercase font-normal tracking-wider text-text-muted'
+const ROTULO_MICRO = 'text-xs uppercase font-normal tracking-wider text-text-muted'
 const BOTAO_PRINCIPAL =
   'bg-primary text-white dark:bg-white dark:text-[#12151c] py-3 px-6 rounded-[6px] text-sm font-medium transition-all inline-flex items-center gap-2 shadow-md cursor-pointer'
 
@@ -270,7 +270,7 @@ export function AbaDePedido({
               id={ID_TITULO}
               ref={titulo}
               tabIndex={-1}
-              className="text-2xl font-light font-display text-text-main dark:text-white leading-tight outline-none"
+              className="text-2xl font-display text-text-main dark:text-white leading-tight outline-none"
             >
               {t.titulo}
             </h2>
@@ -278,7 +278,7 @@ export function AbaDePedido({
             {/* Some na confirmação: ali o pedido já foi, e o carrinho vazio
                 ("0 perfis") só confundiria. */}
             {!confirmacao && (
-              <p aria-live="polite" className="text-sm text-text-muted font-light mt-1">
+              <p aria-live="polite" className="text-sm text-text-muted mt-1">
                 {t.resumo(escolhas.length)}
               </p>
             )}
@@ -307,10 +307,10 @@ export function AbaDePedido({
                o visitante fecha a aba. */
             <div role="status" className="flex flex-col items-center text-center gap-4 py-12">
               <CheckCircle2 size={44} className="text-emerald-700 dark:text-emerald-400" aria-hidden />
-              <h3 className="text-2xl font-light font-display text-text-main dark:text-white leading-tight">
+              <h3 className="text-2xl font-display text-text-main dark:text-white leading-tight">
                 {t.enviada}
               </h3>
-              <p className="text-sm text-text-muted font-light max-w-xs leading-relaxed">{t.sucesso}</p>
+              <p className="text-base text-text-muted max-w-xs leading-relaxed">{t.sucesso}</p>
               {/* `method="dialog"` fecha sem JavaScript — é assim que a página
                   que responde a um envio sem JS sai da confirmação. */}
               <form method="dialog" className="mt-2">
@@ -330,7 +330,7 @@ export function AbaDePedido({
                     >
                       <div
                         className={cn(
-                          'w-9 h-9 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-[10px] shrink-0',
+                          'w-9 h-9 rounded-[6px] bg-linear-to-br flex items-center justify-center text-white font-bold text-xs shrink-0',
                           gradienteDe(p.gradient),
                         )}
                       >
@@ -362,7 +362,7 @@ export function AbaDePedido({
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-text-muted font-light leading-relaxed">{t.vazio}</p>
+                <p className="text-sm text-text-muted leading-relaxed">{t.vazio}</p>
               )}
 
               {/* Espaço no lugar da linha: é assim que a home separa o título do

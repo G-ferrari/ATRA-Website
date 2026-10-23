@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest'
 
 import { areaEmPortugues, linkedinValido, senioridadeEmPortugues } from './banco-de-talentos'
 
-/* D-62: com o banco de talentos indo ao RD, a action aceita só as opções da
- * lista e grava sempre em português — um POST forjado não põe texto livre no
- * RD, e o mesmo cargo não vira dois valores conforme o idioma da página. */
+/* D-62: a action aceita só as opções da lista e grava sempre em português — um
+ * POST forjado não põe texto livre no perfil, e o mesmo cargo não vira dois
+ * valores conforme o idioma da página. O envio ao RD, que motivou a regra, saiu
+ * na D-67; a regra ficou para o filtro do admin. */
 describe('opções do banco de talentos', () => {
   it('opção em português fica como está', () => {
     expect(areaEmPortugues('Engenharia de Dados')).toBe('Engenharia de Dados')

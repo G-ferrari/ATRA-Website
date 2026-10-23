@@ -1,7 +1,7 @@
 'use client'
 
 import { ChevronLeft, ChevronRight, Quote, ShieldCheck, Star } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { BORDAS } from '@/components/blocks/bordas'
 import { TechCornerBraces } from '@/components/ui'
@@ -19,24 +19,61 @@ function iniciais(d: { authorName: string | null; company: string }): string {
 
 /* Depoimentos — porte de `legacy/src/App.tsx:1922`.
  *
- * ⚠️ Os depoimentos ficam **todos no DOM**, empilhados na mesma célula de grade,
- * e a troca é opacidade e escala. Não é detalhe de animação: a caixa tem a
- * altura do **maior** depoimento, e um deles tem 600 caracteres. Renderizar só o
- * ativo encolheria a seção conforme o texto, e a página inteira andaria junto. */
+ * Os depoimentos ficam **todos no DOM**, empilhados na mesma célula de grade, e
+ * a troca é opacidade e escala. Empilhados, a caixa teria a altura do **maior**
+ * — um deles tem 600 caracteres —, e os curtos ficavam no meio de um vão em cima
+ * e embaixo. Desde 20/10 (#219) a caixa mede o depoimento da vez e anima até a
+ * altura dele.
+ *
+ * ⚠️ O preço é a página abaixo andar a cada troca. Por isso a altura muda em
+ * transição suave, e a troca automática só roda com o bloco na tela: fora dela,
+ * a página não mexe sozinha enquanto alguém lê outra parte. */
 export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel }) {
   const [ativo, setAtivo] = useState(0)
   const total = bloco.items.length
+  const secao = useRef<HTMLElement>(null)
+  const slides = useRef<(HTMLDivElement | null)[]>([])
+  const [altura, setAltura] = useState<number | null>(null)
+  /* A primeira medida não anima: a caixa nasce com a altura do maior (é o que
+     o HTML do servidor consegue desenhar) e só então se ajusta. */
+  const [animar, setAnimar] = useState(false)
+  const [visivel, setVisivel] = useState(false)
 
   useEffect(() => {
-    if (congelado()) return
+    const el = slides.current[ativo]
+    if (!el) return
+    const medir = () => setAltura(el.offsetHeight)
+    medir()
+    const observador = new ResizeObserver(medir)
+    observador.observe(el)
+    return () => observador.disconnect()
+  }, [ativo])
+
+  useEffect(() => {
+    if (altura === null || animar) return
+    const quadro = requestAnimationFrame(() => setAnimar(true))
+    return () => cancelAnimationFrame(quadro)
+  }, [altura, animar])
+
+  useEffect(() => {
+    const el = secao.current
+    if (!el) return
+    const observador = new IntersectionObserver(([entrada]) => setVisivel(entrada.isIntersecting), { threshold: 0.3 })
+    observador.observe(el)
+    return () => observador.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (congelado() || !visivel) return
     const t = setInterval(() => setAtivo((i) => (i + 1) % total), 8000)
     return () => clearInterval(t)
-  }, [total])
+  }, [total, visivel])
 
   if (total === 0) return null
 
   return (
     <section
+      ref={secao}
       id={bloco.anchor ?? undefined}
       className={cn(
         'py-16 md:py-24 relative overflow-hidden scroll-mt-32',
@@ -47,7 +84,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
       <TechCornerBraces color="orange" position="bottom-right" />
 
       <div className="container mx-auto px-4 md:px-6 text-center relative z-10 max-w-7xl">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-light font-display mb-10 text-text-main">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-display mb-10 text-text-main">
           {bloco.title}
         </h2>
 
@@ -70,10 +107,21 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
               <ChevronLeft size={18} aria-hidden />
             </button>
 
-            <div className="relative w-full overflow-hidden flex-1 grid grid-cols-1 grid-rows-1 items-center px-1 sm:px-4">
+            {/* A altura vem da medida do depoimento da vez; os outros, maiores,
+                ficam cortados pelo `overflow-hidden` e invisíveis. */}
+            <div
+              className={cn(
+                'relative w-full overflow-hidden flex-1 grid grid-cols-1 grid-rows-1 items-center px-1 sm:px-4',
+                animar && 'transition-[height] duration-500 ease-out motion-reduce:transition-none',
+              )}
+              style={altura === null ? undefined : { height: altura }}
+            >
               {bloco.items.map((d, i) => (
                 <div
                   key={`${d.company}-${d.authorRole}`}
+                  ref={(el) => {
+                    slides.current[i] = el
+                  }}
                   className={cn(
                     'col-start-1 row-start-1 w-full transition-all duration-500 ease-out flex flex-col items-center',
                     i === ativo
@@ -81,7 +129,7 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
                       : 'opacity-0 scale-95 pointer-events-none z-0 translate-y-4',
                   )}
                 >
-                  <p className="text-xs sm:text-sm md:text-base font-light leading-relaxed mb-5 sm:mb-6 text-text-main italic">
+                  <p className="text-base leading-relaxed mb-5 sm:mb-6 text-text-main italic">
                     &quot;{d.quote}&quot;
                   </p>
 
@@ -110,13 +158,13 @@ export function BlocoDepoimentos({ bloco }: { bloco: BlocoTestimonialCarousel })
                       <div
                         aria-hidden
                         data-mascara
-                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-primary/40 shadow-sm shrink-0 bg-primary/15 text-primary flex items-center justify-center text-[11px] sm:text-xs font-bold tracking-wide"
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-primary/40 shadow-sm shrink-0 bg-primary/15 text-primary flex items-center justify-center text-xs font-bold tracking-wide"
                       >
                         {iniciais(d)}
                       </div>
                     )}
                     <div className="flex flex-col items-start justify-center text-left">
-                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] bg-primary/20 text-primary text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider">
                         <ShieldCheck size={12} aria-hidden /> {d.authorRole}
                       </div>
                       <h4 className="font-bold text-xs sm:text-sm text-text-main mt-0.5">

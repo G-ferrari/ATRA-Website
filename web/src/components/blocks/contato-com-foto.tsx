@@ -11,10 +11,9 @@ import { PainelDeContatos } from './painel-de-contatos'
 /* Faixa de contato com cartão de foto — porte de `legacy/src/App.tsx:2288`, a
  * seção `#fale-conosco` que fecha a home.
  *
- * ⚠️ É irmã de `consultores/solicitar-consultores.tsx`, não a mesma coisa: lá
- * são cinco campos (com um `select` de modelo de alocação) e o cartão tem
- * `min-h-[480px]`; aqui são quatro e `min-h-[500px]`. As duas seções divergiram
- * no legado, e o aceite visual é contra cada página.
+ * ⚠️ É irmã de `consultores/solicitar-consultores.tsx`, não a mesma coisa: as
+ * duas divergiram no legado, e lá a coluna da esquerda é um botão que abre o
+ * pedido. O cartão da direita é um só nas duas (`PainelDeContatos`, #171).
  *
  * ⚠️ O formulário **envia** desde MIG-100. No gabarito ele não envia — o
  * `onSubmit` do protótipo só faz `preventDefault` —, e a diferença não aparece
@@ -24,7 +23,7 @@ import { PainelDeContatos } from './painel-de-contatos'
 /* ⚠️ Sem `disabled:opacity-60`: o gabarito desenha os campos em opacidade
  * cheia. Quem impede o envio é o `disabled` e o `title` do botão, não a cor. */
 const CAMPO =
-  'w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-sm text-text-main dark:text-white placeholder:text-text-muted dark:placeholder:text-white/40 font-light transition-colors disabled:opacity-100'
+  'w-full bg-transparent border-b border-border-main dark:border-white/20 outline-none py-2 text-base sm:text-sm text-text-main dark:text-white placeholder:text-text-muted dark:placeholder:text-white/40 transition-colors disabled:opacity-100'
 
 export function ContatoComFoto({ bloco, locale }: { bloco: BlocoCtaContact; locale: Locale }) {
   /* Injetado pela página (MIG-072). `null` só no preview de um bloco solto. */
@@ -47,12 +46,12 @@ export function ContatoComFoto({ bloco, locale }: { bloco: BlocoCtaContact; loca
       <div className="container mx-auto max-w-7xl relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 items-stretch relative z-10">
           <div className="flex flex-col text-left py-8 md:py-12 pr-0 lg:pr-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-light font-display text-text-main dark:text-white mb-8 leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display text-text-main dark:text-white mb-8 leading-tight">
               {bloco.title}
             </h2>
 
             {bloco.subtitle && (
-              <h3 className="text-xl md:text-2xl font-light font-display text-text-main dark:text-white mb-6">
+              <h3 className="text-xl md:text-2xl font-display text-text-main dark:text-white mb-6">
                 {bloco.subtitle}
               </h3>
             )}
@@ -101,7 +100,7 @@ export function ContatoComFoto({ bloco, locale }: { bloco: BlocoCtaContact; loca
 
           {/* Painel de contatos compartilhado (fonte única) — ver
               painel-de-contatos.tsx. */}
-          <PainelDeContatos contato={contato} locale={locale} foto={bloco.photo} />
+          <PainelDeContatos contato={contato} locale={locale} />
         </div>
       </div>
     </section>

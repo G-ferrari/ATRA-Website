@@ -47,7 +47,7 @@ function CartaoContato({ whatsapp }: { whatsapp: string }) {
     <div className="bg-surface-2 dark:bg-[#181b22]  rounded-[6px] shadow-lg p-4 my-3 max-w-sm">
       <div className="flex items-center gap-3 mb-3">
         <div className="relative">
-          <div className="w-10 h-10 rounded-[6px] bg-primary/15 text-primary flex items-center justify-center  shadow-inner text-xs font-bold tracking-wide">
+          <div className="w-10 h-10 rounded-[6px] bg-primary/15 text-primary flex items-center justify-center shadow-inner text-xs font-bold tracking-wide">
             AT
           </div>
           <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-surface-2 dark:border-[#181b22]" />
@@ -57,17 +57,17 @@ function CartaoContato({ whatsapp }: { whatsapp: string }) {
             Falar com Especialista
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           </h4>
-          <p className="text-[11px] text-text-muted">Time de Soluções &amp; Arquitetura ATRA</p>
+          <p className="text-sm text-text-muted">Time de Soluções &amp; Arquitetura ATRA</p>
         </div>
       </div>
-      <p className="text-[11px] text-text-muted mb-3.5 leading-relaxed">
+      <p className="text-sm text-text-muted mb-3.5 leading-relaxed">
         Pronto para acelerar seu projeto de Dados e IA? Desenhe o escopo técnico diretamente com nossos arquitetos.
       </p>
       <a
         href={whatsapp}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded-[6px] py-2 px-3.5 flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-wider transition-all shadow-md shadow-emerald-600/20 active:scale-[0.98]"
+        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded-[6px] py-2 px-3.5 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-emerald-600/20 active:scale-[0.98]"
       >
         <Phone size={13} aria-hidden />
         Conectar no WhatsApp
@@ -104,11 +104,11 @@ function CartaoServico({ titulo, descricao, icone }: { titulo: string; descricao
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="font-bold text-text-main text-xs mb-0.5">{titulo}</h4>
-          <p className="text-[11px] text-text-muted leading-relaxed line-clamp-3">{descricao}</p>
+          <p className="text-sm text-text-muted leading-relaxed line-clamp-3">{descricao}</p>
         </div>
       </div>
       <div className="pt-2 border-t border-border-main/50">
-        <span className="text-[10px] text-text-muted flex items-center gap-1">
+        <span className="text-xs text-text-muted flex items-center gap-1">
           <Sparkles size={11} className="text-secondary" aria-hidden /> Solução Especializada
         </span>
       </div>
@@ -152,10 +152,10 @@ function CartaoConteudo({ item, locale }: { item: ReferenciasDaIa[string]; local
         <Icone size={16} aria-hidden />
       </span>
       <span className="flex-1 min-w-0">
-        <span className="block text-[10px] font-semibold uppercase tracking-wider text-text-muted">{tipo[locale]}</span>
+        <span className="block text-xs font-semibold uppercase tracking-wider text-text-muted">{tipo[locale]}</span>
         <span className="block font-bold text-text-main text-xs mt-0.5 group-hover:text-primary transition-colors">{item.titulo}</span>
-        {item.resumo && <span className="block text-[11px] text-text-muted leading-relaxed line-clamp-2 mt-0.5">{item.resumo}</span>}
-        <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-primary">
+        {item.resumo && <span className="block text-xs text-text-muted leading-relaxed line-clamp-2 mt-0.5">{item.resumo}</span>}
+        <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary">
           {ABRIR[locale]} <ArrowUpRight size={12} aria-hidden />
           <span className="sr-only">({NOVA_ABA[locale]})</span>
         </span>
@@ -201,7 +201,7 @@ function SeloParceiro({ nome }: { nome: string }) {
   const temCorPropria = n.includes('google') || n.includes('azure') || n.includes('databricks')
 
   return (
-    <span className="inline-flex items-center gap-1.5 bg-surface-2 dark:bg-[#181b22]  rounded-[6px] px-2.5 py-1 text-[11px] font-semibold text-text-main shadow-xs mx-1 my-0.5 align-middle hover:border-primary/40 transition-colors">
+    <span className="inline-flex items-center gap-1.5 bg-surface-2 dark:bg-[#181b22] rounded-[6px] px-2.5 py-1 text-xs font-semibold text-text-main shadow-xs mx-1 my-0.5 align-middle hover:border-primary/40 transition-colors">
       <Icon icon={icone} width={13} height={13} className={temCorPropria ? '' : 'text-primary'} />
       {nome}
       <CheckCircle2 size={11} className="text-emerald-500 ml-0.5" aria-hidden />
@@ -247,10 +247,10 @@ function CartaoGrafico({ tipo }: { tipo: string }) {
           <Icon icon={finOps ? 'fluent:money-calculator-24-regular' : 'fluent:data-pie-24-regular'} width={16} />
         </div>
         <div>
-          <h4 className="font-bold text-text-main text-[11.5px]">
+          <h4 className="font-bold text-text-main text-xs">
             {finOps ? 'Simulação FinOps (Economia Cloud)' : 'Dashboard BI (Analytics Executivo)'}
           </h4>
-          <p className="text-[10px] text-text-muted">
+          <p className="text-sm text-text-muted">
             {finOps ? 'Otimização contínua de custos em nuvem' : 'Acompanhamento estratégico de metas'}
           </p>
         </div>
@@ -339,7 +339,7 @@ export function RespostaDoModelo({
             return (
               <div
                 key={i}
-                className="markdown-body prose prose-xs dark:prose-invert max-w-none text-text-main text-[13px] leading-relaxed prose-p:leading-relaxed prose-headings:text-text-main prose-headings:font-bold prose-a:text-primary prose-a:font-semibold hover:prose-a:underline prose-strong:text-text-main prose-code:text-primary prose-code:bg-surface-1 dark:prose-code:bg-[#0e1015] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-[6px] prose-ul:my-1.5 prose-li:my-0.5"
+                className="markdown-body prose prose-xs dark:prose-invert max-w-none text-text-main text-sm leading-relaxed prose-p:leading-relaxed prose-headings:text-text-main prose-headings:font-bold prose-a:text-primary prose-a:font-semibold hover:prose-a:underline prose-strong:text-text-main prose-code:text-primary prose-code:bg-surface-1 dark:prose-code:bg-[#0e1015] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-[6px] prose-ul:my-1.5 prose-li:my-0.5"
               >
                 {/* `img` não desenha nada: o servidor já tira imagem da
                     resposta, e isto é a segunda tranca — o navegador nunca
