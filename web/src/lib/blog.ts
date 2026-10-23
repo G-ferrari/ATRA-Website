@@ -1,5 +1,6 @@
 import { cache } from 'react'
 
+import { ondeExisteNoIdioma } from './existe-no-idioma'
 import type { Locale } from './locales'
 import { toPostCard } from './mappers/post'
 import { getPayload } from './payload'
@@ -16,7 +17,12 @@ import type { PostCard } from '@/types/content'
  * cada artigo — JSONB de artigo de blog, não um campo curto — só para desenhar
  * cartão. Medido depois da importação: 536ms sem `select`, 68ms com, para 100.
  *
- * `cache()` por requisição: `generateMetadata` e a página pedem a mesma lista. */
+ * `cache()` por requisição: `generateMetadata` e a página pedem a mesma lista.
+ *
+ * No inglês, só o artigo que tem slug em inglês (D-69): o que foi publicado só
+ * em português daria link para 404. */
+const PUBLICADO = { _status: { equals: 'published' as const } }
+
 export const buscarPostsDoBlog = cache(async (locale: Locale, rascunho: boolean): Promise<PostCard[]> => {
   const payload = await getPayload()
   const { docs } = await payload.find({
@@ -27,15 +33,16 @@ export const buscarPostsDoBlog = cache(async (locale: Locale, rascunho: boolean)
     sort: '-publishedAt',
     draft: rascunho,
     /* Fora do modo rascunho, só publicado — a Local API ignora `access.read`. */
-    ...(rascunho ? {} : { where: { _status: { equals: 'published' } } }),
+    where: ondeExisteNoIdioma(locale, rascunho ? undefined : PUBLICADO),
     select: { title: true, slug: true, description: true, coverImage: true, tags: true, publishedAt: true },
   })
   return docs.map(toPostCard)
 })
 
-/** Quantos artigos publicados há — para saber quantas páginas pré-montar. */
+/** Quantos artigos publicados há no idioma — para saber quantas páginas
+ *  pré-montar. O mesmo corte da lista, ou o inglês montaria página vazia. */
 export async function contarPostsPublicados(locale: Locale): Promise<number> {
   const payload = await getPayload()
-  const { totalDocs } = await payload.count({ collection: 'posts', locale, where: { _status: { equals: 'published' } } })
+  const { totalDocs } = await payload.count({ collection: 'posts', locale, where: ondeExisteNoIdioma(locale, PUBLICADO) })
   return totalDocs
 }

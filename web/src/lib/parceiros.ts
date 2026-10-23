@@ -1,3 +1,4 @@
+import { ondeExisteNoIdioma } from './existe-no-idioma'
 import type { Locale } from './locales'
 import { comParceiros, comVitrineDeParceiros } from './mappers/blocks'
 import { toParceiroDaFaixa } from './mappers/partner'
@@ -13,7 +14,12 @@ import type { Bloco } from '@/types/content'
  * perde a seção inteira, sem erro.
  *
  * Uma consulta só para os dois blocos, e nenhuma quando a página não tem
- * nenhum deles. `partners` não tem rascunho — não há `_status` a filtrar. */
+ * nenhum deles. `partners` não tem rascunho — não há `_status` a filtrar.
+ *
+ * No inglês, só o parceiro com slug em inglês (D-69): na faixa, o logo leva à
+ * página dele, e sem o slug o link dava 404 (o AWS, em 23/10). A vitrine sai
+ * da mesma consulta e segue o mesmo corte — o que não existe no inglês não
+ * aparece no inglês. */
 export async function comParceirosCadastrados(blocos: Bloco[], locale: Locale): Promise<Bloco[]> {
   const faixa = blocos.some((b) => b.tipo === 'logoMarquee')
   const vitrine = blocos.some((b) => b.tipo === 'partnerShowcase' && b.source === 'all')
@@ -26,6 +32,7 @@ export async function comParceirosCadastrados(blocos: Bloco[], locale: Locale): 
     depth: 1,
     limit: 100,
     sort: 'order',
+    where: ondeExisteNoIdioma(locale),
     select: { name: true, slug: true, logo: true, logoDark: true, logoScale: true, hasPage: true },
   })
 

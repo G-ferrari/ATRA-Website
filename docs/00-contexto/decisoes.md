@@ -2300,3 +2300,61 @@ repositório for público. A homologação já roda numa VM do Google
   `DIAS_DO_CERTIFICADO` baixa junto.
 - Como o rótulo da checagem vem do host, trocar de domínio na virada é criar
   outra checagem (`--url` novo) e remover a antiga (`--remover`), não editar.
+
+## D-69 — No inglês, o que não tem versão inglesa não aparece
+
+*Decidida em 23/10/2026 por G-ferrari (tarefa #52 do checklist).*
+
+**Contexto.** Em 07/10 o menu inglês de Soluções mostrava Master Data
+Management e Privacidade & LGPD, criadas no admin só em português, e o link
+dava 404. A causa é o fallback de idioma: a consulta em inglês devolve o slug
+português no lugar do inglês que falta, a listagem monta `/en/<seção>/<slug-pt>`,
+e a rota, que busca o slug na coluna do inglês, não acha nada. Conferido na
+homologação em 23/10, o mesmo valia para o segmento Seguros, o parceiro AWS (no
+menu e na faixa de logos da home), dois artigos do blog e dois webinars — e para
+o sitemap, que montava a URL inglesa com o slug português: as três URLs
+inglesas que ele anunciava davam 404.
+
+**Decisão.**
+
+- Um documento **existe no inglês** quando tem slug gravado no inglês, lido
+  sem fallback. No inglês, toda listagem cujo cartão leva à página do item só
+  mostra o que existe no inglês: o mega-menu (soluções, segmentos, parceiros e
+  os cases do painel de conversão), os índices de Soluções, Segmentos, Cases,
+  Blog, Webinars e E-books, os carrosséis de destaque dessas seções, as faixas
+  da Insights, a lista de vagas do CMS e a faixa e a vitrine de parceiros. O
+  português não muda.
+- O corte vai na própria consulta (`ondeExisteNoIdioma`, em
+  `web/src/lib/existe-no-idioma.ts`): condição sobre campo localizado bate na
+  coluna do idioma pedido, sem fallback. A leitura continua com o fallback, que
+  dá o texto em português ao campo ainda não traduzido de um documento que já
+  existe no inglês (P-08). É a regra que o catálogo da ATRA AI já seguia
+  (D-60).
+- **Não** é o `temIngles` do sitemap. Ele pergunta se o inglês é texto
+  diferente do português, e as 18 soluções da D-52 têm o inglês copiado de
+  propósito: por ele, sumiriam todas do menu inglês. O inglês copiado continua
+  aparecendo.
+- O sitemap passa a exigir as duas coisas — tradução (`temIngles`) e slug no
+  inglês — e monta a URL inglesa com o slug inglês.
+- Quando a Taci salvar o item no inglês, no admin, o slug inglês nasce do
+  título e o item aparece sozinho.
+
+**Consequências.**
+
+- **Customer 360 e dois segmentos ficam no inglês com o nome e o endereço
+  antigos, e o conserto é no admin.** A Customer 360 é o documento "Master Data
+  & Customer 360" da D-52, renomeado em 06/10 só no português: o inglês ficou
+  com o título e o slug antigos (`master-data-e-customer-360`), e é ali que ela
+  abre no inglês. O mesmo com Agroindústria (no inglês, ainda "Indústria", em
+  `industria`) e Bancos e Serviços Financeiros (no inglês,
+  `bancos-seguradoras-servicos-financeiros`). Como existem no inglês, esta
+  decisão não os esconde: quem acerta é o marketing, atualizando o inglês de
+  cada um (D-22).
+- Fica fora da regra o que não abre página do item no site: ATRA na mídia (a
+  matéria abre no veículo) e as vagas do ATRAIR.
+- Links escritos no admin (carrosséis da home, botões) não passam por consulta
+  a collection e não são cortados. Na homologação de 23/10 nenhum deles dava
+  404 no inglês, mas vários levam o visitante inglês à página em português.
+- O `hreflang` das páginas de item ainda declara a versão inglesa com o slug
+  do português, exista ela ou não. Fica para outra tarefa: pede o slug do
+  outro idioma em cada rota de item.
