@@ -34,12 +34,9 @@ export function toPainelDeConversao(args: {
    *  entra aqui, então case escolhido no admin e depois despublicado some do
    *  menu sem ninguém precisar lembrar de tirá-lo do painel. */
   cases: CaseDoPainel[]
-  /** Põe o idioma num destino interno, já traduzido (`/contato` → `/en/contact`):
-   *  `hrefNoIdioma`, de `lib/routes.ts`. */
-  hrefLocal: (href: string) => string
   hrefDoCase: (slug: string) => string
 }): PainelDeConversao | null {
-  const { global, cases, hrefLocal, hrefDoCase } = args
+  const { global, cases, hrefDoCase } = args
   const titulo = vazio(global?.title)
   // Sem título o painel não existe: é a trava que deixa o código ir ao ar
   // antes do conteúdo.
@@ -82,10 +79,12 @@ export function toPainelDeConversao(args: {
       icon: p.icon,
       title: p.title,
       description: vazio(p.description),
-      href: hrefLocal(p.href),
+      /* Os destinos do admin saem como foram escritos (`/contato`); o layout
+         os põe no idioma da página com o resto do menu (D-71). */
+      href: p.href,
     })),
-    cta: ctaLabel && ctaHref ? { label: ctaLabel, href: hrefLocal(ctaHref) } : null,
-    ctaSecundario: segundoLabel && segundoHref ? { label: segundoLabel, href: hrefLocal(segundoHref) } : null,
+    cta: ctaLabel && ctaHref ? { label: ctaLabel, href: ctaHref } : null,
+    ctaSecundario: segundoLabel && segundoHref ? { label: segundoLabel, href: segundoHref } : null,
     provas: (global.proof ?? []).map((p) => ({ value: p.value, label: vazio(p.label) })),
     cases: Object.fromEntries(ABAS_DE_SOLUCOES.map((a) => [a.id, daAba(a.id)])) as Record<AbaDeSolucoes, MiniCase[]>,
   }

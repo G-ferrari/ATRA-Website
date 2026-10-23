@@ -111,30 +111,103 @@ export function caminhoComAlias(caminho: string): string | null {
   return alias ? ['', prefixo, alias, ...resto].join('/') : null
 }
 
-/**
- * Link do admin com o caminho português debaixo do idioma (`/en/sobre`) sai
- * com o caminho do idioma (`/en/about`): o destino do 308 do proxy, sem o
- * salto. Âncora e query passam intactas.
- *
- * O que **não** muda: link externo, link já traduzido e link português sem o
- * prefixo — `/contato` numa página em inglês leva ao português, de propósito ou
- * por descuido, e escolher entre os dois é decisão de conteúdo (D-22).
- */
-export function localizarHref(href: string): string {
-  if (!href.startsWith('/') || href.startsWith('//')) return href
+/** Corta o endereço em caminho e sufixo (query e âncora, que passam intactas). */
+function separar(href: string): { caminho: string; sufixo: string } {
   const corte = href.search(/[?#]/)
-  const caminho = corte === -1 ? href : href.slice(0, corte)
-  const destino = caminhoComAlias(caminho)
-  return destino === null ? href : destino + (corte === -1 ? '' : href.slice(corte))
+  return corte === -1 ? { caminho: href, sufixo: '' } : { caminho: href.slice(0, corte), sufixo: href.slice(corte) }
 }
 
 /**
- * Destino que o admin guarda **sem** o idioma — colunas do rodapé, categorias
- * do menu, painel de conversão, "depois do envio" do formulário: no inglês
- * ganha o prefixo e já sai traduzido (`/contato` → `/en/contact`). Âncora solta
- * (`#x`) e endereço externo passam intactos.
+ * Link com o caminho português debaixo do idioma (`/en/sobre`) sai com o
+ * caminho do idioma (`/en/about`): o destino do 308 do proxy, sem o salto.
+ * Âncora e query passam intactas; link externo e link já traduzido, também.
+ *
+ * Só olha o endereço, e por isso vale em página de qualquer idioma. O link
+ * português **sem** prefixo é com `linkNoIdioma` (D-71).
  */
-export function hrefNoIdioma(caminho: string, locale: Locale): string {
-  if (locale === DEFAULT_LOCALE || !caminho.startsWith('/') || caminho.startsWith('//')) return caminho
-  return localizarHref(caminho === '/' ? `/${locale}` : `/${locale}${caminho}`)
+export function localizarHref(href: string): string {
+  if (!href.startsWith('/') || href.startsWith('//')) return href
+  const { caminho, sufixo } = separar(href)
+  const destino = caminhoComAlias(caminho)
+  return destino === null ? href : destino + sufixo
+}
+
+/** Seções cuja página de item é `/<seção>/<slug>`, com o slug do documento no
+ *  idioma. De que collection vem cada uma, e com que filtro, está em
+ *  `lib/traduzir-links.ts`. */
+export const SECOES_COM_ITEM = [
+  'cases',
+  'solucoes',
+  'parceiros',
+  'segmentos',
+  'blog',
+  'webinars',
+  'ebooks',
+  'carreiras',
+] as const satisfies readonly Secao[]
+export type SecaoComItem = (typeof SECOES_COM_ITEM)[number]
+
+const ehSecaoComItem = (secao: Secao): secao is SecaoComItem => (SECOES_COM_ITEM as readonly Secao[]).includes(secao)
+
+/** O que pede um link interno português sem o prefixo do idioma. */
+export type CaminhoPortugues =
+  | { tipo: 'inicio'; sufixo: string }
+  | { tipo: 'secao'; secao: Secao; sufixo: string }
+  | { tipo: 'item'; secao: SecaoComItem; slug: string; sufixo: string }
+
+/**
+ * Lê um link português sem prefixo: a página inicial, uma seção da tabela
+ * `SECOES` ou um item de seção (`/cases-de-sucesso/<slug>`). `null` para o
+ * resto — externo, âncora solta, já com idioma (`/en/…`, `/pt/…`) e endereço
+ * que a tabela não conhece (`/blog/pagina/2`, `/roadmap`): sem saber se a
+ * página existe no inglês, o link fica como está.
+ */
+export function lerCaminhoPortugues(href: string): CaminhoPortugues | null {
+  if (!href.startsWith('/') || href.startsWith('//')) return null
+  const { caminho, sufixo } = separar(href)
+  const segmentos = caminho.split('/').filter(Boolean)
+  if (segmentos.length === 0) return { tipo: 'inicio', sufixo }
+  if (isLocale(segmentos[0])) return null
+  const secao = (Object.keys(SECOES) as Secao[]).find((s) => SECOES[s][DEFAULT_LOCALE] === segmentos[0])
+  if (!secao) return null
+  if (segmentos.length === 1) return { tipo: 'secao', secao, sufixo }
+  if (segmentos.length === 2 && ehSecaoComItem(secao)) return { tipo: 'item', secao, slug: segmentos[1], sufixo }
+  return null
+}
+
+/** O slug de um item no idioma da página, a partir do português; `null` quando
+ *  o item não existe nesse idioma (D-69). */
+export type SlugDoItem = (secao: SecaoComItem, slugPt: string) => string | null
+
+const nenhumItem: SlugDoItem = () => null
+
+/**
+ * O destino de um link do admin numa página do idioma (D-71).
+ *
+ * - `/en/<português>` sai traduzido, em qualquer página (`localizarHref`).
+ * - Na página em português, nada mais muda.
+ * - Na página em inglês, o link português sem `/en` vai para o inglês **quando
+ *   a página existe no inglês**: a inicial e as seções da tabela `SECOES`
+ *   sempre (a rota é traduzida); o item, quando `slugDoItem` devolve o slug
+ *   inglês dele. Sem isso — item só em português, endereço que a tabela não
+ *   conhece —, o link continua levando ao português.
+ *
+ * Âncora e query passam intactas. Sem `slugDoItem`, todo item fica em
+ * português: é o que o texto rico usa, que não consulta o banco.
+ */
+export function linkNoIdioma(href: string, locale: Locale, slugDoItem: SlugDoItem = nenhumItem): string {
+  const localizado = localizarHref(href)
+  if (locale === DEFAULT_LOCALE) return localizado
+  const alvo = lerCaminhoPortugues(href)
+  if (!alvo) return localizado
+  switch (alvo.tipo) {
+    case 'inicio':
+      return `/${locale}${alvo.sufixo}`
+    case 'secao':
+      return hrefDe(alvo.secao, locale) + alvo.sufixo
+    case 'item': {
+      const slug = slugDoItem(alvo.secao, alvo.slug)
+      return slug ? hrefDe(alvo.secao, locale, slug) + alvo.sufixo : href
+    }
+  }
 }

@@ -1,5 +1,3 @@
-import type { Locale } from '@/lib/locales'
-import { hrefNoIdioma } from '@/lib/routes'
 import type { Contact, Footer } from '@/payload-types'
 import type { Contato, Rodape } from '@/types/content'
 
@@ -42,7 +40,7 @@ export function toContato(doc: Contact): Contato {
   }
 }
 
-export function toRodape(doc: Footer, locale: Locale): Rodape {
+export function toRodape(doc: Footer): Rodape {
   return {
     sobre: doc.about,
     direitos: doc.copyright,
@@ -52,10 +50,9 @@ export function toRodape(doc: Footer, locale: Locale): Rodape {
       /* `href` vazio vira `null`, e o componente desenha `<a href="#">` — que é
        * o que o legado faz nos 3 links legais e nas 3 soluções (D-15).
        *
-       * O admin guarda o caminho português sem o idioma (`/sobre`), um só para
-       * os dois. O prefixo entrava no componente e o `proxy.ts` traduzia com um
-       * 308 (`/en/sobre` → `/en/about`); agora o destino sai pronto daqui. */
-      links: (c.links ?? []).map((l) => ({ label: l.label, href: l.href ? hrefNoIdioma(l.href, locale) : null })),
+       * O destino sai como o admin escreveu (`/sobre`, um só para os dois
+       * idiomas); o layout o põe no idioma da página (`comLinksNoIdioma`, D-71). */
+      links: (c.links ?? []).map((l) => ({ label: l.label, href: l.href || null })),
     })),
   }
 }

@@ -33,55 +33,6 @@ describe('toBlocos', () => {
     })
   })
 
-  /* #210: o campo de link é um só para os dois idiomas; `/en/<português>` sai
-     no caminho que o 308 do proxy daria, e o resto como o admin escreveu. */
-  it('link do admin com o caminho português debaixo de /en sai traduzido', () => {
-    const [hero, faixa, mosaico] = toBlocos(
-      layout(
-        {
-          id: '1',
-          blockType: 'pageHero',
-          title: 'Abertura',
-          ctas: [
-            { label: 'Soluções', href: '/en/solucoes#ia' },
-            { label: 'Contato', href: '/contato' },
-            { label: 'WhatsApp', href: 'https://api.whatsapp.com/send/?phone=5511999999999' },
-          ],
-        },
-        {
-          id: '2',
-          blockType: 'ctaBanner',
-          title: 'Fale com a gente',
-          cta: { label: 'Sobre', href: '/en/sobre' },
-          secondaryCta: { label: 'Diagnóstico', href: '/en/diagnostico-maturidade?setor=financeiro' },
-        },
-        {
-          id: '3',
-          blockType: 'partnerMosaic',
-          items: [
-            {
-              image: { id: 1, url: '/api/media/file/gcp.webp', alt: 'Google Cloud', width: 400, height: 200, mimeType: 'image/webp' },
-              name: 'Google Cloud',
-              href: '/en/parceiros/google-cloud',
-            },
-          ],
-        },
-      ),
-    )
-    expect(hero).toMatchObject({
-      ctas: [
-        { href: '/en/solutions#ia' },
-        { href: '/contato' },
-        { href: 'https://api.whatsapp.com/send/?phone=5511999999999' },
-      ],
-    })
-    expect(faixa).toMatchObject({
-      cta: { href: '/en/about' },
-      secondaryCta: { href: '/en/data-maturity-assessment?setor=financeiro' },
-    })
-    expect(mosaico).toMatchObject({ items: [{ href: '/en/partners/google-cloud' }] })
-  })
-
   describe('vídeo na abertura de página', () => {
     const hero = (campos: Record<string, unknown>) =>
       toBlocos(layout({ id: '1', blockType: 'pageHero', title: 'Abertura', mediaMode: 'video', ...campos }))[0]

@@ -114,7 +114,7 @@ export function SiteFooter({
                     /* Sem destino o legado desenha `<a href="#">`, não `<Link>`:
                        um `Link` para `#` faria o router do Next prefetchar a
                        própria rota a cada item. O destino chega pronto, com o
-                       idioma e o caminho traduzido (`toRodape`). */
+                       idioma e o caminho traduzido (`comLinksNoIdioma`, no layout). */
                     item.href ? (
                       <li key={item.label}>
                         <Link href={item.href} className="hover:text-slate-900 dark:hover:text-white transition-colors">

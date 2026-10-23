@@ -63,16 +63,16 @@ describe('toFormularioDoAdmin', () => {
     expect(f).not.toMatch(/cf_|eventos@|Evento Dados/)
   })
 
-  /* #210: já com a seção traduzida, sem o 308 do proxy no meio do envio. */
-  it('o depois do envio por página põe o prefixo do idioma, com a seção traduzida', () => {
-    const doc = base({ afterSubmit: 'page', redirectPath: '/cases-de-sucesso/abc' })
-    expect(toFormularioDoAdmin(doc, 'pt').depoisDoEnvio).toEqual({ tipo: 'pagina', href: '/cases-de-sucesso/abc' })
-    expect(toFormularioDoAdmin(doc, 'en').depoisDoEnvio).toEqual({ tipo: 'pagina', href: '/en/success-stories/abc' })
-    expect(destinoDepoisDoEnvio(doc, 'en')).toBe('/en/success-stories/abc')
-    expect(toFormularioDoAdmin(base({ afterSubmit: 'page', redirectPath: '/' }), 'en').depoisDoEnvio).toEqual({
-      tipo: 'pagina',
-      href: '/en',
-    })
+  /* D-71: seção e página inicial vão ao inglês já traduzidas, sem o 308 do
+     proxy no meio do envio. O item fica em português aqui: quem sabe se ele
+     existe no inglês é `comLinksNoIdioma` (página) e `traduzirLink` (action). */
+  it('o depois do envio por página vai ao idioma: seção e inicial aqui, item depois', () => {
+    const pagina = (redirectPath: string, locale: 'pt' | 'en') =>
+      toFormularioDoAdmin(base({ afterSubmit: 'page', redirectPath }), locale).depoisDoEnvio
+    expect(pagina('/cases-de-sucesso/abc', 'pt')).toEqual({ tipo: 'pagina', href: '/cases-de-sucesso/abc' })
+    expect(pagina('/contato', 'en')).toEqual({ tipo: 'pagina', href: '/en/contact' })
+    expect(pagina('/', 'en')).toEqual({ tipo: 'pagina', href: '/en' })
+    expect(pagina('/cases-de-sucesso/abc', 'en')).toEqual({ tipo: 'pagina', href: '/cases-de-sucesso/abc' })
   })
 
   it('o que falta vira ConteudoIncompleto, para o preview mostrar', () => {
@@ -111,7 +111,9 @@ describe('toConfigDoFormulario', () => {
 
 describe('destinoDepoisDoEnvio', () => {
   it('devolve o endereço no idioma, ou null para ficar na mensagem — sem lançar', () => {
-    expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: '/obrigado' }, 'en')).toBe('/en/obrigado')
+    expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: '/contato?origem=evento' }, 'en')).toBe('/en/contact?origem=evento')
+    // Endereço que a tabela de rotas não conhece fica em português (D-71).
+    expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: '/obrigado' }, 'en')).toBe('/obrigado')
     expect(destinoDepoisDoEnvio({ afterSubmit: 'message', redirectPath: '/obrigado' }, 'pt')).toBeNull()
     expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: 'https://fora.com' }, 'pt')).toBeNull()
     expect(destinoDepoisDoEnvio({ afterSubmit: 'page', redirectPath: null }, 'pt')).toBeNull()

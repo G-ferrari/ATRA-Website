@@ -2413,3 +2413,61 @@ o resultado como rascunho no idioma de destino.
 - Espanhol pede um idioma novo no site (`locales`, rotas, menu, sitemap): é
   tarefa à parte.
 
+
+## D-71 — No inglês, o link português vai para a página inglesa quando ela existe
+
+*Decidida em 23/10/2026 por G-ferrari (tarefa #210 do checklist).*
+
+**Contexto.** Os campos de link do admin (botões e carrosséis dos blocos, menu,
+rodapé, painel de conversão, "depois do envio" do formulário) não são
+`localized`: o mesmo valor serve aos dois idiomas. Na homologação de 23/10, o
+rodapé e as categorias do menu ganhavam o `/en` no código e o `proxy.ts`
+traduzia o caminho com um 308 a cada clique (`/en/sobre` → `/en/about`). E o
+resto — `/contato`, `/chat`, os cases do carrossel da home, `/solucoes/rc18`,
+o mosaico de parceiros, os atalhos e cartões do menu — levava o visitante
+inglês à página em português. O editor não tinha como consertar: escrever
+`/en/contact` no campo mandaria o português para o inglês.
+
+**Decisão.**
+
+- **O site traduz sozinho.** Numa página em inglês, link interno sem `/en` vai
+  para o caminho inglês **quando a página existe no inglês**; se não existir,
+  continua levando ao português.
+  - Página inicial e seções da tabela `SECOES` (`web/src/lib/routes.ts`):
+    existem sempre no inglês, porque a rota é traduzida. `/contato` →
+    `/en/contact`, `/#fale-conosco` → `/en#fale-conosco`.
+  - Item de seção (case, solução, parceiro, segmento, artigo, webinar, e-book,
+    vaga do CMS): existe no inglês pela regra da D-69 — slug gravado no inglês,
+    lido sem fallback, com o mesmo filtro com que a rota abre (publicado, e
+    `hasPage` em solução e parceiro). O link usa o **slug inglês** do item.
+  - Endereço que a tabela não conhece (`/roadmap`, `/blog/pagina/2`) fica como
+    está: sem saber se existe no inglês, o português é o destino que abre.
+  - Âncora e query passam intactas. Na página em português, nada muda.
+- `/en/<caminho em português>` sai com o caminho do 308, em qualquer página. A
+  regra do 308 e a dos links são a mesma função (`caminhoComAlias`), sem
+  segunda tabela.
+- Onde: no servidor, depois dos mappers, como `comVagas` e `comContato`
+  (`comLinksNoIdioma`, em `web/src/lib/traduzir-links.ts`). Os mappers entregam
+  o destino como o admin escreveu; os destinos são achados pelo nome do campo
+  (`href`, `ctaHref`, `secondaryHref`) e os itens citados são consultados em
+  lote: **uma consulta por collection**, só com o slug, e nenhuma no português.
+  O layout faz o menu, o painel e o rodapé juntos; as páginas de blocos, os
+  blocos.
+- O texto rico (Lexical) fica **só com a parte das seções**: o conversor de
+  `components/content/rich-text.tsx` não consulta o banco, e o link para um
+  item (`/blog/<slug>`, entre artigos) segue em português. Resolver item ali
+  pediria uma consulta por texto, em toda página de artigo.
+- O "depois do envio" do formulário segue a mesma regra: seção no mapper, item
+  na action (`traduzirLink`), na hora do envio.
+
+**Consequências.**
+
+- Uma página em inglês faz, a mais, uma consulta por collection de item citada
+  nos seus links — no banco local, de zero a duas por página (a home cita
+  cases e a RC18) — e o layout, uma por collection citada no menu e no rodapé
+  (hoje, parceiros: o Google Cloud do rodapé). Como as páginas são
+  pré-montadas, o custo é do build e da revalidação.
+- Item criado só em português aparece no inglês com o link para o português,
+  e passa a levar ao inglês sozinho quando ganhar o slug inglês no admin.
+- Um campo de destino com outro nome precisa entrar na lista de
+  `web/src/lib/links-no-idioma.ts`; bloco novo com `href` entra sozinho.

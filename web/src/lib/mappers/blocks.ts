@@ -1,5 +1,4 @@
 import type { Locale } from '@/lib/locales'
-import { localizarHref } from '@/lib/routes'
 import { paraEmbed } from '@/lib/video'
 import type { Form, Media, Page, SiteSetting } from '@/payload-types'
 import type {
@@ -37,14 +36,6 @@ const vazio = (v: string | null | undefined): string | null => {
   return t ? t : null
 }
 
-/* Destino de link escrito no admin. O campo é um só para os dois idiomas, e
- * `/en/<caminho em português>` sai com o caminho traduzido (`localizarHref`) —
- * o destino do 308 do `proxy.ts`, sem o salto. Vazio vira `null`. */
-const destino = (v: string | null | undefined): string | null => {
-  const t = vazio(v)
-  return t ? localizarHref(t) : null
-}
-
 /* Parceiro não populado é descartado em silêncio, não derruba: aqui é uma
  * vitrine decorativa, e a página inteira fora do ar por um logo é troca ruim.
  * Difere de `cases.heroImage`, onde a imagem é o conteúdo. */
@@ -67,7 +58,7 @@ function toPartnerBadge(valor: number | ParceiroPopulado): PartnerBadge | null {
 function toCta(
   g: { label?: string | null; href?: string | null } | null | undefined,
 ): { label: string; href: string } | null {
-  return g?.label && g?.href ? { label: g.label, href: localizarHref(g.href) } : null
+  return g?.label && g?.href ? { label: g.label, href: g.href } : null
 }
 
 /** Cabeçalho com pílula de seção, comum aos quatro blocos de solução. */
@@ -218,7 +209,7 @@ export function toBlocos(
           subtitle: vazio(b.subtitle),
           description: vazio(b.description),
           align: b.align ?? 'left',
-          ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: localizarHref(c.href) })),
+          ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
           ctaVariant: b.ctaVariant ?? 'primary',
           descriptionWidth: b.descriptionWidth ?? 'narrow',
           metrics: (b.metrics ?? []).map((m) => ({
@@ -280,7 +271,7 @@ export function toBlocos(
           body: b.body ?? null,
           image: toImageOpcional(b.image, 'richTextSection.image'),
           imagePosition: b.imagePosition ?? 'right',
-          ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: localizarHref(c.href) })),
+          ctas: (b.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
           bodySize: b.bodySize === 'large' ? 'large' : 'normal',
         })
         break
@@ -446,7 +437,7 @@ export function toBlocos(
             company: i.company,
             title: i.title,
             description: i.description,
-            href: localizarHref(i.href),
+            href: i.href,
             image: toImageOpcional(i.image, 'caseCarousel.items.image'),
             color: i.color,
           })),
@@ -490,7 +481,7 @@ export function toBlocos(
             icon: c.icon,
             category: c.category,
             title: c.title,
-            href: destino(c.href),
+            href: vazio(c.href),
             image: toImageOpcional(c.image, 'contentTeaser.cards.image'),
             column: c.column ?? 'first',
           })),
@@ -499,7 +490,7 @@ export function toBlocos(
                 category: vazio(b.featured.category),
                 title: vazio(b.featured.title),
                 ctaLabel: vazio(b.featured.ctaLabel),
-                href: destino(b.featured.href),
+                href: vazio(b.featured.href),
                 image: toImageOpcional(b.featured.image, 'contentTeaser.featured.image'),
               }
             : null,
@@ -522,7 +513,7 @@ export function toBlocos(
             key: f.key,
             label: f.label,
             icon: f.icon,
-            href: destino(f.href),
+            href: vazio(f.href),
           })),
           faixas: [],
           portals: b.portals?.title
@@ -540,9 +531,9 @@ export function toBlocos(
                 title: vazio(b.closing.title),
                 description: vazio(b.closing.description),
                 ctaLabel: vazio(b.closing.ctaLabel),
-                ctaHref: destino(b.closing.ctaHref),
+                ctaHref: vazio(b.closing.ctaHref),
                 secondaryLabel: vazio(b.closing.secondaryLabel),
-                secondaryHref: destino(b.closing.secondaryHref),
+                secondaryHref: vazio(b.closing.secondaryHref),
               }
             : null,
         })
@@ -560,7 +551,7 @@ export function toBlocos(
             b.secondaryCta?.label && b.secondaryCta?.href
               ? {
                   label: b.secondaryCta.label,
-                  href: localizarHref(b.secondaryCta.href),
+                  href: b.secondaryCta.href,
                   caption: vazio(b.secondaryCta.caption),
                 }
               : null,
@@ -604,7 +595,7 @@ export function toBlocos(
             image: toImage(i.image, 'partnerMosaic.items.image'),
             name: i.name,
             linkLabel: vazio(i.linkLabel),
-            href: destino(i.href),
+            href: vazio(i.href),
           })),
         })
         break
