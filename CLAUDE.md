@@ -473,6 +473,16 @@ dados do passo anterior regravam páginas.
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
 containers logando no journald e o Caddy com log de acesso em arquivo.
 
+**D-68 (23/10)** revê o uptime: o cron do GitHub rodava de 3 em 3 a 8 em 8
+horas, não a cada 5 minutos. A checagem vai para o **Google Cloud Monitoring**
+— `/api/health` a cada minuto, de 3 regiões, e-mail quando 2 delas falham por 3
+minutos seguidos, mais o aviso de certificado com menos de 20 dias. Quem cria é
+G-ferrari ou Leonardo, com `infra/monitoramento/criar-checagem-google.sh`
+(projeto, e-mail e URL por parâmetro, nunca no repositório; rodar de novo
+acerta, não duplica). ⚠️ O `schedule` do `uptime.yml` só sai depois de a
+checagem existir e o e-mail de teste chegar — até lá os dois convivem. Runbook
+em `docs/05-operacao/monitoramento-de-uptime.md`.
+
 **D-41 (29/09)** tirou a integração com o **ATRAIR** do ambiente: o global
 `integrations` (Sistema → Integrações, só admin) tem **duas chaves** —
 `jobsFeed`, a grade de `/carreiras`, e `talentPool`, a ida do currículo — mais o
