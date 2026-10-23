@@ -34,7 +34,8 @@ export function toPainelDeConversao(args: {
    *  entra aqui, então case escolhido no admin e depois despublicado some do
    *  menu sem ninguém precisar lembrar de tirá-lo do painel. */
   cases: CaseDoPainel[]
-  /** Põe o prefixo do idioma num destino interno (`/contato` → `/en/contato`). */
+  /** Põe o idioma num destino interno, já traduzido (`/contato` → `/en/contact`):
+   *  `hrefNoIdioma`, de `lib/routes.ts`. */
   hrefLocal: (href: string) => string
   hrefDoCase: (slug: string) => string
 }): PainelDeConversao | null {

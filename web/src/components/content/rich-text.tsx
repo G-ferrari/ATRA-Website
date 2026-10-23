@@ -1,7 +1,13 @@
+import type { ReactNode } from 'react'
+import type { SerializedAutoLinkNode, SerializedLinkNode } from '@payloadcms/richtext-lexical'
 import {
   RichText as RichTextPayload,
+  type JSXConverter,
+  type JSXConverterArgs,
   type JSXConvertersFunction,
 } from '@payloadcms/richtext-lexical/react'
+
+import { localizarHref } from '@/lib/routes'
 
 /* Renderização de rich text do Payload.
  *
@@ -14,6 +20,18 @@ import {
  * `disableContainer` remove a div que o Payload injetaria por padrão — ela não
  * existe no legado e mudaria o espaçamento. */
 
+/* Link do texto com o caminho português debaixo do idioma (`/en/sobre`) sai
+ * com o caminho traduzido (`/en/about`), sem o 308 do `proxy.ts`. Só o destino
+ * muda: quem desenha o `<a>` continua sendo o conversor do Payload. */
+function comDestinoLocalizado<N extends SerializedLinkNode | SerializedAutoLinkNode>(
+  conversor: JSXConverter<N> | undefined,
+  args: JSXConverterArgs<N>,
+): ReactNode {
+  const url = args.node.fields.url
+  const node = url ? { ...args.node, fields: { ...args.node.fields, url: localizarHref(url) } } : args.node
+  return typeof conversor === 'function' ? conversor({ ...args, node }) : conversor
+}
+
 /* A tipografia do parágrafo é do **chamador**, não do conversor.
  *
  * Fixá-la aqui parecia certo enquanto só a página de case usava rich text; ao
@@ -22,6 +40,8 @@ import {
 const conversores = (classeDoParagrafo?: string): JSXConvertersFunction =>
   ({ defaultConverters }) => ({
   ...defaultConverters,
+  link: (args) => comDestinoLocalizado(defaultConverters.link, args),
+  autolink: (args) => comDestinoLocalizado(defaultConverters.autolink, args),
   paragraph: ({ node, nodesToJSX }) => (
     <p className={classeDoParagrafo}>{nodesToJSX({ nodes: node.children })}</p>
   ),

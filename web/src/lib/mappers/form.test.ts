@@ -63,10 +63,12 @@ describe('toFormularioDoAdmin', () => {
     expect(f).not.toMatch(/cf_|eventos@|Evento Dados/)
   })
 
-  it('o depois do envio por página põe o prefixo do idioma', () => {
+  /* #210: já com a seção traduzida, sem o 308 do proxy no meio do envio. */
+  it('o depois do envio por página põe o prefixo do idioma, com a seção traduzida', () => {
     const doc = base({ afterSubmit: 'page', redirectPath: '/cases-de-sucesso/abc' })
     expect(toFormularioDoAdmin(doc, 'pt').depoisDoEnvio).toEqual({ tipo: 'pagina', href: '/cases-de-sucesso/abc' })
-    expect(toFormularioDoAdmin(doc, 'en').depoisDoEnvio).toEqual({ tipo: 'pagina', href: '/en/cases-de-sucesso/abc' })
+    expect(toFormularioDoAdmin(doc, 'en').depoisDoEnvio).toEqual({ tipo: 'pagina', href: '/en/success-stories/abc' })
+    expect(destinoDepoisDoEnvio(doc, 'en')).toBe('/en/success-stories/abc')
     expect(toFormularioDoAdmin(base({ afterSubmit: 'page', redirectPath: '/' }), 'en').depoisDoEnvio).toEqual({
       tipo: 'pagina',
       href: '/en',

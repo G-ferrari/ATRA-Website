@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE, type Locale } from './locales'
+import { DEFAULT_LOCALE, isLocale, type Locale } from './locales'
 
 /* Caminhos de seção por idioma (D-07: `/sobre` → `/en/about`).
  *
@@ -93,4 +93,48 @@ export function aliasEsperado(segmento: string, locale: Locale): string | null {
     }
   }
   return null
+}
+
+/**
+ * Para onde o `proxy.ts` manda, com 308, um caminho de idioma prefixado escrito
+ * com o segmento português: `/en/solucoes/x` → `/en/solutions/x`. `null` quando
+ * não há salto — português, segmento já traduzido, seção sem alias.
+ *
+ * ⚠️ É a regra do 308 **e** a dos links do site (`localizarHref`): um link que
+ * pula o salto tem de cair exatamente onde o salto cairia. Mudar aqui muda os
+ * dois. Como no proxy, só o primeiro segmento depois do idioma é traduzido.
+ */
+export function caminhoComAlias(caminho: string): string | null {
+  const [vazio, prefixo, secao, ...resto] = caminho.split('/')
+  if (vazio !== '' || !isLocale(prefixo) || prefixo === DEFAULT_LOCALE || !secao) return null
+  const alias = aliasEsperado(secao, prefixo)
+  return alias ? ['', prefixo, alias, ...resto].join('/') : null
+}
+
+/**
+ * Link do admin com o caminho português debaixo do idioma (`/en/sobre`) sai
+ * com o caminho do idioma (`/en/about`): o destino do 308 do proxy, sem o
+ * salto. Âncora e query passam intactas.
+ *
+ * O que **não** muda: link externo, link já traduzido e link português sem o
+ * prefixo — `/contato` numa página em inglês leva ao português, de propósito ou
+ * por descuido, e escolher entre os dois é decisão de conteúdo (D-22).
+ */
+export function localizarHref(href: string): string {
+  if (!href.startsWith('/') || href.startsWith('//')) return href
+  const corte = href.search(/[?#]/)
+  const caminho = corte === -1 ? href : href.slice(0, corte)
+  const destino = caminhoComAlias(caminho)
+  return destino === null ? href : destino + (corte === -1 ? '' : href.slice(corte))
+}
+
+/**
+ * Destino que o admin guarda **sem** o idioma — colunas do rodapé, categorias
+ * do menu, painel de conversão, "depois do envio" do formulário: no inglês
+ * ganha o prefixo e já sai traduzido (`/contato` → `/en/contact`). Âncora solta
+ * (`#x`) e endereço externo passam intactos.
+ */
+export function hrefNoIdioma(caminho: string, locale: Locale): string {
+  if (locale === DEFAULT_LOCALE || !caminho.startsWith('/') || caminho.startsWith('//')) return caminho
+  return localizarHref(caminho === '/' ? `/${locale}` : `/${locale}${caminho}`)
 }

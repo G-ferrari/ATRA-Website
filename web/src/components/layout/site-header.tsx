@@ -170,7 +170,7 @@ export function SiteHeader({
                     return (
                       <div key={rotulo} className="relative py-1">
                         <Link
-                          href={categoria.href ? `${prefixo}${categoria.href}` : '#'}
+                          href={categoria.href ?? '#'}
                           onClick={(e) => {
                             if (!categoria.href) e.preventDefault()
                             else fechar()
@@ -306,7 +306,7 @@ export function SiteHeader({
                       onClick={() => (expansivel ? setGavetaAberta(expandida ? null : categoria.label) : fechar())}
                     >
                       <Link
-                        href={categoria.href ? `${prefixo}${categoria.href}` : '#'}
+                        href={categoria.href ?? '#'}
                         className="text-sm font-semibold text-text-main capitalize tracking-wide flex items-center gap-2.5"
                         onClick={(e) => {
                           if (expansivel || !categoria.href) e.preventDefault()

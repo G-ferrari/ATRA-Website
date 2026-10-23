@@ -1,5 +1,7 @@
 import type { Navigation, Partner, Solution } from '@/payload-types'
 import { ABAS_DE_SOLUCOES } from '@/lib/abas-de-solucoes'
+import type { Locale } from '@/lib/locales'
+import { hrefNoIdioma, localizarHref } from '@/lib/routes'
 import type {
   CategoriaDoMenu,
   CorDeDestaque,
@@ -27,6 +29,12 @@ type ParceiroDoMenu = Pick<Partner, 'name' | 'slug' | 'logo' | 'logoDark' | 'log
 const vazio = (v: string | null | undefined): string | null => {
   const t = v?.trim()
   return t ? t : null
+}
+
+/** Destino guardado sem o idioma (`/sobre`); vazio vira `null`. */
+const noIdioma = (v: string | null | undefined, locale: Locale): string | null => {
+  const t = vazio(v)
+  return t ? hrefNoIdioma(t, locale) : null
 }
 
 /* A ordem e o rótulo das abas vêm de `lib/abas-de-solucoes.ts`, os mesmos do
@@ -57,16 +65,22 @@ export function toGruposDeSolucoes(
   })).filter((g) => g.items.length > 0)
 }
 
-export function toCategorias(global: Navigation | null | undefined): CategoriaDoMenu[] {
+/* ⚠️ Os destinos do menu são de dois tipos, e o código sempre os tratou
+ * diferente. O da **categoria** é guardado sem o idioma (`/sobre`) e ganha o
+ * prefixo — antes no componente, com o `proxy.ts` traduzindo num 308; agora já
+ * sai traduzido daqui (`hrefNoIdioma`). Os **atalhos** e o **cartão** vão como
+ * estão escritos: só `/en/<português>` é traduzido (`localizarHref`), e
+ * `/cases-de-sucesso` segue levando ao português — decisão de conteúdo (D-22). */
+export function toCategorias(global: Navigation | null | undefined, locale: Locale): CategoriaDoMenu[] {
   return (global?.categories ?? []).map((c) => ({
     label: c.label,
-    href: vazio(c.href),
+    href: noIdioma(c.href, locale),
     panel: c.panel,
     links: (c.links ?? []).map((l) => ({
       icon: l.icon,
       label: l.label,
       description: l.description,
-      href: l.href,
+      href: localizarHref(l.href),
     })),
     intro: vazio(c.intro),
     highlights: (c.highlights ?? []).map((h) => ({
@@ -84,7 +98,7 @@ export function toCategorias(global: Navigation | null | undefined): CategoriaDo
             title: c.card.title,
             bullets: (c.card.bullets ?? []).map((b) => b.text).filter(Boolean),
             ctaLabel: vazio(c.card.ctaLabel),
-            href: c.card.href,
+            href: localizarHref(c.card.href),
           }
         : null,
   }))
@@ -128,7 +142,7 @@ export function toNavegacao(args: {
 }): Navegacao {
   const { parceiros, descricoes } = toParceirosDoMenu(args.parceiros)
   return {
-    categorias: toCategorias(args.global),
+    categorias: toCategorias(args.global, args.locale),
     solucoes: toGruposDeSolucoes(args.solucoes, args.locale, args.hrefDaSolucao),
     conversao: args.conversao,
     parceiros,

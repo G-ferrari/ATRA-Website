@@ -869,7 +869,8 @@ export type GrupoDeSolucoes = {
 
 export type CategoriaDoMenu = {
   label: string
-  /** `null` quando a categoria só abre o painel — Soluções e Parceiros. */
+  /** `null` quando a categoria só abre o painel — Soluções e Parceiros. Já
+   *  chega no idioma da página, com o caminho traduzido (`/en/about`). */
   href: string | null
   panel: 'solutions' | 'partners' | 'segments' | 'links' | 'split'
   links: AtalhoDoMenu[]
@@ -1126,6 +1127,7 @@ export type ColunaDoRodape = {
   titulo: string
   /** `contact`: a coluna desenha o global `contact` em vez dos links. */
   tipo: 'links' | 'contact'
+  /** Destino já no idioma da página, com o caminho traduzido (`/en/about`). */
   links: { label: string; href: string | null }[]
 }
 

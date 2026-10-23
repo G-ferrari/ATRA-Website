@@ -7,6 +7,7 @@ import {
   type TipoDeCampo,
 } from '@/lib/formularios-do-admin'
 import type { Locale } from '@/lib/locales'
+import { hrefNoIdioma } from '@/lib/routes'
 import type { Form } from '@/payload-types'
 import type { CampoDoFormulario, ConfigDoFormulario, FormularioDoAdmin, FormularioNoRd } from '@/types/content'
 
@@ -39,12 +40,10 @@ function linhasValidas(doc: Pick<Form, 'fields'>): { linha: Linha; tipo: TipoDeC
   return linhas
 }
 
-/** O endereço do "depois do envio" no idioma da página: o admin guarda o
- *  caminho em português, e o `proxy.ts` traduz os slugs a partir do `/en`. */
-function hrefNoIdioma(caminho: string, locale: Locale): string {
-  if (locale === 'pt') return caminho
-  return caminho === '/' ? `/${locale}` : `/${locale}${caminho}`
-}
+/* O endereço do "depois do envio" no idioma da página: o admin guarda o
+ * caminho em português, e `hrefNoIdioma` põe o `/en` já com a seção traduzida
+ * (`/contato` → `/en/contact`) — o redirecionamento do envio não passa pelo 308
+ * do `proxy.ts`. */
 
 /** Para onde o visitante vai depois do envio, ou `null` para "fica na
  *  mensagem". Sem lançar: a action (049) só precisa disto, e um texto de

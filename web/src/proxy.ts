@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 import { DEFAULT_LOCALE, LOCALES, isLocale } from '@/lib/locales'
 import { caminhosGone, lerRedirects } from '@/lib/redirects'
-import { aliasEsperado, canonizarSegmento } from '@/lib/routes'
+import { caminhoComAlias, canonizarSegmento } from '@/lib/routes'
 
 /* ⚠️ Dois caminhos, porque o app roda em dois lugares. Nativo (`pnpm dev`) o
  * repositório inteiro está no disco e `docs/` é irmã de `web/`; no contêiner só
@@ -61,17 +61,18 @@ export function proxy(request: NextRequest) {
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`),
   )
   if (prefixado) {
-    const [, , secao, ...resto] = pathname.split('/')
-
     // O segmento canônico não deve ser acessível num idioma que tem alias:
     // /en/cases-de-sucesso e /en/success-stories serviriam o mesmo conteúdo.
-    const alias = secao && isLocale(prefixado) ? aliasEsperado(secao, prefixado) : null
-    if (alias) {
+    // A regra mora em `lib/routes.ts` porque os links do site usam a mesma
+    // (`localizarHref`) para não passar por este salto.
+    const destino = caminhoComAlias(pathname)
+    if (destino) {
       const url = request.nextUrl.clone()
-      url.pathname = ['', prefixado, alias, ...resto].join('/')
+      url.pathname = destino
       return NextResponse.redirect(url, 308)
     }
 
+    const [, , secao, ...resto] = pathname.split('/')
     const canonico = secao && isLocale(prefixado) ? canonizarSegmento(secao, prefixado) : null
     if (canonico && canonico !== secao) {
       const url = request.nextUrl.clone()

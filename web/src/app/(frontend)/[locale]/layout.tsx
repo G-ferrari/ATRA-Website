@@ -30,7 +30,7 @@ import { toImageOpcional } from '@/lib/mappers/shared'
 import { toRodape } from '@/lib/mappers/site'
 import { getPayload } from '@/lib/payload'
 import { lerRastreamento } from '@/lib/rastreamento'
-import { hrefDe } from '@/lib/routes'
+import { hrefDe, hrefNoIdioma } from '@/lib/routes'
 import '../globals.css'
 
 /* D-16: Mona Sans pela MESMA build que o legado consome.
@@ -94,7 +94,7 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   ])
 
   const logo = toImageOpcional(institucional.logo, 'site-settings.logo')
-  const rodape = toRodape(rodapeGlobal)
+  const rodape = toRodape(rodapeGlobal, locale)
   /* D-30: `null` enquanto `bannerMessage` estiver vazio no idioma (P-14) — e
      aí o DOM fica idêntico ao de antes da feature, que é o que o gate compara. */
   const avisoDeCookies = await lerAvisoDeCookies(locale)
@@ -112,9 +112,9 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
       global: painelGlobal,
       cases: listas.cases,
       /* Os destinos do painel são texto do admin (`/contato`), como os do
-         rodapé: o prefixo do idioma entra aqui, e o `proxy.ts` faz a ponte para
-         o slug traduzido. */
-      hrefLocal: (href) => (locale !== 'pt' && href.startsWith('/') ? `/${locale}${href}` : href),
+         rodapé: o prefixo do idioma entra aqui, já com o caminho traduzido
+         (`/en/contact`), sem passar pelo 308 do `proxy.ts`. */
+      hrefLocal: (href) => hrefNoIdioma(href, locale),
       hrefDoCase: (slug) => hrefDe('cases', locale, slug),
     }),
     locale,
