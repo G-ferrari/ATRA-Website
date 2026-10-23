@@ -14,6 +14,7 @@ import { hrefDe } from '@/lib/routes'
 import { paraEmbed } from '@/lib/video'
 import type { Webinar } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
+import { versoesDoItem } from '@/lib/versoes-do-item'
 import { VideoSobClique } from '@/components/content/video-sob-clique'
 
 
@@ -45,7 +46,9 @@ const TEXTOS = {
   },
 } as const
 
-async function buscarWebinar(slug: string, locale: Locale): Promise<Webinar | null> {
+/* O `id` acompanha o webinar para o `hreflang` achar o mesmo documento no
+ * outro idioma — o slug muda com o idioma (D-07). */
+async function buscarWebinar(slug: string, locale: Locale): Promise<(Webinar & { id: number }) | null> {
   const { isEnabled: rascunho } = await draftMode()
   const payload = await getPayload()
   const { docs } = await payload.find({
@@ -58,7 +61,7 @@ async function buscarWebinar(slug: string, locale: Locale): Promise<Webinar | nu
       ? { slug: { equals: slug } }
       : { slug: { equals: slug }, _status: { equals: 'published' } },
   })
-  return docs[0] ? toWebinar(docs[0]) : null
+  return docs[0] ? { ...toWebinar(docs[0]), id: docs[0].id } : null
 }
 
 export async function generateStaticParams() {
@@ -83,7 +86,12 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/webinars
   if (!isLocale(locale)) return {}
   const w = await buscarWebinar(slug, locale)
   if (!w) return {}
-  return metadataDe({ locale, local: { secao: 'webinars', slug }, seo: w.seo })
+  return metadataDe({
+    locale,
+    local: { secao: 'webinars', slug },
+    versoes: await versoesDoItem('webinars', w.id),
+    seo: w.seo,
+  })
 }
 
 export default async function WebinarPage({ params }: PageProps<'/[locale]/webinars/[slug]'>) {

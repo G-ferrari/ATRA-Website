@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { paraSitemap, temIngles, versaoInglesa } from './sitemap'
+import { paraSitemap, temIngles, versaoInglesa, versoesDe } from './sitemap'
 
 describe('temIngles', () => {
   it('aceita tradução de verdade', () => {
@@ -82,5 +82,33 @@ describe('paraSitemap com slug inglês', () => {
       'pt-BR': 'http://localhost:3000/solucoes/privacidade',
       en: 'http://localhost:3000/en/solutions/privacy',
     })
+  })
+})
+
+/* Task #209: o `hreflang` da página de item usa a mesma regra do sitemap, para
+   os dois não declararem ao Google versões de idioma diferentes. */
+describe('versoesDe', () => {
+  it('traduzido e com slug no inglês: os dois idiomas, cada um com o seu slug', () => {
+    expect(
+      versoesDe({ pt: { slug: 'privacidade', texto: 'Privacidade & LGPD' }, en: { slug: 'privacy', texto: 'Privacy & LGPD' } }),
+    ).toEqual({ pt: 'privacidade', en: 'privacy' })
+  })
+
+  /* Os 4 cases: slug próprio no inglês, texto ainda em português. A página
+     inglesa abre, mas não é tradução — o sitemap não a lista. */
+  it('inglês que repete o português: só o português', () => {
+    expect(
+      versoesDe({
+        pt: { slug: 'marketplace-governanca-dados', texto: 'Gerando valor' },
+        en: { slug: 'data-marketplace-governance', texto: 'Gerando valor' },
+      }),
+    ).toEqual({ pt: 'marketplace-governanca-dados' })
+  })
+
+  it('sem slug no inglês: só o português', () => {
+    expect(versoesDe({ pt: { slug: 'seguros', texto: 'Seguros' }, en: { slug: null, texto: 'Insurance' } })).toEqual({
+      pt: 'seguros',
+    })
+    expect(versoesDe({ pt: { slug: 'seguros', texto: 'Seguros' } })).toEqual({ pt: 'seguros' })
   })
 })

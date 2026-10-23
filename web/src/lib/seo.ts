@@ -60,9 +60,73 @@ export function caminhoDe(local: Local, locale: Locale): string {
   return hrefDe(local.secao, locale, local.slug)
 }
 
+/** O slug de um documento em cada idioma em que ele tem versão — ver `versoesDe`,
+ *  em `sitemap.ts`. Idioma ausente é idioma sem versão. */
+export type SlugsPorIdioma = Partial<Record<Locale, string>>
+
+/** O código do idioma no `hreflang`: o português é o do Brasil. */
+export function hreflangDe(locale: Locale): string {
+  return locale === 'pt' ? 'pt-BR' : locale
+}
+
+/**
+ * As versões de idioma que a página declara (`hreflang`), ou `undefined` quando
+ * não há par a declarar.
+ *
+ * Sem `versoes`, a rota é fixa ou de seção: `/sobre` e `/en/about` existem os
+ * dois por construção, com o caminho traduzido de `routes.ts` (D-07).
+ *
+ * Com `versoes`, é página de item, e o slug muda com o idioma. ⚠️ Até 23/10 a
+ * versão inglesa saía com o slug **português** — `/en/success-stories/<slug-pt>`,
+ * que dá 404 (os 4 cases têm slug próprio no inglês), ou abre outro documento —,
+ * e era declarada mesmo para o item que não tem inglês. Agora cada idioma usa o
+ * seu slug, e só entra o idioma em que o item tem versão: a regra do sitemap.
+ *
+ * O par só sai com dois idiomas **e** a própria página entre eles. Um idioma só
+ * não é par: a página inglesa de um item sem tradução declarar o português
+ * seria par de mão única, que o Google descarta — e o português, que não a
+ * declara de volta, diz o contrário. O mesmo vale para o `x-default`, que só
+ * tem sentido como escolha entre versões.
+ *
+ * A própria página sai com o endereço da canônica: o Google pede que a
+ * autorreferência e a canônica sejam a mesma URL.
+ */
+export function alternativasDe(
+  local: Local,
+  locale: Locale,
+  versoes?: SlugsPorIdioma,
+): Record<string, string> | undefined {
+  const localEm = (l: Locale): Local | null => {
+    if (!versoes || !('secao' in local)) return local
+    if (!versoes[l]) return null
+    return l === locale ? local : { ...local, slug: versoes[l] }
+  }
+
+  const existentes = LOCALES.flatMap((l) => {
+    const em = localEm(l)
+    return em ? [[l, `${ORIGEM}${caminhoDe(em, l)}`] as const] : []
+  })
+  if (existentes.length < 2 || !existentes.some(([l]) => l === locale)) return undefined
+
+  const urls = Object.fromEntries(existentes) as Partial<Record<Locale, string>>
+  /* `x-default` aponta para o português: é o idioma do conteúdo e o do público,
+     e é o idioma em que todo documento nasce. */
+  const padrao = urls[DEFAULT_LOCALE]
+  return {
+    ...Object.fromEntries(existentes.map(([l, url]) => [hreflangDe(l), url])),
+    ...(padrao && { 'x-default': padrao }),
+  }
+}
+
 export type Descricao = {
   locale: Locale
   local: Local
+  /**
+   * Página de item: o slug do documento em cada idioma em que ele tem versão
+   * (`versoesDoItem`). É o que monta a versão do outro idioma com o slug
+   * **dele**. Rota fixa ou de seção não passa — ver `alternativasDe`.
+   */
+  versoes?: SlugsPorIdioma
   /** Já resolvido por `mappers/seo.ts` — título, descrição e imagem finais. */
   seo: Seo
   /**
@@ -84,24 +148,20 @@ export type Descricao = {
  * rota, então `/sobre` e `/en/about` são a mesma página em dois idiomas. Sem
  * declarar o par, o Google escolhe uma das duas e trata a outra como conteúdo
  * duplicado — e a escolhida não é necessariamente a do idioma de quem busca.
- *
- * `x-default` aponta para o português: é o idioma do conteúdo e o do público.
+ * Quais versões entram, e com que endereço, é `alternativasDe`.
  */
-export function metadataDe({ locale, local, seo, corpo }: Descricao): Metadata {
+export function metadataDe({ locale, local, versoes, seo, corpo }: Descricao): Metadata {
   const caminho = caminhoDe(local, locale)
   const { title, image: og } = seo
   const description = seo.description || undefined
-
-  const idiomas = Object.fromEntries(
-    LOCALES.map((l) => [l === 'pt' ? 'pt-BR' : l, `${ORIGEM}${caminhoDe(local, l)}`]),
-  )
+  const idiomas = alternativasDe(local, locale, versoes)
 
   return {
     title,
     description,
     alternates: {
       canonical: `${ORIGEM}${caminho}`,
-      languages: { ...idiomas, 'x-default': `${ORIGEM}${caminhoDe(local, DEFAULT_LOCALE)}` },
+      ...(idiomas && { languages: idiomas }),
     },
     openGraph: {
       type: 'website',

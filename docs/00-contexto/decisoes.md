@@ -2357,7 +2357,10 @@ inglesas que ele anunciava davam 404.
   404 no inglês, mas vários levam o visitante inglês à página em português.
 - O `hreflang` das páginas de item ainda declara a versão inglesa com o slug
   do português, exista ela ou não. Fica para outra tarefa: pede o slug do
-  outro idioma em cada rota de item.
+  outro idioma em cada rota de item. *Feita em 23/10 (task #209):* cada idioma
+  sai com o seu slug, e só com a regra do sitemap — o item sem tradução não
+  declara par nenhum, nos dois idiomas (`versoesDoItem`, em
+  `web/src/lib/versoes-do-item.ts`).
 
 ## D-70 — Os artigos do blog se traduzem no admin, pelo Gemini, como rascunho
 

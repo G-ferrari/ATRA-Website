@@ -9,6 +9,7 @@ import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { comParceirosCadastrados } from '@/lib/parceiros'
 import { getPayload } from '@/lib/payload'
 import { metadataDe } from '@/lib/seo'
+import { versoesDoItem } from '@/lib/versoes-do-item'
 import { toSeo } from '@/lib/mappers/seo'
 import { toImageOpcional } from '@/lib/mappers/shared'
 
@@ -71,6 +72,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/parceiro
   return metadataDe({
     locale,
     local: { secao: 'parceiros', slug },
+    versoes: await versoesDoItem('partners', p.doc.id),
     seo: toSeo(p.doc.seo, { titulo: p.doc.name, descricao: p.doc.description, imagem: toImageOpcional(p.doc.logo, 'partners.logo') }),
   })
 }
