@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { metadataDe, robotsDeCorpo } from './seo'
+import { alternativasDe, metadataDe, robotsDeCorpo } from './seo'
 import { toSeo } from './mappers/seo'
 import type { Seo } from '@/types/content'
 
@@ -57,6 +57,23 @@ describe('metadataDe', () => {
     const home = metadataDe({ locale: 'pt', local: { caminho: '/' }, seo: seo() })
     expect(home.alternates?.canonical).toBe('http://localhost:3000/')
     expect((home.alternates?.languages as Record<string, string>).en).toBe('http://localhost:3000/en')
+  })
+
+  /* Página fixa no inglês: o mesmo par, com a canônica no inglês. */
+  it('página fixa no inglês declara o mesmo par', () => {
+    const contato = metadataDe({ locale: 'en', local: { secao: 'contato' }, seo: seo() })
+    expect(contato.alternates?.canonical).toBe('http://localhost:3000/en/contact')
+    expect(contato.alternates?.languages).toEqual({
+      'pt-BR': 'http://localhost:3000/contato',
+      en: 'http://localhost:3000/en/contact',
+      'x-default': 'http://localhost:3000/contato',
+    })
+    const home = metadataDe({ locale: 'en', local: { caminho: '/' }, seo: seo() })
+    expect(home.alternates?.languages).toEqual({
+      'pt-BR': 'http://localhost:3000/',
+      en: 'http://localhost:3000/en',
+      'x-default': 'http://localhost:3000/',
+    })
   })
 
   it('leva título, descrição e imagem para o Open Graph', () => {
@@ -123,6 +140,90 @@ describe('metadataDe', () => {
 
   it('indexa quando há corpo e ninguém marcou nada', () => {
     expect(metadataDe({ locale: 'pt', local: { secao: 'blog' }, seo: seo(), corpo: {} }).robots).toBeUndefined()
+  })
+})
+
+/* Task #209. Até 23/10 a página de item declarava a versão inglesa com o slug
+   **português** — `/en/success-stories/<slug-pt>`, 404 nos 4 cases, que têm slug
+   próprio no inglês —, e a declarava mesmo para o item sem inglês. */
+describe('metadataDe em página de item', () => {
+  const PAR = {
+    'pt-BR': 'http://localhost:3000/solucoes/privacidade',
+    en: 'http://localhost:3000/en/solutions/privacy',
+    'x-default': 'http://localhost:3000/solucoes/privacidade',
+  }
+
+  it('no português, com inglês: o inglês sai com o slug inglês', () => {
+    const m = metadataDe({
+      locale: 'pt',
+      local: { secao: 'solucoes', slug: 'privacidade' },
+      versoes: { pt: 'privacidade', en: 'privacy' },
+      seo: seo(),
+    })
+    expect(m.alternates?.canonical).toBe('http://localhost:3000/solucoes/privacidade')
+    expect(m.alternates?.languages).toEqual(PAR)
+  })
+
+  it('no inglês, com inglês: o par recíproco, com a canônica no inglês', () => {
+    const m = metadataDe({
+      locale: 'en',
+      local: { secao: 'solucoes', slug: 'privacy' },
+      versoes: { pt: 'privacidade', en: 'privacy' },
+      seo: seo(),
+    })
+    expect(m.alternates?.canonical).toBe('http://localhost:3000/en/solutions/privacy')
+    expect(m.alternates?.languages).toEqual(PAR)
+  })
+
+  /* Um idioma só não é par. Sem `languages` não sai `hreflang` nenhum, nem o
+     `x-default` — a canônica continua. */
+  it('no português, sem inglês: nenhuma versão declarada', () => {
+    const m = metadataDe({
+      locale: 'pt',
+      local: { secao: 'blog', slug: 'artigo' },
+      versoes: { pt: 'artigo' },
+      seo: seo(),
+    })
+    expect(m.alternates?.canonical).toBe('http://localhost:3000/blog/artigo')
+    expect(m.alternates?.languages).toBeUndefined()
+  })
+
+  /* A página inglesa de um item sem tradução abre (slug gravado, texto em
+     português), mas declarar o português seria par de mão única: o português
+     não a declara de volta, e o sitemap não a lista. */
+  it('no inglês, sem tradução: nenhuma versão declarada, e a canônica no inglês', () => {
+    const m = metadataDe({
+      locale: 'en',
+      local: { secao: 'cases', slug: 'data-marketplace-governance' },
+      versoes: { pt: 'marketplace-governanca-dados' },
+      seo: seo(),
+    })
+    expect(m.alternates?.canonical).toBe('http://localhost:3000/en/success-stories/data-marketplace-governance')
+    expect(m.alternates?.languages).toBeUndefined()
+  })
+
+  it('item não encontrado na consulta das versões: nenhuma versão declarada', () => {
+    const m = metadataDe({ locale: 'pt', local: { secao: 'blog', slug: 'x' }, versoes: {}, seo: seo() })
+    expect(m.alternates?.canonical).toBe('http://localhost:3000/blog/x')
+    expect(m.alternates?.languages).toBeUndefined()
+  })
+})
+
+describe('alternativasDe', () => {
+  /* A autorreferência é a URL da canônica, a que a página foi pedida: o Google
+     pede as duas iguais. */
+  it('a própria página sai com o endereço dela', () => {
+    expect(alternativasDe({ secao: 'blog', slug: 'post-em-ingles' }, 'en', { pt: 'post', en: 'post-em-ingles' })?.en).toBe(
+      'http://localhost:3000/en/blog/post-em-ingles',
+    )
+  })
+
+  it('sem versões, a rota é fixa ou de seção e os dois idiomas existem', () => {
+    expect(alternativasDe({ secao: 'cases' }, 'pt')).toEqual({
+      'pt-BR': 'http://localhost:3000/cases-de-sucesso',
+      en: 'http://localhost:3000/en/success-stories',
+      'x-default': 'http://localhost:3000/cases-de-sucesso',
+    })
   })
 })
 

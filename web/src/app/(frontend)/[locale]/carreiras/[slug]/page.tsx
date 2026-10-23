@@ -16,6 +16,7 @@ import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { VagaDetalhe } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
+import { versoesDoItem } from '@/lib/versoes-do-item'
 
 /* /carreiras/[slug] (MIG-051). Rota **sem gabarito** — não existe no protótipo:
  * no legado a vaga é um item de lista que rola para o banco de talentos, sem
@@ -99,6 +100,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/carreira
   return metadataDe({
     locale,
     local: { secao: 'carreiras', slug },
+    versoes: await versoesDoItem('jobs', vaga.id),
     seo: vaga.area ? { ...vaga.seo, title: `${vaga.seo.title} — ${vaga.area}` } : vaga.seo,
     /* Vaga sem descrição não entrega nada a quem chega da busca. */
     corpo: vaga.body,

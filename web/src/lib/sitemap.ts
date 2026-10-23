@@ -1,8 +1,8 @@
 import type { MetadataRoute } from 'next'
 
 import { DEFAULT_LOCALE, LOCALES, type Locale } from './locales'
-import { slugNoIdioma } from './mappers/idioma'
-import { caminhoDe, ORIGEM, type Local } from './seo'
+import { slugNoIdioma, type Par } from './mappers/idioma'
+import { caminhoDe, hreflangDe, ORIGEM, type Local, type SlugsPorIdioma } from './seo'
 
 /* Montagem do sitemap (MIG-106). A consulta ao banco fica em `app/sitemap.ts`;
  * aqui está a parte que decide o que entra, que é onde há regra. */
@@ -59,6 +59,24 @@ export function versaoInglesa(
   return slug && temIngles(pt.texto, en?.texto) ? { ingles: true, slugIngles: slug } : { ingles: false }
 }
 
+/**
+ * O slug de um documento em cada idioma em que ele tem versão, para o
+ * `hreflang` da página dele (`metadataDe`).
+ *
+ * ⚠️ É de propósito a regra do sitemap, e não a das listagens
+ * (`ondeExisteNoIdioma`). As duas declaram ao Google as versões de idioma de
+ * uma URL e não podem se contradizer: o sitemap dizer que `/blog/x` não tem
+ * inglês enquanto a página declara `/en/blog/x` é sinal trocado, e a URL
+ * inglesa que serve português continua sendo indexação no idioma errado
+ * (`seo-e-redirects.md`: página EN sem tradução não ganha `hreflang`). Que o
+ * item abra no inglês é outra pergunta, que a listagem responde.
+ */
+export function versoesDe(par: Par<{ slug?: string | null; texto?: string | null }>): SlugsPorIdioma {
+  const pt = slugNoIdioma(par, 'pt')
+  const { slugIngles } = versaoInglesa({ texto: par.pt.texto }, par.en)
+  return { ...(pt && { pt }), ...(slugIngles && { en: slugIngles }) }
+}
+
 export function paraSitemap(entradas: Entrada[]): MetadataRoute.Sitemap {
   return entradas.flatMap((e) => {
     const idiomas: Locale[] = e.ingles === false ? [DEFAULT_LOCALE] : [...LOCALES]
@@ -74,7 +92,7 @@ export function paraSitemap(entradas: Entrada[]): MetadataRoute.Sitemap {
        * entrada só, declarar um par seria a mesma mentira que a URL solta. */
       alternates:
         idiomas.length > 1
-          ? { languages: Object.fromEntries(idiomas.map((l) => [l === 'pt' ? 'pt-BR' : l, url(l)])) }
+          ? { languages: Object.fromEntries(idiomas.map((l) => [hreflangDe(l), url(l)])) }
           : undefined,
     }))
   })

@@ -11,6 +11,7 @@ import { getPayload } from '@/lib/payload'
 import { lerContato } from '@/lib/contato'
 import { toSeo } from '@/lib/mappers/seo'
 import { metadataDe } from '@/lib/seo'
+import { versoesDoItem } from '@/lib/versoes-do-item'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 import { servico } from '@/lib/jsonld'
 import { ORIGEM } from '@/lib/seo'
@@ -86,6 +87,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/solucoes
   return metadataDe({
     locale,
     local: { secao: 'solucoes', slug },
+    versoes: await versoesDoItem('solutions', s.doc.id),
     seo: toSeo(s.doc.seo, { titulo: s.doc.title, descricao: s.doc.shortDescription }),
   })
 }

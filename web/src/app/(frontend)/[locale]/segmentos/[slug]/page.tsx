@@ -10,6 +10,7 @@ import { comParceirosCadastrados } from '@/lib/parceiros'
 import { getPayload } from '@/lib/payload'
 import { toSeo } from '@/lib/mappers/seo'
 import { metadataDe } from '@/lib/seo'
+import { versoesDoItem } from '@/lib/versoes-do-item'
 
 /* /segmentos/[slug] (MIG-091).
  *
@@ -75,6 +76,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/segmento
   return metadataDe({
     locale,
     local: { secao: 'segmentos', slug },
+    versoes: await versoesDoItem('segments', s.doc.id),
     seo: toSeo(s.doc.seo, { titulo: s.doc.name, descricao: s.doc.shortDescription }),
     /* D-08: vertical sem seção montada é página magra e não entra no índice. */
     corpo: s.doc.layout?.length ? s.doc.layout : null,
