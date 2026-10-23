@@ -17,10 +17,12 @@ import { sql, type MigrateDownArgs, type MigrateUpArgs } from '@payloadcms/db-po
  * desta, a primeira que já não declara o campo.
  *
  * Esta migração fica como passo vazio, para o histórico e o retrato do schema
- * (o `.json`) seguirem a ordem em que o schema mudou. A seguinte só precisa
- * executar `EXCLUSAO_ADIADA` no `up` e `RECRIACAO` no `down`; as duas são
- * idempotentes. A coluna fica no banco até lá, sem uso, e as linhas de bloco
- * gravadas pelo código novo nascem com ela nula. */
+ * (o `.json`) seguirem a ordem em que o schema mudou. Quem executa
+ * `EXCLUSAO_ADIADA` no `up` e `RECRIACAO` no `down` é
+ * `20261022_180731_drop_cta_contact_photo_column`, que entra na publicação
+ * seguinte à #175; as duas são idempotentes. Até ela rodar, a coluna fica no
+ * banco sem uso, e as linhas de bloco gravadas pelo código novo nascem com ela
+ * nula. */
 export const EXCLUSAO_ADIADA = sql`
   ALTER TABLE "pages_blocks_cta_contact" DROP CONSTRAINT IF EXISTS "pages_blocks_cta_contact_photo_id_media_id_fk";
   ALTER TABLE "_pages_v_blocks_cta_contact" DROP CONSTRAINT IF EXISTS "_pages_v_blocks_cta_contact_photo_id_media_id_fk";
