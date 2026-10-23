@@ -7,9 +7,10 @@ import {
 } from '@focus-reactive/payload-plugin-translator'
 import OpenAI from 'openai'
 
-/* Tradução no admin (checklist #66, teste de 21/10): o plugin
+/* Tradução no admin (D-70; checklist #66, testada de 21 a 23/10): o plugin
  * `@focus-reactive/payload-plugin-translator` traduz os campos localizados de
- * um documento e grava o resultado como rascunho no idioma de destino.
+ * um documento e grava o resultado como rascunho no idioma de destino. Quem
+ * edita pede; nada é traduzido sozinho.
  *
  * Quem traduz é o Gemini, a mesma IA do chat (`GEMINI_API_KEY`), pelo endereço
  * compatível com a API da OpenAI — o plugin fala esse formato, e assim não

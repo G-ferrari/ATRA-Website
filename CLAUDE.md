@@ -469,6 +469,14 @@ com `x-real-ip` próprio, para não gastar a cota de 5 envios por IP da suíte. 
 axe da suíte medem a seção. Ele fica **por último** no `run.mjs`: as migrações de
 dados do passo anterior regravam páginas.
 
+**D-70 (23/10)**: os artigos do Blog se traduzem no admin pelo plugin
+`@focus-reactive/payload-plugin-translator`, com o Gemini da ATRA AI
+(`lib/traducao.ts`). Quem edita pede; a fila (`payload_jobs`) manda um por
+minuto e grava **rascunho** no idioma de destino. ⚠️ O Gemini responde 503 a
+`json_schema` no endereço compatível com a OpenAI: o pedido vai com
+`json_object`. ⚠️ O agendador da fila só começa quando o admin é aberto
+(`cron` do `initReq`), não no build nem em script.
+
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
 containers logando no journald e o Caddy com log de acesso em arquivo.

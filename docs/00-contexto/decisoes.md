@@ -2240,3 +2240,55 @@ D-62, estava vazio na homologação.
   virada. Desligar lá é mexer no site no ar, com o marketing.
 - Voltar a mandar o Trabalhe Conosco ao RD é decisão da ATRA, não ajuste: pede
   uma decisão nova, que reveja esta.
+
+## D-70 — Os artigos do blog se traduzem no admin, pelo Gemini, como rascunho
+
+*Decidida em 23/10/2026 por G-ferrari (tarefa #66 do checklist), depois do teste de 21 a 23/10.*
+
+**Contexto.** O site tem português e inglês, mas o inglês dos 213 artigos é
+cópia do português. A Taci contou que o WordPress tinha uma ferramenta de
+tradução. O plugin `@focus-reactive/payload-plugin-translator` (gratuito,
+compatível com o Payload 3 do site) põe um botão de tradução no admin e grava
+o resultado como rascunho no idioma de destino.
+
+**Decisão.**
+
+- O **Blog** (`posts`) ganha o botão de tradução. A tradução é **pedida** por
+  quem edita, um artigo ou vários, e não automática ao publicar.
+- Quem traduz é o **Gemini**, o mesmo modelo da ATRA AI (`gemini-3.6-flash`),
+  pela `GEMINI_API_KEY` que o servidor já tem. O plugin fala o formato da
+  OpenAI; o Gemini atende nesse formato num endereço próprio. Não entra outro
+  fornecedor de IA.
+- O resultado é **rascunho**: o que está no ar só muda quando alguém revisa e
+  publica.
+- Uma fila no servidor (Payload Jobs, tabelas `payload_jobs`) manda **um
+  artigo por minuto**, com até 4 tentativas e espera exponencial a partir de 1
+  minuto.
+- Traduzem só administrador e editor. O slug não é traduzido.
+- A instrução ao modelo manda manter ATRA, nomes de produto, siglas e
+  endereços (`lib/traducao.ts`). Tom e glossário são do marketing (D-22) e
+  entram quando ele pedir.
+
+**O que o teste mostrou.**
+
+- **10 artigos** em inglês, com a estrutura igual à do português: títulos,
+  listas, citações, links e imagens.
+- **Formato de resposta:** o Gemini responde 503 a todo pedido com
+  `json_schema`, então o pedido vai com `json_object`, e o plugin confere as
+  chaves de volta.
+- **Limite da chave:** com a chave pessoal, pedir nove de uma vez estourou o
+  limite (429) em segundos. Daí a fila de um por minuto. Mesmo assim, houve
+  503 e 429 no meio, e dois artigos precisaram ser pedidos de novo.
+
+**Consequências.**
+
+- ⚠️ A fila só anda com o servidor de pé, e o agendador dela começa quando
+  alguém abre o admin depois de um deploy. Pedido feito antes de um deploy
+  espera a próxima visita ao admin.
+- O custo vai para a conta da chave do servidor: hoje a pessoal do G-ferrari,
+  até a ATRA criar a dela (#110).
+- Publicar o inglês publica o documento inteiro: um rascunho pendente em
+  português vai junto (guia do editor).
+- Espanhol pede um idioma novo no site (`locales`, rotas, menu, sitemap): é
+  tarefa à parte.
+
