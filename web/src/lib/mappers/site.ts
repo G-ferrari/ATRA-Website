@@ -48,7 +48,10 @@ export function toRodape(doc: Footer): Rodape {
       titulo: c.title,
       tipo: c.kind,
       /* `href` vazio vira `null`, e o componente desenha `<a href="#">` — que é
-       * o que o legado faz nos 3 links legais e nas 3 soluções (D-15). */
+       * o que o legado faz nos 3 links legais e nas 3 soluções (D-15).
+       *
+       * O destino sai como o admin escreveu (`/sobre`, um só para os dois
+       * idiomas); o layout o põe no idioma da página (`comLinksNoIdioma`, D-71). */
       links: (c.links ?? []).map((l) => ({ label: l.label, href: l.href || null })),
     })),
   }

@@ -16,6 +16,7 @@ import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { PostDetail } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
+import { versoesDoItem } from '@/lib/versoes-do-item'
 import { artigo } from '@/lib/jsonld'
 import { ORIGEM } from '@/lib/seo'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
@@ -50,7 +51,9 @@ const TEXTOS = {
   },
 } as const
 
-type Resultado = { doc: PostDetail } | { faltando: string } | null
+/* O `id` acompanha o resultado para o `hreflang` achar o mesmo artigo no outro
+ * idioma — o slug muda com o idioma (D-07). */
+type Resultado = (({ doc: PostDetail } | { faltando: string }) & { id: number }) | null
 
 async function buscarPost(slug: string, locale: Locale): Promise<Resultado> {
   const { isEnabled: rascunho } = await draftMode()
@@ -66,7 +69,7 @@ async function buscarPost(slug: string, locale: Locale): Promise<Resultado> {
       : { slug: { equals: slug }, _status: { equals: 'published' } },
   })
   if (!docs[0]) return null
-  return mapearOuFaltando(() => toPostDetail(docs[0]))
+  return { ...mapearOuFaltando(() => toPostDetail(docs[0])), id: docs[0].id }
 }
 
 export async function generateStaticParams() {
@@ -95,7 +98,13 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/blog/[sl
 
   /* `corpo` aplica D-08: artigo sem texto existe para quem tem o link e é
      invisível para busca — página magra prejudica o domínio inteiro. */
-  return metadataDe({ locale, local: { secao: 'blog', slug }, seo: post.seo, corpo: post.body })
+  return metadataDe({
+    locale,
+    local: { secao: 'blog', slug },
+    versoes: await versoesDoItem('posts', r.id),
+    seo: post.seo,
+    corpo: post.body,
+  })
 }
 
 export default async function PostPage({ params }: PageProps<'/[locale]/blog/[slug]'>) {

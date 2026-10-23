@@ -7,10 +7,12 @@ import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { comContato, toBlocos, toMetricas, toSelos } from '@/lib/mappers/blocks'
 import { comParceirosCadastrados } from '@/lib/parceiros'
+import { comLinksNoIdioma } from '@/lib/traduzir-links'
 import { getPayload } from '@/lib/payload'
 import { lerContato } from '@/lib/contato'
 import { toSeo } from '@/lib/mappers/seo'
 import { metadataDe } from '@/lib/seo'
+import { versoesDoItem } from '@/lib/versoes-do-item'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
 import { servico } from '@/lib/jsonld'
 import { ORIGEM } from '@/lib/seo'
@@ -55,6 +57,8 @@ async function buscarSolucao(slug: string, locale: Locale) {
   comContato(blocos, contato)
   // A vitrine de parceiros em "Todos" lê o cadastro (29/09).
   await comParceirosCadastrados(blocos, locale)
+  // D-71: os links do admin no idioma da página, como em `lib/paginas.ts`.
+  await comLinksNoIdioma(blocos, locale)
   return { doc: docs[0], blocos }
 }
 
@@ -86,6 +90,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/solucoes
   return metadataDe({
     locale,
     local: { secao: 'solucoes', slug },
+    versoes: await versoesDoItem('solutions', s.doc.id),
     seo: toSeo(s.doc.seo, { titulo: s.doc.title, descricao: s.doc.shortDescription }),
   })
 }

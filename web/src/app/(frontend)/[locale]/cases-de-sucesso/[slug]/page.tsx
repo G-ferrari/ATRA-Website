@@ -18,6 +18,7 @@ import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { CaseDetail } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
+import { versoesDoItem } from '@/lib/versoes-do-item'
 
 const TEXTOS = {
   pt: {
@@ -50,7 +51,9 @@ const TEXTOS = {
   },
 } as const
 
-type Resultado = { doc: CaseDetail } | { faltando: string } | null
+/* O `id` acompanha o resultado para o `hreflang` achar o mesmo case no outro
+ * idioma — o slug muda com o idioma (D-07). */
+type Resultado = (({ doc: CaseDetail } | { faltando: string }) & { id: number }) | null
 
 async function buscarCase(slug: string, locale: Locale): Promise<Resultado> {
   /* Ver a nota de modo rascunho na listagem. `generateStaticParams` continua
@@ -70,7 +73,7 @@ async function buscarCase(slug: string, locale: Locale): Promise<Resultado> {
   })
   if (!docs[0]) return null
   // Em rascunho, campo obrigatório vazio é uso normal e vira aviso na página.
-  return mapearOuFaltando(() => toCaseDetail(docs[0]))
+  return { ...mapearOuFaltando(() => toCaseDetail(docs[0])), id: docs[0].id }
 }
 
 /* Pré-renderiza os slugs dos dois idiomas. O slug é localizado (D-07), então
@@ -104,6 +107,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/cases-de
   return metadataDe({
     locale,
     local: { secao: 'cases', slug },
+    versoes: await versoesDoItem('cases', r.id),
     seo: caso.client
       ? { ...caso.seo, title: `${caso.seo.title} — ${TEXTOS[locale].prefixo} ${caso.client}` }
       : caso.seo,

@@ -6,6 +6,7 @@ import { PaginaDeMaterial, type TextosDoMaterial } from '@/components/content/pa
 import { isLocale, LOCALES } from '@/lib/locales'
 import { buscarMaterial, slugsDeMaterial } from '@/lib/materiais'
 import { metadataDe } from '@/lib/seo'
+import { versoesDoItem } from '@/lib/versoes-do-item'
 
 /* /ebooks/[slug] (MIG-045). Rota **sem gabarito** — não existe no protótipo.
  * A estrutura vive em `PaginaDeMaterial`, compartilhada com a outra rota. */
@@ -54,7 +55,13 @@ export async function generateMetadata({
 
   /* Sem corpo **e** sem download, a página não entrega nada a quem chega da
      busca. Volta a ser indexável quando MIG-104 ligar o formulário. */
-  return metadataDe({ locale, local: { secao: 'ebooks', slug }, seo: material.seo, corpo: material.body })
+  return metadataDe({
+    locale,
+    local: { secao: 'ebooks', slug },
+    versoes: await versoesDoItem('resources', material.id),
+    seo: material.seo,
+    corpo: material.body,
+  })
 }
 
 export default async function MaterialPage({ params }: PageProps<'/[locale]/ebooks/[slug]'>) {

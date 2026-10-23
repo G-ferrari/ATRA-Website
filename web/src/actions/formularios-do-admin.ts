@@ -13,6 +13,7 @@ import { isLocale, type Locale } from '@/lib/locales'
 import { destinoDepoisDoEnvio, toConfigDoFormulario } from '@/lib/mappers/form'
 import { getPayload } from '@/lib/payload'
 import { rdAceitou } from '@/lib/rd-marketing'
+import { traduzirLink } from '@/lib/traduzir-links'
 import { MAX_POR_VALOR } from '@/lib/utm'
 import type { ConfigDoFormulario } from '@/types/content'
 
@@ -107,7 +108,9 @@ export async function enviarFormularioDoAdmin(dados: FormData): Promise<Resultad
     const { docs } = await lerNo('pt')
     if (!docs[0]) return generico
     config = toConfigDoFormulario(docs[0])
-    destino = destinoDepoisDoEnvio(docs[0], locale)
+    /* D-71: no inglês, o item citado vai ao slug inglês quando existe. */
+    const bruto = destinoDepoisDoEnvio(docs[0], locale)
+    destino = bruto && (await traduzirLink(bruto, locale))
     /* ⚠️ Menos a caixa de consentimento: ela guarda o texto **que o visitante
        viu e marcou**, no idioma da página — é a prova do consentimento
        (LGPD, art. 8º), como a cópia do aviso no Trabalhe Conosco (D-62). */
@@ -261,7 +264,8 @@ async function destinoPublicado(id: number, locale: Locale): Promise<string | nu
       locale: 'pt',
       select: { afterSubmit: true, redirectPath: true },
     })
-    return docs[0] ? destinoDepoisDoEnvio(docs[0], locale) : null
+    const destino = docs[0] ? destinoDepoisDoEnvio(docs[0], locale) : null
+    return destino && (await traduzirLink(destino, locale))
   } catch {
     return null
   }

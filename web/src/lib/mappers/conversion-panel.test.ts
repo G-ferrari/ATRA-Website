@@ -35,7 +35,6 @@ const mapear = (g: ConversionPanel | null, cases = CASES, prefixo = '') =>
   toPainelDeConversao({
     global: g,
     cases,
-    hrefLocal: (href) => `${prefixo}${href}`,
     hrefDoCase: (slug) => `${prefixo}/cases-de-sucesso/${slug}`,
   })
 
@@ -63,10 +62,12 @@ describe('toPainelDeConversao', () => {
     ])
   })
 
-  it('em inglês os destinos ganham o prefixo do idioma', () => {
+  /* D-71: o idioma entra depois, no layout, com o resto do menu
+     (`comLinksNoIdioma`); o case já vem com o endereço do idioma. */
+  it('os destinos do admin saem como foram escritos, e o do case no idioma', () => {
     const painel = mapear(global(), CASES, '/en')!
-    expect(painel.caminhos[0].href).toBe('/en/diagnostico-maturidade')
-    expect(painel.cta?.href).toBe('/en/contato')
+    expect(painel.caminhos[0].href).toBe('/diagnostico-maturidade')
+    expect(painel.cta?.href).toBe('/contato')
     expect(painel.cases['governance-culture'][0].href).toBe('/en/cases-de-sucesso/case-1')
   })
 
@@ -76,7 +77,7 @@ describe('toPainelDeConversao', () => {
   })
 
   /* 06/10: o diagnóstico virou o segundo botão, ao lado do primeiro. */
-  it('o segundo botão só existe com texto e destino, e ganha o prefixo do idioma', () => {
+  it('o segundo botão só existe com texto e destino', () => {
     expect(mapear(global())!.ctaSecundario).toBeNull()
     const comBotao = global({ secondaryCtaLabel: 'Faça seu diagnóstico agora', secondaryCtaHref: '/diagnostico-maturidade' })
     expect(mapear(comBotao)!.ctaSecundario).toEqual({ label: 'Faça seu diagnóstico agora', href: '/diagnostico-maturidade' })

@@ -1,6 +1,7 @@
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
 import { LEGACY_URL, NEXT_URL, PARIDADE_COM_PROTOTIPO } from '../playwright.config'
+import { hrefDe } from '../src/lib/routes'
 import { visit } from './support/stability'
 
 /* Smoke: barato, roda em toda PR, pega o modo de falha mais provável de uma
@@ -718,13 +719,17 @@ test.describe('app novo', () => {
        não para um formulário genérico. O `ctaContact` saiu, e com ele a âncora
        `#contato` e o item "Contato" do submenu, que se monta das âncoras. O CTA
        do herói vai direto à rota nova, já no setor financeiro — não pelo
-       redirect do endereço antigo, que fica só para link de fora do site. */
+       redirect do endereço antigo, que fica só para link de fora do site. No
+       inglês, o link do admin vai ao diagnóstico em inglês (D-71). */
     test('leva ao diagnóstico de maturidade no setor financeiro, sem formulário de contato', async ({ page, request }) => {
-      for (const url of [`${NEXT_URL}/solucoes/rc18`, `${NEXT_URL}/en/solutions/rc18`]) {
+      for (const [url, diagnostico] of [
+        [`${NEXT_URL}/solucoes/rc18`, hrefDe('diagnosticoMaturidade', 'pt')],
+        [`${NEXT_URL}/en/solutions/rc18`, hrefDe('diagnosticoMaturidade', 'en')],
+      ]) {
         const html = await (await request.get(url)).text()
         expect(html, url).not.toContain('id="contato"')
         expect(html, url).not.toContain('href="/diagnostico-rc18"')
-        expect(html, url).toContain('href="/diagnostico-maturidade?setor=financeiro"')
+        expect(html, url).toContain(`href="${diagnostico}?setor=financeiro"`)
       }
 
       await page.goto(`${NEXT_URL}/solucoes/rc18`)

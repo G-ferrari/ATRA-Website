@@ -7,6 +7,7 @@ import {
   type TipoDeCampo,
 } from '@/lib/formularios-do-admin'
 import type { Locale } from '@/lib/locales'
+import { linkNoIdioma } from '@/lib/routes'
 import type { Form } from '@/payload-types'
 import type { CampoDoFormulario, ConfigDoFormulario, FormularioDoAdmin, FormularioNoRd } from '@/types/content'
 
@@ -39,19 +40,18 @@ function linhasValidas(doc: Pick<Form, 'fields'>): { linha: Linha; tipo: TipoDeC
   return linhas
 }
 
-/** O endereço do "depois do envio" no idioma da página: o admin guarda o
- *  caminho em português, e o `proxy.ts` traduz os slugs a partir do `/en`. */
-function hrefNoIdioma(caminho: string, locale: Locale): string {
-  if (locale === 'pt') return caminho
-  return caminho === '/' ? `/${locale}` : `/${locale}${caminho}`
-}
+/* O endereço do "depois do envio" no idioma da página (D-71): o admin guarda
+ * o caminho em português, e `linkNoIdioma` leva a seção e a página inicial ao
+ * inglês (`/contato` → `/en/contact`). O item (`/cases-de-sucesso/x`) sai daqui
+ * em português e vai ao slug inglês depois, quando ele existe: na página, com
+ * os outros links (`comLinksNoIdioma`); no envio, na action (`traduzirLink`). */
 
 /** Para onde o visitante vai depois do envio, ou `null` para "fica na
  *  mensagem". Sem lançar: a action (049) só precisa disto, e um texto de
  *  apresentação faltando em português não pode impedir o lead de ser gravado. */
 export function destinoDepoisDoEnvio(doc: Pick<Form, 'afterSubmit' | 'redirectPath'>, locale: Locale): string | null {
   const caminho = doc.redirectPath?.trim()
-  return doc.afterSubmit === 'page' && caminho && ehEnderecoInterno(caminho) ? hrefNoIdioma(caminho, locale) : null
+  return doc.afterSubmit === 'page' && caminho && ehEnderecoInterno(caminho) ? linkNoIdioma(caminho, locale) : null
 }
 
 export function toFormularioDoAdmin(doc: Form, locale: Locale): FormularioDoAdmin {
@@ -81,7 +81,7 @@ export function toFormularioDoAdmin(doc: Form, locale: Locale): FormularioDoAdmi
   if (doc.afterSubmit === 'page') {
     const caminho = doc.redirectPath?.trim()
     if (!caminho || !ehEnderecoInterno(caminho)) throw new ConteudoIncompleto('forms.redirectPath')
-    depoisDoEnvio = { tipo: 'pagina', href: hrefNoIdioma(caminho, locale) }
+    depoisDoEnvio = { tipo: 'pagina', href: linkNoIdioma(caminho, locale) }
   } else {
     const mensagem = doc.successMessage?.trim()
     if (!mensagem) throw new ConteudoIncompleto('forms.successMessage')
