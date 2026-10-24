@@ -2474,3 +2474,42 @@ inglês à página em português. O editor não tinha como consertar: escrever
   e passa a levar ao inglês sozinho quando ganhar o slug inglês no admin.
 - Um campo de destino com outro nome precisa entrar na lista de
   `web/src/lib/links-no-idioma.ts`; bloco novo com `href` entra sozinho.
+
+---
+
+## D-72 — Um domínio serve o site; os outros redirecionam para ele
+
+*Decidida em 24/10/2026 por Leonardo, na subida da produção.*
+
+**Contexto.** Três domínios da ATRA passam a apontar para a VM do Google
+(35.211.105.220, nuvem cinza na Cloudflare): `atra.com.br`, `atra.digital` e
+`atrainformatica.com.br`, cada um com o seu `www`. O Caddyfile era o da
+homologação: **um bloco só**, com todo nome de `SITE_HOST` servindo o site, com
+`X-Robots-Tag: noindex` e um `robots.txt` que bloqueava tudo. Pôr os três ali
+publicaria o mesmo conteúdo em seis endereços, e nenhum indexável.
+
+**Decisão.**
+
+- O principal é **`https://www.atra.com.br`**. `SITE_HOST` passa a ter só esse
+  nome, e `SITE_URL` é a mesma origem (é dela que o build tira canônica,
+  `hreflang`, sitemap e JSON-LD).
+- Os outros cinco, mais o nome da homologação (`atra-hmg.duckdns.org`), vão em
+  `REDIRECT_HOSTS` e respondem **301** para `SITE_URL{uri}` — caminho e query
+  intactos, para os redirects do WordPress (`redirects.csv`) seguirem valendo
+  depois do salto. 301 e não 308: é o que o passo 18 do runbook confere.
+- O `noindex` e o `robots.txt` do Caddy **saem**: esta VM é a produção, e não
+  há homologação separada (decisão de 01/10, sem `staging.atra.com.br`). O
+  `robots.txt` que vale é o do app.
+- Os dois blocos gravam no mesmo log de acesso.
+
+**Consequências.**
+
+- Domínio novo entra em `REDIRECT_HOSTS`, nunca em `SITE_HOST`. No segundo,
+  é conteúdo duplicado.
+- Sem `REDIRECT_HOSTS` no `.env.prod`, o bloco de redirect fica em `localhost`
+  e o site segue de pé — o Caddy recusaria o arquivo inteiro com o bloco sem
+  nome.
+- Não existe mais ambiente com `noindex`. Ensaio que não pode ser indexado
+  precisa de ambiente próprio, com o bloqueio de volta.
+- Trocar o principal exige rebuild (o `deploy.sh` faz, lendo `SITE_URL`) e
+  mudar `vars.SITE_URL` no GitHub, que é o alvo do `uptime.yml`.

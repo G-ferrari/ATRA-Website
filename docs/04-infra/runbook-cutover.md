@@ -112,7 +112,7 @@ verificação de domínio **não se tocam**.
 | 15 | Alterar o registro **A de `www.atra.com.br`** para o IP da VPS nova | `dig` retorna o IP novo |
 | 16 | Alterar o **A de `atra.com.br`** (apex) para o mesmo IP | idem |
 | 17 | Emitir o certificado TLS para os dois | `curl -I https://www.atra.com.br` responde 200 com TLS válido |
-| 18 | Confirmar o 301 de apex → `www` | `curl -I https://atra.com.br` → 301 |
+| 18 | Confirmar o 301 de apex e dos outros domínios → `www` (D-72) | `curl -I https://atra.com.br/sobre`, `https://atra.digital/` e `https://atrainformatica.com.br/` → 301 para `https://www.atra.com.br/…` |
 | 19 | **Reconferir os MX** | Idêntico ao registrado no passo 10 |
 
 ### Verificação pós-virada (07:15–08:00)
@@ -120,7 +120,7 @@ verificação de domínio **não se tocam**.
 - [ ] Home carrega, em PT e EN, claro e escuro
 - [ ] 30 URLs antigas amostradas: todas 301 para destino 200 — incluindo 10 posts, os 4 cases, 3 soluções, 2 segmentos, 1 vaga
 - [ ] `/sitemap.xml` responde e lista só publicados
-- [ ] `/robots.txt` correto — **e não é o do staging**
+- [ ] `/robots.txt` correto — **e não é o do staging**; nenhuma resposta com `X-Robots-Tag: noindex` fora das rotas que o app marca
 - [ ] Formulário de contato: envio de teste chega em `negocios@atra.com.br` **e** aparece em `form-submissions`
 - [ ] ATRA AI responde e o rate limit funciona
 - [ ] Admin do Payload acessível

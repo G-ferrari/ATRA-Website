@@ -15,7 +15,7 @@ O marketing publica cases, artigos, materiais e vagas sem depender de dev, e o s
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)
 ![Playwright](https://img.shields.io/badge/e2e-Playwright-2ead33?logo=playwright&logoColor=white)
 
-[Homologação](https://atra-hmg.duckdns.org) · [Documentação](docs/README.md) · [Decisões](docs/00-contexto/decisoes.md) · [Guia do editor](docs/05-operacao/guia-do-editor.md)
+[Site](https://www.atra.com.br) · [Documentação](docs/README.md) · [Decisões](docs/00-contexto/decisoes.md) · [Guia do editor](docs/05-operacao/guia-do-editor.md)
 
 </div>
 
@@ -477,7 +477,7 @@ flowchart LR
 - **Backup diário** com restore verificado por contagem ([`infra/backup/`](infra/backup)).
 - **Observabilidade:** Sentry nos três lados, `uptime.yml` abre issue com a etiqueta `uptime`, logs dos containers no journald e log de acesso do Caddy.
 
-**Homologação:** https://atra-hmg.duckdns.org (com `noindex`).
+**Produção:** https://www.atra.com.br. Os outros domínios (`atra.com.br`, `atra.digital`, `atrainformatica.com.br` e a antiga homologação `atra-hmg.duckdns.org`) redirecionam para ele com 301 (D-72).
 Detalhes em [`docs/04-infra/`](docs/04-infra): [ambientes](docs/04-infra/ambientes.md),
 [deploy](docs/04-infra/deploy-vps.md), [backup](docs/04-infra/backup-e-observabilidade.md)
 e o [runbook do cutover](docs/04-infra/runbook-cutover.md).
