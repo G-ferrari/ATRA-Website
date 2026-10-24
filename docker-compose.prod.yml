@@ -37,6 +37,10 @@ services:
       # placeholder resolve vazio: o site responderia em qualquer hostname e
       # sem certificado. (BASIC_AUTH_USER/HASH saíram em 01/10, D-45.)
       SITE_HOST: ${SITE_HOST}
+      # Os domínios que só redirecionam para `SITE_URL` (D-72). Vazio, o bloco
+      # de redirect cai no `localhost` do Caddyfile e o site segue de pé.
+      REDIRECT_HOSTS: ${REDIRECT_HOSTS:-}
+      SITE_URL: ${SITE_URL}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data      # certificados: perder isto refaz o ACME do zero

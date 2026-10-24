@@ -36,6 +36,13 @@ edição de texto** (nunca `source` — o `$$` do bcrypt vira PID no bash), o bl
 Um staging indexado compete com a produção pelo mesmo conteúdo — e como ele terá
 conteúdo idêntico, o estrago é real.
 
+**Desde 24/10/2026 (D-72) a VM do Google é a produção**, e o Caddyfile não tem
+mais o `noindex` nem o `robots.txt` bloqueando. Ela serve só
+`https://www.atra.com.br` (`SITE_HOST`); `atra.com.br`, `atra.digital`,
+`atrainformatica.com.br` (com e sem `www`) e `atra-hmg.duckdns.org` respondem
+301 para ele (`REDIRECT_HOSTS`). Staging, se voltar a existir, é outro ambiente,
+e o bloqueio volta com ele.
+
 ## Estado atual da infraestrutura da ATRA
 
 Levantado em 17/08/2026, por DNS e headers públicos:

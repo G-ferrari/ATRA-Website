@@ -491,6 +491,14 @@ minuto e grava **rascunho** no idioma de destino. ⚠️ O Gemini responde 503 a
 `json_object`. ⚠️ O agendador da fila só começa quando o admin é aberto
 (`cron` do `initReq`), não no build nem em script.
 
+**D-72 (24/10)**: a VM do Google virou a produção. O Caddyfile serve só
+`SITE_HOST` (`www.atra.com.br`), sem `noindex` nem `robots.txt` bloqueando, e
+`REDIRECT_HOSTS` — `atra.com.br`, `atra.digital`, `atrainformatica.com.br`,
+com e sem `www`, e `atra-hmg.duckdns.org` — responde 301 para `SITE_URL{uri}`.
+⚠️ Domínio novo entra em `REDIRECT_HOSTS`, nunca em `SITE_HOST`: no segundo é
+conteúdo duplicado. E `REDIRECT_HOSTS` vazio cai num `localhost` de propósito —
+bloco sem nome faz o Caddy recusar o arquivo inteiro.
+
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
 containers logando no journald e o Caddy com log de acesso em arquivo.
