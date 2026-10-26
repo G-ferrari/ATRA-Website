@@ -56,7 +56,7 @@ Monólito **Next.js + Payload no mesmo processo** (um único servidor Node serve
 - **API style:** REST + GraphQL do Payload (`graphql` 16.14.2), **Server Actions** do Next para formulários, rotas de API (`/api/chat`, `/api/health`), proxy de borda em `proxy.ts`.
 
 ### 2.3 Dados
-- **Banco principal:** PostgreSQL **17** (`postgres:17-alpine`).
+- **Banco principal:** PostgreSQL **17** (`postgres:17-alpine` com a extensão pgvector, construída de `infra/postgres/` — D-73).
 - **ORM/adapter:** `@payloadcms/db-postgres` 3.88.0 sobre **Drizzle ORM 0.45.2** (drizzle-kit 0.31.7, driver `pg` 8.20.0). **`push: false`** — schema muda só por migração versionada (D-21); há **46 arquivos de migração** em `web/src/migrations/` + `index.ts` como manifesto.
 - **Cache:** revalidação de páginas estáticas por **hook em processo** (`revalidatePath`, MIG-143); `Cache-Control immutable` de 1 ano para `/api/media/file` e `next/image`.
 - **Search:** **nenhum motor externo** (sem Elastic/Algolia/Meilisearch) — busca via Postgres.

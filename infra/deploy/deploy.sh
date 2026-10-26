@@ -36,6 +36,15 @@ HOST_EXTERNO="$(valor SITE_HOST | cut -d, -f1 | tr -d '[:space:]')"
 
 echo "→ deploy de $SHA (atual: $TAG_ANTERIOR)"
 
+echo "→ banco"
+# D-73 — o Postgres é imagem nossa (`infra/postgres/`, com pgvector). O
+# `up -d` só recria o container quando a imagem mudou — na primeira vez, e de
+# novo só se o Dockerfile mudar; aí o banco reinicia por alguns segundos, com o
+# volume intacto. Vem **antes** da migração: a que cria a tabela da busca pede
+# a extensão, e contra a imagem antiga ela falharia.
+$COMPOSE build postgres >/dev/null
+$COMPOSE up -d --wait postgres 2>&1 | grep -vE "variable is not set" | tail -2
+
 echo "→ migrator"
 docker build --target migrator -t "atra-website:$SHA-migrator" . >/dev/null
 

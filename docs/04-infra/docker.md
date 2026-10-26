@@ -35,7 +35,8 @@ Em **produção** é o inverso: tudo em container, imagem multi-stage.
 # docker-compose.yml (raiz)
 services:
   postgres:
-    image: postgres:17-alpine
+    build: ./infra/postgres          # postgres:17-alpine + pgvector (D-73)
+    image: atra-postgres:17-pgvector-0.8.1
     environment:
       POSTGRES_USER: atra
       POSTGRES_PASSWORD: atra
@@ -141,7 +142,8 @@ services:
     healthcheck: *health
 
   postgres:
-    image: postgres:17-alpine
+    build: ./infra/postgres          # postgres:17-alpine + pgvector (D-73)
+    image: atra-postgres:17-pgvector-0.8.1
     restart: unless-stopped
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck: *pgready

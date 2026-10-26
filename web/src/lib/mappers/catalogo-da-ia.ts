@@ -63,24 +63,38 @@ type Segmento = Base & { name?: string | null; shortDescription?: string | null 
 type Case = Base & { title?: string | null; summary?: string | null }
 type ComDescricao = Base & { title?: string | null; description?: string | null }
 
+/* O prefixo do código de cada collection. Exportado porque a busca da ATRA AI
+ * (`lib/busca-da-ia/`) guarda os trechos de cada documento pelo mesmo código:
+ * é ele que liga o trecho achado ao cartão que o modelo pode recomendar. */
+export const PREFIXO_DO_CODIGO = {
+  solutions: 'S',
+  segments: 'G',
+  cases: 'C',
+  webinars: 'W',
+  resources: 'E',
+  posts: 'A',
+} as const
+
 /** Solução sem página (`hasPage`) aparece no menu, mas não tem endereço (D-09). */
 export const deSolucao = (par: Par<Solucao>, locale: Locale) =>
-  par.pt.hasPage ? item('S', 'solucao', 'solucoes', par, locale, (d) => ({ titulo: d.title, resumo: d.shortDescription })) : null
+  par.pt.hasPage
+    ? item(PREFIXO_DO_CODIGO.solutions, 'solucao', 'solucoes', par, locale, (d) => ({ titulo: d.title, resumo: d.shortDescription }))
+    : null
 
 export const deSegmento = (par: Par<Segmento>, locale: Locale) =>
-  item('G', 'segmento', 'segmentos', par, locale, (d) => ({ titulo: d.name, resumo: d.shortDescription }))
+  item(PREFIXO_DO_CODIGO.segments, 'segmento', 'segmentos', par, locale, (d) => ({ titulo: d.name, resumo: d.shortDescription }))
 
 export const deCase = (par: Par<Case>, locale: Locale) =>
-  item('C', 'case', 'cases', par, locale, (d) => ({ titulo: d.title, resumo: d.summary }))
+  item(PREFIXO_DO_CODIGO.cases, 'case', 'cases', par, locale, (d) => ({ titulo: d.title, resumo: d.summary }))
 
 export const deWebinar = (par: Par<ComDescricao>, locale: Locale) =>
-  item('W', 'webinar', 'webinars', par, locale, (d) => ({ titulo: d.title, resumo: d.description }))
+  item(PREFIXO_DO_CODIGO.webinars, 'webinar', 'webinars', par, locale, (d) => ({ titulo: d.title, resumo: d.description }))
 
 export const deEbook = (par: Par<ComDescricao>, locale: Locale) =>
-  item('E', 'ebook', 'ebooks', par, locale, (d) => ({ titulo: d.title, resumo: d.description }))
+  item(PREFIXO_DO_CODIGO.resources, 'ebook', 'ebooks', par, locale, (d) => ({ titulo: d.title, resumo: d.description }))
 
 export const deArtigo = (par: Par<ComDescricao>, locale: Locale) =>
-  item('A', 'artigo', 'blog', par, locale, (d) => ({ titulo: d.title, resumo: d.description }))
+  item(PREFIXO_DO_CODIGO.posts, 'artigo', 'blog', par, locale, (d) => ({ titulo: d.title, resumo: d.description }))
 
 /* As páginas que o assistente pode indicar além do conteúdo: os índices das
  * seções e as páginas de conversão. A rota é da **seção** (`hrefDe(secao)`), e
@@ -103,9 +117,14 @@ type Pagina = {
 /** O código da página leva a seção, e não o id: `P-CONTATO`. */
 export const codigoDaPagina = (secao: string): string => `P-${secao.toUpperCase()}`
 
+/** A seção que dá endereço à página, ou `undefined` se ela não é indicável. */
+export function secaoDaPagina(pagina: Pick<Pagina, 'slug' | 'masterOf'>): Secao | undefined {
+  const mestra = (SECOES_INDICAVEIS as readonly string[]).includes(pagina.masterOf ?? '') ? (pagina.masterOf as Secao) : undefined
+  return mestra ?? ROTA_PELO_SLUG[pagina.slug ?? '']
+}
+
 export function dePagina(par: Par<Pagina>, locale: Locale): ConteudoRecomendavel | null {
-  const mestra = (SECOES_INDICAVEIS as readonly string[]).includes(par.pt.masterOf ?? '') ? (par.pt.masterOf as Secao) : undefined
-  const secao = mestra ?? ROTA_PELO_SLUG[par.pt.slug ?? '']
+  const secao = secaoDaPagina(par.pt)
   if (!secao) return null
 
   const doIdioma = (locale === 'pt' ? par.pt : par.en) ?? par.pt

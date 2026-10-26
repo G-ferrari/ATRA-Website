@@ -2513,3 +2513,73 @@ publicaria o mesmo conteúdo em seis endereços, e nenhum indexável.
   precisa de ambiente próprio, com o bloqueio de volta.
 - Trocar o principal exige rebuild (o `deploy.sh` faz, lendo `SITE_URL`) e
   mudar `vars.SITE_URL` no GitHub, que é o alvo do `uptime.yml`.
+
+---
+
+## D-73 — A ATRA AI responde pelo conteúdo do site, e só por ele
+
+*Decidida em 26/10/2026 por Leonardo, depois de o chat responder a uma receita
+de macarrão e a uma pergunta sobre o Estado brasileiro.*
+
+**Contexto.** A instrução da ATRA AI dizia quem ela é e o que não pode prometer
+(preço, retorno), mas nada limitava o **assunto**: o Gemini é de uso geral e
+respondia qualquer coisa. E ela não conhecia o texto das páginas — só o título
+e o resumo de cada item do catálogo (D-60). Perguntada sobre lakehouse,
+respondia com o que o Gemini sabe, não com o que a ATRA escreveu. Das opções
+levadas (regra na instrução, porteiro, busca no conteúdo), Leonardo escolheu a
+**busca com pgvector, mais os guardrails**.
+
+**Decisão.**
+
+- **Busca no conteúdo.** O texto de tudo o que o catálogo lista (soluções,
+  segmentos, cases, webinars, e-books, artigos, páginas) vira trechos de
+  ~1.200 caracteres com embedding do Gemini (`gemini-embedding-001`, 768
+  dimensões), na tabela `ai_chunks`, com a extensão **pgvector** no Postgres.
+  A cada mensagem, os 6 trechos mais próximos entram no fim da instrução, e o
+  modelo é mandado responder **só** com eles, a lista e o texto do admin.
+  Código em `web/src/lib/busca-da-ia/`.
+- **O catálogo decide o que entra.** O índice guarda os trechos pelo código do
+  catálogo (`S12`, `P-CONTATO`): só o que está publicado, tem endereço e existe
+  no idioma (D-69). A busca filtra pelos tipos ligados no admin. Trecho achado
+  vira cartão pelo mesmo código.
+- **O índice se mantém sozinho.** A primeira conversa de cada processo
+  sincroniza; publicar no admin sincroniza 15 s depois da última publicação de
+  uma leva. Sincronizar compara pelo hash de cada trecho: só o que mudou vai ao
+  Gemini. `scripts/indexar-busca-da-ia.ts` faz o mesmo à mão.
+- **Três guardrails.** (1) Regra de escopo no código, ao lado dos limites de
+  preço (`lib/instrucao-da-ia.ts`), que resiste a "é para a ATRA" e "ignore as
+  regras". (2) **Porteiro** no servidor (`lib/porteiro-da-ia.ts`): uma chamada
+  curta ao Gemini, com JSON fechado em `site` / `conversa` / `fora`, que recebe
+  os títulos que a busca achou. `fora` devolve o texto do admin
+  (**Configuração → ATRA AI → Resposta para assunto fora do site**; vazio, um
+  padrão do código), e o modelo que conversa nem é chamado. (3) Sem trecho
+  achado, a instrução proíbe completar com conhecimento geral.
+- **O banco é imagem nossa**: `infra/postgres/Dockerfile`, a mesma
+  `postgres:17-alpine` com o pgvector compilado, e não a `pgvector/pgvector`
+  (Debian). A ordenação de texto do glibc é outra que a do musl, e o volume de
+  produção, criado no Alpine, ficaria com índices de texto inválidos até um
+  `REINDEX`. Dev, CI e produção sobem pelo compose, que constrói a imagem.
+
+**Consequências.**
+
+- O deploy que leva esta decisão **reinicia o banco** uma vez (alguns
+  segundos), porque a imagem muda. `deploy.sh` reconstrói e sobe o Postgres
+  antes de migrar; a migração `20261026_194552_busca_da_ia` falha contra a
+  imagem antiga, e o deploy para antes de trocar o site.
+- O índice nasce vazio no deploy e se enche na primeira conversa, em segundo
+  plano. Essa conversa (e as que chegarem durante a carga) responde sem
+  trechos — mais contida, não mais solta.
+- Cada mensagem custa um embedding da pergunta e uma chamada pequena do
+  porteiro, além da resposta. A carga inicial do índice custa os embeddings de
+  alguns milhares de trechos, uma vez; depois, só o que mudar.
+- Perguntas gerais de tecnologia passam quando o site trata do assunto (o blog
+  tem o artigo), e são respondidas pelo texto do site. Sem nada no site, o
+  porteiro barra.
+- Nenhum guardrail é absoluto: o porteiro é um modelo. O log de cada conversa
+  registra o número de trechos, a similaridade do melhor e o veredito — nunca
+  o texto da pessoa (P-20) — para calibrar com uso real.
+- O porteiro **deixa passar** quando falha (rede, JSON quebrado): a regra de
+  escopo segue valendo, e derrubar a conversa pelo filtro seria pior.
+- Trocar o modelo ou a dimensão do embedding refaz o índice inteiro na
+  sincronização seguinte (entram no hash); a dimensão também está na coluna
+  `vector(768)` e pede migração.

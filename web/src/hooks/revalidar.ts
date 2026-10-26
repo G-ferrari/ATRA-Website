@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache'
 
+import { marcarIndiceDesatualizado } from '../lib/busca-da-ia/agenda'
 import { invalidarCatalogoDaIa } from '../lib/cache-do-catalogo-da-ia'
 
 /* MIG-143 — publicar no CMS passa a atualizar o site.
@@ -29,6 +30,8 @@ export function revalidarSite(): void {
      editar ou apagar qualquer coisa zera esse cache, e a conversa seguinte já
      enxerga a mudança. Fora do `try`: é só um mapa, vale em qualquer processo. */
   invalidarCatalogoDaIa()
+  /* D-73 — e o índice da busca dela se refaz alguns segundos depois. */
+  marcarIndiceDesatualizado()
 
   try {
     revalidatePath('/', 'layout')

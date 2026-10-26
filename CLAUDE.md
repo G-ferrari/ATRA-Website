@@ -451,6 +451,24 @@ entrar no catálogo precisa estar no gancho (`payload.config.ts`). ⚠️ Não h
 `GEMINI_API_KEY` no ambiente local: a conversa de verdade só se testa em
 homologação.
 
+**D-73 (26/10)**: a ATRA AI responde **pelo conteúdo do site, e só por ele**.
+O texto de tudo o que o catálogo lista vira trechos com embedding na tabela
+`ai_chunks` (**pgvector**), e a cada mensagem os 6 mais próximos entram no fim
+da instrução (`lib/busca-da-ia/`). Três guardrails: regra de escopo nos
+limites de `lib/instrucao-da-ia.ts`; o **porteiro** (`lib/porteiro-da-ia.ts`),
+que classifica a mensagem em JSON fechado e, se for `fora`, devolve a resposta
+do admin sem chamar o modelo; e a proibição de completar com conhecimento geral
+quando a busca não acha nada. O índice se refaz sozinho (primeira conversa do
+processo; 15 s depois de uma publicação, `busca-da-ia/agenda.ts`) e só manda ao
+Gemini o trecho cujo hash mudou. ⚠️ `ai_chunks` vive **fora** do Payload (SQL
+escrito na migração `20261026_194552_busca_da_ia`); o retrato `.json` não a
+conhece, e é isso que impede o `migrate:create` de apagá-la. ⚠️ O Postgres é
+**imagem nossa** (`infra/postgres/`, a mesma `17-alpine` com o pgvector
+compilado): a `pgvector/pgvector` é Debian, e a ordenação de texto do glibc
+invalidaria os índices de texto do volume criado no musl. ⚠️ Collection nova
+com página de item precisa entrar no catálogo **e** em `paragrafosPublicados`
+(`busca-da-ia/indice.ts`) — fora dele, o item vira só título e resumo na busca.
+
 **D-69 (23/10, task #52)**: no inglês, o que não tem versão inglesa não
 aparece. Existe no inglês o documento com **slug gravado no inglês** — a regra
 do catálogo, agora de toda listagem que abre o item (menu, índices, carrosséis
