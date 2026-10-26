@@ -7,18 +7,20 @@
 #
 #     infra/monitoramento/criar-checagem-google.sh \
 #         --projeto <id-do-projeto> --email <destino>[,<outro>] \
-#         --url https://atra-hmg.duckdns.org
+#         --url https://www.atra.com.br
 #
 # Os três também valem como variáveis: PROJETO, EMAIL_DO_ALERTA, URL_DO_SITE.
-# A produção, depois da virada, é a mesma linha com `--url https://atra.com.br`:
-# cada endereço ganha checagem e políticas próprias, e o canal de e-mail é o
-# mesmo. `--remover` apaga a checagem e as políticas de um endereço; o canal
-# fica, porque pode servir a outro.
+# A produção é `https://www.atra.com.br`, o único nome que serve o site (D-72):
+# o apex e os outros domínios respondem 301, e uma checagem neles veria o
+# redirect, não o site. Cada endereço ganha checagem e políticas próprias, e o
+# canal de e-mail é o mesmo. `--remover` apaga a checagem e as políticas de um
+# endereço; o canal fica, porque pode servir a outro.
 #
 # Rodar de novo não duplica nada. Cada recurso é achado pelo rótulo que o
 # script põe nele e, se já existe, volta ao que está escrito aqui: rodar de novo
 # também desfaz ajuste feito à mão no console — é assim que o teste do alerta
-# termina.
+# termina. A checagem que perdeu o rótulo também é achada, pelo host e pelo
+# nome que este script dá a ela (ver `checagens_do_endereco`).
 #
 # Runbook (rodar, testar o alerta, desligar): docs/05-operacao/monitoramento-de-uptime.md
 #
@@ -111,6 +113,8 @@ padrao='^https://[a-z0-9.-]+$'
 HOST=${URL_DO_SITE#https://}
 # Valor de rótulo aceita só minúscula, número, hífen e sublinhado, até 63.
 ALVO=$(printf '%s' "$HOST" | tr -c 'a-z0-9' '-' | cut -c1-63)
+NOME_DA_CHECAGEM="ATRA $HOST$ROTA"
+ROTULOS="app=$APP,target=$ALVO,managed_by=$GERENCIADO_POR"
 
 EMAILS=()
 if [ "$REMOVER" = 0 ]; then
@@ -145,12 +149,23 @@ trap 'rm -rf "$TMP"' EXIT
 # é curta, e a igualdade exata não depende da semântica do filtro — o rótulo
 # `atra-com-br` não pode achar `www-atra-com-br`.
 
-# nome, app, alvo e host de cada checagem, separados por tabulação
+# nome, app, alvo, host e nome de exibição de cada checagem, separados por
+# tabulação. O nome de exibição vai por último: é o único com espaço.
 listar_checagens() {
   gc monitoring uptime list-configs \
-    --format='value(name,userLabels.app,userLabels.target,monitoredResource.labels.host)'
+    --format='value(name,userLabels.app,userLabels.target,monitoredResource.labels.host,displayName)'
 }
-checagens_do_alvo() { awk -F'\t' -v app="$APP" -v alvo="$ALVO" '$2 == app && $3 == alvo { print $1 }'; }
+# As deste endereço: pelo rótulo, ou — sem rótulo nenhum — pelo host e pelo nome
+# que este script dá. ⚠️ A segunda regra existe porque o gcloud apaga os
+# rótulos da checagem quando o `update` leva `--set-regions`, mesmo com
+# `--update-user-labels` na mesma linha (gcloud 588, provado em 26/10/2026).
+# Só o rótulo, e a corrida seguinte não achava a checagem e criava outra,
+# deixando as duas no ar. Checagem com rótulo de outro app, ou com outro nome,
+# não é adotada: é de alguém.
+checagens_do_endereco() {
+  awk -F'\t' -v app="$APP" -v alvo="$ALVO" -v host="$HOST" -v nome="$NOME_DA_CHECAGEM" '
+    ($2 == app && $3 == alvo) || ($2 == "" && $3 == "" && $4 == host && $5 == nome) { print $1 }'
+}
 
 politicas_do_alvo() { # tipo: down | tls
   gc monitoring policies list --format='value(name,userLabels.app,userLabels.target,userLabels.alert)' \
@@ -173,7 +188,7 @@ if [ "$REMOVER" = 1 ]; then
     done
   done
   lista=$(listar_checagens)
-  checagens=$(printf '%s\n' "$lista" | checagens_do_alvo)
+  checagens=$(printf '%s\n' "$lista" | checagens_do_endereco)
   for checagem in $checagens; do
     gc monitoring uptime delete "$checagem" >/dev/null
     echo "  − checagem: $checagem"
@@ -246,19 +261,25 @@ echo "→ canais de e-mail"
 for email in "${EMAILS[@]}"; do garantir_canal "$email"; done
 
 # --- Checagem de uptime -------------------------------------------------------------
-NOME_DA_CHECAGEM="ATRA $HOST$ROTA"
-ROTULOS="app=$APP,target=$ALVO,managed_by=$GERENCIADO_POR"
+# Os rótulos vão pela API REST, e não pelo `--update-user-labels` do gcloud: ver
+# `checagens_do_endereco`. O PATCH com `updateMask=userLabels` não toca no resto.
+gravar_rotulos() { # nome da checagem
+  rest PATCH "uptimeCheckConfigs/${1##*/}?updateMask=userLabels" --data "{
+    \"userLabels\": { \"app\": \"$APP\", \"target\": \"$ALVO\", \"managed_by\": \"$GERENCIADO_POR\" }
+  }" >/dev/null
+}
 
 echo "→ checagem de $HOST$ROTA"
 lista=$(listar_checagens)
-avulsas=$(printf '%s\n' "$lista" | awk -F'\t' -v app="$APP" -v host="$HOST" '$4 == host && $2 != app { print $1 }')
+checagens=$(printf '%s\n' "$lista" | checagens_do_endereco)
+CHECAGEM=$(printf '%s\n' "$checagens" | primeira)
+avulsas=$(printf '%s\n' "$lista" | awk -F'\t' -v app="$APP" -v host="$HOST" -v esta="$CHECAGEM" \
+  '$4 == host && $2 != app && $1 != esta { print $1 }')
 if [ -n "$avulsas" ]; then
   echo "  ⚠️ há checagem de $HOST criada fora deste script; confira se não repete esta:" >&2
   # shellcheck disable=SC2086 # um nome por linha, sem espaço: separar é o objetivo
   printf '     %s\n' $avulsas >&2
 fi
-checagens=$(printf '%s\n' "$lista" | checagens_do_alvo)
-CHECAGEM=$(printf '%s\n' "$checagens" | primeira)
 if [ -z "$CHECAGEM" ]; then
   gc monitoring uptime create "$NOME_DA_CHECAGEM" \
     --resource-type=uptime-url --resource-labels="host=$HOST,project_id=$PROJETO" \
@@ -266,19 +287,24 @@ if [ -z "$CHECAGEM" ]; then
     --status-classes=2xx --matcher-type=contains-string --matcher-content="$CONTEUDO_ESPERADO" \
     --period=1 --timeout="$TEMPO_LIMITE" --regions="$REGIOES" \
     --user-labels="$ROTULOS" >/dev/null
-  CHECAGEM=$(listar_checagens | checagens_do_alvo | primeira)
+  CHECAGEM=$(listar_checagens | checagens_do_endereco | primeira)
   [ -n "$CHECAGEM" ] || falha "a checagem foi criada, mas não aparece na lista — confira no console"
   echo "  + criada"
 else
   [ "$(printf '%s\n' "$checagens" | wc -l | tr -d ' ')" = 1 ] \
-    || echo "  ⚠️ mais de uma checagem com o rótulo de $HOST; acerto só a primeira" >&2
+    || echo "  ⚠️ mais de uma checagem de $HOST; acerto só a primeira — apague as outras no console" >&2
   # Host, protocolo e porta não mudam numa checagem existente (o recurso
   # monitorado é imutável); como o rótulo vem do host, nem precisariam.
   gc monitoring uptime update "$CHECAGEM" \
     --display-name="$NOME_DA_CHECAGEM" --path="$ROTA" --validate-ssl=true \
     --set-status-classes=2xx --matcher-type=contains-string --matcher-content="$CONTEUDO_ESPERADO" \
-    --period=1 --timeout="$TEMPO_LIMITE" --set-regions="$REGIOES" \
-    --update-user-labels="$ROTULOS" >/dev/null
+    --period=1 --timeout="$TEMPO_LIMITE" --set-regions="$REGIOES" >/dev/null
+  gravar_rotulos "$CHECAGEM"
+  # Prova, e não confiança: sem o rótulo, a próxima corrida dependeria só da
+  # regra do nome, que some se alguém renomear a checagem no console.
+  listar_checagens | awk -F'\t' -v c="$CHECAGEM" -v app="$APP" -v alvo="$ALVO" \
+    '$1 == c && $2 == app && $3 == alvo { achou = 1 } END { exit !achou }' \
+    || falha "a checagem $CHECAGEM foi acertada, mas ficou sem o rótulo — confira no console"
   echo "  ✓ já existia; acertada"
 fi
 ID_DA_CHECAGEM=${CHECAGEM##*/}
@@ -397,6 +423,7 @@ cat <<FIM
   Testar o alerta sem tocar no site (a checagem passa a exigir um texto que a
   rota não devolve; o e-mail chega em ~5 min):
     gcloud monitoring uptime update $ID_DA_CHECAGEM --project=$PROJETO \\
-      --matcher-type=contains-string --matcher-content='"status":"teste-de-alerta"'
+      --matcher-type=contains-string --matcher-content='"status":"teste-de-alerta"' \\
+      --update-user-labels=$ROTULOS
   Depois do e-mail, rode este script de novo, com os mesmos argumentos, para desfazer.
 FIM

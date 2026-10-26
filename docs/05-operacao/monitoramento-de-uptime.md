@@ -56,7 +56,8 @@ infra/monitoramento/criar-checagem-google.sh \
   (Monitoring → Uptime checks).
 
 Rodar de novo **não duplica nada**: o script acha o que criou pelos rótulos
-(`app=atra-website`, `target=<host>`) e devolve tudo ao que está escrito nele —
+(`app=atra-website`, `target=<host>`) — ou, se a checagem perdeu os rótulos, pelo
+host e pelo nome `ATRA <host>/api/health` — e devolve tudo ao que está escrito nele —
 inclusive o que alguém tenha mexido no console. Para trocar quem recebe, rode
 com a lista nova. O canal antigo continua existindo, só deixa de receber este
 alerta.
@@ -65,13 +66,18 @@ alerta.
 
 Sem tocar no site: a checagem passa a exigir um texto que a rota não devolve.
 
-1. Com o id que o script imprimiu (ou o que aparece em
-   `gcloud monitoring uptime list-configs --project=<id-do-projeto> --format='value(name,displayName)'`):
+1. Copie o comando que o script imprime no fim, já com o id, o projeto e os
+   rótulos. A forma dele, para `www.atra.com.br`:
 
    ```bash
    gcloud monitoring uptime update <id-da-checagem> --project=<id-do-projeto> \
-     --matcher-type=contains-string --matcher-content='"status":"teste-de-alerta"'
+     --matcher-type=contains-string --matcher-content='"status":"teste-de-alerta"' \
+     --update-user-labels=app=atra-website,target=www-atra-com-br,managed_by=criar-checagem-google
    ```
+
+   ⚠️ No zsh, `<` e `>` são redirecionamento: com os marcadores no lugar do
+   valor, o comando nem chega ao gcloud. O id aparece em
+   `gcloud monitoring uptime list-configs --project=<id-do-projeto> --format='value(name,displayName)'`.
 
 2. Em cerca de 5 minutos chega o e-mail de site fora do ar, e o incidente
    aparece em Monitoring → Alerting.
@@ -100,8 +106,9 @@ pessoas usam o ambiente.
 
 ## Depois da virada
 
-A mesma linha, com o endereço de produção: `--url https://atra.com.br` (o
-primeiro nome de `SITE_HOST` no `.env.prod` da produção). Cada endereço ganha
+A mesma linha, com o endereço de produção: `--url https://www.atra.com.br` (o
+`SITE_HOST` do `.env.prod` da produção, D-72). Não o apex nem os outros
+domínios: eles respondem 301, e a checagem veria o redirect, não o site. Cada endereço ganha
 checagem e políticas próprias; os canais são reaproveitados. Homologação e
 produção juntas gastam ~260 mil execuções por mês, dentro do 1 milhão gratuito
 por projeto. As políticas de alerta passam a ser cobradas em setembro de 2027
