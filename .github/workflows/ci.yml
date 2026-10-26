@@ -23,19 +23,6 @@ jobs:
       run:
         working-directory: web
 
-    services:
-      # O build do Payload conecta no banco para conferir o schema.
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_USER: atra
-          POSTGRES_PASSWORD: atra
-          POSTGRES_DB: atra
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U atra -d atra"
-          --health-interval 5s --health-timeout 5s --health-retries 10
-
     env:
       DATABASE_URI: postgres://atra:atra@localhost:5432/atra
       PAYLOAD_SECRET: ci-secret-not-used-in-production
@@ -48,6 +35,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # O build do Payload conecta no banco para conferir o schema.
+      #
+      # ⚠️ Pelo compose do projeto, e não como `services:` do workflow (D-73): o
+      # banco precisa da extensão pgvector, e a imagem é a nossa
+      # (`infra/postgres/Dockerfile`, a `postgres:17-alpine` com o `vector.so`
+      # compilado). Serviço do Actions só aceita imagem pronta; com uma de
+      # terceiro aqui, o CI testaria um banco diferente do de produção.
+      - name: Sobe o banco (:5432)
+        working-directory: .
+        run: docker compose up -d --wait postgres
 
       # O projeto vive em `web/`; não há package.json na raiz, e a action lê
       # `packageManager` de lá por padrão. Sem apontar o caminho, ela falha
@@ -134,18 +132,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: verify
 
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_USER: atra
-          POSTGRES_PASSWORD: atra
-          POSTGRES_DB: atra
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U atra -d atra"
-          --health-interval 5s --health-timeout 5s --health-retries 10
-
     env:
       DATABASE_URI: postgres://atra:atra@localhost:5432/atra
       PAYLOAD_SECRET: ci-secret-not-used-in-production
@@ -193,6 +179,11 @@ jobs:
         run: |
           docker compose up -d --wait minio
           docker compose up createbucket
+
+      # O banco também, pelo mesmo compose: a imagem com pgvector (D-73) é
+      # construída de `infra/postgres/`, como no job `verify`.
+      - name: Sobe o banco (:5432)
+        run: docker compose up -d --wait postgres
 
       - run: pnpm install --frozen-lockfile
         working-directory: web

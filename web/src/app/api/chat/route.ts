@@ -1,12 +1,19 @@
 import { GoogleGenAI, ThinkingLevel } from '@google/genai'
 import { NextResponse } from 'next/server'
 
+import { garantirIndiceEmDia } from '@/lib/busca-da-ia/agenda'
+import type { TrechoAchado } from '@/lib/busca-da-ia/banco'
+import { buscarTrechos } from '@/lib/busca-da-ia/busca'
+import { geradorDeEmbeddings } from '@/lib/busca-da-ia/embeddings'
+import { sincronizarIndice } from '@/lib/busca-da-ia/indice'
 import { lerCatalogoDaIa } from '@/lib/catalogo-da-ia'
 import { MAX_TOKENS_DE_SAIDA, validarConversa, type Mensagem } from '@/lib/chat'
+import { respostaForaDoAssunto } from '@/lib/fora-do-assunto'
 import { montarInstrucao } from '@/lib/instrucao-da-ia'
 import { ipDe } from '@/lib/ip'
 import { tiposLigados } from '@/lib/mappers/catalogo-da-ia'
 import { getPayload } from '@/lib/payload'
+import { perguntarAoPorteiro, type Veredito } from '@/lib/porteiro-da-ia'
 import { resolverReferencias } from '@/lib/referencias-da-ia'
 import type { ConteudoRecomendavel } from '@/types/content'
 
@@ -168,8 +175,59 @@ export async function POST(req: Request) {
     console.error('ATRA AI: catálogo indisponível:', e)
   }
 
+  /* D-73 — a busca no conteúdo do site. O índice se refaz sozinho quando está
+   * desatualizado (primeira conversa do processo, publicação no admin), sem
+   * segurar esta resposta: ver `lib/busca-da-ia/agenda.ts`.
+   *
+   * ⚠️ Falha aqui também não derruba a conversa. Sem trechos, a instrução manda
+   * o modelo responder só com o catálogo e dizer que não achou — não abre a
+   * porta para o conhecimento geral. */
+  const gerar = geradorDeEmbeddings(apiKey)
+  garantirIndiceEmDia(async () => {
+    const resultado = await sincronizarIndice(gerar)
+    console.info('ATRA AI: índice da busca sincronizado:', JSON.stringify(resultado))
+  })
+
+  let trechos: TrechoAchado[] = []
   try {
-    const ai = new GoogleGenAI({ apiKey })
+    trechos = await buscarTrechos(
+      mensagens,
+      locale,
+      catalogo.map((item) => item.codigo),
+      gerar,
+    )
+  } catch (e) {
+    console.error('ATRA AI: busca indisponível:', e)
+  }
+
+  const ai = new GoogleGenAI({ apiKey })
+
+  /* D-73 — o porteiro: assunto fora do site recebe a resposta fixa do admin, e
+   * o modelo que conversa nem é chamado. Erro do porteiro deixa passar (o
+   * porquê está em `lib/porteiro-da-ia.ts`). */
+  let veredito: Veredito | null = null
+  try {
+    const titulo = new Map(catalogo.map((item) => [item.codigo, item.titulo]))
+    veredito = await perguntarAoPorteiro(
+      ai,
+      mensagens,
+      trechos.map((t) => titulo.get(t.codigo) ?? t.codigo),
+    )
+  } catch (e) {
+    console.error('ATRA AI: porteiro indisponível:', e)
+  }
+
+  /* Só números e o veredito, nunca o texto da pessoa (P-20): é o que calibra
+     a busca e o porteiro em produção. */
+  console.info(
+    `ATRA AI: ${trechos.length} trechos (melhor ${trechos[0]?.similaridade.toFixed(3) ?? '-'}), porteiro: ${veredito ?? 'sem resposta'}`,
+  )
+
+  if (veredito === 'fora') {
+    return NextResponse.json({ text: respostaForaDoAssunto(config?.offTopicMessage, locale), referencias: {} })
+  }
+
+  try {
     const resposta = await ai.models.generateContent({
       model: 'gemini-3.6-flash',
       contents: mensagens.map((m) => ({ role: m.role, parts: [{ text: m.content }] })),
@@ -182,7 +240,7 @@ export async function POST(req: Request) {
        * a resposta parava no meio da frase (`finishReason: MAX_TOKENS`). Subir
        * o teto só empurra o corte; o raciocínio cresce junto. */
       config: {
-        systemInstruction: montarInstrucao(config?.systemPrompt ?? '', catalogo, locale),
+        systemInstruction: montarInstrucao(config?.systemPrompt ?? '', catalogo, locale, trechos),
         /* ⚠️ 0,3, e não o 0,7 do protótipo (10/10, decisão do G-ferrari). No
          * primeiro teste com o catálogo os cartões saíram certos, mas o texto
          * livre enfeitava: disse como a ATRA cobra e deu a um case qualidades

@@ -129,6 +129,22 @@ export const AtraAi: GlobalConfig = {
       },
     },
     {
+      /* D-73 — o que a IA responde quando a pergunta não é assunto do site.
+       * Quem decide que não é, é o porteiro (`lib/porteiro-da-ia.ts`), no
+       * servidor; o texto é do marketing (D-22). Vazio, vale o padrão do código
+       * (`lib/fora-do-assunto.ts`): a resposta nunca sai em branco. */
+      name: 'offTopicMessage',
+      type: 'textarea',
+      localized: true,
+      label: { pt: 'Resposta para assunto fora do site', en: 'Reply for off-topic questions' },
+      admin: {
+        description: {
+          pt: 'Mostrada quando a pergunta não tem a ver com a ATRA nem com o que o site publica (uma receita, política, conhecimento geral). A IA nem chega a responder: o site devolve este texto. Vazio, usa o texto padrão.',
+          en: 'Shown when the question has nothing to do with ATRA or what the website publishes (a recipe, politics, general knowledge). The AI does not even answer: the site returns this text. Empty, the default text is used.',
+        },
+      },
+    },
+    {
       /* MIG-149 (D-29) — o convite de lead dentro do chat.
        *
        * ⚠️ São **três chaves independentes**, de propósito: `ENABLE_CHAT_LEAD`

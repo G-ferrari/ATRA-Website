@@ -79,7 +79,11 @@ services:
         condition: service_healthy
 
   postgres:
-    image: postgres:17-alpine
+    # A `postgres:17-alpine` com a extensão pgvector (D-73, a busca da ATRA AI).
+    # Construída de `infra/postgres/`, que explica por que não é a imagem
+    # pronta do pgvector. `docker compose up` constrói sozinho na primeira vez.
+    build: ./infra/postgres
+    image: atra-postgres:17-pgvector-0.8.1
     restart: unless-stopped
     environment:
       POSTGRES_USER: atra

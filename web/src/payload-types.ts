@@ -16653,6 +16653,10 @@ export interface AtraAi {
    * Shown when the limit is hit or the AI is off. Graceful degradation, not an error.
    */
   unavailableMessage: string;
+  /**
+   * Shown when the question has nothing to do with ATRA or what the website publishes (a recipe, politics, general knowledge). The AI does not even answer: the site returns this text. Empty, the default text is used.
+   */
+  offTopicMessage?: string | null;
   leadCapture: {
     /**
      * Shows the invite to leave contact details during the conversation. Also requires the consent notice below.
@@ -17623,6 +17627,7 @@ export interface AtraAiSelect<T extends boolean = true> {
   requestsPerHour?: T;
   dailyRequestCap?: T;
   unavailableMessage?: T;
+  offTopicMessage?: T;
   leadCapture?:
     | T
     | {

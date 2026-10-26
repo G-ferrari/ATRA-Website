@@ -130,6 +130,7 @@ import * as migration_20261022_180731_drop_cta_contact_photo_column from './2026
 import * as migration_20261022_181457_trabalhe_conosco_fora_do_rd from './20261022_181457_trabalhe_conosco_fora_do_rd';
 import * as migration_20261022_234755_drop_talent_pool_rd_columns from './20261022_234755_drop_talent_pool_rd_columns';
 import * as migration_20261023_010102_traducao_no_admin from './20261023_010102_traducao_no_admin';
+import * as migration_20261026_194552_busca_da_ia from './20261026_194552_busca_da_ia';
 
 export const migrations = [
   {
@@ -790,6 +791,11 @@ export const migrations = [
   {
     up: migration_20261023_010102_traducao_no_admin.up,
     down: migration_20261023_010102_traducao_no_admin.down,
-    name: '20261023_010102_traducao_no_admin'
+    name: '20261023_010102_traducao_no_admin',
+  },
+  {
+    up: migration_20261026_194552_busca_da_ia.up,
+    down: migration_20261026_194552_busca_da_ia.down,
+    name: '20261026_194552_busca_da_ia'
   },
 ];
