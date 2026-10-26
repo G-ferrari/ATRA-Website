@@ -433,7 +433,7 @@ function ItensDaGaveta({
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-semibold capitalize tracking-wide leading-tight">{s.name}</span>
-              <span className="text-[10px] text-text-muted leading-tight line-clamp-1">{s.shortDescription}</span>
+              <span className="text-xs text-text-muted leading-tight line-clamp-1">{s.shortDescription}</span>
             </div>
           </Link>
         ))}
