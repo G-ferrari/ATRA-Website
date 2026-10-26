@@ -953,6 +953,32 @@ test.describe('app novo', () => {
       await gaveta.getByRole('link', { name: 'Soluções', exact: true }).dispatchEvent('click')
       await expect(gaveta.getByText('IA & Analytics Avançada')).toBeVisible()
     })
+
+    /* Segmentos abria vazio no celular (24/10, já em produção): a gaveta não
+       tinha ramo para o painel `segments` e caía no de atalhos, que lê uma
+       lista vazia. O teste acima só abria Soluções. Aqui toda categoria com
+       seta precisa abrir com ao menos um link. */
+    test('na gaveta, toda categoria expansível abre com itens', async ({ page }) => {
+      test.skip(!noCelular(page), 'a gaveta é `md:hidden`')
+      await page.goto(`${NEXT_URL}/atra-na-midia`)
+      await page.getByRole('button', { name: 'Abrir menu' }).click()
+
+      const gaveta = page.getByTestId('menu-gaveta')
+      await expect(gaveta).toBeVisible()
+      const expansiveis = gaveta.locator(':scope > div').filter({ has: page.locator('svg.lucide-chevron-down') })
+      const total = await expansiveis.count()
+      expect(total, 'nenhuma categoria expansível na gaveta').toBeGreaterThan(0)
+
+      for (let i = 0; i < total; i++) {
+        const categoria = expansiveis.nth(i)
+        const rotulo = (await categoria.getByRole('link').first().textContent())?.trim()
+        await categoria.getByRole('link').first().dispatchEvent('click')
+        await expect(
+          categoria.getByTestId('gaveta-itens').getByRole('link').first(),
+          `a categoria "${rotulo}" abriu sem itens`,
+        ).toBeVisible()
+      }
+    })
   })
 
   /* O campo de partículas do herói sai da regressão visual por ser

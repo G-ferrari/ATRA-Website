@@ -326,7 +326,10 @@ export function SiteHeader({
                     </div>
 
                     {expansivel && expandida && (
-                      <div className="overflow-hidden bg-surface-1/60 dark:bg-surface-1/40 rounded-[6px] mx-1 mb-2 ">
+                      <div
+                        data-testid="gaveta-itens"
+                        className="overflow-hidden bg-surface-1/60 dark:bg-surface-1/40 rounded-[6px] mx-1 mb-2 "
+                      >
                         <div className="p-2.5 grid grid-cols-1 gap-1.5">
                           <ItensDaGaveta
                             categoria={categoria}
@@ -413,6 +416,27 @@ function ItensDaGaveta({
             </div>
           )
         })}
+      </>
+    )
+  }
+
+  /* Sem este ramo Segmentos caía no genérico abaixo, que lê `categoria.links` —
+   * vazio, porque a lista vem da collection `segments` (`navegacao.segmentos`),
+   * como no painel do desktop. A gaveta abria e não mostrava nada. */
+  if (categoria.panel === 'segments') {
+    return (
+      <>
+        {navegacao.segmentos.map((s) => (
+          <Link key={s.slug} href={hrefDe('segmentos', locale, s.slug)} className={linha} onClick={aoNavegar}>
+            <div className={caixa}>
+              <Icone nome={s.icon} size={18} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold capitalize tracking-wide leading-tight">{s.name}</span>
+              <span className="text-[10px] text-text-muted leading-tight line-clamp-1">{s.shortDescription}</span>
+            </div>
+          </Link>
+        ))}
       </>
     )
   }
