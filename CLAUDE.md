@@ -469,6 +469,13 @@ invalidaria os índices de texto do volume criado no musl. ⚠️ Collection nov
 com página de item precisa entrar no catálogo **e** em `paragrafosPublicados`
 (`busca-da-ia/indice.ts`) — fora dele, o item vira só título e resumo na busca.
 
+**D-75 (27/10)**: a ATRA AI indica **Carreiras** (`P-CARREIRAS`) só a quem
+quer trabalhar na ATRA, e a essa pessoa nunca o WhatsApp do comercial nem
+Consultores; não afirma quais vagas estão abertas. Páginas de parceiro entram
+no catálogo (tipo `parceiro`, código `R<id>`, sob o interruptor "Páginas"), e
+os perfis de `specialist-roles` entram no texto de `P-CONSULTORES` na busca
+(`busca-da-ia/perfis.ts`). O limite 4 proíbe oferecer "agendar".
+
 **D-69 (23/10, task #52)**: no inglês, o que não tem versão inglesa não
 aparece. Existe no inglês o documento com **slug gravado no inglês** — a regra
 do catálogo, agora de toda listagem que abre o item (menu, índices, carrosséis

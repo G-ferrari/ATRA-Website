@@ -5,6 +5,7 @@ import {
   codigoDaPagina,
   deArtigo,
   dePagina,
+  deParceiro,
   deSegmento,
   deSolucao,
   doDiagnostico,
@@ -101,11 +102,17 @@ describe('páginas do site', () => {
     expect(dePagina({ pt: { id: 9, slug: 'sobre', title: 'Sobre' } }, 'pt')?.codigo).toBe('P-SOBRE')
   })
 
-  /* Decisão de 09/10: imprensa e vagas desviam a conversa do foco comercial. */
-  it('ATRA na mídia, Carreiras e página avulsa ficam de fora', () => {
+  /* Decisão de 09/10: a imprensa desvia a conversa do foco comercial. */
+  it('ATRA na mídia e página avulsa ficam de fora', () => {
     expect(dePagina({ pt: { id: 1, slug: 'atra-na-midia', title: 'ATRA na mídia', masterOf: 'midia' } }, 'pt')).toBeNull()
-    expect(dePagina({ pt: { id: 2, slug: 'carreiras', title: 'Trabalhe Conosco', masterOf: 'carreiras' } }, 'pt')).toBeNull()
     expect(dePagina({ pt: { id: 3, slug: 'politicas-e-termos', title: 'Políticas' } }, 'pt')).toBeNull()
+  })
+
+  /* D-75 (27/10): sem Carreiras, "como trabalhar na ATRA?" caía em Consultores. */
+  it('Carreiras entra, com o endereço da seção', () => {
+    const par = { pt: { id: 2, slug: 'carreiras', title: 'Trabalhe Conosco', masterOf: 'carreiras' } }
+    expect(dePagina(par, 'pt')).toMatchObject({ codigo: 'P-CARREIRAS', tipo: 'pagina', href: '/carreiras' })
+    expect(dePagina(par, 'en')?.href).toBe('/en/careers')
   })
 
   it('diagnóstico: rota própria, texto do global', () => {
@@ -117,6 +124,25 @@ describe('páginas do site', () => {
       href: '/diagnostico-maturidade',
     })
     expect(doDiagnostico({ titulo: '' }, 'pt')).toBeNull()
+  })
+})
+
+describe('parceiros', () => {
+  const GOOGLE = { id: 4, name: 'Google Cloud', slug: 'google-cloud', description: 'Analise e proteja seus dados.', hasPage: true }
+
+  /* D-75 — é na página do parceiro que o site fala da certificação Google Cloud. */
+  it('parceiro com página entra, com o nome e a página dele', () => {
+    expect(deParceiro({ pt: GOOGLE }, 'pt')).toEqual({
+      codigo: 'R4',
+      tipo: 'parceiro',
+      titulo: 'Google Cloud',
+      resumo: 'Analise e proteja seus dados.',
+      href: '/parceiros/google-cloud',
+    })
+  })
+
+  it('parceiro sem página fica de fora', () => {
+    expect(deParceiro({ pt: { ...GOOGLE, hasPage: false } }, 'pt')).toBeNull()
   })
 })
 
@@ -141,9 +167,11 @@ describe('emUmaLinha', () => {
 describe('tipos ligados no admin', () => {
   it('cada valor do campo liga um tipo do catálogo', () => {
     expect([...tiposLigados([...TIPOS_RECOMENDAVEIS])].sort()).toEqual(
-      ['artigo', 'case', 'ebook', 'pagina', 'segmento', 'solucao', 'webinar'].sort(),
+      ['artigo', 'case', 'ebook', 'pagina', 'parceiro', 'segmento', 'solucao', 'webinar'].sort(),
     )
     expect([...tiposLigados(['posts'])]).toEqual(['artigo'])
+    /* As páginas de parceiro andam com "Páginas" (D-75). */
+    expect([...tiposLigados(['pages'])].sort()).toEqual(['pagina', 'parceiro'])
   })
 
   /* Vazio é "nada ligado", e não "o padrão": quem desmarca tudo quer o

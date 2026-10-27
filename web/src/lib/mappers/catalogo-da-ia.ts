@@ -62,6 +62,7 @@ type Solucao = Base & { title?: string | null; shortDescription?: string | null;
 type Segmento = Base & { name?: string | null; shortDescription?: string | null }
 type Case = Base & { title?: string | null; summary?: string | null }
 type ComDescricao = Base & { title?: string | null; description?: string | null }
+type Parceiro = Base & { name?: string | null; description?: string | null; hasPage?: boolean | null }
 
 /* O prefixo do código de cada collection. Exportado porque a busca da ATRA AI
  * (`lib/busca-da-ia/`) guarda os trechos de cada documento pelo mesmo código:
@@ -69,6 +70,7 @@ type ComDescricao = Base & { title?: string | null; description?: string | null 
 export const PREFIXO_DO_CODIGO = {
   solutions: 'S',
   segments: 'G',
+  partners: 'R',
   cases: 'C',
   webinars: 'W',
   resources: 'E',
@@ -83,6 +85,15 @@ export const deSolucao = (par: Par<Solucao>, locale: Locale) =>
 
 export const deSegmento = (par: Par<Segmento>, locale: Locale) =>
   item(PREFIXO_DO_CODIGO.segments, 'segmento', 'segmentos', par, locale, (d) => ({ titulo: d.name, resumo: d.shortDescription }))
+
+/* D-75 — a página de cada parceiro (`/parceiros/<slug>`) é onde o site diz que a
+ * ATRA é parceira certificada do Google Cloud, com quais especializações, e o
+ * que ela faz com Databricks. Fora do catálogo, "vocês têm certificação Google
+ * Cloud?" não achava nada disso. Como a solução, só entra quem tem página. */
+export const deParceiro = (par: Par<Parceiro>, locale: Locale) =>
+  par.pt.hasPage
+    ? item(PREFIXO_DO_CODIGO.partners, 'parceiro', 'parceiros', par, locale, (d) => ({ titulo: d.name, resumo: d.description }))
+    : null
 
 export const deCase = (par: Par<Case>, locale: Locale) =>
   item(PREFIXO_DO_CODIGO.cases, 'case', 'cases', par, locale, (d) => ({ titulo: d.title, resumo: d.summary }))
@@ -100,9 +111,15 @@ export const deArtigo = (par: Par<ComDescricao>, locale: Locale) =>
  * seções e as páginas de conversão. A rota é da **seção** (`hrefDe(secao)`), e
  * por isso existe nos dois idiomas sem depender do slug da página.
  *
- * ATRA na mídia e Carreiras ficam de fora por decisão do G-ferrari (09/10):
- * desviam a conversa do foco comercial. */
-const SECOES_INDICAVEIS = ['solucoes', 'segmentos', 'cases', 'blog', 'webinars', 'ebooks', 'insights', 'consultores'] as const
+ * ATRA na mídia fica de fora por decisão do G-ferrari (09/10): desvia a
+ * conversa do foco comercial.
+ *
+ * ⚠️ Carreiras também ficava, pelo mesmo motivo, e entrou na D-75 (27/10): sem
+ * ela, quem perguntava "como faço para trabalhar na ATRA?" recebia a página de
+ * Consultores — que é a alocação de especialistas no time do **cliente** — e o
+ * WhatsApp do comercial. Quem segura o foco agora é a regra de
+ * `lib/instrucao-da-ia.ts`: a página só é indicada a quem procura trabalho. */
+const SECOES_INDICAVEIS = ['solucoes', 'segmentos', 'cases', 'blog', 'webinars', 'ebooks', 'insights', 'consultores', 'carreiras'] as const
 /* Páginas de `pages` que têm rota própria sem ser página-mestra: slug → seção. */
 const ROTA_PELO_SLUG: Partial<Record<string, Secao>> = { contato: 'contato', sobre: 'sobre' }
 
@@ -154,20 +171,24 @@ export function doDiagnostico(textos: { titulo?: string | null; resumo?: string 
 }
 
 /* O que o admin liga em "O que a IA pode recomendar" → os tipos do catálogo.
- * Os valores do campo são os nomes das collections, como no resto do CMS. */
-const TIPO_DO_CAMPO: Record<NonNullable<AtraAi['recommends']>[number], TipoDeConteudoDaIa> = {
-  solutions: 'solucao',
-  segments: 'segmento',
-  cases: 'case',
-  webinars: 'webinar',
-  ebooks: 'ebook',
-  posts: 'artigo',
-  pages: 'pagina',
+ * Os valores do campo são os nomes das collections, como no resto do CMS.
+ *
+ * ⚠️ As páginas de parceiro andam com "Páginas" (D-75): são páginas do site,
+ * e uma opção nova no campo pediria migração para um interruptor que ninguém
+ * pediu. */
+const TIPO_DO_CAMPO: Record<NonNullable<AtraAi['recommends']>[number], readonly TipoDeConteudoDaIa[]> = {
+  solutions: ['solucao'],
+  segments: ['segmento'],
+  cases: ['case'],
+  webinars: ['webinar'],
+  ebooks: ['ebook'],
+  posts: ['artigo'],
+  pages: ['pagina', 'parceiro'],
 }
 
 export const TIPOS_RECOMENDAVEIS = Object.keys(TIPO_DO_CAMPO) as NonNullable<AtraAi['recommends']>
 
 /** Campo vazio = nada ligado: o assistente não recomenda conteúdo do site. */
 export function tiposLigados(doAdmin: AtraAi['recommends'] | undefined): ReadonlySet<TipoDeConteudoDaIa> {
-  return new Set((doAdmin ?? []).map((valor) => TIPO_DO_CAMPO[valor]).filter(Boolean))
+  return new Set((doAdmin ?? []).flatMap((valor) => TIPO_DO_CAMPO[valor] ?? []))
 }

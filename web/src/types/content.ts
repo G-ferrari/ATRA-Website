@@ -891,7 +891,7 @@ export type SegmentCard = {
 /* ATRA AI — o que o assistente pode recomendar, com o endereço certo (D-60).
  * O modelo nunca escreve endereço: cita o `codigo`, e o servidor devolve o
  * resto junto da resposta. */
-export type TipoDeConteudoDaIa = 'solucao' | 'segmento' | 'case' | 'webinar' | 'ebook' | 'artigo' | 'pagina'
+export type TipoDeConteudoDaIa = 'solucao' | 'segmento' | 'parceiro' | 'case' | 'webinar' | 'ebook' | 'artigo' | 'pagina'
 
 export type ConteudoRecomendavel = {
   /** O que o modelo cita (`[UI_CONTEUDO:S12]`): prefixo do tipo + id do documento. */
