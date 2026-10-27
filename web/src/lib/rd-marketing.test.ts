@@ -314,23 +314,25 @@ describe('montarPayload', () => {
       cf_quiz_setor_codigo: 'financeiro',
       cf_quiz_porte: 'ate_50mi',
       cf_quiz_cargo_codigo: 'cio_cto_cdo',
-      cf_quiz_maturidade_geral: 2.45,
+      cf_quiz_maturidade_geral: '2.45',
       cf_quiz_nivel_dmbok: '2 · Repetível',
-      cf_quiz_governanca: 2.1,
-      cf_quiz_qualidade: 2.8,
-      cf_quiz_seguranca: 3,
-      cf_quiz_conformidade: 1.9,
+      cf_quiz_governanca: '2.1',
+      cf_quiz_qualidade: '2.8',
+      cf_quiz_seguranca: '3',
+      cf_quiz_conformidade: '1.9',
       cf_quiz_gaps_top3: 'LGPD (12) | IA (9) | BCB (7)',
       cf_quiz_gaps_json: JSON.stringify(diagnostico.gaps),
       cf_quiz_dama_json: JSON.stringify(diagnostico.dama),
       cf_quiz_respostas_json: JSON.stringify(diagnostico.answers),
       cf_quiz_roadmap: '1. Governança; 2. Qualidade',
-      cf_quiz_duracao_seg: 184,
+      cf_quiz_duracao_seg: '184',
       cf_quiz_versao: '1.0',
     })
     /* Todo cf_quiz_* enviado está na lista que o admin mostra ao marketing. */
     const enviados = Object.keys(p).filter((k) => k.startsWith('cf_quiz_'))
     for (const k of enviados) expect(CAMPOS_PERSONALIZADOS.diagnostico).toContain(k)
+    /* A RD recusa o lead inteiro com número num campo de texto (27/10). */
+    for (const k of enviados) expect(typeof p[k]).toBe('string')
   })
 
   it('pilar que não é número é pulado em vez de sair NaN', () => {
@@ -340,7 +342,7 @@ describe('montarPayload', () => {
       config({ camposPersonalizados: true }),
     )
     expect(p).not.toHaveProperty('cf_quiz_governanca')
-    expect(p.cf_quiz_qualidade).toBe(2)
+    expect(p.cf_quiz_qualidade).toBe('2')
   })
 })
 
