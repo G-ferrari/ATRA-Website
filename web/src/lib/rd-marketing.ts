@@ -406,22 +406,27 @@ function camposPersonalizados(doc: LeadParaRd): Record<string, unknown> {
     return typeof v === 'number' && Number.isFinite(v) ? v : undefined
   }
   const json = (v: unknown) => (v === null || v === undefined ? undefined : JSON.stringify(v))
+  /* ⚠️ Número vai como **texto**. A conta da ATRA criou os campos do
+   * diagnóstico como texto (27/10), e a RD recusa a conversão inteira com
+   * `INVALID_DATA_TYPE: Must be of type 'STRING'` quando recebe número num
+   * campo de texto. O contrário não acontece: campo numérico aceita "2.45". */
+  const numero = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? String(v) : undefined)
   const entradas: Record<string, unknown> = {
     cf_quiz_setor_codigo: d.sector ?? undefined,
     cf_quiz_porte: d.size ?? undefined,
     cf_quiz_cargo_codigo: d.role ?? undefined,
-    cf_quiz_maturidade_geral: typeof d.average === 'number' ? d.average : undefined,
+    cf_quiz_maturidade_geral: numero(d.average),
     cf_quiz_nivel_dmbok: d.level ?? undefined,
-    cf_quiz_governanca: pilar('Governança'),
-    cf_quiz_qualidade: pilar('Qualidade'),
-    cf_quiz_seguranca: pilar('Segurança'),
-    cf_quiz_conformidade: pilar('Conformidade'),
+    cf_quiz_governanca: numero(pilar('Governança')),
+    cf_quiz_qualidade: numero(pilar('Qualidade')),
+    cf_quiz_seguranca: numero(pilar('Segurança')),
+    cf_quiz_conformidade: numero(pilar('Conformidade')),
     cf_quiz_gaps_top3: d.topGaps?.trim() || undefined,
     cf_quiz_gaps_json: json(d.gaps),
     cf_quiz_dama_json: json(d.dama),
     cf_quiz_respostas_json: json(d.answers),
     cf_quiz_roadmap: d.roadmap?.trim() || undefined,
-    cf_quiz_duracao_seg: typeof d.durationSeconds === 'number' ? d.durationSeconds : undefined,
+    cf_quiz_duracao_seg: numero(d.durationSeconds),
     cf_quiz_versao: d.version ?? undefined,
   }
   for (const [chave, valor] of Object.entries(entradas)) if (valor !== undefined) campos[chave] = valor
