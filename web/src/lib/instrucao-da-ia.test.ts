@@ -121,6 +121,43 @@ describe('montarInstrucao', () => {
     expect(vazio).not.toContain('Soluções:')
   })
 
+  /* D-75 (27/10) — "como trabalhar na ATRA?" recebia Consultores e o WhatsApp
+     do comercial. */
+  it('quem procura trabalho não recebe o comercial nem Consultores, em nenhum caso', () => {
+    expect(instrucao).toContain('Quem quer trabalhar na ATRA')
+    expect(instrucao).toContain('nem a página de Consultores')
+    expect(instrucao).toContain('Não diga quais vagas estão abertas')
+    expect(montarInstrucao('', [], 'pt')).toContain('Quem quer trabalhar na ATRA')
+    expect(montarInstrucao('', [], 'en')).toContain('Someone who wants to work at ATRA')
+  })
+
+  it('com Carreiras no catálogo, a regra manda para ela pelo código; sem ela, não cita código', () => {
+    const comCarreiras = montarInstrucao(
+      '',
+      [...CATALOGO, { codigo: 'P-CARREIRAS', tipo: 'pagina', titulo: 'Trabalhe Conosco', resumo: '', href: '/carreiras' }],
+      'pt',
+    )
+    expect(comCarreiras).toContain('a resposta é a página de carreiras: escreva [UI_CONTEUDO:P-CARREIRAS]')
+    expect(instrucao).not.toContain('[UI_CONTEUDO:P-CARREIRAS]')
+  })
+
+  /* 26/10 — "quer agendar uma conversa?" passou pelo limite 4. */
+  it('o limite 4 proíbe oferecer agendar', () => {
+    expect(instrucao).toContain('Não ofereça agendar, marcar ou reservar conversa')
+    expect(montarInstrucao('', [], 'en')).toContain('Do not offer to schedule, book or set up')
+  })
+
+  it('parceiros ganham seção própria, antes das páginas', () => {
+    const comParceiro = montarInstrucao(
+      '',
+      [...CATALOGO, { codigo: 'R4', tipo: 'parceiro', titulo: 'Google Cloud', resumo: 'Nuvem.', href: '/parceiros/google-cloud' }],
+      'pt',
+    )
+    expect(comParceiro).toContain('Parceiros de tecnologia')
+    expect(comParceiro).toContain('- R4 — Google Cloud: Nuvem.')
+    expect(comParceiro.indexOf('Parceiros de tecnologia')).toBeLessThan(comParceiro.indexOf('Páginas do site:'))
+  })
+
   it('sem texto do admin, sobram os limites, as regras e a lista', () => {
     const semAdmin = montarInstrucao('  ', CATALOGO, 'pt')
     expect(semAdmin.startsWith('LIMITES DA CONVERSA')).toBe(true)

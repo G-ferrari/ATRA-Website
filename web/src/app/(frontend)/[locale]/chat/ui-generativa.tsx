@@ -7,6 +7,7 @@ import {
   Building2,
   CheckCircle2,
   FileText,
+  Handshake,
   Layers,
   type LucideIcon,
   PanelsTopLeft,
@@ -122,6 +123,7 @@ function CartaoServico({ titulo, descricao, icone }: { titulo: string; descricao
 const TIPOS: Record<TipoDeConteudoDaIa, { icone: LucideIcon; pt: string; en: string }> = {
   solucao: { icone: Layers, pt: 'Solução', en: 'Solution' },
   segmento: { icone: Building2, pt: 'Segmento', en: 'Segment' },
+  parceiro: { icone: Handshake, pt: 'Parceiro', en: 'Partner' },
   case: { icone: Trophy, pt: 'Case de sucesso', en: 'Success story' },
   webinar: { icone: Video, pt: 'Webinar', en: 'Webinar' },
   ebook: { icone: BookOpen, pt: 'E-book', en: 'E-book' },

@@ -2663,3 +2663,50 @@ inicial precisa da chave da ATRA (#110), no centro de custo do marketing.
   gancho decide de novo a cada documento, para a trava de um não valer para o
   seguinte.
 
+
+
+## D-75 — A ATRA AI indica Carreiras a quem quer trabalhar na ATRA, e conhece parceiros e perfis de consultores
+
+*Decidida em 27/10/2026 por Leonardo, depois dos testes da Taciane (marketing)
+com o chat em produção.*
+
+**Contexto.** Três perguntas saíram ruins no teste. "Como faço para trabalhar
+na ATRA?" recebeu a página de **Consultores** (a alocação de especialistas da
+ATRA no time do cliente) e "tem vagas?", dois artigos e o WhatsApp do
+**comercial**. A página de Carreiras estava fora do catálogo da IA por decisão
+de 09/10 (desviava a conversa do foco comercial), então o modelo não tinha
+para onde mandar. "Quais consultores vocês têm com Databricks?" e "vocês têm
+certificação Google Cloud?" não achavam o que o site diz: os perfis de
+consultores moram na collection `specialist-roles`, fora do texto da página, e
+as páginas de parceiro (onde estão a certificação Google Cloud e as
+especializações) não estavam no catálogo. E a resposta ainda oferecia
+"agendar uma conversa", contra o limite 4 da D-60.
+
+**Decisão.**
+
+- **Carreiras volta ao catálogo** (`P-CARREIRAS`), e quem segura o foco
+  comercial passa a ser a instrução: a página só é indicada a quem pergunta de
+  trabalho, vagas, estágio ou currículo. Para essa pessoa, nem o WhatsApp do
+  comercial nem a página de Consultores. O assistente **não diz quais vagas
+  estão abertas** (nem que não há): a grade muda (e vem do ATRAIR quando
+  ligado, D-41), e o índice só se refaz numa publicação. A página mostra a
+  lista do dia e o banco de talentos.
+- **Páginas de parceiro entram no catálogo e na busca** (tipo `parceiro`,
+  código `R<id>`, cartão "Parceiro"), as que têm página. Andam com o
+  interruptor "Páginas" de "O que a IA pode recomendar": uma opção nova no
+  campo pediria migração para um controle que ninguém pediu.
+- **Os perfis de consultores entram no texto da página de Consultores** na
+  busca (cargo, senioridade, descrição, especialidades e certificações). Os
+  números do cartão (projetos, tamanho do time) ficam de fora: o assistente
+  não fala de tamanho de equipe.
+- **O limite 4 nomeia o verbo**: não oferecer agendar, marcar ou reservar
+  conversa, reunião, call ou demonstração.
+
+**Consequências.**
+
+- O primeiro índice depois do deploy grava os trechos novos (9 parceiros e os
+  perfis), uma vez.
+- Mudar um perfil de consultor ou um parceiro no admin refaz o índice como
+  qualquer publicação.
+- Como na D-73, nada disso é garantia: é instrução a um modelo. O teste é
+  repetir as perguntas da Taciane em produção depois do deploy.

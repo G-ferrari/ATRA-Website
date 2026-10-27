@@ -5,6 +5,7 @@ import { getPayload } from '../payload'
 
 import { apagarTrechos, gravarTrechos, trechosGuardados } from './banco'
 import type { GerarEmbeddings } from './embeddings'
+import { paragrafosDosPerfis, type Perfil } from './perfis'
 import { planejar, trechosDesejados } from './plano'
 import { paragrafosDoDocumento } from './texto'
 
@@ -36,7 +37,7 @@ async function paragrafosPublicados(locale: Locale): Promise<Map<string, string[
   const porCodigo = new Map<string, string[]>()
 
   const ler = async (
-    collection: 'solutions' | 'segments' | 'cases' | 'webinars' | 'resources' | 'posts' | 'pages',
+    collection: 'solutions' | 'segments' | 'partners' | 'cases' | 'webinars' | 'resources' | 'posts' | 'pages',
     codigo: (doc: Documento) => string | null,
     where: Record<string, unknown> = PUBLICADO,
   ) => {
@@ -60,6 +61,8 @@ async function paragrafosPublicados(locale: Locale): Promise<Map<string, string[
   const porId = (prefixo: string) => (doc: Documento) => `${prefixo}${doc.id}`
   await ler('solutions', porId(PREFIXO_DO_CODIGO.solutions))
   await ler('segments', porId(PREFIXO_DO_CODIGO.segments))
+  /* Parceiro não tem rascunho: está no ar quem tem página (D-75). */
+  await ler('partners', porId(PREFIXO_DO_CODIGO.partners), { hasPage: { equals: true } })
   await ler('cases', porId(PREFIXO_DO_CODIGO.cases))
   await ler('webinars', porId(PREFIXO_DO_CODIGO.webinars))
   await ler('resources', porId(PREFIXO_DO_CODIGO.resources), { kind: { equals: 'ebook' }, ...PUBLICADO })
@@ -70,6 +73,15 @@ async function paragrafosPublicados(locale: Locale): Promise<Map<string, string[
     const secao = secaoDaPagina(doc)
     return secao ? codigoDaPagina(secao) : null
   })
+
+  /* D-75 — os perfis de consultores moram numa collection, não no `layout` da
+     página: entram no texto dela (o porquê está em `./perfis`). */
+  const consultores = codigoDaPagina('consultores')
+  const daPagina = porCodigo.get(consultores)
+  if (daPagina) {
+    const { docs } = await payload.find({ collection: 'specialist-roles', locale, depth: 0, limit: 100, sort: 'order' })
+    porCodigo.set(consultores, [...daPagina, ...paragrafosDosPerfis(docs as Perfil[], locale)])
+  }
 
   return porCodigo
 }

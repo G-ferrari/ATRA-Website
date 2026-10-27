@@ -8,6 +8,7 @@ import {
   deCase,
   deEbook,
   dePagina,
+  deParceiro,
   deSegmento,
   deSolucao,
   deWebinar,
@@ -61,7 +62,7 @@ async function montar(locale: Locale): Promise<ConteudoRecomendavel[]> {
   const payload = await getPayload()
   const comum = { depth: 0, where: PUBLICADO } as const
 
-  const [solucoes, segmentos, cases, webinars, ebooks, artigos, paginas, diagnostico] = await Promise.all([
+  const [solucoes, segmentos, parceiros, cases, webinars, ebooks, artigos, paginas, diagnostico] = await Promise.all([
     nosDoisIdiomas(locale, (idioma) =>
       payload.find({
         collection: 'solutions',
@@ -80,6 +81,19 @@ async function montar(locale: Locale): Promise<ConteudoRecomendavel[]> {
         limit: 100,
         sort: 'order',
         select: { name: true, slug: true, shortDescription: true },
+      }),
+    ),
+    /* Parceiro não tem rascunho (nem coluna `_status`): o que diz se ele está
+       no ar é ter página, como na rota `/parceiros/<slug>`. */
+    nosDoisIdiomas(locale, (idioma) =>
+      payload.find({
+        collection: 'partners',
+        depth: 0,
+        ...idioma,
+        limit: 100,
+        sort: 'order',
+        where: { hasPage: { equals: true } },
+        select: { name: true, slug: true, description: true, hasPage: true },
       }),
     ),
     nosDoisIdiomas(locale, (idioma) =>
@@ -138,6 +152,7 @@ async function montar(locale: Locale): Promise<ConteudoRecomendavel[]> {
   const itens: (ConteudoRecomendavel | null)[] = [
     ...solucoes.map((par) => deSolucao(par, locale)),
     ...segmentos.map((par) => deSegmento(par, locale)),
+    ...parceiros.map((par) => deParceiro(par, locale)),
     ...cases.map((par) => deCase(par, locale)),
     ...webinars.map((par) => deWebinar(par, locale)),
     ...ebooks.map((par) => deEbook(par, locale)),
