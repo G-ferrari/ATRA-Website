@@ -509,6 +509,19 @@ minuto e grava **rascunho** no idioma de destino. ⚠️ O Gemini responde 503 a
 `json_object`. ⚠️ O agendador da fila só começa quando o admin é aberto
 (`cron` do `initReq`), não no build nem em script.
 
+**D-74 (27/10)**: o inglês **se traduz sozinho** ao publicar o português, em 12
+collections (`lib/traducao-automatica.ts`, `withAutoTranslate` do mesmo
+plugin), e vai ao ar **sem revisão** — escolha do Leonardo. Três trancas: o
+interruptor em Sistema → Integrações (nasce desligado), a `GEMINI_API_KEY` e a
+caixa "Inglês revisado à mão" de cada documento, que segura o inglês escrito à
+mão. O slug nunca vai à IA. ⚠️ `req.context` é **trocado** a cada chamada da
+Local API com o `req`: leia depois da consulta, não antes — foi assim que a
+trava ficou sem efeito na primeira versão. ⚠️ A trava é coluna em cada
+collection: collection nova na tradução automática pede antecipada própria
+(`20260927_215960_trava_do_ingles_antecipada`), e por isso `press` e `forms`
+ficaram fora. O botão PT/EN do cabeçalho lê o par no `<link hreflang>` da
+página.
+
 **D-72 (24/10)**: a VM do Google virou a produção. O Caddyfile serve só
 `SITE_HOST` (`www.atra.com.br`), sem `noindex` nem `robots.txt` bloqueando, e
 `REDIRECT_HOSTS` — `atra.com.br`, `atra.digital`, `atrainformatica.com.br`,

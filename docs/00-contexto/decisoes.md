@@ -2583,3 +2583,83 @@ levadas (regra na instrução, porteiro, busca no conteúdo), Leonardo escolheu 
 - Trocar o modelo ou a dimensão do embedding refaz o índice inteiro na
   sincronização seguinte (entram no hash); a dimensão também está na coluna
   `vector(768)` e pede migração.
+
+
+## D-74 — O inglês se traduz sozinho ao publicar, e vai ao ar sem revisão
+
+*Decidida em 27/10/2026 por Leonardo, depois do pedido da Karen por uma versão
+em inglês do site.*
+
+**Contexto.** O site é bilíngue desde a fundação (D-07), mas o conteúdo em
+inglês quase não existe: em 27/10 o sitemap de produção declarava 15 endereços
+em inglês, contra 216 artigos, 23 soluções e 8 segmentos. O botão "Traduzir"
+da D-70 resolve um artigo por vez, sob pedido, e só no Blog: manter o inglês
+em dia dependeria de alguém lembrar de clicar a cada edição, e de revisar e
+publicar cada tradução. A Karen disse que o inglês é importante; o time de
+conteúdo não tem como assumir esse trabalho.
+
+**Decisão.**
+
+- As collections de conteúdo **se traduzem sozinhas** para o inglês ao
+  publicar o português, pelo recurso `withAutoTranslate` do mesmo plugin da
+  D-70, com o mesmo Gemini e a mesma instrução (`lib/traducao.ts`). São 12:
+  páginas, soluções, segmentos, cases, artigos, webinars, e-books, vagas,
+  parceiros, depoimentos, temas e especialidades
+  (`lib/traducao-automatica.ts`).
+- **O inglês vai ao ar sem revisão.** O modo automático do plugin publica o
+  que escreve, sem opção de rascunho. Revisar a cada publicação era o trabalho
+  que se queria tirar do time; a alternativa (rascunho automático) deixaria o
+  inglês parado à espera de alguém publicar. Isso muda a D-70 para a tradução
+  automática (a pedida no botão continua chegando como rascunho) e responde,
+  na prática, a P-08: o inglês do site é saída de máquina.
+- **Trava por documento:** a caixa **"Inglês revisado à mão: não
+  retraduzir"** (barra lateral de cada documento). Marcada, o português pode
+  mudar e o inglês fica como alguém escreveu. Desmarcada, a estratégia é
+  `overwrite`: o inglês inteiro é refeito a cada publicação, inclusive o que
+  alguém tenha corrigido à mão.
+- **Interruptor no admin**, nascido **desligado**: Sistema → Integrações →
+  Tradução para o inglês. Ligar gasta a chave do Gemini e publica texto sem
+  revisão, por isso é decisão de admin. Sem `GEMINI_API_KEY` no servidor,
+  ligado continua inerte — e é por isso que nem o CI nem um seed enfileiram
+  tradução.
+- **O endereço não é traduzido.** O slug fica fora da IA em todas as
+  collections; o plugin copia o slug português para o inglês só quando o
+  inglês está vazio, e o que alguém gravou no inglês fica. Com isso o
+  documento traduzido passa a existir no inglês pela regra da D-69. Traduzir
+  o endereço segue manual (campo "Slug" com o admin em English).
+- **Botão PT/EN no cabeçalho**, em toda largura. Leva à mesma página no outro
+  idioma quando ela declara o par (`hreflang`, o critério do sitemap), e à
+  inicial do outro idioma quando não declara.
+
+**Fica de fora.** `press` e `forms`: a trava é coluna nova, e as tabelas das
+duas nascem depois da data da migração antecipada que protege as migrações de
+dados antigas em banco novo — entrar pede outra antecipada. `media` (texto
+alternativo) e os globals (menu, rodapé, contato, cookies, ATRA AI): o plugin
+não traduz global, e eles se editam em inglês no admin. Espanhol e árabe, que
+o WordPress tinha: cada idioma novo pede rotas, menu e sitemap próprios.
+
+**Custo.** Estimado em US$ 1 a 3 para traduzir o site inteiro uma vez (216
+artigos de ~640 palavras e uns 60 mil palavras do resto), e menos de US$ 0,01
+por edição depois, no preço de tabela da linha Flash do Gemini — a conferir no
+console do Google. O limite real é a cota da chave: com a pessoal do
+G-ferrari, a fila parou em ~8 artigos por dia no teste da D-70. A carga
+inicial precisa da chave da ATRA (#110), no centro de custo do marketing.
+
+**Consequências.**
+
+- A fila é a da D-70: um documento por minuto, até 4 tentativas, e só anda
+  com o servidor de pé e depois de alguém abrir o admin após um deploy. A
+  carga inicial do Blog leva umas 4 horas; ela se faz pelo painel da collection
+  (marcar todos → ícone **文A**), não pela publicação.
+- ⚠️ Se, entre a publicação e a vez na fila, alguém salvar um rascunho em
+  português, a tradução parte do rascunho (o plugin lê a versão mais nova) e o
+  inglês publica um texto que o português ainda não publicou. A fila de um
+  minuto deixa a janela curta.
+- ⚠️ `req.context` é trocado por um objeto novo a cada chamada da Local API
+  com o `req` (`createLocalReq`). O gancho que decide lê o contexto **depois**
+  de consultar o interruptor; na primeira versão a chave ia para o objeto
+  velho, e documento travado era traduzido mesmo assim.
+- Publicar vários documentos de uma vez na lista do admin usa um `req` só: o
+  gancho decide de novo a cada documento, para a trava de um não valer para o
+  seguinte.
+

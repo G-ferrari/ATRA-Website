@@ -1,3 +1,5 @@
+import { default as default_5a9e6bfe3379b31c0258f532ec5399fb } from '@focus-reactive/payload-plugin-translator/client/widgets/bulk-translation-dashboard/ui/BulkTranslationDashboard.server'
+import { default as default_587142b484744b5573788fdf4a68522a } from '@focus-reactive/payload-plugin-translator/client/widgets/translate-document/ui/TranslateDocument.server'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -24,8 +26,6 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { RotuloDoCampoDoFormulario as RotuloDoCampoDoFormulario_f3b71a0fdb23297f7ac22b64ad4328bc } from '../../../components/admin/rotulo-do-campo-do-formulario'
 import { CampoDeIcone as CampoDeIcone_b0626561eae40cbc7b11dface6be9a3c } from '../../../components/admin/campo-de-icone'
-import { default as default_5a9e6bfe3379b31c0258f532ec5399fb } from '@focus-reactive/payload-plugin-translator/client/widgets/bulk-translation-dashboard/ui/BulkTranslationDashboard.server'
-import { default as default_587142b484744b5573788fdf4a68522a } from '@focus-reactive/payload-plugin-translator/client/widgets/translate-document/ui/TranslateDocument.server'
 import { RotuloDaResposta as RotuloDaResposta_370e41e01167d930f41ae53b2cb5a4f1 } from '../../../components/admin/rotulo-da-resposta'
 import { SituacaoDaChaveRd as SituacaoDaChaveRd_c45d31bb96eb1dd1a3b6534fe7939c18 } from '../../../components/admin/situacao-da-chave-rd'
 import { FormulariosNoRd as FormulariosNoRd_38505e0929d96a07b25e7018e36255d6 } from '../../../components/admin/formularios-no-rd'
@@ -35,6 +35,8 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@focus-reactive/payload-plugin-translator/client/widgets/bulk-translation-dashboard/ui/BulkTranslationDashboard.server#default": default_5a9e6bfe3379b31c0258f532ec5399fb,
+  "@focus-reactive/payload-plugin-translator/client/widgets/translate-document/ui/TranslateDocument.server#default": default_587142b484744b5573788fdf4a68522a,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -61,8 +63,6 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/rotulo-do-campo-do-formulario#RotuloDoCampoDoFormulario": RotuloDoCampoDoFormulario_f3b71a0fdb23297f7ac22b64ad4328bc,
   "/components/admin/campo-de-icone#CampoDeIcone": CampoDeIcone_b0626561eae40cbc7b11dface6be9a3c,
-  "@focus-reactive/payload-plugin-translator/client/widgets/bulk-translation-dashboard/ui/BulkTranslationDashboard.server#default": default_5a9e6bfe3379b31c0258f532ec5399fb,
-  "@focus-reactive/payload-plugin-translator/client/widgets/translate-document/ui/TranslateDocument.server#default": default_587142b484744b5573788fdf4a68522a,
   "/components/admin/rotulo-da-resposta#RotuloDaResposta": RotuloDaResposta_370e41e01167d930f41ae53b2cb5a4f1,
   "/components/admin/situacao-da-chave-rd#SituacaoDaChaveRd": SituacaoDaChaveRd_c45d31bb96eb1dd1a3b6534fe7939c18,
   "/components/admin/formularios-no-rd#FormulariosNoRd": FormulariosNoRd_38505e0929d96a07b25e7018e36255d6,

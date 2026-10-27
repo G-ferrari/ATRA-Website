@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { Icone } from '@/components/blocks/icones'
+import { AlternadorDeIdioma } from '@/components/layout/alternador-de-idioma'
 import { PainelDoMenu } from '@/components/layout/mega-menu'
 import { TEXTOS_CASCA } from '@/lib/navegacao'
 import { larguraOticaCss } from '@/lib/logo'
@@ -248,6 +249,10 @@ export function SiteHeader({
                 <MessageCircle size={18} aria-hidden />
               </a>
             )}
+
+            {/* D-74: PT/EN, do tamanho do WhatsApp e em toda largura, como ele.
+                Some com o megamenu aberto no desktop pelo mesmo motivo. */}
+            <AlternadorDeIdioma locale={locale} className={aberto ? 'flex md:hidden' : 'flex'} />
 
             {aberto && (
               <button
