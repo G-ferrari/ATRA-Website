@@ -133,6 +133,7 @@ import * as migration_20261022_234755_drop_talent_pool_rd_columns from './202610
 import * as migration_20261023_010102_traducao_no_admin from './20261023_010102_traducao_no_admin';
 import * as migration_20261026_194552_busca_da_ia from './20261026_194552_busca_da_ia';
 import * as migration_20261027_174059_traducao_automatica_do_ingles from './20261027_174059_traducao_automatica_do_ingles';
+import * as migration_20261027_200000_carga_inicial_do_ingles from './20261027_200000_carga_inicial_do_ingles';
 
 export const migrations = [
   {
@@ -809,5 +810,10 @@ export const migrations = [
     up: migration_20261027_174059_traducao_automatica_do_ingles.up,
     down: migration_20261027_174059_traducao_automatica_do_ingles.down,
     name: '20261027_174059_traducao_automatica_do_ingles'
+  },
+  {
+    up: migration_20261027_200000_carga_inicial_do_ingles.up,
+    down: migration_20261027_200000_carga_inicial_do_ingles.down,
+    name: '20261027_200000_carga_inicial_do_ingles',
   },
 ];

@@ -527,6 +527,12 @@ webinars, e-books, vagas, parceiros, depoimentos, temas e especialidades.
 - Menu, rodapé, contato, aviso de cookies, notícias de "ATRA na mídia" e
   formulários **não** se traduzem sozinhos: edite-os em English no admin.
 
+**A carga inicial** (27/10) traduziu de uma vez o que já estava publicado
+antes de a tradução automática existir: páginas primeiro, o Blog por último,
+um documento por minuto, umas 6 horas. Ela respeitou a caixa "Inglês revisado
+à mão" e não tocou em rascunho. Para acompanhar, abra o site em `/en`: o que
+já foi traduzido aparece em inglês.
+
 **Traduzir sob pedido.** O botão de tradução (o ícone **文A**, ao lado de
 "Salvar rascunho") continua em cada documento, e acima da lista para vários de
 uma vez. Pedida por ele, a tradução chega como **rascunho** em inglês, para
