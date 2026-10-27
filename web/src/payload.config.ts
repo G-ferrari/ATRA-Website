@@ -15,6 +15,7 @@ import { buildConfig, type CollectionConfig } from 'payload'
 
 import { revalidarSite } from './hooks/revalidar'
 import { provedorDeTraducao, quemTraduz } from './lib/traducao'
+import { COLECOES_TRADUZIDAS_SOZINHAS, comTraducaoAutomatica } from './lib/traducao-automatica'
 import sharp from 'sharp'
 
 import { Cases } from './collections/Cases'
@@ -67,6 +68,18 @@ function comRevalidacao(collections: CollectionConfig[], fora: string[]): Collec
   )
 }
 
+/* D-74: as collections de conteúdo, já com a trava do inglês e a tradução
+ * automática (`lib/traducao-automatica.ts`). A mesma lista vai ao
+ * `buildConfig` e ao plugin, como o plugin pede. */
+const SLUGS_TRADUZIDOS: readonly string[] = COLECOES_TRADUZIDAS_SOZINHAS
+const traduzidaSeFor = (c: CollectionConfig) => (SLUGS_TRADUZIDOS.includes(c.slug) ? comTraducaoAutomatica(c) : c)
+const COLECOES = [
+  Users, Media, Topics, Testimonials,
+  Cases, Forms, GlossaryTerms, Jobs, Pages, Posts, Press, Resources, Webinars,
+  Clients, Partners, Segments, Solutions, SpecialistRoles,
+  AiUsage, FormSubmissions, PrivateFiles,
+].map(traduzidaSeFor)
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -98,12 +111,7 @@ export default buildConfig({
    * visitante do chat esvaziaria o cache do site inteiro. `users` não desenha
    * página nenhuma. */
   collections: comRevalidacao(
-    [
-      Users, Media, Topics, Testimonials,
-      Cases, Forms, GlossaryTerms, Jobs, Pages, Posts, Press, Resources, Webinars,
-      Clients, Partners, Segments, Solutions, SpecialistRoles,
-      AiUsage, FormSubmissions, PrivateFiles,
-    ],
+    COLECOES,
     ['users', 'ai-usage', 'form-submissions', 'private-files'],
   ),
 
@@ -194,14 +202,16 @@ export default buildConfig({
         forcePathStyle: true,
       },
     }),
-    /* #66 (teste de 21/10): o botão "Traduzir" no admin, por enquanto só nos
-     * artigos. A tradução vai como rascunho para o idioma de destino e roda
+    /* #66 (teste de 21/10): o botão "Traduzir" no admin, nos artigos desde a
+     * D-70 e, desde a D-74, em toda collection de conteúdo — que também se
+     * traduz sozinha ao publicar. Pedida no botão, a tradução vai como
+     * rascunho para o idioma de destino; a automática é publicada. Roda
      * numa fila (Payload Jobs), para a editora não ficar esperando um lote.
      * `staleJobTimeoutMs` acima do mais longo dos artigos: abaixo disso, uma
      * tradução ainda em andamento recomeçaria, e seria cobrada duas vezes.
      * Ver `lib/traducao.ts`. */
     translatorPlugin({
-      collections: [Posts],
+      collections: COLECOES.filter((c) => SLUGS_TRADUZIDOS.includes(c.slug)),
       translationProvider: provedorDeTraducao,
       /* Um artigo por vez, com espera longa entre tentativas: com 9 de uma vez
          o Gemini respondeu 429 (limite de uso da chave) a quase todos, e as 4

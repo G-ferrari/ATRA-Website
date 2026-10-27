@@ -69,6 +69,7 @@ import * as migration_20260927_215900_partner_mosaic from './20260927_215900_par
 import * as migration_20260927_215950_descricao_e_alinhamento from './20260927_215950_descricao_e_alinhamento';
 import * as migration_20260927_215950_page_hero_video from './20260927_215950_page_hero_video';
 import * as migration_20260927_215950_process_steps_variant from './20260927_215950_process_steps_variant';
+import * as migration_20260927_215960_trava_do_ingles_antecipada from './20260927_215960_trava_do_ingles_antecipada';
 import * as migration_20260927_220000_secao_formulario_antecipada from './20260927_220000_secao_formulario_antecipada';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
@@ -131,6 +132,7 @@ import * as migration_20261022_181457_trabalhe_conosco_fora_do_rd from './202610
 import * as migration_20261022_234755_drop_talent_pool_rd_columns from './20261022_234755_drop_talent_pool_rd_columns';
 import * as migration_20261023_010102_traducao_no_admin from './20261023_010102_traducao_no_admin';
 import * as migration_20261026_194552_busca_da_ia from './20261026_194552_busca_da_ia';
+import * as migration_20261027_174059_traducao_automatica_do_ingles from './20261027_174059_traducao_automatica_do_ingles';
 
 export const migrations = [
   {
@@ -489,6 +491,11 @@ export const migrations = [
     name: '20260927_215950_process_steps_variant',
   },
   {
+    up: migration_20260927_215960_trava_do_ingles_antecipada.up,
+    down: migration_20260927_215960_trava_do_ingles_antecipada.down,
+    name: '20260927_215960_trava_do_ingles_antecipada',
+  },
+  {
     up: migration_20260927_220000_secao_formulario_antecipada.up,
     down: migration_20260927_220000_secao_formulario_antecipada.down,
     name: '20260927_220000_secao_formulario_antecipada',
@@ -796,6 +803,11 @@ export const migrations = [
   {
     up: migration_20261026_194552_busca_da_ia.up,
     down: migration_20261026_194552_busca_da_ia.down,
-    name: '20261026_194552_busca_da_ia'
+    name: '20261026_194552_busca_da_ia',
+  },
+  {
+    up: migration_20261027_174059_traducao_automatica_do_ingles.up,
+    down: migration_20261027_174059_traducao_automatica_do_ingles.down,
+    name: '20261027_174059_traducao_automatica_do_ingles'
   },
 ];

@@ -296,6 +296,10 @@ export interface Topic {
    * Lower comes first.
    */
   filterOrder?: number | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -323,6 +327,10 @@ export interface Testimonial {
    */
   photo?: (number | null) | Media;
   featured?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -426,6 +434,10 @@ export interface Case {
    */
   featured?: boolean | null;
   publishedAt: string;
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -3154,6 +3166,10 @@ export interface Partner {
     ogImage?: (number | null) | Media;
     noIndex?: boolean | null;
   };
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -3319,6 +3335,10 @@ export interface Job {
     ogImage?: (number | null) | Media;
     noIndex?: boolean | null;
   };
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -6101,6 +6121,10 @@ export interface Page {
     ogImage?: (number | null) | Media;
     noIndex?: boolean | null;
   };
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -6166,6 +6190,10 @@ export interface Post {
     ogImage?: (number | null) | Media;
     noIndex?: boolean | null;
   };
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -6270,6 +6298,10 @@ export interface Resource {
     ogImage?: (number | null) | Media;
     noIndex?: boolean | null;
   };
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -6355,6 +6387,10 @@ export interface Webinar {
     ogImage?: (number | null) | Media;
     noIndex?: boolean | null;
   };
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -9183,6 +9219,10 @@ export interface Segment {
     ogImage?: (number | null) | Media;
     noIndex?: boolean | null;
   };
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -12002,6 +12042,10 @@ export interface Solution {
     ogImage?: (number | null) | Media;
     noIndex?: boolean | null;
   };
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -12147,6 +12191,10 @@ export interface SpecialistRole {
       }[]
     | null;
   order: number;
+  /**
+   * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
+   */
+  englishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -12618,6 +12666,7 @@ export interface TopicsSelect<T extends boolean = true> {
   description?: T;
   showInFilter?: T;
   filterOrder?: T;
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -12633,6 +12682,7 @@ export interface TestimonialsSelect<T extends boolean = true> {
   authorRole?: T;
   photo?: T;
   featured?: T;
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -12682,6 +12732,7 @@ export interface CasesSelect<T extends boolean = true> {
   slug?: T;
   featured?: T;
   publishedAt?: T;
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -12760,6 +12811,7 @@ export interface JobsSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -13661,6 +13713,7 @@ export interface PagesSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -13690,6 +13743,7 @@ export interface PostsSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -13740,6 +13794,7 @@ export interface ResourcesSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -13772,6 +13827,7 @@ export interface WebinarsSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -14657,6 +14713,7 @@ export interface PartnersSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -15527,6 +15584,7 @@ export interface SegmentsSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -16398,6 +16456,7 @@ export interface SolutionsSelect<T extends boolean = true> {
         ogImage?: T;
         noIndex?: T;
       };
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -16429,6 +16488,7 @@ export interface SpecialistRolesSelect<T extends boolean = true> {
         id?: T;
       };
   order?: T;
+  englishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -17082,6 +17142,12 @@ export interface Integration {
       consultantRequest?: string[] | null;
       dataMaturityDiagnostic?: string[] | null;
     };
+  };
+  englishTranslation?: {
+    /**
+     * On: when a page is published in Portuguese, the AI (Gemini) redoes its English and publishes it, in about a minute, without review. Documents marked "English edited by hand" are left alone. Applies to pages, solutions, segments, cases, posts, webinars, e-books, jobs, partners, testimonials, topics and specialties.
+     */
+    enabled?: boolean | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -17845,6 +17911,11 @@ export interface IntegrationsSelect<T extends boolean = true> {
               dataMaturityDiagnostic?: T;
             };
       };
+  englishTranslation?:
+    | T
+    | {
+        enabled?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -17960,10 +18031,55 @@ export interface TaskTranslateDocument {
     /**
      * Deprecated. See docs/DEPRECATIONS.md#jobs-input-collection-field
      */
-    collection?: {
-      relationTo: 'posts';
-      value: number | Post;
-    } | null;
+    collection?:
+      | ({
+          relationTo: 'topics';
+          value: number | Topic;
+        } | null)
+      | ({
+          relationTo: 'testimonials';
+          value: number | Testimonial;
+        } | null)
+      | ({
+          relationTo: 'cases';
+          value: number | Case;
+        } | null)
+      | ({
+          relationTo: 'jobs';
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'resources';
+          value: number | Resource;
+        } | null)
+      | ({
+          relationTo: 'webinars';
+          value: number | Webinar;
+        } | null)
+      | ({
+          relationTo: 'partners';
+          value: number | Partner;
+        } | null)
+      | ({
+          relationTo: 'segments';
+          value: number | Segment;
+        } | null)
+      | ({
+          relationTo: 'solutions';
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: 'specialist-roles';
+          value: number | SpecialistRole;
+        } | null);
     source_lng: string;
     target_lng: string;
     strategy: string;
@@ -17982,10 +18098,55 @@ export interface WorkflowTranslateDocumentLocales {
     /**
      * Deprecated. See docs/DEPRECATIONS.md#jobs-input-collection-field
      */
-    collection?: {
-      relationTo: 'posts';
-      value: number | Post;
-    } | null;
+    collection?:
+      | ({
+          relationTo: 'topics';
+          value: number | Topic;
+        } | null)
+      | ({
+          relationTo: 'testimonials';
+          value: number | Testimonial;
+        } | null)
+      | ({
+          relationTo: 'cases';
+          value: number | Case;
+        } | null)
+      | ({
+          relationTo: 'jobs';
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'resources';
+          value: number | Resource;
+        } | null)
+      | ({
+          relationTo: 'webinars';
+          value: number | Webinar;
+        } | null)
+      | ({
+          relationTo: 'partners';
+          value: number | Partner;
+        } | null)
+      | ({
+          relationTo: 'segments';
+          value: number | Segment;
+        } | null)
+      | ({
+          relationTo: 'solutions';
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: 'specialist-roles';
+          value: number | SpecialistRole;
+        } | null);
     source_lng: string;
     strategy: string;
     publish_on_translation?: boolean | null;

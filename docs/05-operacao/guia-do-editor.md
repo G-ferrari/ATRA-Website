@@ -505,36 +505,40 @@ formulário.
 versão em inglês: troque o idioma no topo do admin e preencha. Vazio em
 inglês, o site usa o português.
 
-## Traduzir um artigo para o inglês
+## O inglês do site
 
-Os artigos do **Blog** se traduzem no próprio admin, com a mesma IA da ATRA AI
-(o Gemini). A tradução não é automática: alguém pede, e ela chega como
-**rascunho** em inglês, para revisar antes de publicar.
+Desde 27/10 o inglês **se refaz sozinho**: ao publicar em português, a IA da
+ATRA AI (o Gemini) traduz o documento e **publica** o inglês, em cerca de um
+minuto, sem revisão. Vale para páginas, soluções, segmentos, cases, artigos,
+webinars, e-books, vagas, parceiros, depoimentos, temas e especialidades.
 
-1. **Pedir.** Num artigo, clique no botão de tradução (o ícone **文A**, ao lado
-   de "Salvar rascunho") e escolha português → inglês. Para vários de uma vez,
-   marque os artigos na lista do Blog e use o mesmo ícone, acima da lista.
-2. **Esperar.** O pedido entra numa fila no servidor, que traduz **um artigo
-   por minuto**. Se o Gemini estiver ocupado, a fila tenta de novo sozinha,
-   com espera cada vez maior. Dez artigos levam uns dez minutos, ou mais se o
-   Gemini recusar.
-3. **Revisar.** Troque o idioma do admin para **English** (no topo, "Local") e
-   abra o artigo: título, resumo e corpo estão em inglês, com os mesmos
-   títulos, listas, links e imagens do português. Marca, nome de produto e
-   sigla (ATRA, Google Cloud, LGPD, BACEN) não são traduzidos. Corrija o que
-   precisar.
-4. **Publicar.** Clique em **Publicar alterações**. Até lá, o site mostra o
-   artigo como estava.
+- **Ligar e desligar** é de quem administra: **Sistema → Integrações →
+  Tradução para o inglês**. Desligado, nada é traduzido sozinho.
+- **Para escrever o inglês à mão**, marque **"Inglês revisado à mão: não
+  retraduzir"**, na barra lateral do documento, e edite com o admin em
+  **English** (no topo, "Local"). Marcada a caixa, publicar o português não
+  mexe mais no inglês. ⚠️ Sem a caixa, a próxima publicação em português
+  **apaga** as correções feitas no inglês.
+- O **endereço** em inglês não é traduzido: fica o do português até alguém
+  trocar o campo "Slug" com o admin em English. Mudar o endereço de algo
+  publicado quebra links.
+- Marca, nome de produto e sigla (ATRA, Google Cloud, LGPD, BACEN) não são
+  traduzidos.
+- Menu, rodapé, contato, aviso de cookies, notícias de "ATRA na mídia" e
+  formulários **não** se traduzem sozinhos: edite-os em English no admin.
 
-⚠️ **Publicar publica o artigo inteiro**, nos dois idiomas. Se houver mudança
-em português salva como rascunho e ainda não publicada, ela vai ao ar junto.
-Publique o português primeiro, ou confira que ele não tem rascunho pendente.
+**Traduzir sob pedido.** O botão de tradução (o ícone **文A**, ao lado de
+"Salvar rascunho") continua em cada documento, e acima da lista para vários de
+uma vez. Pedida por ele, a tradução chega como **rascunho** em inglês, para
+revisar antes de publicar — útil para o que está travado. A fila traduz **um
+documento por minuto**, e tenta de novo sozinha se o Gemini estiver ocupado.
 
-O **endereço** do artigo em inglês não é traduzido: ele continua com o do
-português, e dá para trocar no campo "Slug" com o admin em English. Por
-enquanto só o Blog tem o botão; soluções, segmentos e as outras páginas se
-traduzem à mão. O espanhol pede um idioma novo no site inteiro, e é outra
-tarefa.
+⚠️ **Publicar o rascunho publica o documento inteiro**, nos dois idiomas. Se
+houver mudança em português salva como rascunho e ainda não publicada, ela vai
+ao ar junto. Publique o português primeiro, ou confira que ele não tem
+rascunho pendente.
+
+O espanhol pede um idioma novo no site inteiro, e é outra tarefa.
 
 ## O que mais é editável
 

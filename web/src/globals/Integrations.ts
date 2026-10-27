@@ -276,5 +276,29 @@ export const Integrations: GlobalConfig = {
         },
       ],
     },
+    {
+      /* D-74: o interruptor da tradução automática para o inglês
+       * (`lib/traducao-automatica.ts`). Nasce desligado: ligar gasta a chave do
+       * Gemini a cada publicação, e o inglês vai ao ar sem revisão — decisão de
+       * admin, não de editor, como o resto deste global. Sem `GEMINI_API_KEY`
+       * no servidor, ligado continua inerte. */
+      name: 'englishTranslation',
+      type: 'group',
+      label: { pt: 'Tradução para o inglês', en: 'English translation' },
+      fields: [
+        {
+          name: 'enabled',
+          type: 'checkbox',
+          defaultValue: false,
+          label: { pt: 'Traduzir para o inglês ao publicar', en: 'Translate into English on publish' },
+          admin: {
+            description: {
+              pt: 'Ligado: ao publicar em português, a IA (Gemini) refaz o inglês do documento e o publica, em cerca de um minuto, sem revisão. Documentos com "Inglês revisado à mão" marcado ficam como estão. Vale para páginas, soluções, segmentos, cases, artigos, webinars, e-books, vagas, parceiros, depoimentos, temas e especialidades.',
+              en: 'On: when a page is published in Portuguese, the AI (Gemini) redoes its English and publishes it, in about a minute, without review. Documents marked "English edited by hand" are left alone. Applies to pages, solutions, segments, cases, posts, webinars, e-books, jobs, partners, testimonials, topics and specialties.',
+            },
+          },
+        },
+      ],
+    },
   ],
 }

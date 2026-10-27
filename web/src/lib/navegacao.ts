@@ -19,6 +19,7 @@ export const TEXTOS_CASCA = {
     logo: 'ATRA Logo',
     areaRestrita: 'Área Restrita',
     alternarTema: 'Alternar tema',
+    outroIdioma: 'Read in English',
   },
   en: {
     menu: 'Menu',
@@ -29,5 +30,6 @@ export const TEXTOS_CASCA = {
     logo: 'ATRA Logo',
     areaRestrita: 'Restricted Area',
     alternarTema: 'Toggle theme',
+    outroIdioma: 'Ver em português',
   },
 } as const
