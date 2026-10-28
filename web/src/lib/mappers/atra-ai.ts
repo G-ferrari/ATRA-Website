@@ -1,5 +1,6 @@
 import type { AtraAi } from '@/payload-types'
 import type { ConviteDeLead } from '@/types/content'
+import type { Locale } from '../locales'
 
 /* Mapper do convite de lead no chat (MIG-150, D-29). */
 
@@ -19,9 +20,14 @@ const RESERVA = {
     mensagem: 'Leave your details and the ATRA team will follow up with you.',
     sucesso: 'Got it! Someone from ATRA will reach out soon.',
   },
+  es: {
+    titulo: '¿Quiere hablar con un especialista?',
+    mensagem: 'Deje sus datos y el equipo de ATRA continuará la conversación con usted.',
+    sucesso: '¡Recibido! Pronto alguien de ATRA se pondrá en contacto.',
+  },
 } as const
 
-export function toConviteDeLead(doc: AtraAi, locale: 'pt' | 'en'): ConviteDeLead | null {
+export function toConviteDeLead(doc: AtraAi, locale: Locale): ConviteDeLead | null {
   const grupo = doc.leadCapture
   if (!grupo?.enabled) return null
 

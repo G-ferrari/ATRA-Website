@@ -3,6 +3,7 @@ import type { Resource, ResourceDetail } from '@/types/content'
 
 import { toImage, toTextos } from './shared'
 import { toSeo } from './seo'
+import { FORMATO_DO_IDIOMA, type Locale } from '../locales'
 
 export function toResource(doc: Doc): Resource {
   return {
@@ -30,8 +31,8 @@ export function toResourceDetail(doc: Doc): ResourceDetail {
 }
 
 /** Data por extenso, como o legado escreve nos cards ("10 de janeiro de 2026"). */
-export function dataPorExtenso(iso: string, locale: 'pt' | 'en'): string {
-  return new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
+export function dataPorExtenso(iso: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(FORMATO_DO_IDIOMA[locale], {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

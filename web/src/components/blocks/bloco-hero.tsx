@@ -15,7 +15,7 @@ import { TextoDestacado } from './texto-destacado'
 
 /* CTA com href absoluto (http/https) é link externo — ex.: o WhatsApp do diretor
    na RC18. Abre em nova aba; `rel` fecha o vazamento de opener/referrer. */
-const ASSISTIR: Record<Locale, string> = { pt: 'Assistir ao vídeo', en: 'Watch the video' }
+const ASSISTIR: Record<Locale, string> = { pt: 'Assistir ao vídeo', en: 'Watch the video', es: 'Ver el video' }
 
 const ehExterno = (href: string) => /^https?:\/\//i.test(href)
 

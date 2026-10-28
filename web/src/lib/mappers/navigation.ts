@@ -11,6 +11,7 @@ import type {
 
 import { toSegmentCard } from './segment'
 import { toImageOpcional } from './shared'
+import type { Locale } from '../locales'
 
 /* Como em `solution.ts`: o parâmetro é o `Pick` do que o menu usa, e não o
  * documento inteiro, para o `select` da consulta e o mapper não saírem de
@@ -38,7 +39,7 @@ const vazio = (v: string | null | undefined): string | null => {
 
 export function toGruposDeSolucoes(
   docs: SolucaoDoMenu[],
-  locale: 'pt' | 'en',
+  locale: Locale,
   hrefDaSolucao: (slug: string) => string,
 ): GrupoDeSolucoes[] {
   return ABAS_DE_SOLUCOES.map((g) => ({
@@ -126,7 +127,7 @@ export function toNavegacao(args: {
   segmentos: SegmentoDoMenu[]
   /** Já mapeado (`conversion-panel.ts`); `null` enquanto não tiver título. */
   conversao: PainelDeConversao | null
-  locale: 'pt' | 'en'
+  locale: Locale
   hrefDaSolucao: (slug: string) => string
 }): Navegacao {
   const { parceiros, descricoes } = toParceirosDoMenu(args.parceiros)

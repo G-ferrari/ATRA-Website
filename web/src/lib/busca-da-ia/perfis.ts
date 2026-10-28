@@ -24,6 +24,7 @@ export type Perfil = {
 const ROTULOS = {
   pt: { perfil: 'Perfil de consultor', especialidades: 'Especialidades', certificacoes: 'Certificações' },
   en: { perfil: 'Consultant profile', especialidades: 'Specialties', certificacoes: 'Certifications' },
+  es: { perfil: 'Perfil de consultor', especialidades: 'Especialidades', certificacoes: 'Certificaciones' },
 } as const
 
 const nomes = (lista: Perfil['tags']): string =>

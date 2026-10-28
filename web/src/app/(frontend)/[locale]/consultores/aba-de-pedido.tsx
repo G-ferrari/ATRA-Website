@@ -61,6 +61,17 @@ const TEXTOS = {
     sucesso: 'We got your request. We will get back to you soon.',
     fechar: 'Close',
   },
+  es: {
+    titulo: 'Mi solicitud',
+    resumo: (perfis: number) => `${perfis} ${perfis === 1 ? 'perfil' : 'perfiles'}`,
+    vazio: 'Aún no eligió ningún perfil. Elija en la lista o describa abajo el profesional que busca.',
+    minimizar: 'Minimizar',
+    expandir: 'Revisar y enviar',
+    remover: 'Quitar de la solicitud',
+    enviada: 'Solicitud enviada',
+    sucesso: 'Recibimos su solicitud. Le responderemos pronto.',
+    fechar: 'Cerrar',
+  },
 } as const
 
 const ID_TITULO = 'titulo-da-aba-de-pedido'

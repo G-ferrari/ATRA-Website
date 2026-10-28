@@ -53,15 +53,25 @@ const completar: CompletionFn = async (pedido) => {
 
 /* O que se acrescenta à instrução do plugin. Só o que é técnico e não se
  * discute: marca, nome de produto e sigla não se traduzem. Tom e glossário são
- * do marketing (D-22) e entram aqui quando ele pedir. */
-const REGRAS_DA_ATRA = [
-  'The text belongs to the website of ATRA, a Brazilian data and AI consultancy. Translate Brazilian Portuguese into US English with a professional, clear B2B tone.',
-  'Keep unchanged: the name ATRA, company and product names (for example Google Cloud, Databricks, BigID, Denodo, Atlan, Microsoft Azure), acronyms (LGPD, BACEN, CVM, ANS, BI, KPI) and URLs.',
-].join('\n')
+ * do marketing (D-22) e entram aqui quando ele pedir.
+ *
+ * A variedade de cada idioma: inglês americano (D-74) e espanhol neutro, para
+ * a América Latina, tratando o leitor por "usted" (D-77) — o mercado de fala
+ * espanhola da ATRA é o latino-americano, e "usted" é o registro do B2B lá. */
+const VARIEDADE: Record<string, string> = {
+  en: 'Translate Brazilian Portuguese into US English with a professional, clear B2B tone.',
+  es: 'Translate Brazilian Portuguese into neutral Latin American Spanish with a professional, clear B2B tone, addressing the reader as "usted". Avoid expressions specific to Spain or to a single country.',
+}
+
+const REGRAS_DA_ATRA = (alvo: string) =>
+  [
+    `The text belongs to the website of ATRA, a Brazilian data and AI consultancy. ${VARIEDADE[alvo] ?? VARIEDADE.en}`,
+    'Keep unchanged: the name ATRA, company and product names (for example Google Cloud, Databricks, BigID, Denodo, Atlan, Microsoft Azure), acronyms (LGPD, BACEN, CVM, ANS, BI, KPI) and URLs.',
+  ].join('\n')
 
 export const provedorDeTraducao = createTranslationProvider({
   complete: completar,
-  systemPrompt: ({ defaultPrompt }) => `${defaultPrompt}\n${REGRAS_DA_ATRA}`,
+  systemPrompt: ({ defaultPrompt, targetLang }) => `${defaultPrompt}\n${REGRAS_DA_ATRA(targetLang)}`,
 })
 
 /** Só quem entrou no admin traduz: os endpoints do plugin gastam a chave do

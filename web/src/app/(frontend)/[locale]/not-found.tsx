@@ -36,6 +36,17 @@ const TEXTOS = {
     glossario: 'Glossary',
     sobre: 'About ATRA',
   },
+  es: {
+    titulo: 'Esta página no existe',
+    texto:
+      'Puede que la dirección haya cambiado o que el enlace que lo trajo aquí esté desactualizado. Abajo están los caminos más usados.',
+    home: 'Ir a la página de inicio',
+    atalhos: 'O vaya directo a:',
+    cases: 'Casos de éxito',
+    blog: 'Blog',
+    glossario: 'Glosario',
+    sobre: 'Sobre ATRA',
+  },
 } as const
 
 export default async function NaoEncontrada() {

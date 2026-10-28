@@ -332,6 +332,7 @@ function PainelDeSolucoes({
 const TEXTOS_DA_CONVERSAO = {
   pt: { rotulo: 'Por onde começar', case: 'Case', cases: 'Cases relacionados', irPara: (n: number, total: number) => `Case ${n} de ${total}` },
   en: { rotulo: 'Where to start', case: 'Case', cases: 'Related cases', irPara: (n: number, total: number) => `Case ${n} of ${total}` },
+  es: { rotulo: 'Por dónde empezar', case: 'Caso', cases: 'Casos relacionados', irPara: (n: number, total: number) => `Caso ${n} de ${total}` },
 } as const
 
 function CamadaDeConversao({

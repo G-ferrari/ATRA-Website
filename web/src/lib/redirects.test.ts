@@ -196,10 +196,11 @@ describe('SOLUCOES_QUE_MUDARAM', () => {
 /* D-47: `/blog/pagina/1` é `/blog`. Na lista de redirects, e não dentro da
    página — lá o Next respondia com o `Location` em dobro. */
 describe('PRIMEIRA_PAGINA', () => {
-  it('leva a página 1 do blog à própria seção, nos dois idiomas', () => {
+  it('leva a página 1 do blog à própria seção, em todos os idiomas', () => {
     expect(PRIMEIRA_PAGINA).toEqual([
       { source: '/blog/pagina/1', destination: '/blog', permanent: true },
       { source: '/en/blog/pagina/1', destination: '/en/blog', permanent: true },
+      { source: '/es/blog/pagina/1', destination: '/es/blog', permanent: true },
     ])
   })
 })

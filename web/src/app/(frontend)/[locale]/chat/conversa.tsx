@@ -11,6 +11,7 @@ import type { ConviteDeLead, ReferenciasDaIa } from '@/types/content'
 
 import { ConviteLead } from './convite-lead'
 import { RespostaDoModelo } from './ui-generativa'
+import type { Locale } from '@/lib/locales'
 
 /* Conversa com a ATRA AI — porte de `legacy/src/pages/Chat.tsx:163`.
  *
@@ -69,7 +70,7 @@ export function Conversa({
   whatsapp,
 }: {
   mensagemInicial?: string
-  locale: 'pt' | 'en'
+  locale: Locale
   /* MIG-150 (D-29): `null` com a feature fechada — e aí nada daqui muda. */
   convite?: ConviteDeLead | null
   /* Para o cartão de [UI_CONTACT] — vem do global `contact`, resolvido na página. */

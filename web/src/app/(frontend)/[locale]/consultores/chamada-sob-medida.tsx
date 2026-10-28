@@ -42,6 +42,10 @@ const TEXTOS = {
     naoEncontrou: "Couldn't find a consultant on this list?",
     pedirSobMedida: 'Click here and request one — we will find the ideal candidate for you.',
   },
+  es: {
+    naoEncontrou: '¿No encontró un consultor en esta lista?',
+    pedirSobMedida: 'Haga clic aquí y solicítelo: buscaremos el candidato ideal para usted.',
+  },
 } as const
 
 /* ⚠️ Par claro/escuro. `text-primary` sozinho mediu 2,97:1 sobre a superfície

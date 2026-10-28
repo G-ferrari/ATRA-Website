@@ -61,6 +61,28 @@ const TEXTOS = {
       },
     ],
   },
+  es: {
+    titulo: '¿Por qué los mayores actores del mercado confían en los consultores ATRA?',
+    texto: 'Garantizamos un alto nivel técnico, gobernanza de procesos y total alineación con las metas de su negocio.',
+    itens: [
+      {
+        title: 'Curaduría y retención de élite',
+        desc: 'Rotación inferior al 5%. Nuestros profesionales pasan por una selección rigurosa y capacitación continua.',
+      },
+      {
+        title: 'Supervisión técnica sin costo',
+        desc: 'Incluso en una asignación individual, un Arquitecto Principal de ATRA revisa periódicamente la entrega y la calidad.',
+      },
+      {
+        title: 'Reemplazo rápido y garantizado',
+        desc: 'Si un perfil necesita ajustes, lo reemplazamos en hasta cinco días hábiles, con la transición a cargo de ATRA.',
+      },
+      {
+        title: 'Cumplimiento, LGPD y seguridad',
+        desc: 'Todos los consultores trabajan bajo estrictos acuerdos de confidencialidad y están capacitados en LGPD e ISO 27001.',
+      },
+    ],
+  },
 } as const
 
 const ICONES = [Award, Cpu, Zap, ShieldCheck] as const

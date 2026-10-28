@@ -36,6 +36,8 @@ import type { AvisoDeCookies as TextosDoAviso } from '@/types/content'
 
 type Estado = 'nada' | 'banner' | 'painel'
 
+const SAIBA_MAIS: Record<Locale, string> = { pt: 'Saiba mais', en: 'Learn more', es: 'Más información' }
+
 export function AvisoDeCookies({ textos, locale }: { textos: TextosDoAviso; locale: Locale }) {
   const [estado, setEstado] = useState<Estado>('nada')
   const [analytics, setAnalytics] = useState(false)
@@ -110,7 +112,7 @@ export function AvisoDeCookies({ textos, locale }: { textos: TextosDoAviso; loca
                   href={hrefDe('politicas', locale)}
                   className="text-primary hover:underline underline-offset-2"
                 >
-                  {locale === 'pt' ? 'Saiba mais' : 'Learn more'}
+                  {SAIBA_MAIS[locale]}
                 </a>
               </p>
               <div className="flex flex-col sm:flex-row gap-2">

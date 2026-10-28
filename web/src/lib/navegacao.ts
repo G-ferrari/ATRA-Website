@@ -19,7 +19,7 @@ export const TEXTOS_CASCA = {
     logo: 'ATRA Logo',
     areaRestrita: 'Área Restrita',
     alternarTema: 'Alternar tema',
-    outroIdioma: 'Read in English',
+    idioma: 'Escolher idioma',
   },
   en: {
     menu: 'Menu',
@@ -30,6 +30,17 @@ export const TEXTOS_CASCA = {
     logo: 'ATRA Logo',
     areaRestrita: 'Restricted Area',
     alternarTema: 'Toggle theme',
-    outroIdioma: 'Ver em português',
+    idioma: 'Choose language',
+  },
+  es: {
+    menu: 'Menú',
+    faleConosco: 'Contáctenos',
+    whatsapp: 'Hablar por WhatsApp',
+    fecharMenu: 'Cerrar menú',
+    abrirMenu: 'Abrir menú',
+    logo: 'Logo de ATRA',
+    areaRestrita: 'Área Restringida',
+    alternarTema: 'Cambiar tema',
+    idioma: 'Elegir idioma',
   },
 } as const

@@ -53,6 +53,7 @@ export type ResultadoDoFormularioDoAdmin =
 const ERRO_GENERICO: Record<Locale, string> = {
   pt: 'Não foi possível enviar agora. Tente pelo WhatsApp ou por negocios@atra.com.br.',
   en: 'We could not send it right now. Please try WhatsApp or negocios@atra.com.br.',
+  es: 'No pudimos enviar ahora. Intente por WhatsApp o en negocios@atra.com.br.',
 }
 
 const MAX_CAMPO = 200
