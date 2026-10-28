@@ -548,8 +548,9 @@ horas, não a cada 5 minutos. A checagem vai para o **Google Cloud Monitoring**
 minutos seguidos, mais o aviso de certificado com menos de 20 dias. Quem cria é
 G-ferrari ou Leonardo, com `infra/monitoramento/criar-checagem-google.sh`
 (projeto, e-mail e URL por parâmetro, nunca no repositório; rodar de novo
-acerta, não duplica). ⚠️ O `schedule` do `uptime.yml` só sai depois de a
-checagem existir e o e-mail de teste chegar — até lá os dois convivem. Runbook
+acerta, não duplica). A de `www.atra.com.br` existe e o teste chegou em 26/10,
+então o `uptime.yml` perdeu o `schedule` e ficou só manual. ⚠️ Antes de
+remover a checagem do Google, o `schedule` volta — senão nada vigia o site. Runbook
 em `docs/05-operacao/monitoramento-de-uptime.md`.
 
 **D-41 (29/09)** tirou a integração com o **ATRAIR** do ambiente: o global
