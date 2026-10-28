@@ -27,7 +27,10 @@
  * `customFields` do admin ligada, e os nomes estão documentados lá.
  */
 
+import { caminhoDoResultado, ehTokenDoResultado } from '@/lib/diagnostico-maturidade/link-do-resultado'
 import { identificadorPadraoDoEbook } from '@/lib/formatos-de-integracao'
+import { isLocale, type Locale } from '@/lib/locales'
+import { absoluta } from '@/lib/seo'
 import { CAIXA_MARCADA } from '@/lib/formularios-do-admin'
 import type { FormularioDoRd, IntegracaoRd } from '@/types/content'
 
@@ -62,6 +65,8 @@ export type LeadParaRd = {
     roadmap?: string | null
     version?: string | null
     durationSeconds?: number | null
+    locale?: string | null
+    resultToken?: string | null
   } | null
   confirmedAt?: string | null
   /** Só o kind `custom-form` (049): as respostas, pelo id da linha do campo. */
@@ -289,6 +294,8 @@ export const CAMPOS_PERSONALIZADOS = {
     'cf_quiz_duracao_seg',
     'cf_quiz_versao',
     'cf_quiz_url',
+    'cf_quiz_link_resultado',
+    'cf_quiz_idioma',
   ],
 } as const
 
@@ -411,6 +418,7 @@ function camposPersonalizados(doc: LeadParaRd): Record<string, unknown> {
    * `INVALID_DATA_TYPE: Must be of type 'STRING'` quando recebe número num
    * campo de texto. O contrário não acontece: campo numérico aceita "2.45". */
   const numero = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? String(v) : undefined)
+  const idioma: Locale | null = d.locale && isLocale(d.locale) ? d.locale : null
   const entradas: Record<string, unknown> = {
     cf_quiz_setor_codigo: d.sector ?? undefined,
     cf_quiz_porte: d.size ?? undefined,
@@ -428,6 +436,13 @@ function camposPersonalizados(doc: LeadParaRd): Record<string, unknown> {
     cf_quiz_roadmap: d.roadmap?.trim() || undefined,
     cf_quiz_duracao_seg: numero(d.durationSeconds),
     cf_quiz_versao: d.version ?? undefined,
+    /* 28/10: o idioma e o link da página do resultado, para a automação do RD
+     * mandar o e-mail com o botão "Ver o diagnóstico completo". Lead de antes
+     * disso não tem token, e o campo não vai — o botão da RD fica sem destino
+     * só para eles. */
+    cf_quiz_idioma: idioma ?? undefined,
+    cf_quiz_link_resultado:
+      ehTokenDoResultado(d.resultToken) ? absoluta(caminhoDoResultado(idioma ?? 'pt', d.resultToken)) : undefined,
   }
   for (const [chave, valor] of Object.entries(entradas)) if (valor !== undefined) campos[chave] = valor
   return campos

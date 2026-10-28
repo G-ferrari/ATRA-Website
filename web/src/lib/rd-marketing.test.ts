@@ -335,6 +335,27 @@ describe('montarPayload', () => {
     for (const k of enviados) expect(typeof p[k]).toBe('string')
   })
 
+  it('leva o idioma e o link absoluto da página do resultado, no idioma do lead', () => {
+    const token = 'a'.repeat(43)
+    const p = montarPayload(
+      lead({ kind: 'data-maturity-diagnostic', diagnostic: { ...diagnostico, locale: 'en', resultToken: token } }),
+      'site-diagnostico-maturidade',
+      config({ camposPersonalizados: true }),
+    )
+    expect(p.cf_quiz_idioma).toBe('en')
+    expect(p.cf_quiz_link_resultado).toMatch(new RegExp(`^https?://[^/]+/en/data-maturity-assessment/resultado/${token}$`))
+  })
+
+  it('lead sem token (de antes de 28/10) não leva link nem idioma', () => {
+    const p = montarPayload(
+      lead({ kind: 'data-maturity-diagnostic', diagnostic: { ...diagnostico, resultToken: 'curto' } }),
+      'site-diagnostico-maturidade',
+      config({ camposPersonalizados: true }),
+    )
+    expect(p).not.toHaveProperty('cf_quiz_link_resultado')
+    expect(p).not.toHaveProperty('cf_quiz_idioma')
+  })
+
   it('pilar que não é número é pulado em vez de sair NaN', () => {
     const p = montarPayload(
       lead({ kind: 'data-maturity-diagnostic', diagnostic: { pillars: { Governança: 'x', Qualidade: 2 } } }),

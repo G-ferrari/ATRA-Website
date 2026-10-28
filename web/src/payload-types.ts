@@ -12358,10 +12358,12 @@ export interface FormSubmission {
       | null;
     roadmap?: string | null;
     version?: string | null;
+    locale?: string | null;
+    resultToken?: string | null;
     durationSeconds?: number | null;
   };
   /**
-   * Empty = the lead did not receive the result.
+   * When the site sends the result (Settings → Data maturity diagnostic). Empty = the site did not send it: either sending is off, because the e-mail goes out through the RD automation, or it failed.
    */
   resultSentAt?: string | null;
   source?: string | null;
@@ -16614,6 +16616,8 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
         answers?: T;
         roadmap?: T;
         version?: T;
+        locale?: T;
+        resultToken?: T;
         durationSeconds?: T;
       };
   resultSentAt?: T;
@@ -17056,6 +17060,10 @@ export interface DataMaturityDiagnostic {
    */
   emailIntro?: string | null;
   /**
+   * Off: the result reaches the lead through the RD Station automation, which carries the link to the result page. Turn on only if the automation stops — on while it runs, the lead gets two e-mails.
+   */
+  sendResultEmail?: boolean | null;
+  /**
    * Optional. With a link, the completion screen and the e-mail get a "Schedule a call" button; empty = no button.
    */
   agendaUrl?: string | null;
@@ -17175,7 +17183,7 @@ export interface Integration {
      */
     enabled?: boolean | null;
     /**
-     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
+     * Only enable after creating custom fields in the RD account with exactly these names: cf_site_mensagem (contact message), cf_site_chat (what they asked ATRA AI) and, for the diagnostic, cf_quiz_setor_codigo, cf_quiz_porte, cf_quiz_cargo_codigo, cf_quiz_maturidade_geral, cf_quiz_nivel_dmbok, cf_quiz_governanca, cf_quiz_qualidade, cf_quiz_seguranca, cf_quiz_conformidade, cf_quiz_gaps_top3, cf_quiz_gaps_json, cf_quiz_dama_json, cf_quiz_respostas_json, cf_quiz_roadmap, cf_quiz_duracao_seg, cf_quiz_versao, cf_quiz_url, cf_quiz_link_resultado, cf_quiz_idioma. A missing field makes RD reject the whole lead — the failure shows under Form submissions.
      */
     customFields?: boolean | null;
     /**
@@ -17897,6 +17905,7 @@ export interface DataMaturityDiagnosticSelect<T extends boolean = true> {
   doneMessage?: T;
   emailSubject?: T;
   emailIntro?: T;
+  sendResultEmail?: T;
   agendaUrl?: T;
   whatsappUrl?: T;
   regulations?:

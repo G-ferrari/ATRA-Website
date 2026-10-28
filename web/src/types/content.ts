@@ -1090,6 +1090,9 @@ export type DiagnosticoDeMaturidade = {
   abertura: string | null
   conclusao: string | null
   email: { assunto: string; abertura: string | null }
+  /** O site manda o próprio e-mail do resultado. Desligado (o padrão desde
+   *  28/10), quem manda é a automação do RD, com o link da página do resultado. */
+  enviarResultadoPorEmail: boolean
   /** Vazio no CMS = sem botão "Agendar conversa" na conclusão e no e-mail. */
   agendaUrl: string | null
   whatsappUrl: string

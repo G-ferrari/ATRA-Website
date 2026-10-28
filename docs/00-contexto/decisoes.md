@@ -2867,3 +2867,37 @@ estiveram no `docker-compose.prod.yml`. A ATRA já usa o Google Workspace.
 `docs/05-operacao/email-pelo-google-workspace.md`. Até as variáveis entrarem no
 `.env.prod`, nada muda: sem `SMTP_HOST` e com o Resend recusando, o lead segue
 gravado com "Resultado enviado em" vazio, como antes.
+
+## D-79 — O resultado do diagnóstico sai pela automação do RD, com link para uma página por lead
+
+**Data:** 28/10/2026 · **Quem:** Leonardo, com Karen e Taciane (marketing)
+
+**Contexto.** O marketing montou no RD Station Marketing o fluxo que manda ao
+lead o resumo do resultado (nível, média, pilares, gaps) no modelo da ATRA,
+disparado pela conversão `diagnostico-maturidade` (o nome editado no admin; o
+padrão do código é `site-diagnostico-maturidade`). O botão "Ver o diagnóstico
+completo" desse e-mail precisava de um destino com a leitura inteira, que até
+aqui só existia no e-mail do site — que nunca chegou (D-78).
+
+**Decisão.**
+
+- **Página do resultado por lead** em
+  `/diagnostico-maturidade/resultado/<token>` (`/en/data-maturity-assessment/…`,
+  `/es/diagnostico-de-madurez/…`), com as mesmas seções do e-mail do resultado
+  (`conteudoDoResultado`), lidas do que foi **gravado** no envio.
+- **O token é a chave**: 32 bytes aleatórios em base64url, gravado no lead
+  (`diagnostic.resultToken`, escondido no admin). Nada de id ou e-mail na URL.
+  A página é `noindex, nofollow`, `no-referrer`, renderizada a cada visita
+  (`connection()`, nada no cache — lead apagado some da página), mostra só o
+  primeiro nome e responde o mesmo 404 para token malformado, inexistente ou de
+  lead sem resultado.
+- **Ao RD vão `cf_quiz_link_resultado`** (URL absoluta) **e `cf_quiz_idioma`**.
+  ⚠️ Os dois têm de existir na conta, como texto, antes da publicação: campo
+  inexistente faz a RD recusar a conversão inteira.
+- **O e-mail do site fica desligado** por padrão (Configuração → Diagnóstico de
+  maturidade → "O site envia o e-mail do resultado"). Ligado com a automação
+  ativa, o lead receberia dois.
+
+**Consequências.** Leads de antes desta publicação não têm token nem página: o
+botão do e-mail da RD fica sem destino só para eles. O token aparece no log de
+acesso do Caddy, como qualquer caminho.

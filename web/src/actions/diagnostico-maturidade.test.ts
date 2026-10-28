@@ -44,6 +44,9 @@ const TEXTOS = {
   abertura: null,
   conclusao: null,
   email: { assunto: 'Seu Diagnóstico de Maturidade de Dados — ATRA', abertura: 'Obrigado por responder.' },
+  /* Ligado aqui para os testes do e-mail do site; o padrão do admin, desde
+     28/10, é desligado (ver "com o envio desligado no admin"). */
+  enviarResultadoPorEmail: true,
   agendaUrl: 'https://agenda.exemplo.com.br/atra',
   whatsappUrl: 'https://api.whatsapp.com/send/?phone=5511963060267',
 }
@@ -127,6 +130,26 @@ describe('enviarDiagnosticoDeMaturidade — envio válido', () => {
       version: VERSAO,
     })
     expect(payload.create.mock.calls[0][0]).toMatchObject({ collection: 'form-submissions', overrideAccess: true })
+  })
+
+  it('grava o idioma e um token de resultado novo a cada envio, impossível de adivinhar', async () => {
+    await enviar(valido())
+    await enviar(valido({ idioma: 'en' }))
+    const [a, b] = payload.create.mock.calls.map((c) => c[0].data.diagnostic)
+    expect(a.locale).toBe('pt')
+    expect(b.locale).toBe('en')
+    expect(a.resultToken).toMatch(/^[A-Za-z0-9_-]{43}$/)
+    expect(b.resultToken).toMatch(/^[A-Za-z0-9_-]{43}$/)
+    expect(a.resultToken).not.toBe(b.resultToken)
+  })
+
+  it('com o envio desligado no admin, não manda o resultado, mas avisa a ATRA', async () => {
+    lerDiagnosticoDeMaturidade.mockResolvedValue({ ...TEXTOS, enviarResultadoPorEmail: false })
+    const r = await enviar(valido())
+    expect(r).toEqual({ ok: true, email: 'ana.souza@banco.com.br' })
+    expect(enviarAviso).toHaveBeenCalledTimes(1)
+    expect(enviarAviso.mock.calls[0][0]).toMatchObject({ para: CAIXA })
+    expect(payload.update.mock.calls[0][0].data).toEqual({ notified: true })
   })
 
   it('topGaps no formato do HTML: "Rótulo (gap)" separados por " | "', async () => {
@@ -289,7 +312,9 @@ describe('enviarDiagnosticoDeMaturidade — a nota é sempre a do servidor', () 
     const honesto = gravado().diagnostic
     payload.create.mockClear()
     await enviar(valido({ respostas: JSON.stringify({ ...RESPOSTAS, conf_cap_cvm: 3, conf_tel_anatel: 3 }) }))
-    expect(gravado().diagnostic).toEqual(honesto)
+    /* O token muda a cada envio, de propósito; o resto tem de ser igual. */
+    const semToken = (d: Record<string, unknown>) => ({ ...d, resultToken: null })
+    expect(semToken(gravado().diagnostic)).toEqual(semToken(honesto))
   })
 
   it('o e-mail do resultado sai com a nota recalculada', async () => {

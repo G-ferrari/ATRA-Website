@@ -299,6 +299,23 @@ export const FormSubmissions: CollectionConfig = {
           label: { pt: 'Roadmap sugerido', en: 'Suggested roadmap' },
         },
         { name: 'version', type: 'text', label: { pt: 'Versão do questionário', en: 'Questionnaire version' } },
+        /* O idioma da página em que o lead respondeu (D-76/D-77): decide o da
+         * página do resultado e vai ao RD (`cf_quiz_idioma`), para a automação
+         * mandar o e-mail na língua certa. Vazio nos leads de antes de 28/10. */
+        { name: 'locale', type: 'text', label: { pt: 'Idioma', en: 'Language' } },
+        {
+          /* O segredo do link da página do resultado (28/10), que vai ao RD em
+           * `cf_quiz_link_resultado` para o e-mail da automação. 32 bytes
+           * aleatórios: o link é a única chave da página, então não pode ser
+           * adivinhável — nem id, nem e-mail. `hidden` como o
+           * `confirmationToken`: não é dado editorial, e quem lê a collection
+           * (editor e admin) já lê o resultado inteiro. Leads anteriores ficam
+           * sem, e sem página. */
+          name: 'resultToken',
+          type: 'text',
+          index: true,
+          admin: { hidden: true },
+        },
         {
           name: 'durationSeconds',
           type: 'number',
@@ -320,8 +337,8 @@ export const FormSubmissions: CollectionConfig = {
         position: 'sidebar',
         condition: soDiagnosticoDeMaturidade,
         description: {
-          pt: 'Vazio = o lead não recebeu o resultado.',
-          en: 'Empty = the lead did not receive the result.',
+          pt: 'Quando o site envia o resultado (Configuração → Diagnóstico de maturidade). Vazio = o site não enviou: ou o envio está desligado, porque o e-mail sai pela automação do RD, ou falhou.',
+          en: 'When the site sends the result (Settings → Data maturity diagnostic). Empty = the site did not send it: either sending is off, because the e-mail goes out through the RD automation, or it failed.',
         },
       },
     },
