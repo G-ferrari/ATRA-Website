@@ -17,10 +17,11 @@ import {
  *
  * 1. **O slug português vira o slug espanhol** de todo documento que ainda não
  *    tem um. Sem slug gravado no espanhol, o documento não existe no `/es`
- *    (D-69): a rota dá 404 e as listagens saem vazias. E o slug nunca vai à IA
- *    (`semTraduzirOSlug`), então a tradução não o criaria — só documento novo
- *    ganha slug espanhol, gerado do título traduzido. Durante a carga, o `/es`
- *    mostra o português pelo fallback, item a item, até a fila chegar nele.
+ *    (D-69): a rota dá 404 e as listagens saem vazias. A tradução também o
+ *    copiaria (o plugin põe o slug português quando o destino está vazio,
+ *    D-74), mas só quando a fila chegar no documento — umas 6 horas para o
+ *    último. Copiado antes, o `/es` existe inteiro desde o deploy e mostra o
+ *    português pelo fallback, item a item, até a tradução chegar.
  *    Por SQL, e não `payload.update`: o update parte da última versão, e com
  *    rascunho pendente publicaria o rascunho (ver CLAUDE.md).
  * 2. **O interruptor do espanhol copia o do inglês**: quem ligou a tradução

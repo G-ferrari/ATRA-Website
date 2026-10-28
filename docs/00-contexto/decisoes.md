@@ -2733,9 +2733,11 @@ melhor que o botão PT/EN, no shadcn/ui e com bandeiras.
 - **O slug dos documentos fica o do português.** O slug nunca vai à IA
   (`semTraduzirOSlug`, D-74), e documento sem slug gravado no idioma não existe
   nele (D-69). A migração `20261028_150000_carga_inicial_do_espanhol` copia o
-  slug português para o espanhol de tudo o que existe; documento criado depois
-  ganha slug espanhol, gerado do título traduzido. Trocar no admin é possível,
-  e quebra links como em qualquer idioma.
+  slug português para o espanhol de tudo o que existe, para o `/es` não ficar
+  vazio durante a carga; documento criado depois ganha o mesmo slug do
+  português quando a tradução chega (o plugin o copia quando o destino está
+  vazio, D-74). Trocar no admin é possível, e quebra links como em qualquer
+  idioma.
 - **Tradução automática pelo mesmo caminho da D-74**, com **interruptor e trava
   próprios**: Sistema → Integrações → Tradução para o espanhol, e a caixa
   "Espanhol revisado à mão" em cada documento. O plugin traduz para todos os
