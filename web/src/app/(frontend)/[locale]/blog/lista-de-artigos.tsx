@@ -8,7 +8,7 @@ import { useMemo, useState } from 'react'
 
 import { ChipFilter, EntradaAnimada, SearchInput } from '@/components/ui'
 import { categoriasComArtigo } from '@/lib/categorias-do-blog'
-import type { Locale } from '@/lib/locales'
+import { FORMATO_DO_IDIOMA, type Locale } from '@/lib/locales'
 import { fatia, totalDePaginas } from '@/lib/paginacao'
 import { hrefDaPagina, hrefDe } from '@/lib/routes'
 import type { PostCard } from '@/types/content'
@@ -61,6 +61,22 @@ const TEXTOS = {
       anterior: 'Previous page',
       proxima: 'Next page',
       pagina: (n: number) => `Page ${n}`,
+    },
+  },
+  es: {
+    buscar: 'Buscar artículos...',
+    todos: 'Todos',
+    categorias: 'Categorías:',
+    selo: 'Artículo',
+    cta: 'Seguir leyendo',
+    vazioTitulo: 'No se encontró ningún artículo',
+    vazioTexto: 'Pruebe con otro término o elija la categoría "Todos".',
+    limpar: 'Limpiar filtros',
+    paginacao: {
+      navegacao: 'Páginas del blog',
+      anterior: 'Página anterior',
+      proxima: 'Página siguiente',
+      pagina: (n: number) => `Página ${n}`,
     },
   },
 } as const
@@ -129,7 +145,7 @@ export function ListaDeArtigos({
   }
 
   const formatarData = (iso: string) =>
-    new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
+    new Intl.DateTimeFormat(FORMATO_DO_IDIOMA[locale], {
       day: 'numeric',
       month: 'long',
       year: 'numeric',

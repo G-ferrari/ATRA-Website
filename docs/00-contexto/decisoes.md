@@ -2749,3 +2749,80 @@ fora da tradução automática.
 - HTML novo do Roger com pergunta, alternativa ou regulação a mais reprova
   `ingles.test.ts` até a tradução acompanhar.
 - Mudar um texto fixo do português não muda o inglês: são duas listas.
+
+
+
+
+
+## D-77 — O site ganha o espanhol, traduzido sozinho como o inglês, e um seletor de idioma com bandeiras
+
+*Decidida em 28/10/2026 por Leonardo.*
+
+**Contexto.** O WordPress tinha inglês, espanhol e árabe por plugin. O inglês
+voltou na D-74, traduzido pelo Gemini a cada publicação. Leonardo pediu o mesmo
+processo para o espanhol, a carga inicial de tudo e um seletor de idioma
+melhor que o botão PT/EN, no shadcn/ui e com bandeiras.
+
+**Decisão.**
+
+- **`es` é o terceiro idioma do CMS**, em `/es`, com **slugs de seção em
+  espanhol** (`/es/casos-de-exito`, `/es/soluciones`, `/es/sobre-nosotros`…,
+  `lib/routes.ts`), como o inglês tem os seus (D-07).
+- **Espanhol neutro da América Latina, tratando o leitor por "usted"**
+  (`VARIEDADE` em `lib/traducao.ts`). Os clientes da ATRA fora do Brasil estão
+  na América Latina; o espanhol da Espanha soaria estrangeiro lá.
+- **O slug dos documentos fica o do português.** O slug nunca vai à IA
+  (`semTraduzirOSlug`, D-74), e documento sem slug gravado no idioma não existe
+  nele (D-69). A migração `20261028_150000_carga_inicial_do_espanhol` copia o
+  slug português para o espanhol de tudo o que existe, para o `/es` não ficar
+  vazio durante a carga; documento criado depois ganha o mesmo slug do
+  português quando a tradução chega (o plugin o copia quando o destino está
+  vazio, D-74). Trocar no admin é possível, e quebra links como em qualquer
+  idioma.
+- **Tradução automática pelo mesmo caminho da D-74**, com **interruptor e trava
+  próprios**: Sistema → Integrações → Tradução para o espanhol, e a caixa
+  "Espanhol revisado à mão" em cada documento. O plugin traduz para todos os
+  alvos ou para nenhum; quando só um idioma está aberto (interruptor
+  desligado ou trava marcada no outro), `decidirTraducaoAutomatica` pula o
+  plugin e enfileira direto no fluxo dele, só com aquele alvo. O interruptor do
+  espanhol **nasce copiando o do inglês**: quem ligou a tradução quis o site
+  traduzido.
+- **Os globais também se traduzem para o espanhol** (menu, rodapé, painel do
+  menu, cookies, ATRA AI e configurações,
+  `lib/traducao-de-globais.ts`). O plugin não sabe traduzir global, e no
+  inglês esses textos foram escritos à mão; no espanhol não há quem escreva, e
+  sem isso o `/es` abriria com o menu em português. Salvar o global em
+  português pede a tradução, pela mesma fila. **Sobrescreve**, e global não tem
+  trava: quem escrever o espanhol de um global à mão perde o texto na próxima
+  vez que o português for salvo. ⚠️ O inglês dos globais **não** entra:
+  retraduzir apagaria o que foi escrito à mão. ⚠️ `consentNotice` (ATRA AI)
+  fica fora: é texto de consentimento (P-14), não se gera. ⚠️ O global do
+  Diagnóstico também fica fora: o texto dele é revisado à mão (D-76).
+- **Carga inicial** por migração, como a do inglês: páginas primeiro, o Blog
+  por último (do mais novo ao mais antigo), depois os globais. ~340 pedidos,
+  um por minuto, umas 6 horas a partir da primeira abertura do admin depois do
+  deploy.
+- **Seletor de idioma** no `DropdownMenu` do shadcn/ui
+  (`components/ui/dropdown-menu.tsx`, sobre `@radix-ui/react-dropdown-menu`),
+  com as bandeiras do Brasil, dos EUA e da Espanha em SVG. Trazido à mão, não
+  pelo `shadcn init`, que reescreveria o `globals.css` com os tokens dele. O
+  gatilho mostra a bandeira do idioma atual, no tamanho do botão de antes. A
+  bandeira do espanhol é a da Espanha, embora a tradução seja latino-americana:
+  nenhum país da América Latina representa os outros.
+- **O Diagnóstico de Maturidade** tem o texto no código (`dados.ts`), fora do
+  CMS. A versão em espanhol vai num PR separado, sobre o do inglês (#197), com
+  a mesma revisão pelo Roger e pela Taciane antes de entrar.
+
+**Consequências.**
+
+- Durante a carga, o `/es` mostra o português pelo fallback, item a item, até
+  a fila chegar nele. O sitemap e o `hreflang` só anunciam o espanhol de um
+  documento quando o texto já difere do português (`temTraducao`, mesma regra
+  do inglês).
+- O custo do Gemini cresce na proporção: cada publicação em português passa a
+  pedir duas traduções.
+- ⚠️ Em banco novo, o `migrate` roda antes do seed e a cópia de slugs não acha
+  nada: `scripts/seed/migracoes-de-dados.ts` a chama de novo. Sem isso, o `/es`
+  do CI daria 404 até na inicial.
+- ⚠️ A trava é coluna nova nas 12 collections: antecipada própria
+  (`20260927_215961_trava_do_espanhol_antecipada`), gêmea da do inglês.

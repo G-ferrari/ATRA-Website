@@ -55,6 +55,16 @@ const TEXTOS = {
     ctaTitulo: 'Want to join the team?',
     ctaDescricao: 'Leave your CV in our talent pool. We are always looking for good data professionals.',
   },
+  es: {
+    voltar: 'Ver todas las vacantes',
+    selo: 'Vacante abierta',
+    candidatarTitulo: 'Postúlese a esta vacante',
+    semCorpoTitulo: 'Descripción en preparación',
+    semCorpoTexto: 'Los detalles de esta vacante aún se están definiendo. Mientras tanto, contáctenos a través del banco de talentos.',
+    talentos: 'Únase a nuestro banco de talentos',
+    ctaTitulo: '¿Quiere formar parte del equipo?',
+    ctaDescricao: 'Deje su currículum en nuestro banco de talentos. Siempre buscamos buenos profesionales de datos.',
+  },
 } as const
 
 async function buscarVaga(slug: string, locale: Locale): Promise<VagaDetalhe | null> {

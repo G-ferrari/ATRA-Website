@@ -3,7 +3,7 @@ import { locale as getLocale } from 'next/root-params'
 import { notFound } from 'next/navigation'
 
 import { PaginaDeMaterial, type TextosDoMaterial } from '@/components/content/pagina-de-material'
-import { isLocale, LOCALES } from '@/lib/locales'
+import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { buscarMaterial, slugsDeMaterial } from '@/lib/materiais'
 import { metadataDe } from '@/lib/seo'
 import { versoesDoItem } from '@/lib/versoes-do-item'
@@ -14,7 +14,7 @@ import { versoesDoItem } from '@/lib/versoes-do-item'
 const KIND = 'ebook' as const
 const SECAO = 'ebooks' as const
 
-const TEXTOS: Record<'pt' | 'en', TextosDoMaterial> = {
+const TEXTOS: Record<Locale, TextosDoMaterial> = {
   pt: {
     voltar: 'Voltar para e-books',
     prefixo: 'E-book',
@@ -32,6 +32,15 @@ const TEXTOS: Record<'pt' | 'en', TextosDoMaterial> = {
     paginas: 'pages',
     semCorpoTitulo: 'Preview in preparation',
     semCorpoTexto: 'The ebook preview shows up here as soon as it is ready.',
+  },
+  es: {
+    voltar: 'Volver a los e-books',
+    prefixo: 'E-book',
+    cta: 'Descargar el e-book',
+    ctaIndisponivel: 'El archivo aún no está disponible para descarga.',
+    paginas: 'páginas',
+    semCorpoTitulo: 'Vista previa en preparación',
+    semCorpoTexto: 'La vista previa del e-book aparecerá aquí en cuanto esté lista.',
   },
 }
 

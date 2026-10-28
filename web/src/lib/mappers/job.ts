@@ -4,9 +4,9 @@ import type { Vaga, VagaDetalhe } from '@/types/content'
 import { toSeo } from './seo'
 
 const MODELO: Record<Job['locationType'], Record<Locale, string>> = {
-  remote: { pt: 'Remoto', en: 'Remote' },
-  hybrid: { pt: 'Híbrido', en: 'Hybrid' },
-  onsite: { pt: 'Presencial', en: 'On site' },
+  remote: { pt: 'Remoto', en: 'Remote', es: 'Remoto' },
+  hybrid: { pt: 'Híbrido', en: 'Hybrid', es: 'Híbrido' },
+  onsite: { pt: 'Presencial', en: 'On site', es: 'Presencial' },
 }
 
 export function toVaga(doc: Job, locale: Locale): Vaga {

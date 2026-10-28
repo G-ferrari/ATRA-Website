@@ -126,7 +126,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en') | ('pt' | 'en')[];
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en' | 'es') | ('pt' | 'en' | 'es')[];
   globals: {
     appearance: Appearance;
     'atra-ai': AtraAi;
@@ -153,13 +153,14 @@ export interface Config {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     tracking: TrackingSelect<false> | TrackingSelect<true>;
   };
-  locale: 'pt' | 'en';
+  locale: 'pt' | 'en' | 'es';
   widgets: {
     collections: CollectionsWidget;
   };
   user: User;
   jobs: {
     tasks: {
+      'traduzir-global': TaskTraduzirGlobal;
       translate_document: TaskTranslateDocument;
       inline: {
         input: unknown;
@@ -300,6 +301,10 @@ export interface Topic {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -331,6 +336,10 @@ export interface Testimonial {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -438,6 +447,10 @@ export interface Case {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -3170,6 +3183,10 @@ export interface Partner {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -3339,6 +3356,10 @@ export interface Job {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -6125,6 +6146,10 @@ export interface Page {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -6194,6 +6219,10 @@ export interface Post {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -6302,6 +6331,10 @@ export interface Resource {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -6391,6 +6424,10 @@ export interface Webinar {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -9223,6 +9260,10 @@ export interface Segment {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -12046,6 +12087,10 @@ export interface Solution {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -12195,6 +12240,10 @@ export interface SpecialistRole {
    * When checked, publishing in Portuguese no longer changes the English, which stays as written. When unchecked, the AI redoes the English on every publish, and hand edits to it are lost.
    */
   englishLocked?: boolean | null;
+  /**
+   * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
+   */
+  spanishLocked?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -12404,7 +12453,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translate_document';
+        taskSlug: 'inline' | 'traduzir-global' | 'translate_document';
         taskID: string;
         input?:
           | {
@@ -12438,7 +12487,7 @@ export interface PayloadJob {
       }[]
     | null;
   workflowSlug?: 'translate_document_locales' | null;
-  taskSlug?: ('inline' | 'translate_document') | null;
+  taskSlug?: ('inline' | 'traduzir-global' | 'translate_document') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -12667,6 +12716,7 @@ export interface TopicsSelect<T extends boolean = true> {
   showInFilter?: T;
   filterOrder?: T;
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -12683,6 +12733,7 @@ export interface TestimonialsSelect<T extends boolean = true> {
   photo?: T;
   featured?: T;
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -12733,6 +12784,7 @@ export interface CasesSelect<T extends boolean = true> {
   featured?: T;
   publishedAt?: T;
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -12812,6 +12864,7 @@ export interface JobsSelect<T extends boolean = true> {
         noIndex?: T;
       };
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -13714,6 +13767,7 @@ export interface PagesSelect<T extends boolean = true> {
         noIndex?: T;
       };
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -13744,6 +13798,7 @@ export interface PostsSelect<T extends boolean = true> {
         noIndex?: T;
       };
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -13795,6 +13850,7 @@ export interface ResourcesSelect<T extends boolean = true> {
         noIndex?: T;
       };
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -13828,6 +13884,7 @@ export interface WebinarsSelect<T extends boolean = true> {
         noIndex?: T;
       };
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -14714,6 +14771,7 @@ export interface PartnersSelect<T extends boolean = true> {
         noIndex?: T;
       };
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -15585,6 +15643,7 @@ export interface SegmentsSelect<T extends boolean = true> {
         noIndex?: T;
       };
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -16457,6 +16516,7 @@ export interface SolutionsSelect<T extends boolean = true> {
         noIndex?: T;
       };
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -16489,6 +16549,7 @@ export interface SpecialistRolesSelect<T extends boolean = true> {
       };
   order?: T;
   englishLocked?: T;
+  spanishLocked?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -17146,6 +17207,12 @@ export interface Integration {
   englishTranslation?: {
     /**
      * On: when a page is published in Portuguese, the AI (Gemini) redoes its English and publishes it, in about a minute, without review. Documents marked "English edited by hand" are left alone. Applies to pages, solutions, segments, cases, posts, webinars, e-books, jobs, partners, testimonials, topics and specialties.
+     */
+    enabled?: boolean | null;
+  };
+  spanishTranslation?: {
+    /**
+     * On: when a page is published in Portuguese, the AI (Gemini) redoes its Spanish and publishes it, in about a minute, without review. Documents marked "Spanish edited by hand" are left alone. Applies to the same content as English, plus the menu, footer, cookie notice, menu panel and ATRA AI texts.
      */
     enabled?: boolean | null;
   };
@@ -17916,6 +17983,11 @@ export interface IntegrationsSelect<T extends boolean = true> {
     | {
         enabled?: T;
       };
+  spanishTranslation?:
+    | T
+    | {
+        enabled?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -18019,6 +18091,17 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskTraduzir-global".
+ */
+export interface TaskTraduzirGlobal {
+  input: {
+    global: string;
+    alvo: string;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

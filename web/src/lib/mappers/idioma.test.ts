@@ -35,6 +35,7 @@ describe('parDeTodosOsIdiomas', () => {
     expect(parDeTodosOsIdiomas(doc, 'title')).toEqual({
       pt: { slug: 'marketplace-governanca-dados', texto: 'Gerando valor com Marketplace' },
       en: { slug: 'data-marketplace-governance', texto: 'Gerando valor com Marketplace' },
+      es: { slug: null, texto: null },
     })
   })
 

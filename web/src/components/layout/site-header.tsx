@@ -250,7 +250,7 @@ export function SiteHeader({
               </a>
             )}
 
-            {/* D-74: PT/EN, do tamanho do WhatsApp e em toda largura, como ele.
+            {/* D-77: PT, EN e ES, da altura do WhatsApp e em toda largura, como ele.
                 Some com o megamenu aberto no desktop pelo mesmo motivo. */}
             <AlternadorDeIdioma locale={locale} className={aberto ? 'flex md:hidden' : 'flex'} />
 

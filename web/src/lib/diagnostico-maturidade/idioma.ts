@@ -24,19 +24,23 @@ import type { Impacto } from './motor'
 
 export type Idioma = Locale
 
+/* ⚠️ D-77: até o espanhol do diagnóstico passar pela revisão do Roger e da
+ * Taciane (PR próprio), o `/es` mostra o questionário em português — por isso
+ * o teste aqui é "não é inglês", e não "é português". */
+
 const traduzirOpcoes = <V extends string>(
   lista: readonly OpcaoDoPerfil<V>[],
   em: Readonly<Record<V, string>>,
   idioma: Idioma,
 ): readonly OpcaoDoPerfil<V>[] =>
-  idioma === 'pt' ? lista : lista.map((o) => ({ valor: o.valor, rotulo: em[o.valor] }))
+  idioma !== 'en' ? lista : lista.map((o) => ({ valor: o.valor, rotulo: em[o.valor] }))
 
 export const setoresNoIdioma = (idioma: Idioma) => traduzirOpcoes<Setor>(SETORES, SETORES_EN, idioma)
 export const portesNoIdioma = (idioma: Idioma) => traduzirOpcoes<Porte>(PORTES, PORTES_EN, idioma)
 export const cargosNoIdioma = (idioma: Idioma) => traduzirOpcoes<Cargo>(CARGOS, CARGOS_EN, idioma)
 
 export function perguntaNoIdioma(pergunta: Pergunta, idioma: Idioma): Pergunta {
-  if (idioma === 'pt') return pergunta
+  if (idioma !== 'en') return pergunta
   const em = PERGUNTAS_EN[pergunta.id]
   return {
     ...pergunta,
@@ -49,20 +53,20 @@ export function perguntaNoIdioma(pergunta: Pergunta, idioma: Idioma): Pergunta {
 }
 
 export const pilarNoIdioma = (pilar: NomeDoPilar, idioma: Idioma): string =>
-  idioma === 'pt' ? pilar : PILARES_EN[pilar]
+  idioma !== 'en' ? pilar : PILARES_EN[pilar]
 
 export function rotuloDaTagNoIdioma(tag: string, idioma: Idioma): string {
-  const rotulos = idioma === 'pt' ? ROTULOS_DAS_TAGS : ROTULOS_DAS_TAGS_EN
+  const rotulos = idioma !== 'en' ? ROTULOS_DAS_TAGS : ROTULOS_DAS_TAGS_EN
   return (Object.hasOwn(rotulos, tag) && rotulos[tag as Tag]) || tag
 }
 
 /** As etiquetas do motor (que saem em português) com o rótulo do idioma. */
 export const impactosNoIdioma = (impactos: readonly Impacto[], idioma: Idioma): Impacto[] =>
-  idioma === 'pt'
+  idioma !== 'en'
     ? [...impactos]
     : impactos.map((i) => ({
         tag: i.tag,
         rotulo: rotuloDaTagNoIdioma(i.tag, idioma),
       }))
 
-export const nivelNoIdioma = (numero: NivelNumerico, idioma: Idioma) => (idioma === 'pt' ? NIVEIS : NIVEIS_EN)[numero]
+export const nivelNoIdioma = (numero: NivelNumerico, idioma: Idioma) => (idioma !== 'en' ? NIVEIS : NIVEIS_EN)[numero]

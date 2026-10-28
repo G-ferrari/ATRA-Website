@@ -16,6 +16,7 @@ import { getPayload } from '@/lib/payload'
 import { perguntarAoPorteiro, type Veredito } from '@/lib/porteiro-da-ia'
 import { resolverReferencias } from '@/lib/referencias-da-ia'
 import type { ConteudoRecomendavel } from '@/types/content'
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/lib/locales'
 
 /* POST /api/chat — porte de `legacy/server.ts:38`, com o que D-12 decidiu.
  *
@@ -44,8 +45,9 @@ export const dynamic = 'force-dynamic'
  * idioma padrão, e a página em inglês recebia mensagem em português (e vice-
  * versa, enquanto os campos não eram localizados).
  */
-function idiomaDe(corpo: unknown): 'pt' | 'en' {
-  return (corpo as { locale?: string })?.locale === 'en' ? 'en' : 'pt'
+function idiomaDe(corpo: unknown): Locale {
+  const pedido = (corpo as { locale?: string })?.locale
+  return isLocale(pedido) ? pedido : DEFAULT_LOCALE
 }
 
 const JANELA_MS = 60 * 60 * 1000

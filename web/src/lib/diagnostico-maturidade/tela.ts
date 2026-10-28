@@ -123,4 +123,5 @@ type Textos<T> = {
 }
 export type TextosDaTela = Textos<(typeof TEXTOS_DA_TELA)['pt']>
 
-export const textosDaTela = (idioma: Idioma): TextosDaTela => TEXTOS_DA_TELA[idioma]
+/* D-77: o espanhol sai em português até a tradução revisada entrar. */
+export const textosDaTela = (idioma: Idioma): TextosDaTela => TEXTOS_DA_TELA[idioma === 'en' ? 'en' : 'pt']

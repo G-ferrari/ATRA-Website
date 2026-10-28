@@ -300,5 +300,28 @@ export const Integrations: GlobalConfig = {
         },
       ],
     },
+    {
+      /* D-77 (28/10): o mesmo interruptor, para o espanhol. Separado do inglês
+       * para um idioma poder parar sem o outro — a cota do Gemini é uma só, e
+       * a do chat também sai dela. Vale também para o menu, o rodapé e os
+       * outros textos de Configuração, que no inglês são escritos à mão. */
+      name: 'spanishTranslation',
+      type: 'group',
+      label: { pt: 'Tradução para o espanhol', en: 'Spanish translation' },
+      fields: [
+        {
+          name: 'enabled',
+          type: 'checkbox',
+          defaultValue: false,
+          label: { pt: 'Traduzir para o espanhol ao publicar', en: 'Translate into Spanish on publish' },
+          admin: {
+            description: {
+              pt: 'Ligado: ao publicar em português, a IA (Gemini) refaz o espanhol do documento e o publica, em cerca de um minuto, sem revisão. Documentos com "Espanhol revisado à mão" marcado ficam como estão. Vale para o mesmo conteúdo do inglês e também para o menu, o rodapé, o aviso de cookies, o painel do menu e os textos da ATRA AI.',
+              en: 'On: when a page is published in Portuguese, the AI (Gemini) redoes its Spanish and publishes it, in about a minute, without review. Documents marked "Spanish edited by hand" are left alone. Applies to the same content as English, plus the menu, footer, cookie notice, menu panel and ATRA AI texts.',
+            },
+          },
+        },
+      ],
+    },
   ],
 }

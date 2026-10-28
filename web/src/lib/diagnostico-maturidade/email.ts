@@ -97,9 +97,9 @@ const FIXOS = {
     nivel: 'Level',
     lang: 'en',
   },
-} as const satisfies Record<Idioma, unknown>
+} as const satisfies Record<Exclude<Idioma, 'es'>, unknown>
 
-type Fixos = (typeof FIXOS)[Idioma]
+type Fixos = (typeof FIXOS)[Exclude<Idioma, 'es'>]
 
 /* ---------------------------------------------------------------------
    Cores (DESIGN.md) e tipografia
@@ -217,7 +217,8 @@ export interface EmailDoResultado {
 function conteudoDoResultado(entrada: EntradaDoEmailDoResultado) {
   const { calculo, roadmap } = entrada
   const idioma = entrada.idioma ?? 'pt'
-  const fixos: Fixos = FIXOS[idioma]
+  /* D-77: o espanhol sai em português até a tradução revisada entrar. */
+  const fixos: Fixos = FIXOS[idioma === 'en' ? 'en' : 'pt']
   const numero = nivelNumerico(calculo.media)
   const nivel = nivelNoIdioma(numero, idioma)
   const nome = entrada.nome.trim()

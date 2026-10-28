@@ -2,7 +2,7 @@ import { ArrowUpRight, Play } from 'lucide-react'
 import Image from 'next/image'
 
 import { EntradaAnimada } from '@/components/ui'
-import type { Locale } from '@/lib/locales'
+import { FORMATO_DO_IDIOMA, type Locale } from '@/lib/locales'
 import { cn } from '@/lib/utils'
 import type { CabecalhoDaSecao, MateriaDaImprensa } from '@/types/content'
 
@@ -17,7 +17,7 @@ import { TEXTOS_DAS_SECOES } from './textos'
 
 function dataDe(m: MateriaDaImprensa, locale: Locale): string | null {
   if (!m.publishedAt) return null
-  return new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
+  return new Intl.DateTimeFormat(FORMATO_DO_IDIOMA[locale], {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

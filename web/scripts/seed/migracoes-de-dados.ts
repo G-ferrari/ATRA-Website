@@ -17,6 +17,7 @@ import { up as fimDasPaginasInternas } from '../../src/migrations/20260929_22320
 import { criarMateriasDaImprensa } from '../../src/migrations/20261002_170000_materias_da_imprensa'
 import { preencherPainelDeConversao } from '../../src/migrations/20261002_203000_painel_de_conversao'
 import { criarPaginasMestras } from '../../src/migrations/20261005_230000_paginas_mestras_conteudo'
+import { copiarSlugsParaOEspanhol } from '../../src/migrations/20261028_150000_carga_inicial_do_espanhol'
 
 const payload = await getPayload({ config })
 
@@ -38,5 +39,10 @@ await preencherPainelDeConversao({ payload } as never)
  * Insights, que o seed acabou de criar, ganham aqui a marca da seção — sem ela
  * as duas rotas dariam 404 no e2e. */
 await criarPaginasMestras(payload)
+
+/* O espanhol (D-77): o slug português de cada documento vira o espanhol. Sem
+ * ele, nada do seed existe no `/es` — a inicial inclusive. Por último entre os
+ * que gravam conteúdo, para pegar o que os passos acima criaram. */
+await copiarSlugsParaOEspanhol(payload.db.drizzle as never, console.log)
 
 process.exit(0)

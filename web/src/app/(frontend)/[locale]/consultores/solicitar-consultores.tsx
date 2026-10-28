@@ -31,6 +31,11 @@ const TEXTOS = {
     subtitulo: 'Request profiles or squads for your project.',
     abrir: 'Request consultants',
   },
+  es: {
+    titulo: '¿Aceleramos su equipo con consultores ATRA?',
+    subtitulo: '¡Solicite perfiles o squads para su proyecto!',
+    abrir: 'Solicitar consultores',
+  },
 } as const
 
 export function SolicitarConsultores({

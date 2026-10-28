@@ -43,19 +43,19 @@ export const MAX_ARTIGOS = 400
 
 type Idioma = { locale: Locale; fallbackLocale?: false }
 
-/** O português sempre; o inglês, sem fallback, só quando a conversa é em inglês. */
+/** O português sempre; o idioma da conversa, sem fallback, quando é outro. */
 async function nosDoisIdiomas<T extends { id: number | string }>(
   locale: Locale,
   buscar: (idioma: Idioma) => Promise<{ docs: T[] }>,
 ): Promise<Par<T>[]> {
   if (locale === 'pt') return (await buscar({ locale: 'pt' })).docs.map((doc) => ({ pt: doc }))
 
-  /* ⚠️ `fallbackLocale: false` é o que deixa ver se o slug em inglês **existe**:
-     com o fallback, o inglês devolveria o slug português, e o endereço montado
-     com ele responderia 404. */
-  const [pt, en] = await Promise.all([buscar({ locale: 'pt' }), buscar({ locale: 'en', fallbackLocale: false })])
-  const ingles = new Map(en.docs.map((doc) => [doc.id, doc]))
-  return pt.docs.map((doc) => ({ pt: doc, en: ingles.get(doc.id) }))
+  /* ⚠️ `fallbackLocale: false` é o que deixa ver se o slug no idioma **existe**:
+     com o fallback, ele devolveria o slug português, e o endereço montado com
+     ele responderia 404. */
+  const [pt, outro] = await Promise.all([buscar({ locale: 'pt' }), buscar({ locale, fallbackLocale: false })])
+  const noIdioma = new Map(outro.docs.map((doc) => [doc.id, doc]))
+  return pt.docs.map((doc) => ({ pt: doc, [locale]: noIdioma.get(doc.id) }) as Par<T>)
 }
 
 async function montar(locale: Locale): Promise<ConteudoRecomendavel[]> {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { DEFAULT_LOCALE, LOCALES, type Locale } from './locales'
+import { DEFAULT_LOCALE, ETIQUETA_DO_IDIOMA, LOCALES, type Locale } from './locales'
 import { hrefDe, type Secao } from './routes'
 import type { Seo } from '@/types/content'
 
@@ -66,7 +66,7 @@ export type SlugsPorIdioma = Partial<Record<Locale, string>>
 
 /** O código do idioma no `hreflang`: o português é o do Brasil. */
 export function hreflangDe(locale: Locale): string {
-  return locale === 'pt' ? 'pt-BR' : locale
+  return ETIQUETA_DO_IDIOMA[locale]
 }
 
 /**
@@ -118,6 +118,9 @@ export function alternativasDe(
   }
 }
 
+/** O `og:locale`: o Facebook e o LinkedIn conhecem `es_LA`, não o `es` solto. */
+const OG_LOCALE: Record<Locale, string> = { pt: 'pt_BR', en: 'en_US', es: 'es_LA' }
+
 export type Descricao = {
   locale: Locale
   local: Local
@@ -166,7 +169,7 @@ export function metadataDe({ locale, local, versoes, seo, corpo }: Descricao): M
     openGraph: {
       type: 'website',
       siteName: 'ATRA',
-      locale: locale === 'pt' ? 'pt_BR' : 'en_US',
+      locale: OG_LOCALE[locale],
       url: `${ORIGEM}${caminho}`,
       title,
       description,

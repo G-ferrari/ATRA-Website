@@ -44,6 +44,13 @@ const TEXTOS = {
     irPara: (n: number) => `Go to highlight ${n}`,
     posicao: (n: number, total: number) => `${n} of ${total}`,
   },
+  es: {
+    rotulo: 'Destacados',
+    anterior: 'Destacado anterior',
+    proximo: 'Siguiente destacado',
+    irPara: (n: number) => `Ir al destacado ${n}`,
+    posicao: (n: number, total: number) => `${n} de ${total}`,
+  },
 } as const
 
 /* Link absoluto abre em nova aba, como no bloco de CTA. */

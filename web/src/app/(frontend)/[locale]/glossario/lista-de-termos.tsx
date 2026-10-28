@@ -45,6 +45,20 @@ const TEXTOS = {
     vazioTexto: 'Try another keyword.',
     limpar: 'Clear filters',
   },
+  es: {
+    selo: 'Diccionario Técnico',
+    chip: 'Conceptos Clave',
+    titulo: 'Glosario de',
+    tituloDestaque: 'Datos e IA',
+    subtitulo:
+      'Desmitifique los términos técnicos de ingeniería de datos, computación en la nube, gobernanza e inteligencia artificial aplicada a los negocios.',
+    buscar: 'Buscar un término o definición...',
+    todos: 'Todos',
+    indice: 'Índice alfabético rápido',
+    vazioTitulo: 'No se encontró ningún término',
+    vazioTexto: 'Pruebe con otra palabra clave.',
+    limpar: 'Limpiar filtros',
+  },
 } as const
 
 const ancora = (termo: string) => `term-${termo.toLowerCase().replace(/\s+/g, '-')}`

@@ -36,11 +36,11 @@ function item<T extends Base>(
   locale: Locale,
   textos: (doc: T) => { titulo?: string | null; resumo?: string | null },
 ): ConteudoRecomendavel | null {
-  const doIdioma = locale === 'pt' ? par.pt : par.en
+  const doIdioma = par[locale]
   const slug = slugNoIdioma(par, locale)
   if (!doIdioma || !slug) return null
 
-  /* Texto que falta no inglês cai no português: o endereço existe, e um cartão
+  /* Texto que falta no idioma cai no português: o endereço existe, e um cartão
      com o título em português é melhor que cartão nenhum (P-08). */
   const proprio = textos(doIdioma)
   const reserva = textos(par.pt)
@@ -144,7 +144,7 @@ export function dePagina(par: Par<Pagina>, locale: Locale): ConteudoRecomendavel
   const secao = secaoDaPagina(par.pt)
   if (!secao) return null
 
-  const doIdioma = (locale === 'pt' ? par.pt : par.en) ?? par.pt
+  const doIdioma = par[locale] ?? par.pt
   const titulo = emUmaLinha(doIdioma.title || par.pt.title, 140)
   if (!titulo) return null
 

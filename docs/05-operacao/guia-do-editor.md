@@ -45,9 +45,10 @@ para você, é papel — não erro.
    deixe vazio e o nome não aparece em lugar nenhum — cartão, destaque, página e
    título no Google. ⚠️ Confira também os textos do case (subtítulo, resumo,
    "Sobre o cliente"): o nome escrito neles continua aparecendo.
-5. O seletor de idioma (canto superior) alterna entre **português e inglês**.
-   São dois conteúdos independentes da mesma página: preencher um não traduz o
-   outro.
+5. O seletor de idioma (canto superior, "Local") alterna entre **português,
+   inglês e espanhol**. São conteúdos independentes da mesma página: preencher
+   um não traduz o outro à mão — quem traduz é a tradução automática (ver "O
+   inglês do site" e "O espanhol do site").
 
 ## 3. Imagens — e o texto alternativo
 
@@ -543,6 +544,31 @@ documento por minuto**, e tenta de novo sozinha se o Gemini estiver ocupado.
 houver mudança em português salva como rascunho e ainda não publicada, ela vai
 ao ar junto. Publique o português primeiro, ou confira que ele não tem
 rascunho pendente.
+
+## O espanhol do site
+
+Desde 28/10 o site tem espanhol, em `/es`, e ele **se refaz sozinho** como o
+inglês: ao publicar em português, a IA traduz e publica o espanhol (neutro, da
+América Latina, tratando o leitor por "usted").
+
+- **Ligar e desligar**: **Sistema → Integrações → Tradução para o espanhol**,
+  separado do inglês. Desligar um não para o outro.
+- **Para escrever o espanhol à mão**, marque **"Espanhol revisado à mão: não
+  retraduzir"** na barra lateral e edite com o admin em **Español**.
+- O **endereço** de cada página em espanhol é o mesmo do português
+  (`/es/soluciones/<endereço em português>`); o das seções é em espanhol.
+- **Menu, rodapé, painel do menu, aviso de cookies e os textos da ATRA AI
+  também se traduzem para o espanhol**, a cada vez que forem
+  salvos em português. ⚠️ Esses textos não têm a caixa de trava: corrigir o
+  espanhol deles à mão vale só até a próxima vez que alguém salvar o português.
+  O aviso de consentimento da ATRA AI fica de fora (texto jurídico).
+- Notícias de "ATRA na mídia" e formulários não se traduzem: edite-os em
+  Español no admin, ou deixe que mostrem o português.
+
+**A carga inicial** (28/10) traduz o que já estava publicado: páginas
+primeiro, o Blog por último, depois o menu e o rodapé. Um por minuto, umas 6
+horas, começando quando alguém abrir o admin depois da publicação do site.
+Até a fila chegar em cada página, o `/es` a mostra em português.
 
 O espanhol pede um idioma novo no site inteiro, e é outra tarefa.
 

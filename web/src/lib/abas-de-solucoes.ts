@@ -13,10 +13,10 @@
  * Aba nova: uma linha aqui, o campo de cases em `globals/ConversionPanel.ts` e
  * a migração aditiva do enum (`pnpm payload migrate:create`). */
 export const ABAS_DE_SOLUCOES = [
-  { id: 'innovation-ai', pt: 'IA & Analytics Avançada', en: 'AI & Advanced Analytics' },
-  { id: 'data-bi', pt: 'Dados & Cloud', en: 'Data & Cloud' },
-  { id: 'governance-culture', pt: 'Governança & FinOps', en: 'Governance & FinOps' },
-  { id: 'specialized-services', pt: 'Serviços Especializados', en: 'Specialized Services' },
+  { id: 'innovation-ai', pt: 'IA & Analytics Avançada', en: 'AI & Advanced Analytics', es: 'IA y Analítica Avanzada' },
+  { id: 'data-bi', pt: 'Dados & Cloud', en: 'Data & Cloud', es: 'Datos y Cloud' },
+  { id: 'governance-culture', pt: 'Governança & FinOps', en: 'Governance & FinOps', es: 'Gobernanza y FinOps' },
+  { id: 'specialized-services', pt: 'Serviços Especializados', en: 'Specialized Services', es: 'Servicios Especializados' },
 ] as const
 
 export type AbaDeSolucoes = (typeof ABAS_DE_SOLUCOES)[number]['id']

@@ -1,4 +1,4 @@
-import type { Locale } from '@/lib/locales'
+import { FORMATO_DO_IDIOMA, type Locale } from '@/lib/locales'
 import { nomeDaSecao } from '@/lib/paginas-mestras'
 import { hrefDe } from '@/lib/routes'
 import type {
@@ -30,11 +30,12 @@ const ETIQUETAS = 3
 const SELO = {
   pt: { paginas: (n: number) => `${n} páginas` },
   en: { paginas: (n: number) => `${n} pages` },
+  es: { paginas: (n: number) => `${n} páginas` },
 } as const
 
 function data(iso: string | null, locale: Locale): string | null {
   if (!iso) return null
-  return new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
+  return new Intl.DateTimeFormat(FORMATO_DO_IDIOMA[locale], {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

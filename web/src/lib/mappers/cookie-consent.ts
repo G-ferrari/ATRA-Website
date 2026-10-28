@@ -1,5 +1,6 @@
 import type { CookieConsent } from '@/payload-types'
 import type { AvisoDeCookies } from '@/types/content'
+import type { Locale } from '../locales'
 
 /* Mapper do aviso de cookies (MIG-151, D-30). */
 
@@ -63,9 +64,34 @@ const RESERVA = {
         'We use visitor identification technology to understand which companies visit our site. This technology matches your IP address to public company information. We do not identify individual visitors or track personal browsing behavior. This processing is based on your consent, which you can withdraw at any time through the cookie preferences.',
     },
   },
+  es: {
+    titulo: 'Cookies y privacidad',
+    aceitar: 'Aceptar todas',
+    recusar: 'Rechazar',
+    preferencias: 'Preferencias',
+    salvar: 'Guardar elecciones',
+    tituloDoPainel: 'Preferencias de cookies',
+    mensagemDoPainel: 'Elija lo que el sitio puede registrar. Puede cambiarlo cuando quiera.',
+    necessarios: {
+      nome: 'Necesarias',
+      descricao: 'Guarda su elección de cookies. Sin ella, el sitio no puede recordar lo que respondió aquí.',
+    },
+    analytics: {
+      nome: 'Estadísticas',
+      descricao: 'Google Analytics: mide las visitas y el uso de las páginas. Solo se carga si usted acepta.',
+    },
+    marketing: {
+      nome: 'Marketing',
+      /* ⚠️ Traducción del texto de Karen, como la del inglés: entra en la misma
+         revisión del texto completo de las cookies (P-14). */
+      descricao:
+        'Recuerda de qué campaña llegó (parámetros UTM) y permite que RD Station, nuestra herramienta de marketing, acompañe su navegación en el sitio; ambos se le envían si usted se pone en contacto. ' +
+        'Utilizamos tecnología de identificación de visitantes para entender qué empresas visitan nuestro sitio. Esta tecnología asocia su dirección IP con información pública de la empresa. No identificamos a visitantes individuales ni rastreamos el comportamiento de navegación personal. Este tratamiento se basa en su consentimiento, que puede revocar en cualquier momento desde las preferencias de cookies.',
+    },
+  },
 } as const
 
-export function toAvisoDeCookies(doc: CookieConsent, locale: 'pt' | 'en'): AvisoDeCookies | null {
+export function toAvisoDeCookies(doc: CookieConsent, locale: Locale): AvisoDeCookies | null {
   /* O gate: sem a mensagem jurídica neste idioma, não há banner. */
   const mensagem = doc.bannerMessage?.trim()
   if (!mensagem) return null

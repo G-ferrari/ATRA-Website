@@ -12,20 +12,24 @@
  * "Especialista") — se os campos do RD forem listas fechadas com aqueles
  * valores, isto precisa casar com eles (a conferir na task 047). */
 
+import { LOCALES, type Locale } from './locales'
+
 export const AREAS = {
   pt: ['Engenharia de Dados', 'Inteligência Artificial / ML', 'Analytics & BI', 'Arquitetura Cloud', 'Outros'],
   en: ['Data Engineering', 'Artificial Intelligence / ML', 'Analytics & BI', 'Cloud Architecture', 'Other'],
+  es: ['Ingeniería de Datos', 'Inteligencia Artificial / ML', 'Analytics & BI', 'Arquitectura Cloud', 'Otros'],
 } as const
 
 export const SENIORIDADES = {
   pt: ['Júnior', 'Pleno', 'Sênior', 'Lead / Principal', 'Trainee'],
   en: ['Junior', 'Mid-level', 'Senior', 'Lead / Principal', 'Trainee'],
+  es: ['Junior', 'Semi Senior', 'Senior', 'Lead / Principal', 'Trainee'],
 } as const
 
 /** O rótulo em português da opção escolhida, em qualquer idioma; `undefined`
  *  para o que não é opção da lista (vazio, forjado, de outra versão). */
-function opcaoEmPortugues(lista: { pt: readonly string[]; en: readonly string[] }, valor: string): string | undefined {
-  const i = Math.max(lista.pt.indexOf(valor), lista.en.indexOf(valor))
+function opcaoEmPortugues(lista: Record<Locale, readonly string[]>, valor: string): string | undefined {
+  const i = Math.max(...LOCALES.map((l) => lista[l].indexOf(valor)))
   return i >= 0 ? lista.pt[i] : undefined
 }
 

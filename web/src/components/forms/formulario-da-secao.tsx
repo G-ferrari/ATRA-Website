@@ -39,6 +39,12 @@ const TEXTOS = {
     enviado: 'We received your submission.',
     continuar: 'Continue',
   },
+  es: {
+    selecione: 'Seleccione…',
+    enviando: 'Enviando…',
+    enviado: 'Recibimos su envío.',
+    continuar: 'Continuar',
+  },
 } as const
 
 /* O traço do contato, mais firme no claro: lá o campo fica sobre a página, e

@@ -28,6 +28,12 @@ const TEXTOS = {
     contato: 'Contact us',
     ia: 'Quick question? Talk to our AI',
   },
+  es: {
+    titulo: 'Contáctenos',
+    descricao: 'Conozca más sobre quiénes somos y cómo podemos construir juntos el futuro de su empresa.',
+    contato: 'Hable con nosotros',
+    ia: '¿Una duda rápida? Hable con nuestra IA',
+  },
 } as const
 
 export function ChamadaFinal({ locale }: { locale: Locale }) {

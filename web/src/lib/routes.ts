@@ -8,43 +8,43 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from './locales'
  *
  * Cresce a cada rota portada na Fase 3. */
 export const SECOES = {
-  cases: { pt: 'cases-de-sucesso', en: 'success-stories' },
+  cases: { pt: 'cases-de-sucesso', en: 'success-stories', es: 'casos-de-exito' },
   // A página ainda não existe (Fase 3); o legado já linka para cá e o link
   // está quebrado lá também. Centralizado aqui para não nascer na mão.
-  contato: { pt: 'contato', en: 'contact' },
-  glossario: { pt: 'glossario', en: 'glossary' },
+  contato: { pt: 'contato', en: 'contact', es: 'contacto' },
+  glossario: { pt: 'glossario', en: 'glossary', es: 'glosario' },
   /* "ATRA na mídia": a seção que era `/relatorios` no protótipo. Mudou de nome e
      de endereço em 01/10 (D-43) e virou matérias de imprensa em 02/10 (D-49),
      com collection própria (`press`). `/relatorios` e `/en/reports` redirecionam
      para cá (`ROTAS_RENOMEADAS`, em `lib/redirects.ts`). */
-  midia: { pt: 'atra-na-midia', en: 'atra-in-the-media' },
-  ebooks: { pt: 'ebooks', en: 'ebooks' },
-  webinars: { pt: 'webinars', en: 'webinars' },
-  blog: { pt: 'blog', en: 'blog' },
-  sobre: { pt: 'sobre', en: 'about' },
-  carreiras: { pt: 'carreiras', en: 'careers' },
-  consultores: { pt: 'consultores', en: 'consultants' },
-  parceiros: { pt: 'parceiros', en: 'partners' },
-  solucoes: { pt: 'solucoes', en: 'solutions' },
+  midia: { pt: 'atra-na-midia', en: 'atra-in-the-media', es: 'atra-en-los-medios' },
+  ebooks: { pt: 'ebooks', en: 'ebooks', es: 'ebooks' },
+  webinars: { pt: 'webinars', en: 'webinars', es: 'webinars' },
+  blog: { pt: 'blog', en: 'blog', es: 'blog' },
+  sobre: { pt: 'sobre', en: 'about', es: 'sobre-nosotros' },
+  carreiras: { pt: 'carreiras', en: 'careers', es: 'carreras' },
+  consultores: { pt: 'consultores', en: 'consultants', es: 'consultores' },
+  parceiros: { pt: 'parceiros', en: 'partners', es: 'socios' },
+  solucoes: { pt: 'solucoes', en: 'solutions', es: 'soluciones' },
   /* `segments`, tradução direta, e não `industries` ou `sectors`: as outras
      seções aqui traduzem o termo em vez de reinterpretá-lo, e escolher o
      vocabulário comercial em inglês é decisão de marketing (D-22). */
-  segmentos: { pt: 'segmentos', en: 'segments' },
+  segmentos: { pt: 'segmentos', en: 'segments', es: 'segmentos' },
   // A rota é MIG-061; o destino entra aqui antes porque a caixa de conversa da
   // home já aponta para ela, e link escrito à mão é o que a regra 6 proíbe.
-  chat: { pt: 'chat', en: 'chat' },
-  insights: { pt: 'insights', en: 'insights' },
+  chat: { pt: 'chat', en: 'chat', es: 'chat' },
+  insights: { pt: 'insights', en: 'insights', es: 'insights' },
   /* Diagnóstico de Maturidade de Dados (feature diagnostico-maturidade-dados,
      task 026), que substituiu o diagnóstico RC18 (D-35). O alias EN existe para
      o slug traduzido resolver: a rota em inglês serve o mesmo conteúdo em
      português, por decisão da feature. Os endereços do RC18 não voltam para
      cá — viraram redirect para esta seção (`ROTAS_APOSENTADAS`, em
      `lib/redirects.ts`). */
-  diagnosticoMaturidade: { pt: 'diagnostico-maturidade', en: 'data-maturity-assessment' },
+  diagnosticoMaturidade: { pt: 'diagnostico-maturidade', en: 'data-maturity-assessment', es: 'diagnostico-de-madurez' },
   /* MIG-094. O WordPress serve **uma** página para privacidade, termos e
      cookies (`/politicas-e-termos/`); o rodapé tem um link só para ela, com o
      nome da página. */
-  politicas: { pt: 'politicas-e-termos', en: 'privacy-and-terms' },
+  politicas: { pt: 'politicas-e-termos', en: 'privacy-and-terms', es: 'privacidad-y-terminos' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type Secao = keyof typeof SECOES
