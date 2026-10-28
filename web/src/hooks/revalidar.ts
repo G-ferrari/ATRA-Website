@@ -2,6 +2,7 @@ import { revalidatePath } from 'next/cache'
 
 import { marcarIndiceDesatualizado } from '../lib/busca-da-ia/agenda'
 import { invalidarCatalogoDaIa } from '../lib/cache-do-catalogo-da-ia'
+import { pedirRevalidacaoAoProprioServidor } from '../lib/revalidacao-de-fora'
 
 /* MIG-143 — publicar no CMS passa a atualizar o site.
  *
@@ -36,6 +37,8 @@ export function revalidarSite(): void {
   try {
     revalidatePath('/', 'layout')
   } catch {
-    /* fora do Next (seed, wp-import): nada a invalidar */
+    /* Fora de requisição: a fila do Payload, no processo do Next, pede ao
+       próprio servidor; seed e wp-import, fora dele, não têm o que invalidar. */
+    pedirRevalidacaoAoProprioServidor()
   }
 }
