@@ -557,8 +557,8 @@ América Latina, tratando o leitor por "usted").
   retraduzir"** na barra lateral e edite com o admin em **Español**.
 - O **endereço** de cada página em espanhol é o mesmo do português
   (`/es/soluciones/<endereço em português>`); o das seções é em espanhol.
-- **Menu, rodapé, painel do menu, aviso de cookies e os textos da ATRA AI e
-  do diagnóstico também se traduzem para o espanhol**, a cada vez que forem
+- **Menu, rodapé, painel do menu, aviso de cookies e os textos da ATRA AI
+  também se traduzem para o espanhol**, a cada vez que forem
   salvos em português. ⚠️ Esses textos não têm a caixa de trava: corrigir o
   espanhol deles à mão vale só até a próxima vez que alguém salvar o português.
   O aviso de consentimento da ATRA AI fica de fora (texto jurídico).

@@ -31,7 +31,7 @@ import {
  *    páginas primeiro, o Blog por último, do mais novo para o mais antigo. A
  *    trava "Espanhol revisado à mão" vale; documento que já tem pedido de
  *    espanhol na fila fica com o dele.
- * 4. **Os globais** (menu, rodapé, painel, cookies, ATRA AI, diagnóstico) vão
+ * 4. **Os globais** (menu, rodapé, painel, cookies, ATRA AI, configurações) vão
  *    à fila depois dos documentos — `lib/traducao-de-globais.ts`.
  *
  * Só enfileira: quem traduz é a fila, um por minuto, e ela começa quando
