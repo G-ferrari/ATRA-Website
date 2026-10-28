@@ -2788,7 +2788,7 @@ melhor que o botão PT/EN, no shadcn/ui e com bandeiras.
   espanhol **nasce copiando o do inglês**: quem ligou a tradução quis o site
   traduzido.
 - **Os globais também se traduzem para o espanhol** (menu, rodapé, painel do
-  menu, cookies, ATRA AI, configurações e textos do diagnóstico,
+  menu, cookies, ATRA AI e configurações,
   `lib/traducao-de-globais.ts`). O plugin não sabe traduzir global, e no
   inglês esses textos foram escritos à mão; no espanhol não há quem escreva, e
   sem isso o `/es` abriria com o menu em português. Salvar o global em
@@ -2796,7 +2796,8 @@ melhor que o botão PT/EN, no shadcn/ui e com bandeiras.
   trava: quem escrever o espanhol de um global à mão perde o texto na próxima
   vez que o português for salvo. ⚠️ O inglês dos globais **não** entra:
   retraduzir apagaria o que foi escrito à mão. ⚠️ `consentNotice` (ATRA AI)
-  fica fora: é texto de consentimento (P-14), não se gera.
+  fica fora: é texto de consentimento (P-14), não se gera. ⚠️ O global do
+  Diagnóstico também fica fora: o texto dele é revisado à mão (D-76).
 - **Carga inicial** por migração, como a do inglês: páginas primeiro, o Blog
   por último (do mais novo ao mais antigo), depois os globais. ~340 pedidos,
   um por minuto, umas 6 horas a partir da primeira abertura do admin depois do

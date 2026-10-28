@@ -31,7 +31,7 @@ import {
  *    páginas primeiro, o Blog por último, do mais novo para o mais antigo. A
  *    trava "Espanhol revisado à mão" vale; documento que já tem pedido de
  *    espanhol na fila fica com o dele.
- * 4. **Os globais** (menu, rodapé, painel, cookies, ATRA AI, diagnóstico) vão
+ * 4. **Os globais** (menu, rodapé, painel, cookies, ATRA AI, configurações) vão
  *    à fila depois dos documentos — `lib/traducao-de-globais.ts`.
  *
  * Só enfileira: quem traduz é a fila, um por minuto, e ela começa quando
@@ -69,10 +69,21 @@ export async function copiarSlugsParaOEspanhol(db: Banco, log: (msg: string) => 
     SELECT table_name, column_name FROM information_schema.columns
     WHERE table_schema = 'public' AND column_name IN ('slug', 'version_slug') AND table_name LIKE '%\_locales'`)
   for (const { table_name: tabela, column_name: coluna } of tabelas) {
+    /* ⚠️ Algumas tabelas de idioma têm coluna obrigatória além do slug (o nome
+       do tema, em `topics_locales`): a linha nova leva o valor do português
+       nelas também, que é o que o fallback mostraria. */
+    const { rows: obrigatorias } = await db.execute<{ column_name: string }>(sql`
+      SELECT column_name FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = ${tabela} AND is_nullable = 'NO' AND column_default IS NULL
+        AND column_name NOT IN ('_locale', '_parent_id', ${coluna})`)
+    const colunas = sql.join(
+      [coluna, ...obrigatorias.map((c) => c.column_name)].map((c) => sql.identifier(c)),
+      sql.raw(', '),
+    )
     const { rows } = await db.execute<{ copiados: number }>(sql`
       WITH copiados AS (
-        INSERT INTO ${sql.identifier(tabela)} ("_locale", "_parent_id", ${sql.identifier(coluna)})
-        SELECT 'es', "_parent_id", ${sql.identifier(coluna)} FROM ${sql.identifier(tabela)}
+        INSERT INTO ${sql.identifier(tabela)} ("_locale", "_parent_id", ${colunas})
+        SELECT 'es', "_parent_id", ${colunas} FROM ${sql.identifier(tabela)}
         WHERE "_locale" = 'pt' AND ${sql.identifier(coluna)} IS NOT NULL
         ON CONFLICT ("_locale", "_parent_id") DO UPDATE SET ${sql.identifier(coluna)} = EXCLUDED.${sql.identifier(coluna)}
         WHERE ${sql.identifier(tabela)}.${sql.identifier(coluna)} IS NULL

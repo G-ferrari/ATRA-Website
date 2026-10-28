@@ -21,7 +21,11 @@ import { idiomasLigados, FILA_DE_TRADUCAO } from './traducao-automatica'
  *   (LGPD), e texto jurídico não se gera (P-14). O espanhol mostra o português
  *   pelo fallback até alguém escrever;
  * - os globais sem texto de visitante: Aparência, Contato, Integrações,
- *   Rastreamento. */
+ *   Rastreamento;
+ * - o do Diagnóstico de Maturidade: o texto do questionário mora no código e é
+ *   traduzido à mão, com revisão do Roger e da Taciane (D-76). O texto do
+ *   global vai junto, no mesmo padrão (`PADRAO_DO_DIAGNOSTICO_*`), e uma
+ *   tradução do Gemini aqui passaria por cima do revisado. */
 
 export const GLOBAIS_TRADUZIDOS = [
   'navigation',
@@ -30,7 +34,6 @@ export const GLOBAIS_TRADUZIDOS = [
   'cookie-consent',
   'atra-ai',
   'site-settings',
-  'data-maturity-diagnostic',
 ] as const
 
 /** Os idiomas em que os globais se traduzem sozinhos. Só o espanhol: ver acima. */
