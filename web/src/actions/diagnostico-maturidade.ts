@@ -30,6 +30,7 @@ import {
 } from '@/lib/diagnostico-maturidade'
 import { errosDoContato } from '@/lib/diagnostico-maturidade/contato'
 import type { Idioma } from '@/lib/diagnostico-maturidade/idioma'
+import { novoTokenDoResultado } from '@/lib/diagnostico-maturidade/link-do-resultado'
 import { enviarAviso } from '@/lib/email'
 import { ipDe } from '@/lib/ip'
 import { isLocale } from '@/lib/locales'
@@ -373,6 +374,11 @@ export async function enviarDiagnosticoDeMaturidade(
           roadmap: roadmapEmTexto(roadmap),
           version: VERSAO,
           durationSeconds: duracaoEmSegundos(texto(dados, 'inicio')),
+          locale: idioma,
+          /* A chave da página do resultado, que vai ao RD no link do e-mail da
+             automação (`link-do-resultado.ts`). Nasce aqui, junto com o lead,
+             para a primeira sincronização já levar o link. */
+          resultToken: novoTokenDoResultado(),
         },
         status: 'new',
         notified: false,
@@ -394,29 +400,42 @@ export async function enviarDiagnosticoDeMaturidade(
     const [contato, textos] = await Promise.all([lerContato(), lerDiagnosticoDeMaturidade(idioma)])
     const caixa = caixaDoDiagnostico(contato)
 
-    try {
-      const resultado = montarEmailDoResultado({
-        nome,
-        setor,
-        porte,
-        calculo,
-        /* O roadmap gravado é o português, que é o que o CRM lê. */
-        roadmap: idioma === 'pt' ? roadmap : montarRoadmap(calculo, idioma),
-        textos,
-        idioma,
-        whatsappUrl: textos.whatsappUrl,
-        agendaUrl: textos.agendaUrl,
-      })
-      const enviou = await enviarAviso({
-        para: email,
-        assunto: resultado.assunto,
-        texto: resultado.texto,
-        html: resultado.html,
-        responderPara: caixa,
-      })
-      if (enviou) resultSentAt = new Date().toISOString()
-    } catch (e) {
-      console.error(`[diagnostico-maturidade] lead ${id} gravado, mas o resultado falhou:`, semDadoPessoal(e))
+    /* Desde 28/10 o resultado sai pela automação do RD, com o link da página
+       do resultado; o e-mail do site só vai com a chave ligada no admin, como
+       volta. Desligada, `resultSentAt` fica vazio — o site não enviou. */
+    if (textos.enviarResultadoPorEmail) {
+      try {
+        const resultado = montarEmailDoResultado({
+          nome,
+          setor,
+          porte,
+          calculo,
+          /* O roadmap gravado é o português, que é o que o CRM lê. */
+          roadmap: idioma === 'pt' ? roadmap : montarRoadmap(calculo, idioma),
+          textos,
+          idioma,
+          whatsappUrl: textos.whatsappUrl,
+          agendaUrl: textos.agendaUrl,
+        })
+        const enviou = await enviarAviso({
+          para: email,
+          assunto: resultado.assunto,
+          texto: resultado.texto,
+          html: resultado.html,
+          responderPara: caixa,
+          /* Cópia oculta do resultado para o CRM registrar o que o lead recebeu
+             (28/10). Endereço do ambiente, vários separados por vírgula; vazio,
+             ninguém recebe cópia. Fica fora do aviso à ATRA: aquele já vai à
+             caixa do Diagnóstico. */
+          copiaOculta: (process.env.EMAIL_COPIA_DO_RESULTADO ?? '')
+            .split(',')
+            .map((e) => e.trim())
+            .filter(Boolean),
+        })
+        if (enviou) resultSentAt = new Date().toISOString()
+      } catch (e) {
+        console.error(`[diagnostico-maturidade] lead ${id} gravado, mas o resultado falhou:`, semDadoPessoal(e))
+      }
     }
 
     /* Em `try` próprio: um defeito no e-mail do resultado não pode calar o

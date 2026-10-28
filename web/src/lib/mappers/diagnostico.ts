@@ -60,6 +60,7 @@ export function toDiagnosticoDeMaturidade(doc: DataMaturityDiagnostic, locale: L
       assunto: traduzido(doc.emailSubject) ?? (en ?? PADRAO_DO_DIAGNOSTICO).assuntoDoEmail,
       abertura: traduzido(doc.emailIntro) ?? en?.aberturaDoEmail ?? null,
     },
+    enviarResultadoPorEmail: doc.sendResultEmail === true,
     agendaUrl: link(doc.agendaUrl),
     whatsappUrl: link(doc.whatsappUrl) ?? PADRAO_DO_DIAGNOSTICO.whatsapp,
     /* Setor vazio no admin volta à lista do questionário; ver `regulacoes.ts`. */

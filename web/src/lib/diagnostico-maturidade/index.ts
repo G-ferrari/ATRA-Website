@@ -69,11 +69,13 @@ export { REGULACOES_PADRAO, regulacoesAvaliaveis, resolverRegulacoes, type Regul
 export { impactosNoPerfil } from './perfil'
 
 export {
+  conteudoDoResultado,
   corDoPilar,
   escaparHtml,
   montarAvisoParaAtra,
   montarEmailDoResultado,
   type AvisoParaAtra,
+  type ConteudoDoResultado,
   type EmailDoResultado,
   type EntradaDoAvisoParaAtra,
   type EntradaDoEmailDoResultado,

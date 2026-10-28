@@ -169,6 +169,22 @@ export const DiagnosticoDeMaturidade: GlobalConfig = {
       },
     },
     {
+      /* 28/10: o e-mail do resultado passou a sair pela automação do RD, com
+       * o link da página do resultado. Ligado, o site **também** envia o dele
+       * — o lead receberia dois. Fica como volta, caso a automação pare. Sem
+       * `localized`: liga ou desliga para todos os idiomas. */
+      name: 'sendResultEmail',
+      type: 'checkbox',
+      defaultValue: false,
+      label: { pt: 'O site envia o e-mail do resultado', en: 'The site sends the result e-mail' },
+      admin: {
+        description: {
+          pt: 'Desligado: o resultado chega ao lead pela automação do RD Station, que tem o link da página do resultado. Ligue só se a automação parar — ligado com ela ativa, o lead recebe dois e-mails.',
+          en: 'Off: the result reaches the lead through the RD Station automation, which carries the link to the result page. Turn on only if the automation stops — on while it runs, the lead gets two e-mails.',
+        },
+      },
+    },
+    {
       name: 'agendaUrl',
       type: 'text',
       validate: exigirHttp,

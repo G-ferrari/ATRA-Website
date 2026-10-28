@@ -71,7 +71,11 @@ Levantado em 17/08/2026, por DNS e headers públicos:
 | `S3_ENDPOINT` / `S3_BUCKET` | MinIO local | storage do host | não |
 | `S3_ACCESS_KEY` / `S3_SECRET_KEY` | `.env.local` | gerenciador do host | **sim** |
 | `GEMINI_API_KEY` | `.env.local` | gerenciador do host | **sim** |
-| `RESEND_API_KEY` | vazio (loga no console) | gerenciador do host | **sim** |
+| `RESEND_API_KEY` | vazio (loga no console) | **reserva** desde a D-78: só vale com `SMTP_HOST` vazio. Nunca entregou em produção (domínio sem verificação no Resend) | **sim** |
+| `SMTP_HOST` / `SMTP_PORT` | vazio (sem envio) | `smtp-relay.gmail.com` / `587` — retransmissão do Google Workspace (D-78). Preenchido, vence o Resend | não |
+| `SMTP_USER` / `SMTP_PASSWORD` | vazio | conta do Workspace do site e a **senha de app** dela (D-78). Sem usuário, a retransmissão só aceita pelo IP | **sim** (a senha) |
+| `EMAIL_FROM` | `ATRA <nao-responda@atra.com.br>` | idem; tem que ser endereço do domínio (alias da conta do site) | não |
+| `EMAIL_COPIA_DO_RESULTADO` | vazio | endereço(s), separados por vírgula, que recebem **cópia oculta** do resultado do diagnóstico enviado ao lead (D-78) — o de registro do CRM, por exemplo | não |
 | `SENTRY_DSN` | vazio (SDK inerte) | DSN do projeto no Sentry, lido pelo servidor e pelo edge (MIG-122, D-46). O `environment` sai de `NEXT_PUBLIC_SITE_URL` e o `release` é o SHA do deploy, gravado na imagem pelo `deploy.sh` | não — endereço de ingestão, não credencial |
 | `NEXT_PUBLIC_SENTRY_DSN` | vazio | o mesmo DSN para o navegador; entra no bundle, por isso é **build-arg** no `deploy.sh`, não variável do container | não |
 | `NEXT_PUBLIC_GTM_ID` | vazio | **reserva** desde a D-40: o id do container mora no admin (Sistema → Rastreamento), que vence. Só vale se o admin estiver vazio; o script continua esperando o aceite de estatística (D-30) | não — id público, aparece no HTML de qualquer site que use GTM |

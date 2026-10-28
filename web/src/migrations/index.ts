@@ -55,6 +55,7 @@ import * as migration_20260926_162528_add_highlight_carousel from './20260926_16
 import * as migration_20260926_171500_alocacao_de_consultores from './20260926_171500_alocacao_de_consultores';
 import * as migration_20260926_184353_add_form_recipients from './20260926_184353_add_form_recipients';
 import * as migration_20260926_193658_add_data_maturity_diagnostic from './20260926_193658_add_data_maturity_diagnostic';
+import * as migration_20260926_193700_resultado_do_diagnostico_antecipado from './20260926_193700_resultado_do_diagnostico_antecipado';
 import * as migration_20260926_220000_rc18_aponta_para_o_diagnostico from './20260926_220000_rc18_aponta_para_o_diagnostico';
 import * as migration_20260927_105730_reconcilia_snapshot_destino_e_diagnostico from './20260927_105730_reconcilia_snapshot_destino_e_diagnostico';
 import * as migration_20260927_163411_add_tracking from './20260927_163411_add_tracking';
@@ -137,6 +138,7 @@ import * as migration_20261027_174059_traducao_automatica_do_ingles from './2026
 import * as migration_20261027_200000_carga_inicial_do_ingles from './20261027_200000_carga_inicial_do_ingles';
 import * as migration_20261028_144743_espanhol from './20261028_144743_espanhol';
 import * as migration_20261028_150000_carga_inicial_do_espanhol from './20261028_150000_carga_inicial_do_espanhol';
+import * as migration_20261028_195814_resultado_do_diagnostico from './20261028_195814_resultado_do_diagnostico';
 
 export const migrations = [
   {
@@ -423,6 +425,11 @@ export const migrations = [
     up: migration_20260926_193658_add_data_maturity_diagnostic.up,
     down: migration_20260926_193658_add_data_maturity_diagnostic.down,
     name: '20260926_193658_add_data_maturity_diagnostic',
+  },
+  {
+    up: migration_20260926_193700_resultado_do_diagnostico_antecipado.up,
+    down: migration_20260926_193700_resultado_do_diagnostico_antecipado.down,
+    name: '20260926_193700_resultado_do_diagnostico_antecipado',
   },
   {
     up: migration_20260926_220000_rc18_aponta_para_o_diagnostico.up,
@@ -833,5 +840,10 @@ export const migrations = [
     up: migration_20261028_150000_carga_inicial_do_espanhol.up,
     down: migration_20261028_150000_carga_inicial_do_espanhol.down,
     name: '20261028_150000_carga_inicial_do_espanhol',
+  },
+  {
+    up: migration_20261028_195814_resultado_do_diagnostico.up,
+    down: migration_20261028_195814_resultado_do_diagnostico.down,
+    name: '20261028_195814_resultado_do_diagnostico'
   },
 ];

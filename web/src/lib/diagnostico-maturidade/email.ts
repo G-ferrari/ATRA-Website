@@ -233,8 +233,9 @@ export interface EmailDoResultado {
   texto: string
 }
 
-/* O conteúdo uma vez só; HTML e texto são duas maneiras de escrever o mesmo. */
-function conteudoDoResultado(entrada: EntradaDoEmailDoResultado) {
+/* O conteúdo uma vez só; HTML e texto são duas maneiras de escrever o mesmo — e
+ * a página do resultado (28/10), a terceira. Exportado para ela. */
+export function conteudoDoResultado(entrada: EntradaDoEmailDoResultado) {
   const { calculo, roadmap } = entrada
   const idioma = entrada.idioma ?? 'pt'
   const fixos: Fixos = FIXOS[idioma]
@@ -274,7 +275,8 @@ function conteudoDoResultado(entrada: EntradaDoEmailDoResultado) {
   }
 }
 
-type Conteudo = ReturnType<typeof conteudoDoResultado>
+export type ConteudoDoResultado = ReturnType<typeof conteudoDoResultado>
+type Conteudo = ConteudoDoResultado
 
 /* --- HTML --- */
 

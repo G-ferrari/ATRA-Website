@@ -18,6 +18,7 @@ const global = (over: Partial<DataMaturityDiagnostic> = {}): DataMaturityDiagnos
   doneMessage: 'Conclusão do marketing',
   emailSubject: 'Assunto do marketing',
   emailIntro: 'Abertura do e-mail do marketing',
+  sendResultEmail: true,
   agendaUrl: 'https://calendly.com/atra/diagnostico',
   whatsappUrl: 'https://wa.me/5511999999999',
   ...over,
@@ -30,11 +31,17 @@ describe('toDiagnosticoDeMaturidade', () => {
       abertura: 'Abertura do marketing',
       conclusao: 'Conclusão do marketing',
       email: { assunto: 'Assunto do marketing', abertura: 'Abertura do e-mail do marketing' },
+      enviarResultadoPorEmail: true,
       agendaUrl: 'https://calendly.com/atra/diagnostico',
       whatsappUrl: 'https://wa.me/5511999999999',
       /* Nenhum setor escolhido no admin: a lista do questionário. */
       regulacoes: REGULACOES_PADRAO,
     })
+  })
+
+  it('envio do e-mail do resultado ausente ou nulo é desligado (28/10: quem manda é o RD)', () => {
+    expect(toDiagnosticoDeMaturidade(global({ sendResultEmail: undefined })).enviarResultadoPorEmail).toBe(false)
+    expect(toDiagnosticoDeMaturidade(global({ sendResultEmail: null })).enviarResultadoPorEmail).toBe(false)
   })
 
   /* 07/10: a lista de regulações de cada setor é do admin. O setor que o editor
