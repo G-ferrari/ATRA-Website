@@ -61,6 +61,21 @@ export const PADRAO_DO_DIAGNOSTICO_EN = {
     "Thank you for taking ATRA's Data Maturity Assessment. Below is the reading of your answers: your maturity level, the pillars that need the most attention and a roadmap of next steps.",
 } as const
 
+/* E em espanhol (D-77). O global do Diagnóstico fica fora da tradução
+ * automática dos globais (`lib/traducao-de-globais.ts`): este texto é revisado
+ * à mão, como o resto do questionário. */
+export const PADRAO_DO_DIAGNOSTICO_ES = {
+  titulo:
+    'En 5 minutos, descubra en qué punto está su empresa en el camino de los datos y frente a las regulaciones de 2026-2027.',
+  abertura:
+    'Tres datos nos ayudan a mostrarle solo las preguntas relevantes para su sector y su regulación.',
+  conclusao:
+    'En breve recibirá por correo electrónico la lectura completa. Si lo prefiere, un especialista de ATRA puede comentar los resultados con usted ahora.',
+  assuntoDoEmail: 'Su Diagnóstico de Madurez de Datos — ATRA',
+  aberturaDoEmail:
+    'Gracias por responder el Diagnóstico de Madurez de Datos de ATRA. A continuación está la lectura de sus respuestas: el nivel de madurez, los pilares que requieren más atención y una hoja de ruta con los próximos pasos.',
+} as const
+
 /* Link colado sem protocolo ("calendly.com/atra") vira caminho relativo no site
  * e botão quebrado no e-mail. Recusar no admin avisa quem colou; o mapper
  * descarta o que escapar (e qualquer `javascript:`). */

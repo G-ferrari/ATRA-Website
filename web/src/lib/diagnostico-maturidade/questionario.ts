@@ -180,12 +180,20 @@ export function etapaAtual(estado: EstadoDoQuestionario, concluido = false): Eta
 
 /** Texto do canto do cartão (`#aq-step-label`). */
 export function rotuloDaEtapa(etapa: Etapa, idioma: Idioma = 'pt'): string {
-  const en = idioma === 'en'
-  if (etapa.tipo === 'perfil') return en ? 'Profile' : 'Perfil'
-  if (etapa.tipo === 'pergunta')
-    return en ? `Question ${etapa.numero} of ${etapa.total}` : `Pergunta ${etapa.numero} de ${etapa.total}`
-  if (etapa.tipo === 'contato') return en ? 'Contact' : 'Contato'
-  return en ? 'Done' : 'Concluído'
+  const t = ROTULOS_DA_ETAPA[idioma]
+  if (etapa.tipo === 'perfil') return t.perfil
+  if (etapa.tipo === 'pergunta') return t.pergunta(etapa.numero, etapa.total)
+  if (etapa.tipo === 'contato') return t.contato
+  return t.concluido
+}
+
+const ROTULOS_DA_ETAPA: Record<
+  Idioma,
+  { perfil: string; pergunta: (n: number, total: number) => string; contato: string; concluido: string }
+> = {
+  pt: { perfil: 'Perfil', pergunta: (n, t) => `Pergunta ${n} de ${t}`, contato: 'Contato', concluido: 'Concluído' },
+  en: { perfil: 'Profile', pergunta: (n, t) => `Question ${n} of ${t}`, contato: 'Contact', concluido: 'Done' },
+  es: { perfil: 'Perfil', pergunta: (n, t) => `Pregunta ${n} de ${t}`, contato: 'Contacto', concluido: 'Listo' },
 }
 
 /** Percentual da barra, pela conta do `render()` do HTML: `step / (total − 1)`,

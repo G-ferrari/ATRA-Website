@@ -2809,8 +2809,14 @@ melhor que o botão PT/EN, no shadcn/ui e com bandeiras.
   bandeira do espanhol é a da Espanha, embora a tradução seja latino-americana:
   nenhum país da América Latina representa os outros.
 - **O Diagnóstico de Maturidade** tem o texto no código (`dados.ts`), fora do
-  CMS. A versão em espanhol vai num PR separado, sobre o do inglês (#197), com
-  a mesma revisão pelo Roger e pela Taciane antes de entrar.
+  CMS. O espanhol segue o desenho do inglês (D-76): `espanhol.ts` ao lado de
+  `ingles.ts`, os dois reunidos em `traducoes.ts` (`traducaoDe(idioma)`), em
+  vez de `idioma === 'en'` espalhado pelo motor, pelo perfil e pela tela. O
+  teste de cobertura (`traducoes.test.ts`) roda para todo idioma traduzido. A
+  conta, o lead e o que vai ao RD seguem em português; o aviso à ATRA diz
+  quando a pessoa respondeu em espanhol. Traduzido do português, com o inglês
+  ao lado para conferir termo técnico, e **revisado pelo Roger e pela
+  Taciane** antes de ir ao ar.
 
 **Consequências.**
 

@@ -43,7 +43,21 @@ export const ERROS_DO_CONTATO_EN: Record<CampoValidado, string> = {
   consentimento: 'You need to authorize us to contact you to receive the assessment.',
 }
 
-export const errosDoContato = (idioma: Idioma = 'pt') => (idioma === 'en' ? ERROS_DO_CONTATO_EN : ERROS_DO_CONTATO)
+/** E em espanhol (D-77). */
+export const ERROS_DO_CONTATO_ES: Record<CampoValidado, string> = {
+  name: 'Indique su nombre.',
+  email: 'Use un correo corporativo válido (no aceptamos gmail, hotmail, etc.).',
+  phone: 'Indique un teléfono con código de área.',
+  consentimento: 'Es necesario autorizar el contacto para recibir el diagnóstico.',
+}
+
+const ERROS_POR_IDIOMA: Record<Idioma, Record<CampoValidado, string>> = {
+  pt: ERROS_DO_CONTATO,
+  en: ERROS_DO_CONTATO_EN,
+  es: ERROS_DO_CONTATO_ES,
+}
+
+export const errosDoContato = (idioma: Idioma = 'pt') => ERROS_POR_IDIOMA[idioma]
 
 /* Os mesmos cortes da action: `texto` (apara e corta em 200) e `linha` (junta
  * espaços). Sem eles, "A    b" passaria no servidor e seria recusado aqui — o

@@ -19,25 +19,28 @@ import {
   type Setor,
   type Tag,
 } from './dados'
-import { CARGOS_EN, NIVEIS_EN, PERGUNTAS_EN, PILARES_EN, PORTES_EN, ROTULOS_DAS_TAGS_EN, SETORES_EN } from './ingles'
 import type { Impacto } from './motor'
+import { traducaoDe, type Traducao } from './traducoes'
 
 export type Idioma = Locale
 
 const traduzirOpcoes = <V extends string>(
   lista: readonly OpcaoDoPerfil<V>[],
-  em: Readonly<Record<V, string>>,
+  em: (tr: Traducao) => Readonly<Record<V, string>>,
   idioma: Idioma,
-): readonly OpcaoDoPerfil<V>[] =>
-  idioma === 'pt' ? lista : lista.map((o) => ({ valor: o.valor, rotulo: em[o.valor] }))
+): readonly OpcaoDoPerfil<V>[] => {
+  const tr = traducaoDe(idioma)
+  return tr ? lista.map((o) => ({ valor: o.valor, rotulo: em(tr)[o.valor] })) : lista
+}
 
-export const setoresNoIdioma = (idioma: Idioma) => traduzirOpcoes<Setor>(SETORES, SETORES_EN, idioma)
-export const portesNoIdioma = (idioma: Idioma) => traduzirOpcoes<Porte>(PORTES, PORTES_EN, idioma)
-export const cargosNoIdioma = (idioma: Idioma) => traduzirOpcoes<Cargo>(CARGOS, CARGOS_EN, idioma)
+export const setoresNoIdioma = (idioma: Idioma) => traduzirOpcoes<Setor>(SETORES, (tr) => tr.setores, idioma)
+export const portesNoIdioma = (idioma: Idioma) => traduzirOpcoes<Porte>(PORTES, (tr) => tr.portes, idioma)
+export const cargosNoIdioma = (idioma: Idioma) => traduzirOpcoes<Cargo>(CARGOS, (tr) => tr.cargos, idioma)
 
 export function perguntaNoIdioma(pergunta: Pergunta, idioma: Idioma): Pergunta {
-  if (idioma === 'pt') return pergunta
-  const em = PERGUNTAS_EN[pergunta.id]
+  const tr = traducaoDe(idioma)
+  if (!tr) return pergunta
+  const em = tr.perguntas[pergunta.id]
   return {
     ...pergunta,
     enunciado: em.enunciado,
@@ -49,10 +52,10 @@ export function perguntaNoIdioma(pergunta: Pergunta, idioma: Idioma): Pergunta {
 }
 
 export const pilarNoIdioma = (pilar: NomeDoPilar, idioma: Idioma): string =>
-  idioma === 'pt' ? pilar : PILARES_EN[pilar]
+  traducaoDe(idioma)?.pilares[pilar] ?? pilar
 
 export function rotuloDaTagNoIdioma(tag: string, idioma: Idioma): string {
-  const rotulos = idioma === 'pt' ? ROTULOS_DAS_TAGS : ROTULOS_DAS_TAGS_EN
+  const rotulos = traducaoDe(idioma)?.rotulosDasTags ?? ROTULOS_DAS_TAGS
   return (Object.hasOwn(rotulos, tag) && rotulos[tag as Tag]) || tag
 }
 
@@ -65,4 +68,4 @@ export const impactosNoIdioma = (impactos: readonly Impacto[], idioma: Idioma): 
         rotulo: rotuloDaTagNoIdioma(i.tag, idioma),
       }))
 
-export const nivelNoIdioma = (numero: NivelNumerico, idioma: Idioma) => (idioma === 'pt' ? NIVEIS : NIVEIS_EN)[numero]
+export const nivelNoIdioma = (numero: NivelNumerico, idioma: Idioma) => (traducaoDe(idioma)?.niveis ?? NIVEIS)[numero]

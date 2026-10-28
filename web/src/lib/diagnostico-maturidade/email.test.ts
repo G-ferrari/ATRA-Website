@@ -335,6 +335,41 @@ describe('em inglês', () => {
   })
 })
 
+/* D-77: e quem responde em /es, em espanhol. "Fase 1" e "meses" são iguais
+ * nas duas línguas, e por isso não entram na lista do que não pode vazar. */
+describe('em espanhol', () => {
+  const emEspanhol = (respostas: Respostas) => {
+    const calculo = calcular(SETOR, respostas)
+    return montarEmailDoResultado({
+      nome: 'Ana Souza',
+      setor: SETOR,
+      porte: '1_5bi',
+      calculo,
+      roadmap: montarRoadmap(calculo, 'es'),
+      textos: { ...TEXTOS, email: { assunto: 'Su Diagnóstico de Madurez de Datos — ATRA', abertura: null } },
+      whatsappUrl: WHATSAPP,
+      agendaUrl: AGENDA,
+      idioma: 'es',
+    })
+  }
+
+  it('nenhum texto fixo ou pilar em português', () => {
+    for (const perfil of Object.values(PERFIS)) {
+      const { html, texto } = emEspanhol(perfil)
+      expect(html).toContain('<html lang="es">')
+      for (const corpo of [html, texto]) {
+        for (const pt of [...SECOES, NOTA, BOTAO_AGENDA, BOTAO_ESPECIALISTA, 'Olá', 'Nível', 'Governança', 'Segurança', 'Conformidade']) {
+          expect(corpo, pt).not.toContain(pt)
+        }
+      }
+      expect(texto).toContain('Hola, Ana Souza,')
+      expect(texto).toMatch(/Nivel \d · /)
+      expect(texto).toContain('Madurez por pilar')
+      expect(texto).toContain('Fase 1 · 0 a 3 meses')
+    }
+  })
+})
+
 describe('aviso à ATRA', () => {
   const entrada = (respostas: Respostas, empresa: string | null = 'Banco Exemplo S.A.') => {
     const calculo = calcular(SETOR, respostas)

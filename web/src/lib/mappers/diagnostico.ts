@@ -1,4 +1,8 @@
-import { PADRAO_DO_DIAGNOSTICO, PADRAO_DO_DIAGNOSTICO_EN } from '@/globals/DiagnosticoDeMaturidade'
+import {
+  PADRAO_DO_DIAGNOSTICO,
+  PADRAO_DO_DIAGNOSTICO_EN,
+  PADRAO_DO_DIAGNOSTICO_ES,
+} from '@/globals/DiagnosticoDeMaturidade'
 import { resolverRegulacoes } from '@/lib/diagnostico-maturidade'
 import type { Locale } from '@/lib/locales'
 import type { DataMaturityDiagnostic } from '@/payload-types'
@@ -36,8 +40,14 @@ const link = (valor: string | null | undefined): string | null => {
  * como não traduzido. */
 const PADROES_EM_PORTUGUES = new Set<string>(Object.values(PADRAO_DO_DIAGNOSTICO))
 
+const PADROES_TRADUZIDOS: Record<Exclude<Locale, 'pt'>, Record<keyof typeof PADRAO_DO_DIAGNOSTICO_EN, string>> = {
+  en: PADRAO_DO_DIAGNOSTICO_EN,
+  es: PADRAO_DO_DIAGNOSTICO_ES,
+}
+
 export function toDiagnosticoDeMaturidade(doc: DataMaturityDiagnostic, locale: Locale = 'pt'): DiagnosticoDeMaturidade {
-  const en = locale === 'en' ? PADRAO_DO_DIAGNOSTICO_EN : null
+  /* `en` é o padrão do idioma traduzido — o nome é de antes do espanhol (D-77). */
+  const en = locale === 'pt' ? null : PADROES_TRADUZIDOS[locale]
   const traduzido = (valor: string | null | undefined) => {
     const v = texto(valor)
     return en && v && PADROES_EM_PORTUGUES.has(v) ? null : v
