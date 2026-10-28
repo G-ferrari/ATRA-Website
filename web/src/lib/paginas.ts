@@ -46,7 +46,9 @@ export type PaginaMestraResolvida = PaginaResolvida & { topoProprio: boolean }
 
 export async function resolverPagina(slugPt: string, slugEn: string, locale: Locale): Promise<PaginaResolvida | null> {
   const { isEnabled: rascunho } = await draftMode()
-  const slug = locale === 'pt' ? slugPt : slugEn
+  /* O espanhol (D-77) fica com o slug português: a migração da D-77 o copiou
+     antes da tradução, e o slug nunca vai à IA (`semTraduzirOSlug`). */
+  const slug = locale === 'en' ? slugEn : slugPt
   return montar({ slug: { equals: slug } }, locale, rascunho)
 }
 

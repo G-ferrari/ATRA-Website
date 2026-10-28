@@ -6,6 +6,7 @@
 import type { ConfigDoFormulario } from '@/types/content'
 
 import { ehIdentificadorDeConversao, normalizarNome } from './formatos-de-integracao'
+import type { Locale } from './locales'
 
 /** Os tipos de campo da v1, na ordem do seletor do admin. */
 export const TIPOS_DE_CAMPO = [
@@ -233,6 +234,12 @@ const MENSAGENS = {
     email: 'Please check the e-mail address.',
     opcao: 'Please choose one of the options.',
   },
+  es: {
+    obrigatorio: 'Complete este campo.',
+    marcar: 'Marque esta opción para enviar.',
+    email: 'Revise el correo electrónico.',
+    opcao: 'Elija una de las opciones.',
+  },
 } as const
 
 export type CamposPadraoDoEnvio = {
@@ -274,7 +281,7 @@ export const nomeDoCampo = (campoId: string): string => `campo-${campoId}`
 export function conferirEnvio(
   config: Pick<ConfigDoFormulario, 'campos'>,
   ler: (campoId: string) => string,
-  locale: 'pt' | 'en',
+  locale: Locale,
 ): ConferenciaDoEnvio {
   const m = MENSAGENS[locale]
   const erros: Record<string, string> = {}

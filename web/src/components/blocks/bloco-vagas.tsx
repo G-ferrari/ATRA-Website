@@ -9,6 +9,8 @@ import type { VagaAberta } from '@/lib/atrair'
 import type { BlocoJobsList } from '@/types/content'
 import type { Locale } from '@/lib/locales'
 
+const CANDIDATAR: Record<Locale, string> = { pt: 'Candidatar-se', en: 'Apply', es: 'Postularse' }
+
 /* Lista de vagas — porte de `legacy/src/pages/Careers.tsx:410`.
  *
  * A seção tem **duas partes**: a grade de vagas e, sob ela, o cartão do banco de
@@ -107,7 +109,7 @@ export function BlocoVagas({
                             alturas continuarem casando (ver ⚠️ acima). */}
                         <span className="block text-xs text-text-muted mt-0.5">
                           {[v.senioridade, v.modeloDeTrabalho, v.tipoDeContrato].filter(Boolean).join(' · ') ||
-                            (locale === 'pt' ? 'Candidatar-se' : 'Apply')}
+                            CANDIDATAR[locale]}
                         </span>
                       </span>
                     </div>

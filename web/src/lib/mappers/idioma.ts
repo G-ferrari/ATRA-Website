@@ -1,4 +1,4 @@
-import type { Locale } from '../locales'
+import { LOCALES, type Locale } from '../locales'
 
 /* Quando um documento **existe** num idioma (D-69): tem slug gravado naquele
  * idioma, lido com `fallbackLocale: false`. A regra é a mesma das listagens do
@@ -7,17 +7,18 @@ import type { Locale } from '../locales'
  * em mãos: o catálogo da ATRA AI (D-60), que lê o português e o inglês sem
  * fallback para montar o cartão. */
 
-/** O mesmo documento nos dois idiomas; `en` vem com `fallbackLocale: false`. */
-export type Par<T> = { pt: T; en?: T | null }
+/** O mesmo documento em português e nos outros idiomas, estes lidos com
+ *  `fallbackLocale: false`. O nome ficou de quando eram dois (D-77). */
+export type Par<T> = { pt: T } & Partial<Record<Exclude<Locale, 'pt'>, T | null>>
 
 /** O slug do documento no idioma, ou `null` quando ele não existe nesse idioma. */
 export function slugNoIdioma(par: Par<{ slug?: string | null }>, locale: Locale): string | null {
-  const doIdioma = locale === 'pt' ? par.pt : par.en
+  const doIdioma = par[locale]
   return doIdioma?.slug?.trim() || null
 }
 
 /**
- * Um documento lido com `locale: 'all'` vira o par dos dois idiomas, com o slug
+ * Um documento lido com `locale: 'all'` vira o par de todos os idiomas, com o slug
  * e o texto que diz se o inglês é tradução (`temIngles`, no sitemap).
  *
  * Com `locale: 'all'` o Payload devolve cada campo localizado como objeto por
@@ -42,5 +43,5 @@ export function parDeTodosOsIdiomas(
     return null
   }
   const em = (locale: Locale) => ({ slug: ler(doc.slug, locale), texto: ler(doc[campoDeTexto], locale) })
-  return { pt: em('pt'), en: em('en') }
+  return Object.fromEntries(LOCALES.map((l) => [l, em(l)])) as Par<{ slug: string | null; texto: string | null }>
 }

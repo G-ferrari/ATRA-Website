@@ -9,6 +9,13 @@ import { CAMPO_ISCA } from '@/lib/anti-spam'
 import { contextoDoLead, type Mensagem } from '@/lib/chat'
 import { CHAVES_UTM, lerUtmGuardado, type ChaveUtm } from '@/lib/utm'
 import type { ConviteDeLead } from '@/types/content'
+import type { Locale } from '@/lib/locales'
+
+const TEXTOS = {
+  pt: { nome: 'Nome', email: 'E-mail corporativo', empresa: 'Empresa', telefone: 'Telefone', enviar: 'Enviar contato', fechar: 'Dispensar convite' },
+  en: { nome: 'Name', email: 'Work e-mail', empresa: 'Company', telefone: 'Phone', enviar: 'Send contact', fechar: 'Dismiss invite' },
+  es: { nome: 'Nombre', email: 'Correo corporativo', empresa: 'Empresa', telefone: 'Teléfono', enviar: 'Enviar contacto', fechar: 'Descartar invitación' },
+} as const satisfies Record<Locale, Record<string, string>>
 
 /* MIG-150 (D-29) — o cartão de convite dentro do fluxo do chat.
  *
@@ -31,7 +38,7 @@ export function ConviteLead({
 }: {
   convite: ConviteDeLead
   mensagens: Mensagem[]
-  locale: 'pt' | 'en'
+  locale: Locale
 }) {
   const [dispensado, setDispensado] = useState(false)
   const caminho = usePathname()
@@ -51,10 +58,7 @@ export function ConviteLead({
 
   if (dispensado) return null
 
-  const t =
-    locale === 'pt'
-      ? { nome: 'Nome', email: 'E-mail corporativo', empresa: 'Empresa', telefone: 'Telefone', enviar: 'Enviar contato', fechar: 'Dispensar convite' }
-      : { nome: 'Name', email: 'Work e-mail', empresa: 'Company', telefone: 'Phone', enviar: 'Send contact', fechar: 'Dismiss invite' }
+  const t = TEXTOS[locale]
 
   return (
     <div

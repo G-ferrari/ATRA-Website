@@ -53,7 +53,7 @@ async function slugsNoIdioma(
         })
         return docs.map((doc) => {
           const slug = (doc as unknown as { slug?: Partial<Record<Locale, string | null>> }).slug ?? {}
-          return [chave(secao, slug.pt ?? ''), slugNoIdioma({ pt: { slug: slug.pt }, en: { slug: slug.en } }, locale)] as const
+          return [chave(secao, slug.pt ?? ''), slugNoIdioma({ pt: { slug: slug.pt }, [locale]: { slug: slug[locale] } }, locale)] as const
         })
       } catch (e) {
         /* Sem a resposta, o link fica em português — que abre. Uma página

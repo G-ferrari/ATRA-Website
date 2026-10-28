@@ -38,10 +38,11 @@ describe('metadataDe', () => {
   /* D-07 dá slug traduzido a cada rota: `/sobre` e `/en/about` são a mesma
      página em dois idiomas. Sem declarar o par, o Google trata uma como
      duplicata da outra — e a que ele escolhe não é a do idioma de quem busca. */
-  it('declara as duas versões de idioma, com os slugs traduzidos', () => {
+  it('declara as três versões de idioma, com os slugs traduzidos', () => {
     expect(m.alternates?.languages).toEqual({
       'pt-BR': 'http://localhost:3000/sobre',
       en: 'http://localhost:3000/en/about',
+      es: 'http://localhost:3000/es/sobre-nosotros',
       'x-default': 'http://localhost:3000/sobre',
     })
   })
@@ -66,12 +67,14 @@ describe('metadataDe', () => {
     expect(contato.alternates?.languages).toEqual({
       'pt-BR': 'http://localhost:3000/contato',
       en: 'http://localhost:3000/en/contact',
+      es: 'http://localhost:3000/es/contacto',
       'x-default': 'http://localhost:3000/contato',
     })
     const home = metadataDe({ locale: 'en', local: { caminho: '/' }, seo: seo() })
     expect(home.alternates?.languages).toEqual({
       'pt-BR': 'http://localhost:3000/',
       en: 'http://localhost:3000/en',
+      es: 'http://localhost:3000/es',
       'x-default': 'http://localhost:3000/',
     })
   })
@@ -212,16 +215,26 @@ describe('metadataDe em página de item', () => {
 describe('alternativasDe', () => {
   /* A autorreferência é a URL da canônica, a que a página foi pedida: o Google
      pede as duas iguais. */
+  /* D-77: item traduzido só para o espanhol declara o português e o espanhol. */
+  it('item com espanhol e sem inglês: só os dois que existem', () => {
+    expect(alternativasDe({ secao: 'blog', slug: 'post' }, 'es', { pt: 'post', es: 'post' })).toEqual({
+      'pt-BR': 'http://localhost:3000/blog/post',
+      es: 'http://localhost:3000/es/blog/post',
+      'x-default': 'http://localhost:3000/blog/post',
+    })
+  })
+
   it('a própria página sai com o endereço dela', () => {
     expect(alternativasDe({ secao: 'blog', slug: 'post-em-ingles' }, 'en', { pt: 'post', en: 'post-em-ingles' })?.en).toBe(
       'http://localhost:3000/en/blog/post-em-ingles',
     )
   })
 
-  it('sem versões, a rota é fixa ou de seção e os dois idiomas existem', () => {
+  it('sem versões, a rota é fixa ou de seção e todos os idiomas existem', () => {
     expect(alternativasDe({ secao: 'cases' }, 'pt')).toEqual({
       'pt-BR': 'http://localhost:3000/cases-de-sucesso',
       en: 'http://localhost:3000/en/success-stories',
+      es: 'http://localhost:3000/es/casos-de-exito',
       'x-default': 'http://localhost:3000/cases-de-sucesso',
     })
   })

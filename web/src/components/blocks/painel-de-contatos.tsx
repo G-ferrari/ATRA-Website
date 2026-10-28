@@ -92,6 +92,13 @@ const TEXTOS = {
     conversar: 'Talk to us now',
     redes: 'Our social networks',
   },
+  es: {
+    contatos: 'Nuestros contactos',
+    email: 'Correo electrónico',
+    endereco: 'Dirección',
+    conversar: 'Conversar ahora',
+    redes: 'Nuestras redes sociales',
+  },
 } as const
 
 export function PainelDeContatos({

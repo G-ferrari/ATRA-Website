@@ -23,4 +23,11 @@ export const AREAS_DE_ATUACAO: Record<Locale, string[]> = {
     'Data Security',
     'Data Management',
   ],
+  es: [
+    'Cloud Data Analytics',
+    'Gobernanza de Datos',
+    'Data Integration',
+    'Data Security',
+    'Data Management',
+  ],
 }

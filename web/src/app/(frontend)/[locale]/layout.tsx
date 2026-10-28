@@ -23,7 +23,7 @@ import { lerAvisoDeCookies } from '@/lib/aviso-de-cookies'
 import { lerContato } from '@/lib/contato'
 import { organizacao } from '@/lib/jsonld'
 import { buscarListasDoMenu } from '@/lib/listas-do-menu'
-import { LOCALES, isLocale } from '@/lib/locales'
+import { ETIQUETA_DO_IDIOMA, LOCALES, isLocale } from '@/lib/locales'
 import { toPainelDeConversao } from '@/lib/mappers/conversion-panel'
 import { toNavegacao } from '@/lib/mappers/navigation'
 import { toImageOpcional } from '@/lib/mappers/shared'
@@ -135,7 +135,7 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
      * sobrava na regressão visual depois de layout e fonte já baterem — as
      * 60 caixas de texto da listagem coincidem ao décimo de pixel, e ainda
      * assim as bordas divergiam. Porte fiel vale para isso também (D-15). */
-    <HtmlComTema lang={locale === 'pt' ? 'pt-BR' : 'en'} classeBase={`${monaSans.variable} h-full`}>
+    <HtmlComTema lang={ETIQUETA_DO_IDIOMA[locale]} classeBase={`${monaSans.variable} h-full`}>
       {/* A árvore reproduz a do legado (`App.tsx:2597`): o `<body>` fica limpo,
         * como no `index.html` dele, e as classes de casca vivem no wrapper.
         * A única coisa nele é a variável do peso dos títulos (#215), que a

@@ -44,6 +44,15 @@ const TEXTOS = {
     inscrever: 'Subscribe for free',
     emBreve: 'Subscribing on the site is coming soon.',
   },
+  es: {
+    verTodos: 'Ver todos',
+    verSecao: 'Ver sección',
+    novaAba: 'se abre en otra pestaña',
+    acao: { webinars: 'Ver webinar', ebooks: 'Descargar e-book', midia: 'Leer la nota', padrao: 'Ver contenido' },
+    email: 'Su correo corporativo',
+    inscrever: 'Suscribirse gratis',
+    emBreve: 'La suscripción por el sitio estará disponible pronto.',
+  },
 } as const
 
 /** Onde as faixas começam: o destino da pílula que não leva a uma seção. */

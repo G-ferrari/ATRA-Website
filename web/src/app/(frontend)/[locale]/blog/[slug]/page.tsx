@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation'
 import { RascunhoIncompleto } from '@/components/content/rascunho-incompleto'
 import { ChamadaFinal } from '@/components/layout/chamada-final'
 import { RichText } from '@/components/content/rich-text'
-import { isLocale, LOCALES, type Locale } from '@/lib/locales'
+import { FORMATO_DO_IDIOMA, isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { toPostDetail } from '@/lib/mappers/post'
 import { mapearOuFaltando } from '@/lib/mappers/shared'
 import { getPayload } from '@/lib/payload'
@@ -48,6 +48,12 @@ const TEXTOS = {
     prefixo: 'Post',
     semCorpoTitulo: 'Content in preparation',
     semCorpoTexto: 'This post has no published text yet. It shows up here as soon as it is ready.',
+  },
+  es: {
+    voltar: 'Volver al blog',
+    prefixo: 'Artículo',
+    semCorpoTitulo: 'Contenido en preparación',
+    semCorpoTexto: 'Este artículo aún no tiene texto publicado. Aparecerá aquí en cuanto esté listo.',
   },
 } as const
 
@@ -133,7 +139,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
     url: `${ORIGEM}${hrefDe('blog', locale, post.slug)}`,
     publicadoEm: post.publishedAt,
   })
-  const data = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
+  const data = new Intl.DateTimeFormat(FORMATO_DO_IDIOMA[locale], {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

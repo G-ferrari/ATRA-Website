@@ -37,6 +37,16 @@ const TEXTOS = {
     cta: 'Read the full case study',
     selo: 'ATRA Case',
   },
+  es: {
+    buscar: 'Buscar por cliente, tema...',
+    todos: 'Todos',
+    categorias: 'Categorías:',
+    vazioTitulo: 'No se encontró ningún caso',
+    vazioDescricao: 'Pruebe con otro término o elija la categoría "Todos".',
+    limpar: 'Limpiar filtros',
+    cta: 'Leer el caso completo',
+    selo: 'Caso ATRA',
+  },
 } as const
 
 const TODOS = 'todos'

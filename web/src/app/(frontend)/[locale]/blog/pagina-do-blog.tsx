@@ -17,7 +17,7 @@ import { metadataDe } from '@/lib/seo'
  * Topo, textos, a chamada para os webinars do fim e o SEO são a página-mestra
  * do blog, no admin. */
 
-const SUFIXO = { pt: 'página', en: 'page' } as const
+const SUFIXO = { pt: 'página', en: 'page', es: 'página' } as const
 
 /** Metadata de uma página do blog. Cada uma é canônica de si mesma: o conteúdo
  *  é outro, e apontar todas para `/blog` esconderia do Google os artigos antigos. */

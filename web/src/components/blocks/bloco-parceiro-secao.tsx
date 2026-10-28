@@ -37,7 +37,7 @@ function iconeDe(nome: string): string {
   return REGRAS.find(([palavras]) => palavras.some((p) => n.includes(p)))?.[1] ?? 'award'
 }
 
-const ESPECIALIZACAO = { pt: 'Especialização', en: 'Specialisation' } as const
+const ESPECIALIZACAO = { pt: 'Especialização', en: 'Specialisation', es: 'Especialización' } as const
 
 export function BlocoParceiroSecao({ bloco, locale }: { bloco: BlocoPartnerSplit; locale: Locale }) {
   const especializacoes = bloco.rightColumn === 'specGrid'

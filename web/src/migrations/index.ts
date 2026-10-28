@@ -70,6 +70,7 @@ import * as migration_20260927_215950_descricao_e_alinhamento from './20260927_2
 import * as migration_20260927_215950_page_hero_video from './20260927_215950_page_hero_video';
 import * as migration_20260927_215950_process_steps_variant from './20260927_215950_process_steps_variant';
 import * as migration_20260927_215960_trava_do_ingles_antecipada from './20260927_215960_trava_do_ingles_antecipada';
+import * as migration_20260927_215961_trava_do_espanhol_antecipada from './20260927_215961_trava_do_espanhol_antecipada';
 import * as migration_20260927_220000_secao_formulario_antecipada from './20260927_220000_secao_formulario_antecipada';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
@@ -134,6 +135,8 @@ import * as migration_20261023_010102_traducao_no_admin from './20261023_010102_
 import * as migration_20261026_194552_busca_da_ia from './20261026_194552_busca_da_ia';
 import * as migration_20261027_174059_traducao_automatica_do_ingles from './20261027_174059_traducao_automatica_do_ingles';
 import * as migration_20261027_200000_carga_inicial_do_ingles from './20261027_200000_carga_inicial_do_ingles';
+import * as migration_20261028_144743_espanhol from './20261028_144743_espanhol';
+import * as migration_20261028_150000_carga_inicial_do_espanhol from './20261028_150000_carga_inicial_do_espanhol';
 
 export const migrations = [
   {
@@ -497,6 +500,11 @@ export const migrations = [
     name: '20260927_215960_trava_do_ingles_antecipada',
   },
   {
+    up: migration_20260927_215961_trava_do_espanhol_antecipada.up,
+    down: migration_20260927_215961_trava_do_espanhol_antecipada.down,
+    name: '20260927_215961_trava_do_espanhol_antecipada',
+  },
+  {
     up: migration_20260927_220000_secao_formulario_antecipada.up,
     down: migration_20260927_220000_secao_formulario_antecipada.down,
     name: '20260927_220000_secao_formulario_antecipada',
@@ -809,11 +817,21 @@ export const migrations = [
   {
     up: migration_20261027_174059_traducao_automatica_do_ingles.up,
     down: migration_20261027_174059_traducao_automatica_do_ingles.down,
-    name: '20261027_174059_traducao_automatica_do_ingles'
+    name: '20261027_174059_traducao_automatica_do_ingles',
   },
   {
     up: migration_20261027_200000_carga_inicial_do_ingles.up,
     down: migration_20261027_200000_carga_inicial_do_ingles.down,
     name: '20261027_200000_carga_inicial_do_ingles',
+  },
+  {
+    up: migration_20261028_144743_espanhol.up,
+    down: migration_20261028_144743_espanhol.down,
+    name: '20261028_144743_espanhol',
+  },
+  {
+    up: migration_20261028_150000_carga_inicial_do_espanhol.up,
+    down: migration_20261028_150000_carga_inicial_do_espanhol.down,
+    name: '20261028_150000_carga_inicial_do_espanhol',
   },
 ];

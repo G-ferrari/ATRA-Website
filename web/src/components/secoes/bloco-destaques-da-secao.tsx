@@ -2,7 +2,7 @@ import { ArrowUpRight, Calendar, Download, Newspaper, Play } from 'lucide-react'
 
 import { FeaturedHero, type FeaturedHeroProps, type FeaturedItem } from '@/components/ui'
 import { itensEmDestaque } from '@/lib/destaques-da-secao'
-import type { Locale } from '@/lib/locales'
+import { FORMATO_DO_IDIOMA, type Locale } from '@/lib/locales'
 import { hrefDe } from '@/lib/routes'
 import type { BlocoSectionFeatured } from '@/types/content'
 
@@ -10,7 +10,7 @@ import { origemDaMateria } from './lista-de-midia'
 import { TEXTOS_DAS_SECOES } from './textos'
 
 function dataPorExtenso(iso: string, locale: Locale): string {
-  return new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
+  return new Intl.DateTimeFormat(FORMATO_DO_IDIOMA[locale], {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

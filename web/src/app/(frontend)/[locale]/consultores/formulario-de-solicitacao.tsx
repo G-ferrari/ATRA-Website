@@ -66,6 +66,24 @@ const TEXTOS = {
       falha: 'We could not send it right now. Try WhatsApp or negocios@atra.com.br.',
     } satisfies Record<CodigoDeErro, string>,
   },
+  es: {
+    nome: 'Nombre completo *',
+    email: 'Correo corporativo *',
+    telefone: 'Teléfono / WhatsApp',
+    mensagem: 'Describa brevemente el proyecto (opcional)',
+    mensagemSozinha: 'Describa el profesional que busca',
+    enviar: 'Enviar solicitud',
+    enviando: 'Enviando...',
+    privacidade: 'Sus datos se tratan conforme a nuestra',
+    politica: 'Política de Privacidad',
+    erros: {
+      email: 'Revise el correo electrónico.',
+      vazio: 'Elija al menos un perfil o describa el profesional que busca.',
+      indisponiveis:
+        'Los perfiles elegidos ya no están disponibles. Actualice la página y elija de nuevo, o describa el profesional que busca.',
+      falha: 'No pudimos enviar ahora. Intente por WhatsApp o en negocios@atra.com.br.',
+    } satisfies Record<CodigoDeErro, string>,
+  },
 } as const
 
 /* O mesmo campo de antes. A nota sobre `disabled:opacity-100` saiu com o

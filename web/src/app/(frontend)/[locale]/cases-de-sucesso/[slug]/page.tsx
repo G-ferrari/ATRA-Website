@@ -49,6 +49,20 @@ const TEXTOS = {
     infoProjeto: 'Project details',
     areas: 'Areas of expertise',
   },
+  es: {
+    voltar: 'Volver a los casos',
+    prefixo: 'Caso de Éxito',
+    desafios: 'Desafíos',
+    solucao: 'Solución',
+    resultados: 'Resultados',
+    sobre: 'Sobre',
+    sobreOCliente: 'Sobre el cliente',
+    tecnologias: 'Tecnologías',
+    parceiros: 'Socios',
+    conector: ' y ',
+    infoProjeto: 'Información del proyecto',
+    areas: 'Áreas de actuación',
+  },
 } as const
 
 /* O `id` acompanha o resultado para o `hreflang` achar o mesmo case no outro

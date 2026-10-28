@@ -1,5 +1,5 @@
 import { lerCatalogoDaIa } from '../catalogo-da-ia'
-import type { Locale } from '../locales'
+import { LOCALES, type Locale } from '../locales'
 import { PREFIXO_DO_CODIGO, codigoDaPagina, secaoDaPagina } from '../mappers/catalogo-da-ia'
 import { getPayload } from '../payload'
 
@@ -115,5 +115,7 @@ export async function sincronizarIdioma(locale: Locale, gerar: GerarEmbeddings):
 export async function sincronizarIndice(gerar: GerarEmbeddings): Promise<ResultadoDaSincronizacao[]> {
   /* Um idioma por vez: são as mesmas consultas pesadas, e em paralelo elas
      disputariam o banco com o site. */
-  return [await sincronizarIdioma('pt', gerar), await sincronizarIdioma('en', gerar)]
+  const resultados: ResultadoDaSincronizacao[] = []
+  for (const locale of LOCALES) resultados.push(await sincronizarIdioma(locale, gerar))
+  return resultados
 }

@@ -530,6 +530,19 @@ collection: collection nova na tradução automática pede antecipada própria
 ficaram fora. O botão PT/EN do cabeçalho lê o par no `<link hreflang>` da
 página.
 
+**D-77 (28/10)**: o **espanhol**, em `/es`, com slugs de seção em espanhol
+(`lib/routes.ts`) e o dos documentos copiado do português (o slug não vai à
+IA). Traduz-se sozinho como o inglês, com interruptor e trava próprios
+(`spanishLocked`); quando só um idioma está aberto, `decidirTraducaoAutomatica`
+enfileira direto no fluxo do plugin, que só sabe "todos os alvos ou nenhum". Os
+**globais** se traduzem só para o espanhol (`lib/traducao-de-globais.ts`,
+tarefa `traduzir-global`), reaproveitando os ids das linhas do português. O
+seletor do cabeçalho é o `DropdownMenu` do shadcn/ui, copiado à mão para
+`components/ui/` com os nossos tokens. ⚠️ Idioma novo: `LOCALES` e todo
+`Record<Locale, …>` reprovam no `tsc` até ganharem o texto — é a lista do que
+falta. ⚠️ Em banco novo a cópia de slugs roda de novo no fim do seed
+(`migracoes-de-dados.ts`); sem ela o `/es` do CI dá 404 até na inicial.
+
 **D-72 (24/10)**: a VM do Google virou a produção. O Caddyfile serve só
 `SITE_HOST` (`www.atra.com.br`), sem `noindex` nem `robots.txt` bloqueando, e
 `REDIRECT_HOSTS` — `atra.com.br`, `atra.digital`, `atrainformatica.com.br`,

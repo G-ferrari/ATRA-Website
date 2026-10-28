@@ -40,12 +40,26 @@ const ROTAS_PORTADAS = {
     '/en/privacy-and-terms',
     '/en/data-maturity-assessment',
   ],
+  // D-77: o espanhol, com os slugs dele. Antes de a fila traduzir, o conteúdo
+  // sai em português pelo fallback — o que se testa aqui é a rota.
+  es: [
+    '/es',
+    '/es/casos-de-exito',
+    '/es/atra-en-los-medios',
+    '/es/ebooks',
+    '/es/webinars',
+    '/es/blog',
+    '/es/soluciones',
+    '/es/segmentos',
+    '/es/privacidad-y-terminos',
+    '/es/diagnostico-de-madurez',
+  ],
 } as const
 
 test.describe('app novo', () => {
   /* D-36: o glossário saiu do ar com 404, nos dois idiomas. */
   test('o glossário responde 404', async ({ request }) => {
-    for (const rota of ['/glossario', '/en/glossary']) {
+    for (const rota of ['/glossario', '/en/glossary', '/es/glosario']) {
       expect((await request.get(`${NEXT_URL}${rota}`)).status(), rota).toBe(404)
     }
   })
@@ -72,11 +86,22 @@ test.describe('app novo', () => {
     for (const [url, marca] of [
       [`${NEXT_URL}/rota-que-nao-existe`, 'Esta página não existe'],
       [`${NEXT_URL}/en/does-not-exist`, 'This page does not exist'],
+      [`${NEXT_URL}/es/no-existe`, 'Esta página no existe'],
     ] as const) {
       await page.goto(url)
       await expect(page.getByRole('heading', { name: marca })).toBeVisible()
       await expect(page.locator('footer')).toBeVisible()
     }
+  })
+
+  /* D-77: o seletor de idioma leva à mesma página no idioma escolhido, pelo
+   * par que a página declara no `<link hreflang>` — com o slug de cada idioma. */
+  test('o seletor de idioma leva à mesma seção no idioma escolhido', async ({ page }) => {
+    await page.goto(`${NEXT_URL}/es/soluciones`)
+    await page.getByRole('button', { name: /Elegir idioma/ }).click()
+    await expect(page.getByRole('menuitemradio', { name: 'Español' })).toHaveAttribute('aria-checked', 'true')
+    await page.getByRole('menuitemradio', { name: 'English' }).click()
+    await page.waitForURL(`${NEXT_URL}/en/solutions`)
   })
 
   test('/pt redireciona para a raiz (sem conteúdo duplicado)', async ({ request }) => {

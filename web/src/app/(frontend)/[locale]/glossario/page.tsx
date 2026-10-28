@@ -36,6 +36,11 @@ const META = {
     description:
       'Data engineering, cloud, governance and AI terms explained for people making business decisions.',
   },
+  es: {
+    title: 'Glosario de Datos e IA',
+    description:
+      'Términos de ingeniería de datos, nube, gobernanza e IA explicados para quien toma decisiones de negocio.',
+  },
 } as const
 
 export async function generateMetadata(): Promise<Metadata> {

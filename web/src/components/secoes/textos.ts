@@ -47,4 +47,24 @@ export const TEXTOS_DAS_SECOES = {
     consultores: { metricas: ['On the team', 'Active projects', 'Satisfaction'] },
     regua: { anteriores: 'Previous highlights', proximos: 'Next highlights' },
   },
+  es: {
+    vazio: {
+      solucoes: 'No hay soluciones publicadas.',
+      segmentos: 'No hay segmentos publicados.',
+      midia: 'Las notas aparecerán aquí en cuanto se publiquen.',
+    },
+    acaoPadrao: {
+      webinars: 'Reservar mi lugar',
+      cases: 'Seguir leyendo',
+      blog: 'Leer el artículo completo',
+      midia: 'Leer la nota',
+      ebooks: 'Descargar el e-book',
+    },
+    webinars: { eyebrow: 'Próximo evento', acaoSecundaria: 'Ver detalles' },
+    midia: { ler: 'Leer la nota', assistir: 'Ver', novaAba: 'se abre en otra pestaña' },
+    ebooks: { selo: 'E-book', paginas: 'páginas de contenido exclusivo', cta: 'Descargar ahora', rotuloDaCapa: 'E-book' },
+    blog: { paginaDe: (n: number, total: number) => `Página ${n} de ${total}` },
+    consultores: { metricas: ['En el equipo', 'Proyectos activos', 'Satisfacción'] },
+    regua: { anteriores: 'Destacados anteriores', proximos: 'Siguientes destacados' },
+  },
 } as const

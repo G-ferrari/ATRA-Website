@@ -20,6 +20,7 @@ import type { ComponentProps } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
+import type { Locale } from '@/lib/locales'
 import { tokenizarUiGenerativa } from '@/lib/ui-generativa'
 import type { ReferenciasDaIa, TipoDeConteudoDaIa } from '@/types/content'
 
@@ -120,26 +121,26 @@ function CartaoServico({ titulo, descricao, icone }: { titulo: string; descricao
 /* O que cada tipo de conteúdo mostra no cartão. Ao contrário dos cartões
  * portados do protótipo, estes rótulos acompanham o idioma da conversa: o
  * cartão é novo (D-60), não há gabarito em português a preservar. */
-const TIPOS: Record<TipoDeConteudoDaIa, { icone: LucideIcon; pt: string; en: string }> = {
-  solucao: { icone: Layers, pt: 'Solução', en: 'Solution' },
-  segmento: { icone: Building2, pt: 'Segmento', en: 'Segment' },
-  parceiro: { icone: Handshake, pt: 'Parceiro', en: 'Partner' },
-  case: { icone: Trophy, pt: 'Case de sucesso', en: 'Success story' },
-  webinar: { icone: Video, pt: 'Webinar', en: 'Webinar' },
-  ebook: { icone: BookOpen, pt: 'E-book', en: 'E-book' },
-  artigo: { icone: FileText, pt: 'Artigo', en: 'Article' },
-  pagina: { icone: PanelsTopLeft, pt: 'Página', en: 'Page' },
+const TIPOS: Record<TipoDeConteudoDaIa, { icone: LucideIcon } & Record<Locale, string>> = {
+  solucao: { icone: Layers, pt: 'Solução', en: 'Solution', es: 'Solución' },
+  segmento: { icone: Building2, pt: 'Segmento', en: 'Segment', es: 'Segmento' },
+  parceiro: { icone: Handshake, pt: 'Parceiro', en: 'Partner', es: 'Socio' },
+  case: { icone: Trophy, pt: 'Case de sucesso', en: 'Success story', es: 'Caso de éxito' },
+  webinar: { icone: Video, pt: 'Webinar', en: 'Webinar', es: 'Webinar' },
+  ebook: { icone: BookOpen, pt: 'E-book', en: 'E-book', es: 'E-book' },
+  artigo: { icone: FileText, pt: 'Artigo', en: 'Article', es: 'Artículo' },
+  pagina: { icone: PanelsTopLeft, pt: 'Página', en: 'Page', es: 'Página' },
 }
 
-const ABRIR = { pt: 'Abrir', en: 'Open' } as const
-const NOVA_ABA = { pt: 'abre em nova aba', en: 'opens in a new tab' } as const
+const ABRIR = { pt: 'Abrir', en: 'Open', es: 'Abrir' } as const
+const NOVA_ABA = { pt: 'abre em nova aba', en: 'opens in a new tab', es: 'se abre en otra pestaña' } as const
 
 /** [UI_CONTEUDO:código] — um item do site, com o endereço de verdade.
  *
  * Título, resumo e endereço vêm do CMS pelo servidor (`lib/referencias-da-ia.ts`):
  * o modelo só escolheu o código. ⚠️ Abre em **nova aba**: a conversa vive na
  * memória desta página, e navegar na mesma aba a apagaria. */
-function CartaoConteudo({ item, locale }: { item: ReferenciasDaIa[string]; locale: 'pt' | 'en' }) {
+function CartaoConteudo({ item, locale }: { item: ReferenciasDaIa[string]; locale: Locale }) {
   const tipo = TIPOS[item.tipo]
   const Icone = tipo.icone
 
@@ -319,7 +320,7 @@ export function RespostaDoModelo({
   /* Os itens que esta resposta citou. Etiqueta sem par aqui não desenha nada:
      o servidor já tirou as que não existem, e o navegador não inventa cartão. */
   referencias?: ReferenciasDaIa
-  locale: 'pt' | 'en'
+  locale: Locale
 }) {
   return (
     <div>

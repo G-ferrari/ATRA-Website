@@ -50,6 +50,18 @@ const TEXTOS = {
     enviar: 'Send application',
     sucesso: 'Application received! Our recruiting team will review your profile and reach out when an opportunity comes up.',
   },
+  es: {
+    nome: 'Nombre completo *',
+    email: 'Correo corporativo/personal *',
+    linkedin: 'LinkedIn',
+    telefone: 'Teléfono / WhatsApp',
+    area: 'Área de actuación',
+    areas: AREAS.es,
+    senioridade: 'Seniority',
+    senioridades: SENIORIDADES.es,
+    enviar: 'Enviar postulación',
+    sucesso: '¡Postulación recibida! Nuestro equipo de selección evaluará su perfil y se pondrá en contacto cuando surja una oportunidad.',
+  },
 } as const
 
 const CAMPO =

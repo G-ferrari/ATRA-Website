@@ -44,6 +44,15 @@ const TEXTOS = {
       'This webinar has no published recording yet. The video shows up here as soon as it is available.',
     assistir: 'Watch the recording',
   },
+  es: {
+    voltar: 'Volver a los webinars',
+    prefixo: 'Webinar',
+    duracao: 'Duración',
+    semVideoTitulo: 'Grabación próximamente',
+    semVideoTexto:
+      'Este webinar aún no tiene grabación publicada. El video aparecerá aquí en cuanto esté disponible.',
+    assistir: 'Ver la grabación',
+  },
 } as const
 
 /* O `id` acompanha o webinar para o `hreflang` achar o mesmo documento no

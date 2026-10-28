@@ -16,6 +16,7 @@ import { buildConfig, type CollectionConfig } from 'payload'
 import { revalidarSite } from './hooks/revalidar'
 import { provedorDeTraducao, quemTraduz } from './lib/traducao'
 import { COLECOES_TRADUZIDAS_SOZINHAS, comTraducaoAutomatica } from './lib/traducao-automatica'
+import { GLOBAIS_TRADUZIDOS, pedirTraducaoAoSalvar, tarefaDeTraducaoDeGlobal } from './lib/traducao-de-globais'
 import sharp from 'sharp'
 
 import { Cases } from './collections/Cases'
@@ -115,10 +116,24 @@ export default buildConfig({
     ['users', 'ai-usage', 'form-submissions', 'private-files'],
   ),
 
+  /* D-77: os globais de texto de visitante pedem a tradução para o espanhol ao
+   * salvar em português (`lib/traducao-de-globais.ts`). */
   globals: [Appearance, AtraAi, Contact, ConversionPanel, CookieConsent, DiagnosticoDeMaturidade, Footer, Integrations, Navigation, SiteSettings, Tracking].map((g) => ({
     ...g,
-    hooks: { ...g.hooks, afterChange: [...(g.hooks?.afterChange ?? []), () => revalidarSite()] },
+    hooks: {
+      ...g.hooks,
+      afterChange: [
+        ...(g.hooks?.afterChange ?? []),
+        () => revalidarSite(),
+        ...((GLOBAIS_TRADUZIDOS as readonly string[]).includes(g.slug) ? [pedirTraducaoAoSalvar] : []),
+      ],
+    },
   })),
+
+  /* A tarefa que traduz um global (D-77), na mesma fila e no mesmo ritmo da
+   * tradução das collections — quem a põe para rodar é o `autoRun` que o
+   * plugin de tradução registra para a fila `translations`, mais abaixo. */
+  jobs: { tasks: [tarefaDeTraducaoDeGlobal] },
 
   /* Idioma da INTERFACE do admin (botões, menus, validação) — diferente de
    * `localization`, que é o idioma do CONTEÚDO. São independentes: dá para
@@ -142,13 +157,15 @@ export default buildConfig({
     features: [...defaultEditorFeatures, EXPERIMENTAL_TableFeature()],
   }),
 
-  // D-07: português na raiz, inglês em /en, com slugs traduzidos.
+  // D-07: português na raiz, inglês em /en, com slugs traduzidos. Espanhol em
+  // /es desde 28/10 (D-77), com a mesma regra.
   // Habilitado desde a fundação de propósito — adicionar localization depois
   // seria migração de banco em toda collection.
   localization: {
     locales: [
       { code: 'pt', label: 'Português' },
       { code: 'en', label: 'English' },
+      { code: 'es', label: 'Español' },
     ],
     defaultLocale: 'pt',
     fallback: true,
