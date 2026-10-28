@@ -413,6 +413,14 @@ export async function enviarDiagnosticoDeMaturidade(
         texto: resultado.texto,
         html: resultado.html,
         responderPara: caixa,
+        /* Cópia oculta do resultado para o CRM registrar o que o lead recebeu
+           (28/10). Endereço do ambiente, vários separados por vírgula; vazio,
+           ninguém recebe cópia. Fica fora do aviso à ATRA: aquele já vai à
+           caixa do Diagnóstico. */
+        copiaOculta: (process.env.EMAIL_COPIA_DO_RESULTADO ?? '')
+          .split(',')
+          .map((e) => e.trim())
+          .filter(Boolean),
       })
       if (enviou) resultSentAt = new Date().toISOString()
     } catch (e) {

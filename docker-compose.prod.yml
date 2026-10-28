@@ -77,6 +77,17 @@ services:
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
+      # 28/10 (D-78): os e-mails do site saem pela retransmissão SMTP do Google
+      # Workspace. Com SMTP_HOST preenchido o Resend é ignorado; vazio, volta a
+      # valer a RESEND_API_KEY. Passo a passo em
+      # docs/05-operacao/email-pelo-google-workspace.md. ⚠️ EMAIL_FROM e
+      # RESEND_FROM nunca estiveram nesta lista: o remetente era sempre o padrão.
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      EMAIL_COPIA_DO_RESULTADO: ${EMAIL_COPIA_DO_RESULTADO:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       # D-54: os leads dos formulários viram conversões no RD Station
       # Marketing. Liga/desliga e nomes moram no CMS (Sistema → Integrações);

@@ -196,6 +196,19 @@ describe('enviarDiagnosticoDeMaturidade — envio válido', () => {
     })
   })
 
+  /* 28/10: o CRM guarda o que o lead recebeu por cópia oculta. Só o resultado
+     leva a cópia; o aviso à ATRA já vai à caixa do Diagnóstico. */
+  it('manda cópia oculta do resultado ao endereço do ambiente, e só do resultado', async () => {
+    vi.stubEnv('EMAIL_COPIA_DO_RESULTADO', 'registro@crm.exemplo.com, outro@crm.exemplo.com')
+    try {
+      await enviar(valido())
+      expect(emailAoLead().copiaOculta).toEqual(['registro@crm.exemplo.com', 'outro@crm.exemplo.com'])
+      expect(avisoAAtra().copiaOculta).toBeUndefined()
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+
   it('marca resultSentAt e notified numa escrita só, pelo id que o create devolveu', async () => {
     await enviar(valido())
     expect(payload.update).toHaveBeenCalledTimes(1)

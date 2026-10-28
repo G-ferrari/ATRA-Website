@@ -2832,3 +2832,38 @@ melhor que o botão PT/EN, no shadcn/ui e com bandeiras.
   do CI daria 404 até na inicial.
 - ⚠️ A trava é coluna nova nas 12 collections: antecipada própria
   (`20260927_215961_trava_do_espanhol_antecipada`), gêmea da do inglês.
+
+## D-78 — Os e-mails do site saem pelo Google Workspace, com cópia oculta do resultado
+
+*Decidida em 28/10/2026 por Leonardo.*
+
+**Contexto.** Desde 26/09 o site manda ao lead o resultado do Diagnóstico de
+Maturidade, e a cada formulário um aviso interno, pelo Resend. Em 28/10, com a
+Karen e a Taci pedindo esse e-mail, descobriu-se que ele não chegava: o DNS de
+atra.com.br não tinha os registros do Resend (`resend._domainkey`,
+`send.atra.com.br`), então o domínio nunca foi verificado lá, e o remetente
+`nao-responda@atra.com.br` é recusado. `EMAIL_FROM`/`RESEND_FROM` também nunca
+estiveram no `docker-compose.prod.yml`. A ATRA já usa o Google Workspace.
+
+**Decisão.**
+
+- **O envio passa a ser SMTP pela retransmissão do Google Workspace**
+  (`smtp-relay.gmail.com`, 587, STARTTLS obrigatório), autenticado por IP da VM
+  e por uma conta do site com senha de app (`SMTP_*`, `lib/email.ts`). Com
+  `SMTP_HOST` vazio o Resend volta a valer: a volta é trocar variável.
+- **`nodemailer` entra como dependência.** A regra de "uma chamada `fetch` não
+  justifica SDK" valia para o Resend; SMTP não é HTTP.
+- **Cópia oculta do resultado** para quem estiver em `EMAIL_COPIA_DO_RESULTADO`
+  (vírgula separa vários), pedido de Leonardo para o RD guardar o que o lead
+  recebeu. Só o resultado leva cópia; o aviso interno já vai à caixa do
+  Diagnóstico. O RD Station Marketing não recebe e-mail por cópia — o registro
+  dele continua sendo a conversão com os 19 campos (PR #192); a cópia serve a um
+  endereço de registro de CRM ou a uma caixa da ATRA.
+- **Autenticação do domínio**: DKIM do Google (`google._domainkey`) e um único
+  SPF — em 28/10 havia dois registros `v=spf1`, o que invalida o SPF de todo
+  e-mail da ATRA.
+
+**Consequências.** Quem configura segue
+`docs/05-operacao/email-pelo-google-workspace.md`. Até as variáveis entrarem no
+`.env.prod`, nada muda: sem `SMTP_HOST` e com o Resend recusando, o lead segue
+gravado com "Resultado enviado em" vazio, como antes.
