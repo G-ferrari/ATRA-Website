@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { PADRAO_DO_DIAGNOSTICO } from '@/globals/DiagnosticoDeMaturidade'
+import { PADRAO_DO_DIAGNOSTICO, PADRAO_DO_DIAGNOSTICO_EN } from '@/globals/DiagnosticoDeMaturidade'
 import { REGULACOES_PADRAO } from '@/lib/diagnostico-maturidade'
 import type { DataMaturityDiagnostic } from '@/payload-types'
 
@@ -81,5 +81,31 @@ describe('toDiagnosticoDeMaturidade', () => {
     const d = toDiagnosticoDeMaturidade(global({ title: '  Título  ', agendaUrl: ' https://x.com/a ' }))
     expect(d.titulo).toBe('Título')
     expect(d.agendaUrl).toBe('https://x.com/a')
+  })
+
+  /* D-76: global não entra na tradução automática, então o inglês vazio é o
+     caso comum. Ele não pode virar parágrafo sumido nem português na página. */
+  it('no inglês, o vazio e o padrão português viram o padrão inglês', () => {
+    const d = toDiagnosticoDeMaturidade(
+      global({
+        title: null,
+        intro: '',
+        doneMessage: PADRAO_DO_DIAGNOSTICO.conclusao,
+        emailSubject: null,
+        emailIntro: null,
+      }),
+      'en',
+    )
+    expect(d.titulo).toBe(PADRAO_DO_DIAGNOSTICO_EN.titulo)
+    expect(d.abertura).toBe(PADRAO_DO_DIAGNOSTICO_EN.abertura)
+    expect(d.conclusao).toBe(PADRAO_DO_DIAGNOSTICO_EN.conclusao)
+    expect(d.email).toEqual({
+      assunto: PADRAO_DO_DIAGNOSTICO_EN.assuntoDoEmail,
+      abertura: PADRAO_DO_DIAGNOSTICO_EN.aberturaDoEmail,
+    })
+  })
+
+  it('no inglês, o que o marketing escreveu vence', () => {
+    expect(toDiagnosticoDeMaturidade(global({ title: 'Marketing title' }), 'en').titulo).toBe('Marketing title')
   })
 })

@@ -14,6 +14,7 @@
  */
 
 import type { Setor } from './dados'
+import type { Idioma } from './idioma'
 import { ehEmailCorporativo } from './motor'
 
 /** A empresa fica de fora: no HTML ela é "(opcional)" e não tem regra. */
@@ -34,6 +35,16 @@ export const ERROS_DO_CONTATO: Record<CampoValidado, string> = {
   consentimento: 'É preciso autorizar o contato para receber o diagnóstico.',
 }
 
+/** Os mesmos erros em inglês (D-76). */
+export const ERROS_DO_CONTATO_EN: Record<CampoValidado, string> = {
+  name: 'Please enter your name.',
+  email: 'Use a valid work e-mail (we do not accept gmail, hotmail, etc.).',
+  phone: 'Please enter a phone number with area code.',
+  consentimento: 'You need to authorize us to contact you to receive the assessment.',
+}
+
+export const errosDoContato = (idioma: Idioma = 'pt') => (idioma === 'en' ? ERROS_DO_CONTATO_EN : ERROS_DO_CONTATO)
+
 /* Os mesmos cortes da action: `texto` (apara e corta em 200) e `linha` (junta
  * espaços). Sem eles, "A    b" passaria no servidor e seria recusado aqui — o
  * servidor mede o nome depois de juntar os espaços. */
@@ -44,13 +55,14 @@ const linha = (valor: string) => texto(valor).replace(/\s+/g, ' ')
 
 /** Um problema por campo, todos de uma vez — errar dois e descobrir um por
  * envio é o que o HTML evita marcando todos juntos. Objeto vazio = pode enviar. */
-export function validarContato(contato: ContatoDigitado): ErrosDoContato {
+export function validarContato(contato: ContatoDigitado, idioma: Idioma = 'pt'): ErrosDoContato {
   const erros: ErrosDoContato = {}
+  const mensagens = errosDoContato(idioma)
   const email = texto(contato.email)
-  if (linha(contato.name).length < 3) erros.name = ERROS_DO_CONTATO.name
-  if (!FORMATO_DE_EMAIL.test(email) || !ehEmailCorporativo(email)) erros.email = ERROS_DO_CONTATO.email
-  if (linha(contato.phone).replace(/\D/g, '').length < 10) erros.phone = ERROS_DO_CONTATO.phone
-  if (!contato.consentimento) erros.consentimento = ERROS_DO_CONTATO.consentimento
+  if (linha(contato.name).length < 3) erros.name = mensagens.name
+  if (!FORMATO_DE_EMAIL.test(email) || !ehEmailCorporativo(email)) erros.email = mensagens.email
+  if (linha(contato.phone).replace(/\D/g, '').length < 10) erros.phone = mensagens.phone
+  if (!contato.consentimento) erros.consentimento = mensagens.consentimento
   return erros
 }
 

@@ -477,6 +477,16 @@ no catálogo (tipo `parceiro`, código `R<id>`, sob o interruptor "Páginas"), e
 os perfis de `specialist-roles` entram no texto de `P-CONSULTORES` na busca
 (`busca-da-ia/perfis.ts`). O limite 4 proíbe oferecer "agendar".
 
+**D-76 (28/10)**: o **Diagnóstico de Maturidade** tem versão inglesa em
+`/en/data-maturity-assessment` — tela (`lib/diagnostico-maturidade/tela.ts`),
+perguntas e roadmap (`ingles.ts`) e o e-mail do resultado, no idioma do campo
+escondido `idioma`. ⚠️ **O que a ATRA lê fica em português**: lead gravado,
+RD Station (as automações da Taciane leem o nível e o roadmap) e o aviso à
+caixa do diagnóstico. A tradução é só de exibição (`perguntaNoIdioma`): o
+índice da alternativa e a conta são os da base. HTML novo do Roger reprova
+`ingles.test.ts` até o inglês acompanhar. O global é lido no inglês **sem**
+fallback, e o vazio sai do `PADRAO_DO_DIAGNOSTICO_EN`.
+
 **D-69 (23/10, task #52)**: no inglês, o que não tem versão inglesa não
 aparece. Existe no inglês o documento com **slug gravado no inglês** — a regra
 do catálogo, agora de toda listagem que abre o item (menu, índices, carrosséis

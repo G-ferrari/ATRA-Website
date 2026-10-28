@@ -21,6 +21,7 @@
  */
 
 import type { Cargo, Pergunta, Porte, Setor } from './dados'
+import type { Idioma } from './idioma'
 import { ehCargo, ehPorte, ehSetor, perguntasDoSetor } from './motor'
 
 export type CampoDoPerfil = 'setor' | 'porte' | 'cargo'
@@ -178,11 +179,13 @@ export function etapaAtual(estado: EstadoDoQuestionario, concluido = false): Eta
 }
 
 /** Texto do canto do cartão (`#aq-step-label`). */
-export function rotuloDaEtapa(etapa: Etapa): string {
-  if (etapa.tipo === 'perfil') return 'Perfil'
-  if (etapa.tipo === 'pergunta') return `Pergunta ${etapa.numero} de ${etapa.total}`
-  if (etapa.tipo === 'contato') return 'Contato'
-  return 'Concluído'
+export function rotuloDaEtapa(etapa: Etapa, idioma: Idioma = 'pt'): string {
+  const en = idioma === 'en'
+  if (etapa.tipo === 'perfil') return en ? 'Profile' : 'Perfil'
+  if (etapa.tipo === 'pergunta')
+    return en ? `Question ${etapa.numero} of ${etapa.total}` : `Pergunta ${etapa.numero} de ${etapa.total}`
+  if (etapa.tipo === 'contato') return en ? 'Contact' : 'Contato'
+  return en ? 'Done' : 'Concluído'
 }
 
 /** Percentual da barra, pela conta do `render()` do HTML: `step / (total − 1)`,
