@@ -42,15 +42,8 @@ import {
   type Tag,
 } from './dados'
 import type { Idioma } from './idioma'
-import {
-  ACOES_POR_REGULACAO_EN,
-  MOTOR_EN,
-  OFERTAS_EN,
-  O_QUE_ESTA_EM_JOGO_EN,
-  PILARES_EN,
-  ROTULOS_DAS_TAGS_EN,
-} from './ingles'
 import { REGULACOES_PADRAO, type RegulacoesPorSetor } from './regulacoes'
+import { traducaoDe } from './traducoes'
 
 /* ⚠️ `regulacoes` — o último parâmetro de `tagRelevante`, `impactosDaPergunta`,
  * `impactosDoSetor` e `calcular` — é a única coisa aqui que **não** vem do HTML
@@ -294,23 +287,23 @@ const ORDEM_DOS_PILARES: readonly NomeDoPilar[] = ['Governança', 'Qualidade', '
  * pilar mais fraco; fase 2, a do segundo e a frente regulatória de maior gap;
  * fase 3, as dos outros dois e — média ≥ 3,5 — IA sobre dados confiáveis. */
 export function montarRoadmap(calculo: Pick<Calculo, 'media' | 'pilares' | 'gaps'>, idioma: Idioma = 'pt'): Roadmap {
-  /* D-76: o inglês troca só o texto; a ordem, as faixas e as regras são as do
+  /* D-76: o inglês (e o espanhol, D-77) troca só o texto; a ordem, as faixas e as regras são as do
      HTML. O roadmap que vai ao CRM é sempre o português. */
-  const emIngles = idioma === 'en'
-  const ofertas = emIngles ? OFERTAS_EN : OFERTAS
-  const acoes = emIngles ? ACOES_POR_REGULACAO_EN : ACOES_POR_REGULACAO
+  const tr = traducaoDe(idioma)
+  const ofertas = tr ? tr.ofertas : OFERTAS
+  const acoes = tr ? tr.acoesPorRegulacao : ACOES_POR_REGULACAO
   const rotulo = (tag: string) =>
-    emIngles ? (Object.hasOwn(ROTULOS_DAS_TAGS_EN, tag) && ROTULOS_DAS_TAGS_EN[tag as Tag]) || tag : rotuloDaTag(tag)
-  const nomeDoPilar = (pilar: NomeDoPilar) => (emIngles ? PILARES_EN[pilar] : pilar)
+    tr ? (Object.hasOwn(tr.rotulosDasTags, tag) && tr.rotulosDasTags[tag as Tag]) || tag : rotuloDaTag(tag)
+  const nomeDoPilar = (pilar: NomeDoPilar) => (tr ? tr.pilares[pilar] : pilar)
 
   const pilares = ORDEM_DOS_PILARES.map((pilar) => ({ pilar, nota: calculo.pilares[pilar] || 0 })).sort(
     (a, b) => a.nota - b.nota,
   )
-  const fases: Roadmap['fases'] = emIngles
+  const fases: Roadmap['fases'] = tr
     ? [
-        { ...MOTOR_EN.fases[0], classe: 'f1', itens: [] },
-        { ...MOTOR_EN.fases[1], classe: 'f2', itens: [] },
-        { ...MOTOR_EN.fases[2], classe: 'f3', itens: [] },
+        { ...tr.motor.fases[0], classe: 'f1', itens: [] },
+        { ...tr.motor.fases[1], classe: 'f2', itens: [] },
+        { ...tr.motor.fases[2], classe: 'f3', itens: [] },
       ]
     : [
         { fase: 'Fase 1', prazo: '0 a 3 meses', classe: 'f1', itens: [] },
@@ -318,8 +311,8 @@ export function montarRoadmap(calculo: Pick<Calculo, 'media' | 'pilares' | 'gaps
         { fase: 'Fase 3', prazo: '6 a 12 meses', classe: 'f3', itens: [] },
       ]
   fases[0].itens.push(
-    emIngles
-      ? { ...MOTOR_EN.diagnosticoExecutivo }
+    tr
+      ? { ...tr.motor.diagnosticoExecutivo }
       : {
           titulo: 'Diagnóstico executivo de dados',
           descricao:
@@ -344,14 +337,14 @@ export function montarRoadmap(calculo: Pick<Calculo, 'media' | 'pilares' | 'gaps
 
   if (regulacoes.length) {
     fases[1].itens.push({
-      titulo: emIngles ? MOTOR_EN.frenteRegulatoria : 'Frente regulatória prioritária',
+      titulo: tr ? tr.motor.frenteRegulatoria : 'Frente regulatória prioritária',
       descricao: `${regulacoes[0].titulo}: ${regulacoes[0].descricao}`,
     })
   }
   if (calculo.media >= 3.5) {
     fases[2].itens.push(
-      emIngles
-        ? { ...MOTOR_EN.iaSobreDadosConfiaveis }
+      tr
+        ? { ...tr.motor.iaSobreDadosConfiaveis }
         : {
             titulo: 'IA sobre dados confiáveis',
             descricao:
@@ -393,9 +386,7 @@ const PORTES_GRANDES: readonly Porte[] = ['1_5bi', 'acima_5bi']
 export function leituraPeloPorte(media: number, porte: Porte, idioma: Idioma = 'pt'): string {
   const grande = PORTES_GRANDES.includes(porte)
   const t =
-    idioma === 'en'
-      ? MOTOR_EN.leitura
-      : {
+    traducaoDe(idioma)?.motor.leitura ?? {
           abaixo: 'Para o seu porte, esse nível está abaixo do esperado pelos pares e pelos reguladores.',
           acima: 'Nível acima da média do mercado brasileiro.',
           compativel: 'Nível compatível com a maioria das empresas do seu porte, com espaço claro de evolução.',
@@ -409,7 +400,7 @@ export function pilaresEmJogo(
   roadmap: Roadmap,
   idioma: Idioma = 'pt',
 ): { pilar: NomeDoPilar; nota: number; emJogo: string }[] {
-  const emJogo = idioma === 'en' ? O_QUE_ESTA_EM_JOGO_EN : O_QUE_ESTA_EM_JOGO
+  const emJogo = traducaoDe(idioma)?.oQueEstaEmJogo ?? O_QUE_ESTA_EM_JOGO
   return roadmap.pilares
     .filter((x) => x.nota < 3.5)
     .slice(0, 3)

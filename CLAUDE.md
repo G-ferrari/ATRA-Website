@@ -548,7 +548,10 @@ enfileira direto no fluxo do plugin, que só sabe "todos os alvos ou nenhum". Os
 **globais** se traduzem só para o espanhol (`lib/traducao-de-globais.ts`,
 tarefa `traduzir-global`), reaproveitando os ids das linhas do português. O
 seletor do cabeçalho é o `DropdownMenu` do shadcn/ui, copiado à mão para
-`components/ui/` com os nossos tokens. ⚠️ Idioma novo: `LOCALES` e todo
+`components/ui/` com os nossos tokens. O Diagnóstico de Maturidade em
+espanhol mora em `lib/diagnostico-maturidade/espanhol.ts`, e todo texto
+traduzido do diagnóstico se pede a `traducaoDe(idioma)` (`traducoes.ts`).
+⚠️ Idioma novo: `LOCALES` e todo
 `Record<Locale, …>` reprovam no `tsc` até ganharem o texto — é a lista do que
 falta. ⚠️ Em banco novo a cópia de slugs roda de novo no fim do seed
 (`migracoes-de-dados.ts`); sem ela o `/es` do CI dá 404 até na inicial.

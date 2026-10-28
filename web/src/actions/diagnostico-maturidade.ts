@@ -32,6 +32,7 @@ import { errosDoContato } from '@/lib/diagnostico-maturidade/contato'
 import type { Idioma } from '@/lib/diagnostico-maturidade/idioma'
 import { enviarAviso } from '@/lib/email'
 import { ipDe } from '@/lib/ip'
+import { isLocale } from '@/lib/locales'
 import { getPayload } from '@/lib/payload'
 import { MAX_POR_VALOR } from '@/lib/utm'
 import type { Contato } from '@/types/content'
@@ -119,7 +120,12 @@ const MENSAGENS = {
     perfil: 'We could not read your profile. Please reload the page and take the assessment again.',
     semRespostas: 'We did not receive your answers. Please reload the page and take the assessment again.',
   },
-} as const
+  es: {
+    erro: 'No logramos registrar sus respuestas ahora. Intente de nuevo o hable directamente con nosotros por WhatsApp.',
+    perfil: 'No logramos leer su perfil. Actualice la página y vuelva a hacer el diagnóstico.',
+    semRespostas: 'No recibimos sus respuestas. Actualice la página y vuelva a hacer el diagnóstico.',
+  },
+} as const satisfies Record<Idioma, unknown>
 
 /* MIG-142: todo campo entra cortado no teto do servidor, como nos outros
  * formulários. As respostas cabem folgadas em 5.000: o setor com mais perguntas
@@ -199,6 +205,11 @@ const rotuloDe = <V extends string>(lista: readonly { valor: V; rotulo: string }
  * e maiores gaps já vão como campos personalizados (`lib/rd-marketing.ts`), que lê o
  * grupo `diagnostic`; repetir aqui duplicaria as linhas na negociação. O perfil
  * sai em rótulo, que é o que o comercial lê. */
+const RESPONDIDO_EM: Record<Exclude<Idioma, 'pt'>, string> = {
+  en: 'Respondido em inglês (/en): o resultado foi enviado em inglês.',
+  es: 'Respondido em espanhol (/es): o resultado foi enviado em espanhol.',
+}
+
 function resumoDoEnvio(setor: Setor, porte: Porte, cargo: Cargo, respondidas: number, idioma: Idioma): string {
   return [
     `Diagnóstico de maturidade de dados (v${VERSAO}): ${respondidas} de ${perguntasDoSetor(setor).length} perguntas respondidas.`,
@@ -206,7 +217,7 @@ function resumoDoEnvio(setor: Setor, porte: Porte, cargo: Cargo, respondidas: nu
     `Porte: ${rotuloDe(PORTES, porte)}`,
     `Cargo: ${rotuloDe(CARGOS, cargo)}`,
     /* O comercial precisa saber em que língua abordar. */
-    ...(idioma === 'en' ? ['Respondido em inglês (/en): o resultado foi enviado em inglês.'] : []),
+    ...(idioma === 'pt' ? [] : [RESPONDIDO_EM[idioma]]),
   ].join('\n')
 }
 
@@ -232,8 +243,9 @@ export async function enviarDiagnosticoDeMaturidade(
   ): ResultadoDoDiagnostico => ({ ok: false, codigo, erro, campos, valores })
 
   /* O idioma da página que enviou: decide o texto da recusa e o do e-mail do
-     resultado. Qualquer coisa que não seja `en` é português. */
-  const idioma: Idioma = texto(dados, 'idioma') === 'en' ? 'en' : 'pt'
+     resultado. Qualquer coisa que não seja um idioma do site é português. */
+  const pedido = texto(dados, 'idioma')
+  const idioma: Idioma = isLocale(pedido) ? pedido : 'pt'
   const mensagens = MENSAGENS[idioma]
   const ERRO_DO_CAMPO = errosDoContato(idioma)
 

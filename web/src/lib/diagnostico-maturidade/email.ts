@@ -65,7 +65,8 @@ const MARCA = 'ATRA'
 const NOME_DO_DIAGNOSTICO = 'Diagnóstico de Maturidade de Dados'
 
 /* Tudo o que o e-mail escreve, por idioma. O português é o do HTML, nas
- * constantes acima, que o teste confere; o inglês é tradução nossa (D-76). */
+ * constantes acima, que o teste confere; o inglês é tradução nossa (D-76), e o espanhol
+ * também (D-77). */
 const FIXOS = {
   pt: {
     titulos: TITULOS,
@@ -97,9 +98,28 @@ const FIXOS = {
     nivel: 'Level',
     lang: 'en',
   },
-} as const satisfies Record<Exclude<Idioma, 'es'>, unknown>
+  es: {
+    titulos: {
+      resultado: 'Resultado del diagnóstico',
+      impactos: 'Impactos evaluados para su sector',
+      pilares: 'Madurez por pilar',
+      emJogo: 'Qué está en juego',
+      regulacoes: 'Regulaciones con mayor brecha',
+      roadmap: 'Hoja de ruta recomendada · consultoría e implementación ATRA',
+      acoes: 'Acciones por regulación',
+    },
+    entreOutros: 'entre otros',
+    nota: 'Resultado generado a partir de sus respuestas, en la escala de madurez DAMA-DMBOK (1 Inicial a 5 Optimizado). La brecha de cada regulación es la distancia al nivel 5, sumada en las respuestas relacionadas. Las recomendaciones son un punto de partida: la lectura completa se hace en la conversación con el especialista.',
+    botaoEspecialista: 'Hablar con un especialista',
+    botaoAgenda: 'Agendar la lectura del diagnóstico',
+    nomeDoDiagnostico: 'Diagnóstico de Madurez de Datos',
+    ola: 'Hola',
+    nivel: 'Nivel',
+    lang: 'es',
+  },
+} as const satisfies Record<Idioma, unknown>
 
-type Fixos = (typeof FIXOS)[Exclude<Idioma, 'es'>]
+type Fixos = (typeof FIXOS)[Idioma]
 
 /* ---------------------------------------------------------------------
    Cores (DESIGN.md) e tipografia
@@ -217,8 +237,7 @@ export interface EmailDoResultado {
 function conteudoDoResultado(entrada: EntradaDoEmailDoResultado) {
   const { calculo, roadmap } = entrada
   const idioma = entrada.idioma ?? 'pt'
-  /* D-77: o espanhol sai em português até a tradução revisada entrar. */
-  const fixos: Fixos = FIXOS[idioma === 'en' ? 'en' : 'pt']
+  const fixos: Fixos = FIXOS[idioma]
   const numero = nivelNumerico(calculo.media)
   const nivel = nivelNoIdioma(numero, idioma)
   const nome = entrada.nome.trim()

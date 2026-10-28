@@ -1,7 +1,7 @@
 /* Os textos fixos da ilha do questionário, por idioma (D-76).
  *
  * O português é o do HTML do Roger (v1.7), caractere a caractere (D-22) — só
- * mudou de lugar, saindo de `questionario.tsx`. O inglês é tradução nossa,
+ * mudou de lugar, saindo de `questionario.tsx`. O inglês e o espanhol (D-77) são tradução nossa,
  * revisada pelo marketing antes de ir ao ar. Mora fora do componente para o
  * teste conferir que os dois idiomas têm as mesmas chaves. */
 
@@ -116,6 +116,60 @@ export const TEXTOS_DA_TELA = {
       agenda: 'Schedule with a specialist',
     },
   },
+  es: {
+    marca: 'Diagnóstico de Madurez de Datos',
+    campos: {
+      setor: { rotulo: 'Sector de actividad', erro: 'Indique el sector.' },
+      porte: {
+        rotulo: 'Facturación anual aproximada',
+        erro: 'Indique el tamaño de la empresa.',
+      },
+      cargo: { rotulo: 'Su cargo', erro: 'Indique su cargo.' },
+    },
+    selecione: 'Seleccione…',
+    voltar: 'Volver',
+    enviando: 'Enviando…',
+    tentarDeNovo: 'Intentar de nuevo',
+    receber: 'Recibir mi diagnóstico',
+    comecar: 'Comenzar',
+    proxima: 'Siguiente',
+    ajuda: '¿Le gustaría una atención más personalizada?',
+    ajudaLink: 'Haga clic para hablar con los especialistas de ATRA',
+    perfil: 'Perfil de la empresa',
+    instrucao: 'Elija la alternativa que más se acerque a la realidad actual.',
+    grupoDeEtiquetas: 'Área DAMA y regulaciones impactadas',
+    tituloDama: 'Área de conocimiento DAMA-DMBOK',
+    impacta: 'Impacta:',
+    base: 'Base para todas las regulaciones del sector',
+    impactosAvaliados: 'Impactos evaluados:',
+    entreOutros: 'entre otros',
+    contato: {
+      pilula: 'Ya casi',
+      titulo: '¿A dónde le enviamos su diagnóstico?',
+      texto:
+        'Recibirá por correo electrónico la lectura de madurez de cada pilar, las brechas regulatorias de su sector y recomendaciones prácticas de ATRA.',
+      isca: 'No complete este campo',
+      nome: 'Nombre completo',
+      nomeExemplo: '¿Cómo lo llamamos?',
+      email: 'Correo electrónico corporativo',
+      emailExemplo: 'usted@suempresa.com',
+      telefone: 'Teléfono / WhatsApp',
+      telefoneExemplo: '+55 11 99999-9999',
+      empresa: 'Empresa',
+      opcional: '(opcional)',
+      empresaExemplo: 'Nombre de la empresa',
+      consentimentoAntes: 'Autorizo a ATRA a contactarme y a tratar mis datos de acuerdo con la',
+      politica: 'Política de Privacidad',
+      consentimentoDepois: '(LGPD).',
+    },
+    whatsapp: 'Hablar por WhatsApp',
+    conclusao: {
+      titulo: 'Diagnóstico recibido. ¡Gracias!',
+      enviamos: 'Enviamos su resultado a',
+      spam: '¿No encontró el correo? Revise también la carpeta de spam o de correo no deseado.',
+      agenda: 'Agendar con un especialista',
+    },
+  },
 } as const
 
 type Textos<T> = {
@@ -123,5 +177,4 @@ type Textos<T> = {
 }
 export type TextosDaTela = Textos<(typeof TEXTOS_DA_TELA)['pt']>
 
-/* D-77: o espanhol sai em português até a tradução revisada entrar. */
-export const textosDaTela = (idioma: Idioma): TextosDaTela => TEXTOS_DA_TELA[idioma === 'en' ? 'en' : 'pt']
+export const textosDaTela = (idioma: Idioma): TextosDaTela => TEXTOS_DA_TELA[idioma]

@@ -16,7 +16,7 @@
  * site por cima dele. */
 import { ROTULOS_DAS_TAGS, TAGS_UNIVERSAIS_DO_PERFIL, type Setor, type Tag } from './dados'
 import type { Idioma } from './idioma'
-import { ROTULOS_DAS_TAGS_EN, ROTULOS_NA_LINHA_EN } from './ingles'
+import { traducaoDe } from './traducoes'
 import { impactosDoSetor, type Impacto } from './motor'
 import { REGULACOES_PADRAO, type RegulacoesPorSetor } from './regulacoes'
 
@@ -49,8 +49,9 @@ function orgaoDe(tag: string): string {
 }
 
 function rotuloNaLinha(tag: string, doQuestionario: string, idioma: Idioma): string {
-  const naLinha = idioma === 'en' ? ROTULOS_NA_LINHA_EN : ROTULO_NA_LINHA
-  const rotulos = idioma === 'en' ? ROTULOS_DAS_TAGS_EN : ROTULOS_DAS_TAGS
+  const tr = traducaoDe(idioma)
+  const naLinha = tr ? tr.rotulosNaLinha : ROTULO_NA_LINHA
+  const rotulos = tr ? tr.rotulosDasTags : ROTULOS_DAS_TAGS
   if (Object.hasOwn(naLinha, tag)) return naLinha[tag as Tag] ?? doQuestionario
   return (Object.hasOwn(rotulos, tag) && rotulos[tag as Tag]) || doQuestionario
 }

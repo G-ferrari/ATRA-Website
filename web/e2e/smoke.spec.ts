@@ -123,7 +123,7 @@ test.describe('app novo', () => {
       expect(r.status(), rota).toBe(200)
       return r.text()
     }
-    for (const rota of ['/diagnostico-maturidade', '/en/data-maturity-assessment']) {
+    for (const rota of ['/diagnostico-maturidade', '/en/data-maturity-assessment', '/es/diagnostico-de-madurez']) {
       expect(await html(rota), rota).toContain('noindex')
     }
     const comSetor = await html('/diagnostico-maturidade?setor=saude')
@@ -140,6 +140,13 @@ test.describe('app novo', () => {
     expect(emIngles).toContain('Data Maturity Assessment')
     expect(emIngles).not.toContain('Impactos avaliados:')
     expect(emIngles).not.toContain('Selecione…')
+
+    // D-77: e a espanhola, em espanhol.
+    const emEspanhol = await html('/es/diagnostico-de-madurez?setor=saude')
+    expect(emEspanhol).toContain('Impactos evaluados:')
+    expect(emEspanhol).toContain('Diagnóstico de Madurez de Datos')
+    expect(emEspanhol).not.toContain('Impactos avaliados:')
+    expect(emEspanhol).not.toContain('Selecione…')
   })
 
   /* Task 030. Sitemap e `robots` não podem se contradizer: anunciar ao robô uma
