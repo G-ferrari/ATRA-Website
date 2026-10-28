@@ -18,7 +18,8 @@
 
 import type { DiagnosticoDeMaturidade } from '@/types/content'
 
-import { CARGOS, NIVEIS, PORTES, SETORES, type Cargo, type Porte, type Setor } from './dados'
+import { CARGOS, PORTES, SETORES, type Cargo, type Porte, type Setor } from './dados'
+import { nivelNoIdioma, pilarNoIdioma, type Idioma } from './idioma'
 import {
   alternativaEscolhida,
   faixa,
@@ -62,6 +63,43 @@ const BOTAO_AGENDA = 'Agendar leitura do diagnóstico'
  * texto, não imagem — cliente que bloqueia imagem mostraria um quadro vazio. */
 const MARCA = 'ATRA'
 const NOME_DO_DIAGNOSTICO = 'Diagnóstico de Maturidade de Dados'
+
+/* Tudo o que o e-mail escreve, por idioma. O português é o do HTML, nas
+ * constantes acima, que o teste confere; o inglês é tradução nossa (D-76). */
+const FIXOS = {
+  pt: {
+    titulos: TITULOS,
+    entreOutros: ENTRE_OUTROS,
+    nota: NOTA_METODOLOGICA,
+    botaoEspecialista: BOTAO_ESPECIALISTA,
+    botaoAgenda: BOTAO_AGENDA,
+    nomeDoDiagnostico: NOME_DO_DIAGNOSTICO,
+    ola: 'Olá',
+    nivel: 'Nível',
+    lang: 'pt-BR',
+  },
+  en: {
+    titulos: {
+      resultado: 'Assessment result',
+      impactos: 'Impacts assessed for your sector',
+      pilares: 'Maturity by pillar',
+      emJogo: 'What is at stake',
+      regulacoes: 'Regulations with the largest gap',
+      roadmap: 'Recommended roadmap · ATRA consulting and implementation',
+      acoes: 'Actions by regulation',
+    },
+    entreOutros: 'among others',
+    nota: 'Result generated from your answers, on the DAMA-DMBOK maturity scale (1 Initial to 5 Optimized). The gap for each regulation is the distance to level 5, summed across the related answers. The recommendations are a starting point: the full reading happens in the session with the specialist.',
+    botaoEspecialista: 'Talk to a specialist',
+    botaoAgenda: 'Schedule a reading of the assessment',
+    nomeDoDiagnostico: 'Data Maturity Assessment',
+    ola: 'Hello',
+    nivel: 'Level',
+    lang: 'en',
+  },
+} as const satisfies Record<Idioma, unknown>
+
+type Fixos = (typeof FIXOS)[Idioma]
 
 /* ---------------------------------------------------------------------
    Cores (DESIGN.md) e tipografia
@@ -126,8 +164,10 @@ export function escaparHtml(texto: string): string {
 
 const e = escaparHtml
 
-/* Vírgula decimal, como o HTML (`toFixed(1).replace('.', ',')`). */
-const decimal = (n: number, casas = 1) => n.toFixed(casas).replace('.', ',')
+/* Vírgula decimal, como o HTML (`toFixed(1).replace('.', ',')`); ponto no
+ * inglês. */
+const decimal = (n: number, casas = 1, idioma: Idioma = 'pt') =>
+  idioma === 'en' ? n.toFixed(casas) : n.toFixed(casas).replace('.', ',')
 
 /* O mapper já descarta o que não é http(s); isto segura quem chamar sem ele —
  * um `javascript:` num `href` de e-mail é o mesmo XSS que seria no site. */
@@ -162,6 +202,9 @@ export interface EntradaDoEmailDoResultado {
   whatsappUrl: string
   /** Vazio = sem o botão de agenda. */
   agendaUrl?: string | null
+  /** O da página em que o diagnóstico foi respondido (D-76). O `roadmap` e os
+   * `textos` já têm de vir nele. */
+  idioma?: Idioma
 }
 
 export interface EmailDoResultado {
@@ -173,37 +216,40 @@ export interface EmailDoResultado {
 /* O conteúdo uma vez só; HTML e texto são duas maneiras de escrever o mesmo. */
 function conteudoDoResultado(entrada: EntradaDoEmailDoResultado) {
   const { calculo, roadmap } = entrada
+  const idioma = entrada.idioma ?? 'pt'
+  const fixos: Fixos = FIXOS[idioma]
   const numero = nivelNumerico(calculo.media)
-  const nivel = NIVEIS[numero]
+  const nivel = nivelNoIdioma(numero, idioma)
   const nome = entrada.nome.trim()
   const regulacoes = roadmap.regulacoes
   const whatsapp = linkSeguro(entrada.whatsappUrl)
   const agenda = linkSeguro(entrada.agendaUrl)
 
   return {
-    saudacao: nome ? `Olá, ${nome},` : 'Olá,',
+    fixos,
+    saudacao: nome ? `${fixos.ola}, ${nome},` : `${fixos.ola},`,
     abertura: entrada.textos.email.abertura?.trim() || null,
-    media: decimal(calculo.media),
-    nivel: `Nível ${numero} · ${nivel.nome}`,
-    leitura: `${nivel.descricao} ${leituraPeloPorte(calculo.media, entrada.porte)}`,
+    media: decimal(calculo.media, 1, idioma),
+    nivel: `${fixos.nivel} ${numero} · ${nivel.nome}`,
+    leitura: `${nivel.descricao} ${leituraPeloPorte(calculo.media, entrada.porte, idioma)}`,
     /* A lista do admin, a mesma da tela: o e-mail não pode citar uma regulação
        que o perfil não mostrou. */
-    impactos: impactosNoPerfil(entrada.setor, entrada.textos.regulacoes).map((i) => i.rotulo),
+    impactos: impactosNoPerfil(entrada.setor, entrada.textos.regulacoes, idioma).map((i) => i.rotulo),
     pilares: pilaresDoMaisForte(roadmap).map((x) => ({
-      pilar: x.pilar,
-      nota: decimal(x.nota),
+      pilar: pilarNoIdioma(x.pilar, idioma),
+      nota: decimal(x.nota, 1, idioma),
       largura: Math.round((x.nota / 5) * 100),
       cor: corDoPilar(x.nota),
     })),
-    emJogo: pilaresEmJogo(roadmap),
+    emJogo: pilaresEmJogo(roadmap, idioma).map((x) => ({ ...x, pilar: pilarNoIdioma(x.pilar, idioma) })),
     regulacoes,
     fases: roadmap.fases,
     /* Como no HTML: "Ações por regulação" só quando há mais de uma — com uma só,
      * a ação já está inteira na "Frente regulatória prioritária" da fase 2. */
     acoes: regulacoes.length > 1 ? regulacoes : [],
     botoes: [
-      ...(whatsapp ? [{ rotulo: BOTAO_ESPECIALISTA, url: whatsapp, fundo: COR.azulProfundo, corDoTexto: COR.papel }] : []),
-      ...(agenda ? [{ rotulo: BOTAO_AGENDA, url: agenda, fundo: COR.laranja, corDoTexto: COR.tinta }] : []),
+      ...(whatsapp ? [{ rotulo: fixos.botaoEspecialista, url: whatsapp, fundo: COR.azulProfundo, corDoTexto: COR.papel }] : []),
+      ...(agenda ? [{ rotulo: fixos.botaoAgenda, url: agenda, fundo: COR.laranja, corDoTexto: COR.tinta }] : []),
     ],
   }
 }
@@ -298,11 +344,12 @@ const paragrafosDoCms = (texto: string) =>
 
 function htmlDoResultado(assunto: string, c: Conteudo): string {
   const secoes: string[] = []
+  const { titulos } = c.fixos
 
   secoes.push(
     bloco(
       `<p style="margin:0;font-size:20px;line-height:1.2;font-weight:800;letter-spacing:0.02em;color:${COR.tinta};">${e(MARCA)}</p>` +
-        `<p style="margin:4px 0 0;font-size:13px;line-height:1.4;color:${COR.ardosiaClara};">${e(NOME_DO_DIAGNOSTICO)}</p>`,
+        `<p style="margin:4px 0 0;font-size:13px;line-height:1.4;color:${COR.ardosiaClara};">${e(c.fixos.nomeDoDiagnostico)}</p>`,
       '24px 24px 20px',
     ),
   )
@@ -314,7 +361,7 @@ function htmlDoResultado(assunto: string, c: Conteudo): string {
    * bloco escuro em e-mail vira mancha quando o cliente inverte as cores. */
   secoes.push(
     bloco(
-      `<p style="margin:16px 0 10px;font-size:12px;line-height:1;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:${COR.azulProfundo};">${e(TITULOS.resultado)}</p>` +
+      `<p style="margin:16px 0 10px;font-size:12px;line-height:1;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:${COR.azulProfundo};">${e(titulos.resultado)}</p>` +
         tabela(
           `<tr><td style="padding:16px;border-radius:6px;background-color:${COR.nevoaRecuada};">` +
             tabela(
@@ -341,14 +388,14 @@ function htmlDoResultado(assunto: string, c: Conteudo): string {
 
   secoes.push(
     bloco(
-      tituloDaSecao(TITULOS.impactos) +
-        `<div>${c.impactos.map((i) => etiqueta(i)).join(' ')} ${etiqueta(ENTRE_OUTROS, true)}</div>`,
+      tituloDaSecao(titulos.impactos) +
+        `<div>${c.impactos.map((i) => etiqueta(i)).join(' ')} ${etiqueta(c.fixos.entreOutros, true)}</div>`,
     ),
   )
 
   secoes.push(
     bloco(
-      tituloDaSecao(TITULOS.pilares) +
+      tituloDaSecao(titulos.pilares) +
         tabela(
           c.pilares
             .map(
@@ -365,24 +412,24 @@ function htmlDoResultado(assunto: string, c: Conteudo): string {
   )
 
   if (c.emJogo.length) {
-    secoes.push(bloco(tituloDaSecao(TITULOS.emJogo) + c.emJogo.map((x) => itemDeLista(x.pilar, x.emJogo)).join('')))
+    secoes.push(bloco(tituloDaSecao(titulos.emJogo) + c.emJogo.map((x) => itemDeLista(x.pilar, x.emJogo)).join('')))
   }
 
   if (c.regulacoes.length) {
     secoes.push(
-      bloco(tituloDaSecao(TITULOS.regulacoes) + `<div>${c.regulacoes.map((r) => etiqueta(r.titulo)).join(' ')}</div>`),
+      bloco(tituloDaSecao(titulos.regulacoes) + `<div>${c.regulacoes.map((r) => etiqueta(r.titulo)).join(' ')}</div>`),
     )
   }
 
-  secoes.push(bloco(tituloDaSecao(TITULOS.roadmap) + c.fases.map(fase).join('')))
+  secoes.push(bloco(tituloDaSecao(titulos.roadmap) + c.fases.map(fase).join('')))
 
   if (c.acoes.length) {
-    secoes.push(bloco(tituloDaSecao(TITULOS.acoes) + c.acoes.map((r) => itemDeLista(r.titulo, r.descricao)).join('')))
+    secoes.push(bloco(tituloDaSecao(titulos.acoes) + c.acoes.map((r) => itemDeLista(r.titulo, r.descricao)).join('')))
   }
 
   secoes.push(
     bloco(
-      `<p style="margin:20px 0 0;padding:12px 0 0;border-top:1px dashed ${COR.traco};font-size:12px;line-height:1.5;color:${COR.ardosiaClara};">${e(NOTA_METODOLOGICA)}</p>`,
+      `<p style="margin:20px 0 0;padding:12px 0 0;border-top:1px dashed ${COR.traco};font-size:12px;line-height:1.5;color:${COR.ardosiaClara};">${e(c.fixos.nota)}</p>`,
     ),
   )
 
@@ -394,7 +441,7 @@ function htmlDoResultado(assunto: string, c: Conteudo): string {
    * que ignora `max-width` e esticaria o cartão na janela inteira. */
   return (
     `<!DOCTYPE html>` +
-    `<html lang="pt-BR">` +
+    `<html lang="${c.fixos.lang}">` +
     `<head>` +
     `<meta charset="utf-8">` +
     `<meta name="viewport" content="width=device-width, initial-scale=1">` +
@@ -423,16 +470,17 @@ function htmlDoResultado(assunto: string, c: Conteudo): string {
 
 function textoDoResultado(c: Conteudo): string {
   const secao = (titulo: string, linhas: string[]) => [titulo, ...linhas].join('\n')
+  const { titulos } = c.fixos
   const blocos: string[] = [c.saudacao]
   if (c.abertura) blocos.push(c.abertura)
 
-  blocos.push(secao(TITULOS.resultado, [`${c.media} · ${c.nivel}`, c.leitura]))
-  blocos.push(secao(TITULOS.impactos, [[...c.impactos, ENTRE_OUTROS].join(', ')]))
-  blocos.push(secao(TITULOS.pilares, c.pilares.map((p) => `${p.pilar}: ${p.nota}`)))
-  if (c.emJogo.length) blocos.push(secao(TITULOS.emJogo, c.emJogo.map((x) => `${x.pilar}: ${x.emJogo}`)))
-  if (c.regulacoes.length) blocos.push(secao(TITULOS.regulacoes, [c.regulacoes.map((r) => r.titulo).join(', ')]))
+  blocos.push(secao(titulos.resultado, [`${c.media} · ${c.nivel}`, c.leitura]))
+  blocos.push(secao(titulos.impactos, [[...c.impactos, c.fixos.entreOutros].join(', ')]))
+  blocos.push(secao(titulos.pilares, c.pilares.map((p) => `${p.pilar}: ${p.nota}`)))
+  if (c.emJogo.length) blocos.push(secao(titulos.emJogo, c.emJogo.map((x) => `${x.pilar}: ${x.emJogo}`)))
+  if (c.regulacoes.length) blocos.push(secao(titulos.regulacoes, [c.regulacoes.map((r) => r.titulo).join(', ')]))
   blocos.push(
-    secao(TITULOS.roadmap, [
+    secao(titulos.roadmap, [
       c.fases
         /* Descrição na linha de baixo: "Título: descrição" viraria "Frente
          * regulatória prioritária: LGPD: Inventário…", com dois-pontos em série. */
@@ -440,8 +488,8 @@ function textoDoResultado(c: Conteudo): string {
         .join('\n\n'),
     ]),
   )
-  if (c.acoes.length) blocos.push(secao(TITULOS.acoes, c.acoes.map((r) => `${r.titulo}: ${r.descricao}`)))
-  blocos.push(NOTA_METODOLOGICA)
+  if (c.acoes.length) blocos.push(secao(titulos.acoes, c.acoes.map((r) => `${r.titulo}: ${r.descricao}`)))
+  blocos.push(c.fixos.nota)
   if (c.botoes.length) blocos.push(c.botoes.map((b) => `${b.rotulo}: ${b.url}`).join('\n'))
 
   return blocos.join('\n\n')

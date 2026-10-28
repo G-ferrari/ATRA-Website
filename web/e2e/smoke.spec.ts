@@ -109,6 +109,12 @@ test.describe('app novo', () => {
     // Nenhuma opção com valor escolhida: porte e cargo também nascem vazios.
     expect(invalido).not.toMatch(/<option value="[^"]+" selected=""/)
     expect(invalido).not.toContain('Impactos avaliados:')
+    // D-76: a rota inglesa é o questionário em inglês, sem português no meio.
+    const emIngles = await html('/en/data-maturity-assessment?setor=saude')
+    expect(emIngles).toContain('Impacts assessed:')
+    expect(emIngles).toContain('Data Maturity Assessment')
+    expect(emIngles).not.toContain('Impactos avaliados:')
+    expect(emIngles).not.toContain('Selecione…')
   })
 
   /* Task 030. Sitemap e `robots` não podem se contradizer: anunciar ao robô uma

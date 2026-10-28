@@ -41,6 +41,15 @@ import {
   type Setor,
   type Tag,
 } from './dados'
+import type { Idioma } from './idioma'
+import {
+  ACOES_POR_REGULACAO_EN,
+  MOTOR_EN,
+  OFERTAS_EN,
+  O_QUE_ESTA_EM_JOGO_EN,
+  PILARES_EN,
+  ROTULOS_DAS_TAGS_EN,
+} from './ingles'
 import { REGULACOES_PADRAO, type RegulacoesPorSetor } from './regulacoes'
 
 /* ⚠️ `regulacoes` — o último parâmetro de `tagRelevante`, `impactosDaPergunta`,
@@ -284,45 +293,71 @@ const ORDEM_DOS_PILARES: readonly NomeDoPilar[] = ['Governança', 'Qualidade', '
 /** `buildRoadmap`: fase 1 abre com o diagnóstico executivo e recebe a oferta do
  * pilar mais fraco; fase 2, a do segundo e a frente regulatória de maior gap;
  * fase 3, as dos outros dois e — média ≥ 3,5 — IA sobre dados confiáveis. */
-export function montarRoadmap(calculo: Pick<Calculo, 'media' | 'pilares' | 'gaps'>): Roadmap {
+export function montarRoadmap(calculo: Pick<Calculo, 'media' | 'pilares' | 'gaps'>, idioma: Idioma = 'pt'): Roadmap {
+  /* D-76: o inglês troca só o texto; a ordem, as faixas e as regras são as do
+     HTML. O roadmap que vai ao CRM é sempre o português. */
+  const emIngles = idioma === 'en'
+  const ofertas = emIngles ? OFERTAS_EN : OFERTAS
+  const acoes = emIngles ? ACOES_POR_REGULACAO_EN : ACOES_POR_REGULACAO
+  const rotulo = (tag: string) =>
+    emIngles ? (Object.hasOwn(ROTULOS_DAS_TAGS_EN, tag) && ROTULOS_DAS_TAGS_EN[tag as Tag]) || tag : rotuloDaTag(tag)
+  const nomeDoPilar = (pilar: NomeDoPilar) => (emIngles ? PILARES_EN[pilar] : pilar)
+
   const pilares = ORDEM_DOS_PILARES.map((pilar) => ({ pilar, nota: calculo.pilares[pilar] || 0 })).sort(
     (a, b) => a.nota - b.nota,
   )
-  const fases: Roadmap['fases'] = [
-    { fase: 'Fase 1', prazo: '0 a 3 meses', classe: 'f1', itens: [] },
-    { fase: 'Fase 2', prazo: '3 a 6 meses', classe: 'f2', itens: [] },
-    { fase: 'Fase 3', prazo: '6 a 12 meses', classe: 'f3', itens: [] },
-  ]
-  fases[0].itens.push({
-    titulo: 'Diagnóstico executivo de dados',
-    descricao:
-      'Leitura detalhada deste resultado com um especialista da ATRA, priorização dos gaps por risco e prazo regulatório, e roadmap aprovado pela diretoria.',
-  })
+  const fases: Roadmap['fases'] = emIngles
+    ? [
+        { ...MOTOR_EN.fases[0], classe: 'f1', itens: [] },
+        { ...MOTOR_EN.fases[1], classe: 'f2', itens: [] },
+        { ...MOTOR_EN.fases[2], classe: 'f3', itens: [] },
+      ]
+    : [
+        { fase: 'Fase 1', prazo: '0 a 3 meses', classe: 'f1', itens: [] },
+        { fase: 'Fase 2', prazo: '3 a 6 meses', classe: 'f2', itens: [] },
+        { fase: 'Fase 3', prazo: '6 a 12 meses', classe: 'f3', itens: [] },
+      ]
+  fases[0].itens.push(
+    emIngles
+      ? { ...MOTOR_EN.diagnosticoExecutivo }
+      : {
+          titulo: 'Diagnóstico executivo de dados',
+          descricao:
+            'Leitura detalhada deste resultado com um especialista da ATRA, priorização dos gaps por risco e prazo regulatório, e roadmap aprovado pela diretoria.',
+        },
+  )
   pilares.forEach((x, i) => {
-    const oferta = OFERTAS[x.pilar][faixa(x.nota)]
-    fases[i < 2 ? i : 2].itens.push({ titulo: `${oferta.titulo} · ${x.pilar}`, descricao: oferta.descricao })
+    const oferta = ofertas[x.pilar][faixa(x.nota)]
+    fases[i < 2 ? i : 2].itens.push({
+      titulo: `${oferta.titulo} · ${nomeDoPilar(x.pilar)}`,
+      descricao: oferta.descricao,
+    })
   })
 
   const { gaps } = calculo
-  const acao = (tag: string) => (Object.hasOwn(ACOES_POR_REGULACAO, tag) ? ACOES_POR_REGULACAO[tag as Tag] : undefined)
+  const acao = (tag: string) => (Object.hasOwn(acoes, tag) ? acoes[tag as Tag] : undefined)
   const regulacoes = Object.keys(gaps)
     .sort((a, b) => gaps[b] - gaps[a])
     .filter((t) => acao(t))
     .slice(0, 4)
-    .map((t) => ({ titulo: rotuloDaTag(t), descricao: acao(t)!, gap: gaps[t] }))
+    .map((t) => ({ titulo: rotulo(t), descricao: acao(t)!, gap: gaps[t] }))
 
   if (regulacoes.length) {
     fases[1].itens.push({
-      titulo: 'Frente regulatória prioritária',
+      titulo: emIngles ? MOTOR_EN.frenteRegulatoria : 'Frente regulatória prioritária',
       descricao: `${regulacoes[0].titulo}: ${regulacoes[0].descricao}`,
     })
   }
   if (calculo.media >= 3.5) {
-    fases[2].itens.push({
-      titulo: 'IA sobre dados confiáveis',
-      descricao:
-        'Casos de uso de IA e analytics avançado sobre a base governada, com governança de modelos e dados de treinamento.',
-    })
+    fases[2].itens.push(
+      emIngles
+        ? { ...MOTOR_EN.iaSobreDadosConfiaveis }
+        : {
+            titulo: 'IA sobre dados confiáveis',
+            descricao:
+              'Casos de uso de IA e analytics avançado sobre a base governada, com governança de modelos e dados de treinamento.',
+          },
+    )
   }
   return { pilares, fases, regulacoes }
 }
@@ -355,22 +390,30 @@ export function nivelNumerico(media: number): NivelNumerico {
 const PORTES_GRANDES: readonly Porte[] = ['1_5bi', 'acima_5bi']
 
 /** `bench`: a frase que segue a descrição do nível, lida pelo porte. */
-export function leituraPeloPorte(media: number, porte: Porte): string {
+export function leituraPeloPorte(media: number, porte: Porte, idioma: Idioma = 'pt'): string {
   const grande = PORTES_GRANDES.includes(porte)
-  return grande && media < 3
-    ? 'Para o seu porte, esse nível está abaixo do esperado pelos pares e pelos reguladores.'
-    : media >= 4
-      ? 'Nível acima da média do mercado brasileiro.'
-      : 'Nível compatível com a maioria das empresas do seu porte, com espaço claro de evolução.'
+  const t =
+    idioma === 'en'
+      ? MOTOR_EN.leitura
+      : {
+          abaixo: 'Para o seu porte, esse nível está abaixo do esperado pelos pares e pelos reguladores.',
+          acima: 'Nível acima da média do mercado brasileiro.',
+          compativel: 'Nível compatível com a maioria das empresas do seu porte, com espaço claro de evolução.',
+        }
+  return grande && media < 3 ? t.abaixo : media >= 4 ? t.acima : t.compativel
 }
 
 /** `weak` → bloco "O que está em jogo": até 3 pilares abaixo de 3,5, do mais
  * fraco para o mais forte, com a consequência prática de cada um. */
-export function pilaresEmJogo(roadmap: Roadmap): { pilar: NomeDoPilar; nota: number; emJogo: string }[] {
+export function pilaresEmJogo(
+  roadmap: Roadmap,
+  idioma: Idioma = 'pt',
+): { pilar: NomeDoPilar; nota: number; emJogo: string }[] {
+  const emJogo = idioma === 'en' ? O_QUE_ESTA_EM_JOGO_EN : O_QUE_ESTA_EM_JOGO
   return roadmap.pilares
     .filter((x) => x.nota < 3.5)
     .slice(0, 3)
-    .map((x) => ({ pilar: x.pilar, nota: x.nota, emJogo: O_QUE_ESTA_EM_JOGO[x.pilar] }))
+    .map((x) => ({ pilar: x.pilar, nota: x.nota, emJogo: emJogo[x.pilar] }))
 }
 
 /* ---------------------------------------------------------------------

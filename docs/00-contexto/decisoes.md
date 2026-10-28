@@ -2710,3 +2710,42 @@ especializações) não estavam no catálogo. E a resposta ainda oferecia
   qualquer publicação.
 - Como na D-73, nada disso é garantia: é instrução a um modelo. O teste é
   repetir as perguntas da Taciane em produção depois do deploy.
+
+## D-76 — O Diagnóstico de Maturidade em inglês, com o CRM em português
+
+*Decidida em 28/10/2026 por Leonardo, ao ver que
+`/en/data-maturity-assessment` servia o questionário em português.*
+
+**Contexto.** Desde a feature do diagnóstico (D-35), a rota inglesa servia o
+português de propósito, com `lang="pt-BR"` no `<main>`: o texto é do Roger
+(HTML v1.7), gerado em `dados.ts`, e não havia tradução. A carga do inglês da
+D-74 não alcança o diagnóstico: as perguntas estão no código, e o global fica
+fora da tradução automática.
+
+**Decisão.**
+
+- **A rota inglesa é o questionário em inglês**: textos da tela
+  (`lib/diagnostico-maturidade/tela.ts`), as 33 perguntas com as alternativas,
+  níveis, ofertas do roadmap, "o que está em jogo" e as ações por regulação
+  (`ingles.ts`). A tradução foi feita à mão, sem o Gemini (a chave não existe
+  no ambiente de desenvolvimento), e **só vai ao ar depois de revisada pelo
+  Roger ou pela Taciane**. Nome de regulação e de órgão fica como é (LGPD,
+  BACEN, ANS…), com a explicação em inglês só onde o português já explicava.
+- **O e-mail do resultado sai no idioma da página** (campo escondido
+  `idioma` no formulário).
+- **O que a ATRA lê fica em português**: o lead gravado (`roadmapEmTexto`,
+  nível, gaps), o que vai à RD Station — de que as automações da Taciane
+  dependem — e o aviso à caixa do diagnóstico. O resumo do lead diz quando a
+  pessoa respondeu em inglês, para o comercial saber em que língua abordar.
+- **A conta não muda**: a pergunta traduzida mantém id, pilar, notas e tags, e
+  o índice da alternativa é o mesmo nos dois idiomas. `motor.test.ts` segue
+  comparando o português com o HTML original.
+- **O global no inglês** é lido sem fallback. Texto que ninguém escreveu no
+  admin (ou que chegou com o padrão português) sai do padrão inglês
+  (`PADRAO_DO_DIAGNOSTICO_EN`), nunca do português.
+
+**Consequências.**
+
+- HTML novo do Roger com pergunta, alternativa ou regulação a mais reprova
+  `ingles.test.ts` até a tradução acompanhar.
+- Mudar um texto fixo do português não muda o inglês: são duas listas.

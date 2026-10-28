@@ -46,6 +46,21 @@ export const PADRAO_DO_DIAGNOSTICO = {
     'https://api.whatsapp.com/send/?phone=5511963060267&text=Oi+Fabio+vamos+agendar+um+papo&type=phone_number&app_absent=0',
 } as const
 
+/* Os mesmos textos em inglês (D-76), para a página /en enquanto ninguém
+ * escrever o inglês no admin. Globais ficam fora da tradução automática
+ * (D-74), então o inglês vazio é o caso comum, não acidente: sem isto, o
+ * fallback do Payload poria o português no meio da página inglesa. */
+export const PADRAO_DO_DIAGNOSTICO_EN = {
+  titulo: 'In 5 minutes, find out where your company stands in its data journey and against the 2026-2027 regulations.',
+  abertura:
+    'Three pieces of information help us show only the questions that matter for your sector and its regulations.',
+  conclusao:
+    'You will soon receive the full reading by e-mail. If you prefer, an ATRA specialist can go over the results with you right now.',
+  assuntoDoEmail: 'Your Data Maturity Assessment — ATRA',
+  aberturaDoEmail:
+    "Thank you for taking ATRA's Data Maturity Assessment. Below is the reading of your answers: your maturity level, the pillars that need the most attention and a roadmap of next steps.",
+} as const
+
 /* Link colado sem protocolo ("calendly.com/atra") vira caminho relativo no site
  * e botão quebrado no e-mail. Recusar no admin avisa quem colou; o mapper
  * descarta o que escapar (e qualquer `javascript:`). */
