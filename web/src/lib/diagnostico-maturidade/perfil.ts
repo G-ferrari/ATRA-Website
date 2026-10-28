@@ -15,6 +15,8 @@
  * `sectorImpactChips` e segue comparado com o HTML original; isto é a regra do
  * site por cima dele. */
 import { ROTULOS_DAS_TAGS, TAGS_UNIVERSAIS_DO_PERFIL, type Setor, type Tag } from './dados'
+import type { Idioma } from './idioma'
+import { ROTULOS_DAS_TAGS_EN, ROTULOS_NA_LINHA_EN } from './ingles'
 import { impactosDoSetor, type Impacto } from './motor'
 import { REGULACOES_PADRAO, type RegulacoesPorSetor } from './regulacoes'
 
@@ -46,9 +48,11 @@ function orgaoDe(tag: string): string {
   return (Object.hasOwn(ORGAO, tag) && ORGAO[tag as Tag]) || tag
 }
 
-function rotuloNaLinha(tag: string, doQuestionario: string): string {
-  if (Object.hasOwn(ROTULO_NA_LINHA, tag)) return ROTULO_NA_LINHA[tag as Tag] ?? doQuestionario
-  return (Object.hasOwn(ROTULOS_DAS_TAGS, tag) && ROTULOS_DAS_TAGS[tag as Tag]) || doQuestionario
+function rotuloNaLinha(tag: string, doQuestionario: string, idioma: Idioma): string {
+  const naLinha = idioma === 'en' ? ROTULOS_NA_LINHA_EN : ROTULO_NA_LINHA
+  const rotulos = idioma === 'en' ? ROTULOS_DAS_TAGS_EN : ROTULOS_DAS_TAGS
+  if (Object.hasOwn(naLinha, tag)) return naLinha[tag as Tag] ?? doQuestionario
+  return (Object.hasOwn(rotulos, tag) && rotulos[tag as Tag]) || doQuestionario
 }
 
 /**
@@ -59,7 +63,11 @@ function rotuloNaLinha(tag: string, doQuestionario: string): string {
  * Parte de `impactosDoSetor`, então a lista do admin (D-56) continua mandando:
  * regulação tirada de um setor sai daqui, e a ordem do admin é a da tela.
  */
-export function impactosNoPerfil(setor: Setor, regulacoes: RegulacoesPorSetor = REGULACOES_PADRAO): Impacto[] {
+export function impactosNoPerfil(
+  setor: Setor,
+  regulacoes: RegulacoesPorSetor = REGULACOES_PADRAO,
+  idioma: Idioma = 'pt',
+): Impacto[] {
   const posicao = (tag: string) => (tag === REFORMA ? 2 : PARA_TODOS.has(orgaoDe(tag)) ? 1 : 0)
   /* `sort` é estável: dentro de cada grupo fica a ordem do motor. */
   const ordenados = [...impactosDoSetor(setor, regulacoes)].sort((a, b) => posicao(a.tag) - posicao(b.tag))
@@ -70,7 +78,7 @@ export function impactosNoPerfil(setor: Setor, regulacoes: RegulacoesPorSetor = 
     const tag = orgaoDe(impacto.tag)
     if (vistos.has(tag)) continue
     vistos.add(tag)
-    saida.push({ tag, rotulo: rotuloNaLinha(tag, impacto.rotulo) })
+    saida.push({ tag, rotulo: rotuloNaLinha(tag, impacto.rotulo, idioma) })
   }
   return saida
 }

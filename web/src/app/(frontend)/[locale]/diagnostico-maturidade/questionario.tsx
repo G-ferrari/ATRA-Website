@@ -3,6 +3,8 @@
 import { CalendarDays, Check, ChevronDown, LoaderCircle, MessageCircle } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import {
+  createContext,
+  use,
   useActionState,
   useEffect,
   useId,
@@ -24,15 +26,7 @@ import {
 } from '@/actions/diagnostico-maturidade'
 import { StatusBadge } from '@/components/ui'
 import { CAMPO_ISCA } from '@/lib/anti-spam'
-import {
-  CARGOS,
-  PORTES,
-  SETORES,
-  impactosDaPergunta,
-  impactosNoPerfil,
-  type OpcaoDoPerfil,
-  type Setor,
-} from '@/lib/diagnostico-maturidade'
+import { impactosDaPergunta, impactosNoPerfil, type OpcaoDoPerfil, type Setor } from '@/lib/diagnostico-maturidade'
 import {
   CAMPOS_VALIDADOS,
   parametrosDoLead,
@@ -55,6 +49,16 @@ import {
   type EstadoDoQuestionario,
   type Perfil,
 } from '@/lib/diagnostico-maturidade/questionario'
+import {
+  cargosNoIdioma,
+  impactosNoIdioma,
+  perguntaNoIdioma,
+  pilarNoIdioma,
+  portesNoIdioma,
+  setoresNoIdioma,
+  type Idioma,
+} from '@/lib/diagnostico-maturidade/idioma'
+import { textosDaTela, type TextosDaTela } from '@/lib/diagnostico-maturidade/tela'
 import { congelado } from '@/lib/e2e'
 import { useRastrearEnvio } from '@/lib/use-rastrear-envio'
 import { cn } from '@/lib/utils'
@@ -75,8 +79,10 @@ import { BarraDeProgresso } from './barra-de-progresso'
  * refaz a conta, grava o lead e manda o resultado **só por e-mail**: a
  * conclusão confirma o endereço e não mostra nota nenhuma (decisão de 26/09).
  *
- * Os textos da UI ficam em português também em `/en`: a rota EN serve o
- * conteúdo PT por decisão da feature, e o `<main>` declara `lang="pt-BR"`. */
+ * Desde a D-76 a ilha fala o idioma da página: os textos fixos moram em
+ * `tela.ts`, e as perguntas, as opções e as etiquetas são traduzidas só na
+ * hora de mostrar. O reducer e o que vai ao servidor não mudam — a mesma
+ * pergunta, o mesmo índice de alternativa, nos dois idiomas. */
 
 /** `CONFIG.autoAdvanceMs` do HTML. */
 const AVANCO_AUTOMATICO_MS = 350
@@ -84,13 +90,16 @@ const AVANCO_AUTOMATICO_MS = 350
 /** Abaixo disto o topo do cartão está sob o cabeçalho fixo do site. */
 const TOPO_VISIVEL_PX = 96
 
-const MARCA = 'Diagnóstico de Maturidade de Dados'
-
-const CAMPOS: Record<CampoDoPerfil, { rotulo: string; erro: string; opcoes: readonly OpcaoDoPerfil<string>[] }> = {
-  setor: { rotulo: 'Setor de atuação', erro: 'Informe o setor.', opcoes: SETORES },
-  porte: { rotulo: 'Faturamento anual aproximado', erro: 'Informe o porte.', opcoes: PORTES },
-  cargo: { rotulo: 'Seu cargo', erro: 'Informe o cargo.', opcoes: CARGOS },
+const OPCOES: Record<CampoDoPerfil, (idioma: Idioma) => readonly OpcaoDoPerfil<string>[]> = {
+  setor: setoresNoIdioma,
+  porte: portesNoIdioma,
+  cargo: cargosNoIdioma,
 }
+
+/* O idioma e os textos dele chegam a toda tela e peça por contexto: passados
+   por prop, desceriam por quatro níveis só para escrever um rótulo. */
+const Idioma = createContext<{ idioma: Idioma; t: TextosDaTela }>({ idioma: 'pt', t: textosDaTela('pt') })
+const useIdioma = () => use(Idioma)
 
 const movimentoReduzido = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -107,10 +116,12 @@ export type TextosDoQuestionario = Pick<
 const CONTATO_VAZIO: ValoresEnviados = { name: '', email: '', phone: '', company: '', consentimento: false }
 
 export function Questionario({
+  idioma,
   textos,
   setorInicial,
   privacidadeHref,
 }: {
+  idioma: Idioma
   textos: TextosDoQuestionario
   /** `?setor=` já validado pela página; `null` abre o perfil sem setor. */
   setorInicial: Setor | null
@@ -127,7 +138,8 @@ export function Questionario({
   const [envio, acao, enviando] = useActionState(enviarDiagnosticoDeMaturidade, null)
   const concluido = envio?.ok === true
   const etapa = etapaAtual(estado, concluido)
-  const rotulo = rotuloDaEtapa(etapa)
+  const rotulo = rotuloDaEtapa(etapa, idioma)
+  const t = textosDaTela(idioma)
   /* A tela que está no cartão. A conclusão não é passo do reducer (ver
      `questionario.ts`), então o passo sozinho não diz quando ela entrou. */
   const tela = concluido ? 'conclusao' : estado.passo
@@ -246,106 +258,107 @@ export function Questionario({
   const falhou = envio?.ok === false && envio.codigo === 'falha'
 
   return (
-    <section
-      ref={cartao}
-      aria-labelledby={ids.marca}
-      onKeyDown={aoTeclar}
-      className="relative scroll-mt-24 rounded-[12px] bg-surface-2 shadow-sm md:scroll-mt-28"
-    >
-      <div className="px-5 pt-5 sm:px-8 sm:pt-7">
-        <div className="flex items-center justify-between gap-3">
-          <h1 id={ids.marca} className="text-base text-text-main">
-            {MARCA}
-          </h1>
-          {/* `aria-live`: a cada tela o foco vai para o título, que diz a
+    <Idioma value={{ idioma, t }}>
+      <section
+        ref={cartao}
+        aria-labelledby={ids.marca}
+        onKeyDown={aoTeclar}
+        className="relative scroll-mt-24 rounded-[12px] bg-surface-2 shadow-sm md:scroll-mt-28"
+      >
+        <div className="px-5 pt-5 sm:px-8 sm:pt-7">
+          <div className="flex items-center justify-between gap-3">
+            <h1 id={ids.marca} className="text-base text-text-main">
+              {t.marca}
+            </h1>
+            {/* `aria-live`: a cada tela o foco vai para o título, que diz a
               pergunta; isto diz em que ponto dela a pessoa está. */}
-          <p aria-live="polite" className="shrink-0 whitespace-nowrap text-sm font-medium text-text-muted">
-            {rotulo}
-          </p>
+            <p aria-live="polite" className="shrink-0 whitespace-nowrap text-sm font-medium text-text-muted">
+              {rotulo}
+            </p>
+          </div>
+          <BarraDeProgresso
+            className="mt-3.5"
+            valor={progresso(estado, concluido)}
+            rotuladoPor={ids.marca}
+            textoDoValor={rotulo}
+          />
         </div>
-        <BarraDeProgresso
-          className="mt-3.5"
-          valor={progresso(estado, concluido)}
-          rotuladoPor={ids.marca}
-          textoDoValor={rotulo}
-        />
-      </div>
 
-      {/* `key` pela tela: cada uma entra montada do zero, e o
+        {/* `key` pela tela: cada uma entra montada do zero, e o
           `@starting-style` (`starting:`) faz o fade de entrada do HTML sem JS
           de animação. */}
-      <div
-        key={tela}
-        className="min-h-[340px] px-5 py-6 sm:px-8 sm:py-7 motion-safe:transition-[opacity,translate] motion-safe:duration-300 motion-safe:ease-out starting:translate-y-2.5 starting:opacity-0"
-      >
-        {etapa.tipo === 'perfil' && (
-          <TelaDoPerfil
-            textos={textos}
-            perfil={estado.perfil}
-            invalidos={estado.invalidos}
-            idDoTitulo={ids.titulo}
-            idDoCampo={ids.campo}
-            refDoTitulo={titulo}
-            refDoCampo={(campo, el) => {
-              campos.current[campo] = el
-            }}
-            onPreencher={(campo, valor) => despachar({ tipo: 'preencher', campo, valor })}
-          />
-        )}
-        {etapa.tipo === 'pergunta' && (
-          <TelaDaPergunta
-            etapa={etapa}
-            regulacoes={textos.regulacoes}
-            idDoTitulo={ids.titulo}
-            idDaInstrucao={ids.instrucao}
-            refDoTitulo={titulo}
-            onEscolher={escolher}
-          />
-        )}
-        {etapa.tipo === 'contato' && (
-          <TelaDoContato
-            estado={estado}
-            rascunho={rascunho}
-            onDigitar={(campo, valor) => setRascunho((r) => ({ ...r, [campo]: valor }))}
-            envio={envio}
-            acao={acao}
-            enviando={enviando}
-            inicio={inicio}
-            whatsappUrl={textos.whatsappUrl}
-            privacidadeHref={privacidadeHref}
-            idDoTitulo={ids.titulo}
-            idDoFormulario={ids.formulario}
-            idDoCampo={ids.campo}
-            refDoTitulo={titulo}
-          />
-        )}
-        {etapa.tipo === 'conclusao' && envio?.ok && (
-          <TelaDeConclusao email={envio.email} textos={textos} idDoTitulo={ids.titulo} refDoTitulo={titulo} />
-        )}
-      </div>
+        <div
+          key={tela}
+          className="min-h-[340px] px-5 py-6 sm:px-8 sm:py-7 motion-safe:transition-[opacity,translate] motion-safe:duration-300 motion-safe:ease-out starting:translate-y-2.5 starting:opacity-0"
+        >
+          {etapa.tipo === 'perfil' && (
+            <TelaDoPerfil
+              textos={textos}
+              perfil={estado.perfil}
+              invalidos={estado.invalidos}
+              idDoTitulo={ids.titulo}
+              idDoCampo={ids.campo}
+              refDoTitulo={titulo}
+              refDoCampo={(campo, el) => {
+                campos.current[campo] = el
+              }}
+              onPreencher={(campo, valor) => despachar({ tipo: 'preencher', campo, valor })}
+            />
+          )}
+          {etapa.tipo === 'pergunta' && (
+            <TelaDaPergunta
+              etapa={etapa}
+              regulacoes={textos.regulacoes}
+              idDoTitulo={ids.titulo}
+              idDaInstrucao={ids.instrucao}
+              refDoTitulo={titulo}
+              onEscolher={escolher}
+            />
+          )}
+          {etapa.tipo === 'contato' && (
+            <TelaDoContato
+              estado={estado}
+              rascunho={rascunho}
+              onDigitar={(campo, valor) => setRascunho((r) => ({ ...r, [campo]: valor }))}
+              envio={envio}
+              acao={acao}
+              enviando={enviando}
+              inicio={inicio}
+              whatsappUrl={textos.whatsappUrl}
+              privacidadeHref={privacidadeHref}
+              idDoTitulo={ids.titulo}
+              idDoFormulario={ids.formulario}
+              idDoCampo={ids.campo}
+              refDoTitulo={titulo}
+            />
+          )}
+          {etapa.tipo === 'conclusao' && envio?.ok && (
+            <TelaDeConclusao email={envio.email} textos={textos} idDoTitulo={ids.titulo} refDoTitulo={titulo} />
+          )}
+        </div>
 
-      {/* Na conclusão não há rodapé nem o convite ao WhatsApp: os botões dela
+        {/* Na conclusão não há rodapé nem o convite ao WhatsApp: os botões dela
           já são a saída (o `btnB`/`btnN`/`help` escondidos do `render()` do
           HTML). */}
-      {!concluido && (
-        <>
-          {/* No celular os botões ocupam a largura, com o de avançar em cima —
+        {!concluido && (
+          <>
+            {/* No celular os botões ocupam a largura, com o de avançar em cima —
               o `column-reverse` do HTML. */}
-          <div className="flex flex-col-reverse gap-3 px-5 sm:flex-row sm:items-center sm:px-8">
-            {estado.passo > 0 && (
-              <button
-                type="button"
-                onClick={voltar}
-                /* Sair do contato no meio do envio desmontaria o formulário
+            <div className="flex flex-col-reverse gap-3 px-5 sm:flex-row sm:items-center sm:px-8">
+              {estado.passo > 0 && (
+                <button
+                  type="button"
+                  onClick={voltar}
+                  /* Sair do contato no meio do envio desmontaria o formulário
                    com a resposta a caminho. */
-                disabled={enviando}
-                className="pill-btn-outline min-h-11 w-full underline-offset-4 focus-visible:bg-primary/10 focus-visible:underline disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-              >
-                <span aria-hidden>←</span> Voltar
-              </button>
-            )}
-            {etapa.tipo === 'contato' ? (
-              /* O envio mora no rodapé, no lugar do "Próxima" — é o `btnN` do
+                  disabled={enviando}
+                  className="pill-btn-outline min-h-11 w-full underline-offset-4 focus-visible:bg-primary/10 focus-visible:underline disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                >
+                  <span aria-hidden>←</span> {t.voltar}
+                </button>
+              )}
+              {etapa.tipo === 'contato' ? (
+                /* O envio mora no rodapé, no lugar do "Próxima" — é o `btnN` do
                  HTML trocando de texto. `form` o liga ao formulário da tela,
                  que fica acima dele: é atributo nativo, envia também sem
                  JavaScript. O texto é o do HTML, sem a seta.
@@ -359,48 +372,55 @@ export function Questionario({
                  (movimento reduzido, ou depois de voltar); quem escolhe a
                  alternativa avança sozinho e nunca via. Com `key`, o botão
                  clicado sai do DOM e o de envio é outro elemento. */
-              <button
-                key="enviar"
-                type="submit"
-                form={ids.formulario}
-                disabled={enviando}
-                className={cn(BOTAO_DE_AVANCAR, 'disabled:cursor-wait')}
-              >
-                {enviando ? (
-                  <>
-                    <LoaderCircle size={16} aria-hidden className="animate-spin motion-reduce:animate-none" />
-                    Enviando…
-                  </>
-                ) : falhou ? (
-                  'Tentar novamente'
-                ) : (
-                  'Receber meu diagnóstico'
-                )}
-              </button>
-            ) : (
-              <button key="avancar" type="button" onClick={avancar} disabled={!podeAvancar(estado)} className={BOTAO_DE_AVANCAR}>
-                {etapa.tipo === 'perfil' ? 'Começar' : 'Próxima'} <span aria-hidden>→</span>
-              </button>
-            )}
-          </div>
+                <button
+                  key="enviar"
+                  type="submit"
+                  form={ids.formulario}
+                  disabled={enviando}
+                  className={cn(BOTAO_DE_AVANCAR, 'disabled:cursor-wait')}
+                >
+                  {enviando ? (
+                    <>
+                      <LoaderCircle size={16} aria-hidden className="animate-spin motion-reduce:animate-none" />
+                      {t.enviando}
+                    </>
+                  ) : falhou ? (
+                    t.tentarDeNovo
+                  ) : (
+                    t.receber
+                  )}
+                </button>
+              ) : (
+                <button
+                  key="avancar"
+                  type="button"
+                  onClick={avancar}
+                  disabled={!podeAvancar(estado)}
+                  className={BOTAO_DE_AVANCAR}
+                >
+                  {etapa.tipo === 'perfil' ? t.comecar : t.proxima} <span aria-hidden>→</span>
+                </button>
+              )}
+            </div>
 
-          {/* "Prefere conversar?" (FEATURE §5.2 F): o `#aq-help` do HTML, com
+            {/* "Prefere conversar?" (FEATURE §5.2 F): o `#aq-help` do HTML, com
               o texto dele. Visível em toda tela do fluxo, menos na conclusão.
               Link externo, nova aba. */}
-          <p className="px-5 pb-6 pt-5 text-center text-sm leading-normal text-text-muted sm:px-8">
-            Gostaria de um atendimento mais personalizado?{' '}
-            <a
-              href={textos.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-primary-dark underline-offset-4 hover:underline focus-visible:underline dark:text-primary"
-            >
-              Clique para falar com nossos especialistas da ATRA
-            </a>
-          </p>
-        </>
-      )}
-    </section>
+            <p className="px-5 pb-6 pt-5 text-center text-sm leading-normal text-text-muted sm:px-8">
+              {t.ajuda}{' '}
+              <a
+                href={textos.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-primary-dark underline-offset-4 hover:underline focus-visible:underline dark:text-primary"
+              >
+                {t.ajudaLink}
+              </a>
+            </p>
+          </>
+        )}
+      </section>
+    </Idioma>
   )
 }
 
@@ -436,9 +456,10 @@ function TelaDoPerfil({
   refDoCampo: (campo: CampoDoPerfil, el: HTMLSelectElement | null) => void
   onPreencher: (campo: CampoDoPerfil, valor: string) => void
 }) {
+  const { idioma, t } = useIdioma()
   return (
     <>
-      <Pilula>Perfil da empresa</Pilula>
+      <Pilula>{t.perfil}</Pilula>
       <h2 ref={refDoTitulo} id={idDoTitulo} tabIndex={-1} className={TITULO_DA_TELA}>
         {textos.titulo}
       </h2>
@@ -449,7 +470,8 @@ function TelaDoPerfil({
           <CampoDeEscolha
             key={campo}
             id={`${idDoCampo}-${campo}`}
-            {...CAMPOS[campo]}
+            {...t.campos[campo]}
+            opcoes={OPCOES[campo](idioma)}
             valor={perfil[campo]}
             invalido={invalidos.includes(campo)}
             refDoCampo={(el) => refDoCampo(campo, el)}
@@ -479,26 +501,29 @@ function TelaDaPergunta({
   refDoTitulo: Ref<HTMLHeadingElement>
   onEscolher: (indice: number) => void
 }) {
-  const { setor, pergunta, numero, total, resposta } = etapa
-  const impactos = impactosDaPergunta(pergunta, setor, regulacoes)
+  const { idioma, t } = useIdioma()
+  const { setor, numero, total, resposta } = etapa
+  /* Traduzida só para mostrar: as notas e as tags são as da base. */
+  const pergunta = perguntaNoIdioma(etapa.pergunta, idioma)
+  const impactos = impactosNoIdioma(impactosDaPergunta(pergunta, setor, regulacoes), idioma)
 
   return (
     <>
-      <Pilula>{`${pergunta.pilar} · ${numero}/${total}`}</Pilula>
+      <Pilula>{`${pilarNoIdioma(pergunta.pilar, idioma)} · ${numero}/${total}`}</Pilula>
       <h2 ref={refDoTitulo} id={idDoTitulo} tabIndex={-1} className={TITULO_DA_TELA}>
         {pergunta.enunciado}
       </h2>
       <p id={idDaInstrucao} className="mt-2 text-sm leading-relaxed text-text-muted">
-        Escolha a alternativa que mais se aproxima da realidade hoje.
+        {t.instrucao}
       </p>
 
       {/* `tagChips` do HTML: a área DAMA e as regulações que a pergunta toca,
           filtradas pelo setor; sem nenhuma, a frase de base. */}
-      <div role="group" aria-label="Área DAMA e regulações impactadas" className="mt-4 flex flex-wrap items-center gap-1.5">
-        <Etiqueta tom="dama" title="Área de conhecimento DAMA-DMBOK">
+      <div role="group" aria-label={t.grupoDeEtiquetas} className="mt-4 flex flex-wrap items-center gap-1.5">
+        <Etiqueta tom="dama" title={t.tituloDama}>
           DAMA · {pergunta.dama}
         </Etiqueta>
-        <span className="ml-1.5 text-xs font-medium text-text-muted">Impacta:</span>
+        <span className="ml-1.5 text-xs font-medium text-text-muted">{t.impacta}</span>
         {impactos.length > 0 ? (
           impactos.map((impacto) => (
             <Etiqueta key={impacto.tag} tom="regulacao">
@@ -506,7 +531,7 @@ function TelaDaPergunta({
             </Etiqueta>
           ))
         ) : (
-          <Etiqueta tom="regulacao">Base para todas as regulações do setor</Etiqueta>
+          <Etiqueta tom="regulacao">{t.base}</Etiqueta>
         )}
       </div>
 
@@ -563,6 +588,7 @@ function TelaDoContato({
   idDoCampo: string
   refDoTitulo: Ref<HTMLHeadingElement>
 }) {
+  const { idioma, t } = useIdioma()
   const caminho = usePathname()
   const campos = useRef<Partial<Record<CampoValidado, HTMLInputElement | null>>>({})
 
@@ -643,12 +669,15 @@ function TelaDoContato({
        `preventDefault` aqui cancela também a action (o React confere
        `defaultPrevented` antes de chamá-la). */
     const dados = new FormData(e.currentTarget)
-    const novos = validarContato({
-      name: String(dados.get('name') ?? ''),
-      email: String(dados.get('email') ?? ''),
-      phone: String(dados.get('phone') ?? ''),
-      consentimento: dados.get('consentimento') !== null,
-    })
+    const novos = validarContato(
+      {
+        name: String(dados.get('name') ?? ''),
+        email: String(dados.get('email') ?? ''),
+        phone: String(dados.get('phone') ?? ''),
+        consentimento: dados.get('consentimento') !== null,
+      },
+      idioma,
+    )
     const primeiro = CAMPOS_VALIDADOS.find((campo) => novos[campo])
     if (!primeiro) return
     e.preventDefault()
@@ -668,14 +697,11 @@ function TelaDoContato({
 
   return (
     <>
-      <Pilula>Quase lá</Pilula>
+      <Pilula>{t.contato.pilula}</Pilula>
       <h2 ref={refDoTitulo} id={idDoTitulo} tabIndex={-1} className={TITULO_DA_TELA}>
-        Para onde enviamos o seu diagnóstico?
+        {t.contato.titulo}
       </h2>
-      <p className="mt-2 text-sm leading-relaxed text-text-muted">
-        Você recebe por e-mail a leitura da maturidade por pilar, os gaps regulatórios do seu setor e recomendações
-        práticas da ATRA.
-      </p>
+      <p className="mt-2 text-sm leading-relaxed text-text-muted">{t.contato.texto}</p>
 
       <form
         id={idDoFormulario}
@@ -696,6 +722,8 @@ function TelaDoContato({
         <input type="hidden" name="cargo" value={estado.perfil.cargo ?? ''} />
         <input type="hidden" name="respostas" value={JSON.stringify(estado.respostas)} />
         <input type="hidden" name="source" value={caminho ?? ''} />
+        {/* Decide a língua da recusa e do e-mail do resultado (D-76). */}
+        <input type="hidden" name="idioma" value={idioma} />
         <input ref={campoDoInicio} type="hidden" name="inicio" />
         <input ref={carimbo} type="hidden" name="carimbo" />
         {CHAVES_UTM.map((chave, i) => (
@@ -709,7 +737,7 @@ function TelaDoContato({
           />
         ))}
         <div aria-hidden className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
-          <label htmlFor={`${idDoCampo}-${CAMPO_ISCA}`}>Não preencha este campo</label>
+          <label htmlFor={`${idDoCampo}-${CAMPO_ISCA}`}>{t.contato.isca}</label>
           <input id={`${idDoCampo}-${CAMPO_ISCA}`} name={CAMPO_ISCA} type="text" tabIndex={-1} autoComplete="off" />
         </div>
 
@@ -717,11 +745,11 @@ function TelaDoContato({
           <CampoDeTexto
             id={idDe('name')}
             nome="name"
-            rotulo="Nome completo"
+            rotulo={t.contato.nome}
             type="text"
             autoComplete="name"
             required
-            placeholder="Como devemos te chamar"
+            placeholder={t.contato.nomeExemplo}
             valorInicial={rascunho.name}
             erro={erros.name}
             refDoCampo={(el) => guardarCampo('name', el)}
@@ -731,12 +759,12 @@ function TelaDoContato({
           <CampoDeTexto
             id={idDe('email')}
             nome="email"
-            rotulo="E-mail corporativo"
+            rotulo={t.contato.email}
             type="email"
             autoComplete="email"
             inputMode="email"
             required
-            placeholder="voce@suaempresa.com.br"
+            placeholder={t.contato.emailExemplo}
             valorInicial={rascunho.email}
             erro={erros.email}
             refDoCampo={(el) => guardarCampo('email', el)}
@@ -745,12 +773,12 @@ function TelaDoContato({
           <CampoDeTexto
             id={idDe('phone')}
             nome="phone"
-            rotulo="Telefone / WhatsApp"
+            rotulo={t.contato.telefone}
             type="tel"
             autoComplete="tel"
             inputMode="tel"
             required
-            placeholder="(11) 99999-9999"
+            placeholder={t.contato.telefoneExemplo}
             valorInicial={rascunho.phone}
             erro={erros.phone}
             refDoCampo={(el) => guardarCampo('phone', el)}
@@ -761,12 +789,12 @@ function TelaDoContato({
             nome="company"
             rotulo={
               <>
-                Empresa <small className="text-sm font-medium text-text-muted">(opcional)</small>
+                {t.contato.empresa} <small className="text-sm font-medium text-text-muted">{t.contato.opcional}</small>
               </>
             }
             type="text"
             autoComplete="organization"
-            placeholder="Razão social ou nome fantasia"
+            placeholder={t.contato.empresaExemplo}
             valorInicial={rascunho.company}
             onMudar={(valor) => digitar('company', valor)}
             className="sm:col-span-2"
@@ -792,16 +820,16 @@ function TelaDoContato({
                 className="mt-0.5 size-[18px] shrink-0 cursor-pointer accent-primary aria-[invalid=true]:outline-2 aria-[invalid=true]:outline-offset-2 aria-[invalid=true]:outline-red-500"
               />
               <span>
-                Autorizo a ATRA a entrar em contato e a tratar meus dados conforme a{' '}
+                {t.contato.consentimentoAntes}{' '}
                 <a
                   href={privacidadeHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-semibold text-primary-dark underline underline-offset-2 dark:text-primary"
                 >
-                  Política de Privacidade
+                  {t.contato.politica}
                 </a>{' '}
-                (LGPD).
+                {t.contato.consentimentoDepois}
               </span>
             </label>
             {erros.consentimento && (
@@ -823,7 +851,7 @@ function TelaDoContato({
               rel="noopener noreferrer"
               className="font-semibold underline underline-offset-2"
             >
-              Falar no WhatsApp
+              {t.whatsapp}
             </a>
           </div>
         )}
@@ -855,23 +883,22 @@ function TelaDeConclusao({
   idDoTitulo: string
   refDoTitulo: Ref<HTMLHeadingElement>
 }) {
+  const { t } = useIdioma()
   return (
     <div className="flex flex-col items-center pt-2 text-center">
       <span className="grid size-16 place-items-center rounded-full bg-primary/10 text-primary-dark dark:text-primary">
         <Check size={30} strokeWidth={3} aria-hidden />
       </span>
       <h2 ref={refDoTitulo} id={idDoTitulo} tabIndex={-1} className={cn(TITULO_DA_TELA, 'mt-4')}>
-        Diagnóstico registrado. Obrigado!
+        {t.conclusao.titulo}
       </h2>
       <p className="mt-3 max-w-xl text-base leading-relaxed text-text-muted">
-        Enviamos o seu resultado para <strong className="break-all font-semibold text-text-main">{email}</strong>
+        {t.conclusao.enviamos} <strong className="break-all font-semibold text-text-main">{email}</strong>
       </p>
       {textos.conclusao && (
         <p className="mt-2 max-w-xl text-base leading-relaxed text-text-muted">{textos.conclusao}</p>
       )}
-      <p className="mt-2 max-w-xl text-base leading-normal text-text-muted">
-        Não encontrou o e-mail? Confira também a caixa de spam ou de lixo eletrônico.
-      </p>
+      <p className="mt-2 max-w-xl text-base leading-normal text-text-muted">{t.conclusao.spam}</p>
 
       {/* `#aq-cta-wa` e `#aq-cta-agenda`, com os textos do HTML. A agenda só
           existe com link no global. Os dois abrem em nova aba, como lá. */}
@@ -882,7 +909,7 @@ function TelaDeConclusao({
           rel="noopener noreferrer"
           className="pill-btn-primary min-h-11 underline-offset-4 focus-visible:bg-primary-dark focus-visible:underline"
         >
-          <MessageCircle size={16} aria-hidden /> Falar no WhatsApp
+          <MessageCircle size={16} aria-hidden /> {t.whatsapp}
         </a>
         {textos.agendaUrl && (
           <a
@@ -891,7 +918,7 @@ function TelaDeConclusao({
             rel="noopener noreferrer"
             className="pill-btn-outline min-h-11 bg-surface-1 underline-offset-4 focus-visible:underline"
           >
-            <CalendarDays size={16} aria-hidden /> Agendar com um especialista
+            <CalendarDays size={16} aria-hidden /> {t.conclusao.agenda}
           </a>
         )}
       </div>
@@ -933,6 +960,7 @@ function CampoDeEscolha({
   className?: string
   children?: ReactNode
 }) {
+  const { t } = useIdioma()
   const idDoErro = `${id}-erro`
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
@@ -950,7 +978,7 @@ function CampoDeEscolha({
           aria-describedby={invalido ? idDoErro : undefined}
           className={CAMPO}
         >
-          <option value="">Selecione…</option>
+          <option value="">{t.selecione}</option>
           {opcoes.map((opcao) => (
             <option key={opcao.valor} value={opcao.valor}>
               {opcao.rotulo}
@@ -1050,17 +1078,18 @@ function ImpactosDoSetor({
   setor: Setor | null
   regulacoes: TextosDoQuestionario['regulacoes']
 }) {
+  const { idioma, t } = useIdioma()
   return (
     <div aria-live="polite" aria-atomic="true">
       {setor && (
         <p className="mt-1.5 flex flex-wrap items-center gap-1.5">
-          <span className="text-xs font-medium text-text-muted">Impactos avaliados:</span>
-          {impactosNoPerfil(setor, regulacoes).map((impacto) => (
+          <span className="text-xs font-medium text-text-muted">{t.impactosAvaliados}</span>
+          {impactosNoPerfil(setor, regulacoes, idioma).map((impacto) => (
             <Etiqueta key={impacto.tag} tom="regulacao">
               {impacto.rotulo}
             </Etiqueta>
           ))}
-          <span className="text-xs font-medium text-text-muted">entre outros</span>
+          <span className="text-xs font-medium text-text-muted">{t.entreOutros}</span>
         </p>
       )}
     </div>

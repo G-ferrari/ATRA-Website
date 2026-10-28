@@ -4,6 +4,7 @@ import { locale as getLocale } from 'next/root-params'
 
 import { lerDiagnosticoDeMaturidade } from '@/lib/diagnostico'
 import { ehSetor } from '@/lib/diagnostico-maturidade'
+import { textosDaTela } from '@/lib/diagnostico-maturidade/tela'
 import { DEFAULT_LOCALE, isLocale, LOCALES } from '@/lib/locales'
 import { hrefDe } from '@/lib/routes'
 
@@ -20,23 +21,25 @@ import { Questionario } from './questionario'
  * cai aqui, já com `?setor=financeiro` (`ROTAS_APOSENTADAS`, em
  * `lib/redirects.ts`).
  *
- * A rota EN (`/en/data-maturity-assessment`) serve o mesmo conteúdo em
- * português, por decisão da feature: o global é lido em `pt` nos dois idiomas —
- * se o marketing preencher o EN um dia, o título não sai em inglês sobre um
- * questionário em português — e o `<main>` declara `lang="pt-BR"` para o leitor
- * de tela não ler português com pronúncia inglesa. */
+ * A rota EN (`/en/data-maturity-assessment`) é o questionário em inglês desde
+ * a D-76 (28/10): textos fixos, perguntas e e-mail do resultado. O global é
+ * lido no idioma da rota, e o inglês que ninguém escreveu no admin sai do
+ * padrão inglês do mapper, nunca do português. Até ali a rota servia o
+ * português, com `lang="pt-BR"` no `<main>`. */
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { titulo } = await lerDiagnosticoDeMaturidade(DEFAULT_LOCALE)
+  const locale = await getLocale()
+  const idioma = isLocale(locale) ? locale : DEFAULT_LOCALE
+  const { titulo } = await lerDiagnosticoDeMaturidade(idioma)
   /* Sem `metadataDe`: canônica e hreflang são para página que se quer
      encontrada (o mesmo argumento de `/chat`). A descrição fica para a prévia
      de quem compartilha o link. */
   return {
-    title: 'Diagnóstico de Maturidade de Dados',
+    title: textosDaTela(idioma).marca,
     description: titulo,
     robots: { index: false, follow: true },
   }
@@ -65,13 +68,10 @@ export default async function Pagina({ searchParams }: PageProps<'/[locale]/diag
   const { setor } = await searchParams
   const setorInicial = ehSetor(setor) ? setor : null
 
-  const { titulo, abertura, conclusao, whatsappUrl, agendaUrl, regulacoes } = await lerDiagnosticoDeMaturidade(DEFAULT_LOCALE)
+  const { titulo, abertura, conclusao, whatsappUrl, agendaUrl, regulacoes } = await lerDiagnosticoDeMaturidade(locale)
 
   return (
-    <main
-      lang={locale === DEFAULT_LOCALE ? undefined : 'pt-BR'}
-      className="relative overflow-x-clip pt-24 md:pt-36 pb-20 min-h-screen bg-surface-1 text-text-main"
-    >
+    <main className="relative overflow-x-clip pt-24 md:pt-36 pb-20 min-h-screen bg-surface-1 text-text-main">
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6">
         {/* Os dois brilhos do HTML do Roger (azul em cima, laranja embaixo),
             na intensidade do banner do carrossel de destaques: a "corrente
@@ -86,6 +86,7 @@ export default async function Pagina({ searchParams }: PageProps<'/[locale]/diag
         />
         {/* A política no idioma da rota: é página do site, e existe nos dois. */}
         <Questionario
+          idioma={locale}
           textos={{ titulo, abertura, conclusao, whatsappUrl, agendaUrl, regulacoes }}
           setorInicial={setorInicial}
           privacidadeHref={hrefDe('politicas', locale)}

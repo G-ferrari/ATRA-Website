@@ -28,6 +28,8 @@ import {
   type RegulacoesPorSetor,
   type Setor,
 } from '@/lib/diagnostico-maturidade'
+import { errosDoContato } from '@/lib/diagnostico-maturidade/contato'
+import type { Idioma } from '@/lib/diagnostico-maturidade/idioma'
 import { enviarAviso } from '@/lib/email'
 import { ipDe } from '@/lib/ip'
 import { getPayload } from '@/lib/payload'
@@ -95,23 +97,29 @@ export type ResultadoDoDiagnostico =
       valores: ValoresEnviados
     }
 
-/* Textos dos erros de campo e da falha de envio: os do HTML v1.7
- * (`.aq-field .err` e `#aq-send-error`), caractere a caractere — conteúdo do
- * Roger, não da engenharia (D-22). */
-/* A empresa não tem mensagem: no HTML v1.7 ela é "(opcional)", e o porte já
+/* A falha de envio é a do HTML v1.7 (`#aq-send-error`), caractere a caractere —
+ * conteúdo do Roger, não da engenharia (D-22). Os erros de campo moram em
+ * `contato.ts`, os mesmos que a ilha mostra antes de enviar.
+ *
+ * A empresa não tem mensagem: no HTML v1.7 ela é "(opcional)", e o porte já
  * qualifica o lead. Obrigá-la seria regra nossa sobre o questionário do Roger
  * (D-22). O assunto do aviso à ATRA já trata a empresa vazia. */
-const ERRO_DO_CAMPO: Record<Exclude<CampoDoContato, 'company'>, string> = {
-  name: 'Informe seu nome.',
-  email: 'Use um e-mail corporativo válido (não aceitamos gmail, hotmail, etc.).',
-  phone: 'Informe um telefone com DDD.',
-  consentimento: 'É preciso autorizar o contato para receber o diagnóstico.',
-}
-const ERRO = 'Não conseguimos registrar agora. Tente novamente ou fale direto com a gente pelo WhatsApp.'
-/* Estes dois o HTML nunca mostra — lá o perfil e as respostas não saem da
- * página. Aqui chegam pela rede, e o único conserto é recomeçar. */
-const PERFIL = 'Não conseguimos ler o seu perfil. Atualize a página e refaça o diagnóstico.'
-const SEM_RESPOSTAS = 'Não recebemos as suas respostas. Atualize a página e refaça o diagnóstico.'
+const MENSAGENS = {
+  pt: {
+    erro: 'Não conseguimos registrar agora. Tente novamente ou fale direto com a gente pelo WhatsApp.',
+    /* Estes dois o HTML nunca mostra — lá o perfil e as respostas não saem da
+     * página. Aqui chegam pela rede, e o único conserto é recomeçar. */
+    perfil: 'Não conseguimos ler o seu perfil. Atualize a página e refaça o diagnóstico.',
+    semRespostas: 'Não recebemos as suas respostas. Atualize a página e refaça o diagnóstico.',
+  },
+  /* D-76: a página em inglês recebe a recusa em inglês. Os erros de campo são
+     os de `contato.ts`, os mesmos que a ilha mostra antes de enviar. */
+  en: {
+    erro: 'We could not register your answers right now. Please try again or talk to us directly on WhatsApp.',
+    perfil: 'We could not read your profile. Please reload the page and take the assessment again.',
+    semRespostas: 'We did not receive your answers. Please reload the page and take the assessment again.',
+  },
+} as const
 
 /* MIG-142: todo campo entra cortado no teto do servidor, como nos outros
  * formulários. As respostas cabem folgadas em 5.000: o setor com mais perguntas
@@ -191,12 +199,14 @@ const rotuloDe = <V extends string>(lista: readonly { valor: V; rotulo: string }
  * e maiores gaps já vão como campos personalizados (`lib/rd-marketing.ts`), que lê o
  * grupo `diagnostic`; repetir aqui duplicaria as linhas na negociação. O perfil
  * sai em rótulo, que é o que o comercial lê. */
-function resumoDoEnvio(setor: Setor, porte: Porte, cargo: Cargo, respondidas: number): string {
+function resumoDoEnvio(setor: Setor, porte: Porte, cargo: Cargo, respondidas: number, idioma: Idioma): string {
   return [
     `Diagnóstico de maturidade de dados (v${VERSAO}): ${respondidas} de ${perguntasDoSetor(setor).length} perguntas respondidas.`,
     `Setor: ${rotuloDe(SETORES, setor)}`,
     `Porte: ${rotuloDe(PORTES, porte)}`,
     `Cargo: ${rotuloDe(CARGOS, cargo)}`,
+    /* O comercial precisa saber em que língua abordar. */
+    ...(idioma === 'en' ? ['Respondido em inglês (/en): o resultado foi enviado em inglês.'] : []),
   ].join('\n')
 }
 
@@ -221,6 +231,12 @@ export async function enviarDiagnosticoDeMaturidade(
     campos: Partial<Record<CampoDoContato, string>> = {},
   ): ResultadoDoDiagnostico => ({ ok: false, codigo, erro, campos, valores })
 
+  /* O idioma da página que enviou: decide o texto da recusa e o do e-mail do
+     resultado. Qualquer coisa que não seja `en` é português. */
+  const idioma: Idioma = texto(dados, 'idioma') === 'en' ? 'en' : 'pt'
+  const mensagens = MENSAGENS[idioma]
+  const ERRO_DO_CAMPO = errosDoContato(idioma)
+
   /* ⚠️ Toda validação vem **antes** das barreiras, e não depois. Na ordem
    * inversa, o robô recebia `{ ok: true }` quando barrado e o erro de campo
    * quando não — um oráculo para testar cada técnica (ver `consultores.ts`). E
@@ -232,7 +248,7 @@ export async function enviarDiagnosticoDeMaturidade(
   const setor = texto(dados, 'setor')
   const porte = texto(dados, 'porte')
   const cargo = texto(dados, 'cargo')
-  if (!ehSetor(setor) || !ehPorte(porte) || !ehCargo(cargo)) return recusa('perfil', PERFIL)
+  if (!ehSetor(setor) || !ehPorte(porte) || !ehCargo(cargo)) return recusa('perfil', mensagens.perfil)
 
   /* Respostas: `{ perguntaId: índice }` em JSON. JSON quebrado é o mesmo que
    * nenhuma resposta. Resposta parcial passa — a conta do motor é sobre o que
@@ -244,7 +260,7 @@ export async function enviarDiagnosticoDeMaturidade(
     bruto = null
   }
   const respostas = validarRespostas(setor, bruto)
-  if (Object.keys(respostas).length === 0) return recusa('respostas', SEM_RESPOSTAS)
+  if (Object.keys(respostas).length === 0) return recusa('respostas', mensagens.semRespostas)
 
   /* Contato: as regras de `validateLead` no HTML — a empresa fica opcional, como lá.
    * Todos os campos de uma vez — errar dois e descobrir um por envio é o que o
@@ -304,7 +320,7 @@ export async function enviarDiagnosticoDeMaturidade(
     payload = await getPayload()
   } catch (e) {
     console.error('[diagnostico-maturidade] sem conexão com o banco:', semDadoPessoal(e))
-    return recusa('falha', ERRO)
+    return recusa('falha', mensagens.erro)
   }
 
   let id: number
@@ -321,7 +337,7 @@ export async function enviarDiagnosticoDeMaturidade(
         name: nome,
         phone: telefone,
         company: empresa,
-        message: resumoDoEnvio(setor, porte, cargo, respondidas.length).slice(0, MAX_MENSAGEM),
+        message: resumoDoEnvio(setor, porte, cargo, respondidas.length, idioma).slice(0, MAX_MENSAGEM),
         source: linha(dados, 'source') || undefined,
         utm: {
           source: campanha(dados, 'utm_source'),
@@ -353,7 +369,7 @@ export async function enviarDiagnosticoDeMaturidade(
     id = doc.id
   } catch (e) {
     console.error('[diagnostico-maturidade] não gravou:', semDadoPessoal(e))
-    return recusa('falha', ERRO)
+    return recusa('falha', mensagens.erro)
   }
 
   /* Daqui em diante o lead está salvo: falha só vai para o log, e o que não
@@ -361,10 +377,9 @@ export async function enviarDiagnosticoDeMaturidade(
   let resultSentAt: string | undefined
   let notified = false
   try {
-    /* `pt`: o corpo do e-mail é o texto do motor (perguntas, níveis, roadmap),
-       que só existe em português — a rota EN serve o diagnóstico em PT pelo
-       mesmo motivo. Assunto em inglês sobre corpo em português seria pior. */
-    const [contato, textos] = await Promise.all([lerContato(), lerDiagnosticoDeMaturidade('pt')])
+    /* No idioma da página (D-76): quem respondeu em inglês recebe o resultado
+       em inglês. O lead gravado e o aviso à ATRA seguem em português. */
+    const [contato, textos] = await Promise.all([lerContato(), lerDiagnosticoDeMaturidade(idioma)])
     const caixa = caixaDoDiagnostico(contato)
 
     try {
@@ -373,8 +388,10 @@ export async function enviarDiagnosticoDeMaturidade(
         setor,
         porte,
         calculo,
-        roadmap,
+        /* O roadmap gravado é o português, que é o que o CRM lê. */
+        roadmap: idioma === 'pt' ? roadmap : montarRoadmap(calculo, idioma),
         textos,
+        idioma,
         whatsappUrl: textos.whatsappUrl,
         agendaUrl: textos.agendaUrl,
       })

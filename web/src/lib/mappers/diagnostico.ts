@@ -1,5 +1,6 @@
-import { PADRAO_DO_DIAGNOSTICO } from '@/globals/DiagnosticoDeMaturidade'
+import { PADRAO_DO_DIAGNOSTICO, PADRAO_DO_DIAGNOSTICO_EN } from '@/globals/DiagnosticoDeMaturidade'
 import { resolverRegulacoes } from '@/lib/diagnostico-maturidade'
+import type { Locale } from '@/lib/locales'
 import type { DataMaturityDiagnostic } from '@/payload-types'
 import type { DiagnosticoDeMaturidade } from '@/types/content'
 
@@ -13,7 +14,12 @@ import type { DiagnosticoDeMaturidade } from '@/types/content'
  *    escolha — `null`, e o componente não desenha;
  *  - título, assunto e WhatsApp: vazio é acidente — página sem cabeçalho, e-mail
  *    sem assunto (cara de spam) e lead sem saída quando o e-mail não chega. Volta
- *    o padrão do global, a mesma constante, sem texto duplicado em código. */
+ *    o padrão do global, a mesma constante, sem texto duplicado em código.
+ *
+ *  No inglês (D-76) o vazio é outra coisa: é texto que ninguém traduziu, porque
+ *  global não entra na tradução automática. Ali todo texto vazio volta ao
+ *  padrão inglês — o documento chega lido sem fallback, para o português não
+ *  aparecer no meio da página inglesa. */
 
 const texto = (valor: string | null | undefined): string | null => valor?.trim() || null
 
@@ -25,14 +31,24 @@ const link = (valor: string | null | undefined): string | null => {
   return v && /^https?:\/\//i.test(v) ? v : null
 }
 
-export function toDiagnosticoDeMaturidade(doc: DataMaturityDiagnostic): DiagnosticoDeMaturidade {
+/* ⚠️ O `defaultValue` dos campos é o português, e o Payload o aplica também à
+ * leitura em inglês de global nunca salvo. No inglês, o padrão português conta
+ * como não traduzido. */
+const PADROES_EM_PORTUGUES = new Set<string>(Object.values(PADRAO_DO_DIAGNOSTICO))
+
+export function toDiagnosticoDeMaturidade(doc: DataMaturityDiagnostic, locale: Locale = 'pt'): DiagnosticoDeMaturidade {
+  const en = locale === 'en' ? PADRAO_DO_DIAGNOSTICO_EN : null
+  const traduzido = (valor: string | null | undefined) => {
+    const v = texto(valor)
+    return en && v && PADROES_EM_PORTUGUES.has(v) ? null : v
+  }
   return {
-    titulo: texto(doc.title) ?? PADRAO_DO_DIAGNOSTICO.titulo,
-    abertura: texto(doc.intro),
-    conclusao: texto(doc.doneMessage),
+    titulo: traduzido(doc.title) ?? (en ?? PADRAO_DO_DIAGNOSTICO).titulo,
+    abertura: traduzido(doc.intro) ?? en?.abertura ?? null,
+    conclusao: traduzido(doc.doneMessage) ?? en?.conclusao ?? null,
     email: {
-      assunto: texto(doc.emailSubject) ?? PADRAO_DO_DIAGNOSTICO.assuntoDoEmail,
-      abertura: texto(doc.emailIntro),
+      assunto: traduzido(doc.emailSubject) ?? (en ?? PADRAO_DO_DIAGNOSTICO).assuntoDoEmail,
+      abertura: traduzido(doc.emailIntro) ?? en?.aberturaDoEmail ?? null,
     },
     agendaUrl: link(doc.agendaUrl),
     whatsappUrl: link(doc.whatsappUrl) ?? PADRAO_DO_DIAGNOSTICO.whatsapp,

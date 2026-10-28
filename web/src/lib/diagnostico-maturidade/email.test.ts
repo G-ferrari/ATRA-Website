@@ -281,6 +281,60 @@ describe('HTML de e-mail', () => {
   })
 })
 
+/* D-76: quem responde em /en recebe o resultado em inglês. O que este bloco
+ * protege é o português vazando no meio — o texto do motor, um rótulo de
+ * pilar, a vírgula decimal. */
+describe('em inglês', () => {
+  const emIngles = (respostas: Respostas) => {
+    const calculo = calcular(SETOR, respostas)
+    return montarEmailDoResultado({
+      nome: 'Ana Souza',
+      setor: SETOR,
+      porte: '1_5bi',
+      calculo,
+      roadmap: montarRoadmap(calculo, 'en'),
+      textos: { ...TEXTOS, email: { assunto: 'Your Data Maturity Assessment — ATRA', abertura: null } },
+      whatsappUrl: WHATSAPP,
+      agendaUrl: AGENDA,
+      idioma: 'en',
+    })
+  }
+
+  it('nenhum texto fixo, pilar ou fase em português', () => {
+    for (const perfil of Object.values(PERFIS)) {
+      const { html, texto } = emIngles(perfil)
+      expect(html).toContain('<html lang="en">')
+      for (const corpo of [html, texto]) {
+        for (const pt of [
+          ...SECOES,
+          NOTA,
+          BOTAO_AGENDA,
+          BOTAO_ESPECIALISTA,
+          'Olá',
+          'Nível',
+          'Fase 1',
+          'meses',
+          'Governança',
+          'Segurança',
+          'Conformidade',
+        ]) {
+          expect(corpo, pt).not.toContain(pt)
+        }
+      }
+      expect(texto).toContain('Hello, Ana Souza,')
+      expect(texto).toMatch(/Level \d · /)
+      expect(texto).toContain('Maturity by pillar')
+      expect(texto).toContain('Phase 1 · 0 to 3 months')
+    }
+  })
+
+  it('ponto decimal, e não vírgula', () => {
+    const { texto } = emIngles(PERFIS.misto)
+    expect(texto).toMatch(/Security: 5\.0/)
+    expect(texto).not.toMatch(/\d,\d/)
+  })
+})
+
 describe('aviso à ATRA', () => {
   const entrada = (respostas: Respostas, empresa: string | null = 'Banco Exemplo S.A.') => {
     const calculo = calcular(SETOR, respostas)
