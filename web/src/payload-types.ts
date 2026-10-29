@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     topics: Topic;
     testimonials: Testimonial;
+    authors: Author;
     cases: Case;
     forms: Form;
     'glossary-terms': GlossaryTerm;
@@ -100,6 +101,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    authors: AuthorsSelect<false> | AuthorsSelect<true>;
     cases: CasesSelect<false> | CasesSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'glossary-terms': GlossaryTermsSelect<false> | GlossaryTermsSelect<true>;
@@ -340,6 +342,23 @@ export interface Testimonial {
    * When checked, publishing in Portuguese no longer changes the Spanish, which stays as written. When unchecked, the AI redoes the Spanish on every publish, and hand edits to it are lost.
    */
   spanishLocked?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Specialists who sign blog posts. The byline shows on the post and in the data search engines read.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors".
+ */
+export interface Author {
+  id: number;
+  /**
+   * Name only, no job title or honorific.
+   */
+  name: string;
+  jobTitle?: string | null;
+  profileUrl?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1878,6 +1897,136 @@ export interface Partner {
             id?: string | null;
             blockName?: string | null;
             blockType: 'audienceSplit';
+          }
+        | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
+                  | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
+                  | 'pie-chart'
+                  | 'line-chart'
+                  | 'gauge'
+                  | 'layers'
+                  | 'network'
+                  | 'git-branch'
+                  | 'bot'
+                  | 'brain-circuit'
+                  | 'wand'
+                  | 'scan-search'
+                  | 'database-zap'
+                  | 'table'
+                  | 'file-spreadsheet'
+                  | 'blocks'
+                  | 'waypoints'
+                  | 'laptop'
+                  | 'refresh'
+                  | 'funnel'
+                  | 'lightbulb'
+                  | 'puzzle'
+                  | 'handshake'
+                  | 'goal'
+                  | 'compass'
+                  | 'route'
+                  | 'map'
+                  | 'globe'
+                  | 'presentation'
+                  | 'megaphone'
+                  | 'wallet'
+                  | 'dollar'
+                  | 'trophy'
+                  | 'badge-check'
+                  | 'list-checks'
+                  | 'clipboard-check'
+                  | 'check-circle'
+                  | 'clock'
+                  | 'calendar'
+                  | 'timer'
+                  | 'users-round'
+                  | 'user-cog'
+                  | 'message-square'
+                  | 'mail'
+                  | 'phone'
+                  | 'key'
+                  | 'fingerprint'
+                  | 'eye'
+                  | 'scale'
+                  | 'file-check'
+                  | 'alert'
+                  | 'landmark'
+                  | 'factory'
+                  | 'store'
+                  | 'shopping-cart'
+                  | 'truck'
+                  | 'plane'
+                  | 'hospital'
+                  | 'stethoscope'
+                  | 'heart-pulse'
+                  | 'microscope'
+                  | 'wheat'
+                  | 'leaf'
+                  | 'plug'
+                  | 'radio-tower'
+                  | 'umbrella'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            /**
+             * Write it the way a client would ask, and answer in 2 to 4 sentences, leading with the answer.
+             */
+            items: {
+              question: string;
+              answer: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faqSection';
           }
         | {
             eyebrow?: string | null;
@@ -4778,6 +4927,136 @@ export interface Page {
       }
     | {
         eyebrow?: string | null;
+        eyebrowIcon?:
+          | (
+              | 'sparkles'
+              | 'target'
+              | 'shield'
+              | 'rocket'
+              | 'users'
+              | 'database'
+              | 'cloud'
+              | 'brain'
+              | 'chart'
+              | 'lock'
+              | 'workflow'
+              | 'award'
+              | 'app'
+              | 'search'
+              | 'settings'
+              | 'zap'
+              | 'cpu'
+              | 'shield-check'
+              | 'trending-up'
+              | 'arrow-up-right'
+              | 'star'
+              | 'file-text'
+              | 'newspaper'
+              | 'video'
+              | 'book'
+              | 'briefcase'
+              | 'graduation-cap'
+              | 'heart'
+              | 'info'
+              | 'user-check'
+              | 'building'
+              | 'coffee'
+              | 'server'
+              | 'code'
+              | 'headset'
+              | 'pie-chart'
+              | 'line-chart'
+              | 'gauge'
+              | 'layers'
+              | 'network'
+              | 'git-branch'
+              | 'bot'
+              | 'brain-circuit'
+              | 'wand'
+              | 'scan-search'
+              | 'database-zap'
+              | 'table'
+              | 'file-spreadsheet'
+              | 'blocks'
+              | 'waypoints'
+              | 'laptop'
+              | 'refresh'
+              | 'funnel'
+              | 'lightbulb'
+              | 'puzzle'
+              | 'handshake'
+              | 'goal'
+              | 'compass'
+              | 'route'
+              | 'map'
+              | 'globe'
+              | 'presentation'
+              | 'megaphone'
+              | 'wallet'
+              | 'dollar'
+              | 'trophy'
+              | 'badge-check'
+              | 'list-checks'
+              | 'clipboard-check'
+              | 'check-circle'
+              | 'clock'
+              | 'calendar'
+              | 'timer'
+              | 'users-round'
+              | 'user-cog'
+              | 'message-square'
+              | 'mail'
+              | 'phone'
+              | 'key'
+              | 'fingerprint'
+              | 'eye'
+              | 'scale'
+              | 'file-check'
+              | 'alert'
+              | 'landmark'
+              | 'factory'
+              | 'store'
+              | 'shopping-cart'
+              | 'truck'
+              | 'plane'
+              | 'hospital'
+              | 'stethoscope'
+              | 'heart-pulse'
+              | 'microscope'
+              | 'wheat'
+              | 'leaf'
+              | 'plug'
+              | 'radio-tower'
+              | 'umbrella'
+            )
+          | null;
+        title: string;
+        description?: string | null;
+        /**
+         * Write it the way a client would ask, and answer in 2 to 4 sentences, leading with the answer.
+         */
+        items: {
+          question: string;
+          answer: string;
+          id?: string | null;
+        }[];
+        /**
+         * When filled, the block joins the page side nav. E.g. who-we-are.
+         */
+        anchor?: string | null;
+        /**
+         * Empty falls back to the section title.
+         */
+        navLabel?: string | null;
+        borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+        spacing?: ('normal' | 'roomy') | null;
+        theme?: ('surface-1' | 'surface-2') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'faqSection';
+      }
+    | {
+        eyebrow?: string | null;
         title?: string | null;
         body?: {
           root: {
@@ -6197,6 +6476,10 @@ export interface Post {
       }[]
     | null;
   publishedAt: string;
+  /**
+   * Who wrote it. Add people under Content → Authors.
+   */
+  authors?: (number | Author)[] | null;
   /**
    * Optional. When empty, the site falls back to the page title and summary.
    */
@@ -7952,6 +8235,136 @@ export interface Segment {
             id?: string | null;
             blockName?: string | null;
             blockType: 'audienceSplit';
+          }
+        | {
+            eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
+                  | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
+                  | 'pie-chart'
+                  | 'line-chart'
+                  | 'gauge'
+                  | 'layers'
+                  | 'network'
+                  | 'git-branch'
+                  | 'bot'
+                  | 'brain-circuit'
+                  | 'wand'
+                  | 'scan-search'
+                  | 'database-zap'
+                  | 'table'
+                  | 'file-spreadsheet'
+                  | 'blocks'
+                  | 'waypoints'
+                  | 'laptop'
+                  | 'refresh'
+                  | 'funnel'
+                  | 'lightbulb'
+                  | 'puzzle'
+                  | 'handshake'
+                  | 'goal'
+                  | 'compass'
+                  | 'route'
+                  | 'map'
+                  | 'globe'
+                  | 'presentation'
+                  | 'megaphone'
+                  | 'wallet'
+                  | 'dollar'
+                  | 'trophy'
+                  | 'badge-check'
+                  | 'list-checks'
+                  | 'clipboard-check'
+                  | 'check-circle'
+                  | 'clock'
+                  | 'calendar'
+                  | 'timer'
+                  | 'users-round'
+                  | 'user-cog'
+                  | 'message-square'
+                  | 'mail'
+                  | 'phone'
+                  | 'key'
+                  | 'fingerprint'
+                  | 'eye'
+                  | 'scale'
+                  | 'file-check'
+                  | 'alert'
+                  | 'landmark'
+                  | 'factory'
+                  | 'store'
+                  | 'shopping-cart'
+                  | 'truck'
+                  | 'plane'
+                  | 'hospital'
+                  | 'stethoscope'
+                  | 'heart-pulse'
+                  | 'microscope'
+                  | 'wheat'
+                  | 'leaf'
+                  | 'plug'
+                  | 'radio-tower'
+                  | 'umbrella'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            /**
+             * Write it the way a client would ask, and answer in 2 to 4 sentences, leading with the answer.
+             */
+            items: {
+              question: string;
+              answer: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faqSection';
           }
         | {
             eyebrow?: string | null;
@@ -10782,6 +11195,136 @@ export interface Solution {
           }
         | {
             eyebrow?: string | null;
+            eyebrowIcon?:
+              | (
+                  | 'sparkles'
+                  | 'target'
+                  | 'shield'
+                  | 'rocket'
+                  | 'users'
+                  | 'database'
+                  | 'cloud'
+                  | 'brain'
+                  | 'chart'
+                  | 'lock'
+                  | 'workflow'
+                  | 'award'
+                  | 'app'
+                  | 'search'
+                  | 'settings'
+                  | 'zap'
+                  | 'cpu'
+                  | 'shield-check'
+                  | 'trending-up'
+                  | 'arrow-up-right'
+                  | 'star'
+                  | 'file-text'
+                  | 'newspaper'
+                  | 'video'
+                  | 'book'
+                  | 'briefcase'
+                  | 'graduation-cap'
+                  | 'heart'
+                  | 'info'
+                  | 'user-check'
+                  | 'building'
+                  | 'coffee'
+                  | 'server'
+                  | 'code'
+                  | 'headset'
+                  | 'pie-chart'
+                  | 'line-chart'
+                  | 'gauge'
+                  | 'layers'
+                  | 'network'
+                  | 'git-branch'
+                  | 'bot'
+                  | 'brain-circuit'
+                  | 'wand'
+                  | 'scan-search'
+                  | 'database-zap'
+                  | 'table'
+                  | 'file-spreadsheet'
+                  | 'blocks'
+                  | 'waypoints'
+                  | 'laptop'
+                  | 'refresh'
+                  | 'funnel'
+                  | 'lightbulb'
+                  | 'puzzle'
+                  | 'handshake'
+                  | 'goal'
+                  | 'compass'
+                  | 'route'
+                  | 'map'
+                  | 'globe'
+                  | 'presentation'
+                  | 'megaphone'
+                  | 'wallet'
+                  | 'dollar'
+                  | 'trophy'
+                  | 'badge-check'
+                  | 'list-checks'
+                  | 'clipboard-check'
+                  | 'check-circle'
+                  | 'clock'
+                  | 'calendar'
+                  | 'timer'
+                  | 'users-round'
+                  | 'user-cog'
+                  | 'message-square'
+                  | 'mail'
+                  | 'phone'
+                  | 'key'
+                  | 'fingerprint'
+                  | 'eye'
+                  | 'scale'
+                  | 'file-check'
+                  | 'alert'
+                  | 'landmark'
+                  | 'factory'
+                  | 'store'
+                  | 'shopping-cart'
+                  | 'truck'
+                  | 'plane'
+                  | 'hospital'
+                  | 'stethoscope'
+                  | 'heart-pulse'
+                  | 'microscope'
+                  | 'wheat'
+                  | 'leaf'
+                  | 'plug'
+                  | 'radio-tower'
+                  | 'umbrella'
+                )
+              | null;
+            title: string;
+            description?: string | null;
+            /**
+             * Write it the way a client would ask, and answer in 2 to 4 sentences, leading with the answer.
+             */
+            items: {
+              question: string;
+              answer: string;
+              id?: string | null;
+            }[];
+            /**
+             * When filled, the block joins the page side nav. E.g. who-we-are.
+             */
+            anchor?: string | null;
+            /**
+             * Empty falls back to the section title.
+             */
+            navLabel?: string | null;
+            borda?: ('nenhuma' | 'topo' | 'ambas') | null;
+            spacing?: ('normal' | 'roomy') | null;
+            theme?: ('surface-1' | 'surface-2') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faqSection';
+          }
+        | {
+            eyebrow?: string | null;
             title?: string | null;
             body?: {
               root: {
@@ -12520,6 +13063,10 @@ export interface PayloadLockedDocument {
         value: number | Testimonial;
       } | null)
     | ({
+        relationTo: 'authors';
+        value: number | Author;
+      } | null)
+    | ({
         relationTo: 'cases';
         value: number | Case;
       } | null)
@@ -12736,6 +13283,17 @@ export interface TestimonialsSelect<T extends boolean = true> {
   featured?: T;
   englishLocked?: T;
   spanishLocked?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors_select".
+ */
+export interface AuthorsSelect<T extends boolean = true> {
+  name?: T;
+  jobTitle?: T;
+  profileUrl?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -13184,6 +13742,28 @@ export interface PagesSelect<T extends boolean = true> {
                     accent?: T;
                     title?: T;
                     description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faqSection?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -13791,6 +14371,7 @@ export interface PostsSelect<T extends boolean = true> {
         id?: T;
       };
   publishedAt?: T;
+  authors?: T;
   seo?:
     | T
     | {
@@ -14222,6 +14803,28 @@ export interface PartnersSelect<T extends boolean = true> {
                     accent?: T;
                     title?: T;
                     description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faqSection?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
                     id?: T;
                   };
               anchor?: T;
@@ -15101,6 +15704,28 @@ export interface SegmentsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        faqSection?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
         richTextSection?:
           | T
           | {
@@ -15967,6 +16592,28 @@ export interface SolutionsSelect<T extends boolean = true> {
                     accent?: T;
                     title?: T;
                     description?: T;
+                    id?: T;
+                  };
+              anchor?: T;
+              navLabel?: T;
+              borda?: T;
+              spacing?: T;
+              theme?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faqSection?:
+          | T
+          | {
+              eyebrow?: T;
+              eyebrowIcon?: T;
+              title?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
                     id?: T;
                   };
               anchor?: T;

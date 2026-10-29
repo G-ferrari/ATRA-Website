@@ -14,6 +14,7 @@ import { toSeo } from '@/lib/mappers/seo'
 import { metadataDe } from '@/lib/seo'
 import { versoesDoItem } from '@/lib/versoes-do-item'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
+import { trilhaDoItem } from '@/lib/trilha'
 import { servico } from '@/lib/jsonld'
 import { ORIGEM } from '@/lib/seo'
 import { hrefDe } from '@/lib/routes'
@@ -180,10 +181,13 @@ export default async function SolucaoPage({ params }: PageProps<'/[locale]/soluc
     <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
       {/* Invisível: vai num `<script type="application/ld+json">`. */}
       <DadosEstruturados
-        dados={servico({
-          seo: toSeo(solucao.doc.seo, { titulo: solucao.doc.title, descricao: solucao.doc.shortDescription }),
-          url: `${ORIGEM}${hrefDe('solucoes', locale, slug)}`,
-        })}
+        dados={[
+          servico({
+            seo: toSeo(solucao.doc.seo, { titulo: solucao.doc.title, descricao: solucao.doc.shortDescription }),
+            url: `${ORIGEM}${hrefDe('solucoes', locale, slug)}`,
+          }),
+          trilhaDoItem('solucoes', locale, slug, solucao.doc.title),
+        ]}
       />
       <RenderBlocks blocos={blocos} locale={locale} />
     </main>

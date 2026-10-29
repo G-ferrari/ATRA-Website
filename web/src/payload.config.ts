@@ -13,7 +13,9 @@ import {
 import { s3Storage } from '@payloadcms/storage-s3'
 import { buildConfig, type CollectionConfig } from 'payload'
 
+import { avisarIndexNowAoApagar, avisarIndexNowAoMudar } from './hooks/avisar-indexnow'
 import { revalidarSite } from './hooks/revalidar'
+import { SECAO_DA_COLECAO, type ColecaoAvisada } from './lib/indexnow'
 import { provedorDeTraducao, quemTraduz } from './lib/traducao'
 import { COLECOES_TRADUZIDAS_SOZINHAS, comTraducaoAutomatica } from './lib/traducao-automatica'
 import { GLOBAIS_TRADUZIDOS, pedirTraducaoAoSalvar, tarefaDeTraducaoDeGlobal } from './lib/traducao-de-globais'
@@ -39,6 +41,7 @@ import { Topics } from './collections/Topics'
 import { Users } from './collections/Users'
 import { Forms } from './collections/Forms'
 import { Press } from './collections/Press'
+import { Authors } from './collections/Authors'
 import { Webinars } from './collections/Webinars'
 import { Appearance } from './globals/Appearance'
 import { AtraAi } from './globals/AtraAi'
@@ -74,12 +77,24 @@ function comRevalidacao(collections: CollectionConfig[], fora: string[]): Collec
  * `buildConfig` e ao plugin, como o plugin pede. */
 const SLUGS_TRADUZIDOS: readonly string[] = COLECOES_TRADUZIDAS_SOZINHAS
 const traduzidaSeFor = (c: CollectionConfig) => (SLUGS_TRADUZIDOS.includes(c.slug) ? comTraducaoAutomatica(c) : c)
+/* D-80: as collections com página de item avisam o IndexNow ao publicar. */
+const comIndexNow = (c: CollectionConfig): CollectionConfig =>
+  c.slug in SECAO_DA_COLECAO
+    ? {
+        ...c,
+        hooks: {
+          ...c.hooks,
+          afterChange: [...(c.hooks?.afterChange ?? []), avisarIndexNowAoMudar(c.slug as ColecaoAvisada)],
+          afterDelete: [...(c.hooks?.afterDelete ?? []), avisarIndexNowAoApagar(c.slug as ColecaoAvisada)],
+        },
+      }
+    : c
 const COLECOES = [
   Users, Media, Topics, Testimonials,
-  Cases, Forms, GlossaryTerms, Jobs, Pages, Posts, Press, Resources, Webinars,
+  Authors, Cases, Forms, GlossaryTerms, Jobs, Pages, Posts, Press, Resources, Webinars,
   Clients, Partners, Segments, Solutions, SpecialistRoles,
   AiUsage, FormSubmissions, PrivateFiles,
-].map(traduzidaSeFor)
+].map(traduzidaSeFor).map(comIndexNow)
 
 export default buildConfig({
   admin: {

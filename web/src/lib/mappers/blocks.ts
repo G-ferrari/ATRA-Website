@@ -805,6 +805,20 @@ export function toBlocos(
         })
         break
 
+      case 'faqSection':
+        blocos.push({
+          ...base(b),
+          ...cabecalho(b),
+          tipo: 'faqSection',
+          /* Item sem pergunta ou sem resposta é rascunho da editora: fora da
+           * página e, principalmente, fora do FAQPage — o Google recusa a
+           * marcação inteira por uma `Question` sem `acceptedAnswer`. */
+          items: (b.items ?? [])
+            .map((i) => ({ question: i.question?.trim() ?? '', answer: i.answer?.trim() ?? '' }))
+            .filter((i) => i.question && i.answer),
+        })
+        break
+
       default:
         console.warn(
           `[mapper] bloco desconhecido "${(b as { blockType: string }).blockType}" ignorado. ` +

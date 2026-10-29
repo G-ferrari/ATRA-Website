@@ -46,13 +46,17 @@ export function organizacao(args: { contato: Contato; logo: Image | null; fundad
   }
 }
 
+/** Quem assina um artigo (D-80). Só o que o cadastro de autores tem. */
+export type AutorJsonLd = { nome: string; cargo: string | null; perfil: string | null }
+
 export function artigo(args: {
   seo: Seo
   url: string
   publicadoEm: string
   atualizadoEm?: string | null
+  autores?: AutorJsonLd[]
 }): JsonLd {
-  const { seo, url, publicadoEm, atualizadoEm } = args
+  const { seo, url, publicadoEm, atualizadoEm, autores = [] } = args
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -61,16 +65,34 @@ export function artigo(args: {
     ...(seo.image ? { image: [absoluta(seo.image.url)] } : {}),
     datePublished: publicadoEm,
     dateModified: atualizadoEm ?? publicadoEm,
-    /* ⚠️ Sem `author` de pessoa: o WordPress não traz autoria por artigo, e o
-     * schema aceita organização como autor. Inventar um nome seria markup
-     * enganoso. */
-    author: { '@id': ID_DA_ORGANIZACAO },
+    /* Pessoa quando o artigo tem autor no admin (D-80); a organização quando
+     * não tem. O WordPress não trazia autoria, então os 207 importados seguem
+     * assinados pela ATRA até alguém atribuir — inventar um nome seria markup
+     * enganoso, e o Google pede o autor "preciso". */
+    author: autores.length ? autores.map(pessoa) : { '@id': ID_DA_ORGANIZACAO },
     publisher: { '@id': ID_DA_ORGANIZACAO },
     mainEntityOfPage: url,
   }
 }
 
-export function servico(args: { seo: Seo; url: string }): JsonLd {
+/* O Google pede `Person` para gente, com `url` ou `sameAs` apontando para
+ * uma página que identifique a pessoa, e só o nome em `name` — cargo vai em
+ * `jobTitle` (documentação de Article, "author best practices"). */
+function pessoa(autor: AutorJsonLd): JsonLd {
+  return {
+    '@type': 'Person',
+    name: autor.nome,
+    ...(autor.cargo ? { jobTitle: autor.cargo } : {}),
+    ...(autor.perfil ? { url: autor.perfil, sameAs: [autor.perfil] } : {}),
+    worksFor: { '@id': ID_DA_ORGANIZACAO },
+  }
+}
+
+/**
+ * Serviço: solução ou segmento. No segmento, `publico` é o setor atendido
+ * (Bancos, Saúde…) — o mesmo nome que a página mostra no título.
+ */
+export function servico(args: { seo: Seo; url: string; publico?: string }): JsonLd {
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -78,7 +100,110 @@ export function servico(args: { seo: Seo; url: string }): JsonLd {
     description: args.seo.description || undefined,
     ...(args.seo.image ? { image: [absoluta(args.seo.image.url)] } : {}),
     provider: { '@id': ID_DA_ORGANIZACAO },
+    ...(args.publico ? { audience: { '@type': 'BusinessAudience', name: args.publico } } : {}),
     url: args.url,
+  }
+}
+
+/**
+ * O site (D-80). O Google usa o `WebSite` da página inicial como o sinal
+ * principal para o nome do site nos resultados ("Site names"). Só na inicial:
+ * é lá que a documentação manda pôr.
+ */
+export function site(args: { url: string; idioma: string }): JsonLd {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${ORIGEM}/#site`,
+    name: 'ATRA',
+    url: args.url,
+    inLanguage: args.idioma,
+    publisher: { '@id': ID_DA_ORGANIZACAO },
+  }
+}
+
+/**
+ * Trilha de navegação (BreadcrumbList), da inicial até a página. Cada degrau é
+ * o nome que o visitante vê e a URL absoluta; o último é a própria página.
+ */
+export function trilha(degraus: { nome: string; url: string }[]): JsonLd {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: degraus.map((d, i) => ({ '@type': 'ListItem', position: i + 1, name: d.nome, item: d.url })),
+  }
+}
+
+/** FAQPage do bloco de perguntas frequentes. Texto puro, como a página mostra. */
+export function perguntasFrequentes(itens: { question: string; answer: string }[]): JsonLd {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: itens.map((i) => ({
+      '@type': 'Question',
+      name: i.question,
+      acceptedAnswer: { '@type': 'Answer', text: i.answer },
+    })),
+  }
+}
+
+/**
+ * Case de sucesso como `Article` (D-80): é um relato com data e autoria da
+ * ATRA, e o tipo que o Google documenta para isso. O cliente, quando o case
+ * o identifica, vai em `about` — é sobre ele que o texto fala.
+ */
+export function estudoDeCaso(args: { seo: Seo; url: string; publicadoEm: string; cliente: string | null }): JsonLd {
+  return {
+    ...artigo({ seo: args.seo, url: args.url, publicadoEm: args.publicadoEm }),
+    ...(args.cliente ? { about: { '@type': 'Organization', name: args.cliente } } : {}),
+  }
+}
+
+/**
+ * Vaga (JobPosting), que também torna a vaga elegível à busca de empregos do
+ * Google. Os obrigatórios da documentação: `title`, `description`,
+ * `datePosted`, `hiringOrganization` e `jobLocation` — ou, na vaga remota,
+ * `jobLocationType` com `applicantLocationRequirements`.
+ *
+ * ⚠️ A localidade do admin é texto livre ("São Paulo, SP"): vai inteira em
+ * `addressLocality`. Separar cidade e estado seria adivinhar.
+ */
+export function vaga(args: {
+  titulo: string
+  descricao: string
+  publicadaEm: string
+  modelo: 'remote' | 'hybrid' | 'onsite'
+  localidade: string | null
+  url: string
+}): JsonLd {
+  const { titulo, descricao, publicadaEm, modelo, localidade, url } = args
+  const remota = modelo === 'remote'
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: titulo,
+    description: descricao,
+    datePosted: publicadaEm,
+    hiringOrganization: { '@id': ID_DA_ORGANIZACAO, '@type': 'Organization', name: 'ATRA', sameAs: `${ORIGEM}/` },
+    ...(remota
+      ? {
+          jobLocationType: 'TELECOMMUTE',
+          applicantLocationRequirements: { '@type': 'Country', name: 'BR' },
+        }
+      : {}),
+    ...(localidade || !remota
+      ? {
+          jobLocation: {
+            '@type': 'Place',
+            address: {
+              '@type': 'PostalAddress',
+              ...(localidade ? { addressLocality: localidade } : {}),
+              addressCountry: 'BR',
+            },
+          },
+        }
+      : {}),
+    url,
   }
 }
 

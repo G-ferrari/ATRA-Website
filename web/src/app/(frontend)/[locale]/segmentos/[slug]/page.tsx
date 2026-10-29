@@ -10,7 +10,11 @@ import { comParceirosCadastrados } from '@/lib/parceiros'
 import { comLinksNoIdioma } from '@/lib/traduzir-links'
 import { getPayload } from '@/lib/payload'
 import { toSeo } from '@/lib/mappers/seo'
-import { metadataDe } from '@/lib/seo'
+import { DadosEstruturados } from '@/components/layout/dados-estruturados'
+import { servico } from '@/lib/jsonld'
+import { hrefDe } from '@/lib/routes'
+import { metadataDe, ORIGEM } from '@/lib/seo'
+import { trilhaDoItem } from '@/lib/trilha'
 import { versoesDoItem } from '@/lib/versoes-do-item'
 
 /* /segmentos/[slug] (MIG-091).
@@ -98,6 +102,17 @@ export default async function SegmentoPage({ params }: PageProps<'/[locale]/segm
 
   return (
     <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
+      {/* Invisível: o setor atendido como serviço da ATRA, e a trilha (D-80). */}
+      <DadosEstruturados
+        dados={[
+          servico({
+            seo: toSeo(segmento.doc.seo, { titulo: segmento.doc.name, descricao: segmento.doc.shortDescription }),
+            url: `${ORIGEM}${hrefDe('segmentos', locale, slug)}`,
+            publico: segmento.doc.name,
+          }),
+          trilhaDoItem('segmentos', locale, slug, segmento.doc.name),
+        ]}
+      />
       <RenderBlocks blocos={segmento.blocos} locale={locale} />
     </main>
   )

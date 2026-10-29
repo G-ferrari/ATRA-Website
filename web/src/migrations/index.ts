@@ -72,6 +72,7 @@ import * as migration_20260927_215950_page_hero_video from './20260927_215950_pa
 import * as migration_20260927_215950_process_steps_variant from './20260927_215950_process_steps_variant';
 import * as migration_20260927_215960_trava_do_ingles_antecipada from './20260927_215960_trava_do_ingles_antecipada';
 import * as migration_20260927_215961_trava_do_espanhol_antecipada from './20260927_215961_trava_do_espanhol_antecipada';
+import * as migration_20260927_215970_geo_faq_e_autores_antecipada from './20260927_215970_geo_faq_e_autores_antecipada';
 import * as migration_20260927_220000_secao_formulario_antecipada from './20260927_220000_secao_formulario_antecipada';
 import * as migration_20260927_235900_solucoes_do_wordpress from './20260927_235900_solucoes_do_wordpress';
 import * as migration_20260927_235930_segmentos_do_wordpress from './20260927_235930_segmentos_do_wordpress';
@@ -139,6 +140,7 @@ import * as migration_20261027_200000_carga_inicial_do_ingles from './20261027_2
 import * as migration_20261028_144743_espanhol from './20261028_144743_espanhol';
 import * as migration_20261028_150000_carga_inicial_do_espanhol from './20261028_150000_carga_inicial_do_espanhol';
 import * as migration_20261028_195814_resultado_do_diagnostico from './20261028_195814_resultado_do_diagnostico';
+import * as migration_20261029_192622_geo_faq_e_autores from './20261029_192622_geo_faq_e_autores';
 
 export const migrations = [
   {
@@ -512,6 +514,11 @@ export const migrations = [
     name: '20260927_215961_trava_do_espanhol_antecipada',
   },
   {
+    up: migration_20260927_215970_geo_faq_e_autores_antecipada.up,
+    down: migration_20260927_215970_geo_faq_e_autores_antecipada.down,
+    name: '20260927_215970_geo_faq_e_autores_antecipada',
+  },
+  {
     up: migration_20260927_220000_secao_formulario_antecipada.up,
     down: migration_20260927_220000_secao_formulario_antecipada.down,
     name: '20260927_220000_secao_formulario_antecipada',
@@ -844,6 +851,11 @@ export const migrations = [
   {
     up: migration_20261028_195814_resultado_do_diagnostico.up,
     down: migration_20261028_195814_resultado_do_diagnostico.down,
-    name: '20261028_195814_resultado_do_diagnostico'
+    name: '20261028_195814_resultado_do_diagnostico',
+  },
+  {
+    up: migration_20261029_192622_geo_faq_e_autores.up,
+    down: migration_20261029_192622_geo_faq_e_autores.down,
+    name: '20261029_192622_geo_faq_e_autores'
   },
 ];
