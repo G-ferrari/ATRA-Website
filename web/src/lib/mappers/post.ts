@@ -1,5 +1,5 @@
 import type { Post as Doc } from '@/payload-types'
-import type { PostCard, PostDetail } from '@/types/content'
+import type { Autor, PostCard, PostDetail } from '@/types/content'
 
 import { toImage, toTextos } from './shared'
 import { toSeo } from './seo'
@@ -20,10 +20,20 @@ export function toPostCard(doc: CamposDeCartao): PostCard {
   }
 }
 
-export function toPostDetail(doc: CamposDeCartao & Pick<Doc, 'body' | 'seo'>): PostDetail {
+export function toPostDetail(doc: CamposDeCartao & Pick<Doc, 'body' | 'seo' | 'authors'>): PostDetail {
   return {
     ...toPostCard(doc),
     body: doc.body ?? null,
     seo: toSeo(doc.seo, { titulo: doc.title, descricao: doc.description, imagem: toImage(doc.coverImage, 'posts.coverImage') }),
+    autores: (doc.authors ?? []).map(toAutor),
   }
+}
+
+/* Relação sem popular derruba com o conserto, como as imagens (regra 3 do
+ * CLAUDE.md): assinatura que some em silêncio é pior que erro. */
+function toAutor(autor: NonNullable<Doc['authors']>[number]): Autor {
+  if (typeof autor !== 'object') {
+    throw new Error('posts.authors veio sem popular: consulte o artigo com `depth: 1` ou mais.')
+  }
+  return { nome: autor.name, cargo: autor.jobTitle?.trim() || null, perfil: autor.profileUrl?.trim() || null }
 }

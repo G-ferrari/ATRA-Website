@@ -89,6 +89,19 @@ export const Posts: CollectionConfig = {
       label: { pt: 'Data de publicação', en: 'Published at' },
       admin: { position: 'sidebar', date: { pickerAppearance: 'dayOnly' } },
     },
+    {
+      /* D-80: a assinatura do artigo. Vazio, o artigo segue assinado pela ATRA
+       * — é o caso dos 207 vindos do WordPress, que não guardava autor. */
+      name: 'authors',
+      type: 'relationship',
+      relationTo: 'authors',
+      hasMany: true,
+      label: { pt: 'Autores', en: 'Authors' },
+      admin: {
+        position: 'sidebar',
+        description: { pt: 'Quem escreveu. Cadastre em Conteúdo → Autores.', en: 'Who wrote it. Add people under Content → Authors.' },
+      },
+    },
     seoField,
   ],
 }

@@ -11,7 +11,21 @@ import type { JsonLd } from '@/lib/jsonld'
  * tag no meio e o resto do JSON viraria markup na página.
  */
 export function DadosEstruturados({ dados }: { dados: JsonLd | JsonLd[] }) {
-  const json = JSON.stringify(dados).replace(/</g, '\\u003c')
+  /* Lista vira um `<script>` por nó, e não um array num só (D-80): os dois são
+   * válidos para o Google, mas quem lê a página procurando um `@type` — o
+   * smoke, e qualquer leitor que espere um objeto por bloco — não acha o nó
+   * dentro de um array. */
+  const nos = Array.isArray(dados) ? dados : [dados]
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />
+  return (
+    <>
+      {nos.map((no, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(no).replace(/</g, '\\u003c') }}
+        />
+      ))}
+    </>
+  )
 }

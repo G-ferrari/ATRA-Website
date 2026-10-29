@@ -566,6 +566,17 @@ com e sem `www`, e `atra-hmg.duckdns.org` — responde 301 para `SITE_URL{uri}`.
 conteúdo duplicado. E `REDIRECT_HOSTS` vazio cai num `localhost` de propósito —
 bloco sem nome faz o Caddy recusar o arquivo inteiro.
 
+**D-80 (29/10)**: GEO. `WebSite` na inicial, `BreadcrumbList` nas páginas de
+item (`lib/trilha.ts`), case como `Article`, segmento como `Service`, vaga como
+`JobPosting`; a seção **Perguntas frequentes** (`faqSection`, com `FAQPage`,
+resposta em `<details>` para ficar no HTML); a collection **`authors`** ligada
+a `posts.authors` (`Person` no artigo); `/llms.txt` do catálogo da ATRA AI; e o
+**IndexNow** ao publicar (`INDEXNOW_KEY` + origem de produção,
+`/indexnow-key.txt`). Robôs de IA no log do Caddy:
+`infra/monitoramento/robos-de-ia.py`. O que é de conta (Bing, GA4) está em
+`docs/05-operacao/geo.md`. ⚠️ Collection nova com página de item entra em
+`SECAO_DA_COLECAO` (`lib/indexnow.ts`) e, se quiser trilha, em `lib/trilha.ts`.
+
 **D-46 (01/10)** é a observabilidade: Sentry ligado nos três lados e **inerte sem
 `SENTRY_DSN`**, uptime pelo workflow `uptime.yml` (issue com etiqueta `uptime`),
 containers logando no journald e o Caddy com log de acesso em arquivo.

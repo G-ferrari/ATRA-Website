@@ -17,6 +17,7 @@ import { BlocoEtapas } from './bloco-etapas'
 import { BlocoContato } from './bloco-contato'
 import { BlocoFormulario } from './bloco-formulario'
 import { BlocoParaQuem } from './bloco-para-quem'
+import { BlocoPerguntasFrequentes } from './bloco-perguntas-frequentes'
 import { BlocoAbasDeDestaque } from './bloco-abas-de-destaque'
 import { BlocoBentoDaHome } from './bloco-bento-da-home'
 import { BlocoCarrosselDeCases } from './bloco-carrossel-de-cases'
@@ -143,6 +144,8 @@ export function RenderBlocks({
         return <BlocoParaQuem key={b.id} bloco={b} />
       case 'accordionSteps':
         return <BlocoAcordeao key={b.id} bloco={b} />
+      case 'faqSection':
+        return <BlocoPerguntasFrequentes key={b.id} bloco={b} />
       case 'partnerHero':
         return <BlocoParceiroHero key={b.id} bloco={b} />
       case 'partnerSplit':

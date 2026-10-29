@@ -166,6 +166,30 @@ test.describe('app novo', () => {
     }
   })
 
+  /* D-80 (GEO). O resumo para assistentes de IA responde em Markdown, com as
+   * seções do site em links absolutos; e a inicial declara o `WebSite`, que o
+   * Google lê para o nome do site. */
+  test('o llms.txt responde e lista as seções', async ({ request }) => {
+    const r = await request.get(`${NEXT_URL}/llms.txt`)
+    expect(r.status()).toBe(200)
+    expect(r.headers()['content-type']).toContain('text/markdown')
+    const texto = await r.text()
+    expect(texto.startsWith('# ATRA\n')).toBe(true)
+    /* A origem do link é a do build (`NEXT_PUBLIC_SITE_URL`), não a do gate. */
+    expect(texto).toMatch(/\(https?:\/\/[^)]+\/cases-de-sucesso\)/)
+  })
+
+  test('a inicial declara o WebSite nos dados estruturados', async ({ request }) => {
+    const html = await (await request.get(`${NEXT_URL}/`)).text()
+    expect(html).toContain('"@type":"WebSite"')
+  })
+
+  /* Sem `INDEXNOW_KEY` no ambiente do CI: a prova de posse não existe, e o
+   * aviso ao Bing também não sai. */
+  test('sem chave, o arquivo do IndexNow responde 404', async ({ request }) => {
+    expect((await request.get(`${NEXT_URL}/indexnow-key.txt`)).status()).toBe(404)
+  })
+
   /* `/blog/[slug]` **não existe no legado** (os cards apontam para `#`), então
    * não há gabarito e a regressão visual não cobre esta rota. Estas asserções
    * são o que sobra de rede de segurança — ver a nota no topo da página.

@@ -1214,6 +1214,43 @@ export const AccordionSteps: Block = {
   ],
 }
 
+/* Perguntas frequentes (GEO, D-80). Pergunta e resposta em texto simples, uma
+ * por item: é o formato que os buscadores com IA recortam e citam — o Bing pede
+ * "fatos ditos de forma direta" e o essencial no topo (diretrizes de 2026).
+ *
+ * ⚠️ Resposta em `textarea`, não em rich text. Ela vai **inteira** para o
+ * FAQPage do schema.org, que aceita texto; um Lexical exigiria converter para
+ * HTML no servidor, e link no meio da resposta é o que a editora mais erra. */
+export const FaqSection: Block = {
+  slug: 'faqSection',
+  labels: {
+    singular: { pt: 'Perguntas frequentes', en: 'FAQ' },
+    plural: { pt: 'Perguntas frequentes', en: 'FAQ' },
+  },
+  fields: [
+    ...camposDeCabecalho,
+    {
+      name: 'items',
+      type: 'array',
+      required: true,
+      minRows: 1,
+      label: { pt: 'Perguntas', en: 'Questions' },
+      labels: { singular: { pt: 'Pergunta', en: 'Question' }, plural: { pt: 'Perguntas', en: 'Questions' } },
+      admin: {
+        description: {
+          pt: 'Escreva como o cliente perguntaria e responda em 2 a 4 frases, com a resposta já na primeira.',
+          en: 'Write it the way a client would ask, and answer in 2 to 4 sentences, leading with the answer.',
+        },
+      },
+      fields: [
+        { name: 'question', type: 'text', required: true, localized: true, label: { pt: 'Pergunta', en: 'Question' } },
+        { name: 'answer', type: 'textarea', required: true, localized: true, label: { pt: 'Resposta', en: 'Answer' } },
+      ],
+    },
+    ...camposComuns,
+  ],
+}
+
 /* Blocos do template de página de parceiro (MIG-054a).
  *
  * Justificativa (blocos.md, regra 3): o legado não monta essa página com seções
@@ -1917,6 +1954,7 @@ const GRUPO_DO_BLOCO = {
   featureTabs: 'texto',
   processSteps: 'etapas',
   accordionSteps: 'etapas',
+  faqSection: 'texto',
   statsGrid: 'prova',
   sealsBanner: 'prova',
   imageGrid: 'prova',
@@ -1952,6 +1990,7 @@ const TODOS = [
   BentoGrid,
   AudienceSplit,
   AccordionSteps,
+  FaqSection,
   CtaContact,
   FormSection,
   JobsList,

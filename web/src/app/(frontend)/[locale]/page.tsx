@@ -6,7 +6,9 @@ import { DecoracoesDaHome } from '@/components/blocks/decoracoes-da-home'
 import { RenderBlocks } from '@/components/blocks/render-blocks'
 import { isLocale, LOCALES } from '@/lib/locales'
 import { resolverPagina } from '@/lib/paginas'
-import { metadataDe } from '@/lib/seo'
+import { DadosEstruturados } from '@/components/layout/dados-estruturados'
+import { site } from '@/lib/jsonld'
+import { caminhoDe, hreflangDe, metadataDe, ORIGEM } from '@/lib/seo'
 
 /* A home (MIG-059) — montada por blocos, como as outras.
  *
@@ -40,6 +42,8 @@ export default async function Pagina() {
        decorações: ela é `-z-10`, então um fundo no próprio `main` a esconde por
        completo — as oito formas ficam atrás dele. */
     <main className="relative overflow-hidden">
+      {/* Invisível: o `WebSite` que o Google lê para o nome do site (D-80). */}
+      <DadosEstruturados dados={site({ url: `${ORIGEM}${caminhoDe({ caminho: '/' }, locale)}`, idioma: hreflangDe(locale) })} />
       <DecoracoesDaHome />
       <RenderBlocks blocos={pagina.blocos} locale={locale} />
     </main>

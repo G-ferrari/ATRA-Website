@@ -15,7 +15,13 @@ import { toVagaDetalhe } from '@/lib/mappers/job'
 import { getPayload } from '@/lib/payload'
 import { hrefDe } from '@/lib/routes'
 import type { VagaDetalhe } from '@/types/content'
-import { metadataDe } from '@/lib/seo'
+import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+
+import { DadosEstruturados } from '@/components/layout/dados-estruturados'
+import { vaga as vagaJsonLd } from '@/lib/jsonld'
+import { metadataDe, ORIGEM } from '@/lib/seo'
+import { trilhaDoItem } from '@/lib/trilha'
 import { versoesDoItem } from '@/lib/versoes-do-item'
 
 /* /carreiras/[slug] (MIG-051). Rota **sem gabarito** — não existe no protótipo:
@@ -134,8 +140,28 @@ export default async function VagaPage({ params }: PageProps<'/[locale]/carreira
   const listaDeVagas = `${hrefDe('carreiras', locale)}#trabalhe-conosco`
   const bancoDeTalentos = `${hrefDe('carreiras', locale)}#banco-talentos`
 
+  /* JobPosting só com descrição (D-80): é campo obrigatório, e vaga sem texto
+     já sai com `noindex` (D-08) — marcá-la seria anunciar o que a página não
+     tem. A descrição vai em HTML, como o Google pede. */
+  const dados = [
+    trilhaDoItem('carreiras', locale, slug, vaga.title),
+    ...(vaga.body
+      ? [
+          vagaJsonLd({
+            titulo: vaga.title,
+            descricao: convertLexicalToHTML({ data: vaga.body as SerializedEditorState, disableContainer: true }),
+            publicadaEm: vaga.publicadaEm,
+            modelo: vaga.modelo,
+            localidade: vaga.localidade,
+            url: `${ORIGEM}${hrefDe('carreiras', locale, slug)}`,
+          }),
+        ]
+      : []),
+  ]
+
   return (
     <main className="pt-24 md:pt-36 pb-0 bg-surface-1 min-h-screen text-text-main">
+      <DadosEstruturados dados={dados} />
       <div className="max-w-7xl mx-auto px-3 sm:px-6">
         <Link
           href={listaDeVagas}

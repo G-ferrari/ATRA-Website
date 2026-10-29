@@ -19,6 +19,10 @@ import { hrefDe } from '@/lib/routes'
 import type { CaseDetail } from '@/types/content'
 import { metadataDe } from '@/lib/seo'
 import { versoesDoItem } from '@/lib/versoes-do-item'
+import { DadosEstruturados } from '@/components/layout/dados-estruturados'
+import { estudoDeCaso } from '@/lib/jsonld'
+import { ORIGEM } from '@/lib/seo'
+import { trilhaDoItem } from '@/lib/trilha'
 
 const TEXTOS = {
   pt: {
@@ -156,6 +160,18 @@ export default async function CasePage({ params }: PageProps<'/[locale]/cases-de
        temar junto com o texto do corpo (Regra do Par). O claro segue `bg-white`
        — pixel intacto; só o escuro muda, e o gabarito escuro precisa regravar. */
     <main className="min-h-screen bg-white dark:bg-[#0e1015]">
+      {/* Invisível: o case como artigo da ATRA, e a trilha (D-80). */}
+      <DadosEstruturados
+        dados={[
+          estudoDeCaso({
+            seo: caso.seo,
+            url: `${ORIGEM}${hrefDe('cases', locale, caso.slug)}`,
+            publicadoEm: caso.publishedAt,
+            cliente: caso.client,
+          }),
+          trilhaDoItem('cases', locale, caso.slug, caso.title),
+        ]}
+      />
       {/* `data-heroi-azul`: o cabeçalho, transparente por cima, ganha fundo
           (variante `sobre-azul`, globals.css). */}
       <section data-heroi-azul className="relative min-h-[50vh] md:min-h-[60vh] bg-primary overflow-hidden flex items-center pt-32 md:pt-48 pb-16">

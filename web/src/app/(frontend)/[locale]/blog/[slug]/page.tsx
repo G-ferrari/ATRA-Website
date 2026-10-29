@@ -20,6 +20,7 @@ import { versoesDoItem } from '@/lib/versoes-do-item'
 import { artigo } from '@/lib/jsonld'
 import { ORIGEM } from '@/lib/seo'
 import { DadosEstruturados } from '@/components/layout/dados-estruturados'
+import { trilhaDoItem } from '@/lib/trilha'
 
 /* /blog/[slug] (MIG-044).
  *
@@ -39,6 +40,7 @@ const TEXTOS = {
   pt: {
     voltar: 'Voltar para o blog',
     prefixo: 'Artigo',
+    por: 'Por',
     semCorpoTitulo: 'Conteúdo em preparação',
     semCorpoTexto:
       'Este artigo ainda não tem texto publicado. Assim que estiver pronto, ele aparece aqui.',
@@ -46,12 +48,14 @@ const TEXTOS = {
   en: {
     voltar: 'Back to the blog',
     prefixo: 'Post',
+    por: 'By',
     semCorpoTitulo: 'Content in preparation',
     semCorpoTexto: 'This post has no published text yet. It shows up here as soon as it is ready.',
   },
   es: {
     voltar: 'Volver al blog',
     prefixo: 'Artículo',
+    por: 'Por',
     semCorpoTitulo: 'Contenido en preparación',
     semCorpoTexto: 'Este artículo aún no tiene texto publicado. Aparecerá aquí en cuanto esté listo.',
   },
@@ -138,6 +142,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
     seo: post.seo,
     url: `${ORIGEM}${hrefDe('blog', locale, post.slug)}`,
     publicadoEm: post.publishedAt,
+    autores: post.autores,
   })
   const data = new Intl.DateTimeFormat(FORMATO_DO_IDIOMA[locale], {
     day: 'numeric',
@@ -149,7 +154,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
   return (
     <main className="min-h-screen bg-white dark:bg-[#0e1015]">
       {/* Invisível: vai num `<script type="application/ld+json">`. */}
-      <DadosEstruturados dados={dadosDoArtigo} />
+      <DadosEstruturados dados={[dadosDoArtigo, trilhaDoItem('blog', locale, post.slug, post.title)]} />
       {/* `data-heroi-azul`: o cabeçalho, transparente por cima, ganha fundo
           (variante `sobre-azul`, globals.css). */}
       <section data-heroi-azul className="relative min-h-[50vh] md:min-h-[60vh] bg-primary overflow-hidden flex items-center pt-32 md:pt-48 pb-16">
@@ -181,6 +186,26 @@ export default async function PostPage({ params }: PageProps<'/[locale]/blog/[sl
               {post.title}
             </h1>
             <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl">{post.description}</p>
+            {post.autores.length > 0 && (
+              /* D-80: a assinatura que o Google pede "onde o leitor espera".
+                 Nome com link para o perfil, quando houver; cargo ao lado. */
+              <p className="mt-6 text-sm text-slate-300">
+                {t.por}{' '}
+                {post.autores.map((a, i) => (
+                  <span key={a.nome}>
+                    {i > 0 && ', '}
+                    {a.perfil ? (
+                      <a href={a.perfil} target="_blank" rel="noopener" className="font-semibold text-white hover:text-secondary transition-colors">
+                        {a.nome}
+                      </a>
+                    ) : (
+                      <span className="font-semibold text-white">{a.nome}</span>
+                    )}
+                    {a.cargo && <span>, {a.cargo}</span>}
+                  </span>
+                ))}
+              </p>
+            )}
           </div>
         </div>
       </section>

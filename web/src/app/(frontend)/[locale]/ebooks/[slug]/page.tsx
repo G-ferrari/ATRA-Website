@@ -7,6 +7,8 @@ import { isLocale, LOCALES, type Locale } from '@/lib/locales'
 import { buscarMaterial, slugsDeMaterial } from '@/lib/materiais'
 import { metadataDe } from '@/lib/seo'
 import { versoesDoItem } from '@/lib/versoes-do-item'
+import { DadosEstruturados } from '@/components/layout/dados-estruturados'
+import { trilhaDoItem } from '@/lib/trilha'
 
 /* /ebooks/[slug] (MIG-045). Rota **sem gabarito** — não existe no protótipo.
  * A estrutura vive em `PaginaDeMaterial`, compartilhada com a outra rota. */
@@ -82,6 +84,9 @@ export default async function MaterialPage({ params }: PageProps<'/[locale]/eboo
   if (!material) notFound()
 
   return (
-    <PaginaDeMaterial material={material} secao={SECAO} locale={locale} t={TEXTOS[locale]} />
+    <>
+      <DadosEstruturados dados={trilhaDoItem('ebooks', locale, slug, material.title)} />
+      <PaginaDeMaterial material={material} secao={SECAO} locale={locale} t={TEXTOS[locale]} />
+    </>
   )
 }

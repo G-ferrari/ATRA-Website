@@ -73,6 +73,9 @@ const PAGINA_DO_BLOCO: Record<string, string | null> = {
   // 21/10 (task 051): a miniatura saiu de uma página de teste local, com o mesmo
   // procedimento deste arquivo. Apontar para a primeira página que usar a seção.
   formSection: null,
+  // 29/10 (D-80): a miniatura saiu de uma página de teste local, como a do formulário.
+  // Apontar para a primeira página que usar a seção.
+  faqSection: null,
   jobsList: '/carreiras',
   // Os blocos das páginas-mestras (D-55): a lista com filtro, o carrossel e a chamada do blog.
   sectionListing: '/cases-de-sucesso',

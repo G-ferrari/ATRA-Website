@@ -572,6 +572,19 @@ Até a fila chegar em cada página, o `/es` a mostra em português.
 
 O espanhol pede um idioma novo no site inteiro, e é outra tarefa.
 
+## Perguntas frequentes e autores (GEO)
+
+**Perguntas frequentes.** Em qualquer página, solução ou segmento: **Adicionar
+Seção → Texto e cards → Perguntas frequentes**. Escreva a pergunta como o
+cliente perguntaria e responda em 2 a 4 frases, com a resposta já na primeira.
+Os buscadores com IA recortam esse trecho e o citam. Uma seção de perguntas por
+página.
+
+**Autores.** Cadastre quem escreve em **Conteúdo → Autores** (nome, cargo e o
+link do LinkedIn) e escolha no campo **Autores**, na lateral do artigo. A
+assinatura aparece no topo do artigo. Sem autor, o artigo segue assinado pela
+ATRA.
+
 ## O que mais é editável
 
 - **Depoimentos e clientes** — Catálogos. Depoimento sem foto mostra

@@ -129,7 +129,11 @@ export type PostDetail = PostCard & {
   /** Documento Lexical serializado; `null` enquanto ninguém escreveu. */
   body: unknown | null
   seo: Seo
+  /** D-80. Vazio: o artigo é assinado pela ATRA. */
+  autores: Autor[]
 }
+
+export type Autor = { nome: string; cargo: string | null; perfil: string | null }
 
 export type ResourceDetail = Resource & {
   /** Documento Lexical serializado; `null` enquanto ninguém escreveu. */
@@ -561,6 +565,10 @@ export type VagaDetalhe = Vaga & {
   /** MIG-102: vai para a Server Action da candidatura. */
   id: number
   seo: Seo
+  /** Para o JobPosting (D-80): data ISO, modelo de trabalho e a localidade crua. */
+  publicadaEm: string
+  modelo: 'remote' | 'hybrid' | 'onsite'
+  localidade: string | null
 }
 
 export type BlocoCtaContact = Base & {
@@ -680,6 +688,12 @@ export type BlocoAccordionSteps = Base &
     steps: { title: string; description: string }[]
   }
 
+export type BlocoFaqSection = Base &
+  ComCabecalho & {
+    tipo: 'faqSection'
+    items: { question: string; answer: string }[]
+  }
+
 /* Páginas-mestras (feature paginas-mestras, D-55). A parte automática de cada
  * seção, já resolvida pelo `resolverPaginaMestra` — o bloco não busca dado.
  * Uma variante por seção: cada lista desenha o seu cartão. */
@@ -762,6 +776,7 @@ export type Bloco =
   | BlocoBentoGrid
   | BlocoAudienceSplit
   | BlocoAccordionSteps
+  | BlocoFaqSection
   | BlocoPartnerHero
   | BlocoPartnerSplit
   | BlocoHomeHero

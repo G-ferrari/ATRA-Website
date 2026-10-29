@@ -2901,3 +2901,48 @@ aqui só existia no e-mail do site — que nunca chegou (D-78).
 **Consequências.** Leads de antes desta publicação não têm token nem página: o
 botão do e-mail da RD fica sem destino só para eles. O token aparece no log de
 acesso do Caddy, como qualquer caminho.
+
+## D-80 — GEO: o site se prepara para ser citado por assistentes de IA
+
+**Data:** 29/10/2026 · **Quem:** Leonardo, a pedido da Karen (marketing)
+
+**Contexto.** O diagnóstico de GEO de 29/10 deu nota 5 de 10: o site é legível
+para os robôs de IA (texto no HTML, robots liberado, sitemap com os três
+idiomas), mas dá poucos motivos para ser citado. A parte técnica do plano foi
+adiantada nesta branch, aguardando a aprovação da Karen para a fase 1. As
+fontes são as orientações oficiais: Google ("AI features and your website",
+"Creating helpful content", dados estruturados de Article, Site names,
+Breadcrumb e Job posting), Bing (seção GEO das diretrizes, AI Performance e
+IndexNow), OpenAI e Perplexity (robôs).
+
+**Decisão.**
+
+- **Dados estruturados que faltavam**: `WebSite` na inicial (nome do site),
+  `BreadcrumbList` nas páginas de item (artigo, case, solução, segmento, vaga,
+  webinar, e-book), case como `Article` com o cliente em `about`, segmento
+  como `Service` com o setor em `audience`, e vaga como `JobPosting` — só com
+  descrição, a mesma regra de página magra (D-08).
+- **Seção "Perguntas frequentes"** (`faqSection`) em páginas, soluções,
+  segmentos e parceiros, com `FAQPage`. Resposta em `<details>`: fica no HTML
+  mesmo fechada, ao contrário do acordeão de etapas. O Google tirou o destaque
+  de FAQ em maio de 2026; a marcação fica pelo texto, que o Bing pede direto.
+- **Autores** (`authors`): nome, cargo e LinkedIn, ligados ao artigo. Com
+  autor, o artigo assina e marca `Person`; sem, segue assinado pela ATRA, como
+  os 207 do WordPress. Sem página por autor (seria página magra).
+- **`/llms.txt`** a partir do catálogo da ATRA AI (D-60). É proposta, não
+  padrão, e o Google diz que não usa: entra por custar pouco.
+- **IndexNow**: publicar, alterar ou despublicar um item avisa o Bing.
+  Trancas: `INDEXNOW_KEY` no ambiente e a origem `www.atra.com.br`. A prova de
+  posse é `/indexnow-key.txt`.
+- **Medição dos robôs**: `infra/monitoramento/robos-de-ia.py` conta, no log de
+  acesso do Caddy, as visitas de GPTBot, OAI-SearchBot, PerplexityBot,
+  ClaudeBot, bingbot e outros. O GA4 não vê robô.
+
+**Fica de fora, por ser decisão de conteúdo (D-22):** escrever as perguntas
+frequentes, atribuir autores, reescrever os cases, o resumo da inicial (que é
+também o topo do `llms.txt`) e a volta do Glossário.
+
+**Consequências.** Bloco e collection novos pedem a migração antecipada
+(`20260927_215970_geo_faq_e_autores_antecipada`), a armadilha do CLAUDE.md.
+O cadastro no Bing Webmaster Tools é manual — runbook em
+`docs/05-operacao/geo.md`.
