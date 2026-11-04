@@ -185,21 +185,24 @@ function LinkDoTexto({ href, children }: ComponentProps<'a'>) {
 /** [UI_PARTNER:nome] — selo inline de parceiro, no meio da frase. */
 function SeloParceiro({ nome }: { nome: string }) {
   const n = nome.toLowerCase()
-  const icone = n.includes('google')
-    ? 'logos:google-cloud'
-    : n.includes('azure')
-      ? 'logos:microsoft-azure'
-      : n.includes('databricks')
-        ? 'logos:databricks'
-        : n.includes('snowflake')
-          ? 'logos:snowflake-icon'
-          : n.includes('ibm')
-            ? 'logos:ibm'
-            : n.includes('denodo')
-              ? 'fluent:layer-diagonal-24-filled'
-              : n.includes('atlan')
-                ? 'fluent:globe-search-24-filled'
-                : 'fluent:star-24-filled'
+  /* AWS entrou no catálogo de parceiros depois do legado, que não tinha ícone para ela. */
+  const icone = n.includes('aws')
+    ? 'logos:aws'
+    : n.includes('google')
+      ? 'logos:google-cloud'
+      : n.includes('azure')
+        ? 'logos:microsoft-azure'
+        : n.includes('databricks')
+          ? 'logos:databricks'
+          : n.includes('snowflake')
+            ? 'logos:snowflake-icon'
+            : n.includes('ibm')
+              ? 'logos:ibm'
+              : n.includes('denodo')
+                ? 'fluent:layer-diagonal-24-filled'
+                : n.includes('atlan')
+                  ? 'fluent:globe-search-24-filled'
+                  : 'fluent:star-24-filled'
   /* Marcas com logo colorido próprio ficam sem tint; as demais herdam o azul. */
   const temCorPropria = n.includes('google') || n.includes('azure') || n.includes('databricks')
 

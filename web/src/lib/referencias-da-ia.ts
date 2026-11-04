@@ -46,6 +46,18 @@ function caminhoInterno(url: string, origens: ReadonlySet<string>): string | nul
   }
 }
 
+/** Para comparar endereço de fora: host em minúscula, sem `www.`, sem query,
+ *  âncora nem barra no fim. `null` se não é http(s). */
+function externoNormalizado(url: string): string | null {
+  try {
+    const u = new URL(url)
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return null
+    return `${u.hostname.toLowerCase().replace(/^www\./, '')}${caminhoLimpo(u.pathname)}`.replace(/\/$/, '')
+  } catch {
+    return null
+  }
+}
+
 /** Host sem `www.`, de uma URL ou de um nome de host; `null` se não der. */
 function hostDe(origem: string): string | null {
   try {
@@ -59,12 +71,21 @@ export function resolverReferencias(
   texto: string,
   catalogo: readonly ConteudoRecomendavel[],
   origens: readonly (string | undefined)[] = [],
+  /* Os canais oficiais (redes do global `contact`): os únicos endereços de
+     fora que a resposta pode levar como link. Sai o endereço do CMS, não o
+     que o modelo escreveu. */
+  externos: readonly string[] = [],
 ): RespostaConferida {
   const porCodigo = new Map(catalogo.map((item) => [item.codigo.toUpperCase(), item]))
   const porEndereco = new Map(catalogo.map((item) => [caminhoLimpo(item.href), item]))
   /* Só soluções e segmentos: é o que a etiqueta antiga recomendava. */
   const porTitulo = new Map(
     catalogo.filter((item) => item.tipo === 'solucao' || item.tipo === 'segmento').map((item) => [normalizar(item.titulo), item]),
+  )
+  const permitidos = new Map(
+    externos
+      .map((url) => [externoNormalizado(url), url] as const)
+      .filter((par): par is [string, string] => Boolean(par[0])),
   )
   const hosts = new Set(origens.map((o) => (o ? hostDe(o) : null)).filter((h): h is string => Boolean(h)))
 
@@ -96,11 +117,14 @@ export function resolverReferencias(
   saida = saida.replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
 
   /* 4. Link em markdown: fica o que aponta para um item do catálogo, já com o
-        endereço do catálogo; qualquer outro perde o link e mantém o texto. */
+        endereço do catálogo, ou para um canal oficial; qualquer outro perde o
+        link e mantém o texto. */
   saida = saida.replace(/\[([^\]]+)\]\(\s*([^)\s]+)(?:\s+"[^"]*")?\s*\)/g, (_, rotulo: string, url: string) => {
     const caminho = caminhoInterno(url, hosts)
     const item = caminho ? porEndereco.get(caminho) : undefined
-    return item ? `[${rotulo}](${item.href})` : rotulo
+    if (item) return `[${rotulo}](${item.href})`
+    const externo = permitidos.get(externoNormalizado(url) ?? '')
+    return externo ? `[${rotulo}](${externo})` : rotulo
   })
 
   /* Etiqueta removida não pode deixar um buraco de três linhas no texto. */

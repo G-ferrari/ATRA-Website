@@ -8,8 +8,9 @@ import { geradorDeEmbeddings } from '@/lib/busca-da-ia/embeddings'
 import { sincronizarIndice } from '@/lib/busca-da-ia/indice'
 import { lerCatalogoDaIa } from '@/lib/catalogo-da-ia'
 import { MAX_TOKENS_DE_SAIDA, validarConversa, type Mensagem } from '@/lib/chat'
+import { lerContato } from '@/lib/contato'
 import { respostaForaDoAssunto } from '@/lib/fora-do-assunto'
-import { montarInstrucao } from '@/lib/instrucao-da-ia'
+import { canaisDoContato, montarInstrucao, type CanaisDaAtra } from '@/lib/instrucao-da-ia'
 import { ipDe } from '@/lib/ip'
 import { tiposLigados } from '@/lib/mappers/catalogo-da-ia'
 import { getPayload } from '@/lib/payload'
@@ -177,6 +178,15 @@ export async function POST(req: Request) {
     console.error('ATRA AI: catálogo indisponível:', e)
   }
 
+  /* 04/11 — as redes e o e-mail do rodapé, para "qual o LinkedIn da ATRA?".
+   * Mesma regra do catálogo: falha aqui não derruba a conversa. */
+  let canais: CanaisDaAtra | null = null
+  try {
+    canais = canaisDoContato(await lerContato())
+  } catch (e) {
+    console.error('ATRA AI: contato indisponível:', e)
+  }
+
   /* D-73 — a busca no conteúdo do site. O índice se refaz sozinho quando está
    * desatualizado (primeira conversa do processo, publicação no admin), sem
    * segurar esta resposta: ver `lib/busca-da-ia/agenda.ts`.
@@ -242,7 +252,7 @@ export async function POST(req: Request) {
        * a resposta parava no meio da frase (`finishReason: MAX_TOKENS`). Subir
        * o teto só empurra o corte; o raciocínio cresce junto. */
       config: {
-        systemInstruction: montarInstrucao(config?.systemPrompt ?? '', catalogo, locale, trechos),
+        systemInstruction: montarInstrucao(config?.systemPrompt ?? '', catalogo, locale, trechos, canais),
         /* ⚠️ 0,3, e não o 0,7 do protótipo (10/10, decisão do G-ferrari). No
          * primeiro teste com o catálogo os cartões saíram certos, mas o texto
          * livre enfeitava: disse como a ATRA cobra e deu a um case qualidades
@@ -258,10 +268,12 @@ export async function POST(req: Request) {
     /* A resposta sai conferida: cartão só de item que existe, link só para
        endereço do catálogo. O host de produção entra na lista porque o modelo
        às vezes escreve o endereço inteiro. */
-    const { texto, referencias } = resolverReferencias(resposta.text ?? '', catalogo, [
-      process.env.NEXT_PUBLIC_SITE_URL,
-      'atra.com.br',
-    ])
+    const { texto, referencias } = resolverReferencias(
+      resposta.text ?? '',
+      catalogo,
+      [process.env.NEXT_PUBLIC_SITE_URL, 'atra.com.br'],
+      canais?.redes.map((r) => r.url),
+    )
     return NextResponse.json({ text: texto, referencias })
   } catch (e) {
     console.error('ATRA AI:', e)

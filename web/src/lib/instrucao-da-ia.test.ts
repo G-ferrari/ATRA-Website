@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { ConteudoRecomendavel } from '@/types/content'
 
-import { montarInstrucao } from './instrucao-da-ia'
+import { canaisDoContato, montarInstrucao } from './instrucao-da-ia'
 
 const CATALOGO: ConteudoRecomendavel[] = [
   { codigo: 'A128', tipo: 'artigo', titulo: 'O que é Data Mesh', resumo: 'Resumo do artigo que não entra na lista.', href: '/blog/o-que-e-data-mesh' },
@@ -163,5 +163,53 @@ describe('montarInstrucao', () => {
     expect(semAdmin.startsWith('LIMITES DA CONVERSA')).toBe(true)
     expect(semAdmin).toContain('REGRAS PARA RECOMENDAR')
     expect(semAdmin).toContain('- S12 — Customer 360')
+  })
+  /* 04/11 — pedido da Karen: "o que a ATRA faz?" citava só o Google Cloud, o
+     exemplo do texto do admin, com nove parceiros na lista. */
+  it('a pergunta geral sobre parcerias cita todos os parceiros da lista, nos três idiomas', () => {
+    expect(instrucao).toContain('cite pelo nome todos os parceiros da seção "Parceiros de tecnologia"')
+    expect(instrucao).toContain('é só um exemplo')
+    expect(montarInstrucao('', CATALOGO, 'en')).toContain('name every partner in the "Technology partners" section')
+    expect(montarInstrucao('', CATALOGO, 'es')).toContain('nombre a todos los socios de la sección "Socios tecnológicos"')
+  })
+
+  /* 04/11 — "qual o LinkedIn da ATRA?" recebia "não encontrei": o rodapé não
+     entra na busca. */
+  describe('canais oficiais', () => {
+    const canais = canaisDoContato({
+      email: 'negocios@atra.com.br',
+      redes: {
+        linkedin: 'https://www.linkedin.com/company/atraoficial/',
+        instagram: ' ',
+        facebook: null,
+        youtube: 'https://www.youtube.com/@ATRA.oficial',
+      },
+    })
+
+    it('saem do contato na ordem do rodapé, sem rede vazia', () => {
+      expect(canais).toEqual({
+        email: 'negocios@atra.com.br',
+        redes: [
+          { rede: 'LinkedIn', url: 'https://www.linkedin.com/company/atraoficial/' },
+          { rede: 'YouTube', url: 'https://www.youtube.com/@ATRA.oficial' },
+        ],
+      })
+    })
+
+    it('entram depois dos limites e antes da lista, como a única exceção à regra dos endereços', () => {
+      const comCanais = montarInstrucao('Você é um consultor da ATRA.', CATALOGO, 'pt', [], canais)
+      const bloco = comCanais.indexOf('CANAIS OFICIAIS DA ATRA')
+      expect(bloco).toBeGreaterThan(comCanais.indexOf('LIMITES DA CONVERSA'))
+      expect(bloco).toBeLessThan(comCanais.indexOf('CONTEÚDO DO SITE DA ATRA (lista'))
+      expect(comCanais).toContain('- LinkedIn: https://www.linkedin.com/company/atraoficial/')
+      expect(comCanais).toContain('- E-mail: negocios@atra.com.br')
+      expect(comCanais).toContain('É a única exceção à regra de não escrever endereços')
+      expect(montarInstrucao('', [], 'en', [], canais)).toContain("ATRA'S OFFICIAL CHANNELS")
+    })
+
+    it('sem canais, o bloco não aparece', () => {
+      expect(instrucao).not.toContain('CANAIS OFICIAIS')
+      expect(montarInstrucao('', CATALOGO, 'pt', [], { redes: [], email: null })).not.toContain('CANAIS OFICIAIS')
+    })
   })
 })

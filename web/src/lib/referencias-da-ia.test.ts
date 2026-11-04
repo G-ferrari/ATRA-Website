@@ -93,6 +93,16 @@ describe('link escrito pelo modelo', () => {
     expect(resolverReferencias('[x](//outro.com/contato)', CATALOGO, ORIGENS).texto).toBe('x')
   })
 
+  /* 04/11 — as redes do rodapé são os únicos endereços de fora que passam, e
+     com o endereço do CMS, não com a variação que o modelo escreveu. */
+  it('canal oficial fica como link, na forma do CMS; outro perfil na mesma rede, não', () => {
+    const redes = ['https://www.linkedin.com/company/atraoficial/']
+    expect(resolverReferencias('[LinkedIn da ATRA](https://linkedin.com/company/atraoficial)', CATALOGO, ORIGENS, redes).texto).toBe(
+      '[LinkedIn da ATRA](https://www.linkedin.com/company/atraoficial/)',
+    )
+    expect(resolverReferencias('[LinkedIn](https://www.linkedin.com/company/outra/)', CATALOGO, ORIGENS, redes).texto).toBe('LinkedIn')
+  })
+
   it('esquema que não é http não passa', () => {
     expect(resolverReferencias('[clique](javascript:alert(1))', CATALOGO).texto).not.toContain('javascript:')
     expect(resolverReferencias('[e-mail](mailto:a@b.com)', CATALOGO).texto).toBe('e-mail')
