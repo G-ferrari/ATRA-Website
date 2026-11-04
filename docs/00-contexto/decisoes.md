@@ -2901,3 +2901,32 @@ aqui só existia no e-mail do site — que nunca chegou (D-78).
 **Consequências.** Leads de antes desta publicação não têm token nem página: o
 botão do e-mail da RD fica sem destino só para eles. O token aparece no log de
 acesso do Caddy, como qualquer caminho.
+
+## D-81 — A ATRA AI cita todos os parceiros e responde pelas redes do rodapé
+
+**Contexto.** Em 04/11 a Karen testou o chat em produção. "O que a ATRA faz?"
+respondia com "parcerias sólidas com grandes players, como o Google Cloud" e
+parava ali, com os nove parceiros publicados (todos com página) na lista que o
+modelo recebe. O texto do admin apresenta a ATRA como "parceira do Google
+Cloud" e usa o Google como exemplo da etiqueta de parceiro, e o modelo tomava o
+exemplo pela resposta. E "qual o LinkedIn da ATRA?" recebia "não encontrei":
+as redes estão no rodapé de toda página, mas o rodapé vem do global `contact`,
+que não é documento do catálogo nem entra na busca (D-73).
+
+**Decisão.**
+
+- **Regra 8.1** em `lib/instrucao-da-ia.ts` (pt, en, es): pergunta geral sobre
+  parcerias cita pelo nome todos os parceiros da seção de parceiros da lista;
+  pergunta específica, os ligados ao assunto; exemplo do texto do admin é só
+  exemplo. O texto do admin não foi editado (D-22).
+- **Canais oficiais**: as redes (LinkedIn, Instagram, Facebook, YouTube) e o
+  e-mail do global `contact` entram na instrução, depois dos limites. Rede vai
+  como link em markdown, e é a **única** exceção à regra de não escrever
+  endereço: `resolverReferencias` deixa passar link só para esses endereços, e
+  troca o que o modelo escreveu pelo endereço do CMS.
+- O porteiro passa a contar redes sociais e contato da ATRA como assunto do
+  site.
+
+**Consequências.** Mudou a rede no admin, muda a resposta na conversa seguinte,
+sem reindexar. A resposta sobre a ATRA fica mais longa quando cita os nove
+parceiros.

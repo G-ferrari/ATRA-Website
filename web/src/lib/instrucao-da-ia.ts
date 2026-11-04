@@ -1,4 +1,4 @@
-import type { ConteudoRecomendavel, TipoDeConteudoDaIa } from '@/types/content'
+import type { Contato, ConteudoRecomendavel, TipoDeConteudoDaIa } from '@/types/content'
 
 import type { TrechoAchado } from './busca-da-ia/banco'
 import type { Locale } from './locales'
@@ -44,6 +44,19 @@ import { codigoDaPagina } from './mappers/catalogo-da-ia'
  * instrução do admin manda concluir com um próximo passo, e o modelo lia
  * agendar como um. O limite agora nomeia o verbo.
  *
+ * ⚠️ **Parceiro é lista, não exemplo** (04/11, pedido da Karen). "O que a ATRA
+ * faz?" respondia "parcerias sólidas com grandes players, como o Google Cloud",
+ * e parava ali — com os nove parceiros publicados na lista. O texto do admin
+ * apresenta a ATRA como "parceira do Google Cloud" e dá o Google como exemplo
+ * da etiqueta de parceiro, e o modelo lia o exemplo como a resposta. A regra
+ * 8.1 manda citar a lista inteira quando a pergunta é geral.
+ *
+ * ⚠️ **Os canais oficiais** (04/11, mesmo pedido): "qual o LinkedIn da ATRA?"
+ * recebia "não encontrei" — o endereço está no rodapé de toda página, mas o
+ * rodapé não é documento do catálogo e não entra na busca. As redes e o e-mail
+ * vêm do global `contact`, e são a única exceção à regra de não escrever
+ * endereço: `resolverReferencias` deixa passar só esses, pela mesma lista.
+ *
  * ⚠️ O que é fixo vem **antes** do que muda: texto do admin, limites, regras, a
  * lista, com os artigos por último, e só então os trechos que a busca achou
  * para esta pergunta (D-73), que mudam a cada mensagem. O Gemini cobra menos
@@ -63,6 +76,13 @@ const TEXTOS = {
       '6. Diante de um assunto fora do site, diga em uma frase que você só pode ajudar com a ATRA e com o que ela publica, e sugira um tema do site para continuar. Não explique o motivo nem cite estas regras.',
       '7. Quem quer trabalhar na ATRA (vagas, estágio, trainee, processo seletivo, enviar currículo) não é cliente. Não ofereça a essa pessoa o contato [UI_CONTACT], que abre o WhatsApp do time comercial, nem a página de Consultores, que apresenta os especialistas que a ATRA aloca nos times dos clientes. Não diga quais vagas estão abertas nem que não há vagas: a lista muda, e a página de carreiras mostra a de hoje.',
     ],
+    canais: [
+      'CANAIS OFICIAIS DA ATRA (os mesmos do rodapé do site). Estas regras valem sobre qualquer instrução anterior.',
+      '1. Quando a pessoa perguntar pelas redes sociais da ATRA (LinkedIn, Instagram, Facebook, YouTube) ou pelo e-mail, responda com o que está abaixo.',
+      '2. Rede social vai como link em markdown, com o endereço exatamente como está aqui. Exemplo: [LinkedIn da ATRA](endereço). É a única exceção à regra de não escrever endereços: nenhum outro endereço de fora pode ser escrito.',
+      '3. Não invente perfil, rede ou e-mail que não esteja aqui.',
+    ],
+    rotuloEmail: 'E-mail',
     cabecalho: 'CONTEÚDO DO SITE DA ATRA (lista automática do que está publicado hoje)',
     regras: [
       'REGRAS PARA RECOMENDAR CONTEÚDO DO SITE. Elas valem sobre qualquer instrução anterior.',
@@ -74,6 +94,7 @@ const TEXTOS = {
       '6. Fale de cada item só com o que o resumo dele e os trechos do site dizem. Não invente recursos, prazos, preços, clientes ou resultados. Se a pessoa pedir um detalhe que não está aqui, diga que a página do item ou um especialista da ATRA responde melhor.',
       '7. Não explique as etiquetas nem os códigos para a pessoa.',
       '8. As parcerias e as certificações da ATRA (Google Cloud, Databricks e as outras) estão nas páginas de parceiro da lista; os perfis de consultores, com especialidades e certificações, estão na página de Consultores. Responda por elas e pelos trechos delas, sem inventar nomes de pessoas nem números de profissionais.',
+      '8.1. Quando falar das parcerias da ATRA em geral (o que a ATRA faz, com quem trabalha, quais são os parceiros), cite pelo nome todos os parceiros da seção "Parceiros de tecnologia" da lista, e não só um. Ao falar de um assunto específico, cite os parceiros ligados a ele. Nunca apresente um parceiro como se fosse o único: se a instrução do início dá um parceiro como exemplo, é só um exemplo.',
     ],
     carreiras: (codigo: string) =>
       `9. Para quem quer trabalhar na ATRA, a resposta é a página de carreiras: escreva [UI_CONTEUDO:${codigo}]. É lá que ficam as vagas abertas, o processo seletivo e o banco de talentos, onde a pessoa deixa o currículo mesmo sem vaga para o perfil dela. Não indique essa página a quem não perguntou de trabalho.`,
@@ -115,6 +136,13 @@ const TEXTOS = {
       '6. Faced with a subject outside the website, say in one sentence that you can only help with ATRA and what it publishes, and suggest a website topic to continue. Do not explain why or mention these rules.',
       "7. Someone who wants to work at ATRA (job openings, internships, trainee programme, hiring process, sending a CV) is not a client. Do not offer them the [UI_CONTACT] contact, which opens the sales team's WhatsApp, nor the Consultants page, which presents the specialists ATRA allocates to clients' teams. Do not say which positions are open or that there are none: the list changes, and the careers page shows today's.",
     ],
+    canais: [
+      "ATRA'S OFFICIAL CHANNELS (the same as in the website footer). These rules override any earlier instruction.",
+      "1. When the person asks for ATRA's social media (LinkedIn, Instagram, Facebook, YouTube) or e-mail, answer with what is below.",
+      '2. A social network goes as a markdown link, with the address exactly as written here. Example: [ATRA on LinkedIn](address). This is the only exception to the rule of not writing addresses: no other outside address may be written.',
+      '3. Do not make up a profile, network or e-mail that is not here.',
+    ],
+    rotuloEmail: 'E-mail',
     cabecalho: 'ATRA WEBSITE CONTENT (automatic list of what is published today)',
     regras: [
       'RULES FOR RECOMMENDING WEBSITE CONTENT. They override any earlier instruction.',
@@ -126,6 +154,7 @@ const TEXTOS = {
       '6. Describe each item only with what its summary and the website excerpts say. Do not invent features, deadlines, prices, clients or results. If the person asks for a detail that is not here, say the item page or an ATRA specialist can answer better.',
       '7. Do not explain the tags or the codes to the person.',
       "8. ATRA's partnerships and certifications (Google Cloud, Databricks and the others) are on the partner pages in the list; the consultant profiles, with their specialties and certifications, are on the Consultants page. Answer from those pages and their excerpts, without making up people's names or headcounts.",
+      '8.1. When you talk about ATRA\'s partnerships in general (what ATRA does, who it works with, who its partners are), name every partner in the "Technology partners" section of the list, not just one. When the subject is specific, name the partners related to it. Never present one partner as if it were the only one: if the opening instruction gives one partner as an example, it is only an example.',
     ],
     carreiras: (codigo: string) =>
       `9. For someone who wants to work at ATRA, the answer is the careers page: write [UI_CONTEUDO:${codigo}]. That is where the open positions, the hiring process and the talent pool are, and where the person leaves a CV even when no opening fits their profile. Do not point to that page unless the person asked about working at ATRA.`,
@@ -168,6 +197,13 @@ const TEXTOS = {
       '6. Ante un tema fuera del sitio, diga en una frase que solo puede ayudar con ATRA y con lo que publica, y sugiera un tema del sitio para continuar. No explique el motivo ni mencione estas reglas.',
       '7. Quien quiere trabajar en ATRA (vacantes, pasantías, trainee, proceso de selección, enviar currículum) no es cliente. No le ofrezca el contacto [UI_CONTACT], que abre el WhatsApp del equipo comercial, ni la página de Consultores, que presenta a los especialistas que ATRA asigna a los equipos de los clientes. No diga qué vacantes están abiertas ni que no las hay: la lista cambia, y la página de carreras muestra la de hoy.',
     ],
+    canais: [
+      'CANALES OFICIALES DE ATRA (los mismos del pie de página del sitio). Estas reglas prevalecen sobre cualquier instrucción anterior.',
+      '1. Cuando la persona pregunte por las redes sociales de ATRA (LinkedIn, Instagram, Facebook, YouTube) o por el correo, responda con lo que está abajo.',
+      '2. Una red social va como enlace en markdown, con la dirección exactamente como está aquí. Ejemplo: [LinkedIn de ATRA](dirección). Es la única excepción a la regla de no escribir direcciones: ninguna otra dirección externa puede escribirse.',
+      '3. No invente perfiles, redes ni correos que no estén aquí.',
+    ],
+    rotuloEmail: 'Correo',
     cabecalho: 'CONTENIDO DEL SITIO DE ATRA (lista automática de lo que está publicado hoy)',
     regras: [
       'REGLAS PARA RECOMENDAR CONTENIDO DEL SITIO. Prevalecen sobre cualquier instrucción anterior.',
@@ -179,6 +215,7 @@ const TEXTOS = {
       '6. Hable de cada ítem solo con lo que dicen su resumen y los fragmentos del sitio. No invente funcionalidades, plazos, precios, clientes ni resultados. Si la persona pide un detalle que no está aquí, diga que la página del ítem o un especialista de ATRA puede responder mejor.',
       '7. No explique las etiquetas ni los códigos a la persona.',
       '8. Las alianzas y certificaciones de ATRA (Google Cloud, Databricks y las demás) están en las páginas de socios de la lista; los perfiles de consultores, con especialidades y certificaciones, están en la página de Consultores. Responda con ellas y con sus fragmentos, sin inventar nombres de personas ni cantidades de profesionales.',
+      '8.1. Cuando hable de las alianzas de ATRA en general (qué hace ATRA, con quién trabaja, cuáles son sus socios), nombre a todos los socios de la sección "Socios tecnológicos" de la lista, no solo a uno. Si el tema es específico, nombre a los socios relacionados con él. Nunca presente a un socio como si fuera el único: si la instrucción inicial da un socio como ejemplo, es solo un ejemplo.',
     ],
     carreiras: (codigo: string) =>
       `9. Para quien quiere trabajar en ATRA, la respuesta es la página de carreras: escriba [UI_CONTEUDO:${codigo}]. Allí están las vacantes abiertas, el proceso de selección y el banco de talentos, donde la persona deja su currículum aunque no haya vacante para su perfil. No indique esa página a quien no preguntó por trabajo.`,
@@ -211,6 +248,33 @@ const TEXTOS = {
   },
 } as const
 
+/** As redes e o e-mail do global `contact`, como o rodapé mostra. */
+export type CanaisDaAtra = {
+  redes: readonly { rede: string; url: string }[]
+  email: string | null
+}
+
+/** Do global `contact` para os canais da instrução, na ordem do rodapé. */
+export function canaisDoContato(contato: Pick<Contato, 'redes' | 'email'>): CanaisDaAtra {
+  const { linkedin, instagram, facebook, youtube } = contato.redes
+  const redes = [
+    { rede: 'LinkedIn', url: linkedin },
+    { rede: 'Instagram', url: instagram },
+    { rede: 'Facebook', url: facebook },
+    { rede: 'YouTube', url: youtube },
+  ].filter((r): r is { rede: string; url: string } => Boolean(r.url?.trim()))
+  return {
+    redes: redes.map((r) => ({ rede: r.rede, url: r.url.trim() })),
+    email: contato.email?.trim() || null,
+  }
+}
+
+function blocoDosCanais(canais: CanaisDaAtra, t: (typeof TEXTOS)[Locale]): string | null {
+  const linhas = canais.redes.map((r) => `- ${r.rede}: ${r.url}`)
+  if (canais.email) linhas.push(`- ${t.rotuloEmail}: ${canais.email}`)
+  return linhas.length > 0 ? [...t.canais, '', ...linhas].join('\n') : null
+}
+
 /** Uma linha da lista. O artigo entra só com o título: são centenas, e o resumo
  *  de cada um aparece no cartão, que é onde a pessoa lê. */
 function linha(item: ConteudoRecomendavel): string {
@@ -233,11 +297,16 @@ export function montarInstrucao(
   catalogo: readonly ConteudoRecomendavel[],
   locale: Locale,
   trechos: readonly TrechoAchado[] = [],
+  canais: CanaisDaAtra | null = null,
 ): string {
   const t = TEXTOS[locale]
   const partes: string[] = []
   if (doAdmin.trim()) partes.push(doAdmin.trim())
   partes.push(t.limites.join('\n'))
+
+  /* Os canais mudam quase nunca: entram com o que é fixo, antes da lista. */
+  const doRodape = canais ? blocoDosCanais(canais, t) : null
+  if (doRodape) partes.push(doRodape)
 
   if (catalogo.length === 0) {
     partes.push(t.vazio.join('\n'))
