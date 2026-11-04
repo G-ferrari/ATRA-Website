@@ -139,6 +139,7 @@ import * as migration_20261027_200000_carga_inicial_do_ingles from './20261027_2
 import * as migration_20261028_144743_espanhol from './20261028_144743_espanhol';
 import * as migration_20261028_150000_carga_inicial_do_espanhol from './20261028_150000_carga_inicial_do_espanhol';
 import * as migration_20261028_195814_resultado_do_diagnostico from './20261028_195814_resultado_do_diagnostico';
+import * as migration_20261104_150000_retomar_carga_do_espanhol from './20261104_150000_retomar_carga_do_espanhol';
 
 export const migrations = [
   {
@@ -845,5 +846,10 @@ export const migrations = [
     up: migration_20261028_195814_resultado_do_diagnostico.up,
     down: migration_20261028_195814_resultado_do_diagnostico.down,
     name: '20261028_195814_resultado_do_diagnostico'
+  },
+  {
+    up: migration_20261104_150000_retomar_carga_do_espanhol.up,
+    down: migration_20261104_150000_retomar_carga_do_espanhol.down,
+    name: '20261104_150000_retomar_carga_do_espanhol',
   },
 ];
