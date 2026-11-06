@@ -6446,7 +6446,7 @@ export interface Client {
   name: string;
   logo: number | Media;
   /**
-   * For files where the mark sits small in the canvas and reads smaller than its neighbours.
+   * Exception only. The site already evens out the logos by the file proportions; tick it only if the mark still reads smaller than its neighbours (a file with padding around it, say).
    */
   enlarge?: boolean | null;
   order?: number | null;

@@ -44,12 +44,18 @@ export function ContatoComFoto({ bloco, locale }: { bloco: BlocoCtaContact; loca
       <TechCornerBraces color="orange" position="bottom-left" />
 
       <div className="container mx-auto max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-2 gap-8 items-stretch relative z-10">
-          <div className="flex flex-col text-left py-8 md:py-12 pr-0 lg:pr-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display text-text-main dark:text-white mb-8 leading-tight">
-              {bloco.title}
-            </h2>
+        {/* Ajustes do marketing (06/11, aprovados pela Karen): o título ocupa a
+            primeira linha da grade e o cartão de contatos fica na segunda, ao
+            lado do subtítulo e do formulário. Assim o topo do cartão encontra o
+            "Comece seu projeto de dados" e a base encontra o botão Enviar, e o
+            cartão tem a altura do formulário — antes ele ia do título ao fim
+            da seção, com espaço vazio entre os contatos. */}
+        <div className="grid lg:grid-cols-2 lg:grid-rows-[auto_1fr] gap-x-8 items-stretch relative z-10 py-8 md:py-12">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-display text-text-main dark:text-white mb-8 leading-tight text-left lg:pr-12">
+            {bloco.title}
+          </h2>
 
+          <div className="flex flex-col text-left lg:col-start-1 lg:row-start-2 pr-0 lg:pr-12">
             {bloco.subtitle && (
               <h3 className="text-xl md:text-2xl font-display text-text-main dark:text-white mb-6">
                 {bloco.subtitle}
@@ -100,7 +106,9 @@ export function ContatoComFoto({ bloco, locale }: { bloco: BlocoCtaContact; loca
 
           {/* Painel de contatos compartilhado (fonte única) — ver
               painel-de-contatos.tsx. */}
-          <PainelDeContatos contato={contato} locale={locale} />
+          <div className="mt-12 lg:mt-0 lg:col-start-2 lg:row-start-2">
+            <PainelDeContatos contato={contato} locale={locale} compacto />
+          </div>
         </div>
       </div>
     </section>

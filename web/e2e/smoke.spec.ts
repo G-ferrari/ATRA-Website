@@ -812,28 +812,33 @@ test.describe('app novo', () => {
     const CATEGORIAS = ['Soluções', 'Segmentos', 'Consultores', 'Insights', 'Parceiros', 'Carreiras', 'Sobre']
 
     /* As categorias e o rótulo do rodapé têm o mesmo texto, então todo locator
-       aqui é escopado no `<nav>`. A fileira é `hidden md:flex`: no celular a
+       aqui é escopado no `<nav>`. A fileira é `hidden lg:flex`: no celular a
        navegação é a gaveta, testada por último. */
     /* ⚠️ Não dá para usar `isMobile`: os três projetos rodam com o mesmo
        `devices['Desktop Chrome']` e só trocam o viewport, então `isMobile` é
        falso nos três. A largura é o que separa a fileira da gaveta. */
-    const noCelular = (page: import('@playwright/test').Page) => (page.viewportSize()?.width ?? 0) < 768
+    /* Abaixo de 1024px é a gaveta (o `lg` do cabeçalho): desde 06/11 o tablet
+       também a usa, porque as 7 categorias sempre à mostra não cabem ali. */
+    const noCelular = (page: import('@playwright/test').Page) => (page.viewportSize()?.width ?? 0) < 1024
 
     /* A fileira do desktop e a gaveta do celular coexistem no DOM — uma é
        escondida por CSS — então todo rótulo aparece duas vezes e um locator por
        texto vira violação de strict mode. Por isso cada teste entra pela região
        que lhe interessa. */
+    /* Desde 06/11 não há botão no desktop: as categorias ficam à mostra e o
+       painel abre no hover. "Abrir menu" é só da gaveta. */
     const abrirMenu = async (page: import('@playwright/test').Page) => {
       await page.goto(`${NEXT_URL}/atra-na-midia`)
-      await page.getByRole('button', { name: 'Abrir menu' }).click()
-      return page.getByTestId('menu-categorias')
+      const fileira = page.getByTestId('menu-categorias')
+      await expect(fileira).toBeVisible()
+      return fileira
     }
 
     /* Passa o ponteiro numa categoria e espera o painel dela, **reabrindo o
      * menu quando ele fechou no meio do caminho**.
      *
      * ⚠️ Só repetir o hover não basta, e foi o que deixou estes dois testes
-     * instáveis: depois do clique em "Abrir menu" o ponteiro fica sobre outra
+     * instáveis: com o ponteiro já sobre outra
      * categoria, o `onMouseEnter` dela troca o painel, e a remontagem do
      * `AnimatePresence` pode tirar a barra de debaixo do ponteiro — aí o
      * `onMouseLeave` fecha o menu. Fechado o menu, a fileira some, e todas as
@@ -860,16 +865,14 @@ test.describe('app novo', () => {
     }
 
     test('abre com as 7 categorias e o painel de soluções', async ({ page }) => {
-      test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
+      test.skip(noCelular(page), 'a fileira de categorias é `lg:flex`')
       const fileira = await abrirMenu(page)
 
       for (const c of CATEGORIAS) {
         await expect(fileira.getByRole('link', { name: c, exact: true })).toBeVisible()
       }
 
-      /* Hover explícito: o painel abre em Soluções, mas depois do clique o
-         ponteiro fica no meio da barra — em cima de outra categoria — e o
-         `onMouseEnter` troca o painel, como no legado. */
+      /* O painel só existe depois do hover numa categoria. */
       const painel = page.getByRole('navigation')
       await passarNaCategoria(page, 'Soluções', () =>
         expect(painel.getByRole('button', { name: 'IA & Analytics Avançada' })).toBeVisible({ timeout: 2000 }),
@@ -888,7 +891,7 @@ test.describe('app novo', () => {
        parceiros para onde ir. A distinção some fácil: as três abrem painel, e
        por dois anos as três apontaram para `#` no protótipo. */
     test('a categoria Soluções leva ao índice, e Parceiros continua sem destino', async ({ page, request }) => {
-      test.skip(noCelular(page), 'a fileira de categorias é `md:flex`')
+      test.skip(noCelular(page), 'a fileira de categorias é `lg:flex`')
       const fileira = await abrirMenu(page)
 
       await expect(fileira.getByRole('link', { name: 'Soluções', exact: true })).toHaveAttribute('href', '/solucoes')
@@ -973,7 +976,7 @@ test.describe('app novo', () => {
     })
 
     test('no celular vira gaveta, e só as categorias com lista expandem', async ({ page }) => {
-      test.skip(!noCelular(page), 'a gaveta é `md:hidden`')
+      test.skip(!noCelular(page), 'a gaveta é `lg:hidden`')
       await page.goto(`${NEXT_URL}/atra-na-midia`)
       await page.getByRole('button', { name: 'Abrir menu' }).click()
 
@@ -997,7 +1000,7 @@ test.describe('app novo', () => {
        lista vazia. O teste acima só abria Soluções. Aqui toda categoria com
        seta precisa abrir com ao menos um link. */
     test('na gaveta, toda categoria expansível abre com itens', async ({ page }) => {
-      test.skip(!noCelular(page), 'a gaveta é `md:hidden`')
+      test.skip(!noCelular(page), 'a gaveta é `lg:hidden`')
       await page.goto(`${NEXT_URL}/atra-na-midia`)
       await page.getByRole('button', { name: 'Abrir menu' }).click()
 
