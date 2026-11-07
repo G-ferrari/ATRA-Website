@@ -116,12 +116,15 @@ por projeto. As políticas de alerta passam a ser cobradas em setembro de 2027
 
 ## O `uptime.yml` do GitHub
 
-Continua agendado até a checagem do Google existir **e** o teste acima chegar
-por e-mail: tirar antes deixaria o site sem vigilância nenhuma. Feito o teste,
-abrir um PR que remove o `schedule` do `.github/workflows/uptime.yml` e mantém o
-`workflow_dispatch`, útil para conferir os três alvos à mão. A partir daí uma
-queda deixa de abrir issue com a etiqueta `uptime`: o registro passa a ser o
-histórico de incidentes do Monitoring.
+**Sem agendamento desde 26/10/2026.** A checagem do Google de
+`www.atra.com.br` existe e o teste acima chegou por e-mail, nos dois sentidos
+(fora e voltou); então o `schedule` saiu e ficou só o `workflow_dispatch`, útil
+para conferir os três alvos e o certificado à mão (Actions → Uptime → *Run
+workflow*). Uma queda não abre mais issue com a etiqueta `uptime`: o registro é
+o histórico de incidentes do Monitoring.
+
+⚠️ Antes de tirar a checagem do Google (`--remover`), volte o `schedule`: sem
+ele, nada mais vigia o site.
 
 ## Ajustes
 
