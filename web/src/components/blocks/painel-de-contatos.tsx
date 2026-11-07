@@ -3,6 +3,7 @@ import Image from 'next/image'
 import type { ReactNode } from 'react'
 
 import type { Locale } from '@/lib/locales'
+import { cn } from '@/lib/utils'
 import type { Contato } from '@/types/content'
 
 /* Painel de contatos (foto + e-mail + endereço + WhatsApp + redes).
@@ -63,9 +64,21 @@ function Redes({ redes }: { redes: Contato['redes'] }) {
 
 /** Uma linha da lista: ícone, rótulo e o contato. Cresce para dividir a altura
  *  do cartão com as outras — é o que preenche o espaço. */
-function Linha({ icone, cor, rotulo, children }: { icone: ReactNode; cor: string; rotulo: ReactNode; children: ReactNode }) {
+function Linha({
+  icone,
+  cor,
+  rotulo,
+  children,
+  compacto,
+}: {
+  icone: ReactNode
+  cor: string
+  rotulo: ReactNode
+  children: ReactNode
+  compacto: boolean
+}) {
   return (
-    <li className="flex-1 flex items-center gap-4 py-5">
+    <li className={cn('flex-1 flex items-center gap-4', compacto ? 'py-3' : 'py-5')}>
       <span className={`w-11 h-11 rounded-[6px] flex items-center justify-center shrink-0 ${cor}`} aria-hidden>
         {icone}
       </span>
@@ -104,11 +117,17 @@ const TEXTOS = {
 export function PainelDeContatos({
   contato,
   locale,
+  compacto = false,
 }: {
   /* `null` só no preview de um bloco solto no admin — o cartão fica só com o
      e-mail. */
   contato: Contato | null
   locale: Locale
+  /** Sem a altura mínima e com as linhas juntas: a altura vem de quem envolve
+   *  o cartão. É a forma da home desde 06/11 (ajustes do marketing, aprovados
+   *  pela Karen), em que o cartão acompanha o formulário ao lado. /contato e
+   *  consultores seguem com a forma alta. */
+  compacto?: boolean
 }) {
   const t = TEXTOS[locale]
   const neutro = 'bg-primary/10 text-primary'
@@ -116,7 +135,12 @@ export function PainelDeContatos({
   const foto = contato?.foto
 
   return (
-    <div className="relative rounded-[6px] overflow-hidden flex flex-col p-8 sm:p-10 min-h-[500px] shadow-xl dark:shadow-2xl bg-surface-1 dark:bg-[#12151c]">
+    <div
+      className={cn(
+        'relative rounded-[6px] overflow-hidden flex flex-col shadow-xl dark:shadow-2xl bg-surface-1 dark:bg-[#12151c]',
+        compacto ? 'h-full p-6 sm:p-8' : 'p-8 sm:p-10 min-h-[500px]',
+      )}
+    >
       {/* A foto fica atrás, escurecida pelas duas camadas abaixo: é fundo, e o
           texto da lista passa por cima dela. Sem foto no global, o cartão fica
           só com o fundo escuro. */}
@@ -137,7 +161,7 @@ export function PainelDeContatos({
       </h3>
 
       <ul className="relative z-10 flex-1 flex flex-col divide-y divide-border-main/60 dark:divide-white/10">
-        <Linha icone={<Mail size={20} />} cor={neutro} rotulo={t.email}>
+        <Linha compacto={compacto} icone={<Mail size={20} />} cor={neutro} rotulo={t.email}>
           <a href={`mailto:${EMAIL}`} className={valor}>
             {EMAIL}
           </a>
@@ -145,6 +169,7 @@ export function PainelDeContatos({
 
         {contato && (
           <Linha
+            compacto={compacto}
             icone={<MessageCircle size={20} />}
             cor="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
             rotulo={
@@ -161,13 +186,13 @@ export function PainelDeContatos({
         )}
 
         {contato?.endereco && (
-          <Linha icone={<MapPin size={20} />} cor={neutro} rotulo={t.endereco}>
+          <Linha compacto={compacto} icone={<MapPin size={20} />} cor={neutro} rotulo={t.endereco}>
             <p className="text-sm text-text-main dark:text-white/90 whitespace-pre-line">{contato.endereco}</p>
           </Linha>
         )}
 
         {contato && (
-          <Linha icone={<Share2 size={20} />} cor={neutro} rotulo={t.redes}>
+          <Linha compacto={compacto} icone={<Share2 size={20} />} cor={neutro} rotulo={t.redes}>
             <Redes redes={contato.redes} />
           </Linha>
         )}

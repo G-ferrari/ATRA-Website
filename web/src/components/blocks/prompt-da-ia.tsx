@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 import { TechHorizontalLine, TechVerticalLine } from '@/components/ui'
+import { larguraOticaCss } from '@/lib/logo'
 import { hrefDe } from '@/lib/routes'
 import type { Locale } from '@/lib/locales'
 import type { BlocoHomeHero } from '@/types/content'
@@ -152,18 +153,26 @@ export function PromptDaIa({
                       {esteira.map((c, i) => (
                         <div
                           key={`${c.name}-${i}`}
-                          className="flex items-center justify-center bg-[#f8f8f8] dark:bg-[#f8f8f8] px-4 py-2.5 rounded-[6px] h-14 w-[156px] mx-3.5 shrink-0 shadow-xs hover:scale-105 transition-transform duration-200 cursor-default"
+                          className="flex items-center justify-center bg-[#f8f8f8] dark:bg-[#f8f8f8] px-5 py-3 rounded-[6px] h-[72px] w-[200px] mx-3.5 shrink-0 shadow-xs hover:scale-105 transition-transform duration-200 cursor-default"
                         >
-                          {/* A caixa é fixa e a imagem se ajusta por `max-h`; o
-                              next/image fixaria a caixa pelas dimensões do
-                              arquivo, e os sete logos têm proporções diferentes. */}
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          {/* Ajustes do marketing (06/11): caixa maior (era
+                              156×56) e todos os logos com o mesmo peso visual —
+                              a largura sai da proporção do arquivo
+                              (`lib/logo.ts`), como na faixa de parceiros. Antes
+                              cada logo enchia a caixa por `max-h`: o comprido
+                              (Oncoclínicas) virava um risco e o quadrado
+                              parecia maior. "Ampliar o logo" passa a ser só
+                              para arquivo com margem que não dá para recortar.
+                              0,3 é a altura sobre a largura da área útil
+                              (160×48). */}
+                          {/* eslint-disable-next-line @next/next/no-img-element -- a caixa é fixa e a largura vem da proporção; o next/image fixaria a caixa pelas dimensões do arquivo */}
                           <img
                             src={c.logo.url}
                             alt={`Logo ${c.name}`}
                             loading="lazy"
                             decoding="async"
-                            className={`${c.enlarge ? 'max-h-10 scale-110' : 'max-h-8'} max-w-full object-contain pointer-events-none opacity-90 hover:opacity-100 transition-all`}
+                            style={{ width: larguraOticaCss(c.logo, c.enlarge ? 'lg' : 'md', 0.3) }}
+                            className="h-auto max-h-full object-contain pointer-events-none opacity-90 hover:opacity-100 transition-all"
                           />
                         </div>
                       ))}

@@ -46,15 +46,17 @@ export const Clients: CollectionConfig = {
       /* ⚠️ Três dos sete logos são desenhados menores dentro do arquivo, e o
        * legado os amplia um a um (`App.tsx:1895`). Sem isto, ANBIMA, Afya e
        * Icatu aparecem visivelmente menores que os outros quatro na mesma
-       * fileira. É correção de arte do arquivo, não preferência. */
+       * fileira. É correção de arte do arquivo, não preferência.
+       * Desde 06/11 a esteira iguala o peso pela proporção (`lib/logo.ts`), e
+       * este campo vira a escala `lg` dela: sobra só para a exceção. */
       name: 'enlarge',
       type: 'checkbox',
       defaultValue: false,
       label: { pt: 'Ampliar o logo', en: 'Enlarge the logo' },
       admin: {
         description: {
-          pt: 'Para arquivos em que a marca ocupa pouco espaço e sai menor que as vizinhas.',
-          en: 'For files where the mark sits small in the canvas and reads smaller than its neighbours.',
+          pt: 'Exceção. O site já iguala o peso das logos pela proporção do arquivo; marque só se a marca ainda sair menor que as vizinhas (arquivo com margem em volta, por exemplo).',
+          en: 'Exception only. The site already evens out the logos by the file proportions; tick it only if the mark still reads smaller than its neighbours (a file with padding around it, say).',
         },
       },
     },

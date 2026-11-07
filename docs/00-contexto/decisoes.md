@@ -2930,3 +2930,34 @@ que não é documento do catálogo nem entra na busca (D-73).
 **Consequências.** Mudou a rede no admin, muda a resposta na conversa seguinte,
 sem reindexar. A resposta sobre a ATRA fica mais longa quando cita os nove
 parceiros.
+
+## D-82 — Menu aberto, logos de cliente com o mesmo peso, contato e valores alinhados
+
+**Contexto.** Em 05/11 a Taciane (marketing) mandou sete ajustes do site. Dois
+eram configuração no admin (o código da RD em Sistema → Rastreamento e a
+conferência da Lusha); os outros quatro mudavam layout, e o Leonardo mandou
+prévias, que a Karen aprovou em 06/11 ("Pode seguir!").
+
+**Decisão.**
+
+- **Menu**: as 7 categorias ficam sempre à mostra a partir do `lg`, sem o
+  botão "Menu ☰", em fluxo (não mais centradas em absoluto) e com letra de
+  15 px no `xl`. Passar o ponteiro, focar ou tocar numa categoria sem destino
+  abre o painel. Abaixo de 1024 px as 7 não cabem, e o botão abre a gaveta —
+  o tablet passou a usá-la. O "Fale Conosco" do cabeçalho fica só a partir do
+  `xl`, pelo mesmo motivo.
+- **Logos de cliente** (esteira da home): caixa de 200×72 (era 156×56) e
+  largura pela proporção do arquivo (`lib/logo.ts`, a regra da faixa de
+  parceiros). "Ampliar o logo" vira a escala `lg` dessa regra: exceção para
+  arquivo com margem.
+- **Contato da home**: o título ocupa a linha de cima da grade e o cartão de
+  contatos a de baixo, ao lado do subtítulo e do formulário — topo no "Comece
+  seu projeto de dados", base no Enviar, linhas juntas
+  (`PainelDeContatos compacto`). /contato e consultores seguem com a forma
+  alta.
+- **Nossos valores** (cartão curto, /sobre): grade em `max-w-4xl` e conteúdo
+  de cada cartão centralizado nele, no eixo do título; texto à esquerda.
+
+**Consequências.** Com arquivos de produção, os logos ficam parelhos; os que
+ainda destoam são de arquivo: HDI marcado para ampliar sem precisar, B3, Icatu
+e Nice com margem em volta. Conserto no admin, não no código.

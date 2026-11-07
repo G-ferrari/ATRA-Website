@@ -78,7 +78,17 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
           </div>
         )}
 
-        <div className={cn('grid md:grid-cols-3 gap-6', alto && 'grid-cols-1 lg:gap-8 items-stretch')}>
+        {/* Cartão curto (/sobre → Nossos valores, ajustes do marketing de 06/11,
+            aprovados pela Karen): a grade estreita e o conteúdo de cada cartão
+            centraliza dentro dele, para os três ficarem no eixo do título —
+            Pessoas e Inovação à mesma distância do centro, Qualidade logo
+            abaixo. O texto segue alinhado à esquerda, que lê melhor. */}
+        <div
+          className={cn(
+            'grid md:grid-cols-3 gap-6',
+            alto ? 'grid-cols-1 lg:gap-8 items-stretch' : 'max-w-4xl mx-auto',
+          )}
+        >
           {bloco.items.map((v) => {
             const Icone = iconePorNome(v.icon)
             const laranja = v.glowColor === 'orange'
@@ -136,7 +146,7 @@ export function BlocoValores({ bloco }: { bloco: BlocoValueCards }) {
               </div>
             ) : (
               <GlowCard key={v.title} glowColor={v.glowColor} className="p-8 flex flex-col justify-between">
-                <div>
+                <div className="w-full max-w-52 mx-auto">
                   <div className="w-12 h-12 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center mb-6">
                     <Icone size={24} aria-hidden />
                   </div>

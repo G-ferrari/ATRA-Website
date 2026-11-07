@@ -22,9 +22,9 @@ import type { CategoriaDoMenu, Image as Imagem, Navegacao } from '@/types/conten
  * Ilha cliente porque abrir, fechar e trocar de categoria é estado. **Não busca
  * dado**: o `navegacao` chega resolvido pelo layout (blocos.md, regra 1).
  *
- * ⚠️ O estado **fechado** não mudou nesta task, de propósito: é ele que aparece
- * em toda captura da regressão visual, e mexer nele obrigaria a regravar os 9
- * gabaritos. Os painéis só existem depois do clique. */
+ * Desde 06/11 (ajustes do marketing, aprovados pela Karen) as categorias ficam
+ * sempre à mostra no desktop, sem o botão "Menu ☰": o estado fechado do
+ * legado deixou de existir a partir do `lg`. A gaveta segue abaixo dele. */
 
 export function SiteHeader({
   locale,
@@ -86,7 +86,10 @@ export function SiteHeader({
         className={cn(
           'pointer-events-auto w-full max-w-7xl mx-auto transition-all duration-500 flex flex-col px-6 md:px-8 relative z-40',
           aberto
-            ? 'bg-surface-2 shadow-2xl py-5 text-text-main rounded-[6px]'
+            ? /* Mesma altura do estado fechado: com as categorias sempre à
+                 mostra, o painel abre no hover, e a barra crescer sob o
+                 ponteiro empurrava a fileira para baixo dele. */
+              cn('bg-surface-2 shadow-2xl text-text-main rounded-[6px]', rolou ? 'py-2' : 'py-3')
             : rolou
               ? cn(
                   'bg-surface-2 py-2 md:py-2 text-text-main',
@@ -115,8 +118,8 @@ export function SiteHeader({
            cabeçalho. A variante `sobre-azul` (globals.css) só age com ela. */
         data-topo={!rolou && !aberto ? '' : undefined}
       >
-        <div className="w-full flex items-center justify-between relative">
-          <Link href={prefixo || '/'} className="flex items-center gap-2" onClick={() => setAberto(false)}>
+        <div className="w-full flex items-center justify-between gap-2 relative">
+          <Link href={prefixo || '/'} className="flex items-center gap-2 shrink-0" onClick={() => setAberto(false)}>
             {/* ⚠️ `<img>` cru, e não `next/image`: a caixa é `h-12 w-auto`, e o
                 gabarito desenha o arquivo original. Passar pelo next/image
                 reescalaria e mudaria a caixa. O `src` deixou de ser o hotlink do
@@ -133,94 +136,92 @@ export function SiteHeader({
             )}
           </Link>
 
-          {/* ⚠️ O marcador vai aqui, e não no `motion.div` de dentro: o
-              `motion/react` filtra `data-*` e o atributo nunca chega ao DOM —
-              custou uma rodada inteira de testes a descobrir. */}
-          <div
-            data-testid="menu-categorias"
-            className="flex items-center absolute left-1/2 -translate-x-1/2 h-full pointer-events-auto"
-          >
-            <AnimatePresence mode="wait">
-              {!aberto ? (
-                <motion.button
-                  key="menu-fechado"
-                  type="button"
-                  initial={{ opacity: 0, scale: 0.9, y: -2 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: 2 }}
-                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="p-1.5 px-3.5 rounded-[6px] transition-all flex items-center gap-1.5 text-sm font-semibold tracking-normal cursor-pointer hover:scale-105 active:scale-95 bg-transparent text-text-main dark:text-white hover:opacity-80"
-                  onClick={() => setAberto(true)}
-                  aria-expanded={false}
-                  aria-label={t.abrirMenu}
-                >
-                  <span>{t.menu}</span> <Menu size={14} className="text-primary" aria-hidden />
-                </motion.button>
-              ) : (
-                <motion.div
-                  key="menu-aberto"
-                  initial={{ opacity: 0, scale: 0.98, y: 4 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.98, y: -4 }}
-                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                  className="hidden md:flex items-center gap-3.5"
-                >
-                  {categorias.map((categoria) => {
-                    const rotulo = categoria.label
-                    const selecionada = ativa?.label === rotulo
-                    return (
-                      <div key={rotulo} className="relative py-1">
-                        <Link
-                          href={categoria.href ?? '#'}
-                          onClick={(e) => {
-                            if (!categoria.href) e.preventDefault()
-                            else fechar()
-                          }}
-                          onMouseEnter={() => setCategoriaAtiva(rotulo)}
-                          className={cn(
-                            'text-sm font-semibold transition-colors flex items-center gap-1 cursor-pointer relative pb-1 tracking-normal',
-                            selecionada ? 'text-primary font-bold' : 'text-text-muted hover:text-text-main',
-                          )}
-                        >
-                          <span>{rotulo}</span>
-                          <ChevronDown
-                            size={12}
-                            aria-hidden
-                            className={cn(
-                              'transition-transform duration-300',
-                              selecionada ? 'rotate-180 text-primary' : 'text-text-muted',
-                            )}
-                          />
-                          {selecionada && (
-                            <motion.div
-                              layoutId="sublinhadoDoMenu"
-                              className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-atra rounded-full"
-                              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                            />
-                          )}
-                        </Link>
-                      </div>
-                    )
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* Ajustes do marketing (05/11, aprovados pela Karen em 06/11): as
+              categorias ficam sempre à mostra a partir do `lg`, sem o botão
+              "Menu ☰", e com letra maior no `xl`. Passar o ponteiro abre o
+              painel; tocar numa categoria sem destino também, para notebook
+              com tela de toque.
+              ⚠️ Em fluxo (`flex-1`), não mais centrada em absoluto: centrada,
+              a fileira invadia o "Fale Conosco" perto de 1024px. Abaixo do
+              `lg` as 7 não cabem, e o botão abre a gaveta, como no celular.
+              ⚠️ O marcador vai aqui, e não no `motion.div`: o `motion/react`
+              filtra `data-*` e o atributo nunca chega ao DOM. */}
+          <div className="flex flex-1 min-w-0 items-center justify-center h-full pointer-events-auto px-2 lg:px-4">
+            {!aberto && (
+              <button
+                type="button"
+                className="lg:hidden p-1.5 px-3.5 rounded-[6px] transition-all flex items-center gap-1.5 text-sm font-semibold tracking-normal cursor-pointer active:scale-95 bg-transparent text-text-main dark:text-white hover:opacity-80"
+                onClick={() => setAberto(true)}
+                aria-expanded={false}
+                aria-label={t.abrirMenu}
+              >
+                <span>{t.menu}</span> <Menu size={14} className="text-primary" aria-hidden />
+              </button>
+            )}
+            <div data-testid="menu-categorias" className="hidden lg:flex items-center gap-3 xl:gap-6">
+              {categorias.map((categoria) => {
+                const rotulo = categoria.label
+                const selecionada = aberto && ativa?.label === rotulo
+                const abrir = () => {
+                  setCategoriaAtiva(rotulo)
+                  setAberto(true)
+                }
+                return (
+                  <div key={rotulo} className="relative py-1">
+                    <Link
+                      href={categoria.href ?? '#'}
+                      onClick={(e) => {
+                        if (!categoria.href) {
+                          e.preventDefault()
+                          abrir()
+                        } else fechar()
+                      }}
+                      onMouseEnter={abrir}
+                      onFocus={abrir}
+                      aria-expanded={selecionada}
+                      className={cn(
+                        'text-sm xl:text-[15px] font-semibold transition-colors flex items-center gap-1 cursor-pointer relative pb-1 tracking-normal whitespace-nowrap',
+                        selecionada
+                          ? 'text-primary'
+                          : aberto
+                            ? 'text-text-muted hover:text-text-main'
+                            : 'text-text-main dark:text-white hover:text-primary',
+                      )}
+                    >
+                      <span>{rotulo}</span>
+                      <ChevronDown
+                        size={12}
+                        aria-hidden
+                        className={cn(
+                          'transition-transform duration-300',
+                          selecionada ? 'rotate-180 text-primary' : 'text-text-muted',
+                        )}
+                      />
+                      {selecionada && (
+                        <motion.div
+                          layoutId="sublinhadoDoMenu"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-atra rounded-full"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </Link>
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 lg:gap-4 pointer-events-auto">
-            {/* ⚠️ Some quando o megamenu abre. A fileira de categorias é centrada
-                em absoluto e, perto de ~1024px (largura de laptop muito comum),
-                sua borda direita invadia este botão — saía "Glossárique Conosco".
-                O estado fechado (o que a regressão visual captura) fica idêntico:
-                a condição só troca `hidden lg:flex` por `hidden` com o menu
-                aberto, que não entra em nenhum gabarito. */}
+          <div className="flex items-center gap-2 lg:gap-3 xl:gap-4 shrink-0 pointer-events-auto">
+            {/* Só a partir do `xl`: entre 1024 e 1279px as 7 categorias abertas
+                ocupam o meio da barra, e o botão não cabe. Ali o contato segue
+                a um clique pelo WhatsApp ao lado e pela seção da home. */}
             <Link
               href={`${prefixo}/#fale-conosco`}
               className={cn(
                 /* `h-9`: menor que antes (28/09) e da altura do botão do
                    WhatsApp ao lado, para os dois alinharem. */
                 'items-center gap-1.5 rounded-[6px] text-sm font-normal transition-all shadow-md hover:shadow-lg capitalize border border-primary text-primary hover:bg-primary/10 bg-transparent h-9 px-4 active:scale-95 cursor-pointer',
-                aberto ? 'hidden' : 'hidden lg:flex',
+                'hidden xl:flex',
               )}
             >
               {t.faleConosco} <ArrowRight size={14} aria-hidden />
@@ -243,7 +244,7 @@ export function SiteHeader({
                 title={t.whatsapp}
                 className={cn(
                   'w-9 h-9 rounded-[6px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25 items-center justify-center shrink-0 transition-colors active:scale-95',
-                  aberto ? 'flex md:hidden' : 'flex',
+                  'flex',
                 )}
               >
                 <MessageCircle size={18} aria-hidden />
@@ -252,12 +253,12 @@ export function SiteHeader({
 
             {/* D-77: PT, EN e ES, da altura do WhatsApp e em toda largura, como ele.
                 Some com o megamenu aberto no desktop pelo mesmo motivo. */}
-            <AlternadorDeIdioma locale={locale} className={aberto ? 'flex md:hidden' : 'flex'} />
+            <AlternadorDeIdioma locale={locale} className="flex" />
 
             {aberto && (
               <button
                 type="button"
-                className="p-2 rounded-[6px] hover:bg-slate-100 dark:hover:bg-slate-800 text-text-main md:hidden cursor-pointer"
+                className="p-2 rounded-[6px] hover:bg-slate-100 dark:hover:bg-slate-800 text-text-main lg:hidden cursor-pointer"
                 onClick={fechar}
                 aria-label={t.fecharMenu}
               >
@@ -267,8 +268,8 @@ export function SiteHeader({
           </div>
         </div>
 
-        {/* Painel da categoria ativa. `hidden md:block` porque no celular a
-            navegação é a gaveta abaixo, não o painel (`App.tsx:455`). */}
+        {/* Painel da categoria ativa. `hidden lg:block` porque abaixo do `lg` a
+            navegação é a gaveta, não o painel (`App.tsx:455`). */}
         <AnimatePresence>
           {aberto && ativa && (
             <motion.div
@@ -276,7 +277,7 @@ export function SiteHeader({
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="hidden md:block w-full mt-4 overflow-hidden border-t border-slate-100 dark:border-white/5 pt-4"
+              className="hidden lg:block w-full mt-4 overflow-hidden border-t border-slate-100 dark:border-white/5 pt-4"
             >
               <PainelDoMenu categoria={ativa} navegacao={navegacao} locale={locale} aoNavegar={fechar} />
             </motion.div>
@@ -292,7 +293,7 @@ export function SiteHeader({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -12, scale: 0.98 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="pointer-events-auto w-full max-w-lg mt-2 bg-surface-2  rounded-xl shadow-2xl overflow-hidden relative z-40 mx-auto md:hidden max-h-[82vh] flex flex-col"
+            className="pointer-events-auto w-full max-w-lg mt-2 bg-surface-2  rounded-xl shadow-2xl overflow-hidden relative z-40 mx-auto lg:hidden max-h-[82vh] flex flex-col"
           >
             {/* Rola na vertical, que a roda do mouse alcança sem barra; o item
                 cortado na borda de baixo avisa que há mais. */}
