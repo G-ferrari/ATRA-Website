@@ -12,14 +12,13 @@ name: Uptime
 # de uptime de verdade; a troca é só apontar os mesmos alvos lá.
 # ⚠️ Cron só roda na branch padrão (`main`). Alvo em `vars.SITE_URL`, para a
 # virada de domínio não exigir commit.
-# ⚠️ D-68 (23/10/2026): na prática o GitHub roda isto de 3 em 3 a 8 em 8 horas.
-# O substituto é o Google Cloud Monitoring (infra/monitoramento/), e o
-# `schedule` abaixo só sai quando aquela checagem existir e o e-mail de teste
-# chegar — antes disso, tirá-lo deixaria o site sem vigilância nenhuma. Ver
+# ⚠️ D-68 (23/10/2026): na prática o GitHub rodava isto de 3 em 3 a 8 em 8
+# horas. Quem vigia o site agora é o Google Cloud Monitoring
+# (infra/monitoramento/), a cada minuto: a checagem de www.atra.com.br existe e
+# o alerta de teste chegou por e-mail em 26/10, então o `schedule` saiu. Fica só
+# o disparo manual, para conferir os três alvos e o certificado à mão. Ver
 # docs/05-operacao/monitoramento-de-uptime.md.
 on:
-  schedule:
-    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -35,7 +34,7 @@ jobs:
     name: site no ar?
     runs-on: ubuntu-latest
     env:
-      SITE: ${{ vars.SITE_URL || 'https://35-211-105-220.sslip.io' }}
+      SITE: ${{ vars.SITE_URL || 'https://www.atra.com.br' }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}
     steps:
