@@ -26,13 +26,20 @@ vi.mock('@/lib/anti-spam', async (original) => ({
 
 const { enviarFormulario } = await import('./formularios')
 
-const form = (campos: Record<string, string>) => {
+const PDF = () => new File([Buffer.from('%PDF-1.4\nxref\ntrailer<<>>\n%%EOF\n')], 'cv.pdf', { type: 'application/pdf' })
+const form = (campos: Record<string, string>, cv: File | null = PDF()) => {
   const f = new FormData()
   for (const [k, v] of Object.entries(campos)) f.set(k, v)
+  if (campos.kind === 'talent-pool' && cv) f.set('cv', cv)
   return f
 }
 const contato = () => form({ kind: 'contact', email: 'lead@empresa.com.br', name: 'Maria', message: 'Oi' })
-const talento = () => form({ kind: 'talent-pool', email: 'cand@exemplo.com', name: 'Ana', area: 'Data Engineering' })
+const talento = () =>
+  form({ kind: 'talent-pool', email: 'cand@exemplo.com', name: 'Ana', area: 'Data Engineering', linkedin: 'linkedin.com/in/ana' })
+
+/** Os dados do cadastro gravado em form-submissions (no banco de talentos, o
+ *  currículo é gravado antes, em private-files). */
+const cadastroGravado = () => payload.create.mock.calls.find((c) => c[0].collection === 'form-submissions')![0].data
 
 /** O que o gancho do RD deixou gravado no documento. */
 const rdGravou = (rd: Record<string, unknown> | null) => payload.findByID.mockResolvedValue({ id: 501, rd })
@@ -125,7 +132,7 @@ describe('aviso ao time (task 045)', () => {
   it('newsletter: grava já confirmada, sem token, e não manda e-mail nenhum', async () => {
     const antes = Date.now()
     expect(await enviarFormulario(form({ kind: 'newsletter', email: 'leitor@exemplo.com' }))).toEqual({ ok: true })
-    const data = payload.create.mock.calls[0][0].data
+    const data = cadastroGravado()
     expect(data).toMatchObject({ kind: 'newsletter', email: 'leitor@exemplo.com' })
     expect(Date.parse(data.confirmedAt)).toBeGreaterThanOrEqual(antes)
     expect(data).not.toHaveProperty('confirmationToken')
@@ -180,18 +187,62 @@ describe('depois de gravar, é sucesso', () => {
 describe('banco de talentos — o que é gravado (D-62, D-67)', () => {
   it('grava a área em português e a cópia do aviso que estava valendo (Contato → Candidaturas)', async () => {
     await enviarFormulario(talento())
-    expect(payload.create.mock.calls[0][0].data.talent).toMatchObject({
+    expect(cadastroGravado().talent).toMatchObject({
       area: 'Engenharia de Dados',
       privacyNotice: 'Aviso de teste.',
     })
   })
 
-  it('valor fora da lista e LinkedIn que não é endereço não são gravados no perfil', async () => {
+  it('valor fora da lista não é gravado no perfil', async () => {
     await enviarFormulario(
-      form({ kind: 'talent-pool', email: 'c@x.com', area: 'texto livre forjado', linkedin: 'me ache no google' }),
+      form({ kind: 'talent-pool', email: 'c@x.com', area: 'texto livre forjado', linkedin: 'linkedin.com/in/c' }),
     )
-    const t = payload.create.mock.calls[0][0].data.talent
-    expect(t.area).toBeUndefined()
-    expect(t.linkedin).toBeUndefined()
+    expect(cadastroGravado().talent.area).toBeUndefined()
+  })
+
+  it('grava o LinkedIn normalizado, e é ele que vai na mensagem do aviso', async () => {
+    await enviarFormulario(talento())
+    const data = cadastroGravado()
+    expect(data.talent.linkedin).toBe('https://linkedin.com/in/ana')
+    expect(data.message).toContain('LinkedIn: https://linkedin.com/in/ana')
+  })
+
+  /* 26/11, pedido do RH: o perfil do LinkedIn é obrigatório. Quem posta sem o
+     nosso JavaScript também esbarra aqui, e nada é gravado. */
+  it.each([
+    ['sem LinkedIn', undefined],
+    ['texto que não é endereço', 'me ache no google'],
+    ['endereço que não é do LinkedIn', 'https://github.com/c'],
+    ['página de empresa', 'https://www.linkedin.com/company/atra'],
+  ])('%s → erro, e nada é gravado', async (_, linkedin) => {
+    const campos: Record<string, string> = { kind: 'talent-pool', email: 'c@x.com', name: 'C' }
+    if (linkedin) campos.linkedin = linkedin
+    expect(await enviarFormulario(form(campos))).toEqual({ ok: false, erro: expect.stringContaining('LinkedIn') })
+    expect(payload.create).not.toHaveBeenCalled()
+    expect(enviarAviso).not.toHaveBeenCalled()
+  })
+
+  it('grava o currículo em Arquivos privados e liga ao cadastro', async () => {
+    payload.create.mockImplementation(async ({ collection }) => ({ id: collection === 'private-files' ? 77 : 501 }))
+    expect(await enviarFormulario(talento())).toEqual({ ok: true })
+    const [arquivo, cadastro] = payload.create.mock.calls.map((c) => c[0])
+    expect(arquivo).toMatchObject({ collection: 'private-files', data: { kind: 'cv' }, file: { mimetype: 'application/pdf' } })
+    expect(cadastro).toMatchObject({ collection: 'form-submissions', data: { kind: 'talent-pool', cv: 77 } })
+    expect(enviarAviso).toHaveBeenCalledWith(expect.objectContaining({ texto: expect.stringContaining('currículo está no admin') }))
+  })
+
+  /* 26/11: o currículo também é obrigatório. */
+  it.each([
+    ['sem currículo', null, 'Anexe'],
+    ['imagem no lugar do currículo', new File([new Uint8Array([0x89, 0x50])], 'cv.png'), 'PDF ou um documento do Word'],
+    ['executável renomeado', new File([new Uint8Array([0x4d, 0x5a, 0, 0])], 'cv.pdf'), 'PDF ou um documento do Word'],
+  ])('%s → erro, e nada é gravado', async (_, cv, mensagem) => {
+    const f = form({ kind: 'talent-pool', email: 'c@x.com', name: 'C', linkedin: 'linkedin.com/in/c' }, cv)
+    expect(await enviarFormulario(f)).toEqual({ ok: false, erro: expect.stringContaining(mensagem) })
+    expect(payload.create).not.toHaveBeenCalled()
+  })
+
+  it('contato não pede LinkedIn nem currículo', async () => {
+    expect(await enviarFormulario(contato())).toEqual({ ok: true })
   })
 })

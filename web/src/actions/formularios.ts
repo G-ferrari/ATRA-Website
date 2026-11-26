@@ -4,7 +4,8 @@ import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
 import { enviarParaAtrair } from '@/lib/atrair'
-import { areaEmPortugues, linkedinValido, senioridadeEmPortugues } from '@/lib/banco-de-talentos'
+import { areaEmPortugues, perfilDoLinkedin, senioridadeEmPortugues } from '@/lib/banco-de-talentos'
+import { conferirCurriculo, MENSAGENS_DO_CURRICULO } from '@/lib/curriculo'
 import { lerIntegracaoAtrair } from '@/lib/integracoes'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
@@ -66,6 +67,14 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   const email = texto(dados, 'email')
   if (!pareceEmail(email)) return { ok: false, erro: 'Confira o e-mail informado.' }
 
+  /* O LinkedIn é obrigatório no Banco de Talentos (26/11, pedido do RH): é por
+   * ele que o RH avalia o candidato. O campo já cobra no navegador; aqui é a
+   * regra que vale, para quem posta sem o nosso JavaScript. */
+  const linkedin = kind === 'talent-pool' ? perfilDoLinkedin(texto(dados, 'linkedin', 300)) : undefined
+  if (kind === 'talent-pool' && !linkedin) {
+    return { ok: false, erro: 'Informe o link do seu perfil no LinkedIn (linkedin.com/in/seu-perfil).' }
+  }
+
   const veredito = conferir({ isca: texto(dados, CAMPO_ISCA), carimbo: texto(dados, 'carimbo') })
   if (!veredito.ok) {
     /* ⚠️ Responde **sucesso** ao robô, de propósito. Dizer "você foi barrado"
@@ -78,6 +87,13 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   const cabecalhos = await headers()
   if (excedeuPorIp(ipDe(cabecalhos))) return { ok: true }
 
+  /* O currículo é obrigatório no Banco de Talentos (26/11), junto com o
+   * LinkedIn. Conferido **depois** do anti-spam: ler o arquivo de um robô
+   * barrado seria trabalho à toa. E **antes** de gravar qualquer coisa: sem
+   * currículo, não há cadastro. */
+  const curriculo = kind === 'talent-pool' ? await conferirCurriculo(dados.get('cv')) : null
+  if (curriculo && !curriculo.ok) return { ok: false, erro: MENSAGENS_DO_CURRICULO.pt[curriculo.motivo] }
+
   const payload = await getPayload()
 
   /* MIG-102: o Banco de Talentos tem campos sem coluna própria em
@@ -88,7 +104,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   const extrasDeTalento =
     kind === 'talent-pool'
       ? [
-          texto(dados, 'linkedin', 300) && `LinkedIn: ${texto(dados, 'linkedin', 300)}`,
+          `LinkedIn: ${linkedin}`,
           texto(dados, 'area') && `Área: ${texto(dados, 'area')}`,
           texto(dados, 'senioridade') && `Senioridade: ${texto(dados, 'senioridade')}`,
         ]
@@ -100,6 +116,19 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
      certo, e por ele que se relê o resultado do RD (task 045). */
   let id: number | string
   try {
+    /* O arquivo vai para `private-files` (bucket privado, lido só pelo RH no
+     * admin, apagado em 6 meses por `lib/retencao-de-candidaturas.ts`), e o
+     * cadastro aponta para ele. Gravado antes do cadastro, como na candidatura
+     * a vaga: se o cadastro falhar, o arquivo órfão sai na mesma limpeza. */
+    const cv =
+      curriculo?.ok
+        ? await payload.create({
+            collection: 'private-files',
+            data: { label: `CV — ${texto(dados, 'name') || email} (banco de talentos)`, kind: 'cv' },
+            file: { data: curriculo.conteudo, mimetype: curriculo.mimetype, name: curriculo.nome, size: curriculo.conteudo.length },
+          })
+        : null
+
     const gravado = await payload.create({
       collection: 'form-submissions',
       data: {
@@ -120,13 +149,14 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         ...(kind === 'talent-pool'
           ? {
               talent: {
-                linkedin: linkedinValido(texto(dados, 'linkedin', 300)),
+                linkedin,
                 area: areaEmPortugues(texto(dados, 'area')),
                 seniority: senioridadeEmPortugues(texto(dados, 'senioridade')),
                 privacyNotice: (await lerContato()).avisoDoBancoDeTalentos ?? undefined,
               },
             }
           : {}),
+        ...(cv ? { cv: cv.id } : {}),
         source: texto(dados, 'source') || undefined,
         /* ⚠️ Cortado **de novo** aqui. O cliente já limita, mas quem posta o
          * formulário não é obrigado a ser o nosso JavaScript — `curl` com um
@@ -172,7 +202,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         name: texto(dados, 'name'),
         email,
         phone: texto(dados, 'phone') || undefined,
-        linkedinUrl: texto(dados, 'linkedin', 300) || undefined,
+        linkedinUrl: linkedin,
         area: texto(dados, 'area') || undefined,
         senioridade: texto(dados, 'senioridade') || undefined,
         source: texto(dados, 'source') || undefined,
@@ -268,6 +298,7 @@ function resumo(dados: FormData, email: string): string {
     texto(dados, 'source') && `Veio de: ${texto(dados, 'source')}`,
     texto(dados, 'utm_campaign') && `Campanha: ${texto(dados, 'utm_campaign')}`,
     texto(dados, 'message', MAX_MENSAGEM) && `\n${texto(dados, 'message', MAX_MENSAGEM)}`,
+    texto(dados, 'kind') === 'talent-pool' && '\nO currículo está no admin, no cadastro e em Arquivos privados.',
   ].filter(Boolean)
   return linhas.join('\n')
 }

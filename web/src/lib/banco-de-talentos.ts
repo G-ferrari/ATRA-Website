@@ -36,15 +36,34 @@ function opcaoEmPortugues(lista: Record<Locale, readonly string[]>, valor: strin
 export const areaEmPortugues = (valor: string) => opcaoEmPortugues(AREAS, valor)
 export const senioridadeEmPortugues = (valor: string) => opcaoEmPortugues(SENIORIDADES, valor)
 
-/** O LinkedIn como endereço `http(s)`, até 300 caracteres; o resto vira
- *  `undefined` — o campo é texto livre na tela, e um endereço é o que o RD e o
- *  RH esperam ali. */
-export function linkedinValido(valor: string): string | undefined {
-  if (!valor || valor.length > 300) return undefined
+/** O endereço do perfil no LinkedIn, normalizado para `https://`; `undefined`
+ *  para o que não é perfil do LinkedIn.
+ *
+ *  ⚠️ Obrigatório no Banco de Talentos desde 26/11 (pedido do RH): é o
+ *  LinkedIn, e não um anexo, que o RH abre para avaliar o candidato. Daí a
+ *  regra ser "perfil do LinkedIn" e não "qualquer endereço" — um link para o
+ *  portfólio ou para o Google passaria pela regra antiga e não serviria.
+ *
+ *  Aceita como o candidato cola: com ou sem `https://`, com ou sem `www.`, com
+ *  subdomínio de país (`br.linkedin.com`), e o endereço público antigo
+ *  (`/pub/`). Só `/in/<perfil>`: página de empresa, de vaga ou de post não é o
+ *  perfil de ninguém. A mesma função vale no navegador (a mensagem no campo) e
+ *  na action (a regra que vale). */
+export function perfilDoLinkedin(valor: string): string | undefined {
+  const bruto = valor.trim()
+  if (!bruto || bruto.length > 300) return undefined
+  const comProtocolo = /^[a-z][a-z\d+.-]*:/i.test(bruto) ? bruto : `https://${bruto}`
+  let url: URL
   try {
-    const url = new URL(valor)
-    return url.protocol === 'https:' || url.protocol === 'http:' ? valor : undefined
+    url = new URL(comProtocolo)
   } catch {
     return undefined
   }
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return undefined
+  if (url.username || url.password || url.port) return undefined
+  const host = url.hostname.toLowerCase()
+  if (host !== 'linkedin.com' && !host.endsWith('.linkedin.com')) return undefined
+  if (!/^\/(in|pub)\/[^/]+/i.test(url.pathname)) return undefined
+  url.protocol = 'https:'
+  return url.href
 }

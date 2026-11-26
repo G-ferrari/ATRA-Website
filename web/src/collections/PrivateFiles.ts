@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { isAdmin, isEditorOrAdmin } from '@/access'
+import { MIMETYPES_DE_CURRICULO } from '@/lib/curriculo'
 
 /* Arquivos que o público NÃO lê (MIG-102/104): currículos de candidatos e os
  * PDFs de material rico.
@@ -44,9 +45,11 @@ export const PrivateFiles: CollectionConfig = {
     delete: isAdmin,
   },
   upload: {
-    /* Só PDF: é o que o formulário de vaga aceita e o que material rico usa.
-     * Sem imageSizes — nada aqui é imagem. */
-    mimeTypes: ['application/pdf'],
+    /* PDF (o formulário de vaga e o material rico) e Word (o currículo do
+     * Banco de Talentos, 26/11) — a lista é a de `lib/curriculo.ts`. O Payload
+     * confere o tipo pelo conteúdo, não pelo que o navegador declara. Sem
+     * imageSizes — nada aqui é imagem. */
+    mimeTypes: ['application/pdf', ...MIMETYPES_DE_CURRICULO],
   },
   fields: [
     {
