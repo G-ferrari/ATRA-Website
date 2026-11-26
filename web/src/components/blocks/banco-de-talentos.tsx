@@ -1,5 +1,6 @@
 import { Send, Upload } from 'lucide-react'
 
+import { CampoDoLinkedin } from '@/components/forms/campo-do-linkedin'
 import { Formulario } from '@/components/forms/formulario'
 import { TechCornerBraces } from '@/components/ui'
 import { AREAS, SENIORIDADES } from '@/lib/banco-de-talentos'
@@ -29,7 +30,6 @@ const TEXTOS = {
   pt: {
     nome: 'Nome Completo *',
     email: 'E-mail Corporativo/Pessoal *',
-    linkedin: 'LinkedIn',
     telefone: 'Telefone / WhatsApp',
     area: 'Área de atuação',
     areas: AREAS.pt,
@@ -41,7 +41,6 @@ const TEXTOS = {
   en: {
     nome: 'Full name *',
     email: 'Work/personal e-mail *',
-    linkedin: 'LinkedIn',
     telefone: 'Phone / WhatsApp',
     area: 'Field',
     areas: AREAS.en,
@@ -53,7 +52,6 @@ const TEXTOS = {
   es: {
     nome: 'Nombre completo *',
     email: 'Correo corporativo/personal *',
-    linkedin: 'LinkedIn',
     telefone: 'Teléfono / WhatsApp',
     area: 'Área de actuación',
     areas: AREAS.es,
@@ -118,8 +116,10 @@ export function BancoDeTalentos({
           <input type="email" name="email" placeholder={t.email} required className={CAMPO} />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <input type="text" name="linkedin" placeholder={t.linkedin} className={CAMPO} />
-            <input type="tel" name="phone" placeholder={t.telefone} className={CAMPO} />
+            {/* Obrigatório desde 26/11, pedido do RH: é pelo perfil que ele
+                avalia o candidato (no lugar de um currículo anexo). */}
+            <CampoDoLinkedin locale={locale} className={CAMPO} />
+            <input type="tel" name="phone" placeholder={t.telefone} className={`${CAMPO} self-start`} />
           </div>
 
           {/* ⚠️ NÃO existe seletor de vaga aqui, e é decisão (D-33). Este

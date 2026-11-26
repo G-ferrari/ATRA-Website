@@ -4,7 +4,7 @@ import { headers } from 'next/headers'
 
 import { ipDe } from '@/lib/ip'
 import { enviarParaAtrair } from '@/lib/atrair'
-import { areaEmPortugues, linkedinValido, senioridadeEmPortugues } from '@/lib/banco-de-talentos'
+import { areaEmPortugues, perfilDoLinkedin, senioridadeEmPortugues } from '@/lib/banco-de-talentos'
 import { lerIntegracaoAtrair } from '@/lib/integracoes'
 import { conferir, excedeuPorIp, CAMPO_ISCA } from '@/lib/anti-spam'
 import { lerContato } from '@/lib/contato'
@@ -66,6 +66,14 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   const email = texto(dados, 'email')
   if (!pareceEmail(email)) return { ok: false, erro: 'Confira o e-mail informado.' }
 
+  /* O LinkedIn é obrigatório no Banco de Talentos (26/11, pedido do RH): é por
+   * ele que o RH avalia o candidato. O campo já cobra no navegador; aqui é a
+   * regra que vale, para quem posta sem o nosso JavaScript. */
+  const linkedin = kind === 'talent-pool' ? perfilDoLinkedin(texto(dados, 'linkedin', 300)) : undefined
+  if (kind === 'talent-pool' && !linkedin) {
+    return { ok: false, erro: 'Informe o link do seu perfil no LinkedIn (linkedin.com/in/seu-perfil).' }
+  }
+
   const veredito = conferir({ isca: texto(dados, CAMPO_ISCA), carimbo: texto(dados, 'carimbo') })
   if (!veredito.ok) {
     /* ⚠️ Responde **sucesso** ao robô, de propósito. Dizer "você foi barrado"
@@ -88,7 +96,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
   const extrasDeTalento =
     kind === 'talent-pool'
       ? [
-          texto(dados, 'linkedin', 300) && `LinkedIn: ${texto(dados, 'linkedin', 300)}`,
+          `LinkedIn: ${linkedin}`,
           texto(dados, 'area') && `Área: ${texto(dados, 'area')}`,
           texto(dados, 'senioridade') && `Senioridade: ${texto(dados, 'senioridade')}`,
         ]
@@ -120,7 +128,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         ...(kind === 'talent-pool'
           ? {
               talent: {
-                linkedin: linkedinValido(texto(dados, 'linkedin', 300)),
+                linkedin,
                 area: areaEmPortugues(texto(dados, 'area')),
                 seniority: senioridadeEmPortugues(texto(dados, 'senioridade')),
                 privacyNotice: (await lerContato()).avisoDoBancoDeTalentos ?? undefined,
@@ -172,7 +180,7 @@ export async function enviarFormulario(dados: FormData): Promise<Resultado> {
         name: texto(dados, 'name'),
         email,
         phone: texto(dados, 'phone') || undefined,
-        linkedinUrl: texto(dados, 'linkedin', 300) || undefined,
+        linkedinUrl: linkedin,
         area: texto(dados, 'area') || undefined,
         senioridade: texto(dados, 'senioridade') || undefined,
         source: texto(dados, 'source') || undefined,

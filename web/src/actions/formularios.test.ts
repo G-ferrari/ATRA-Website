@@ -32,7 +32,8 @@ const form = (campos: Record<string, string>) => {
   return f
 }
 const contato = () => form({ kind: 'contact', email: 'lead@empresa.com.br', name: 'Maria', message: 'Oi' })
-const talento = () => form({ kind: 'talent-pool', email: 'cand@exemplo.com', name: 'Ana', area: 'Data Engineering' })
+const talento = () =>
+  form({ kind: 'talent-pool', email: 'cand@exemplo.com', name: 'Ana', area: 'Data Engineering', linkedin: 'linkedin.com/in/ana' })
 
 /** O que o gancho do RD deixou gravado no documento. */
 const rdGravou = (rd: Record<string, unknown> | null) => payload.findByID.mockResolvedValue({ id: 501, rd })
@@ -186,12 +187,36 @@ describe('banco de talentos — o que é gravado (D-62, D-67)', () => {
     })
   })
 
-  it('valor fora da lista e LinkedIn que não é endereço não são gravados no perfil', async () => {
+  it('valor fora da lista não é gravado no perfil', async () => {
     await enviarFormulario(
-      form({ kind: 'talent-pool', email: 'c@x.com', area: 'texto livre forjado', linkedin: 'me ache no google' }),
+      form({ kind: 'talent-pool', email: 'c@x.com', area: 'texto livre forjado', linkedin: 'linkedin.com/in/c' }),
     )
-    const t = payload.create.mock.calls[0][0].data.talent
-    expect(t.area).toBeUndefined()
-    expect(t.linkedin).toBeUndefined()
+    expect(payload.create.mock.calls[0][0].data.talent.area).toBeUndefined()
+  })
+
+  it('grava o LinkedIn normalizado, e é ele que vai na mensagem do aviso', async () => {
+    await enviarFormulario(talento())
+    const data = payload.create.mock.calls[0][0].data
+    expect(data.talent.linkedin).toBe('https://linkedin.com/in/ana')
+    expect(data.message).toContain('LinkedIn: https://linkedin.com/in/ana')
+  })
+
+  /* 26/11, pedido do RH: o perfil do LinkedIn é obrigatório. Quem posta sem o
+     nosso JavaScript também esbarra aqui, e nada é gravado. */
+  it.each([
+    ['sem LinkedIn', undefined],
+    ['texto que não é endereço', 'me ache no google'],
+    ['endereço que não é do LinkedIn', 'https://github.com/c'],
+    ['página de empresa', 'https://www.linkedin.com/company/atra'],
+  ])('%s → erro, e nada é gravado', async (_, linkedin) => {
+    const campos: Record<string, string> = { kind: 'talent-pool', email: 'c@x.com', name: 'C' }
+    if (linkedin) campos.linkedin = linkedin
+    expect(await enviarFormulario(form(campos))).toEqual({ ok: false, erro: expect.stringContaining('LinkedIn') })
+    expect(payload.create).not.toHaveBeenCalled()
+    expect(enviarAviso).not.toHaveBeenCalled()
+  })
+
+  it('contato não pede LinkedIn', async () => {
+    expect(await enviarFormulario(contato())).toEqual({ ok: true })
   })
 })

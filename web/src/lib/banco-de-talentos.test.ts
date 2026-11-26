@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { areaEmPortugues, linkedinValido, senioridadeEmPortugues } from './banco-de-talentos'
+import { areaEmPortugues, perfilDoLinkedin, senioridadeEmPortugues } from './banco-de-talentos'
 
 /* D-62: a action aceita só as opções da lista e grava sempre em português — um
  * POST forjado não põe texto livre no perfil, e o mesmo cargo não vira dois
@@ -26,16 +26,27 @@ describe('opções do banco de talentos', () => {
   })
 })
 
-describe('linkedinValido', () => {
-  it('aceita endereço http(s)', () => {
-    expect(linkedinValido('https://www.linkedin.com/in/maria')).toBe('https://www.linkedin.com/in/maria')
+describe('perfilDoLinkedin', () => {
+  it('aceita o perfil como o candidato cola, e devolve com https', () => {
+    expect(perfilDoLinkedin('https://www.linkedin.com/in/maria')).toBe('https://www.linkedin.com/in/maria')
+    expect(perfilDoLinkedin('linkedin.com/in/maria')).toBe('https://linkedin.com/in/maria')
+    expect(perfilDoLinkedin('  www.linkedin.com/in/maria-silva-123/  ')).toBe('https://www.linkedin.com/in/maria-silva-123/')
+    expect(perfilDoLinkedin('http://br.linkedin.com/in/maria')).toBe('https://br.linkedin.com/in/maria')
+    expect(perfilDoLinkedin('https://LinkedIn.com/in/Maria?utm_source=share')).toBe('https://linkedin.com/in/Maria?utm_source=share')
+    expect(perfilDoLinkedin('https://www.linkedin.com/pub/maria/1/2/3')).toBe('https://www.linkedin.com/pub/maria/1/2/3')
   })
 
-  it('recusa o que não é endereço, ou é longo demais', () => {
-    expect(linkedinValido('linkedin.com/in/maria')).toBeUndefined()
-    expect(linkedinValido('javascript:alert(1)')).toBeUndefined()
-    expect(linkedinValido('Me procure por Maria Silva')).toBeUndefined()
-    expect(linkedinValido(`https://linkedin.com/in/${'a'.repeat(300)}`)).toBeUndefined()
-    expect(linkedinValido('')).toBeUndefined()
+  it('recusa o que não é perfil do LinkedIn', () => {
+    expect(perfilDoLinkedin('')).toBeUndefined()
+    expect(perfilDoLinkedin('Me procure por Maria Silva')).toBeUndefined()
+    expect(perfilDoLinkedin('javascript:alert(1)')).toBeUndefined()
+    expect(perfilDoLinkedin('https://github.com/maria')).toBeUndefined()
+    expect(perfilDoLinkedin('https://linkedin.com.golpe.com/in/maria')).toBeUndefined()
+    expect(perfilDoLinkedin('https://naolinkedin.com/in/maria')).toBeUndefined()
+    expect(perfilDoLinkedin('https://www.linkedin.com/')).toBeUndefined()
+    expect(perfilDoLinkedin('https://www.linkedin.com/in/')).toBeUndefined()
+    expect(perfilDoLinkedin('https://www.linkedin.com/company/atra')).toBeUndefined()
+    expect(perfilDoLinkedin('https://user:senha@linkedin.com/in/maria')).toBeUndefined()
+    expect(perfilDoLinkedin(`https://linkedin.com/in/${'a'.repeat(300)}`)).toBeUndefined()
   })
 })
