@@ -1,5 +1,6 @@
 import { Send, Upload } from 'lucide-react'
 
+import { CampoDeCurriculo } from '@/components/forms/campo-de-curriculo'
 import { CampoDoLinkedin } from '@/components/forms/campo-do-linkedin'
 import { Formulario } from '@/components/forms/formulario'
 import { TechCornerBraces } from '@/components/ui'
@@ -117,7 +118,7 @@ export function BancoDeTalentos({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Obrigatório desde 26/11, pedido do RH: é pelo perfil que ele
-                avalia o candidato (no lugar de um currículo anexo). */}
+                avalia o candidato. */}
             <CampoDoLinkedin locale={locale} className={CAMPO} />
             <input type="tel" name="phone" placeholder={t.telefone} className={`${CAMPO} self-start`} />
           </div>
@@ -148,6 +149,10 @@ export function BancoDeTalentos({
               ))}
             </select>
           </div>
+
+          {/* Obrigatório desde 26/11, junto com o LinkedIn. O arquivo vai
+              para Arquivos privados, que só o RH lê no admin. */}
+          <CampoDeCurriculo locale={locale} />
 
           {/* O aviso de privacidade (RH e jurídico, em Sistema → Contato →
               Candidaturas, D-67) vem antes do botão, para ser lido antes de

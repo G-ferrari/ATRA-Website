@@ -73,7 +73,10 @@ export async function apagarCandidaturasVencidas(payload: Payload, agora = new D
   /* 2. O PDF. Pelo tipo e pela data, e não pelo vínculo com a candidatura: o
         arquivo é gravado **antes** do registro (`actions/candidatura.ts`), e se
         a gravação do registro falhou ele ficou órfão — sem candidatura que o
-        aponte, mas igualmente dado pessoal. O material rico (`kind: material`)
+        aponte, mas igualmente dado pessoal. Pega também o currículo do
+        Banco de Talentos (obrigatório desde 26/11), que é `kind: cv` como o
+        da vaga — o cadastro dele (nome, e-mail, LinkedIn) segue no admin,
+        como já seguia antes do anexo. O material rico (`kind: material`)
         não entra: não é de ninguém. */
   const curriculos = await payload.find({
     collection: 'private-files',

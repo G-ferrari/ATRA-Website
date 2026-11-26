@@ -101,7 +101,15 @@ const nextConfig: NextConfig = {
    * medido, é de dezenas de milissegundos. */
   staticPageGenerationTimeout: 180,
 
-  experimental: { cpus: WORKERS },
+  experimental: {
+    cpus: WORKERS,
+    /* O currículo do Banco de Talentos vai pela Server Action, e o padrão do
+     * Next é 1 MB de corpo: um PDF de 2 MB morria antes de a action rodar,
+     * com um erro que o visitante não entende. 6 MB = o teto do currículo
+     * (`MAX_CURRICULO_BYTES`, 5 MB) mais folga para os campos e as bordas do
+     * multipart. Vale para toda Server Action; as outras mandam só texto. */
+    serverActions: { bodySizeLimit: '6mb' },
+  },
 
   /* O WordPress (CSV) e as rotas do próprio site que saíram — hoje o
    * diagnóstico RC18, que a D-35 trocou pelo de maturidade. Aqui e não no
